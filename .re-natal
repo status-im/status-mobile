@@ -1,0 +1,11 @@
+{
+  "name": "Messenger",
+  "interface": "om-next",
+  "androidHost": "10.0.3.2",
+  "modules": [
+    "react-native-contacts"
+  ],
+  "imageDirs": [
+    "images"
+  ]
+}
