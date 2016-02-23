@@ -42,6 +42,7 @@ target/
 # Figwheel
 #
 figwheel_server.log
+.nrepl-port
 
 # Mercurial
 .hg/
