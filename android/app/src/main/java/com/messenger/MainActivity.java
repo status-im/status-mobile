@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import com.i18n.reactnativei18n.ReactNativeI18n;
+
 
 public class MainActivity extends ReactActivity {
 
@@ -61,7 +63,8 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
-        new ReactNativeContacts()
+        new ReactNativeContacts(),
+        new ReactNativeI18n()
       );
     }
 }
