@@ -11,11 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+
 public class MainActivity extends ReactActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.loadLibrary("gethraw");
+        System.loadLibrary("geth");
         Properties properties = System.getProperties();
         properties.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
         properties.setProperty("https.nonProxyHosts", "localhost|127.0.0.1");
