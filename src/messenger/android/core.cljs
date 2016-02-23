@@ -14,7 +14,8 @@
 
 (def app-registry (.-AppRegistry js/React))
 (def logo-icon (js/require "./images/logo.png"))
-(def user-no-photo (js/require "./images/user.png"))
+(def user-no-photo (js/require "./images/no-photo.png"))
+(def online-icon (js/require "./images/online.png"))
 (def seen-icon (js/require "./images/seen.png"))
 (def delivered-icon (js/require "./images/delivered.png"))
 
@@ -37,32 +38,48 @@
                            :height 75
                            :transform [{:translateX 0}
                                        {:translateY 0}]}}
-                  (view {}
-                        (image {:source (if (< 0 (count photo))
-                                          {:uri photo}
-                                          user-no-photo)
-                                :style {:borderWidth 2
-                                        :borderColor "#FFFFFF"
-                                        ;; :borderStyle "solid"
-                                        :borderRadius 50
-                                        :width 54
-                                        :height 54}})
+                  (view {:width 54
+                         :height 54}
+                        ;;; photo
+                        (view {:width 54
+                               :height 54
+                               :borderRadius 50
+                               :backgroundColor "#FFFFFF"
+                               :elevation 6}
+                              (image {:source (if (< 0 (count photo))
+                                                {:uri photo}
+                                                user-no-photo)
+                                      :style {:borderWidth 2
+                                              :borderColor "#FFFFFF"
+                                              :borderRadius 50
+                                              :width 54
+                                              :height 54
+                                              :position "absolute"
+                                              ;; :top 2
+                                              ;; :right 2
+                                              }}))
+                        ;;; online
                         (when online
-                          (view {:style {:width 12
-                                         :height 12
-                                         :top 40
-                                         :left 40
-                                         :backgroundColor "#6BC6C8"
-                                         :borderRadius 50
-                                         :position "absolute"
-                                         }})))
+                          (view {:position "absolute"
+                                 :top 41
+                                 :left 36
+                                 :width 12
+                                 :height 12
+                                 :borderRadius 50
+                                 :backgroundColor "#FFFFFF"
+                                 :elevation 6}
+                                (image {:source online-icon
+                                        :style {:width 12
+                                                :height 12}}))))
+                  ;;; name
                   (view {:style {:flexDirection "column"
-                                 :marginLeft 20
+                                 :marginLeft 7
                                  :marginRight 10
                                  :flex 1
                                  :position "relative"}}
                         (text {:style {:fontSize 15}} name)
                         (text {:style {:color "#AAB2B2"
+                                       ;; TODO not available for android
                                        :fontFamily "Avenir-Roman"
                                        :fontSize 14
                                        :marginTop 2
