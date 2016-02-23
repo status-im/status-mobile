@@ -4,11 +4,27 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
+import android.os.Bundle;
+import com.github.ethereum.go_ethereum.cmd.Geth;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 public class MainActivity extends ReactActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Properties properties = System.getProperties();
+        properties.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
+        properties.setProperty("https.nonProxyHosts", "localhost|127.0.0.1");
+        new Thread(new Runnable() {
+            public void run() {
+                Geth.run("--ipcdisable --nodiscover --rpc --rpcapi \"db,eth,net,web3\" --fast --datadir=" + getFilesDir().getAbsolutePath());
+            }
+        }).start();
+    }
 
     /**
      * Returns the name of the main component registered from JavaScript.
