@@ -11,6 +11,7 @@
 
 (def fake-contacts? true)
 
+(set! js/React (js/require "react-native"))
 (def react-native-contacts (js/require "react-native-contacts"))
 
 (def logo-icon (js/require "./images/logo.png"))
