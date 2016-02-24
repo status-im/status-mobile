@@ -9,6 +9,8 @@
             [re-natal.support :as sup]
             [messenger.state :as state]))
 
+(def fake-contacts? true)
+
 (set! js/React (js/require "react-native"))
 (def react-native-contacts (js/require "react-native-contacts"))
 
@@ -71,21 +73,23 @@
                                 (image {:source online-icon
                                         :style {:width 12
                                                 :height 12}}))))
-                  ;;; name
                   (view {:style {:flexDirection "column"
                                  :marginLeft 7
                                  :marginRight 10
                                  :flex 1
                                  :position "relative"}}
-                        (text {:style {:fontSize 15}} name)
+                        ;;; name
+                        (text {:style {:fontSize 15
+                                       :fontFamily "Avenir-Roman"}} name)
+                        ;;; last message
                         (text {:style {:color "#AAB2B2"
-                                       ;; TODO not available for android
                                        :fontFamily "Avenir-Roman"
                                        :fontSize 14
                                        :marginTop 2
                                        :paddingRight 10}}
                               (str "Hi, I'm " name)))
                   (view {:style {:flexDirection "column"}}
+                        ;;; delivery status
                         (view {:style {:flexDirection "row"
                                        :position "absolute"
                                        :top 0
@@ -95,6 +99,7 @@
                                                   seen-icon
                                                   delivered-icon)
                                         :style {:marginTop 5}}))
+                              ;;; datetime
                               (text {:style {:fontFamily "Avenir-Roman"
                                              :fontSize 11
                                              :color "#AAB2B2"
@@ -102,6 +107,7 @@
                                              :lineHeight 15
                                              :marginLeft 5}}
                                     datetime))
+                        ;;; new messages count
                         (when (< 0 new-messages-count)
                           (view {:style {:position "absolute"
                                          :right 0
@@ -139,21 +145,20 @@
   (map generate-contact (range 1 (inc n))))
 
 (defn load-contacts []
-  (swap! state/app-state update :contacts-ds
-         #(clone-with-rows %
-                           (vec (generate-contacts 100))))
-  
-  ;; (.getAll react-native-contacts
-  ;;          (fn [error raw-contacts]
-  ;;            (when (not error)
-  ;;              (let [contacts (map (fn [contact]
-  ;;                                    (merge (generate-contact 1)
-  ;;                                           {:name (:givenName contact)
-  ;;                                            :photo (:thumbnailPath contact)})) 
-  ;;                                  (js->clj raw-contacts :keywordize-keys true))]
-  ;;                (swap! state/app-state update :contacts-ds
-  ;;                       #(clone-with-rows % contacts))))))
-  )
+  (if fake-contacts?
+    (swap! state/app-state update :contacts-ds
+           #(clone-with-rows %
+                             (vec (generate-contacts 100))))
+    (.getAll react-native-contacts
+             (fn [error raw-contacts]
+               (when (not error)
+                 (let [contacts (map (fn [contact]
+                                       (merge (generate-contact 1)
+                                              {:name (:givenName contact)
+                                               :photo (:thumbnailPath contact)}))
+                                     (js->clj raw-contacts :keywordize-keys true))]
+                   (swap! state/app-state update :contacts-ds
+                          #(clone-with-rows % contacts))))))))
 
 (defui AppRoot
   static om/IQuery
