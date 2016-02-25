@@ -34,13 +34,14 @@
          '[:page :contacts-ds])
   Object
   (render [this]
-          (let [{:keys [page contacts-ds]} (om/props this)]
+          (let [{:keys [page]} (om/props this)]
             (navigator
              {:initialRoute {:component contacts-list}
               :renderScene (fn [route nav]
                              (when state/*nav-render*
                                (init-back-button-handler! nav)
-                               (let [{:keys [component]} (js->clj route :keywordize-keys true)]
+                               (let [{:keys [component]}
+                                     (js->clj route :keywordize-keys true)]
                                  (component (om/computed (om/props this) {:nav nav})))))}))))
 
 (swap! state/app-state assoc :contacts-ds
