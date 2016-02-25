@@ -179,6 +179,7 @@
             (view {:style {:flex 1}}
                   (toolbar-android {:logo res/logo-icon
                                     :title "Chats"
+                                    :titleColor "#4A5258"
                                     :style {:backgroundColor "#e9eaed"
                                             :height 56}})
                   (list-view {:dataSource contacts-ds
