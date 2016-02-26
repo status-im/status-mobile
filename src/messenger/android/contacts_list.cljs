@@ -177,10 +177,10 @@
                                     :title "Chats"
                                     :titleColor "#4A5258"
                                     :style {:backgroundColor "white"
-                                            :height 56}})
+                                            :height 56
+                                            :elevation 2}})
                   (list-view {:dataSource contacts-ds
                               :renderRow (partial render-row nav)
-                              :style {:marginTop 4
-                                      :backgroundColor "white"}})))))
+                              :style {:backgroundColor "white"}})))))
 
 (def contacts-list (om/factory ContactsList))

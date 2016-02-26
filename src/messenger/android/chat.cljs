@@ -101,11 +101,12 @@
                                            "03:39")))))
                  ;;; delivery status
                  (when (and outgoing delivery-status)
-                   (view {:style {:flexDirection "row"}}
+                   (view {:style {:flexDirection "row"
+                                  :marginTop 2}}
                          (image {:source (if (= (keyword delivery-status) :seen)
                                            res/seen-icon
                                            res/delivered-icon)
-                                 :style {:marginTop 5
+                                 :style {:marginTop 6
                                          :opacity 0.6}})
                          (text {:style {:fontFamily "Avenir-Roman"
                                         :fontSize 11
@@ -192,11 +193,10 @@
                              :subtitleColor "#AAB2B2"
                              :navIcon res/nav-back-icon
                              :style {:backgroundColor "white"
-                                     :height 56}
+                                     :height 56
+                                     :elevation 2}
                              :onIconClicked (fn []
                                               (nav-pop nav))})
-           (view {:style {:backgroundColor "#F3F2F1"
-                          :height 4}})
            (list-view {:dataSource messages-ds
                        :renderScrollComponent
                        (fn [props]
@@ -204,8 +204,7 @@
                                                  (clj->js (merge (js->clj props)
                                                                  {:inverted true}))))
                        :renderRow render-row
-                       :style {:marginTop 4
-                               :backgroundColor "white"}})
+                       :style {:backgroundColor "white"}})
            (new-message)))))
 
 (def chat (om/factory Chat))
