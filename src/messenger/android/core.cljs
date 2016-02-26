@@ -42,7 +42,8 @@
                                (init-back-button-handler! nav)
                                (let [{:keys [component]}
                                      (js->clj route :keywordize-keys true)]
-                                 (component (om/computed (om/props this) {:nav nav})))))}))))
+                                 (component (om/computed (om/props this)
+                                                         {:nav nav})))))}))))
 
 (swap! state/app-state assoc :contacts-ds
        (data-source {:rowHasChanged (fn [row1 row2]
