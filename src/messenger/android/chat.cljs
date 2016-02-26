@@ -183,17 +183,20 @@
    [this]
    (let [{:keys [nav]} (om/get-computed this)
          messages-ds (load-messages)]
-     (view {:style {:flex 1}}
+     (view {:style {:flex 1
+                    :backgroundColor "white"}}
            (toolbar-android {:logo res/logo-icon
                              :title "Chat name"
                              :titleColor "#4A5258"
                              :subtitle "Last seen just now"
                              :subtitleColor "#AAB2B2"
                              :navIcon res/nav-back-icon
-                             :style {:backgroundColor "#e9eaed"
+                             :style {:backgroundColor "white"
                                      :height 56}
                              :onIconClicked (fn []
                                               (nav-pop nav))})
+           (view {:style {:backgroundColor "#F3F2F1"
+                          :height 4}})
            (list-view {:dataSource messages-ds
                        :renderScrollComponent
                        (fn [props]
@@ -201,7 +204,8 @@
                                                  (clj->js (merge (js->clj props)
                                                                  {:inverted true}))))
                        :renderRow render-row
-                       :style {}})
+                       :style {:marginTop 4
+                               :backgroundColor "white"}})
            (new-message)))))
 
 (def chat (om/factory Chat))

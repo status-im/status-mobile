@@ -42,9 +42,7 @@
                             :marginBottom 5
                             :paddingLeft 15
                             :paddingRight 15
-                            :height 75
-                            :transform [{:translateX 0}
-                                        {:translateY 0}]}}
+                            :height 75}}
                    (view {:width 54
                           :height 54}
                          ;;; photo
@@ -61,10 +59,7 @@
                                                :borderRadius 50
                                                :width 54
                                                :height 54
-                                               :position "absolute"
-                                               ;; :top 2
-                                               ;; :right 2
-                                               }}))
+                                               :position "absolute"}}))
                          ;;; online
                          (when online
                            (view {:position "absolute"
@@ -176,14 +171,16 @@
   (render [this]
           (let [{:keys [contacts-ds]} (om/props this)
                 {:keys [nav]} (om/get-computed this)]
-            (view {:style {:flex 1}}
+            (view {:style {:flex 1
+                           :backgroundColor "#F3F2F1"}}
                   (toolbar-android {:logo res/logo-icon
                                     :title "Chats"
                                     :titleColor "#4A5258"
-                                    :style {:backgroundColor "#e9eaed"
+                                    :style {:backgroundColor "white"
                                             :height 56}})
                   (list-view {:dataSource contacts-ds
                               :renderRow (partial render-row nav)
-                              :style {}})))))
+                              :style {:marginTop 4
+                                      :backgroundColor "white"}})))))
 
 (def contacts-list (om/factory ContactsList))
