@@ -3,7 +3,8 @@
   "interface": "om-next",
   "androidHost": "10.0.3.2",
   "modules": [
-    "react-native-contacts"
+    "react-native-contacts",
+    "react-native-invertible-scroll-view"
   ],
   "imageDirs": [
     "images"
