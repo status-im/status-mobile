@@ -172,7 +172,7 @@
           (let [{:keys [contacts-ds]} (om/props this)
                 {:keys [nav]} (om/get-computed this)]
             (view {:style {:flex 1
-                           :backgroundColor "#F3F2F1"}}
+                           :backgroundColor "white"}}
                   (toolbar-android {:logo res/logo-icon
                                     :title "Chats"
                                     :titleColor "#4A5258"

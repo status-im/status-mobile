@@ -9,6 +9,7 @@
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
+            [messenger.android.login :refer [login]]
             [messenger.android.contacts-list :refer [contacts-list]]
             [messenger.android.chat :refer [chat]]))
 
@@ -31,12 +32,12 @@
 (defui AppRoot
   static om/IQuery
   (query [this]
-         '[:page :contacts-ds])
+         '[:page :contacts-ds :user-phone-number])
   Object
   (render [this]
           (let [{:keys [page]} (om/props this)]
             (navigator
-             {:initialRoute {:component contacts-list}
+             {:initialRoute {:component login}
               :renderScene (fn [route nav]
                              (when state/*nav-render*
                                (init-back-button-handler! nav)

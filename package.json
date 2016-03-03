@@ -6,6 +6,7 @@
     "start": "node_modules/react-native/packager/packager.sh"
   },
   "dependencies": {
+    "awesome-phonenumber": "^1.0.12",
     "react-native": "0.20.0",
     "react-native-contacts": "^0.2.1",
     "react-native-i18n": "0.0.8",
