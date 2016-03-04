@@ -14,6 +14,30 @@
 (set! js/PhoneNumber (js/require "awesome-phonenumber"))
 (def country-code "US")
 
+(set! js/Web3 (js/require "web3"))
+(def ethereum-rpc-url "http://localhost:8545")
+(defn make-web3 [rpc-url]
+  (->> (js/Web3.providers.HttpProvider. rpc-url)
+       (js/Web3.)))
+(defn new-identity [web3 handler]
+  (.newIdentity (.-shh web3) handler))
+
+(defn my-handler [error result]
+  (if error
+    (do (alert (str error))
+        (.log js/console "error")
+        (.log js/console error))
+    (alert (str result)))
+  (.log js/console "result")
+  (.log js/console result))
+
+;; (def web3 (make-web3 ethereum-rpc-url))
+(new-identity (make-web3 ethereum-rpc-url) my-handler)
+;; (def whisper-identity (new-identity web3 my-handler))
+;; (alert (str whisper-identity))
+
+
+
 (defn show-home-view [nav]
   (binding [state/*nav-render* false]
     (.replace nav (clj->js {:component contacts-list
