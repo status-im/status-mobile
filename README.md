@@ -1,14 +1,15 @@
 # messenger
 
-A Clojure library designed to ... well, that part is up to you.
+## Setup
 
-## Usage
+https://github.com/drapanjanas/re-natal
 
-FIXME
+In `.re-natal`:
+- set `"androidHost": "localhost"` for real device
+- set `"androidHost": "10.0.3.2"` for genymotion
 
-## License
+## Issues
 
-Copyright © 2016 FIXME
+`Requiring unknown module "react"`
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Solution: https://github.com/exponentjs/react-native-invertible-scroll-view/issues/20
