@@ -32,7 +32,7 @@
 (defui AppRoot
   static om/IQuery
   (query [this]
-         '[:page :contacts-ds :user-phone-number])
+         '[:page :contacts-ds :user-phone-number :confirmation-code])
   Object
   (render [this]
           (let [{:keys [page]} (om/props this)]
