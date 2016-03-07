@@ -5,7 +5,8 @@
 (set! js/React (js/require "react-native"))
 
 (defonce app-state (atom {:component nil
-                          :user-phone-number nil}))
+                          :user-phone-number nil
+                          :user-whisper-identity nil}))
 (def ^{:dynamic true :private true} *nav-render*
   "Flag to suppress navigator re-renders from outside om when pushing/popping."
   true)

@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.170"]
                  [org.omcljs/om "1.0.0-alpha28" :exclusions [cljsjs/react cljsjs/react-dom]]
-                 [natal-shell "0.1.6"]]
+                 [natal-shell "0.1.6"]
+                 [syng-im/protocol "0.1.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
@@ -30,7 +31,10 @@
                                 :compiler {:output-to "target/android/not-used.js"
                                            :main "env.android.main"
                                            :output-dir "target/android"
-                                           :optimizations :none}}}}
+                                           :optimizations :none
+                                           :foreign-libs [{:file "resources/vendor/js/web3.js"
+                                                           :file-min "resources/vendor/js/web3.min.js"
+                                                           :provides ["cljsjs.web3"]}]}}}}
          :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
    :prod {:cljsbuild {:builds
                       {:ios {:source-paths ["src" "env/prod"]

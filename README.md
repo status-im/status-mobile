@@ -4,9 +4,12 @@
 
 https://github.com/drapanjanas/re-natal
 
-In `.re-natal`:
-- set `"androidHost": "localhost"` for real device
-- set `"androidHost": "10.0.3.2"` for genymotion
+
+Can be required after pulling changes:
+
+switching between android device
+
+https://github.com/drapanjanas/re-natal#switching-between-android-devices
 
 ## Issues
 
