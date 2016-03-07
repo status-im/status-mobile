@@ -43,7 +43,8 @@
 
 (defn get-whisper-identity-handler [phone-number]
   (fn [identity]
-    (if identity
+    ;; TODO to test newIdentity. Change to 'identity' to use saved identity.
+    (if false ;; identity
       (sign-in phone-number identity)
       (get-identity (fn [error identity]
                       (if (not error)
