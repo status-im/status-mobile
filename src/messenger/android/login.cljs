@@ -9,8 +9,9 @@
             [re-natal.support :as sup]
             [syng-im.protocol.whisper :as whisper]
             [messenger.state :as state]
+            [messenger.android.utils :refer [log toast]]
             [messenger.android.resources :as res]
-            [messenger.android.contacts-list :refer [contacts-list]]))
+            [messenger.android.sign-up-confirm :refer [sign-up-confirm]]))
 
 (def nav-atom (atom nil))
 
@@ -18,24 +19,24 @@
 (def country-code "US")
 (def ethereum-rpc-url "http://localhost:8545")
 
-(defn show-home-view []
+(defn show-confirm-view []
   (binding [state/*nav-render* false]
-    (.replace @nav-atom (clj->js {:component contacts-list
-                                  :name "contacts-list"}))))
+    (.replace @nav-atom (clj->js {:component sign-up-confirm
+                                  :name "sign-up-confirm"}))))
 
 (defn sign-in [phone-number whisper-identity]
-  (alert (str "TODO: send number: " phone-number ", "
-              (subs whisper-identity 0 2) ".."
-              (subs whisper-identity (- (count whisper-identity) 2)
-                    (count whisper-identity))))
-  (show-home-view))
+  (toast (str "TODO: send number: " phone-number ", "
+                   (subs whisper-identity 0 2) ".."
+                   (subs whisper-identity (- (count whisper-identity) 2)
+                         (count whisper-identity))))
+  (show-confirm-view))
 
 (defn identity-handler [error result]
   (if error
-    (do (alert (str error))
+    (do (toast (str error))
         (.log js/console "error")
         (.log js/console error))
-    (alert (str result))))
+    (toast (str result))))
 
 (defn get-identity [handler]
   (let [web3 (whisper/make-web3 ethereum-rpc-url)]
@@ -51,7 +52,7 @@
                         (do (set-item "user-whisper-identity" identity)
                             (swap! state/app-state assoc :user-whisper-identity identity)
                             (sign-in phone-number identity))
-                        (alert error)))))))
+                        (toast (str "error" error))))))))
 
 (defn load-user-whisper-identity [handler]
   (get-item "user-whisper-identity"
@@ -60,7 +61,7 @@
                 (let [whisper-identity (when value (str value))]
                   (swap! state/app-state assoc :user-whisper-identity whisper-identity)
                   (handler whisper-identity))
-                (alert (str "error" error))))))
+                (toast (str "error" error))))))
 
 (defn handle-phone-number [phone-number]
   (when phone-number
