@@ -5,8 +5,7 @@
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
-    "awesome-phonenumber",
-    "web3"
+    "awesome-phonenumber"
   ],
   "imageDirs": [
     "images"
