@@ -10,7 +10,7 @@
             [re-natal.support :as sup]
             [syng-im.protocol.whisper :as whisper]
             [messenger.state :as state]
-            [messenger.android.utils :refer [log toast]]
+            [messenger.android.utils :refer [log toast http-post]]
             [messenger.android.resources :as res]
             [messenger.android.contacts-list :refer [contacts-list]]))
 
@@ -27,16 +27,22 @@
 (defn send-check-contacts []
   )
 
-(defn handle-send-code-response [response]
-  )
+(defn handle-send-code-response [body]
+  (log body)
+  (toast (if (:confirmed body)
+           "Confirmed"
+           "Wrong code"))
+  (when (:confirmed body)
+    (show-home-view)))
 
 (defn code-valid? [code]
   (= 4 (count code)))
 
 (defn send-code [code]
   (when (code-valid? code)
-    (toast (str code))
-    (show-home-view)))
+    (http-post "sign-up-confirm"
+               {:code code}
+               handle-send-code-response)))
 
 (defn update-code [value]
   (let [formatted value]

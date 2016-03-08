@@ -11,6 +11,9 @@ switching between android device
 
 https://github.com/drapanjanas/re-natal#switching-between-android-devices
 
+
+Change `server-address` value at `/src/messenger/android/utils.cljs`
+
 ## Issues
 
 `Requiring unknown module "react"`

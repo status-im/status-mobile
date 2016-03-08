@@ -9,7 +9,7 @@
             [re-natal.support :as sup]
             [syng-im.protocol.whisper :as whisper]
             [messenger.state :as state]
-            [messenger.android.utils :refer [log toast]]
+            [messenger.android.utils :refer [log toast http-post]]
             [messenger.android.resources :as res]
             [messenger.android.sign-up-confirm :refer [sign-up-confirm]]))
 
@@ -25,11 +25,16 @@
                                   :name "sign-up-confirm"}))))
 
 (defn sign-in [phone-number whisper-identity]
-  (toast (str "TODO: send number: " phone-number ", "
-                   (subs whisper-identity 0 2) ".."
-                   (subs whisper-identity (- (count whisper-identity) 2)
-                         (count whisper-identity))))
-  (show-confirm-view))
+  ;; (toast (str "TODO: send number: " phone-number ", "
+  ;;             (subs whisper-identity 0 2) ".."
+  ;;             (subs whisper-identity (- (count whisper-identity) 2)
+  ;;                   (count whisper-identity))))
+  (http-post "sign-up"
+             {:phone-number phone-number
+              :whisper-identity whisper-identity}
+             (fn [body]
+               (log body)
+               (show-confirm-view))))
 
 (defn identity-handler [error result]
   (if error
@@ -41,6 +46,7 @@
 (defn get-identity [handler]
   (let [web3 (whisper/make-web3 ethereum-rpc-url)]
     (str (.newIdentity (whisper/whisper web3) handler))))
+
 
 (defn get-whisper-identity-handler [phone-number]
   (fn [identity]
