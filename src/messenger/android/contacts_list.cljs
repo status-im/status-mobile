@@ -8,7 +8,9 @@
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
+            [messenger.android.utils :refer [log toast http-post]]
             [messenger.android.resources :as res]
+            [messenger.android.contacts :as contacts]
             [messenger.android.chat :refer [chat]]))
 
 (def fake-contacts? true)
@@ -134,32 +136,13 @@
   (contact (om/computed (js->clj row :keywordize-keys true)
                         {:nav nav})))
 
-(defn generate-contact [n]
-  {:name (str "Contact " n)
-   :photo ""
-   :delivery-status (if (< (rand) 0.5) :delivered :seen)
-   :datetime "15:30"
-   :new-messages-count (rand-int 3)
-   :online (< (rand) 0.5)})
-
-(defn generate-contacts [n]
-  (map generate-contact (range 1 (inc n))))
-
 (defn load-contacts []
-  (if fake-contacts?
-    (swap! state/app-state update :contacts-ds
-           #(clone-with-rows %
-                             (vec (generate-contacts 100))))
-    (.getAll react-native-contacts
-             (fn [error raw-contacts]
-               (when (not error)
-                 (let [contacts (map (fn [contact]
-                                       (merge (generate-contact 1)
-                                              {:name (:givenName contact)
-                                               :photo (:thumbnailPath contact)}))
-                                     (js->clj raw-contacts :keywordize-keys true))]
-                   (swap! state/app-state update :contacts-ds
-                          #(clone-with-rows % contacts))))))))
+  (contacts/load-contacts
+   (fn [contacts]
+     (swap! state/app-state update :contacts-ds
+            #(clone-with-rows % contacts)))
+   (fn [error]
+     (toast (str error)))))
 
 (defui ContactsList
   static om/IQuery
