@@ -11,7 +11,9 @@
             [syng-im.protocol.whisper :as whisper]
             [messenger.state :as state]
             [messenger.android.utils :refer [log toast http-post]]
+            [messenger.android.crypt :refer [encrypt]]
             [messenger.android.resources :as res]
+            [messenger.android.contacts :as contacts]
             [messenger.android.contacts-list :refer [contacts-list]]))
 
 (def nav-atom (atom nil))
@@ -21,11 +23,29 @@
     (.replace @nav-atom (clj->js {:component contacts-list
                                   :name "contacts-list"}))))
 
-(defn handle-send-check-contacts-response []
+(defn handle-load-contacts-identities-response [identities]
   (show-home-view))
 
-(defn send-check-contacts []
-  )
+(defn get-contacts-by-hash [contacts]
+  (reduce (fn [m contact]
+            (let [number (get-in contact [:phone-numbers :number])
+                  hash (encrypt number)]
+              (assoc m hash number)))
+          contacts))
+
+(defn send-load-contacts-identities [contacts]
+  (let [contacts-by-hash (get-contacts-by-hash contacts)
+        data (keys contacts-by-hash)]
+    (http-post "get-contacts" data
+               handle-load-contacts-identities-response
+               (fn [error]
+                 (toast (str error))))))
+
+(defn load-contacts []
+  (contacts/load-contacts
+   send-load-contacts-identities
+   (fn [error]
+     (toast (str error)))))
 
 (defn handle-send-code-response [body]
   (log body)
