@@ -2,14 +2,14 @@
   (:require [messenger.state :as state]
             [messenger.android.utils :refer [log toast http-post]]))
 
-(def fake-contacts? false)
+(def fake-contacts? true)
 
 (def react-native-contacts (js/require "react-native-contacts"))
 
 (defn generate-contact [n]
   {:name (str "Contact " n)
    :photo ""
-   :phone-numbers [{:label "mobile" :number "121212"}]
+   :phone-numbers [{:label "mobile" :number (apply str (repeat 7 n))}]
    :delivery-status (if (< (rand) 0.5) :delivered :seen)
    :datetime "15:30"
    :new-messages-count (rand-int 3)
@@ -20,7 +20,7 @@
 
 (defn load-contacts [on-success on-error]
   (if fake-contacts?
-    (on-success (generate-contacts 100))
+    (on-success (generate-contacts 10))
     (.getAll react-native-contacts
              (fn [error raw-contacts]
                (if (not error)
