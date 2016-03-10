@@ -24,19 +24,26 @@
                                   :name "contacts-list"}))))
 
 (defn handle-load-contacts-identities-response [identities]
+  ;; do not keywordize?
+  ;; save contacts to DB
   (show-home-view))
 
 (defn get-contacts-by-hash [contacts]
-  (reduce (fn [m contact]
-            (let [number (get-in contact [:phone-numbers :number])
-                  hash (encrypt number)]
-              (assoc m hash number)))
-          contacts))
+  (let [numbers (reduce (fn [numbers contact]
+                          (into numbers
+                                (map :number (:phone-numbers contact))))
+                        '()
+                        contacts)]
+    (reduce (fn [m number]
+              (let [hash (encrypt number)]
+                (assoc m hash number)))
+            {}
+            numbers)))
 
 (defn send-load-contacts-identities [contacts]
   (let [contacts-by-hash (get-contacts-by-hash contacts)
         data (keys contacts-by-hash)]
-    (http-post "get-contacts" data
+    (http-post "get-contacts" {:phone-numbers data}
                handle-load-contacts-identities-response
                (fn [error]
                  (toast (str error))))))
@@ -53,7 +60,7 @@
            "Confirmed"
            "Wrong code"))
   (when (:confirmed body)
-    (show-home-view)))
+    (load-contacts)))
 
 (defn code-valid? [code]
   (= 4 (count code)))
