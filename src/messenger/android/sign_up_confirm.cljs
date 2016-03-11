@@ -4,8 +4,7 @@
                                    toolbar-android text-input]]
    [natal-shell.async-storage :refer [get-item set-item]]
    [natal-shell.core :refer [with-error-view]]
-   [natal-shell.alert :refer [alert]]
-   [natal-shell.toast-android :as toast])
+   [natal-shell.alert :refer [alert]])
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [syng-im.protocol.whisper :as whisper]
@@ -13,6 +12,7 @@
             [messenger.android.utils :refer [log toast http-post]]
             [messenger.android.crypt :refer [encrypt]]
             [messenger.android.resources :as res]
+            [messenger.android.database :as db]
             [messenger.android.contacts :as contacts]
             [messenger.android.contacts-list :refer [contacts-list]]))
 
@@ -23,10 +23,14 @@
     (.replace @nav-atom (clj->js {:component contacts-list
                                   :name "contacts-list"}))))
 
-(defn handle-load-contacts-identities-response [identities]
-  ;; do not keywordize?
-  ;; save contacts to DB
-  (show-home-view))
+(defn handle-load-contacts-identities-response [contacts-by-hash data]
+  (let [contacts (map (fn [contact]
+                        {:phone-number (get contacts-by-hash
+                                            (:phone-number-hash contact))
+                         :whisper-identity (:whisper-identity contact)})
+                      (js->clj (:contacts data)))]
+    (db/add-contacts contacts)
+    (show-home-view)))
 
 (defn get-contacts-by-hash [contacts]
   (let [numbers (reduce (fn [numbers contact]
@@ -43,8 +47,8 @@
 (defn send-load-contacts-identities [contacts]
   (let [contacts-by-hash (get-contacts-by-hash contacts)
         data (keys contacts-by-hash)]
-    (http-post "get-contacts" {:phone-numbers data}
-               handle-load-contacts-identities-response
+    (http-post "get-contacts" {:phone-number-hashes data}
+               (partial handle-load-contacts-identities-response contacts-by-hash)
                (fn [error]
                  (toast (str error))))))
 

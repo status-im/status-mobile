@@ -14,6 +14,7 @@ import java.util.Properties;
 import java.io.File;
 
 import com.i18n.reactnativei18n.ReactNativeI18n;
+import io.realm.react.RealmReactPackage;
 
 
 public class MainActivity extends ReactActivity {
@@ -72,7 +73,8 @@ public class MainActivity extends ReactActivity {
         return Arrays.<ReactPackage>asList(
                 new MainReactPackage(),
                 new ReactNativeContacts(),
-                new ReactNativeI18n()
+                new ReactNativeI18n(),
+                new RealmReactPackage()
         );
     }
 }

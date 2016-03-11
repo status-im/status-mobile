@@ -126,4 +126,7 @@ dependencies {
     compile project(':react-native-contacts')
     compile project(':react-native-i18n')
     compile(name:'geth', ext:'aar')
+
+    compile project(":realm")
+    compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
