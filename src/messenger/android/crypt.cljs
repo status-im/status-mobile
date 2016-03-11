@@ -2,8 +2,6 @@
   (:require [goog.crypt :refer [byteArrayToHex]])
   (:import goog.crypt.Sha256))
 
-(def base-64 (js/require "base-64"))
-
 (def sha-256 (Sha256.))
 
 (defn bytes-to-str [arr]

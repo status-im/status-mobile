@@ -10,6 +10,7 @@
     "react-native": "^0.21.0",
     "react-native-contacts": "^0.2.1",
     "react-native-i18n": "0.0.8",
-    "react-native-invertible-scroll-view": "^0.2.0"
+    "react-native-invertible-scroll-view": "^0.2.0",
+    "realm": "^0.10.0"
   }
 }
