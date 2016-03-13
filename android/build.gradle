@@ -24,5 +24,8 @@ allprojects {
         flatDir {
             dirs 'libs'
         }
+        maven {
+            url "http://85.90.244.96:8081/artifactory/libs-release-local"
+        }
     }
 }

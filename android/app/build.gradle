@@ -125,7 +125,8 @@ dependencies {
     compile "com.facebook.react:react-native:+"  // From node_modules
     compile project(':react-native-contacts')
     compile project(':react-native-i18n')
-    compile(name:'geth', ext:'aar')
+//    compile(name:'geth', ext:'aar')
+    compile(group: 'syng-im', name: 'android-geth', version: '1.4.0-201603131817-92d65cf', ext: 'aar')
 
     compile project(":realm")
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
