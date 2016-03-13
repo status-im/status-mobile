@@ -7,7 +7,7 @@
    [natal-shell.alert :refer [alert]])
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
-            [syng-im.protocol.whisper :as whisper]
+            [syng-im.protocol.web3 :as whisper]
             [messenger.state :as state]
             [messenger.android.utils :refer [log toast http-post]]
             [messenger.android.resources :as res]
