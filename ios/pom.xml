@@ -6,11 +6,6 @@
   <groupId>org.reactjs.native.example</groupId>
   <artifactId>Messenger</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>xcode-lib</packaging>
-
-  <properties>
-    <xcode.sourceDirectory>.</xcode.sourceDirectory>
-  </properties>
 
   <repositories>
     <repository>
@@ -19,27 +14,25 @@
     </repository>
  </repositories>
 
-  <dependencies>
-    <dependency>
-      <groupId>syng-im</groupId>
-      <artifactId>ios-geth</artifactId>
-      <version>1.4.0-201603140656-92d65cf</version>
-      <type>xcode-framework</type>
-    </dependency>
-  </dependencies>
-
   <build>
-    <plugins>
-      <plugin>
-        <!-- requires Maven 3.0, 3.1+ fails -->
-        <groupId>com.sap.prd.mobile.ios.mios</groupId>
-        <artifactId>xcode-maven-plugin</artifactId>
-        <version>1.14.2</version>
-        <extensions>true</extensions>
-        <configuration>
-          
-        </configuration>
-      </plugin>
-    </plugins>
+     <plugins>
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-dependency-plugin</artifactId>
+         <version>2.10</version>
+         <configuration>
+           <artifactItems>
+             <artifactItem>
+               <groupId>syng-im</groupId>
+               <artifactId>ios-geth</artifactId>
+               <version>1.4.0-201603140656-92d65cf</version>
+               <type>zip</type>
+               <overWrite>true</overWrite>
+               <outputDirectory>${project.build.directory}/Frameworks</outputDirectory>
+             </artifactItem>
+           </artifactItems>
+         </configuration>
+       </plugin>
+     </plugins>
   </build>
 </project>
