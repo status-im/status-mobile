@@ -24,13 +24,14 @@
       <groupId>syng-im</groupId>
       <artifactId>ios-geth</artifactId>
       <version>1.4.0-201603140656-92d65cf</version>
-      <type>zip</type>
+      <type>xcode-framework</type>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
+        <!-- requires Maven 3.0, 3.1+ fails -->
         <groupId>com.sap.prd.mobile.ios.mios</groupId>
         <artifactId>xcode-maven-plugin</artifactId>
         <version>1.14.2</version>
