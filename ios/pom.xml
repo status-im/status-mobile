@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>im.syng</groupId>
+  <artifactId>Syng</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>xcode-lib</packaging>
+
+  <repositories>
+    <repository>
+      <id>ci.syng.im</id>
+      <url>http://syng.im:8081/artifactory/libs-release-local/</url>
+    </repository>
+ </repositories>
+
+  <dependency>
+    <groupId>syng-im</groupId>
+    <artifactId>ios-geth</artifactId>
+    <version>1.4.0-201603140656-92d65cf</version>
+    <type>zip</type>
+  </dependency>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.sap.prd.mobile.ios.mios</groupId>
+        <artifactId>xcode-maven-plugin</artifactId>
+        <version>1.14.2</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
