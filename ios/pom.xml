@@ -11,16 +11,18 @@
   <repositories>
     <repository>
       <id>ci.syng.im</id>
-      <url>http://syng.im:8081/artifactory/libs-release-local/</url>
+      <url>http://ci.syng.im:8081/artifactory/libs-release-local/</url>
     </repository>
  </repositories>
 
-  <dependency>
-    <groupId>syng-im</groupId>
-    <artifactId>ios-geth</artifactId>
-    <version>1.4.0-201603140656-92d65cf</version>
-    <type>zip</type>
-  </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>syng-im</groupId>
+      <artifactId>ios-geth</artifactId>
+      <version>1.4.0-201603140656-92d65cf</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
