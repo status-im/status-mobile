@@ -3,10 +3,14 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>im.syng</groupId>
-  <artifactId>Syng</artifactId>
+  <groupId>org.reactjs.native.example</groupId>
+  <artifactId>Messenger</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>xcode-lib</packaging>
+
+  <properties>
+    <xcode.sourceDirectory>.</xcode.sourceDirectory>
+  </properties>
 
   <repositories>
     <repository>
@@ -31,6 +35,9 @@
         <artifactId>xcode-maven-plugin</artifactId>
         <version>1.14.2</version>
         <extensions>true</extensions>
+        <configuration>
+          
+        </configuration>
       </plugin>
     </plugins>
   </build>
