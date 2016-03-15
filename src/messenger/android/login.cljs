@@ -87,9 +87,6 @@
   static om/IQuery
   (query [this]
          '[:user-phone-number])
-  Object
-  (componentDidMount [this]
-                     (load-user-phone-number nil))
   (render [this]
           (let [{:keys [user-phone-number]} (om/props this)
                 {:keys [nav]} (om/get-computed this)]
