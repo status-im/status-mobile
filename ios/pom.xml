@@ -25,7 +25,7 @@
              <artifactItem>
                <groupId>syng-im</groupId>
                <artifactId>ios-geth</artifactId>
-               <version>1.4.0-201603140656-92d65cf</version>
+               <version>1.4.0-201603151613-92d65cf</version>
                <type>zip</type>
                <overWrite>true</overWrite>
                <outputDirectory>${project.build.directory}/Frameworks</outputDirectory>
