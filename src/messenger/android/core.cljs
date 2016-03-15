@@ -11,7 +11,9 @@
             [messenger.state :as state]
             [messenger.android.login :refer [login]]
             [messenger.android.contacts-list :refer [contacts-list]]
-            [messenger.android.chat :refer [chat]]))
+            [messenger.android.chat :refer [chat]]
+            [messenger.comm.pubsub :as pubsub]
+            [messenger.comm.intercom :refer [load-user-phone-number]]))
 
 (def app-registry (.-AppRegistry js/React))
 
@@ -55,5 +57,7 @@
 (defonce app-root (om/factory RootNode))
 
 (defn init []
+  (pubsub/setup-pub-sub)
+  (load-user-phone-number)
   (om/add-root! state/reconciler AppRoot 1)
   (.registerComponent app-registry "Messenger" (fn [] app-root)))

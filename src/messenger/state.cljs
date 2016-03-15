@@ -1,13 +1,16 @@
 (ns messenger.state
-  (:require [om.next :as om]
+  (:require [cljs.core.async :as async :refer [chan pub sub]]
+            [om.next :as om]
             [re-natal.support :as sup]))
 
 (set! js/React (js/require "react-native"))
 
-(defonce app-state (atom {:component nil
-                          :user-phone-number nil
+(defonce app-state (atom {:component             nil
+                          :user-phone-number     nil
                           :user-whisper-identity nil
-                          :confirmation-code nil}))
+                          :confirmation-code     nil
+                          :channels              {:pub-sub-publisher   (chan)
+                                                  :pub-sub-publication nil}}))
 (def ^{:dynamic true :private true} *nav-render*
   "Flag to suppress navigator re-renders from outside om when pushing/popping."
   true)
@@ -21,8 +24,17 @@
       {:value :not-found})))
 
 (defonce reconciler
-  (om/reconciler
-   {:state        app-state
-    :parser       (om/parser {:read read})
-    :root-render  sup/root-render
-    :root-unmount sup/root-unmount}))
+         (om/reconciler
+           {:state        app-state
+            :parser       (om/parser {:read read})
+            :root-render  sup/root-render
+            :root-unmount sup/root-unmount}))
+
+
+(defn state [] @app-state)
+
+(def pub-sub-bus-path [:channels :pub-sub-publisher])
+(def pub-sub-path [:channels :pub-sub-publication])
+(def user-notification-path [:user-notification])
+
+(defn pub-sub-publisher [app] (get-in app pub-sub-bus-path))
