@@ -12,6 +12,9 @@
 (defn toast [s]
   (toast/show s (toast/long)))
 
+(defn on-error [error]
+  (toast (str "error: " error)))
+
 (defn http-post
   ([action data on-success]
    (http-post action data on-success nil))

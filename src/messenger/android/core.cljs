@@ -13,7 +13,8 @@
             [messenger.android.contacts-list :refer [contacts-list]]
             [messenger.android.chat :refer [chat]]
             [messenger.comm.pubsub :as pubsub]
-            [messenger.comm.intercom :refer [load-user-phone-number]]))
+            [messenger.comm.intercom :refer [load-user-phone-number
+                                             load-user-whisper-identity]]))
 
 (def app-registry (.-AppRegistry js/React))
 
@@ -59,5 +60,6 @@
 (defn init []
   (pubsub/setup-pub-sub)
   (load-user-phone-number)
+  (load-user-whisper-identity)
   (om/add-root! state/reconciler AppRoot 1)
   (.registerComponent app-registry "Messenger" (fn [] app-root)))
