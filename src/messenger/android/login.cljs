@@ -83,23 +83,10 @@
     (swap! state/app-state assoc :user-phone-number
            formatted)))
 
-(defn load-user-phone-number [handler]
-  (get-item "user-phone-number"
-            (fn [error value]
-              (if (not error)
-                (let [phone-number (when value (str value))]
-                  (swap! state/app-state assoc :user-phone-number phone-number)
-                  (when handler
-                    (handler phone-number)))
-                (alert (str "error" error))))))
-
 (defui Login
   static om/IQuery
   (query [this]
          '[:user-phone-number])
-  Object
-  (componentDidMount [this]
-                     (load-user-phone-number nil))
   (render [this]
           (let [{:keys [user-phone-number]} (om/props this)
                 {:keys [nav]} (om/get-computed this)]
