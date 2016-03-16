@@ -1,5 +1,5 @@
-(ns messenger.android.database
-  (:require [messenger.android.utils :refer [log toast http-post]]))
+(ns messenger.utils.database
+  (:require [messenger.utils.utils :refer [log toast http-post]]))
 
 (set! js/Realm (js/require "realm"))
 

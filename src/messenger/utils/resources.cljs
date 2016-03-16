@@ -1,4 +1,4 @@
-(ns messenger.android.resources)
+(ns messenger.utils.resources)
 
 (def logo-icon (js/require "./images/logo.png"))
 (def nav-back-icon (js/require "./images/nav-back.png"))

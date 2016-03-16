@@ -6,10 +6,9 @@
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
-            [messenger.comm.intercom :as intercom :refer [set-user-phone-number
-                                                          save-user-phone-number]]
-            [messenger.android.utils :refer [log toast http-post]]
-            [messenger.android.resources :as res]
+            [messenger.comm.intercom :as intercom :refer [set-user-phone-number]]
+            [messenger.utils.utils :refer [log toast http-post]]
+            [messenger.utils.resources :as res]
             [messenger.android.sign-up-confirm :refer [sign-up-confirm]]))
 
 (def nav-atom (atom nil))
@@ -26,7 +25,6 @@
   (let [app-state (state/state)
         phone-number (:user-phone-number app-state)
         whisper-identity (:user-whisper-identity app-state)]
-    (save-user-phone-number phone-number)
     (intercom/sign-up phone-number whisper-identity show-confirm-view)))
 
 (defn update-phone-number [value]
