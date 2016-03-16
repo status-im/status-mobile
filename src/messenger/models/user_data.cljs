@@ -4,7 +4,7 @@
   (:require [cljs.core.async :as async :refer [chan put! <! >!]]
             [syng-im.protocol.web3 :as web3]
             [messenger.state :as state]
-            [messenger.android.utils :refer [log on-error toast]]))
+            [messenger.utils.utils :refer [log on-error toast]]))
 
 (def ethereum-rpc-url "http://localhost:8545")
 
@@ -50,3 +50,6 @@
                       (put! ch {:error error
                                 :value value}))))
     ch))
+
+(defn set-confirmation-code [code]
+  (swap! state/app-state assoc :confirmation-code code))

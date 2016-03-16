@@ -1,4 +1,4 @@
-(ns messenger.android.crypt
+(ns messenger.utils.crypt
   (:require [goog.crypt :refer [byteArrayToHex]])
   (:import goog.crypt.Sha256))
 

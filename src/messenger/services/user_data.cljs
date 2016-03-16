@@ -6,8 +6,9 @@
                                                 load-phone-number
                                                 save-whisper-identity
                                                 load-whisper-identity
-                                                new-whisper-identity]]
-            [messenger.android.utils :refer [log on-error]]
+                                                new-whisper-identity
+                                                set-confirmation-code]]
+            [messenger.utils.utils :refer [log on-error]]
             [syng-im.utils.logging :as log]))
 
 (defmulti user-data (fn [state id args]
@@ -40,6 +41,11 @@
             (if-let [error (:error result)]
               (on-error error)
               (save-whisper-identity (:value result)))))))))
+
+(defmethod user-data :user-data/set-confirmation-code
+  [state id confirmation-code]
+  (log/info "handling " id " args = " confirmation-code)
+  (set-confirmation-code confirmation-code))
 
 (defn user-data-handler [state [id args]]
   (log/info "user notification: " args)
