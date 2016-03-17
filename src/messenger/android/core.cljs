@@ -9,12 +9,13 @@
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
+            [messenger.utils.utils :refer [log toast]]
             [messenger.android.login :refer [login]]
             [messenger.android.contacts-list :refer [contacts-list]]
             [messenger.android.chat :refer [chat]]
             [messenger.comm.pubsub :as pubsub]
-            [messenger.comm.intercom :refer [load-user-phone-number
-                                             load-user-whisper-identity]]))
+            [messenger.comm.intercom :as intercom :refer [load-user-phone-number
+                                                          load-user-whisper-identity]]))
 
 (def app-registry (.-AppRegistry js/React))
 
@@ -35,20 +36,20 @@
 (defui AppRoot
   static om/IQuery
   (query [this]
-         '[:page :contacts-ds :user-phone-number :confirmation-code])
+         '[:contacts-ds :user-phone-number :confirmation-code])
   Object
   (render [this]
-          (let [{:keys [page]} (om/props this)]
-            (navigator
-             {:initialRoute {:component login}
-              :renderScene (fn [route nav]
-                             (when state/*nav-render*
-                               (init-back-button-handler! nav)
-                               (let [{:keys [component]}
-                                     (js->clj route :keywordize-keys true)]
-                                 (component (om/computed (om/props this)
-                                                         {:nav nav})))))}))))
+          (navigator
+           {:initialRoute {:component login}
+            :renderScene (fn [route nav]
+                           (when state/*nav-render*
+                             (init-back-button-handler! nav)
+                             (let [{:keys [component]}
+                                   (js->clj route :keywordize-keys true)]
+                               (component (om/computed (om/props this)
+                                                       {:nav nav})))))})))
 
+;; TODO to service?
 (swap! state/app-state assoc :contacts-ds
        (data-source {:rowHasChanged (fn [row1 row2]
                                       (not= row1 row2))}))
