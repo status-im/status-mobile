@@ -5,16 +5,13 @@
    [natal-shell.async-storage :refer [get-item set-item]]
    [natal-shell.core :refer [with-error-view]]
    [natal-shell.alert :refer [alert]])
-  (:require [clojure.string :as cstr]
-            [om.next :as om :refer-macros [defui]]
+  (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [syng-im.protocol.web3 :as whisper]
             [messenger.state :as state]
-            [messenger.android.utils :refer [log toast http-post]]
-            [messenger.android.crypt :refer [encrypt]]
-            [messenger.android.resources :as res]
-            [messenger.android.database :as db]
-            [messenger.android.contacts :as contacts]
+            [messenger.utils.utils :refer [log toast]]
+            [messenger.utils.resources :as res]
+            [messenger.comm.intercom :as intercom :refer [set-confirmation-code]]
             [messenger.android.contacts-list :refer [contacts-list]]))
 
 (def nav-atom (atom nil))
@@ -24,76 +21,28 @@
     (.replace @nav-atom (clj->js {:component contacts-list
                                   :name "contacts-list"}))))
 
-(defn get-contact-name [phone-contact]
-  (cstr/join " "
-             (filter #(not (cstr/blank? %))
-                     [(:givenName phone-contact)
-                      (:middleName phone-contact)
-                      (:familyName phone-contact)])))
+(defn sync-contacts []
+  (intercom/sync-contacts show-home-view))
 
-(defn handle-load-contacts-identities-response [contacts-by-hash data]
-  (let [contacts (map (fn [server-contact]
-                        (let [number-info (get contacts-by-hash
-                                               (:phone-number-hash server-contact))
-                              phone-contact (:contact number-info)]
-                          {:phone-number (:number number-info)
-                           :whisper-identity (:whisper-identity server-contact)
-                           :name (get-contact-name phone-contact)
-                           :photo-path (:photo-path phone-contact)}))
-                      (js->clj (:contacts data)))]
-    (db/add-contacts contacts)
-    (show-home-view)))
-
-(defn get-contacts-by-hash [contacts]
-  (let [numbers-info (reduce (fn [numbers contact]
-                               (into numbers
-                                     (map (fn [c]
-                                            {:number (:number c)
-                                             :contact contact})
-                                          (:phone-numbers contact))))
-                             '()
-                             contacts)]
-    (reduce (fn [m number-info]
-              (let [number (:number number-info)
-                    hash (encrypt number)]
-                (assoc m hash number-info)))
-            {}
-            numbers-info)))
-
-(defn send-load-contacts-identities [contacts]
-  (let [contacts-by-hash (get-contacts-by-hash contacts)
-        data (keys contacts-by-hash)]
-    (http-post "get-contacts" {:phone-number-hashes data}
-               (partial handle-load-contacts-identities-response contacts-by-hash)
-               (fn [error]
-                 (toast (str error))))))
-
-(defn load-contacts []
-  (contacts/load-phone-contacts
-   send-load-contacts-identities
-   (fn [error]
-     (toast (str error)))))
-
-(defn handle-send-code-response [body]
+(defn on-send-code-response [body]
   (log body)
   (toast (if (:confirmed body)
            "Confirmed"
            "Wrong code"))
   (when (:confirmed body)
-    (load-contacts)))
+    ;; TODO user action required
+    (sync-contacts)))
 
 (defn code-valid? [code]
   (= 4 (count code)))
 
 (defn send-code [code]
   (when (code-valid? code)
-    (http-post "sign-up-confirm"
-               {:code code}
-               handle-send-code-response)))
+    (intercom/sign-up-confirm code on-send-code-response)))
 
 (defn update-code [value]
   (let [formatted value]
-    (swap! state/app-state assoc :confirmation-code formatted)))
+    (set-confirmation-code formatted)))
 
 (defui SignUpConfirm
   static om/IQuery
@@ -134,7 +83,7 @@
                 :style {:alignSelf "center"
                         :borderRadius 7
                         :backgroundColor "#E5F5F6"
-                        
+
                         :width 100}}
                (text {:style {:marginVertical 10
                               :textAlign "center"}}

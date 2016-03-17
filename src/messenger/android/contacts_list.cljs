@@ -2,15 +2,13 @@
   (:require-macros
    [natal-shell.components :refer [view text image touchable-highlight list-view
                                    toolbar-android]]
-   [natal-shell.data-source :refer [data-source clone-with-rows]]
-   [natal-shell.core :refer [with-error-view]]
-   [natal-shell.alert :refer [alert]])
+   [natal-shell.core :refer [with-error-view]])
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
-            [messenger.android.utils :refer [log toast http-post]]
-            [messenger.android.resources :as res]
-            [messenger.android.contacts :as contacts]
+            [messenger.utils.utils :refer [log toast http-post]]
+            [messenger.utils.resources :as res]
+            [messenger.comm.intercom :as intercom]
             [messenger.android.chat :refer [chat]]))
 
 (def fake-contacts? true)
@@ -137,9 +135,7 @@
                         {:nav nav})))
 
 (defn load-contacts []
-  (let [contacts (contacts/load-whisper-contacts)]
-    (swap! state/app-state update :contacts-ds
-           #(clone-with-rows % contacts))))
+  (intercom/load-syng-contacts))
 
 (defui ContactsList
   static om/IQuery

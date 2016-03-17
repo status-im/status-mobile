@@ -8,7 +8,7 @@
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
-            [messenger.android.resources :as res]))
+            [messenger.utils.resources :as res]))
 
 (set! js/InvertibleScrollView (js/require "react-native-invertible-scroll-view"))
 

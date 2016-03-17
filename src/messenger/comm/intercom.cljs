@@ -11,9 +11,44 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; user data
+
+(defn set-user-phone-number [phone-number]
+  (publish! :service [:user-data :user-data/set-phone-number phone-number]))
+
+(defn save-user-phone-number [phone-number]
+  (publish! :service [:user-data :user-data/save-phone-number phone-number]))
+
 (defn load-user-phone-number []
   ;; :service [service_name action_id args_map]
   (publish! :service [:user-data :user-data/load-phone-number nil]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn load-user-whisper-identity []
+  (publish! :service [:user-data :user-data/load-whisper-identity nil]))
 
+(defn set-confirmation-code [confirmation-code]
+  (publish! :service [:user-data :user-data/set-confirmation-code confirmation-code]))
+
+
+;;; server
+
+(defn sign-up [phone-number whisper-identity handler]
+  (publish! :service [:server :server/sign-up {:phone-number phone-number
+                                               :whisper-identity whisper-identity
+                                               :handler handler}]))
+
+(defn sign-up-confirm [confirmation-code handler]
+  (publish! :service [:server :server/sign-up-confirm
+                      {:confirmation-code confirmation-code
+                       :handler handler}]))
+
+
+;; contacts
+
+(defn load-syng-contacts []
+  (publish! :service [:contacts :contacts/load-syng-contacts nil]))
+
+(defn sync-contacts [handler]
+  (publish! :service [:contacts :contacts/sync-contacts handler]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
