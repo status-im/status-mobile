@@ -26,7 +26,7 @@
 
 (defmethod user-data :user-data/load-phone-number
   [state id args]
-  (log/info "handling " id " args = " args)
+  (log/debug "handling " id "args = " args)
   (load-phone-number))
 
 (defmethod user-data :user-data/load-whisper-identity
@@ -48,5 +48,5 @@
   (set-confirmation-code confirmation-code))
 
 (defn user-data-handler [state [id args]]
-  (log/info "user notification: " args)
+  (log/debug "user-data-handler: " args)
   (user-data state id args))
