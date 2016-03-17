@@ -10,7 +10,6 @@
     (put! publisher [topic message])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;;; user data
 
 (defn set-user-phone-number [phone-number]
@@ -30,6 +29,7 @@
   (publish! :service [:user-data :user-data/set-confirmation-code confirmation-code]))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; server
 
 (defn sign-up [phone-number whisper-identity handler]
@@ -42,7 +42,7 @@
                       {:confirmation-code confirmation-code
                        :handler handler}]))
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; contacts
 
 (defn load-syng-contacts []
@@ -52,3 +52,7 @@
   (publish! :service [:contacts :contacts/sync-contacts handler]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; protocol
+
+(defn protocol-initialized [identity]
+  (publish! :service [:protocol :protocol/initialized {:identity identity}]))
