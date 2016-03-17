@@ -55,8 +55,8 @@
   (-> (aget result 0)))
 
 (defn single-cljs [result]
-  (-> (aget result 0)
-      (js->clj :keywordize-keys true)))
+  (some-> (aget result 0)
+          (js->clj :keywordize-keys true)))
 
 (defn decode-value [{:keys [key value]}]
   (read-string value))

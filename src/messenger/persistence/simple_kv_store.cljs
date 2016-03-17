@@ -10,9 +10,9 @@
         (r/create :kv-store {:key   key
                              :value (str value)} true))))
   (get [_ key]
-    (-> (r/get-by-field :kv-store :key key)
-        (r/single-cljs)
-        (r/decode-value)))
+    (some-> (r/get-by-field :kv-store :key key)
+            (r/single-cljs)
+            (r/decode-value)))
   (contains-key? [_ key]
     (= 0
        (.-length (r/get-by-field :kv-store :key key))))
@@ -23,4 +23,4 @@
 
 (comment
 
-    )
+  )
