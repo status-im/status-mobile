@@ -55,29 +55,15 @@
   (-> (aget result 0)))
 
 (defn single-cljs [result]
-  (-> (aget result 0)
-      (js->clj :keywordize-keys true)))
+  (some-> (aget result 0)
+          (js->clj :keywordize-keys true)))
 
 (defn decode-value [{:keys [key value]}]
   (read-string value))
 
-(comment
-  (use 'figwheel-sidecar.repl-api)
-  (cljs-repl)
-
-  (def x (-> (get-by-field :kv-store :key :identity)
-             (single)))
-
-  (aget x 1)
-
+(defn delete [obj]
   (write (fn []
-           (.delete realm (-> (get-by-field :kv-store :key :identity)
-                              (single)))))
+           (.delete realm obj))))
 
-
-  (log/info (.keys js/Object realm))
-  (log/info (clj->js opts))
-
-  (clj->js (clj->js {:a [{:b 123}]}))
-
+(comment
   )

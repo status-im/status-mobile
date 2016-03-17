@@ -17,7 +17,8 @@
             [messenger.comm.intercom :as intercom :refer [load-user-phone-number
                                                           load-user-whisper-identity]]
             [messenger.protocol.protocol-handler :refer [make-handler]]
-            [syng-im.protocol.api :refer [init-protocol]]))
+            [syng-im.protocol.api :refer [init-protocol]]
+            [messenger.init :refer [init-simple-store]]))
 
 
 (def app-registry (.-AppRegistry js/React))
@@ -62,6 +63,7 @@
 (defonce app-root (om/factory RootNode))
 
 (defn init []
+  (init-simple-store)
   (pubsub/setup-pub-sub)
   (init-protocol (make-handler))
   (load-user-phone-number)
