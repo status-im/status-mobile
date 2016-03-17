@@ -1,13 +1,6 @@
 (ns messenger.utils.database
-  (:require [messenger.utils.utils :refer [log toast http-post]]))
-
-(set! js/Realm (js/require "realm"))
-
-(def realm (js/Realm. (clj->js {:schema [{:name "Contact"
-                                          :properties {:phone-number "string"
-                                                       :whisper-identity "string"
-                                                       :name "string"
-                                                       :photo-path "string"}}]})))
+  (:require [messenger.utils.utils :refer [log toast http-post]]
+            [messenger.persistence.realm :refer [realm]]))
 
 (defn write [f]
   (.write realm f))
