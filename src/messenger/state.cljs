@@ -38,5 +38,8 @@
 (def pub-sub-path [:channels :pub-sub-publication])
 (def user-notification-path [:user-notification])
 (def protocol-initialized-path [:protocol-initialized])
+(def simple-store-path [:simple-store])
 
 (defn pub-sub-publisher [app] (get-in app pub-sub-bus-path))
+(defn kv-store []
+  (get-in @app-state simple-store-path))
