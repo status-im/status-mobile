@@ -2,12 +2,13 @@
   (:require [syng-im.utils.logging :as log]
             [messenger.constants :refer [ethereum-rpc-url]]
             [messenger.comm.intercom :refer [protocol-initialized]]
-            [messenger.models.protocol :refer [current-identity]]))
+            [messenger.models.protocol :refer [current-identity]]
+            [messenger.state :refer [kv-store]]))
 
 (defn make-handler []
   {:ethereum-rpc-url ethereum-rpc-url
    :identity         (current-identity)
-   :storage          nil
+   :storage          (kv-store)
    :handler          (fn [{:keys [event-type] :as event}]
                        (log/info "Event:" (clj->js event))
                        (case event-type
