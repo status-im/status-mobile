@@ -40,7 +40,7 @@
 (defui AppRoot
   static om/IQuery
   (query [this]
-    '[:contacts-ds :user-phone-number :confirmation-code])
+    '[:loading :contacts-ds :user-phone-number :confirmation-code])
   Object
   (render [this]
     (navigator

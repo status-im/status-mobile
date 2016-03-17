@@ -10,6 +10,7 @@
 (set! js/React (js/require "react-native"))
 
 (defonce app-state (atom {:component             nil
+                          :loading               false
                           :user-phone-number     nil
                           :user-whisper-identity nil
                           :confirmation-code     nil

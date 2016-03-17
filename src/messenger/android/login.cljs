@@ -9,6 +9,7 @@
             [messenger.comm.intercom :as intercom :refer [set-user-phone-number]]
             [messenger.utils.utils :refer [log toast http-post]]
             [messenger.utils.resources :as res]
+            [messenger.utils.ui-utils :as ui]
             [messenger.android.sign-up-confirm :refer [sign-up-confirm]]
             [messenger.constants :refer [ethereum-rpc-url]]))
 
@@ -18,11 +19,13 @@
 (def country-code "US")
 
 (defn show-confirm-view []
+  (swap! state/app-state assoc :loading false)
   (binding [state/*nav-render* false]
     (.replace @nav-atom (clj->js {:component sign-up-confirm
                                   :name "sign-up-confirm"}))))
 
 (defn sign-up []
+  (swap! state/app-state assoc :loading true)
   (let [app-state (state/state)
         phone-number (:user-phone-number app-state)
         whisper-identity (:user-whisper-identity app-state)]
@@ -35,42 +38,46 @@
 (defui Login
   static om/IQuery
   (query [this]
-         '[:user-phone-number :user-whisper-identity])
+         '[:user-phone-number :user-whisper-identity :loading])
   Object
   (render [this]
-          (let [{:keys [user-phone-number user-whisper-identity]} (om/props this)
+          (let [{:keys [user-phone-number user-whisper-identity loading]} (om/props this)
                 {:keys [nav]} (om/get-computed this)]
             (reset! nav-atom nav)
             (view
-             {:style {:flex 1
-                      :backgroundColor "white"}}
-             (toolbar-android {:logo res/logo-icon
-                               :title "Login"
-                               :titleColor "#4A5258"
-                               :style {:backgroundColor "white"
-                                       :height 56
-                                       :elevation 2}})
-             (view {:style {;; :alignItems "center"
-                            }}
-                   (text-input {:underlineColorAndroid "#9CBFC0"
-                                :placeholder "Enter your phone number"
-                                :keyboardType "phone-pad"
-                                :onChangeText (fn [value]
-                                                (update-phone-number value))
-                                :style {:flex 1
-                                        :marginHorizontal 18
-                                        :lineHeight 42
-                                        :fontSize 14
-                                        :fontFamily "Avenir-Roman"
-                                        :color "#9CBFC0"}}
-                               user-phone-number)
-                   (touchable-highlight {:onPress #(sign-up)
-                                         :style {:alignSelf "center"
-                                                 :borderRadius 7
-                                                 :backgroundColor "#E5F5F6"
-                                                 :width 100}}
-                                        (text {:style {:marginVertical 10
-                                                       :textAlign "center"}}
-                                              "Sign up")))))))
+             {:style {:flex 1}}
+             (view
+              {:style {:flex 1
+                       :backgroundColor "white"}}
+              (toolbar-android {:logo res/logo-icon
+                                :title "Login"
+                                :titleColor "#4A5258"
+                                :style {:backgroundColor "white"
+                                        :height 56
+                                        :elevation 2}})
+              (view {:style { ;; :alignItems "center"
+                             }}
+                    (text-input {:underlineColorAndroid "#9CBFC0"
+                                 :placeholder "Enter your phone number"
+                                 :keyboardType "phone-pad"
+                                 :onChangeText (fn [value]
+                                                 (update-phone-number value))
+                                 :style {:flex 1
+                                         :marginHorizontal 18
+                                         :lineHeight 42
+                                         :fontSize 14
+                                         :fontFamily "Avenir-Roman"
+                                         :color "#9CBFC0"}}
+                                user-phone-number)
+                    (touchable-highlight {:onPress #(sign-up)
+                                          :style {:alignSelf "center"
+                                                  :borderRadius 7
+                                                  :backgroundColor "#E5F5F6"
+                                                  :width 100}}
+                                         (text {:style {:marginVertical 10
+                                                        :textAlign "center"}}
+                                               "Sign up"))))
+             (when loading
+               (ui/spinner {:visible true}))))))
 
 (def login (om/factory Login))
