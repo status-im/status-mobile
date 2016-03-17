@@ -1,11 +1,11 @@
 (ns messenger.android.core
   (:require-macros
-   [natal-shell.components :refer [navigator view text image touchable-highlight list-view
-                                   toolbar-android]]
-   [natal-shell.data-source :refer [data-source clone-with-rows]]
-   [natal-shell.back-android :refer [add-event-listener]]
-   [natal-shell.core :refer [with-error-view]]
-   [natal-shell.alert :refer [alert]])
+    [natal-shell.components :refer [navigator view text image touchable-highlight list-view
+                                    toolbar-android]]
+    [natal-shell.data-source :refer [data-source clone-with-rows]]
+    [natal-shell.back-android :refer [add-event-listener]]
+    [natal-shell.core :refer [with-error-view]]
+    [natal-shell.alert :refer [alert]])
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
@@ -15,7 +15,10 @@
             [messenger.android.chat :refer [chat]]
             [messenger.comm.pubsub :as pubsub]
             [messenger.comm.intercom :as intercom :refer [load-user-phone-number
-                                                          load-user-whisper-identity]]))
+                                                          load-user-whisper-identity]]
+            [messenger.protocol.protocol-handler :refer [make-handler]]
+            [syng-im.protocol.api :refer [init-protocol]]))
+
 
 (def app-registry (.-AppRegistry js/React))
 
@@ -36,18 +39,18 @@
 (defui AppRoot
   static om/IQuery
   (query [this]
-         '[:contacts-ds :user-phone-number :confirmation-code])
+    '[:contacts-ds :user-phone-number :confirmation-code])
   Object
   (render [this]
-          (navigator
-           {:initialRoute {:component login}
-            :renderScene (fn [route nav]
-                           (when state/*nav-render*
-                             (init-back-button-handler! nav)
-                             (let [{:keys [component]}
-                                   (js->clj route :keywordize-keys true)]
-                               (component (om/computed (om/props this)
-                                                       {:nav nav})))))})))
+    (navigator
+      {:initialRoute {:component login}
+       :renderScene  (fn [route nav]
+                       (when state/*nav-render*
+                         (init-back-button-handler! nav)
+                         (let [{:keys [component]}
+                               (js->clj route :keywordize-keys true)]
+                           (component (om/computed (om/props this)
+                                                   {:nav nav})))))})))
 
 ;; TODO to service?
 (swap! state/app-state assoc :contacts-ds
@@ -60,6 +63,7 @@
 
 (defn init []
   (pubsub/setup-pub-sub)
+  (init-protocol (make-handler))
   (load-user-phone-number)
   (load-user-whisper-identity)
   (om/add-root! state/reconciler AppRoot 1)

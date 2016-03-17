@@ -37,5 +37,6 @@
 (def pub-sub-bus-path [:channels :pub-sub-publisher])
 (def pub-sub-path [:channels :pub-sub-publication])
 (def user-notification-path [:user-notification])
+(def protocol-initialized-path [:protocol-initialized])
 
 (defn pub-sub-publisher [app] (get-in app pub-sub-bus-path))
