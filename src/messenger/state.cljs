@@ -3,6 +3,10 @@
             [om.next :as om]
             [re-natal.support :as sup]))
 
+(def ^{:dynamic true :private true} *nav-render*
+  "Flag to suppress navigator re-renders from outside om when pushing/popping."
+  true)
+
 (set! js/React (js/require "react-native"))
 
 (defonce app-state (atom {:component             nil
@@ -11,9 +15,6 @@
                           :confirmation-code     nil
                           :channels              {:pub-sub-publisher   (chan)
                                                   :pub-sub-publication nil}}))
-(def ^{:dynamic true :private true} *nav-render*
-  "Flag to suppress navigator re-renders from outside om when pushing/popping."
-  true)
 
 (defmulti read om/dispatch)
 (defmethod read :default
