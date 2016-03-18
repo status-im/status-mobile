@@ -4,10 +4,9 @@
             [messenger.models.user-data :refer [set-phone-number
                                                 save-phone-number
                                                 load-phone-number
-                                                save-whisper-identity
-                                                load-whisper-identity
-                                                new-whisper-identity
+                                                set-identity
                                                 set-confirmation-code]]
+            [messenger.models.protocol :refer [current-identity]]
             [messenger.utils.utils :refer [log on-error]]
             [syng-im.utils.logging :as log]))
 
@@ -29,18 +28,11 @@
   (log/debug "handling " id "args = " args)
   (load-phone-number))
 
-(defmethod user-data :user-data/load-whisper-identity
+(defmethod user-data :user-data/load-identity
   [state id args]
   (log/info "handling " id " args = " args)
-  (go
-    (let [result (<! (load-whisper-identity))]
-      (if-let [error (:error result)]
-        (on-error error)
-        (when (not (:value result))
-          (let [result (<! (new-whisper-identity))]
-            (if-let [error (:error result)]
-              (on-error error)
-              (save-whisper-identity (:value result)))))))))
+  (let [identity (current-identity)]
+    (set-identity identity)))
 
 (defmethod user-data :user-data/set-confirmation-code
   [state id confirmation-code]

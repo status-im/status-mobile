@@ -12,7 +12,7 @@
 (defonce app-state (atom {:component             nil
                           :loading               false
                           :user-phone-number     nil
-                          :user-whisper-identity nil
+                          :user-identity         nil
                           :confirmation-code     nil
                           :channels              {:pub-sub-publisher   (chan)
                                                   :pub-sub-publication nil}}))
