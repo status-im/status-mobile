@@ -1,9 +1,11 @@
 (ns messenger.protocol.protocol-handler
   (:require [syng-im.utils.logging :as log]
             [messenger.constants :refer [ethereum-rpc-url]]
-            [messenger.comm.intercom :refer [protocol-initialized]]
+            [messenger.comm.intercom :refer [protocol-initialized
+                                             save-new-msg]]
             [messenger.models.protocol :refer [current-identity]]
             [messenger.state :refer [kv-store]]))
+
 
 (defn make-handler []
   {:ethereum-rpc-url ethereum-rpc-url
@@ -14,9 +16,8 @@
                        (case event-type
                          :initialized (let [{:keys [identity]} event]
                                         (protocol-initialized identity))
-                         ;:new-msg (let [{from               :from
-                         ;                {content :content} :payload} event]
-                         ;           (add-to-chat "chat" from content))
+                         :new-msg (let [{:keys [from payload]} event]
+                                    (save-new-msg from payload))
                          ;:msg-acked (let [{:keys [msg-id]} event]
                          ;             (add-to-chat "chat" ":" (str "Message " msg-id " was acked")))
                          ;:delivery-failed (let [{:keys [msg-id]} event]

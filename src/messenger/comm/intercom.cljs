@@ -33,14 +33,14 @@
 ;;; server
 
 (defn sign-up [phone-number whisper-identity handler]
-  (publish! :service [:server :server/sign-up {:phone-number phone-number
+  (publish! :service [:server :server/sign-up {:phone-number     phone-number
                                                :whisper-identity whisper-identity
-                                               :handler handler}]))
+                                               :handler          handler}]))
 
 (defn sign-up-confirm [confirmation-code handler]
   (publish! :service [:server :server/sign-up-confirm
                       {:confirmation-code confirmation-code
-                       :handler handler}]))
+                       :handler           handler}]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; contacts
@@ -56,3 +56,7 @@
 
 (defn protocol-initialized [identity]
   (publish! :service [:protocol :protocol/initialized {:identity identity}]))
+
+(defn save-new-msg [from payload]
+  (publish! :service [:protocol :protocol/save-new-msg {:from    from
+                                                        :payload payload}]))
