@@ -6,7 +6,8 @@
     "react-native-contacts",
     "react-native-invertible-scroll-view",
     "awesome-phonenumber",
-    "realm"
+    "realm",
+    "react-native-loading-spinner-overlay"
   ],
   "imageDirs": [
     "images"
