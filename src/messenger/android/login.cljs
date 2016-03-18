@@ -28,7 +28,7 @@
   (swap! state/app-state assoc :loading true)
   (let [app-state (state/state)
         phone-number (:user-phone-number app-state)
-        whisper-identity (:user-whisper-identity app-state)]
+        whisper-identity (:public (:user-identity app-state))]
     (intercom/sign-up phone-number whisper-identity show-confirm-view)))
 
 (defn update-phone-number [value]
@@ -38,10 +38,10 @@
 (defui Login
   static om/IQuery
   (query [this]
-         '[:user-phone-number :user-whisper-identity :loading])
+         '[:user-phone-number :user-identity :loading])
   Object
   (render [this]
-          (let [{:keys [user-phone-number user-whisper-identity loading]} (om/props this)
+          (let [{:keys [user-phone-number user-identity loading]} (om/props this)
                 {:keys [nav]} (om/get-computed this)]
             (reset! nav-atom nav)
             (view

@@ -15,7 +15,7 @@
             [messenger.android.chat :refer [chat]]
             [messenger.comm.pubsub :as pubsub]
             [messenger.comm.intercom :as intercom :refer [load-user-phone-number
-                                                          load-user-whisper-identity]]
+                                                          load-user-identity]]
             [messenger.protocol.protocol-handler :refer [make-handler]]
             [syng-im.protocol.api :refer [init-protocol]]
             [messenger.init :refer [init-simple-store]]))
@@ -40,7 +40,7 @@
 (defui AppRoot
   static om/IQuery
   (query [this]
-    '[:loading :contacts-ds :user-phone-number :confirmation-code])
+    '[:loading :contacts-ds :user-phone-number :user-identity :confirmation-code])
   Object
   (render [this]
     (navigator
@@ -67,6 +67,6 @@
   (pubsub/setup-pub-sub)
   (init-protocol (make-handler))
   (load-user-phone-number)
-  (load-user-whisper-identity)
+  (load-user-identity)
   (om/add-root! state/reconciler AppRoot 1)
   (.registerComponent app-registry "Messenger" (fn [] app-root)))

@@ -7,7 +7,6 @@
    [natal-shell.alert :refer [alert]])
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
-            [syng-im.protocol.web3 :as whisper]
             [messenger.state :as state]
             [messenger.utils.utils :refer [log toast]]
             [messenger.utils.resources :as res]
