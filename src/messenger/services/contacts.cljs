@@ -2,11 +2,17 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.string :as cstr]
             [cljs.core.async :as async :refer [chan put! <!]]
-            [messenger.utils.utils :refer [log on-error http-post]]
+            [messenger.utils.utils :refer [log on-error http-post toast]]
             [messenger.utils.crypt :refer [encrypt]]
             [messenger.comm.intercom :as intercom :refer [save-user-phone-number]]
             [messenger.models.contacts :as contacts-model]
             [syng-im.utils.logging :as log]))
+
+(set! js/PhoneNumber (js/require "awesome-phonenumber"))
+(def country-code "US")
+
+(defn- format-phone-number [number]
+  (str (.getNumber (js/PhoneNumber. number country-code "international"))))
 
 (defn- get-contact-name [phone-contact]
   (cstr/join " "
@@ -30,7 +36,7 @@
   (let [numbers-info (reduce (fn [numbers contact]
                                (into numbers
                                      (map (fn [c]
-                                            {:number (:number c)
+                                            {:number (format-phone-number (:number c))
                                              :contact contact})
                                           (:phone-numbers contact))))
                              '()
@@ -62,9 +68,7 @@
           (handler))))))
 
 (defn- load-syng-contacts []
-  (contacts-model/load-syng-contacts)
-  ;; TODO handle contacts
-  )
+  (contacts-model/load-syng-contacts))
 
 
 (defmulti contacts (fn [state id args]

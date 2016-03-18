@@ -5,7 +5,7 @@
             [messenger.utils.utils :refer [log toast http-post]]
             [messenger.utils.database :as db]))
 
-(def fake-contacts? true)
+(def fake-contacts? false)
 
 (def react-native-contacts (js/require "react-native-contacts"))
 
@@ -32,7 +32,8 @@
                         :contacts
                         (when (not error)
                           (map (fn [contact]
-                                 (merge (generate-contact 1)
+                                 (merge contact
+                                        (generate-contact 1)
                                         {:name (:givenName contact)
                                          :photo-path (:thumbnailPath contact)
                                          :phone-numbers (:phoneNumbers contact)}))
