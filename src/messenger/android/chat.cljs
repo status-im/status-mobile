@@ -8,9 +8,8 @@
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
             [messenger.state :as state]
-            [messenger.utils.resources :as res]))
-
-(set! js/InvertibleScrollView (js/require "react-native-invertible-scroll-view"))
+            [messenger.utils.resources :as res]
+            [messenger.components.invertible-scroll-view :refer [invertible-scroll-view]]))
 
 (defn nav-pop [nav]
   (binding [state/*nav-render* false]
@@ -200,9 +199,7 @@
            (list-view {:dataSource messages-ds
                        :renderScrollComponent
                        (fn [props]
-                         (js/React.createElement js/InvertibleScrollView
-                                                 (clj->js (merge (js->clj props)
-                                                                 {:inverted true}))))
+                         (invertible-scroll-view nil))
                        :renderRow render-row
                        :style {:backgroundColor "white"}})
            (new-message)))))
