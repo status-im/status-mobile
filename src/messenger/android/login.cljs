@@ -9,7 +9,7 @@
             [messenger.comm.intercom :as intercom :refer [set-user-phone-number]]
             [messenger.utils.utils :refer [log toast http-post]]
             [messenger.utils.resources :as res]
-            [messenger.utils.ui-utils :as ui]
+            [messenger.components.spinner :refer [spinner]]
             [messenger.android.sign-up-confirm :refer [sign-up-confirm]]
             [messenger.constants :refer [ethereum-rpc-url]]))
 
@@ -78,6 +78,6 @@
                                                         :textAlign "center"}}
                                                "Sign up"))))
              (when loading
-               (ui/spinner {:visible true}))))))
+               (spinner {:visible true}))))))
 
 (def login (om/factory Login))
