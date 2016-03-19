@@ -77,7 +77,7 @@
                                          (text {:style {:marginVertical 10
                                                         :textAlign "center"}}
                                                "Sign up"))))
-             (when loading
+             (when (or loading (not user-identity))
                (spinner {:visible true}))))))
 
 (def login (om/factory Login))
