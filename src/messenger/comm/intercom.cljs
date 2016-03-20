@@ -22,9 +22,6 @@
   ;; :service [service_name action_id args_map]
   (publish! :service [:user-data :user-data/load-phone-number nil]))
 
-(defn load-user-identity []
-  (publish! :service [:user-data :user-data/load-identity nil]))
-
 (defn set-confirmation-code [confirmation-code]
   (publish! :service [:user-data :user-data/set-confirmation-code confirmation-code]))
 

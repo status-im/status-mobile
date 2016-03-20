@@ -4,3 +4,6 @@
   (if (keyword? s)
     (name s)
     s))
+
+(defn to-edn-string [value]
+  (with-out-str (pr value)))

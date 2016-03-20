@@ -28,12 +28,6 @@
   (log/debug "handling " id "args = " args)
   (load-phone-number))
 
-(defmethod user-data :user-data/load-identity
-  [state id args]
-  (log/info "handling " id " args = " args)
-  (let [identity (current-identity)]
-    (set-identity identity)))
-
 (defmethod user-data :user-data/set-confirmation-code
   [state id confirmation-code]
   (log/info "handling " id " args = " confirmation-code)
