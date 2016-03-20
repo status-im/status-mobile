@@ -12,7 +12,6 @@
             [messenger.utils.utils :refer [log toast]]
             [messenger.android.login :refer [login]]
             [messenger.android.contacts-list :refer [contacts-list]]
-            [messenger.android.chat :refer [chat]]
             [messenger.comm.pubsub :as pubsub]
             [messenger.comm.intercom :as intercom :refer [load-user-phone-number]]
             [messenger.protocol.protocol-handler :refer [make-handler]]

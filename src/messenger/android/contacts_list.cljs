@@ -9,7 +9,7 @@
             [messenger.utils.utils :refer [log toast http-post]]
             [messenger.utils.resources :as res]
             [messenger.comm.intercom :as intercom]
-            [messenger.android.chat :refer [chat]]))
+            [messenger.components.chat.chat :refer [chat]]))
 
 (def fake-contacts? true)
 
