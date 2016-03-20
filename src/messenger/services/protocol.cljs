@@ -2,7 +2,7 @@
   (:require [messenger.models.protocol :refer [set-initialized
                                                update-identity]]
             [messenger.models.messages :refer [save-message]]
-            [messenger.comm.intercom :refer [load-user-identity]]
+            [messenger.models.user-data :refer [set-identity]]
             [syng-im.utils.logging :as log]))
 
 (defmulti protocol (fn [state id args]
@@ -12,7 +12,7 @@
   [state id {:keys [identity] :as args}]
   (log/debug "handling " id "args = " args)
   (update-identity identity)
-  (load-user-identity)
+  (set-identity identity)
   (set-initialized true))
 
 (defmethod protocol :protocol/save-new-msg

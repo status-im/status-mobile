@@ -14,8 +14,7 @@
             [messenger.android.contacts-list :refer [contacts-list]]
             [messenger.android.chat :refer [chat]]
             [messenger.comm.pubsub :as pubsub]
-            [messenger.comm.intercom :as intercom :refer [load-user-phone-number
-                                                          load-user-identity]]
+            [messenger.comm.intercom :as intercom :refer [load-user-phone-number]]
             [messenger.protocol.protocol-handler :refer [make-handler]]
             [syng-im.protocol.api :refer [init-protocol]]
             [messenger.init :refer [init-simple-store]]))
@@ -67,6 +66,5 @@
   (pubsub/setup-pub-sub)
   (init-protocol (make-handler))
   (load-user-phone-number)
-  (load-user-identity)
   (om/add-root! state/reconciler AppRoot 1)
   (.registerComponent app-registry "Messenger" (fn [] app-root)))

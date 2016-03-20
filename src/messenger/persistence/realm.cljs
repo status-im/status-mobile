@@ -1,7 +1,8 @@
 (ns messenger.persistence.realm
   (:require [cljs.reader :refer [read-string]]
             [syng-im.utils.logging :as log]
-            [messenger.utils.types :refer [to-string]]))
+            [messenger.utils.types :refer [to-string]])
+  (:refer-clojure :exclude [exists?]))
 
 (set! js/Realm (js/require "realm"))
 
