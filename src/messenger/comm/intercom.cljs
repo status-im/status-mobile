@@ -57,3 +57,10 @@
 (defn save-new-msg [from payload]
   (publish! :service [:protocol :protocol/save-new-msg {:from    from
                                                         :payload payload}]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; navigate-to
+
+(defn show-chat [navigator chat-id]
+  (publish! :service [:navigate-to :scene/chat {:chat-id   chat-id
+                                                :navigator navigator}]))

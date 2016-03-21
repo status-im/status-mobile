@@ -7,7 +7,9 @@
             [messenger.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [messenger.components.chat.message :refer [message]]
             [messenger.components.chat.new-message :refer [new-message]]
-            [messenger.state :as state]))
+            [messenger.state :as state]
+            [syng-im.utils.logging :as log]
+            [messenger.components.iname :as in]))
 
 (defn generate-message [n]
   {:id              n
@@ -38,10 +40,18 @@
   (message (js->clj row :keywordize-keys true)))
 
 (defui Chat
+  static in/IName
+  (get-name [this]
+    :chat)
+  static om/IQuery
+  (query [this]
+    '[:chat/messages])
   Object
   (render
     [this]
     (let [{:keys [nav]} (om/get-computed this)
+          {{messages :chat/messages} :chat} (om/props this)
+          _           (log/debug "messages=" messages)
           messages-ds (load-messages)]
       (view {:style {:flex            1
                      :backgroundColor "white"}}
