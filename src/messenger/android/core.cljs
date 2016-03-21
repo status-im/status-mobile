@@ -11,7 +11,7 @@
             [messenger.state :as state]
             [messenger.utils.utils :refer [log toast]]
             [messenger.android.login :refer [login]]
-            [messenger.android.contacts-list :refer [contacts-list]]
+            [messenger.components.contact-list.contact-list :refer [contact-list]]
             [messenger.comm.pubsub :as pubsub]
             [messenger.comm.intercom :as intercom :refer [load-user-phone-number]]
             [messenger.protocol.protocol-handler :refer [make-handler]]
@@ -55,7 +55,6 @@
 (swap! state/app-state assoc :contacts-ds
        (data-source {:rowHasChanged (fn [row1 row2]
                                       (not= row1 row2))}))
-(swap! state/app-state assoc :component contacts-list)
 
 (defonce RootNode (sup/root-node! 1))
 (defonce app-root (om/factory RootNode))

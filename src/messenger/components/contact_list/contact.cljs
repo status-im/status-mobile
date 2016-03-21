@@ -1,19 +1,11 @@
-(ns messenger.android.contacts-list
+(ns messenger.components.contact-list.contact
   (:require-macros
-   [natal-shell.components :refer [view text image touchable-highlight list-view
-                                   toolbar-android]]
-   [natal-shell.core :refer [with-error-view]])
+   [natal-shell.components :refer [view text image touchable-highlight]])
   (:require [om.next :as om :refer-macros [defui]]
-            [re-natal.support :as sup]
             [messenger.state :as state]
             [messenger.utils.utils :refer [log toast http-post]]
             [messenger.utils.resources :as res]
-            [messenger.comm.intercom :as intercom]
             [messenger.components.chat.chat :refer [chat]]))
-
-(def fake-contacts? true)
-
-(def react-native-contacts (js/require "react-native-contacts"))
 
 (defn nav-push [nav route]
   (binding [state/*nav-render* false]
@@ -32,7 +24,8 @@
          '[:name :photo-path :delivery-status :datetime :new-messages-count :online])
   Object
   (render [this]
-          (let [{:keys [name photo-path delivery-status datetime new-messages-count online]}
+          (let [{:keys [name photo-path delivery-status datetime new-messages-count
+                        online]}
                 (dissoc (om/props this) :om.next/computed)
                 {:keys [nav]} (om/get-computed this)]
             (touchable-highlight
@@ -129,34 +122,3 @@
                                        new-messages-count)))))))))
 
 (def contact (om/factory Contact {:keyfn :name}))
-
-(defn render-row [nav row section-id row-id]
-  (contact (om/computed (js->clj row :keywordize-keys true)
-                        {:nav nav})))
-
-(defn load-contacts []
-  (intercom/load-syng-contacts))
-
-(defui ContactsList
-  static om/IQuery
-  (query [this]
-         '[:contacts-ds])
-  Object
-  (componentDidMount [this]
-                     (load-contacts))
-  (render [this]
-          (let [{:keys [contacts-ds]} (om/props this)
-                {:keys [nav]} (om/get-computed this)]
-            (view {:style {:flex 1
-                           :backgroundColor "white"}}
-                  (toolbar-android {:logo res/logo-icon
-                                    :title "Chats"
-                                    :titleColor "#4A5258"
-                                    :style {:backgroundColor "white"
-                                            :height 56
-                                            :elevation 2}})
-                  (list-view {:dataSource contacts-ds
-                              :renderRow (partial render-row nav)
-                              :style {:backgroundColor "white"}})))))
-
-(def contacts-list (om/factory ContactsList))
