@@ -3,7 +3,7 @@
   (:require [cljs.core.async :as async :refer [chan put! <! >!]]
             [messenger.state :as state]
             [messenger.utils.utils :refer [log toast http-post]]
-            [messenger.utils.database :as db]))
+            [messenger.persistence.realm :as realm]))
 
 (def fake-contacts? false)
 
@@ -40,6 +40,9 @@
                                (js->clj raw-contacts :keywordize-keys true)))}))))
     ch))
 
+(defn- get-contacts []
+  (realm/get-list "Contact"))
+
 (defn load-syng-contacts []
   (let [contacts (map (fn [contact]
                         (merge contact
@@ -47,9 +50,29 @@
                                 :datetime "15:30"
                                 :new-messages-count (rand-int 3)
                                 :online (< (rand) 0.5)}))
-                      (db/get-contacts))]
+                      (get-contacts))]
     (swap! state/app-state update :contacts-ds
            #(clone-with-rows % contacts))))
 
+(defn- create-contact [{:keys [phone-number whisper-identity name photo-path]}]
+  (realm/create "Contact"
+                {:phone-number phone-number
+                 :whisper-identity whisper-identity
+                 :name (or name "")
+                 :photo-path (or photo-path "")}))
+
+(defn- contact-exist? [contacts contact]
+  (some #(= (:phone-number contact) (:phone-number %)) contacts))
+
+(defn- add-contacts [contacts]
+  (realm/write (fn []
+                 (let [db-contacts (get-contacts)]
+                   (dorun (map (fn [contact]
+                                 (if (not (contact-exist? db-contacts contact))
+                                   (create-contact contact)
+                                   ;; TODO else override?
+                                   ))
+                               contacts))))))
+
 (defn save-syng-contacts [syng-contacts]
-  (db/add-contacts syng-contacts))
+  (add-contacts syng-contacts))

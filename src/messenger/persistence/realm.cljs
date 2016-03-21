@@ -75,5 +75,8 @@
   (> (.-length (get-by-field schema-name field value))
      0))
 
-(comment
-  )
+(defn get-count [objs]
+  (.-length objs))
+
+(defn get-list [schema-name]
+  (vals (js->clj (.objects realm schema-name) :keywordize-keys true)))
