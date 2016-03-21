@@ -1,9 +1,9 @@
 (ns messenger.android.core
   (:require-macros
-    [natal-shell.components :refer [navigator view text image touchable-highlight list-view
-                                    toolbar-android]]
+    [natal-shell.components :refer [navigator view text image touchable-highlight
+                                    list-view toolbar-android]]
     [natal-shell.data-source :refer [data-source clone-with-rows]]
-    [natal-shell.back-android :refer [add-event-listener]]
+    [natal-shell.back-android :refer [add-event-listener remove-event-listener]]
     [natal-shell.core :refer [with-error-view]]
     [natal-shell.alert :refer [alert]])
   (:require [om.next :as om :refer-macros [defui]]
@@ -21,19 +21,21 @@
 
 (def app-registry (.-AppRegistry js/React))
 
-(def initialized-atom (atom false))
+(def back-button-handler-atom (atom {:nav nil
+                                     :handler nil}))
+
 (defn init-back-button-handler! [nav]
-  (if (not @initialized-atom)
-    (swap! initialized-atom
-           (fn [initialized]
-             (when (not initialized)
-               (add-event-listener "hardwareBackPress"
-                                   (fn []
-                                     (binding [state/*nav-render* false]
-                                       (when (< 1 (.-length (.getCurrentRoutes nav)))
-                                         (.pop nav)
-                                         true)))))
-             true))))
+  (let [back-button-handler @back-button-handler-atom]
+    (when (not= (:nav back-button-handler) nav)
+      (remove-event-listener "hardwareBackPress" (:handler back-button-handler))
+      (let [new-listener (fn []
+                           (binding [state/*nav-render* false]
+                             (when (< 1 (.-length (.getCurrentRoutes nav)))
+                               (.pop nav)
+                               true)))]
+        (reset! back-button-handler-atom {:nav nav
+                                          :handler new-listener})
+        (add-event-listener "hardwareBackPress" new-listener)))))
 
 (defui AppRoot
   static om/IQuery
