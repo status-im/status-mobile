@@ -8,15 +8,13 @@
             [messenger.state :as state]
             [messenger.comm.intercom :as intercom :refer [set-user-phone-number]]
             [messenger.utils.utils :refer [log toast http-post]]
+            [messenger.utils.phone-number :refer [format-phone-number]]
             [messenger.utils.resources :as res]
             [messenger.components.spinner :refer [spinner]]
             [messenger.android.sign-up-confirm :refer [sign-up-confirm]]
             [messenger.constants :refer [ethereum-rpc-url]]))
 
 (def nav-atom (atom nil))
-
-(set! js/PhoneNumber (js/require "awesome-phonenumber"))
-(def country-code "US")
 
 (defn show-confirm-view []
   (swap! state/app-state assoc :loading false)
@@ -32,7 +30,7 @@
     (intercom/sign-up phone-number whisper-identity show-confirm-view)))
 
 (defn update-phone-number [value]
-  (let [formatted (str (.getNumber (js/PhoneNumber. value country-code "international")))]
+  (let [formatted (format-phone-number value)]
     (set-user-phone-number formatted)))
 
 (defui Login
