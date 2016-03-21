@@ -4,15 +4,10 @@
             [cljs.core.async :as async :refer [chan put! <!]]
             [messenger.utils.utils :refer [log on-error http-post toast]]
             [messenger.utils.crypt :refer [encrypt]]
+            [messenger.utils.phone-number :refer [format-phone-number]]
             [messenger.comm.intercom :as intercom :refer [save-user-phone-number]]
             [messenger.models.contacts :as contacts-model]
             [syng-im.utils.logging :as log]))
-
-(set! js/PhoneNumber (js/require "awesome-phonenumber"))
-(def country-code "US")
-
-(defn- format-phone-number [number]
-  (str (.getNumber (js/PhoneNumber. number country-code "international"))))
 
 (defn- get-contact-name [phone-contact]
   (cstr/join " "
