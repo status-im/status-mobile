@@ -17,9 +17,10 @@
                                   :value "string"}}
                     {:name       :msgs
                      :primaryKey :msg-id
-                     :properties {:msg-id  "string"
-                                  :chat-id "string"
-                                  :msg     "string"}}]})
+                     :properties {:msg-id    "string"
+                                  :timestamp "int"
+                                  :chat-id   "string"
+                                  :msg       "string"}}]})
 
 (def realm (js/Realm. (clj->js opts)))
 
@@ -27,7 +28,6 @@
                          (mapv (fn [{:keys [name] :as schema}]
                                  [name schema]))
                          (into {})))
-
 
 (defn field-type [schema-name field]
   (get-in schema-by-name [schema-name :properties field]))
@@ -56,6 +56,12 @@
 (defn get-by-field [schema-name field value]
   (-> (.objects realm (name schema-name))
       (.filtered (to-query schema-name :eq field value))))
+
+(defn sorted [results field-name]
+  (.sorted results (to-string field-name)))
+
+(defn page [results from to]
+  (js/Array.prototype.slice.call results from to))
 
 (defn single [result]
   (-> (aget result 0)))
