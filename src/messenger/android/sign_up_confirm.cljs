@@ -11,16 +11,16 @@
             [messenger.utils.utils :refer [log toast]]
             [messenger.utils.resources :as res]
             [messenger.components.spinner :refer [spinner]]
-            [messenger.comm.intercom :as intercom :refer [set-confirmation-code]]
-            [messenger.android.contacts-list :refer [contacts-list]]))
+            [messenger.components.contact-list.contact-list :refer [contact-list]]
+            [messenger.comm.intercom :as intercom :refer [set-confirmation-code]]))
 
 (def nav-atom (atom nil))
 
 (defn show-home-view []
   (swap! state/app-state assoc :loading false)
   (binding [state/*nav-render* false]
-    (.replace @nav-atom (clj->js {:component contacts-list
-                                  :name "contacts-list"}))))
+    (.replace @nav-atom (clj->js {:component contact-list
+                                  :name "contact-list"}))))
 
 (defn sync-contacts []
   (intercom/sync-contacts show-home-view))
