@@ -80,5 +80,5 @@
   (sync-contacts args))
 
 (defn contacts-handler [state [id args]]
-  (log/info "user notification: " args)
+  (log/info "contacts-handler: " args)
   (contacts state id args))

@@ -8,6 +8,7 @@
     [natal-shell.alert :refer [alert]])
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
+            [messenger.omnext :as omnext]
             [messenger.state :as state]
             [messenger.utils.utils :refer [log toast]]
             [messenger.android.login :refer [login]]
@@ -15,8 +16,11 @@
             [messenger.comm.pubsub :as pubsub]
             [messenger.comm.intercom :as intercom :refer [load-user-phone-number]]
             [messenger.protocol.protocol-handler :refer [make-handler]]
+            [messenger.init :refer [init-simple-store]]
+            [messenger.components.chat.chat :as chat]
             [syng-im.protocol.api :refer [init-protocol]]
-            [messenger.init :refer [init-simple-store]]))
+            [syng-im.utils.logging :as log]
+            [messenger.components.iname :as in]))
 
 
 (def app-registry (.-AppRegistry js/React))
@@ -40,18 +44,20 @@
 (defui AppRoot
   static om/IQuery
   (query [this]
-    '[:loading :contacts-ds :user-phone-number :user-identity :confirmation-code])
+    [:loading :contacts-ds :user-phone-number :user-identity :confirmation-code])
   Object
   (render [this]
+    (log/debug "APPROOT Rendering")
     (navigator
       {:initialRoute {:component login}
        :renderScene  (fn [route nav]
+                       (log/debug "RENDER SCENE")
                        (when state/*nav-render*
                          (init-back-button-handler! nav)
-                         (let [{:keys [component]}
-                               (js->clj route :keywordize-keys true)]
-                           (component (om/computed (om/props this)
-                                                   {:nav nav})))))})))
+                         (let [{:keys [component]} (js->clj route :keywordize-keys true)
+                               props (om/props this)
+                               props (om/computed props {:nav nav})]
+                           (component props))))})))
 
 ;; TODO to service?
 (swap! state/app-state assoc :contacts-ds
@@ -66,5 +72,5 @@
   (pubsub/setup-pub-sub)
   (init-protocol (make-handler))
   (load-user-phone-number)
-  (om/add-root! state/reconciler AppRoot 1)
+  (om/add-root! omnext/reconciler AppRoot 1)
   (.registerComponent app-registry "Messenger" (fn [] app-root)))

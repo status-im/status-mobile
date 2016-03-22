@@ -27,5 +27,5 @@
              handler))
 
 (defn server-handler [state [id args]]
-  (log/info "user notification: " args)
+  (log/info "contacts handler: " args)
   (server state id args))
