@@ -4,7 +4,8 @@
     [messenger.services.user-data :refer [user-data-handler]]
     [messenger.services.protocol :refer [protocol-handler]]
     [messenger.services.server :refer [server-handler]]
-    [messenger.services.contacts :refer [contacts-handler]]))
+    [messenger.services.contacts :refer [contacts-handler]]
+    [messenger.services.navigate-to :refer [navigate-to-handler]]))
 
 (defmulti service (fn [state service-id args]
                     service-id))
@@ -24,6 +25,10 @@
 (defmethod service :protocol
   [state service-id args]
   (protocol-handler state args))
+
+(defmethod service :navigate-to
+  [state service-id args]
+  (navigate-to-handler state args))
 
 (defn services-handler [state service-id args]
   (log/info "handling " service-id " args = " args)

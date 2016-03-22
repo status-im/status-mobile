@@ -3,7 +3,7 @@
                    [natal-shell.alert :refer [alert]])
   (:require [om.next :as om :refer-macros [defui]]
             [re-natal.support :as sup]
-            [messenger.state :as state]))
+            [messenger.omnext :as omnext]))
 
 (set! js/React (js/require "react-native"))
 
@@ -29,5 +29,5 @@
 (defonce app-root (om/factory RootNode))
 
 (defn init []
-      (om/add-root! state/reconciler AppRoot 1)
+      (om/add-root! omnext/reconciler AppRoot 1)
       (.registerComponent app-registry "Messenger" (fn [] app-root)))
