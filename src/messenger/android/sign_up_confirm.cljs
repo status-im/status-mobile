@@ -12,15 +12,14 @@
             [messenger.utils.resources :as res]
             [messenger.components.spinner :refer [spinner]]
             [messenger.components.contact-list.contact-list :refer [contact-list]]
-            [messenger.comm.intercom :as intercom :refer [set-confirmation-code]]))
+            [messenger.comm.intercom :as intercom :refer [set-confirmation-code]]
+            [messenger.components.iname :as in]))
 
 (def nav-atom (atom nil))
 
 (defn show-home-view []
   (swap! state/app-state assoc :loading false)
-  (binding [state/*nav-render* false]
-    (.replace @nav-atom (clj->js {:component contact-list
-                                  :name "contact-list"}))))
+  (intercom/show-contacts @nav-atom))
 
 (defn sync-contacts []
   (intercom/sync-contacts show-home-view))
@@ -47,13 +46,16 @@
     (set-confirmation-code formatted)))
 
 (defui SignUpConfirm
+  static in/IName
+  (get-name [this]
+    :signup/confirm)
   static om/IQuery
   (query [this]
          '[:confirmation-code :loading])
   Object
   (render
    [this]
-   (let [{:keys [confirmation-code loading]} (om/props this)
+   (let [{{:keys [confirmation-code loading]} :signup/confirm} (om/props this)
          {:keys [nav]} (om/get-computed this)]
      (reset! nav-atom nav)
      (view

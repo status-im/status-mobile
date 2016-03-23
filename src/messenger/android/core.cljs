@@ -11,8 +11,7 @@
             [messenger.omnext :as omnext]
             [messenger.state :as state]
             [messenger.utils.utils :refer [log toast]]
-            [messenger.android.login :refer [login]]
-            [messenger.components.contact-list.contact-list :refer [contact-list]]
+            [messenger.android.login :refer [login Login]]
             [messenger.comm.pubsub :as pubsub]
             [messenger.comm.intercom :as intercom :refer [load-user-phone-number]]
             [messenger.protocol.protocol-handler :refer [make-handler]]
@@ -20,12 +19,14 @@
             [messenger.components.chat.chat :as chat]
             [syng-im.protocol.api :refer [init-protocol]]
             [syng-im.utils.logging :as log]
-            [messenger.components.iname :as in]))
+            [messenger.components.iname :as in]
+            [messenger.models.navigation :as n]
+            [messenger.components.contact-list.contact-list :refer [ContactList contact-list]]))
 
 
 (def app-registry (.-AppRegistry js/React))
 
-(def back-button-handler-atom (atom {:nav nil
+(def back-button-handler-atom (atom {:nav     nil
                                      :handler nil}))
 
 (defn init-back-button-handler! [nav]
@@ -37,19 +38,20 @@
                              (when (< 1 (.-length (.getCurrentRoutes nav)))
                                (.pop nav)
                                true)))]
-        (reset! back-button-handler-atom {:nav nav
+        (reset! back-button-handler-atom {:nav     nav
                                           :handler new-listener})
         (add-event-listener "hardwareBackPress" new-listener)))))
 
 (defui AppRoot
   static om/IQuery
   (query [this]
-    [:loading :contacts-ds :user-phone-number :user-identity :confirmation-code])
+    (let [component (n/current-screen-class)]
+      [{(in/get-name component) (om/get-query component)}]))
   Object
   (render [this]
     (log/debug "APPROOT Rendering")
     (navigator
-      {:initialRoute {:component login}
+      {:initialRoute {:component contact-list}
        :renderScene  (fn [route nav]
                        (log/debug "RENDER SCENE")
                        (when state/*nav-render*
@@ -68,6 +70,7 @@
 (defonce app-root (om/factory RootNode))
 
 (defn init []
+  (n/set-current-screen-class ContactList)
   (init-simple-store)
   (pubsub/setup-pub-sub)
   (init-protocol (make-handler))

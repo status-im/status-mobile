@@ -12,15 +12,14 @@
             [messenger.utils.resources :as res]
             [messenger.components.spinner :refer [spinner]]
             [messenger.android.sign-up-confirm :refer [sign-up-confirm]]
-            [messenger.constants :refer [ethereum-rpc-url]]))
+            [messenger.constants :refer [ethereum-rpc-url]]
+            [messenger.components.iname :as in]))
 
 (def nav-atom (atom nil))
 
 (defn show-confirm-view []
   (swap! state/app-state assoc :loading false)
-  (binding [state/*nav-render* false]
-    (.replace @nav-atom (clj->js {:component sign-up-confirm
-                                  :name "sign-up-confirm"}))))
+  (intercom/show-signup-confirm @nav-atom))
 
 (defn sign-up []
   (swap! state/app-state assoc :loading true)
@@ -34,12 +33,15 @@
     (set-user-phone-number formatted)))
 
 (defui Login
+  static in/IName
+  (get-name [this]
+    :login/login)
   static om/IQuery
   (query [this]
          '[:user-phone-number :user-identity :loading])
   Object
   (render [this]
-          (let [{:keys [user-phone-number user-identity loading]} (om/props this)
+          (let [{{:keys [user-phone-number user-identity loading]} :login/login} (om/props this)
                 {:keys [nav]} (om/get-computed this)]
             (reset! nav-atom nav)
             (view

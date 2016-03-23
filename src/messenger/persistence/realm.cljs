@@ -17,10 +17,14 @@
                                   :value "string"}}
                     {:name       :msgs
                      :primaryKey :msg-id
-                     :properties {:msg-id    "string"
-                                  :timestamp "int"
-                                  :chat-id   "string"
-                                  :msg       "string"}}]})
+                     :properties {:msg-id       "string"
+                                  :from         "string"
+                                  :to           "string"
+                                  :content      "string"    ;; TODO make it ArrayBuffer
+                                  :content-type "string"
+                                  :timestamp    "int"
+                                  :chat-id      "string"
+                                  :outgoing     "bool"}}]})
 
 (def realm (js/Realm. (clj->js opts)))
 
@@ -57,8 +61,10 @@
   (-> (.objects realm (name schema-name))
       (.filtered (to-query schema-name :eq field value))))
 
-(defn sorted [results field-name]
-  (.sorted results (to-string field-name)))
+(defn sorted [results field-name order]
+  (.sorted results (to-string field-name) (if (= order :asc)
+                                            false
+                                            true)))
 
 (defn page [results from to]
   (js/Array.prototype.slice.call results from to))

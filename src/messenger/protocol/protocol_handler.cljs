@@ -16,8 +16,8 @@
                        (case event-type
                          :initialized (let [{:keys [identity]} event]
                                         (protocol-initialized identity))
-                         :new-msg (let [{:keys [from payload]} event]
-                                    (save-new-msg from payload))
+                         :new-msg (let [{:keys [from to payload]} event]
+                                    (save-new-msg (assoc payload :from from :to to)))
                          ;:msg-acked (let [{:keys [msg-id]} event]
                          ;             (add-to-chat "chat" ":" (str "Message " msg-id " was acked")))
                          ;:delivery-failed (let [{:keys [msg-id]} event]

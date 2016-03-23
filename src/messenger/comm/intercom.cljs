@@ -54,9 +54,12 @@
 (defn protocol-initialized [identity]
   (publish! :service [:protocol :protocol/initialized {:identity identity}]))
 
-(defn save-new-msg [from payload]
-  (publish! :service [:protocol :protocol/save-new-msg {:from    from
-                                                        :payload payload}]))
+(defn save-new-msg [msg]
+  (publish! :service [:protocol :protocol/save-new-msg {:msg msg}]))
+
+(defn send-msg [chat-id text]
+  (publish! :service [:protocol :protocol/send-msg {:chat-id chat-id
+                                                    :text    text}]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; navigate-to
@@ -64,3 +67,9 @@
 (defn show-chat [navigator chat-id]
   (publish! :service [:navigate-to :scene/chat {:chat-id   chat-id
                                                 :navigator navigator}]))
+
+(defn show-signup-confirm [navigator]
+  (publish! :service [:navigate-to :scene/signup-confirm {:navigator navigator}]))
+
+(defn show-contacts [navigator]
+  (publish! :service [:navigate-to :scene/contacts {:navigator navigator}]))
