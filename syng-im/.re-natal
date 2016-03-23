@@ -1,0 +1,9 @@
+{
+  "name": "SyngIm",
+  "interface": "reagent",
+  "androidHost": "localhost",
+  "modules": [],
+  "imageDirs": [
+    "images"
+  ]
+}
