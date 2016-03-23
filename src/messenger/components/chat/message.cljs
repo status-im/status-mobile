@@ -2,21 +2,20 @@
   (:require-macros
     [natal-shell.components :refer [view text image]])
   (:require [om.next :as om :refer-macros [defui]]
-            [messenger.utils.resources :as res]))
+            [messenger.utils.resources :as res]
+            [messenger.constants :refer [text-content-type]]))
 
 (defui Message
   static om/Ident
-  (ident [this {:keys [id]}]
-    [:message/by-id id])
+  (ident [this {:keys [msg-id]}]
+    [:message/by-id msg-id])
   static om/IQuery
   (query [this]
-    '[:id :type :body :outgoing :delivery-status :date :new-day])
+    '[:msg-id :content :content-type :outgoing :delivery-status :date :new-day])
   Object
   (render
     [this]
-    (let [{:keys [id body outgoing delivery-status date new-day] :as props}
-          (om/props this)
-          type (keyword (:type props))]
+    (let [{:keys [msg-id content content-type outgoing delivery-status date new-day] :as props} (om/props this)]
       (view {:paddingHorizontal 15}
             ;;; date
             (when new-day
@@ -39,7 +38,7 @@
                                    {:alignSelf  "flex-start"
                                     :alignItems "flex-start"}))}
                   (view {:style (merge {:borderRadius 6}
-                                       (if (= type :text)
+                                       (if (= content-type text-content-type)
                                          {:paddingVertical   12
                                           :paddingHorizontal 16}
                                          {:paddingVertical   14
@@ -47,11 +46,11 @@
                                        (if outgoing
                                          {:backgroundColor "#D3EEEF"}
                                          {:backgroundColor "#FBF6E3"}))}
-                        (if (= type :text)
+                        (if (= content-type text-content-type)
                           (text {:style {:fontSize   14
                                          :fontFamily "Avenir-Roman"
                                          :color      "#4A5258"}}
-                                body)
+                                content)
                           ;;; audio
                           (view {:style {:flexDirection "row"
                                          :alignItems    "center"}}
@@ -105,4 +104,4 @@
                                   "Seen"
                                   "Delivered")))))))))
 
-(def message (om/factory Message {:keyfn :id}))
+(def message (om/factory Message {:keyfn :msg-id}))
