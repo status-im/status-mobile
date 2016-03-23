@@ -2,7 +2,14 @@
   "name": "SyngIm",
   "interface": "reagent",
   "androidHost": "localhost",
-  "modules": [],
+  "modules": [
+    "react-native-contacts",
+    "react-native-invertible-scroll-view",
+    "awesome-phonenumber",
+    "realm",
+    "react-native-loading-spinner-overlay",
+    "react-native-i18n"
+  ],
   "imageDirs": [
     "images"
   ]

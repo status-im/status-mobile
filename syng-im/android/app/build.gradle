@@ -121,5 +121,12 @@ android {
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:0.20.+"
+    compile "com.facebook.react:react-native:+"  // From node_modules
+    compile project(':react-native-contacts')
+    compile project(':react-native-i18n')
+//    compile(name:'geth', ext:'aar')
+    compile(group: 'syng-im', name: 'android-geth', version: '1.4.0-201603131817-92d65cf', ext: 'aar')
+
+    compile project(":realm")
+    compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
