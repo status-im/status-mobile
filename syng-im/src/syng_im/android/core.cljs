@@ -8,12 +8,9 @@
             [syng-im.subs]
             [syng-im.components.react :refer [navigator app-registry]]
             [syng-im.components.chat :refer [chat]]
-            [syng-im.utils.logging :as log]))
+            [syng-im.utils.logging :as log]
+            [syng-im.navigation :refer [*nav-render*]]))
 
-
-(def ^{:dynamic true :private true} *nav-render*
-  "Flag to suppress navigator re-renders from outside om when pushing/popping."
-  true)
 
 (def back-button-handler (cljs/atom {:nav     nil
                                      :handler nil}))
