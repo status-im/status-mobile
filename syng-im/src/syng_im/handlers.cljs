@@ -7,9 +7,11 @@
     [syng-im.protocol.protocol-handler :refer [make-handler]]
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
-    [syng-im.models.messages :refer [save-message
-                                     new-message-arrived]]
-    [syng-im.utils.logging :as log]))
+    [syng-im.models.messages :refer [save-message]]
+    [syng-im.models.chat :refer [set-latest-msg-id]]
+    [syng-im.utils.logging :as log]
+    [syng-im.protocol.api :as api]
+    [syng-im.constants :refer [text-content-type]]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -47,7 +49,23 @@
   (fn [db [_ {chat-id :from
               msg-id  :msg-id :as msg}]]
     (save-message chat-id msg)
-    (new-message-arrived db chat-id msg-id)))
+    (set-latest-msg-id db chat-id msg-id)))
+
+(register-handler :send-chat-msg
+  (fn [db [_ chat-id text]]
+    (log/debug "chat-id" chat-id "text" text)
+    (let [{msg-id     :msg-id
+           {from :from
+            to   :to} :msg} (api/send-user-msg {:to      chat-id
+                                                :content text})
+          msg {:msg-id       msg-id
+               :from         from
+               :to           to
+               :content      text
+               :content-type text-content-type
+               :outgoing     true}]
+      (save-message chat-id msg)
+      (set-latest-msg-id db chat-id msg-id))))
 
 ;; -- Something --------------------------------------------------------------
 

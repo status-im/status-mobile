@@ -26,9 +26,6 @@
   (-> (get-messages* chat-id)
       (js->clj :keywordize-keys true)))
 
-(defn new-message-arrived [db chat-id msg-id]
-  (assoc-in db (db/arrived-message-path chat-id) msg-id))
-
 (comment
 
   (save-message "0x040028c500ff086ecf1cfbb3c1a7240179cde5b86f9802e6799b9bbe9cdd7ad1b05ae8807fa1f9ed19cc8ce930fc2e878738c59f030a6a2f94b3522dc1378ff154"
@@ -38,7 +35,7 @@
 
   (get-messages* "0x040028c500ff086ecf1cfbb3c1a7240179cde5b86f9802e6799b9bbe9cdd7ad1b05ae8807fa1f9ed19cc8ce930fc2e878738c59f030a6a2f94b3522dc1378ff154")
 
-  (get-messages "0x043df89d36f6e3d8ade18e55ac3e2e39406ebde152f76f2f82d674681d59319ffd9880eebfb4f5f8d5c222ec485b44d6e30ba3a03c96b1c946144fdeba1caccd43")
+  (get-messages nil)
 
   (doseq [msg (get-messages* "0x043df89d36f6e3d8ade18e55ac3e2e39406ebde152f76f2f82d674681d59319ffd9880eebfb4f5f8d5c222ec485b44d6e30ba3a03c96b1c946144fdeba1caccd43")]
     (r/delete msg))

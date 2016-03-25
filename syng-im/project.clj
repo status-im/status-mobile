@@ -17,6 +17,7 @@
                          ["do" "clean"
                           ["with-profile" "prod" "cljsbuild" "once" "ios"]
                           ["with-profile" "prod" "cljsbuild" "once" "android"]]}
+  :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.0-2"]
                                    [com.cemerick/piggieback "0.2.1"]]
                     :source-paths ["src" "env/dev"]

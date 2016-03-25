@@ -1,21 +1,48 @@
 (ns syng-im.components.chat
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.components.react :refer [view text image touchable-highlight navigator]]
-            [syng-im.utils.logging :as log]))
-
-(def logo-img (js/require "./images/cljs.png"))
-
-(defn alert [title]
-  (.alert (.-Alert js/React) title))
+            [syng-im.components.react :refer [android?
+                                              view
+                                              text
+                                              image
+                                              touchable-highlight
+                                              navigator
+                                              toolbar-android
+                                              list-view]]
+            [syng-im.utils.logging :as log]
+            [syng-im.navigation :refer [nav-pop]]
+            [syng-im.resources :as res]
+            [syng-im.utils.listview :refer [to-datasource]]
+            [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
+            [reagent.core :as r]
+            [syng-im.components.chat-message :refer [chat-message]]
+            [syng-im.components.chat-message-new :refer [chat-message-new]]))
 
 
 (defn chat [{:keys [navigator]}]
-  (let [greeting (subscribe [:get-greeting])]
+  (let [messages (subscribe [:get-chat-messages])]
     (fn []
-      [view {:style {:flex-direction "column" :margin 40 :align-items "center"}}
-       [text {:style {:font-size 30 :font-weight "100" :margin-bottom 20 :text-align "center"}} @greeting]
-       [image {:source logo-img
-               :style  {:width 80 :height 80 :margin-bottom 30}}]
-       [touchable-highlight {:style    {:background-color "#999" :padding 10 :border-radius 5}
-                             :on-press #(alert "HELLO!")}
-        [text {:style {:color "white" :text-align "center" :font-weight "bold"}} "press me"]]])))
+      (let [msgs       @messages
+            _          (log/debug "messages=" msgs)
+            datasource (to-datasource msgs)]
+        [view {:style {:flex            1
+                       :backgroundColor "white"}}
+         (when android?
+           ;; TODO add IOS version
+           [toolbar-android {:logo          res/logo-icon
+                             :title         "Chat name"
+                             :titleColor    "#4A5258"
+                             :subtitle      "Last seen just now"
+                             :subtitleColor "#AAB2B2"
+                             :navIcon       res/nav-back-icon
+                             :style         {:backgroundColor "white"
+                                             :height          56
+                                             :elevation       2}
+                             :onIconClicked (fn []
+                                              (nav-pop navigator))}])
+         [list-view {:dataSource            datasource
+                     :renderScrollComponent (fn [props]
+                                              (invertible-scroll-view nil))
+                     :renderRow             (fn [row section-id row-id]
+                                              (r/as-element [chat-message (js->clj row :keywordize-keys true)]))
+                     :style                 {:backgroundColor "black"}}]
+         [chat-message-new]]))))
