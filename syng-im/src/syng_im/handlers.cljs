@@ -7,6 +7,7 @@
     [syng-im.protocol.protocol-handler :refer [make-handler]]
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
+    [syng-im.models.contacts :as contacts]
     [syng-im.models.messages :refer [save-message
                                      new-message-arrived]]
     [syng-im.utils.logging :as log]))
@@ -48,6 +49,12 @@
               msg-id  :msg-id :as msg}]]
     (save-message chat-id msg)
     (new-message-arrived db chat-id msg-id)))
+
+;; -- Contacts --------------------------------------------------------------
+
+(register-handler :load-syng-contacts
+  (fn [db [_ value]]
+    (contacts/load-syng-contacts db)))
 
 ;; -- Something --------------------------------------------------------------
 
