@@ -6,7 +6,8 @@
 
 ;; initial state of app-db
 (def app-db {:greeting "Hello Clojure in iOS and Android!"
-             :identity-password "replace-me-with-user-entered-password"})
+             :identity-password "replace-me-with-user-entered-password"
+             :contacts []})
 
 
 (def protocol-initialized-path [:protocol-initialized])
