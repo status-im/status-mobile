@@ -4,7 +4,7 @@
             [syng-im.utils.types :refer [to-string]])
   (:refer-clojure :exclude [exists?]))
 
-(set! js/Realm (js/require "realm"))
+(set! js/window.Realm (js/require "realm"))
 
 (def opts {:schema [{:name       "Contact"
                      :properties {:phone-number     "string"
