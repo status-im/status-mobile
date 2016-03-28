@@ -1,17 +1,16 @@
 (ns syng-im.components.contact-list.contact
   (:require [syng-im.components.react :refer [view text image touchable-highlight]]
             [syng-im.components.resources :as res]
-            ;; [messenger.comm.intercom :as intercom :refer [show-chat]]
-            ;; [messenger.components.chat.chat :refer [chat]]
-            ))
+            [syng-im.components.nav :as nav]))
 
-(defn contact-view [contact]
+(defn show-chat [navigator whisper-identity]
+  (nav/nav-push navigator {:view-id :chat}))
+
+(defn contact-view [{:keys [navigator contact]}]
   (let [{:keys [name photo-path delivery-status datetime new-messages-count
                 online whisper-identity]} contact]
     [touchable-highlight {:onPress (fn []
-                                     ;; TODO
-                                     ;; (show-chat nav whisper-identity)
-                                     )}
+                                     (show-chat navigator whisper-identity))}
      [view {:style {:flexDirection "row"
                     :marginTop     5
                     :marginBottom  5
