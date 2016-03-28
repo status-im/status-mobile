@@ -12,6 +12,6 @@
     "react-native-i18n": "0.0.8",
     "react-native-invertible-scroll-view": "^0.2.0",
     "react-native-loading-spinner-overlay": "0.0.6",
-    "realm": "^0.10.0"
+    "realm": "^0.11.0"
   }
 }

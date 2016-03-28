@@ -17,10 +17,10 @@
                                         (dispatch [:protocol-initialized identity]))
                          :new-msg (let [{:keys [from to payload]} event]
                                     (dispatch [:received-msg (assoc payload :from from :to to)]))
-                         ;:msg-acked (let [{:keys [msg-id]} event]
-                         ;             (add-to-chat "chat" ":" (str "Message " msg-id " was acked")))
-                         ;:delivery-failed (let [{:keys [msg-id]} event]
-                         ;                   (add-to-chat "chat" ":" (str "Delivery of message " msg-id " failed")))
+                         :msg-acked (let [{:keys [msg-id from]} event]
+                                      (dispatch [:acked-msg from msg-id]))
+                         :delivery-failed (let [{:keys [msg-id]} event]
+                                            (dispatch [:msg-delivery-failed msg-id]))
                          ;:new-group-chat (let [{:keys [from group-id identities]} event]
                          ;                  (set-group-id! group-id)
                          ;                  (set-group-identities identities)
