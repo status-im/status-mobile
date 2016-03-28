@@ -12,6 +12,7 @@
     [syng-im.models.messages :refer [save-message
                                      new-message-arrived]]
     [syng-im.handlers.server :as server]
+    [syng-im.handlers.contacts :as contacts-service]
     [syng-im.utils.logging :as log]))
 
 ;; -- Middleware ------------------------------------------------------------
@@ -74,6 +75,20 @@
 (register-handler :sign-up
   (fn [db [_ phone-number whisper-identity handler]]
     (server/sign-up phone-number whisper-identity handler)
+    db))
+
+(register-handler :set-confirmation-code
+  (fn [db [_ value]]
+    (assoc db :confirmation-code value)))
+
+(register-handler :sign-up-confirm
+  (fn [db [_ confirmation-code handler]]
+    (server/sign-up-confirm confirmation-code handler)
+    db))
+
+(register-handler :sync-contacts
+  (fn [db [_ handler]]
+    (contacts-service/sync-contacts handler)
     db))
 
 ;; -- Contacts --------------------------------------------------------------

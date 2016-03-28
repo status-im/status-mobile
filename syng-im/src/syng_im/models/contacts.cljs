@@ -4,7 +4,9 @@
             [syng-im.utils.utils :refer [log toast]]
             [syng-im.persistence.realm :as realm]))
 
-(def fake-contacts? true)
+;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
+(def fake-phone-contacts? true)
+(def fake-contacts? false)
 
 (def react-native-contacts (js/require "react-native-contacts"))
 
@@ -22,7 +24,7 @@
 
 (defn load-phone-contacts []
   (let [ch (chan)]
-    (if fake-contacts?
+    (if fake-phone-contacts?
       (put! ch {:error nil, :contacts (generate-contacts 10)})
       (.getAll react-native-contacts
                (fn [error raw-contacts]
@@ -32,7 +34,6 @@
                         (when (not error)
                           (log  raw-contacts)
                           (map (fn [contact]
-                                 ;; (toast (str contact))
                                  (merge contact
                                         (generate-contact 1)
                                         {:name (:givenName contact)
