@@ -11,6 +11,7 @@
 (def touchable-highlight (r/adapt-react-class (.-TouchableHighlight js/React)))
 (def toolbar-android (r/adapt-react-class (.-ToolbarAndroid js/React)))
 (def list-view (r/adapt-react-class (.-ListView js/React)))
+(def text-input (r/adapt-react-class (.-TextInput js/React)))
 
 (defn list-item [component]
   (r/as-element component))

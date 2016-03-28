@@ -7,9 +7,11 @@
     [syng-im.protocol.protocol-handler :refer [make-handler]]
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
+    [syng-im.models.user-data :as user-data]
     [syng-im.models.contacts :as contacts]
     [syng-im.models.messages :refer [save-message
                                      new-message-arrived]]
+    [syng-im.handlers.server :as server]
     [syng-im.utils.logging :as log]))
 
 ;; -- Middleware ------------------------------------------------------------
@@ -31,6 +33,12 @@
   (fn [_ _]
     app-db))
 
+;; -- Common --------------------------------------------------------------
+
+(register-handler :set-loading
+  (fn [db [_ value]]
+    (assoc db :loading value)))
+
 ;; -- Protocol --------------------------------------------------------------
 
 (register-handler :initialize-protocol
@@ -49,6 +57,24 @@
               msg-id  :msg-id :as msg}]]
     (save-message chat-id msg)
     (new-message-arrived db chat-id msg-id)))
+
+;; -- User data --------------------------------------------------------------
+
+(register-handler :set-user-phone-number
+  (fn [db [_ value]]
+    (assoc db :user-phone-number value)))
+
+(register-handler :load-user-phone-number
+  (fn [db [_]]
+    (user-data/load-phone-number)
+    db))
+
+;; -- Sign up --------------------------------------------------------------
+
+(register-handler :sign-up
+  (fn [db [_ phone-number whisper-identity handler]]
+    (server/sign-up phone-number whisper-identity handler)
+    db))
 
 ;; -- Contacts --------------------------------------------------------------
 

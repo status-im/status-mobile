@@ -2,10 +2,8 @@
   (:require-macros
    [natal-shell.async-storage :refer [get-item set-item]]
    [natal-shell.alert :refer [alert]]
-   [natal-shell.toast-android :as toast]))
-
-;; (def server-address "http://rpc0.syng.im:20000/")
-(def server-address "http://10.0.3.2:3000/")
+   [natal-shell.toast-android :as toast])
+  (:require [syng-im.constants :as const]))
 
 (defn log [obj]
   (.log js/console obj))
@@ -21,7 +19,7 @@
    (http-post action data on-success nil))
   ([action data on-success on-error]
    (-> (.fetch js/window
-               (str server-address action)
+               (str const/server-address action)
                (clj->js {:method "POST"
                          :headers {:accept "application/json"
                                    :content-type "application/json"}
