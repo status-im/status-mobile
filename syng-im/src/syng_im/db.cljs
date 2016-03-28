@@ -7,7 +7,7 @@
 ;; initial state of app-db
 (def app-db {:greeting          "Hello Clojure in iOS and Android!"
              :identity-password "replace-me-with-user-entered-password"
-             :chat              {:current-chat-id "0x040028c500ff086ecf1cfbb3c1a7240179cde5b86f9802e6799b9bbe9cdd7ad1b05ae8807fa1f9ed19cc8ce930fc2e878738c59f030a6a2f94b3522dc1378ff154"}
+             :chat              {:current-chat-id "0x0479a5ed1f38cadfad1db6cd56c4b659b0ebe052bbe9efa950f6660058519fa4ca6be2dda66afa80de96ab00eb97a2605d5267a1e8f4c2a166ab551f6826608cdd"}
              :chats             {}})
 
 

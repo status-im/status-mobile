@@ -6,12 +6,12 @@
                                               image
                                               touchable-highlight
                                               navigator
-                                              toolbar-android
-                                              list-view]]
+                                              toolbar-android]]
+            [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
-            [syng-im.utils.listview :refer [to-datasource]]
+            [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [reagent.core :as r]
             [syng-im.components.chat-message :refer [chat-message]]
@@ -23,7 +23,7 @@
     (fn []
       (let [msgs       @messages
             _          (log/debug "messages=" msgs)
-            datasource (to-datasource msgs)]
+            datasource (to-realm-datasource msgs)]
         [view {:style {:flex            1
                        :backgroundColor "white"}}
          (when android?

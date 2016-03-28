@@ -7,8 +7,10 @@
     [syng-im.protocol.protocol-handler :refer [make-handler]]
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
-    [syng-im.models.messages :refer [save-message]]
-    [syng-im.models.chat :refer [set-latest-msg-id]]
+    [syng-im.models.messages :refer [save-message
+                                     update-message!
+                                     message-by-id]]
+    [syng-im.models.chat :refer [signal-chat-updated]]
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
     [syng-im.constants :refer [text-content-type]]))
@@ -49,7 +51,20 @@
   (fn [db [_ {chat-id :from
               msg-id  :msg-id :as msg}]]
     (save-message chat-id msg)
-    (set-latest-msg-id db chat-id msg-id)))
+    (signal-chat-updated db chat-id)))
+
+(register-handler :acked-msg
+  (fn [db [_ from msg-id]]
+    (update-message! {:msg-id          msg-id
+                      :delivery-status :delivered})
+    (signal-chat-updated db from)))
+
+(register-handler :msg-delivery-failed
+  (fn [db [_ msg-id]]
+    (update-message! {:msg-id          msg-id
+                      :delivery-status :failed})
+    (let [{:keys [chat-id]} (message-by-id msg-id)]
+      (signal-chat-updated db chat-id))))
 
 (register-handler :send-chat-msg
   (fn [db [_ chat-id text]]
@@ -65,7 +80,7 @@
                :content-type text-content-type
                :outgoing     true}]
       (save-message chat-id msg)
-      (set-latest-msg-id db chat-id msg-id))))
+      (signal-chat-updated db chat-id))))
 
 ;; -- Something --------------------------------------------------------------
 

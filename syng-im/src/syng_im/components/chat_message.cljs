@@ -81,9 +81,10 @@
 (defn message-delivery-status [{:keys [delivery-status]}]
   [view {:style {:flexDirection "row"
                  :marginTop     2}}
-   [image {:source (if (= (keyword delivery-status) :seen)
-                     res/seen-icon
-                     res/delivered-icon)
+   [image {:source (case delivery-status
+                     :delivered res/delivered-icon
+                     :seen res/seen-icon
+                     :failed res/delivery-failed-icon)
            :style  {:marginTop 6
                     :opacity   0.6}}]
    [text {:style {:fontFamily "Avenir-Roman"
@@ -91,9 +92,10 @@
                   :color      "#AAB2B2"
                   :opacity    0.8
                   :marginLeft 5}}
-    (if (= (keyword delivery-status) :seen)
-      "Seen"
-      "Delivered")]])
+    (case delivery-status
+      :delivered "Delivered"
+      :seen "Seen"
+      :failed "Failed")]])
 
 (defn message-body [{:keys [msg-id content content-type outgoing delivery-status]}]
   [view {:style (merge {:flexDirection  "column"
@@ -118,4 +120,4 @@
                   :content         content
                   :content-type    content-type
                   :outgoing        outgoing
-                  :delivery-status delivery-status}]])
+                  :delivery-status (keyword delivery-status)}]])
