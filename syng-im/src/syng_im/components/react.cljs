@@ -1,7 +1,7 @@
 (ns syng-im.components.react
   (:require [reagent.core :as r]))
 
-(set! js/React (js/require "react-native"))
+(set! js/window.React (js/require "react-native"))
 
 (def app-registry (.-AppRegistry js/React))
 (def navigator (r/adapt-react-class (.-Navigator js/React)))
