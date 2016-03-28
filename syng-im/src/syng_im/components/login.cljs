@@ -6,20 +6,18 @@
             [syng-im.components.spinner :refer [spinner]]
             [syng-im.components.nav :as nav]
             [syng-im.utils.utils :refer [log toast http-post]]
-            [syng-im.utils.phone-number :refer [format-phone-number]]
-            ;; [messenger.android.sign-up-confirm :refer [sign-up-confirm]]
-))
+            [syng-im.utils.phone-number :refer [format-phone-number]]))
 
-(def nav-atom (atom nil))
+;; (def nav-atom (atom nil))
 
-(defn show-confirm-view []
+(defn show-confirm-view [navigator]
   (dispatch [:set-loading false])
   ;; TODO 'nav-replace
-  (nav/nav-push @nav-atom {:view-id :chat}))
+  (nav/nav-push navigator {:view-id :sign-up-confirm}))
 
-(defn sign-up [user-phone-number user-identity]
+(defn sign-up [user-phone-number user-identity navigator]
   (dispatch [:set-loading true])
-  (dispatch [:sign-up user-phone-number user-identity show-confirm-view]))
+  (dispatch [:sign-up user-phone-number user-identity #(show-confirm-view navigator)]))
 
 (defn update-phone-number [value]
   (let [formatted (format-phone-number value)]
@@ -30,7 +28,7 @@
         user-phone-number (subscribe [:get-user-phone-number])
         user-identity (subscribe [:get-user-identity])]
     (fn []
-      (reset! nav-atom navigator)
+      ;; (reset! nav-atom navigator)
       [view {:style {:flex 1}}
        [view {:style {:flex 1
                       :backgroundColor "white"}}
@@ -53,7 +51,7 @@
                               :fontFamily "Avenir-Roman"
                               :color "#9CBFC0"}}
           @user-phone-number]
-         [touchable-highlight {:onPress #(sign-up @user-phone-number @user-identity)
+         [touchable-highlight {:onPress #(sign-up @user-phone-number @user-identity navigator)
                                :style {:alignSelf "center"
                                        :borderRadius 7
                                        :backgroundColor "#E5F5F6"
@@ -61,6 +59,5 @@
           [text {:style {:marginVertical 10
                          :textAlign "center"}}
            "Sign up"]]]]
-       ;; (when (or loading (not user-identity))
-       ;;   [spinner {:visible true}])
-       ])))
+       (when (or @loading (not @user-identity))
+         [spinner {:visible true}])])))

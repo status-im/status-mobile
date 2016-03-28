@@ -10,6 +10,7 @@
             [syng-im.components.contact-list.contact-list :refer [contact-list]]
             [syng-im.components.chat :refer [chat]]
             [syng-im.components.login :refer [login-view]]
+            [syng-im.components.sign-up-confirm :refer [sign-up-confirm-view]]
 
             ;; [syng-im.components.chat.chat :refer [chat]]
             [syng-im.components.nav :as nav]
@@ -42,7 +43,7 @@
                                        })
               :render-scene  (fn [route nav]
                                (log/debug "route" route)
-                               (when nav/*nav-render*
+                               (when true ;; nav/*nav-render*
                                  (let [{:keys [view-id]} (js->clj route :keywordize-keys true)
                                        view-id (keyword view-id)]
                                    (init-back-button-handler! nav)
@@ -50,7 +51,9 @@
                                      :contact-list (r/as-element [contact-list
                                                                   {:navigator nav}])
                                      :chat (r/as-element [chat {:navigator nav}])
-                                     :login (r/as-element [login-view {:navigator nav}])))))}])
+                                     :login (r/as-element [login-view {:navigator nav}])
+                                     :sign-up-confirm (r/as-element [sign-up-confirm-view
+                                                                     {:navigator nav}])))))}])
 
 (defn init []
   (dispatch-sync [:initialize-db])

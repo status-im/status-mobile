@@ -19,13 +19,19 @@
   :get-user-identity
   (fn [db _]
     (reaction
-      (get @db :identity))))
+      (get @db :user-identity))))
 
 (register-sub
   :get-loading
   (fn [db _]
     (reaction
       (get @db :loading))))
+
+(register-sub
+  :get-confirmation-code
+  (fn [db _]
+    (reaction
+      (get @db :confirmation-code))))
 
 (register-sub
   :get-contacts

@@ -8,14 +8,13 @@
   [phone-number whisper-identity handler]
   (user-data/save-phone-number phone-number)
   (http-post "sign-up" {:phone-number phone-number
-                        :whisper-identity whisper-identity}
+                        :whisper-identity (:public whisper-identity)}
              (fn [body]
                (log body)
                (handler))))
 
 (defn sign-up-confirm
-  [state id {:keys [confirmation-code handler] :as args}]
-  (log/info "handling " id " args = " args)
+  [confirmation-code handler]
   (http-post "sign-up-confirm"
              {:code confirmation-code}
              handler))
