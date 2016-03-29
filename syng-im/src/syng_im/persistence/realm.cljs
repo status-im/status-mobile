@@ -114,7 +114,7 @@
   (.-length objs))
 
 (defn get-list [schema-name]
-  (vals (js->clj (.objects realm schema-name) :keywordize-keys true)))
+  (vals (js->clj (.objects realm (to-string schema-name)) :keywordize-keys true)))
 
 
 (comment

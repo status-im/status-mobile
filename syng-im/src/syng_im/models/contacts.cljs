@@ -48,7 +48,7 @@
       :whisper-identity "abc"
       :name "fake"
       :photo-path ""}]
-    (realm/get-list "Contact")))
+    (realm/get-list :contacts)))
 
 (defn load-syng-contacts [db]
   (let [contacts (map (fn [contact]
@@ -61,7 +61,7 @@
     (assoc db :contacts contacts)))
 
 (defn- create-contact [{:keys [phone-number whisper-identity name photo-path]}]
-  (realm/create "Contact"
+  (realm/create :contacts
                 {:phone-number phone-number
                  :whisper-identity whisper-identity
                  :name (or name "")
