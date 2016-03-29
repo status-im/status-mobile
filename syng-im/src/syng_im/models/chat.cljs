@@ -9,9 +9,9 @@
 
 (defn signal-chat-updated [db chat-id]
   (update-in db (db/updated-chat-signal-path chat-id) (fn [current]
-                                                  (if current
-                                                    (inc current)
-                                                    0))))
+                                                        (if current
+                                                          (inc current)
+                                                          0))))
 
 (defn chat-updated? [db chat-id]
   (->> (db/updated-chat-signal-path chat-id)

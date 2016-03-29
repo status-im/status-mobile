@@ -2,7 +2,8 @@
   (:require [syng-im.persistence.realm :as r]
             [syng-im.utils.random :refer [timestamp]]
             [clojure.string :refer [join blank?]]
-            [syng-im.db :as db]))
+            [syng-im.db :as db]
+            [syng-im.utils.logging :as log]))
 
 (defn signal-chats-updated [db]
   (update-in db db/updated-chats-signal-path (fn [current]
@@ -32,9 +33,11 @@
   ([db chat-id identities]
    (create-chat db chat-id identities nil))
   ([db chat-id identities chat-name]
-   (when-not (r/exists? :chats :chat-id chat-id)
+   (if (r/exists? :chats :chat-id chat-id)
+     db
      (let [chat-name (or chat-name
-                         (get-chat-name chat-id identities))]
+                         (get-chat-name chat-id identities))
+           _         (log/debug "creating chat" chat-name)]
        (r/write
          (fn []
            (let [group-chat? (> (count identities) 1)

@@ -61,8 +61,9 @@
         (set-initialized true))))
 
 (register-handler :received-msg
-  (fn [db [_ {chat-id :from
-              msg-id  :msg-id :as msg}]]
+  (fn [db [action {chat-id :from
+                   msg-id  :msg-id :as msg}]]
+    (log/debug action "msg" msg)
     (save-message chat-id msg)
     (-> db
         (create-chat chat-id [chat-id])
