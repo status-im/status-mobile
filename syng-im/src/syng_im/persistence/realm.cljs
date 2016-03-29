@@ -6,11 +6,15 @@
 
 (set! js/window.Realm (js/require "realm"))
 
-(def opts {:schema [{:name       "Contact"
-                     :properties {:phone-number     "string"
+(def opts {:schema [{:name       :contacts
+                     :primaryKey :whisper-identity
+                     :properties {:phone-number     {:type     "string"
+                                                     :optional true}
                                   :whisper-identity "string"
-                                  :name             "string"
-                                  :photo-path       "string"}}
+                                  :name             {:type     "string"
+                                                     :optional true}
+                                  :photo-path       {:type    "string"
+                                                     :optinal true}}}
                     {:name       :kv-store
                      :primaryKey :key
                      :properties {:key   "string"
@@ -27,7 +31,18 @@
                                                     :indexed true}
                                   :outgoing        "bool"
                                   :delivery-status {:type     "string"
-                                                    :optional true}}}]})
+                                                    :optional true}}}
+                    {:name       :chat-contact
+                     :properties {:identity "string"}}
+                    {:name       :chats
+                     :primaryKey :chat-id
+                     :properties {:chat-id    "string"
+                                  :name       "string"
+                                  :group-chat "bool"
+                                  :timestamp  "int"
+                                  :contacts   {:type       "list"
+                                               :objectType "chat-contact"}}}]})
+
 
 (def realm (js/Realm. (clj->js opts)))
 
@@ -65,6 +80,9 @@
   (let [q (to-query schema-name :eq field value)]
     (-> (.objects realm (name schema-name))
         (.filtered q))))
+
+(defn get-all [schema-name]
+  (.objects realm (to-string schema-name)))
 
 (defn sorted [results field-name order]
   (.sorted results (to-string field-name) (if (= order :asc)
@@ -104,6 +122,5 @@
   (write #(.create realm "msgs" (clj->js {:msg-id          "1459175391577-a2185a35-5c49-5a6b-9c08-6eb5b87ceb7f"
                                           :content         "sdfd"
                                           :delivery-status "seen"}) true))
-
 
   )

@@ -1,4 +1,4 @@
-(ns syng-im.components.chat
+(ns syng-im.components.chats.chats-list
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [android?
                                               view
@@ -12,26 +12,24 @@
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
             [syng-im.utils.listview :refer [to-realm-datasource]]
-            [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [reagent.core :as r]
-            [syng-im.components.chat-message :refer [chat-message]]
-            [syng-im.components.chat-message-new :refer [chat-message-new]]))
+            [syng-im.components.chats.chat-list-item :refer [chat-list-item]]))
 
 
-(defn chat [{:keys [navigator]}]
-  (let [messages (subscribe [:get-chat-messages])]
+(defn chats-list [{:keys [navigator]}]
+  (let [chats (subscribe [:get-chats])]
     (fn []
-      (let [msgs       @messages
-            _          (log/debug "messages=" msgs)
-            datasource (to-realm-datasource msgs)]
+      (let [chats      @chats
+            _          (log/debug "chats=" chats)
+            datasource (to-realm-datasource chats)]
         [view {:style {:flex            1
                        :backgroundColor "white"}}
          (when android?
            ;; TODO add IOS version
            [toolbar-android {:logo          res/logo-icon
-                             :title         "Chat name"
+                             :title         "Your Chats"
                              :titleColor    "#4A5258"
-                             :subtitle      "Last seen just now"
+                             :subtitle      "List of your recent chats"
                              :subtitleColor "#AAB2B2"
                              :navIcon       res/nav-back-icon
                              :style         {:backgroundColor "white"
@@ -39,10 +37,7 @@
                                              :elevation       2}
                              :onIconClicked (fn []
                                               (nav-pop navigator))}])
-         [list-view {:dataSource            datasource
-                     :renderScrollComponent (fn [props]
-                                              (invertible-scroll-view nil))
-                     :renderRow             (fn [row section-id row-id]
-                                              (r/as-element [chat-message (js->clj row :keywordize-keys true)]))
-                     :style                 {:backgroundColor "white"}}]
-         [chat-message-new]]))))
+         [list-view {:dataSource datasource
+                     :renderRow  (fn [row section-id row-id]
+                                   (r/as-element [chat-list-item row navigator]))
+                     :style      {:backgroundColor "white"}}]]))))

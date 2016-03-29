@@ -7,6 +7,7 @@
 (def seen-icon (js/require "./images/seen.png"))
 (def delivered-icon (js/require "./images/delivered.png"))
 (def delivery-failed-icon (js/require "./images/deliveryfailed.png"))
+(def chat-icon (js/require "./images/chat.png"))
 (def play (js/require "./images/play.png"))
 (def mic (js/require "./images/mic.png"))
 (def smile (js/require "./images/smile.png"))
