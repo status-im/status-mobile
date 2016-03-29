@@ -9,16 +9,10 @@
             [syng-im.components.react :refer [navigator app-registry]]
             [syng-im.components.contact-list.contact-list :refer [contact-list]]
             [syng-im.components.chat :refer [chat]]
-            [syng-im.components.login :refer [login-view]]
+            [syng-im.components.sign-up :refer [sign-up-view]]
             [syng-im.components.sign-up-confirm :refer [sign-up-confirm-view]]
-
-            ;; [syng-im.components.chat.chat :refer [chat]]
             [syng-im.components.nav :as nav]
             [syng-im.utils.logging :as log]))
-
-;; (def ^{:dynamic true :private true} *nav-render*
-;;   "Flag to suppress navigator re-renders from outside om when pushing/popping."
-;;   true)
 
 (def back-button-handler (cljs/atom {:nav     nil
                                      :handler nil}))
@@ -37,10 +31,7 @@
         (add-event-listener "hardwareBackPress" new-listener)))))
 
 (defn app-root []
-  [navigator {:initial-route (clj->js {:view-id ;; :chat
-                                       ;; :contact-list
-                                       :login
-                                       })
+  [navigator {:initial-route (clj->js {:view-id :sign-up})
               :render-scene  (fn [route nav]
                                (log/debug "route" route)
                                (when true ;; nav/*nav-render*
@@ -51,7 +42,8 @@
                                      :contact-list (r/as-element [contact-list
                                                                   {:navigator nav}])
                                      :chat (r/as-element [chat {:navigator nav}])
-                                     :login (r/as-element [login-view {:navigator nav}])
+                                     :sign-up (r/as-element [sign-up-view
+                                                             {:navigator nav}])
                                      :sign-up-confirm (r/as-element [sign-up-confirm-view
                                                                      {:navigator nav}])))))}])
 

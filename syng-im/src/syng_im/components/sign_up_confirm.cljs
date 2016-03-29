@@ -11,7 +11,7 @@
 
 (defn show-home-view [navigator]
   (dispatch [:set-loading false])
-  (nav/nav-push navigator {:view-id :contact-list}))
+  (nav/nav-replace navigator {:view-id :contact-list}))
 
 (defn sync-contacts [navigator]
   (dispatch [:sync-contacts #(show-home-view navigator)]))
