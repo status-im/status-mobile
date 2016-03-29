@@ -11,8 +11,8 @@
             [syng-im.components.chat :refer [chat]]
             [syng-im.components.sign-up :refer [sign-up-view]]
             [syng-im.components.sign-up-confirm :refer [sign-up-confirm-view]]
-            [syng-im.components.nav :as nav]
-            [syng-im.utils.logging :as log]))
+            [syng-im.utils.logging :as log]
+            [syng-im.navigation :as nav]))
 
 (def back-button-handler (cljs/atom {:nav     nil
                                      :handler nil}))
@@ -24,7 +24,7 @@
       (let [new-listener (fn []
                            (binding [nav/*nav-render* false]
                              (when (< 1 (.-length (.getCurrentRoutes nav)))
-                               (.pop nav)
+                               (nav/nav-pop nav)
                                true)))]
         (reset! back-button-handler {:nav     nav
                                      :handler new-listener})

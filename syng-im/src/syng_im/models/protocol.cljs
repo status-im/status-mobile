@@ -25,3 +25,8 @@
     (when encrypted
       (-> (password-decrypt password encrypted)
           (read-string)))))
+
+(comment
+
+  (stored-identity @re-frame.db/app-db)
+  )

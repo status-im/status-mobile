@@ -6,7 +6,7 @@
                                               toolbar-android text-input]]
             [syng-im.components.resources :as res]
             [syng-im.components.spinner :refer [spinner]]
-            [syng-im.components.nav :as nav]
+            [syng-im.navigation :as nav]
             [syng-im.utils.utils :refer [log toast http-post]]))
 
 (defn show-home-view [navigator]

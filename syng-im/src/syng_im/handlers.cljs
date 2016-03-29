@@ -10,10 +10,14 @@
     [syng-im.models.user-data :as user-data]
     [syng-im.models.contacts :as contacts]
     [syng-im.models.messages :refer [save-message
-                                     new-message-arrived]]
+                                     update-message!
+                                     message-by-id]]
+    [syng-im.models.chat :refer [signal-chat-updated]]
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
-    [syng-im.utils.logging :as log]))
+    [syng-im.utils.logging :as log]
+    [syng-im.protocol.api :as api]
+    [syng-im.constants :refer [text-content-type]]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -57,7 +61,36 @@
   (fn [db [_ {chat-id :from
               msg-id  :msg-id :as msg}]]
     (save-message chat-id msg)
-    (new-message-arrived db chat-id msg-id)))
+    (signal-chat-updated db chat-id)))
+
+(register-handler :acked-msg
+  (fn [db [_ from msg-id]]
+    (update-message! {:msg-id          msg-id
+                      :delivery-status :delivered})
+    (signal-chat-updated db from)))
+
+(register-handler :msg-delivery-failed
+  (fn [db [_ msg-id]]
+    (update-message! {:msg-id          msg-id
+                      :delivery-status :failed})
+    (let [{:keys [chat-id]} (message-by-id msg-id)]
+      (signal-chat-updated db chat-id))))
+
+(register-handler :send-chat-msg
+  (fn [db [_ chat-id text]]
+    (log/debug "chat-id" chat-id "text" text)
+    (let [{msg-id     :msg-id
+           {from :from
+            to   :to} :msg} (api/send-user-msg {:to      chat-id
+                                                :content text})
+          msg {:msg-id       msg-id
+               :from         from
+               :to           to
+               :content      text
+               :content-type text-content-type
+               :outgoing     true}]
+      (save-message chat-id msg)
+      (signal-chat-updated db chat-id))))
 
 ;; -- User data --------------------------------------------------------------
 
