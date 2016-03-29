@@ -1,4 +1,4 @@
-(ns syng-im.components.login
+(ns syng-im.components.sign-up
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view text image touchable-highlight
                                               toolbar-android text-input]]
@@ -8,12 +8,9 @@
             [syng-im.utils.utils :refer [log toast http-post]]
             [syng-im.utils.phone-number :refer [format-phone-number]]))
 
-;; (def nav-atom (atom nil))
-
 (defn show-confirm-view [navigator]
   (dispatch [:set-loading false])
-  ;; TODO 'nav-replace
-  (nav/nav-push navigator {:view-id :sign-up-confirm}))
+  (nav/nav-replace navigator {:view-id :sign-up-confirm}))
 
 (defn sign-up [user-phone-number user-identity navigator]
   (dispatch [:set-loading true])
@@ -23,7 +20,7 @@
   (let [formatted (format-phone-number value)]
     (dispatch [:set-user-phone-number formatted])))
 
-(defn login-view [{:keys [navigator]}]
+(defn sign-up-view [{:keys [navigator]}]
   (let [loading (subscribe [:get-loading])
         user-phone-number (subscribe [:get-user-phone-number])
         user-identity (subscribe [:get-user-identity])]
@@ -33,7 +30,7 @@
        [view {:style {:flex 1
                       :backgroundColor "white"}}
         [toolbar-android {:logo res/logo-icon
-                          :title "Login"
+                          :title "Sign up"
                           :titleColor "#4A5258"
                           :style {:backgroundColor "white"
                                   :height 56
