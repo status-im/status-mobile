@@ -4,7 +4,7 @@
                                               toolbar-android text-input]]
             [syng-im.components.resources :as res]
             [syng-im.components.spinner :refer [spinner]]
-            [syng-im.components.nav :as nav]
+            [syng-im.navigation :as nav]
             [syng-im.utils.utils :refer [log toast http-post]]
             [syng-im.utils.phone-number :refer [format-phone-number]]))
 
@@ -25,7 +25,6 @@
         user-phone-number (subscribe [:get-user-phone-number])
         user-identity (subscribe [:get-user-identity])]
     (fn []
-      ;; (reset! nav-atom navigator)
       [view {:style {:flex 1}}
        [view {:style {:flex 1
                       :backgroundColor "white"}}

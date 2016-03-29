@@ -1,4 +1,4 @@
-(ns syng-im.components.nav)
+(ns syng-im.navigation)
 
 (def ^{:dynamic true :private true} *nav-render*
   "Flag to suppress navigator re-renders from outside om when pushing/popping."
