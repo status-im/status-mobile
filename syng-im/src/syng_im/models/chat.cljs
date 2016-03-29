@@ -8,13 +8,13 @@
   (get-in db db/current-chat-id-path))
 
 (defn signal-chat-updated [db chat-id]
-  (update-in db (db/latest-msg-id-path chat-id) (fn [current]
+  (update-in db (db/updated-chat-signal-path chat-id) (fn [current]
                                                   (if current
                                                     (inc current)
                                                     0))))
 
-(defn latest-msg-id [db chat-id]
-  (->> (db/latest-msg-id-path chat-id)
+(defn chat-updated? [db chat-id]
+  (->> (db/updated-chat-signal-path chat-id)
        (get-in db)))
 
 (comment

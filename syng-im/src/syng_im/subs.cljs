@@ -2,29 +2,40 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.models.chat :refer [current-chat-id
-                                         latest-msg-id]]
+                                         chat-updated?]]
+            [syng-im.models.chats :refer [chats-list
+                                          chats-updated?]]
             [syng-im.models.messages :refer [get-messages]]))
 
-(register-sub :get-greeting (fn [db _]
-                              (reaction
-                                (get @db :greeting))))
+;; -- Chat --------------------------------------------------------------
 
 (register-sub :get-chat-messages
-              (fn [db _]
-                (let [chat-id    (-> (current-chat-id @db)
-                                     (reaction))
-                      latest-msg (-> (latest-msg-id @db @chat-id)
-                                     (reaction))]
-                  ;; latest-msg signals us that a new message has been added
-                  (reaction
-                    (let [_ @latest-msg]
-                      (get-messages @chat-id))))))
+  (fn [db _]
+    (let [chat-id      (-> (current-chat-id @db)
+                           (reaction))
+          chat-updated (-> (chat-updated? @db @chat-id)
+                           (reaction))]
+      (reaction
+        (let [_ @chat-updated]
+          (get-messages @chat-id))))))
 
-(register-sub :get-current-chat-id (fn [db _]
-                                     (-> (current-chat-id @db)
-                                         (reaction))))
+(register-sub :get-current-chat-id
+  (fn [db _]
+    (-> (current-chat-id @db)
+        (reaction))))
+
+;; -- Chats list --------------------------------------------------------------
+
+(register-sub :get-chats
+  (fn [db _]
+    (let [chats-updated (-> (chats-updated? @db)
+                            (reaction))]
+      (reaction
+        (let [_ @chats-updated]
+          (chats-list))))))
 
 ;; -- User data --------------------------------------------------------------
+
 (register-sub
   :get-user-phone-number
   (fn [db _]

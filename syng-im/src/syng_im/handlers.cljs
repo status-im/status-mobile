@@ -12,12 +12,16 @@
     [syng-im.models.messages :refer [save-message
                                      update-message!
                                      message-by-id]]
-    [syng-im.models.chat :refer [signal-chat-updated]]
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
+
+    [syng-im.models.chats :refer [create-chat]]
+    [syng-im.models.chat :refer [signal-chat-updated
+                                 set-current-chat-id]]
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
-    [syng-im.constants :refer [text-content-type]]))
+    [syng-im.constants :refer [text-content-type]]
+    [syng-im.navigation :refer [nav-push]]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -32,13 +36,12 @@
 (def validate-schema-mw
   (after (partial check-and-throw schema)))
 
-;; -- Handlers --------------------------------------------------------------
+
+;; -- Common --------------------------------------------------------------
 
 (register-handler :initialize-db
   (fn [_ _]
     app-db))
-
-;; -- Common --------------------------------------------------------------
 
 (register-handler :set-loading
   (fn [db [_ value]]
@@ -61,7 +64,9 @@
   (fn [db [_ {chat-id :from
               msg-id  :msg-id :as msg}]]
     (save-message chat-id msg)
-    (signal-chat-updated db chat-id)))
+    (-> db
+        (create-chat chat-id [chat-id])
+        (signal-chat-updated chat-id))))
 
 (register-handler :acked-msg
   (fn [db [_ from msg-id]]
@@ -77,8 +82,8 @@
       (signal-chat-updated db chat-id))))
 
 (register-handler :send-chat-msg
-  (fn [db [_ chat-id text]]
-    (log/debug "chat-id" chat-id "text" text)
+  (fn [db [action chat-id text]]
+    (log/debug action "chat-id" chat-id "text" text)
     (let [{msg-id     :msg-id
            {from :from
             to   :to} :msg} (api/send-user-msg {:to      chat-id
@@ -130,8 +135,10 @@
   (fn [db [_ value]]
     (contacts/load-syng-contacts db)))
 
-;; -- Something --------------------------------------------------------------
+;; -- Chats --------------------------------------------------------------
 
-(register-handler :set-greeting
-  (fn [db [_ value]]
-    (assoc db :greeting value)))
+(register-handler :show-chat
+  (fn [db [action chat-id navigator]]
+    (log/debug action "chat-id" chat-id)
+    (nav-push navigator {:view-id :chat})
+    (set-current-chat-id db chat-id)))

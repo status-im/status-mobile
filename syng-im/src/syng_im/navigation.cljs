@@ -4,14 +4,14 @@
   "Flag to suppress navigator re-renders from outside om when pushing/popping."
   true)
 
+(defn nav-pop [nav]
+  (binding [*nav-render* true]
+    (.pop nav)))
+
 (defn nav-push [nav route]
-  (binding [*nav-render* false]
+  (binding [*nav-render* true]
     (.push nav (clj->js route))))
 
 (defn nav-replace [nav route]
-  (binding [*nav-render* false]
+  (binding [*nav-render* true]
     (.replace nav (clj->js route))))
-
-(defn nav-pop [nav]
-  (binding [*nav-render* false]
-    (.pop nav)))
