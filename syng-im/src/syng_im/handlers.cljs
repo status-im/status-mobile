@@ -14,6 +14,7 @@
                                      message-by-id]]
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
+    [syng-im.handlers.suggestions :as suggestions-service]
 
     [syng-im.models.chats :refer [create-chat]]
     [syng-im.models.chat :refer [signal-chat-updated
@@ -143,3 +144,9 @@
     (log/debug action "chat-id" chat-id)
     (nav-push navigator {:view-id :chat})
     (set-current-chat-id db chat-id)))
+
+;; -- Chat --------------------------------------------------------------
+
+(register-handler :generate-suggestions
+  (fn [db [_ text]]
+    (suggestions-service/generate-suggestions db text)))

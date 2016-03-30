@@ -8,11 +8,7 @@
                                               list-item]]
             [syng-im.components.resources :as res]
             [syng-im.components.contact-list.contact :refer [contact-view]]
-            [syng-im.utils.logging :as log]
-            ;; [messenger.comm.intercom :as intercom]
-            ;; [messenger.components.contact-list.contact :refer [contact]]
-            ;; [messenger.components.iname :as in]
-            ))
+            [syng-im.utils.logging :as log]))
 
 (defn render-row [navigator row section-id row-id]
   (list-item [contact-view {:navigator navigator

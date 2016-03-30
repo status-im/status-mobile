@@ -1,6 +1,7 @@
 (ns syng-im.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
+            [syng-im.db :as db]
             [syng-im.models.chat :refer [current-chat-id
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
@@ -23,6 +24,10 @@
   (fn [db _]
     (-> (current-chat-id @db)
         (reaction))))
+
+(register-sub :get-suggestions
+  (fn [db _]
+    (reaction (get-in @db db/input-suggestions-path))))
 
 ;; -- Chats list --------------------------------------------------------------
 
