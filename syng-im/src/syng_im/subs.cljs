@@ -29,6 +29,10 @@
   (fn [db _]
     (reaction (get-in @db db/input-suggestions-path))))
 
+(register-sub :get-input-command
+  (fn [db _]
+    (reaction (get-in @db db/input-command-path))))
+
 ;; -- Chats list --------------------------------------------------------------
 
 (register-sub :get-chats
