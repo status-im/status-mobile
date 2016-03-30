@@ -15,6 +15,7 @@
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
     [syng-im.handlers.suggestions :as suggestions-service]
+    [syng-im.handlers.commands :as commands-service]
 
     [syng-im.models.chats :refer [create-chat]]
     [syng-im.models.chat :refer [signal-chat-updated
@@ -150,3 +151,7 @@
 (register-handler :generate-suggestions
   (fn [db [_ text]]
     (suggestions-service/generate-suggestions db text)))
+
+(register-handler :set-input-command
+  (fn [db [_ command]]
+    (commands-service/set-input-command db command)))

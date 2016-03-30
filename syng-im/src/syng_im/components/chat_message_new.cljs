@@ -5,12 +5,12 @@
                                               image
                                               text-input]]
             [syng-im.components.chat.suggestions :refer [suggestions-view]]
+            [syng-im.utils.utils :refer [log toast http-post]]
             [syng-im.utils.logging :as log]
             [syng-im.resources :as res]
             [reagent.core :as r]))
 
-
-(defn chat-message-new []
+(defn message-input []
   (let [text    (r/atom nil)
         chat-id (subscribe [:get-current-chat-id])]
     (fn []
@@ -53,3 +53,32 @@
                          :width       17
                          :height      14}}]]
        [suggestions-view]])))
+
+(defn special-input [command]
+  (case command
+    :phone [text-input {:underlineColorAndroid "#9CBFC0"
+                        :style                 {:flex       1
+                                                :marginLeft 18
+                                                :lineHeight 42
+                                                :fontSize   14
+                                                :fontFamily "Avenir-Roman"
+                                                :color      "#9CBFC0"}
+                        :autoFocus             true
+                        :placeholder           "Phone input"}]
+    [text-input {:underlineColorAndroid "#9CBFC0"
+                 :style                 {:flex       1
+                                         :marginLeft 18
+                                         :lineHeight 42
+                                         :fontSize   14
+                                         :fontFamily "Avenir-Roman"
+                                         :color      "#9CBFC0"}
+                 :autoFocus             true
+                 :placeholder           "Command input"}]))
+
+(defn chat-message-new []
+  (let [input-command-atom (subscribe [:get-input-command])]
+    (fn []
+      (let [input-command @input-command-atom]
+        (if input-command
+          [special-input input-command]
+          [message-input])))))
