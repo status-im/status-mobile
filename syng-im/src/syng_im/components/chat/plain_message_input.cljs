@@ -1,4 +1,4 @@
-(ns syng-im.components.chat-message-new
+(ns syng-im.components.chat.plain-message-input
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [android?
                                               view
@@ -10,11 +10,13 @@
             [syng-im.resources :as res]
             [reagent.core :as r]))
 
-(defn message-input []
+(defn plain-message-input-view []
   (let [text    (r/atom nil)
         chat-id (subscribe [:get-current-chat-id])]
+    (dispatch [:generate-suggestions @text])
     (fn []
       [view {:style {:flexDirection "column"}}
+       [suggestions-view]
        [view {:style {:flexDirection   "row"
                       :margin          10
                       :height          40
@@ -32,7 +34,7 @@
                                              :fontSize   14
                                              :fontFamily "Avenir-Roman"
                                              :color      "#9CBFC0"}
-                     :autoFocus             true
+                     :autoFocus             false
                      :placeholder           "Enter your message here"
                      :value                 @text
                      :onChangeText          (fn [new-text]
@@ -51,34 +53,4 @@
                 :style  {:marginTop   14
                          :marginRight 16
                          :width       17
-                         :height      14}}]]
-       [suggestions-view]])))
-
-(defn special-input [command]
-  (case command
-    :phone [text-input {:underlineColorAndroid "#9CBFC0"
-                        :style                 {:flex       1
-                                                :marginLeft 18
-                                                :lineHeight 42
-                                                :fontSize   14
-                                                :fontFamily "Avenir-Roman"
-                                                :color      "#9CBFC0"}
-                        :autoFocus             true
-                        :placeholder           "Phone input"}]
-    [text-input {:underlineColorAndroid "#9CBFC0"
-                 :style                 {:flex       1
-                                         :marginLeft 18
-                                         :lineHeight 42
-                                         :fontSize   14
-                                         :fontFamily "Avenir-Roman"
-                                         :color      "#9CBFC0"}
-                 :autoFocus             true
-                 :placeholder           "Command input"}]))
-
-(defn chat-message-new []
-  (let [input-command-atom (subscribe [:get-input-command])]
-    (fn []
-      (let [input-command @input-command-atom]
-        (if input-command
-          [special-input input-command]
-          [message-input])))))
+                         :height      14}}]]])))

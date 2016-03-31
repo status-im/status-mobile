@@ -14,8 +14,8 @@
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [reagent.core :as r]
-            [syng-im.components.chat-message :refer [chat-message]]
-            [syng-im.components.chat-message-new :refer [chat-message-new]]))
+            [syng-im.components.chat.chat-message :refer [chat-message]]
+            [syng-im.components.chat.chat-message-new :refer [chat-message-new]]))
 
 
 (defn chat [{:keys [navigator]}]
