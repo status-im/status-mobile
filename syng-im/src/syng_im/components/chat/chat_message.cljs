@@ -1,4 +1,4 @@
-(ns syng-im.components.chat-message
+(ns syng-im.components.chat.chat-message
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [android?
                                               view
