@@ -6,8 +6,8 @@
             [syng-im.components.react :refer [view text image touchable-highlight
                                               navigator list-view toolbar-android
                                               list-item]]
-            [syng-im.components.resources :as res]
             [syng-im.components.contact-list.contact :refer [contact-view]]
+            [syng-im.resources :as res]
             [syng-im.utils.logging :as log]))
 
 (defn render-row [navigator row section-id row-id]
