@@ -1,6 +1,6 @@
 (ns syng-im.components.contact-list.contact
   (:require [syng-im.components.react :refer [view text image touchable-highlight]]
-            [syng-im.components.resources :as res]
+            [syng-im.resources :as res]
             [syng-im.navigation :as nav]))
 
 (defn show-chat [navigator whisper-identity]

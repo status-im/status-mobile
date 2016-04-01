@@ -2,8 +2,8 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view text image touchable-highlight
                                               toolbar-android text-input]]
-            [syng-im.components.resources :as res]
             [syng-im.components.spinner :refer [spinner]]
+            [syng-im.resources :as res]
             [syng-im.navigation :as nav]
             [syng-im.utils.utils :refer [log toast http-post]]
             [syng-im.utils.phone-number :refer [format-phone-number]]))
