@@ -17,6 +17,18 @@
   (->> (db/updated-chat-signal-path chat-id)
        (get-in db)))
 
+(defn update-new-group-selection [db identity add?]
+  (update-in db db/new-group-path (fn [new-group]
+                                      (if add?
+                                        (conj new-group identity)
+                                        (disj new-group identity)))))
+
+(defn new-group-selection [db]
+  (get-in db db/new-group-path))
+
+(defn clear-new-group [db]
+  (assoc-in db db/new-group-path #{}))
+
 (comment
 
   (swap! re-frame.db/app-db (fn [db]

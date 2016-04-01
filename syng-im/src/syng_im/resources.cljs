@@ -12,3 +12,4 @@
 (def mic (js/require "./images/mic.png"))
 (def smile (js/require "./images/smile.png"))
 (def att (js/require "./images/att.png"))
+(def v (js/require "./images/v.png"))

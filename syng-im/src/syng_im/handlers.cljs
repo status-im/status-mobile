@@ -1,6 +1,6 @@
 (ns syng-im.handlers
   (:require
-    [re-frame.core :refer [register-handler after]]
+    [re-frame.core :refer [register-handler after dispatch]]
     [schema.core :as s :include-macros true]
     [syng-im.db :refer [app-db schema]]
     [syng-im.protocol.api :refer [init-protocol]]
@@ -19,7 +19,10 @@
 
     [syng-im.models.chats :refer [create-chat]]
     [syng-im.models.chat :refer [signal-chat-updated
-                                 set-current-chat-id]]
+                                 set-current-chat-id
+                                 update-new-group-selection
+                                 clear-new-group
+                                 new-group-selection]]
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
     [syng-im.constants :refer [text-content-type]]
@@ -155,3 +158,39 @@
 (register-handler :set-input-command
   (fn [db [_ command]]
     (commands-service/set-input-command db command)))
+
+(register-handler :show-contacts
+  (fn [db [action navigator]]
+    (log/debug action)
+    (nav-push navigator {:view-id :contact-list})
+    db))
+
+(register-handler :show-group-new
+  (fn [db [action navigator]]
+    (log/debug action)
+    (nav-push navigator {:view-id :new-group})
+    (clear-new-group db)))
+
+(register-handler :select-for-new-group
+  (fn [db [action identity add?]]
+    (log/debug action identity add?)
+    (update-new-group-selection db identity add?)))
+
+(register-handler :create-new-group
+  (fn [db [action navigator]]
+    (log/debug action)
+    (let [identities (-> (new-group-selection db)
+                         (vec))
+          group-id   (api/start-group-chat identities)
+          db         (create-chat db group-id identities)]
+      (dispatch [:show-chat group-id navigator])
+      db)))
+
+
+(comment
+
+  (.getProgress (.. js/ecc -sjcl -random))
+
+(js/window.crypto )
+  js/window
+  )

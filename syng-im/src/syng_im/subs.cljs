@@ -6,7 +6,8 @@
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
                                           chats-updated?]]
-            [syng-im.models.messages :refer [get-messages]]))
+            [syng-im.models.messages :refer [get-messages]]
+            [syng-im.models.contacts :refer [contacts-list]]))
 
 ;; -- Chat --------------------------------------------------------------
 
@@ -77,3 +78,9 @@
   (fn [db _]
     (reaction
       (get @db :contacts))))
+
+(register-sub :all-contacts
+  (fn [db _]
+    (reaction
+      (contacts-list))))
+

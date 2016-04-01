@@ -12,7 +12,8 @@
                                     :suggestions []
                                     :command nil}
              :chats                {}
-             :chats-updated-signal 0})
+             :chats-updated-signal 0
+             :new-group            #{}})
 
 
 (def protocol-initialized-path [:protocol-initialized])
@@ -23,3 +24,4 @@
 (def updated-chats-signal-path [:chats-updated-signal])
 (defn updated-chat-signal-path [chat-id]
   [:chats chat-id :chat-updated-signal])
+(def new-group-path [:new-group])
