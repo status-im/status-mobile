@@ -21,24 +21,30 @@
   [touchable-highlight {:onPress (fn []
                                    (set-command-input (keyword (:command suggestion))))}
    [view {:style {:flexDirection    "row"
-                  :marginVertical   5
-                  :marginHorizontal 10
-                  :height           20
-                  ;; :backgroundColor "white"
-                  }}
+                  :marginVertical   1
+                  :marginHorizontal 0
+                  :height           40
+                  :backgroundColor "white"}}
+    [view {:style {:flexDirection   "column"
+                   :position        "absolute"
+                   :top             10
+                   :left            60
+                   :backgroundColor (:color suggestion)
+                   :borderRadius    10}}
+     [text {:style {:marginTop -2
+                    :marginHorizontal 10
+                    :fontSize         14
+                    :fontFamily       "Avenir-Roman"
+                    :color            "white"}}
+      (:text suggestion)]]
     [text {:style {:flex       1
-                   :marginLeft 18
+                   :position   "absolute"
+                   :top        7
+                   :left       190
                    :lineHeight 18
                    :fontSize   14
                    :fontFamily "Avenir-Roman"
-                   :color      "#9CBFC0"}}
-     (:text suggestion)]
-    [text {:style {:flex       1
-                   :marginLeft 18
-                   :lineHeight 18
-                   :fontSize   14
-                   :fontFamily "Avenir-Roman"
-                   :color      "#9CBFC0"}}
+                   :color      "black"}}
      (:description suggestion)]]])
 
 (defn render-row [row section-id row-id]
@@ -50,10 +56,10 @@
       (let [suggestions @suggestions-atom]
         (when (not (empty? suggestions))
           [view {:style {:flexDirection    "row"
-                         :marginVertical   5
-                         :marginHorizontal 10
-                         :height           120
-                         :backgroundColor  "#E5F5F6"
+                         :marginVertical   1
+                         :marginHorizontal 0
+                         :height           (min 105 (* 42 (count suggestions)))
+                         :backgroundColor  "#eef2f5"
                          :borderRadius     5}}
            [list-view {:dataSource (to-datasource suggestions)
                        :renderRow  render-row

@@ -32,7 +32,6 @@
            [view {:style {:flexDirection "row"}}
             [view {:style {:flexDirection   "column"
                            :margin          10
-                           :width           120
                            :backgroundColor "blue"
                            :borderRadius    10}}
              [text {:style {:marginVertical   3
