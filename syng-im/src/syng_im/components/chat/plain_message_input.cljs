@@ -11,23 +11,23 @@
             [reagent.core :as r]))
 
 (defn plain-message-input-view []
-  (let [text    (r/atom nil)
+  (let [text    (r/atom "!")
         chat-id (subscribe [:get-current-chat-id])]
     (dispatch [:generate-suggestions @text])
     (fn []
       [view {:style {:flexDirection "column"}}
        [suggestions-view]
        [view {:style {:flexDirection   "row"
-                      :margin          10
+                      :margin          1
                       :height          40
-                      :backgroundColor "#E5F5F6"
+                      :backgroundColor "white"
                       :borderRadius    5}}
         [image {:source res/mic
                 :style  {:marginTop  11
                          :marginLeft 14
                          :width      13
                          :height     20}}]
-        [text-input {:underlineColorAndroid "#9CBFC0"
+        [text-input {:underlineColorAndroid "transparent"
                      :style                 {:flex       1
                                              :marginLeft 18
                                              :lineHeight 42
@@ -35,7 +35,7 @@
                                              :fontFamily "Avenir-Roman"
                                              :color      "#9CBFC0"}
                      :autoFocus             false
-                     :placeholder           "Enter your message here"
+                     :placeholder           "Type"
                      :value                 @text
                      :onChangeText          (fn [new-text]
                                               (dispatch [:generate-suggestions new-text])

@@ -25,7 +25,7 @@
             _          (log/debug "messages=" msgs)
             datasource (to-realm-datasource msgs)]
         [view {:style {:flex            1
-                       :backgroundColor "white"}}
+                       :backgroundColor "#eef2f5"}}
          (when android?
            ;; TODO add IOS version
            [toolbar-android {:logo          res/logo-icon
