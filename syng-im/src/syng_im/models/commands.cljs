@@ -18,7 +18,7 @@
                 :text "!phone"
                 :description "Send phone number"
                 :color "#48ba30"
-                :suggestion false}
+                :suggestion true}
                {:command :send
                 :text "!send"
                 :description "Send location"

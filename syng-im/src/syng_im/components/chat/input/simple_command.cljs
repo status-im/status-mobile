@@ -1,4 +1,4 @@
-(ns syng-im.components.chat.simple-command-input
+(ns syng-im.components.chat.input.simple-command
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [android?
                                               view
@@ -14,7 +14,7 @@
 (defn cancel-command-input []
   (dispatch [:set-input-command nil]))
 
-(defn simple-command-input-view [command input-type]
+(defn simple-command-input-view [command input-options]
   (let [message-atom    (r/atom nil)
         chat-id (subscribe [:get-current-chat-id])]
     (fn []
@@ -49,20 +49,21 @@
              [image {:source res/att
                      :style  {:width  17
                               :height 14}}]]]
-           [text-input {:style                 {:flex       1
-                                                :marginLeft 8
-                                                :lineHeight 42
-                                                :fontSize   14
-                                                :fontFamily "Avenir-Roman"
-                                                :color      "#9CBFC0"}
-                        :underlineColorAndroid "transparent"
-                        :autoFocus             true
-                        :keyboardType          input-type
-                        :value                 message
-                        :onChangeText          (fn [new-text]
-                                                 )
-                        :onSubmitEditing       (fn [e]
-                                                 )}]]]
+           [text-input (merge {:style                 {:flex       1
+                                                       :marginLeft 8
+                                                       :lineHeight 42
+                                                       :fontSize   14
+                                                       :fontFamily "Avenir-Roman"
+                                                       :color      "black"}
+                               :underlineColorAndroid "transparent"
+                               :autoFocus             true
+                               :keyboardType          "default"
+                               :value                 message
+                               :onChangeText          (fn [new-text]
+                                                        )
+                               :onSubmitEditing       (fn [e]
+                                                        )}
+                              input-options)]]]
          [touchable-highlight {:style {:marginTop   14
                                        :marginRight 16
                                        :position    "absolute"
