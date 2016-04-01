@@ -13,7 +13,10 @@
             [syng-im.resources :as res]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [reagent.core :as r]
-            [syng-im.components.chats.chat-list-item :refer [chat-list-item]]))
+            [syng-im.components.chats.chat-list-item :refer [chat-list-item]]
+            [syng-im.components.action-button :refer [action-button
+                                                      action-button-item]]
+            [syng-im.components.icons.ionicons :refer [icon]]))
 
 
 (defn chats-list [{:keys [navigator]}]
@@ -40,4 +43,21 @@
          [list-view {:dataSource datasource
                      :renderRow  (fn [row section-id row-id]
                                    (r/as-element [chat-list-item row navigator]))
-                     :style      {:backgroundColor "white"}}]]))))
+                     :style      {:backgroundColor "white"}}]
+         [action-button {:buttonColor "rgba(231,76,60,1)"}
+          [action-button-item {:title       "New Chat"
+                               :buttonColor "#9b59b6"
+                               :onPress     (fn []
+                                              (dispatch [:show-contacts navigator]))}
+           [icon {:name  "android-create"
+                  :style {:fontSize 20
+                          :height   22
+                          :color    "white"}}]]
+          [action-button-item {:title       "New Group Chat"
+                               :buttonColor "#1abc9c"
+                               :onPress     (fn []
+                                              (dispatch [:show-group-new navigator]))}
+           [icon {:name  "person-stalker"
+                  :style {:fontSize 20
+                          :height   22
+                          :color    "white"}}]]]]))))

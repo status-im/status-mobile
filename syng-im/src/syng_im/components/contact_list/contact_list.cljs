@@ -26,7 +26,7 @@
         [view {:style {:flex            1
                        :backgroundColor "white"}}
          [toolbar-android {:logo       res/logo-icon
-                           :title      "Chats"
+                           :title      "Contacts"
                            :titleColor "#4A5258"
                            :style      {:backgroundColor "white"
                                         :height          56

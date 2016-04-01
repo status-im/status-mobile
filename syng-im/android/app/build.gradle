@@ -119,6 +119,9 @@ android {
 }
 
 dependencies {
+    compile project(':randombytes')
+    compile project(':realm')
+    compile project(':react-native-vector-icons')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
@@ -127,6 +130,5 @@ dependencies {
 //    compile(name:'geth', ext:'aar')
     compile(group: 'syng-im', name: 'android-geth', version: '1.4.0-201603131817-92d65cf', ext: 'aar')
 
-    compile project(":realm")
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
