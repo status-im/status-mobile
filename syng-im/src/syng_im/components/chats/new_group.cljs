@@ -5,7 +5,8 @@
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.chats.new-group-contact :refer [new-group-contact]]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [syng-im.navigation :refer [nav-pop]]))
 
 (defn new-group [{:keys [navigator]}]
   (let [contacts   (subscribe [:all-contacts])
@@ -26,7 +27,10 @@
                                                  :icon  res/v
                                                  :show  "always"}]
                              :onActionSelected (fn [position]
-                                                 (dispatch [:create-new-group navigator]))}])
+                                                 (dispatch [:create-new-group @group-name navigator]))
+                             :navIcon          res/nav-back-icon
+                             :onIconClicked    (fn []
+                                                 (nav-pop navigator))}])
          [text-input {:underlineColorAndroid "#9CBFC0"
                       :style                 {:marginLeft  5
                                               :marginRight 5

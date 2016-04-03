@@ -23,7 +23,8 @@
                      :primaryKey :msg-id
                      :properties {:msg-id          "string"
                                   :from            "string"
-                                  :to              "string"
+                                  :to              {:type     "string"
+                                                    :optional true}
                                   :content         "string" ;; TODO make it ArrayBuffer
                                   :content-type    "string"
                                   :timestamp       "int"
@@ -121,12 +122,12 @@
 
   (write #(.create realm "msgs" (clj->js {:msg-id          "12"
                                           :content         "sdfd"
-                                          :from "sdfsd"
-                                          :chat-id "56"
-                                          :content-type "fg"
-                                          :timestamp 2
-                                          :outgoing true
-                                          :to "sfs"
+                                          :from            "sdfsd"
+                                          :chat-id         "56"
+                                          :content-type    "fg"
+                                          :timestamp       2
+                                          :outgoing        true
+                                          :to              "sfs"
                                           :delivery-status "seen"}) true))
 
   (.addListener realm "change" (fn [& args]
@@ -136,6 +137,5 @@
   ;                                   // Update UI
   ;                                   ...
   ;                                   });
-
 
   )
