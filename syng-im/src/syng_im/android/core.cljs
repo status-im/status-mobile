@@ -34,7 +34,7 @@
         (add-event-listener "hardwareBackPress" new-listener)))))
 
 (defn app-root []
-  [navigator {:initial-route (clj->js {:view-id :new-group})
+  [navigator {:initial-route (clj->js {:view-id :chat-list})
               :render-scene  (fn [route nav]
                                (log/debug "route" route)
                                (when true                   ;; nav/*nav-render*
@@ -51,6 +51,7 @@
 
 (defn init []
   (dispatch-sync [:initialize-db])
+  (dispatch [:initialize-crypt])
   (dispatch [:initialize-protocol])
   (dispatch [:load-user-phone-number])
   (dispatch [:load-syng-contacts])

@@ -26,7 +26,8 @@
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
     [syng-im.constants :refer [text-content-type]]
-    [syng-im.navigation :refer [nav-push]]))
+    [syng-im.navigation :refer [nav-push]]
+    [syng-im.utils.crypt :refer [gen-random-bytes]]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -51,6 +52,33 @@
 (register-handler :set-loading
   (fn [db [_ value]]
     (assoc db :loading value)))
+
+(register-handler :initialize-crypt
+  (fn [db _]
+    (log/debug "initializing crypt")
+    (gen-random-bytes 1024 (fn [{:keys [error buffer]}]
+                             (if error
+                               (do
+                                 (log/error "Failed to generate random bytes to initialize sjcl crypto")
+                                 (dispatch [:notify-user {:type  :error
+                                                          :error error}]))
+                               (do
+                                 (->> (.toString buffer "hex")
+                                      (.toBits (.. js/ecc -sjcl -codec -hex))
+                                      (.addEntropy (.. js/ecc -sjcl -random)))
+                                 (dispatch [:crypt-initialized])))))
+    db))
+
+(register-handler :crypt-initialized
+  (fn [db _]
+    (log/debug "crypt initialized")
+    db))
+
+(register-handler :navigate-to
+  (fn [db [action navigator route]]
+    (log/debug action route)
+    (nav-push navigator route)
+    db))
 
 ;; -- Protocol --------------------------------------------------------------
 
@@ -103,6 +131,21 @@
       (save-message chat-id msg)
       (signal-chat-updated db chat-id))))
 
+(register-handler :send-group-chat-msg
+  (fn [db [action chat-id text]]
+    (log/debug action "chat-id" chat-id "text" text)
+    (let [{msg-id     :msg-id
+           {from :from} :msg} (api/send-group-user-msg {:group-id chat-id
+                                                      :content  text})
+          msg {:msg-id       msg-id
+               :from         from
+               :to           nil
+               :content      text
+               :content-type text-content-type
+               :outgoing     true}]
+      (save-message chat-id msg)
+      (signal-chat-updated db chat-id))))
+
 ;; -- User data --------------------------------------------------------------
 
 (register-handler :set-user-phone-number
@@ -146,8 +189,9 @@
 (register-handler :show-chat
   (fn [db [action chat-id navigator]]
     (log/debug action "chat-id" chat-id)
-    (nav-push navigator {:view-id :chat})
-    (set-current-chat-id db chat-id)))
+    (let [db (set-current-chat-id db chat-id)]
+      (dispatch [:navigate-to navigator {:view-id :chat}])
+      db)))
 
 ;; -- Chat --------------------------------------------------------------
 
@@ -177,20 +221,16 @@
     (update-new-group-selection db identity add?)))
 
 (register-handler :create-new-group
-  (fn [db [action navigator]]
+  (fn [db [action group-name navigator]]
     (log/debug action)
     (let [identities (-> (new-group-selection db)
                          (vec))
           group-id   (api/start-group-chat identities)
-          db         (create-chat db group-id identities)]
+          db         (create-chat db group-id identities group-name)]
       (dispatch [:show-chat group-id navigator])
       db)))
 
 
 (comment
 
-  (.getProgress (.. js/ecc -sjcl -random))
-
-(js/window.crypto )
-  js/window
   )

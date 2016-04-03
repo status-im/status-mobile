@@ -11,8 +11,8 @@
             [reagent.core :as r]))
 
 (defn plain-message-input-view []
-  (let [text    (r/atom "!")
-        chat-id (subscribe [:get-current-chat-id])]
+  (let [text (r/atom "!")
+        chat (subscribe [:get-current-chat])]
     (dispatch [:generate-suggestions @text])
     (fn []
       [view {:style {:flexDirection "column"}}
@@ -42,7 +42,10 @@
                                               (reset! text new-text)
                                               (r/flush))
                      :onSubmitEditing       (fn [e]
-                                              (dispatch [:send-chat-msg @chat-id @text])
+                                              (let [{:keys [group-chat chat-id]} @chat]
+                                                (if group-chat
+                                                  (dispatch [:send-group-chat-msg chat-id @text])
+                                                  (dispatch [:send-chat-msg chat-id @text])))
                                               (reset! text nil))}]
         [image {:source res/smile
                 :style  {:marginTop   11

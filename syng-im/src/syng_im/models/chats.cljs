@@ -54,8 +54,12 @@
   (-> (r/get-all :chats)
       (r/sorted :timestamp :desc)))
 
+(defn chat-by-id [chat-id]
+  (-> (r/get-by-field :chats :chat-id chat-id)
+      (r/single-cljs)))
 
 (comment
+  (chat-by-id "1459693168208-31d4942e-ca3b-5c03-a397-cd7a29f777d4")
 
   (chats-list)
   (r/delete (chats-list))

@@ -94,12 +94,12 @@
 (comment
 
   (r/write #(create-contact {:phone-number     "0543072333"
-                             :whisper-identity "0x0479a5ed1f38cadfad1db6cd56c4b659b0ebe052bbe9efa950f6660058519fa4ca6be2dda66afa80de96ab00eb97a2605d5267a1e8f4c2a166ab551f6826608cdd"
+                             :whisper-identity "0x04b6552945c18ebca487c8a829365d3812a246e1cd00d775f47248a21a61bad0912409b8bd18dc0604d1df494cea001cce85098906df231d2a431067734ecc5a21"
                              :name             "Mr. Bean"
                              :photo-path       ""}))
 
   (r/write #(create-contact {:phone-number     "0544828649"
-                             :whisper-identity "0x042fc4ef6525be53a6358da6db9d9019184e0fd04b5bd67a6faa252c3d0f4efdf57bdafc2c03b39daa2d0deabe49bb727c272c59ade8857f93a6ef27be77517e9e"
+                             :whisper-identity "0x043d9e25c6cf89941849cf5e4439084a93002f757cfd49fef411d4793d888b408dfa5bc54ac5989f65da8d764dc332f06b646f3cfae194a0801f6090b272a0c56e"
                              :name             "Mr. Batman"
                              :photo-path       ""}))
 

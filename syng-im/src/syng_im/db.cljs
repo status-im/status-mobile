@@ -25,3 +25,4 @@
 (defn updated-chat-signal-path [chat-id]
   [:chats chat-id :chat-updated-signal])
 (def new-group-path [:new-group])
+

@@ -5,7 +5,8 @@
             [syng-im.models.chat :refer [current-chat-id
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
-                                          chats-updated?]]
+                                          chats-updated?
+                                          chat-by-id]]
             [syng-im.models.messages :refer [get-messages]]
             [syng-im.models.contacts :refer [contacts-list]]))
 
@@ -46,6 +47,14 @@
       (reaction
         (let [_ @chats-updated]
           (chats-list))))))
+
+(register-sub :get-current-chat
+  (fn [db _]
+    (let [current-chat-id (-> (current-chat-id @db)
+                              (reaction))]
+      (-> (when-let [chat-id @current-chat-id]
+            (chat-by-id chat-id))
+          (reaction)))))
 
 ;; -- User data --------------------------------------------------------------
 
