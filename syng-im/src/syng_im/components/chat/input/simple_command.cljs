@@ -14,11 +14,16 @@
 (defn cancel-command-input []
   (dispatch [:set-input-command nil]))
 
+(defn send-command [chat-id command text]
+  (dispatch [:send-chat-command chat-id (:command command) text])
+  (cancel-command-input))
+
 (defn simple-command-input-view [command input-options]
-  (let [message-atom    (r/atom nil)
-        chat-id (subscribe [:get-current-chat-id])]
+  (let [message-atom (r/atom nil)
+        chat-id-atom (subscribe [:get-current-chat-id])]
     (fn []
-      (let [message @message-atom]
+      (let [message @message-atom
+            chat-id @chat-id-atom]
         [view {:style {:flexDirection "row"}}
          [view {:style {:flex 1
                         :flexDirection   "column"
@@ -60,9 +65,10 @@
                                :keyboardType          "default"
                                :value                 message
                                :onChangeText          (fn [new-text]
-                                                        )
+                                                        (reset! message-atom new-text))
                                :onSubmitEditing       (fn [e]
-                                                        )}
+                                                        (send-command chat-id command message)
+                                                        (reset! message-atom nil))}
                               input-options)]]]
          [touchable-highlight {:style {:marginTop   14
                                        :marginRight 16

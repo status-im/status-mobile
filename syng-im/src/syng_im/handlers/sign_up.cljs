@@ -1,11 +1,12 @@
 (ns syng-im.handlers.sign-up
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.db :as db]
-            ;; [syng-im.models.commands :refer [commands suggestions]]
+            [syng-im.models.commands :as commands]
             [syng-im.utils.utils :refer [log on-error http-post toast]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.random :as random]
-            [syng-im.constants :refer [text-content-type]]))
+            [syng-im.constants :refer [text-content-type
+                                       content-type-command]]))
 
 (defn intro [db]
   (dispatch [:received-msg {:msg-id "1"
@@ -35,4 +36,13 @@
    :to           "console"
    :content      text
    :content-type text-content-type
+   :outgoing     true})
+
+;; TODO store command key in a separate field
+(defn send-console-command [command content]
+  {:msg-id       (random/id)
+   :from         "me"
+   :to           "console"
+   :content      (commands/format-command-msg-content command content)
+   :content-type content-type-command
    :outgoing     true})

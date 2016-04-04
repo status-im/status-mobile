@@ -6,3 +6,4 @@
 ;; (def server-address "http://10.0.3.2:3000/")
 
 (def text-content-type "text/plain")
+(def content-type-command "command")

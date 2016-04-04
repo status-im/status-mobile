@@ -1,5 +1,7 @@
 (ns syng-im.models.commands
-  (:require [cljs.core.async :as async :refer [chan put! <! >!]]
+  (:require [clojure.string :refer [join split]]
+            [clojure.walk :refer [stringify-keys keywordize-keys]]
+            [cljs.core.async :as async :refer [chan put! <! >!]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.utils.utils :refer [log toast]]
             [syng-im.persistence.realm :as realm]))
@@ -44,3 +46,19 @@
 
 (defn get-command [command-key]
   (first (filter #(= command-key (:command %)) commands)))
+
+(defn- map-to-str
+  [m]
+  (join ";" (map #(join "=" %) (stringify-keys m))))
+
+(defn- str-to-map
+  [s]
+  (keywordize-keys (apply hash-map (split s #"[;=]"))))
+
+;; TODO store command key in separate field
+(defn format-command-msg-content [command content]
+  (map-to-str {:command (name command) :content content}))
+
+;; TODO temp
+(defn parse-command-msg-content [content]
+  (update (str-to-map content) :command #(get-command (keyword %))))
