@@ -34,8 +34,8 @@
                                              :fontSize   14
                                              :fontFamily "Avenir-Roman"
                                              :color      "#9CBFC0"}
-                     :autoFocus             false
-                     :placeholder           "Type"
+                     :autoFocus             true
+                     :placeholder           "Type your message here"
                      :value                 @text
                      :onChangeText          (fn [new-text]
                                               (dispatch [:generate-suggestions new-text])
