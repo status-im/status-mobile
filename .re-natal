@@ -1,17 +1,21 @@
 {
-  "name": "Messenger",
-  "interface": "om-next",
-  "androidHost": "localhost",
+  "name": "SyngIm",
+  "interface": "reagent",
+  "androidHost": "10.0.3.2",
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
     "awesome-phonenumber",
     "realm",
     "react-native-loading-spinner-overlay",
-    "react-native-i18n"
+    "react-native-i18n",
+    "realm/react-native",
+    "react-native-action-button",
+    "react-native-vector-icons/Ionicons",
+    "react-native-circle-checkbox",
+    "react-native-randombytes"
   ],
   "imageDirs": [
     "images"
-  ],
-  "iosHost": "localhost"
+  ]
 }

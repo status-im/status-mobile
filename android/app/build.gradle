@@ -26,9 +26,7 @@ import com.android.build.OutputFile
  *
  *   // whether to bundle JS and assets in another build variant (if configured).
  *   // See http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Build-Variants
- *   // The configuration property can be in the following formats
- *   //         'bundleIn${productFlavor}${buildType}'
- *   //         'bundleIn${buildType}'
+ *   // The configuration property is in the format 'bundleIn${productFlavor}${buildType}'
  *   // bundleInFreeDebug: true,
  *   // bundleInPaidRelease: true,
  *   // bundleInBeta: true,
@@ -62,7 +60,8 @@ import com.android.build.OutputFile
 apply from: "react.gradle"
 
 /**
- * Set this to true to create two separate APKs instead of one:
+ * Set this to true to create three separate APKs instead of one:
+ *   - A universal APK that works on all devices
  *   - An APK that only works on ARM devices
  *   - An APK that only works on x86 devices
  * The advantage is the size of the APK is reduced by about 4MB.
@@ -81,7 +80,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.messenger"
+        applicationId "com.syngim"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
@@ -92,9 +91,9 @@ android {
     }
     splits {
         abi {
-            reset()
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
+            universalApk false
+            reset()
             include "armeabi-v7a", "x86"
         }
     }
@@ -120,6 +119,9 @@ android {
 }
 
 dependencies {
+    compile project(':randombytes')
+    compile project(':realm')
+    compile project(':react-native-vector-icons')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
@@ -128,6 +130,5 @@ dependencies {
 //    compile(name:'geth', ext:'aar')
     compile(group: 'syng-im', name: 'android-geth', version: '1.4.0-201603131817-92d65cf', ext: 'aar')
 
-    compile project(":realm")
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
