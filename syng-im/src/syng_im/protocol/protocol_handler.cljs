@@ -23,11 +23,13 @@
                                             (dispatch [:msg-delivery-failed msg-id]))
                          :new-group-chat (let [{:keys [from group-id identities group-name]} event]
                                            (dispatch [:group-chat-invite-received from group-id identities group-name]))
+                         :new-group-msg (let [{from     :from
+                                               group-id :group-id
+                                               payload  :payload} event]
+                                          (dispatch [:group-received-msg (assoc payload :from from
+                                                                                        :group-id group-id)]))
                          ;:group-chat-invite-acked (let [{:keys [from group-id]} event]
                          ;                           (add-to-chat "group-chat" ":" (str "Received ACK for group chat invitation from " from " for group-id: " group-id)))
-                         ;:new-group-msg (let [{from               :from
-                         ;                      {content :content} :payload} event]
-                         ;                 (add-to-chat "group-chat" from content))
                          ;:group-new-participant (let [{:keys [group-id identity from]} event]
                          ;                         (add-to-chat "group-chat" ":" (str (shorten from) " added " (shorten identity) " to group chat"))
                          ;                         (add-identity-to-group-list identity))

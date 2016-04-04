@@ -102,6 +102,12 @@
         (create-chat chat-id [chat-id] false)
         (signal-chat-updated chat-id))))
 
+(register-handler :group-received-msg
+  (fn [db [action {chat-id :group-id :as msg}]]
+    (log/debug action "msg" msg)
+    (save-message chat-id msg)
+    (signal-chat-updated db chat-id)))
+
 (register-handler :acked-msg
   (fn [db [_ from msg-id]]
     (update-message! {:msg-id          msg-id
@@ -134,9 +140,9 @@
 (register-handler :send-group-chat-msg
   (fn [db [action chat-id text]]
     (log/debug action "chat-id" chat-id "text" text)
-    (let [{msg-id     :msg-id
+    (let [{msg-id       :msg-id
            {from :from} :msg} (api/send-group-user-msg {:group-id chat-id
-                                                      :content  text})
+                                                        :content  text})
           msg {:msg-id       msg-id
                :from         from
                :to           nil
