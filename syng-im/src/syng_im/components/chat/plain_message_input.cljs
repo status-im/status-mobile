@@ -42,7 +42,7 @@
                                               (reset! text new-text)
                                               (r/flush))
                      :onSubmitEditing       (fn [e]
-                                              (let [{:keys [group-chat chat-id]} @chat]
+                                              (let [{:keys [group-chat chat-id]} (:chat-id @chat)]
                                                 (if group-chat
                                                   (dispatch [:send-group-chat-msg chat-id @text])
                                                   (dispatch [:send-chat-msg chat-id @text])))
