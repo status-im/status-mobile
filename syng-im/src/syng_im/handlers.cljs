@@ -99,7 +99,7 @@
     (log/debug action "msg" msg)
     (save-message chat-id msg)
     (-> db
-        (create-chat chat-id [chat-id])
+        (create-chat chat-id [chat-id] false)
         (signal-chat-updated chat-id))))
 
 (register-handler :acked-msg
@@ -225,11 +225,15 @@
     (log/debug action)
     (let [identities (-> (new-group-selection db)
                          (vec))
-          group-id   (api/start-group-chat identities)
-          db         (create-chat db group-id identities group-name)]
+          group-id   (api/start-group-chat identities group-name)
+          db         (create-chat db group-id identities true group-name)]
       (dispatch [:show-chat group-id navigator])
       db)))
 
+(register-handler :group-chat-invite-received
+  (fn [db [action from group-id identities group-name]]
+    (log/debug action from group-id identities)
+    (create-chat db group-id identities true group-name)))
 
 (comment
 
