@@ -31,10 +31,7 @@
 
 (register-sub :get-input-command
   (fn [db _]
-    (reaction (get-in @db db/input-command-path))
-    ;; (let [input-command-name ]
-    ;;   (reaction @input-command-name))
-    ))
+    (reaction (get-in @db db/input-command-path))))
 
 ;; -- Chats list --------------------------------------------------------------
 

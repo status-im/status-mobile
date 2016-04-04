@@ -7,10 +7,12 @@
                                               touchable-highlight
                                               navigator
                                               toolbar-android]]
+            [syng-im.models.commands :as commands]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
-            [syng-im.constants :refer [text-content-type]]))
+            [syng-im.constants :refer [text-content-type
+                                       content-type-command]]))
 
 
 (defn message-date [{:keys [date]}]
@@ -60,6 +62,29 @@
                    :lineHeight    15}}
      "03:39"]]])
 
+
+(defn message-content-command [content]
+  (let [{:keys [command content]} (commands/parse-command-msg-content content)]
+    [view {:style {:flexDirection "column"}}
+     [view {:style {:margin          10
+                    :backgroundColor (:color command)
+                    :borderRadius    10}}
+      [text {:style {:marginTop -2
+                     :marginHorizontal 10
+                     :fontSize         14
+                     :fontFamily       "Avenir-Roman"
+                     :color           "white"}}
+       (:text command)]]
+     [text {:style {:marginTop -2
+                     :marginHorizontal 10
+                     :fontSize         14
+                     :fontFamily       "Avenir-Roman"
+                     :color           "black"}}
+      ;; TODO isn't smart
+       (if (= (:command command) :keypair-password)
+         "******"
+         content)]]))
+
 (defn message-content [{:keys [content-type content outgoing]}]
   [view {:style (merge {:borderRadius 6}
                        (if (= content-type text-content-type)
@@ -70,13 +95,16 @@
                        (if outgoing
                          {:backgroundColor "#D3EEEF"}
                          {:backgroundColor "#FBF6E3"}))}
-   (if (= content-type text-content-type)
+   (cond
+     (= content-type text-content-type)
      [text {:style {:fontSize   14
                     :fontFamily "Avenir-Roman"
                     :color      "#4A5258"}}
       content]
-     [message-content-audio {:content      content
-                             :content-type content-type}])])
+     (= content-type content-type-command)
+     [message-content-command content]
+     :else [message-content-audio {:content      content
+                                   :content-type content-type}])])
 
 (defn message-delivery-status [{:keys [delivery-status]}]
   [view {:style {:flexDirection "row"

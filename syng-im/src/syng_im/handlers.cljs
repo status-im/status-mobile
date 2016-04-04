@@ -103,6 +103,25 @@
       (save-message chat-id msg)
       (signal-chat-updated db chat-id))))
 
+(register-handler :send-chat-command
+  (fn [db [action chat-id command content]]
+    (log/debug action "chat-id" chat-id "command" command "content" content)
+    (let [msg (if (= chat-id "console")
+                (sign-up-service/send-console-command command content)
+                ;; TODO handle command, now sends as plain message
+                (let [{msg-id :msg-id
+                       {from :from
+                        to   :to} :msg} (api/send-user-msg {:to      chat-id
+                                                            :content content})]
+                  {:msg-id       msg-id
+                   :from         from
+                   :to           to
+                   :content      content
+                   :content-type text-content-type
+                   :outgoing     true}))]
+      (save-message chat-id msg)
+      (signal-chat-updated db chat-id))))
+
 ;; -- User data --------------------------------------------------------------
 
 (register-handler :set-user-phone-number
