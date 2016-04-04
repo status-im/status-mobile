@@ -5,7 +5,8 @@
             [syng-im.db :as db]
             [syng-im.utils.logging :as log]))
 
-(defn save-message [chat-id {:keys [from to msg-id content content-type outgoing] :or {outgoing false} :as msg}]
+(defn save-message [chat-id {:keys [from to msg-id content content-type outgoing] :or {outgoing false
+                                                                                       to       nil} :as msg}]
   (when-not (r/exists? :msgs :msg-id msg-id)
     (r/write
       (fn []
