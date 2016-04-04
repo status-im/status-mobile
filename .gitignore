@@ -25,7 +25,7 @@ project.xcworkspace
 # Android/IJ
 #
 .idea
-.gradle/
+.gradle
 local.properties
 
 # node.js
@@ -42,8 +42,3 @@ target/
 # Figwheel
 #
 figwheel_server.log
-.nrepl-port
-
-# Mercurial
-.hg/
-.hgignore

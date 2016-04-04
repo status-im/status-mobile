@@ -1,21 +1,14 @@
-# messenger
+# syng-im
 
-## Setup
+A Clojure library designed to ... well, that part is up to you.
 
-https://github.com/drapanjanas/re-natal
+## Usage
 
+FIXME
 
-Can be required after pulling changes:
+## License
 
-switching between android device
+Copyright © 2016 FIXME
 
-https://github.com/drapanjanas/re-natal#switching-between-android-devices
-
-
-Change `server-address` value at `/src/messenger/android/utils.cljs`
-
-## Issues
-
-`Requiring unknown module "react"`
-
-Solution: https://github.com/exponentjs/react-native-invertible-scroll-view/issues/20
+Distributed under the Eclipse Public License either version 1.0 or (at
+your option) any later version.

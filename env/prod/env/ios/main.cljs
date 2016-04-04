@@ -1,4 +1,6 @@
-(ns env.ios.main
-  (:require [messenger.ios.core :as core]))
+ (ns env.ios.main
+  (:require [syng-im.ios.core :as core]))
 
-(core/init)
+ (core/init)
+
+
