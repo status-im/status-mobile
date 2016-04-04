@@ -32,8 +32,7 @@
   (let [input-command-atom (subscribe [:get-input-command])]
     (fn []
       (let [input-command @input-command-atom]
-        [view ;; TODO temp to show input above react-native warning 
-         {:style {:marginBottom 50}}
+        [view
          (if input-command
            [special-input-view input-command]
            [plain-message-input-view])]))))
