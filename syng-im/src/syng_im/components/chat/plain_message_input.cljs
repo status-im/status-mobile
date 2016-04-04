@@ -11,7 +11,7 @@
             [reagent.core :as r]))
 
 (defn plain-message-input-view []
-  (let [text    (r/atom "!")
+  (let [text    (r/atom "")
         chat-id (subscribe [:get-current-chat-id])]
     (dispatch [:generate-suggestions @text])
     (fn []

@@ -16,6 +16,7 @@
     [syng-im.handlers.contacts :as contacts-service]
     [syng-im.handlers.suggestions :as suggestions-service]
     [syng-im.handlers.commands :as commands-service]
+    [syng-im.handlers.sign-up :as sign-up-service]
 
     [syng-im.models.chats :refer [create-chat]]
     [syng-im.models.chat :refer [signal-chat-updated
@@ -87,16 +88,18 @@
 (register-handler :send-chat-msg
   (fn [db [action chat-id text]]
     (log/debug action "chat-id" chat-id "text" text)
-    (let [{msg-id     :msg-id
-           {from :from
-            to   :to} :msg} (api/send-user-msg {:to      chat-id
-                                                :content text})
-          msg {:msg-id       msg-id
-               :from         from
-               :to           to
-               :content      text
-               :content-type text-content-type
-               :outgoing     true}]
+    (let [msg (if (= chat-id "console")
+                (sign-up-service/send-console-msg text)
+                (let [{msg-id :msg-id
+                       {from :from
+                        to   :to} :msg} (api/send-user-msg {:to      chat-id
+                                                            :content text})]
+                  {:msg-id       msg-id
+                   :from         from
+                   :to           to
+                   :content      text
+                   :content-type text-content-type
+                   :outgoing     true}))]
       (save-message chat-id msg)
       (signal-chat-updated db chat-id))))
 
@@ -145,6 +148,12 @@
     (log/debug action "chat-id" chat-id)
     (nav-push navigator {:view-id :chat})
     (set-current-chat-id db chat-id)))
+
+(register-handler :set-sign-up-chat
+  (fn [db [_]]
+    (-> db
+        (set-current-chat-id "console")
+        sign-up-service/intro)))
 
 ;; -- Chat --------------------------------------------------------------
 
