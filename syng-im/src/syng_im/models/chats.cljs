@@ -30,9 +30,9 @@
       chat-id))
 
 (defn create-chat
-  ([db chat-id identities]
-   (create-chat db chat-id identities nil))
-  ([db chat-id identities chat-name]
+  ([db chat-id identities group-chat?]
+   (create-chat db chat-id identities group-chat? nil))
+  ([db chat-id identities group-chat? chat-name]
    (if (r/exists? :chats :chat-id chat-id)
      db
      (let [chat-name (or chat-name
@@ -40,8 +40,7 @@
            _         (log/debug "creating chat" chat-name)]
        (r/write
          (fn []
-           (let [group-chat? (> (count identities) 1)
-                 contacts    (mapv (fn [ident]
+           (let [contacts    (mapv (fn [ident]
                                      {:identity ident}) identities)]
              (r/create :chats {:chat-id    chat-id
                                :name       chat-name
