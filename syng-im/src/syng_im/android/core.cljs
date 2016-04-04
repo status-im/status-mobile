@@ -12,8 +12,10 @@
             [syng-im.components.sign-up :refer [sign-up-view]]
             [syng-im.components.sign-up-confirm :refer [sign-up-confirm-view]]
             [syng-im.components.chats.chats-list :refer [chats-list]]
+            [syng-im.components.chats.new-group :refer [new-group]]
             [syng-im.utils.logging :as log]
-            [syng-im.navigation :as nav]))
+            [syng-im.navigation :as nav]
+            [syng-im.utils.encryption]))
 
 (def back-button-handler (cljs/atom {:nav     nil
                                      :handler nil}))
@@ -32,8 +34,7 @@
         (add-event-listener "hardwareBackPress" new-listener)))))
 
 (defn app-root []
-  [navigator {:initial-route (clj->js {:view-id ;:chat-list
-                                       :chat})
+  [navigator {:initial-route (clj->js {:view-id :chat-list})
               :render-scene  (fn [route nav]
                                (log/debug "route" route)
                                (when true                   ;; nav/*nav-render*
@@ -42,6 +43,7 @@
                                    (init-back-button-handler! nav)
                                    (case view-id
                                      :chat-list (r/as-element [chats-list {:navigator nav}])
+                                     :new-group (r/as-element [new-group {:navigator nav}])
                                      :contact-list (r/as-element [contact-list {:navigator nav}])
                                      :chat (r/as-element [chat {:navigator nav}])
                                      :sign-up (r/as-element [sign-up-view {:navigator nav}])
@@ -49,6 +51,7 @@
 
 (defn init []
   (dispatch-sync [:initialize-db])
+  (dispatch [:initialize-crypt])
   (dispatch [:initialize-protocol])
   (dispatch [:load-user-phone-number])
   (dispatch [:load-syng-contacts])
