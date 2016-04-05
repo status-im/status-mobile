@@ -29,6 +29,9 @@
 (defn clear-new-group [db]
   (assoc-in db db/new-group-path #{}))
 
+(defn set-chat-input-text [db text]
+  (assoc-in db (db/chat-input-text-path (current-chat-id db)) text))
+
 (comment
 
   (swap! re-frame.db/app-db (fn [db]

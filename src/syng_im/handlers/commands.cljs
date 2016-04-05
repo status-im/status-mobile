@@ -5,5 +5,12 @@
             [syng-im.utils.utils :refer [log on-error http-post]]
             [syng-im.utils.logging :as log]))
 
-(defn set-input-command [db command]
-  (assoc-in db db/input-command-path (get-command command)))
+(defn set-chat-command-content [db content]
+  (assoc-in db (db/chat-command-content-path (get-in db db/current-chat-id-path))
+            content))
+
+(defn set-chat-command [db command-key]
+  (-> db
+      (set-chat-command-content nil)
+      (assoc-in (db/chat-command-path (get-in db db/current-chat-id-path))
+             (get-command command-key))))
