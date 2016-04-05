@@ -29,10 +29,10 @@
     [default-command-input-view command]))
 
 (defn chat-message-new []
-  (let [input-command-atom (subscribe [:get-input-command])]
+  (let [command-atom (subscribe [:get-chat-command])]
     (fn []
-      (let [input-command @input-command-atom]
+      (let [command @command-atom]
         [view
-         (if input-command
-           [special-input-view input-command]
+         (if command
+           [special-input-view command]
            [plain-message-input-view])]))))

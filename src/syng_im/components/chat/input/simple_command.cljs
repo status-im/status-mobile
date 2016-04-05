@@ -12,18 +12,21 @@
             [reagent.core :as r]))
 
 (defn cancel-command-input []
-  (dispatch [:set-input-command nil]))
+  (dispatch [:set-chat-command nil]))
+
+(defn set-input-message [message]
+  (dispatch [:set-chat-command-content message]))
 
 (defn send-command [chat-id command text]
   (dispatch [:send-chat-command chat-id (:command command) text])
   (cancel-command-input))
 
 (defn simple-command-input-view [command input-options]
-  (let [message-atom (r/atom nil)
-        chat-id-atom (subscribe [:get-current-chat-id])]
-    (fn []
-      (let [message @message-atom
-            chat-id @chat-id-atom]
+  (let [chat-id-atom (subscribe [:get-current-chat-id])
+        message-atom (subscribe [:get-chat-command-content])]
+    (fn [command input-options]
+      (let [chat-id @chat-id-atom
+            message @message-atom]
         [view {:style {:flexDirection "row"}}
          [view {:style {:flex 1
                         :flexDirection   "column"
@@ -63,13 +66,13 @@
                                :underlineColorAndroid "transparent"
                                :autoFocus             true
                                :keyboardType          "default"
-                               :value                 message
                                :onChangeText          (fn [new-text]
-                                                        (reset! message-atom new-text))
+                                                        (set-input-message new-text))
                                :onSubmitEditing       (fn [e]
                                                         (send-command chat-id command message)
-                                                        (reset! message-atom nil))}
-                              input-options)]]]
+                                                        (set-input-message nil))}
+                              input-options)
+            message]]]
          [touchable-highlight {:style {:marginTop   14
                                        :marginRight 16
                                        :position    "absolute"

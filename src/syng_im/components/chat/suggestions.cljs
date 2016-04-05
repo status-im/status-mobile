@@ -15,7 +15,7 @@
             [syng-im.utils.logging :as log]))
 
 (defn set-command-input [command]
-  (dispatch [:set-input-command command]))
+  (dispatch [:set-chat-command command]))
 
 (defn suggestion-list-item [suggestion]
   [touchable-highlight {:onPress (fn []

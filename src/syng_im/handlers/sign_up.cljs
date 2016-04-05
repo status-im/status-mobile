@@ -27,7 +27,7 @@
                             :outgoing false
                             :from "console"
                             :to "me"}])
-  (dispatch [:set-input-command :keypair-password])
+  (dispatch [:set-chat-command :keypair-password])
   db)
 
 (defn send-console-msg [text]

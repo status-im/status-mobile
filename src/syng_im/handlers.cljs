@@ -14,8 +14,8 @@
                                      message-by-id]]
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
-    [syng-im.handlers.suggestions :as suggestions-service]
-    [syng-im.handlers.commands :as commands-service]
+    [syng-im.handlers.commands :refer [set-chat-command
+                                       set-chat-command-content]]
     [syng-im.handlers.sign-up :as sign-up-service]
 
     [syng-im.models.chats :refer [create-chat]]
@@ -23,7 +23,8 @@
                                  set-current-chat-id
                                  update-new-group-selection
                                  clear-new-group
-                                 new-group-selection]]
+                                 new-group-selection
+                                 set-chat-input-text]]
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
     [syng-im.constants :refer [text-content-type]]
@@ -229,13 +230,17 @@
 
 ;; -- Chat --------------------------------------------------------------
 
-(register-handler :generate-suggestions
+(register-handler :set-chat-input-text
   (fn [db [_ text]]
-    (suggestions-service/generate-suggestions db text)))
+    (set-chat-input-text db text)))
 
-(register-handler :set-input-command
-  (fn [db [_ command]]
-    (commands-service/set-input-command db command)))
+(register-handler :set-chat-command
+  (fn [db [_ command-key]]
+    (set-chat-command db command-key)))
+
+(register-handler :set-chat-command-content
+  (fn [db [_ content]]
+    (set-chat-command-content db content)))
 
 (register-handler :show-contacts
   (fn [db [action navigator]]
