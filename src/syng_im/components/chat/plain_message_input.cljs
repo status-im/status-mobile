@@ -37,7 +37,7 @@
                                               :fontSize   14
                                               :fontFamily "Avenir-Roman"
                                               :color      "#9CBFC0"}
-                      :autoFocus             true
+                      :autoFocus             false
                       :placeholder           "Type your message here"
                       :onChangeText          (fn [new-text]
                                                (set-input-message new-text))

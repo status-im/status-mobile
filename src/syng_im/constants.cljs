@@ -7,3 +7,4 @@
 
 (def text-content-type "text/plain")
 (def content-type-command "command")
+(def content-type-command-request "command-request")

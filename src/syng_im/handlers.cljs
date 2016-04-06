@@ -144,7 +144,8 @@
 (register-handler :send-chat-command
   (fn [db [action chat-id command content]]
     (log/debug action "chat-id" chat-id "command" command "content" content)
-    (let [msg (if (= chat-id "console")
+    (let [db (set-chat-input-text db nil)
+          msg (if (= chat-id "console")
                 (sign-up-service/send-console-command command content)
                 ;; TODO handle command, now sends as plain message
                 (let [{msg-id :msg-id
