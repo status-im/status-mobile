@@ -69,42 +69,45 @@
      [view {:style {:margin          10
                     :backgroundColor (:color command)
                     :borderRadius    10}}
-      [text {:style {:marginTop -2
+      [text {:style {:marginTop        -2
                      :marginHorizontal 10
                      :fontSize         14
                      :fontFamily       "Avenir-Roman"
-                     :color           "white"}}
+                     :color            "white"}}
        (:text command)]]
-     [text {:style {:marginTop -2
-                     :marginHorizontal 10
-                     :fontSize         14
-                     :fontFamily       "Avenir-Roman"
-                     :color           "black"}}
+     [text {:style {:marginTop        -2
+                    :marginHorizontal 10
+                    :fontSize         14
+                    :fontFamily       "Avenir-Roman"
+                    :color            "black"}}
       ;; TODO isn't smart
-       (if (= (:command command) :keypair-password)
-         "******"
-         content)]]))
+      (if (= (:command command) :keypair-password)
+        "******"
+        content)]]))
 
-(defn message-content [{:keys [content-type content outgoing]}]
-  [view {:style (merge {:borderRadius 6}
-                       (if (= content-type text-content-type)
-                         {:paddingVertical   12
-                          :paddingHorizontal 16}
-                         {:paddingVertical   14
-                          :paddingHorizontal 10})
-                       (if outgoing
-                         {:backgroundColor "#D3EEEF"}
-                         {:backgroundColor "#FBF6E3"}))}
-   (cond
-     (= content-type text-content-type)
-     [text {:style {:fontSize   14
-                    :fontFamily "Avenir-Roman"
-                    :color      "#4A5258"}}
-      content]
-     (= content-type content-type-command)
-     [message-content-command content]
-     :else [message-content-audio {:content      content
-                                   :content-type content-type}])])
+(defn message-content [{:keys [content-type content outgoing text-color background-color]}]
+  (let [_ (log/debug color)]
+    [view {:style (merge {:borderRadius 6}
+                         (if (= content-type text-content-type)
+                           {:paddingVertical   12
+                            :paddingHorizontal 16}
+                           {:paddingVertical   14
+                            :paddingHorizontal 10})
+                         (if outgoing
+                           {:backgroundColor "#D3EEEF"}
+                           {:backgroundColor background-color}))}
+     (cond
+       (= content-type text-content-type)
+       [text {:style (merge {:fontSize   14
+                             :fontFamily "Avenir-Roman"}
+                            (if outgoing
+                              {:color "#4A5258"}
+                              {:color text-color}))}
+        content]
+       (= content-type content-type-command)
+       [message-content-command content]
+       :else [message-content-audio {:content      content
+                                     :content-type content-type}])]))
 
 (defn message-delivery-status [{:keys [delivery-status]}]
   [view {:style {:flexDirection "row"
@@ -125,7 +128,7 @@
       :seen "Seen"
       :failed "Failed")]])
 
-(defn message-body [{:keys [msg-id content content-type outgoing delivery-status]}]
+(defn message-body [{:keys [msg-id content content-type outgoing delivery-status text-color background-color]}]
   [view {:style (merge {:flexDirection  "column"
                         :width          260
                         :marginVertical 5}
@@ -134,18 +137,22 @@
                           :alignItems "flex-end"}
                          {:alignSelf  "flex-start"
                           :alignItems "flex-start"}))}
-   [message-content {:content-type content-type
-                     :content      content
-                     :outgoing     outgoing}]
+   [message-content {:content-type     content-type
+                     :content          content
+                     :outgoing         outgoing
+                     :text-color       text-color
+                     :background-color background-color}]
    (when (and outgoing delivery-status)
      [message-delivery-status {:delivery-status delivery-status}])])
 
-(defn chat-message [{:keys [msg-id content content-type outgoing delivery-status date new-day] :as msg}]
+(defn chat-message [{:keys [msg-id content content-type outgoing delivery-status date new-day text-color background-color] :as msg}]
   [view {:paddingHorizontal 15}
    (when new-day
      [message-date {:date date}])
-   [message-body {:msg-id          msg-id
-                  :content         content
-                  :content-type    content-type
-                  :outgoing        outgoing
-                  :delivery-status (keyword delivery-status)}]])
+   [message-body {:msg-id           msg-id
+                  :content          content
+                  :content-type     content-type
+                  :outgoing         outgoing
+                  :text-color       text-color
+                  :background-color background-color
+                  :delivery-status  (keyword delivery-status)}]])
