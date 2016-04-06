@@ -69,8 +69,7 @@
                                :onChangeText          (fn [new-text]
                                                         (set-input-message new-text))
                                :onSubmitEditing       (fn [e]
-                                                        (send-command chat-id command message)
-                                                        (set-input-message nil))}
+                                                        (send-command chat-id command message))}
                               input-options)
             message]]]
          [touchable-highlight {:style {:marginTop   14
@@ -79,7 +78,7 @@
                                        :right       20
                                        :bottom      20}
                                :onPress (fn []
-                                          (cancel-command-input))}
+                                          (send-command chat-id command message))}
           [image {:source res/att
                   :style  {:width  34
                            :height 28}}]]]))))

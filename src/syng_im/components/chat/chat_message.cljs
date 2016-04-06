@@ -12,7 +12,8 @@
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
             [syng-im.constants :refer [text-content-type
-                                       content-type-command]]))
+                                       content-type-command
+                                       content-type-command-request]]))
 
 
 (defn message-date [{:keys [date]}]
@@ -66,45 +67,80 @@
 (defn message-content-command [content]
   (let [{:keys [command content]} (commands/parse-command-msg-content content)]
     [view {:style {:flexDirection "column"}}
-     [view {:style {:margin          10
+     [view {:style {:marginTop       -5
+                    :marginLeft      0
                     :backgroundColor (:color command)
                     :borderRadius    10}}
-      [text {:style {:marginTop -2
+      [text {:style {:marginTop        0
                      :marginHorizontal 10
                      :fontSize         14
                      :fontFamily       "Avenir-Roman"
-                     :color           "white"}}
+                     :color            "white"}}
        (:text command)]]
-     [text {:style {:marginTop -2
-                     :marginHorizontal 10
-                     :fontSize         14
-                     :fontFamily       "Avenir-Roman"
-                     :color           "black"}}
+     [text {:style {:marginTop        5
+                    :marginHorizontal 0
+                    :fontSize         14
+                    :fontFamily       "Avenir-Roman"
+                    :color           "black"}}
       ;; TODO isn't smart
-       (if (= (:command command) :keypair-password)
-         "******"
-         content)]]))
+      (if (= (:command command) :keypair-password)
+        "******"
+        content)]]))
+
+(defn set-chat-command [command]
+  (dispatch [:set-chat-command (:command command)]))
+
+(defn message-content-command-request [content outgoing]
+  (let [{:keys [command content]} (commands/parse-command-request-msg-content content)]
+    [view {:style {:marginTop 10}}
+     [view {:style (merge {:borderRadius      6
+                           :paddingVertical   12
+                           :paddingHorizontal 16}
+                          (if outgoing
+                            {:backgroundColor "#D3EEEF"}
+                            {:backgroundColor "#FBF6E3"}))}
+      [text {:style {:fontSize   14
+                     :fontFamily "Avenir-Roman"
+                     :color      "#4A5258"}}
+       content]]
+     [touchable-highlight {:style {:position    "absolute"
+                                   :top         -15
+                                   :left        20}
+                           :onPress (fn []
+                                      (set-chat-command command))}
+      [view {:style {:width           30
+                     :height          30
+                     :borderRadius    50
+                     :backgroundColor (:color command)}}
+       [image {:source res/att
+               :style  {:width  17
+                        :height 14
+                        :position "absolute"
+                        :top 8
+                        :left 6}}]]]]))
 
 (defn message-content [{:keys [content-type content outgoing]}]
-  [view {:style (merge {:borderRadius 6}
-                       (if (= content-type text-content-type)
-                         {:paddingVertical   12
-                          :paddingHorizontal 16}
-                         {:paddingVertical   14
-                          :paddingHorizontal 10})
-                       (if outgoing
-                         {:backgroundColor "#D3EEEF"}
-                         {:backgroundColor "#FBF6E3"}))}
-   (cond
-     (= content-type text-content-type)
-     [text {:style {:fontSize   14
-                    :fontFamily "Avenir-Roman"
-                    :color      "#4A5258"}}
-      content]
-     (= content-type content-type-command)
-     [message-content-command content]
-     :else [message-content-audio {:content      content
-                                   :content-type content-type}])])
+  (if (= content-type content-type-command-request)
+    [message-content-command-request content outgoing]
+    [view {:style (merge {:borderRadius 6}
+                         (if (= content-type text-content-type)
+                           {:paddingVertical   12
+                            :paddingHorizontal 16}
+                           {:paddingVertical   14
+                            :paddingHorizontal 10})
+                         (if outgoing
+                           {:backgroundColor "#D3EEEF"}
+                           {:backgroundColor "#FBF6E3"}))}
+     (cond
+       (= content-type text-content-type)
+       [text {:style {:fontSize   14
+                      :fontFamily "Avenir-Roman"
+                      :color      "#4A5258"}}
+        content]
+       (= content-type content-type-command)
+       [message-content-command content]
+       :else [message-content-audio {:content      content
+                                     :content-type content-type}])]))
 
 (defn message-delivery-status [{:keys [delivery-status]}]
   [view {:style {:flexDirection "row"

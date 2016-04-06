@@ -56,5 +56,5 @@
   (dispatch [:load-user-phone-number])
   (dispatch [:load-syng-contacts])
   ;; TODO execute on first run only
-  ;; (dispatch [:set-sign-up-chat])
+  (dispatch [:set-sign-up-chat])
   (.registerComponent app-registry "SyngIm" #(r/reactify-component app-root)))
