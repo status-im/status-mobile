@@ -190,9 +190,8 @@
 ;; -- Sign up --------------------------------------------------------------
 
 (register-handler :sign-up
-  (fn [db [_ phone-number whisper-identity handler]]
-    (server/sign-up phone-number whisper-identity handler)
-    db))
+  (fn [db [_ phone-number handler]]
+    (server/sign-up db phone-number handler)))
 
 (register-handler :set-confirmation-code
   (fn [db [_ value]]

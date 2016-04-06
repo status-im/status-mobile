@@ -65,11 +65,11 @@
 
 ;; -- User data --------------------------------------------------------------
 
-(register-sub
-  :get-user-phone-number
-  (fn [db _]
-    (reaction
-      (get @db :user-phone-number))))
+;; (register-sub
+;;   :get-user-phone-number
+;;   (fn [db _]
+;;     (reaction
+;;       (get @db :user-phone-number))))
 
 (register-sub
   :get-user-identity

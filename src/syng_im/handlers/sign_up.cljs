@@ -5,6 +5,7 @@
             [syng-im.utils.utils :refer [log on-error http-post toast]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.random :as random]
+            [syng-im.utils.phone-number :refer [format-phone-number]]
             [syng-im.constants :refer [text-content-type
                                        content-type-command
                                        content-type-command-request]]))
@@ -35,7 +36,7 @@
               :outgoing false
               :from "console"
               :to "me"}])
-  (dispatch [:set-chat-command :keypair-password])
+  ;; (dispatch [:set-chat-command :keypair-password])
   db)
 
 (defn send-console-msg [text]
@@ -45,6 +46,47 @@
    :content      text
    :content-type text-content-type
    :outgoing     true})
+
+
+
+;; ----------
+;; server
+;; from confirm code view
+(comment
+  (defn sync-contacts [navigator]
+    (dispatch [:sync-contacts #(show-home-view navigator)]))
+
+  (defn on-send-code-response [navigator body]
+    (log body)
+    (toast (if (:confirmed body)
+             "Confirmed"
+             "Wrong code"))
+    (if (:confirmed body)
+      ;; TODO user action required
+      (sync-contacts navigator)
+      (dispatch [:set-loading false])))
+
+  (defn code-valid? [code]
+    (= 4 (count code)))
+
+  (defn send-code [code navigator]
+    (when (code-valid? code)
+      (dispatch [:set-loading true])
+      (dispatch [:sign-up-confirm code (partial on-send-code-response navigator)])))
+
+  (defn update-code [value]
+    (let [formatted value]
+      (dispatch [:set-confirmation-code formatted]))))
+
+;; from sign up view
+
+
+
+
+;; ----------
+;; end server
+
+
 
 (defn- handle-password [content]
   ;; TODO validate and save password
@@ -102,9 +144,7 @@
               :from "console"
               :to "me"}]))
 
-(defn- handle-phone [content]
-  ;; TODO validate and save phone number
-  ;; send phone to server
+(defn on-sign-up-response []
   (dispatch [:received-msg
              {:msg-id "10"
               :content (commands/format-command-request-msg-content
@@ -115,6 +155,10 @@
               :outgoing false
               :from "console"
               :to "me"}]))
+
+(defn- handle-phone [content]
+  (let [phone-number (format-phone-number content)]
+    (dispatch [:sign-up phone-number on-sign-up-response])))
 
 (defn- handle-confirmation-code [content]
   ;; TODO validate confirmation code
