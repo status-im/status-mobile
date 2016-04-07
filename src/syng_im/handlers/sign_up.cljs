@@ -47,51 +47,10 @@
    :content-type text-content-type
    :outgoing     true})
 
-
-
-;; ----------
-;; server
-;; from confirm code view
-(comment
-  (defn sync-contacts [navigator]
-    (dispatch [:sync-contacts #(show-home-view navigator)]))
-
-  (defn on-send-code-response [navigator body]
-    (log body)
-    (toast (if (:confirmed body)
-             "Confirmed"
-             "Wrong code"))
-    (if (:confirmed body)
-      ;; TODO user action required
-      (sync-contacts navigator)
-      (dispatch [:set-loading false])))
-
-  (defn code-valid? [code]
-    (= 4 (count code)))
-
-  (defn send-code [code navigator]
-    (when (code-valid? code)
-      (dispatch [:set-loading true])
-      (dispatch [:sign-up-confirm code (partial on-send-code-response navigator)])))
-
-  (defn update-code [value]
-    (let [formatted value]
-      (dispatch [:set-confirmation-code formatted]))))
-
-;; from sign up view
-
-
-
-
-;; ----------
-;; end server
-
-
-
 (defn- handle-password [content]
   ;; TODO validate and save password
   (dispatch [:received-msg
-             {:msg-id "4"
+             {:msg-id (random/id)
               :content (str "OK great! Your password has been saved. Just to let you "
                             "know, you can always change it in the Console, by the way, "
                             "it's me, the Console, nice to meet you!")
@@ -100,7 +59,7 @@
               :from "console"
               :to "me"}])
   (dispatch [:received-msg
-             {:msg-id "5"
+             {:msg-id (random/id)
               :content (str "I'll generate a passphrase for you so you can restore your "
                             "access or log in from another device")
               :content-type text-content-type
@@ -108,7 +67,7 @@
               :from "console"
               :to "me"}])
   (dispatch [:received-msg
-             {:msg-id "6"
+             {:msg-id (random/id)
               :content "Here's your passphrase:"
               :content-type text-content-type
               :outgoing false
@@ -118,7 +77,7 @@
   (let [passphrase (str "The brash businessman's braggadocio and public squabbing with "
                         "candidates in the US presidential election")]
     (dispatch [:received-msg
-               {:msg-id "7"
+               {:msg-id (random/id)
                 :content passphrase
                 :content-type text-content-type
                 :outgoing false
@@ -133,7 +92,7 @@
               :to "me"}])
   ;; TODO highlight '!phone'
   (dispatch [:received-msg
-             {:msg-id "9"
+             {:msg-id (random/id)
               :content (commands/format-command-request-msg-content
                         :phone
                         (str "Your phone number is also required to use the app. Type the "
@@ -144,9 +103,11 @@
               :from "console"
               :to "me"}]))
 
+
+;; -- Send phone number ----------------------------------------
 (defn on-sign-up-response []
   (dispatch [:received-msg
-             {:msg-id "10"
+             {:msg-id (random/id)
               :content (commands/format-command-request-msg-content
                         :confirmation-code
                         (str "Thanks! We've sent you a text message with a confirmation "
@@ -160,16 +121,43 @@
   (let [phone-number (format-phone-number content)]
     (dispatch [:sign-up phone-number on-sign-up-response])))
 
-(defn- handle-confirmation-code [content]
-  ;; TODO validate confirmation code
-  ;; send code to server
+
+;; -- Phone number confirmation --------------------------------
+(defn on-sync-contacts []
   (dispatch [:received-msg
-             {:msg-id "10"
-              :content "Thanks!"
+             {:msg-id (random/id)
+              :content (str "Your contacts have been synchronized")
               :content-type text-content-type
               :outgoing false
               :from "console"
               :to "me"}]))
+
+(defn sync-contacts []
+  (dispatch [:sync-contacts on-sync-contacts]))
+
+(defn on-send-code-response [body]
+  (if (:confirmed body)
+    (do (dispatch [:received-msg
+                   {:msg-id (random/id)
+                    :content "Confirmed"
+                    :content-type text-content-type
+                    :outgoing false
+                    :from "console"
+                    :to "me"}])
+        (sync-contacts))
+    (dispatch [:received-msg
+               {:msg-id (random/id)
+                :content "Wrong code"
+                :content-type text-content-type
+                :outgoing false
+                :from "console"
+                :to "me"}])))
+
+(defn send-code [code]
+  (dispatch [:sign-up-confirm code on-send-code-response]))
+
+(defn- handle-confirmation-code [content]
+  (send-code content))
 
 ;; TODO store command key in a separate field
 (defn send-console-command [command content]
