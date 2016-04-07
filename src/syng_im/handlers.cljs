@@ -110,6 +110,19 @@
     (save-message chat-id msg)
     (signal-chat-updated db chat-id)))
 
+(defn joined-chat-msg [chat-id from msg-id]
+  (let [contact-name (:name (contacts/contatct-by-identity from))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or contact-name from) " received chat invitation")
+                           :content-type text-content-type})))
+
+(register-handler :group-chat-invite-acked
+  (fn [db [action from group-id ack-msg-id]]
+    (log/debug action from group-id ack-msg-id)
+    (joined-chat-msg group-id from ack-msg-id)
+    (signal-chat-updated db group-id)))
+
 (register-handler :acked-msg
   (fn [db [_ from msg-id]]
     (update-message! {:msg-id          msg-id
@@ -128,7 +141,7 @@
     (log/debug action "chat-id" chat-id "text" text)
     (let [msg (if (= chat-id "console")
                 (sign-up-service/send-console-msg text)
-                (let [{msg-id :msg-id
+                (let [{msg-id     :msg-id
                        {from :from
                         to   :to} :msg} (api/send-user-msg {:to      chat-id
                                                             :content text})]
@@ -147,7 +160,7 @@
     (let [msg (if (= chat-id "console")
                 (sign-up-service/send-console-command command content)
                 ;; TODO handle command, now sends as plain message
-                (let [{msg-id :msg-id
+                (let [{msg-id     :msg-id
                        {from :from
                         to   :to} :msg} (api/send-user-msg {:to      chat-id
                                                             :content content})]
