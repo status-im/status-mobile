@@ -61,8 +61,30 @@
       (r/single-cljs)
       (r/list-to-array :contacts)))
 
-(comment
+(defn chat-add-participants [chat-id identities]
+  (r/write
+    (fn []
+      (let [chat           (-> (r/get-by-field :chats :chat-id chat-id)
+                               (r/single))
+            contacts       (aget chat "contacts")
+            contacts-count (aget contacts "length")
+            colors         (drop contacts-count group-chat-colors)
+            new-contacts   (mapv (fn [ident {:keys [background text]}]
+                                   {:identity         ident
+                                    :background-color background
+                                    :text-color       text}) identities colors)]
+        (doseq [contact new-contacts]
+          (.push contacts (clj->js contact)))))))
 
+(defn active-group-chats []
+  (let [results (-> (r/get-all :chats)
+                    (r/filtered "group-chat = true"))]
+    (->> (.map results (fn [object index collection]
+                         (aget object "chat-id")))
+         (js->clj))))
+
+(comment
+  (active-group-chats)
 
 
   (-> (r/get-by-field :chats :chat-id "0x04ed4c3797026cddeb7d64a54ca58142e57ea03cda21072358d67455b506db90c56d95033e3d221992f70d01922c3d90bf0697c49e4be118443d03ae4a1cd3c15c")

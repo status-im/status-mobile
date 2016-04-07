@@ -8,7 +8,8 @@
                                           chats-updated?
                                           chat-by-id]]
             [syng-im.models.messages :refer [get-messages]]
-            [syng-im.models.contacts :refer [contacts-list]]
+            [syng-im.models.contacts :refer [contacts-list
+                                             contacts-list-exclude]]
             [syng-im.handlers.suggestions :refer [get-suggestions]]))
 
 ;; -- Chat --------------------------------------------------------------
@@ -99,3 +100,17 @@
   (fn [db _]
     (reaction
       (contacts-list))))
+
+(register-sub :all-new-contacts
+  (fn [db _]
+    (let [current-chat-id (-> (current-chat-id @db)
+                              (reaction))
+          chat            (-> (when-let [chat-id @current-chat-id]
+                                (chat-by-id chat-id))
+                              (reaction))]
+      (reaction
+        (when @chat
+          (let [current-participants (->> @chat
+                                          :contacts
+                                          (map :identity))]
+            (contacts-list-exclude current-participants)))))))

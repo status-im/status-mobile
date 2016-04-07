@@ -13,6 +13,7 @@
             [syng-im.components.sign-up-confirm :refer [sign-up-confirm-view]]
             [syng-im.components.chats.chats-list :refer [chats-list]]
             [syng-im.components.chats.new-group :refer [new-group]]
+            [syng-im.components.chat.new-participants :refer [new-participants]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :as nav]
             [syng-im.utils.encryption]))
@@ -42,6 +43,7 @@
                                        view-id (keyword view-id)]
                                    (init-back-button-handler! nav)
                                    (case view-id
+                                     :add-participants (r/as-element [new-participants {:navigator nav}])
                                      :chat-list (r/as-element [chats-list {:navigator nav}])
                                      :new-group (r/as-element [new-group {:navigator nav}])
                                      :contact-list (r/as-element [contact-list {:navigator nav}])

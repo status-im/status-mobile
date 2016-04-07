@@ -3,12 +3,14 @@
             [syng-im.constants :refer [ethereum-rpc-url]]
             [re-frame.core :refer [dispatch]]
             [syng-im.models.protocol :refer [stored-identity]]
-            [syng-im.persistence.simple-kv-store :as kv]))
+            [syng-im.persistence.simple-kv-store :as kv]
+            [syng-im.models.chats :refer [active-group-chats]]))
 
 
 (defn make-handler [db]
   {:ethereum-rpc-url ethereum-rpc-url
    :identity         (stored-identity db)
+   :active-group-ids (active-group-chats)
    :storage          kv/kv-store
    :handler          (fn [{:keys [event-type] :as event}]
                        (log/info "Event:" (clj->js event))
