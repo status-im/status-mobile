@@ -25,9 +25,12 @@
        (into {})))
 
 (defn add-msg-color [{:keys [from] :as msg} contact-by-identity]
-  (let [{:keys [text-color background-color]} (get contact-by-identity from)]
-    (assoc msg :text-color text-color
-               :background-color background-color)))
+  (if (= "system" from)
+    (assoc msg :text-color "#4A5258"
+               :background-color "#D3EEEF")
+    (let [{:keys [text-color background-color]} (get contact-by-identity from)]
+      (assoc msg :text-color text-color
+                 :background-color background-color))))
 
 (defn chat [{:keys [navigator]}]
   (let [messages (subscribe [:get-chat-messages])

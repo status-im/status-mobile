@@ -91,6 +91,10 @@
   (-> (r/get-all :contacts)
       (r/sorted :name :asc)))
 
+(defn contatct-by-identity [identity]
+  (-> (r/get-by-field :contacts :whisper-identity identity)
+      (r/single-cljs)))
+
 (comment
 
   (r/write #(create-contact {:phone-number     "0543072333"
