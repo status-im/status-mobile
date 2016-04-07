@@ -3,7 +3,8 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.utils.utils :refer [log toast]]
             [syng-im.persistence.realm :as realm]
-            [syng-im.persistence.realm :as r]))
+            [syng-im.persistence.realm :as r]
+            [clojure.string :as s]))
 
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
 (def fake-phone-contacts? true)
@@ -91,6 +92,15 @@
   (-> (r/get-all :contacts)
       (r/sorted :name :asc)))
 
+(defn contacts-list-exclude [exclude-idents]
+  (let [exclude-query (->> exclude-idents
+                           (map (fn [ident]
+                                  (str "whisper-identity != '" ident "'")))
+                           (s/join " && "))]
+    (-> (r/get-all :contacts)
+        (r/filtered exclude-query)
+        (r/sorted :name :asc))))
+
 (defn contatct-by-identity [identity]
   (-> (r/get-by-field :contacts :whisper-identity identity)
       (r/single-cljs)))
@@ -98,13 +108,23 @@
 (comment
 
   (r/write #(create-contact {:phone-number     "0543072333"
-                             :whisper-identity "0x04ed4c3797026cddeb7d64a54ca58142e57ea03cda21072358d67455b506db90c56d95033e3d221992f70d01922c3d90bf0697c49e4be118443d03ae4a1cd3c15c"
+                             :whisper-identity "0x045326d94f999c3e17d11d6a09e13cf9a34b30f62687a970053887b8f8d1fefac3f185e6ba6f02f8217b6947227c7dbfa8d4ee3a4a2864b0cac9968c819ba9c17c"
                              :name             "Mr. Bean"
                              :photo-path       ""}))
 
   (r/write #(create-contact {:phone-number     "0544828649"
-                             :whisper-identity "0x0498bcce41dbe05c6d4776ef50d12c2ef1a00d9d7f7144d174ece3dce85ca3428bf0900352abcccdc463bd2cfa4ec319cda46c2079152c4cb14d1cad9a00dd7571"
+                             :whisper-identity "0x0496152b9bb6640fddb3a156747baa961792762264ab459c8d7c9ac179ddceb2abb701357a9b6691ef858ef8ce2eb306754825b8267add96e7a01d854a576b9fda"
                              :name             "Mr. Batman"
+                             :photo-path       ""}))
+
+  (r/write #(create-contact {:phone-number     "0522222222"
+                             :whisper-identity "0x04ef1f45303a14cb30af0458fabc2c7b1fd1bc9bb69fae5bb4ec63ae5b52cd53c2a194398b6674cc335899bbf6a24bfe48813a134ce9b8b85877690c1a99f0b19f"
+                             :name             "Mr. Eagle"
+                             :photo-path       ""}))
+
+  (r/write #(create-contact {:phone-number     "0533333333"
+                             :whisper-identity "0x04e9e31a92ab16dbac9cdce47f59545ac646175087f4eeb6e4442e36d37b09e20dcb6239ac743ddd3f1fa17377c1789dc60a1ebb8774d247f3df69ebd0082d46fe"
+                             :name             "Mr. PiggyBear"
                              :photo-path       ""}))
 
   (contacts-list)

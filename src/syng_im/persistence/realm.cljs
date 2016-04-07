@@ -41,7 +41,8 @@
                      :primaryKey :chat-id
                      :properties {:chat-id    "string"
                                   :name       "string"
-                                  :group-chat "bool"
+                                  :group-chat {:type    "bool"
+                                               :indexed true}
                                   :timestamp  "int"
                                   :contacts   {:type       "list"
                                                :objectType "chat-contact"}}}]})
@@ -91,6 +92,9 @@
   (.sorted results (to-string field-name) (if (= order :asc)
                                             false
                                             true)))
+
+(defn filtered [results filter-query]
+  (.filtered results filter-query))
 
 (defn page [results from to]
   (js/Array.prototype.slice.call results from to))

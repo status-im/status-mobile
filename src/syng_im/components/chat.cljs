@@ -45,18 +45,24 @@
                        :backgroundColor "#eef2f5"}}
          (when android?
            ;; TODO add IOS version
-           [toolbar-android {:logo          res/logo-icon
-                             :title         (or (@chat :name)
-                                                "Chat name")
-                             :titleColor    "#4A5258"
-                             :subtitle      "Last seen just now"
-                             :subtitleColor "#AAB2B2"
-                             :navIcon       res/nav-back-icon
-                             :style         {:backgroundColor "white"
-                                             :height          56
-                                             :elevation       2}
-                             :onIconClicked (fn []
-                                              (nav-pop navigator))}])
+           [toolbar-android {:logo             res/logo-icon
+                             :title            (or (@chat :name)
+                                                   "Chat name")
+                             :titleColor       "#4A5258"
+                             :subtitle         "Last seen just now"
+                             :subtitleColor    "#AAB2B2"
+                             :navIcon          res/nav-back-icon
+                             :style            {:backgroundColor "white"
+                                                :height          56
+                                                :elevation       2}
+                             :actions          [{:title        "Add Contact to chat"
+                                                 :icon         res/add-icon
+                                                 :showWithText true}]
+                             :onActionSelected (fn [position]
+                                                 (case position
+                                                   0 (dispatch [:show-add-participants navigator])))
+                             :onIconClicked    (fn []
+                                                 (nav-pop navigator))}])
          [list-view {:dataSource            datasource
                      :renderScrollComponent (fn [props]
                                               (invertible-scroll-view nil))

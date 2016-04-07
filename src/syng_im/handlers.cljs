@@ -18,13 +18,18 @@
                                        set-chat-command-content]]
     [syng-im.handlers.sign-up :as sign-up-service]
 
-    [syng-im.models.chats :refer [create-chat]]
+    [syng-im.models.chats :refer [create-chat
+                                  chat-add-participants]]
     [syng-im.models.chat :refer [signal-chat-updated
                                  set-current-chat-id
+                                 current-chat-id
                                  update-new-group-selection
+                                 update-new-participants-selection
                                  clear-new-group
+                                 clear-new-participants
                                  new-group-selection
-                                 set-chat-input-text]]
+                                 set-chat-input-text
+                                 new-participants-selection]]
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
     [syng-im.constants :refer [text-content-type]]
@@ -124,13 +129,15 @@
     (signal-chat-updated db group-id)))
 
 (register-handler :acked-msg
-  (fn [db [_ from msg-id]]
+  (fn [db [action from msg-id]]
+    (log/debug action from msg-id)
     (update-message! {:msg-id          msg-id
                       :delivery-status :delivered})
     (signal-chat-updated db from)))
 
 (register-handler :msg-delivery-failed
-  (fn [db [_ msg-id]]
+  (fn [db [action msg-id]]
+    (log/debug action from msg-id)
     (update-message! {:msg-id          msg-id
                       :delivery-status :failed})
     (let [{:keys [chat-id]} (message-by-id msg-id)]
@@ -260,6 +267,29 @@
     (log/debug action)
     (nav-push navigator {:view-id :contact-list})
     db))
+
+(register-handler :select-new-participant
+  (fn [db [action identity add?]]
+    (log/debug action identity add?)
+    (update-new-participants-selection db identity add?)))
+
+(register-handler :show-add-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (nav-push navigator {:view-id :add-participants})
+    (clear-new-participants db)))
+
+(register-handler :add-new-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (let [identities (-> (new-participants-selection db)
+                         (vec))
+          chat-id    (current-chat-id db)]
+      (chat-add-participants chat-id identities)
+      (dispatch [:show-chat chat-id navigator])
+      (doseq [ident identities]
+        (api/group-add-participant chat-id ident))
+      db)))
 
 (register-handler :show-group-new
   (fn [db [action navigator]]
