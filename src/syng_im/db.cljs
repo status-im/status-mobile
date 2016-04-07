@@ -27,4 +27,6 @@
   [:chats chat-id :command-input :command])
 (defn chat-command-content-path [chat-id]
   [:chats chat-id :command-input :content])
+(defn chat-command-request-path [chat-id]
+  [:chats chat-id :command-request])
 (def new-group-path [:new-group])

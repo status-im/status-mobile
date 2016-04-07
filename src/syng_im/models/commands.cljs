@@ -3,6 +3,8 @@
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [cljs.core.async :as async :refer [chan put! <! >!]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [syng-im.db :as db]
+            [syng-im.models.chat :refer [current-chat-id]]
             [syng-im.utils.utils :refer [log toast]]
             [syng-im.persistence.realm :as realm]))
 
@@ -51,6 +53,29 @@
 
 (defn get-command [command-key]
   (first (filter #(= command-key (:command %)) commands)))
+
+(defn get-chat-command-content [db]
+  (get-in db (db/chat-command-content-path (current-chat-id db))))
+
+(defn set-chat-command-content [db content]
+  (assoc-in db (db/chat-command-content-path (get-in db db/current-chat-id-path))
+            content))
+
+(defn get-chat-command [db]
+  (get-in db (db/chat-command-path (current-chat-id db))))
+
+(defn set-chat-command [db command-key]
+  (-> db
+      (set-chat-command-content nil)
+      (assoc-in (db/chat-command-path (get-in db db/current-chat-id-path))
+                (get-command command-key))))
+
+(defn get-chat-command-request [db]
+  (get-in db (db/chat-command-request-path (current-chat-id db))))
+
+(defn set-chat-command-request [db handler]
+  (assoc-in db (db/chat-command-request-path (current-chat-id db)) handler))
+
 
 (defn- map-to-str
   [m]
