@@ -18,5 +18,6 @@
   ],
   "imageDirs": [
     "images"
-  ]
+  ],
+  "iosHost": "localhost"
 }
