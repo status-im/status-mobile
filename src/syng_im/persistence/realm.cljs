@@ -34,7 +34,9 @@
                                   :delivery-status {:type     "string"
                                                     :optional true}}}
                     {:name       :chat-contact
-                     :properties {:identity "string"}}
+                     :properties {:identity         "string"
+                                  :text-color       "string"
+                                  :background-color "string"}}
                     {:name       :chats
                      :primaryKey :chat-id
                      :properties {:chat-id    "string"
@@ -99,6 +101,11 @@
 (defn single-cljs [result]
   (some-> (aget result 0)
           (js->clj :keywordize-keys true)))
+
+(defn list-to-array [record list-field]
+  (assoc record list-field (-> (get record list-field)
+                               vals
+                               vec)))
 
 (defn decode-value [{:keys [key value]}]
   (read-string value))
