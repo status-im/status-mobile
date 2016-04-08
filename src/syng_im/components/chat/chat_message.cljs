@@ -87,13 +87,13 @@
         "******"
         content)]]))
 
-(defn set-chat-command [command]
-  (dispatch [:set-chat-command (:command command)]))
+(defn set-chat-command [msg-id command]
+  (dispatch [:set-response-chat-command msg-id (:command command)]))
 
-(defn message-content-command-request [content outgoing text-color background-color]
+(defn message-content-command-request [msg-id content outgoing text-color background-color]
   (let [{:keys [command content]} (commands/parse-command-request-msg-content content)]
     [touchable-highlight {:onPress (fn []
-                                     (set-chat-command command))}
+                                     (set-chat-command msg-id command))}
      [view {}
       [view {:style (merge {:marginTop         15
                             :borderRadius      6
@@ -122,9 +122,9 @@
                         :top      8
                         :left     6}}]]]]))
 
-(defn message-content [{:keys [content-type content outgoing text-color background-color]}]
+(defn message-content [{:keys [msg-id content-type content outgoing text-color background-color]}]
   (if (= content-type content-type-command-request)
-    [message-content-command-request content outgoing text-color background-color]
+    [message-content-command-request msg-id content outgoing text-color background-color]
     [view {:style (merge {:borderRadius 6}
                          (if (= content-type text-content-type)
                            {:paddingVertical   12
@@ -175,7 +175,8 @@
                           :alignItems "flex-end"}
                          {:alignSelf  "flex-start"
                           :alignItems "flex-start"}))}
-   [message-content {:content-type     content-type
+   [message-content {:msg-id           msg-id
+                     :content-type     content-type
                      :content          content
                      :outgoing         outgoing
                      :text-color       text-color

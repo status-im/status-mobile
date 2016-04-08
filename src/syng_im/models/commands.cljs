@@ -64,17 +64,30 @@
 (defn get-chat-command [db]
   (get-in db (db/chat-command-path (current-chat-id db))))
 
-(defn set-chat-command [db command-key]
+(defn set-response-chat-command [db msg-id command-key]
   (-> db
       (set-chat-command-content nil)
-      (assoc-in (db/chat-command-path (get-in db db/current-chat-id-path))
-                (get-command command-key))))
+      (assoc-in (db/chat-command-path (current-chat-id db))
+                (get-command command-key))
+      (assoc-in (db/chat-command-to-msg-id-path (current-chat-id db))
+                msg-id)))
+
+(defn set-chat-command [db command-key]
+  (set-response-chat-command db nil command-key))
+
+(defn get-chat-command-to-msg-id [db]
+  (get-in db (db/chat-command-to-msg-id-path (current-chat-id db))))
 
 (defn get-chat-command-request [db]
-  (get-in db (db/chat-command-request-path (current-chat-id db))))
+  (get-in db (db/chat-command-request-path (current-chat-id db)
+                                           (get-chat-command-to-msg-id db))))
 
-(defn set-chat-command-request [db handler]
-  (assoc-in db (db/chat-command-request-path (current-chat-id db)) handler))
+(defn set-chat-command-request [db msg-id handler]
+  (update-in db (db/chat-command-requests-path (current-chat-id db))
+             (fn [requests]
+               (if requests
+                 (assoc requests msg-id handler)
+                 {msg-id handler}))))
 
 
 (defn- map-to-str
