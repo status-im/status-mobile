@@ -17,7 +17,7 @@
                                      set-chat-command-request]]
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
-    
+    [syng-im.handlers.suggestions :refer [get-command]]
     [syng-im.handlers.sign-up :as sign-up-service]
 
     [syng-im.models.chats :refer [create-chat]]
@@ -128,20 +128,22 @@
 (register-handler :send-chat-msg
   (fn [db [action chat-id text]]
     (log/debug action "chat-id" chat-id "text" text)
-    (let [msg (if (= chat-id "console")
-                (sign-up-service/send-console-msg text)
-                (let [{msg-id :msg-id
-                       {from :from
-                        to   :to} :msg} (api/send-user-msg {:to      chat-id
-                                                            :content text})]
-                  {:msg-id       msg-id
-                   :from         from
-                   :to           to
-                   :content      text
-                   :content-type text-content-type
-                   :outgoing     true}))]
-      (save-message chat-id msg)
-      (signal-chat-updated db chat-id))))
+    (if-let [command (get-command text)]
+      (dispatch [:set-chat-command (:command command)])
+      (let [msg (if (= chat-id "console")
+                  (sign-up-service/send-console-msg text)
+                  (let [{msg-id :msg-id
+                         {from :from
+                          to   :to} :msg} (api/send-user-msg {:to      chat-id
+                                                              :content text})]
+                    {:msg-id       msg-id
+                     :from         from
+                     :to           to
+                     :content      text
+                     :content-type text-content-type
+                     :outgoing     true}))]
+        (save-message chat-id msg)
+        (signal-chat-updated db chat-id)))))
 
 (register-handler :send-chat-command
   (fn [db [action chat-id command content]]

@@ -11,3 +11,8 @@
     ;; TODO change 'commands' to 'suggestions'
     (filterv #(.startsWith (:text %) text) commands)
     []))
+
+(defn get-command [text]
+  (when (= (get text 0) "!")
+    ;; TODO change 'commands' to 'suggestions'
+    (first (filter #(= (:text %) text) commands))))
