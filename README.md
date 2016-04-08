@@ -4,7 +4,24 @@ A Clojure library designed to ... well, that part is up to you.
 
 ## Usage
 
-FIXME
+- install syng-lib/protocol in lein
+
+Linux:
+
+optional: $ npm upgrade -g re-natal
+optional: $ re-natal upgrade
+$ re-natal deps
+$ re-natal use-android-device <real|genymotion|avd>
+$ re-natal use-figwheel
+$ lein figwheel android
+
+- new terminal(only for linux)
+$ react-native start
+
+- new terminal
+$ adb reverse tcp:8081 tcp:8081
+$ adb reverse tcp:3449 tcp:3449
+$ react-native run-android
 
 ## License
 
