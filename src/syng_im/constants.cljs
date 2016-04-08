@@ -7,7 +7,7 @@
 
 (def text-content-type "text/plain")
 (def content-type-command "command")
-
+(def content-type-command-request "command-request")
 (def group-chat-colors [{:background "#AB7967", :text "#FFFFFF"}
                         {:background "#B48EAD", :text "#FFFFFF"}
                         {:background "#8FA1B3", :text "#FFFFFF"}
