@@ -94,10 +94,10 @@
       (get @db :loading))))
 
 (register-sub
-  :get-confirmation-code
-  (fn [db _]
-    (reaction
-      (get @db :confirmation-code))))
+ :signed-up
+ (fn [db _]
+   (reaction
+    (get @db :signed-up))))
 
 (register-sub
   :get-contacts
