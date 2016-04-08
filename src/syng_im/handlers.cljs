@@ -13,11 +13,13 @@
                                      update-message!
                                      message-by-id]]
     [syng-im.models.commands :refer [set-chat-command
+                                     set-response-chat-command
                                      set-chat-command-content
                                      set-chat-command-request]]
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
-    [syng-im.handlers.suggestions :refer [get-command]]
+    [syng-im.handlers.suggestions :refer [get-command
+                                          handle-command]]
     [syng-im.handlers.sign-up :as sign-up-service]
 
     [syng-im.models.chats :refer [create-chat]]
@@ -163,7 +165,9 @@
                    :content-type text-content-type
                    :outgoing     true}))]
       (save-message chat-id msg)
-      (signal-chat-updated db chat-id))))
+      (-> db
+          (handle-command command content)
+          (signal-chat-updated chat-id)))))
 
 (register-handler :send-group-chat-msg
   (fn [db [action chat-id text]]
@@ -240,13 +244,17 @@
   (fn [db [_ command-key]]
     (set-chat-command db command-key)))
 
+(register-handler :set-response-chat-command
+  (fn [db [_ to-msg-id command-key]]
+    (set-response-chat-command db to-msg-id command-key)))
+
 (register-handler :set-chat-command-content
   (fn [db [_ content]]
     (set-chat-command-content db content)))
 
 (register-handler :set-chat-command-request
-  (fn [db [_ handler]]
-    (set-chat-command-request db handler)))
+  (fn [db [_ msg-id handler]]
+    (set-chat-command-request db msg-id handler)))
 
 (register-handler :show-contacts
   (fn [db [action navigator]]

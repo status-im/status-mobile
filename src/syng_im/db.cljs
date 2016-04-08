@@ -26,8 +26,12 @@
   [:chats chat-id :input-text])
 (defn chat-command-path [chat-id]
   [:chats chat-id :command-input :command])
+(defn chat-command-to-msg-id-path [chat-id]
+  [:chats chat-id :command-input :to-msg-id])
 (defn chat-command-content-path [chat-id]
   [:chats chat-id :command-input :content])
-(defn chat-command-request-path [chat-id]
-  [:chats chat-id :command-request])
+(defn chat-command-requests-path [chat-id]
+  [:chats chat-id :command-requests])
+(defn chat-command-request-path [chat-id msg-id]
+  [:chats chat-id :command-requests msg-id])
 (def new-group-path [:new-group])

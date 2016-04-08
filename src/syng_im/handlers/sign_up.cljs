@@ -49,7 +49,6 @@
                     :outgoing false
                     :from "console"
                     :to "me"}])
-        (dispatch [:set-chat-command-request nil])
         (sync-contacts))
     (dispatch [:received-msg
                {:msg-id (random/id)
@@ -62,25 +61,28 @@
 (defn send-code [code]
   (dispatch [:sign-up-confirm code on-send-code-response]))
 
-(defn- handle-confirmation-code [command-key content]
+(defn- handle-confirmation-code [msg-id command-key content]
+  (dispatch [:set-chat-command-request msg-id nil])
   (when (= command-key :confirmation-code)
     (send-code content)))
 
 ;; -- Send phone number ----------------------------------------
 (defn on-sign-up-response []
-  (dispatch [:received-msg
-             {:msg-id (random/id)
-              :content (commands/format-command-request-msg-content
-                        :confirmation-code
-                        (str "Thanks! We've sent you a text message with a confirmation "
-                             "code. Please provide that code to confirm your phone number"))
-              :content-type content-type-command-request
-              :outgoing false
-              :from "console"
-              :to "me"}])
-  (dispatch [:set-chat-command-request handle-confirmation-code]))
+  (let [msg-id (random/id)]
+    (dispatch [:received-msg
+               {:msg-id msg-id
+                :content (commands/format-command-request-msg-content
+                          :confirmation-code
+                          (str "Thanks! We've sent you a text message with a confirmation "
+                               "code. Please provide that code to confirm your phone number"))
+                :content-type content-type-command-request
+                :outgoing false
+                :from "console"
+                :to "me"}])
+    (dispatch [:set-chat-command-request msg-id handle-confirmation-code])))
 
-(defn- handle-phone [command-key content]
+(defn- handle-phone [msg-id command-key content]
+  (dispatch [:set-chat-command-request msg-id nil])
   (when (= command-key :phone)
    (let [phone-number (format-phone-number content)]
      (dispatch [:sign-up phone-number on-sign-up-response]))))
@@ -131,20 +133,22 @@
               :from "console"
               :to "me"}])
   ;; TODO highlight '!phone'
-  (dispatch [:received-msg
-             {:msg-id (random/id)
-              :content (commands/format-command-request-msg-content
-                        :phone
-                        (str "Your phone number is also required to use the app. Type the "
-                             "exclamation mark or hit the icon to open the command list "
-                             "and choose the !phone command"))
-              :content-type content-type-command-request
-              :outgoing false
-              :from "console"
-              :to "me"}])
-  (dispatch [:set-chat-command-request handle-phone]))
+  (let [msg-id (random/id)]
+    (dispatch [:received-msg
+              {:msg-id msg-id
+               :content (commands/format-command-request-msg-content
+                         :phone
+                         (str "Your phone number is also required to use the app. Type the "
+                              "exclamation mark or hit the icon to open the command list "
+                              "and choose the !phone command"))
+               :content-type content-type-command-request
+               :outgoing false
+               :from "console"
+               :to "me"}])
+    (dispatch [:set-chat-command-request msg-id handle-phone])))
 
-(defn- handle-password [command-key content]
+(defn- handle-password [msg-id command-key content]
+  (dispatch [:set-chat-command-request msg-id nil])
   (when (= command-key :keypair-password)
     (save-password content)))
 
@@ -164,24 +168,23 @@
               :outgoing false
               :from "console"
               :to "me"}])
-  (dispatch [:received-msg
-             {:msg-id (random/id)
-              :content (commands/format-command-request-msg-content
-                        :keypair-password
-                        (str "A key pair has been generated and saved to your device. "
-                             "Create a password to secure your key"))
-              :content-type content-type-command-request
-              :outgoing false
-              :from "console"
-              :to "me"}])
-  (dispatch [:set-chat-command-request handle-password])
+  (let [msg-id (random/id)]
+    (dispatch [:received-msg
+               {:msg-id msg-id
+                :content (commands/format-command-request-msg-content
+                          :keypair-password
+                          (str "A key pair has been generated and saved to your device. "
+                               "Create a password to secure your key"))
+                :content-type content-type-command-request
+                :outgoing false
+                :from "console"
+                :to "me"}])
+    (dispatch [:set-chat-command-request msg-id handle-password]))
   ;; (dispatch [:set-chat-command :keypair-password])
   db)
 
 ;; TODO store command key in a separate field
 (defn send-console-command [db command-key content]
-  (when-let [command-handler (commands/get-chat-command-request db)]
-    (command-handler command-key content))
   {:msg-id       (random/id)
    :from         "me"
    :to           "console"
