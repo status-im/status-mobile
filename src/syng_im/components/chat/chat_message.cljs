@@ -92,34 +92,35 @@
 
 (defn message-content-command-request [content outgoing text-color background-color]
   (let [{:keys [command content]} (commands/parse-command-request-msg-content content)]
-    [view {:style {:marginTop 10}}
-     [view {:style (merge {:borderRadius      6
-                           :paddingVertical   12
-                           :paddingHorizontal 16}
-                          (if outgoing
-                            {:backgroundColor "#D3EEEF"}
-                            {:backgroundColor background-color}))}
-      [text {:style (merge {:fontSize   14
-                            :fontFamily "Avenir-Roman"}
+    [touchable-highlight {:onPress (fn []
+                                     (set-chat-command command))}
+     [view {}
+      [view {:style (merge {:marginTop         15
+                            :borderRadius      6
+                            :paddingVertical   12
+                            :paddingHorizontal 16}
                            (if outgoing
-                             {:color "#4A5258"}
-                             {:color text-color}))}
-       content]]
-     [touchable-highlight {:style {:position    "absolute"
-                                   :top         -15
-                                   :left        20}
-                           :onPress (fn []
-                                      (set-chat-command command))}
-      [view {:style {:width           30
+                             {:backgroundColor "#D3EEEF"}
+                             {:backgroundColor background-color}))}
+       [text {:style (merge {:fontSize   14
+                             :fontFamily "Avenir-Roman"}
+                            (if outgoing
+                              {:color "#4A5258"}
+                              {:color text-color}))}
+        content]]
+      [view {:style {:position        "absolute"
+                     :top             0
+                     :left            20
+                     :width           30
                      :height          30
                      :borderRadius    50
                      :backgroundColor (:color command)}}
        [image {:source res/att
-               :style  {:width  17
-                        :height 14
+               :style  {:width    17
+                        :height   14
                         :position "absolute"
-                        :top 8
-                        :left 6}}]]]]))
+                        :top      8
+                        :left     6}}]]]]))
 
 (defn message-content [{:keys [content-type content outgoing text-color background-color]}]
   (if (= content-type content-type-command-request)
