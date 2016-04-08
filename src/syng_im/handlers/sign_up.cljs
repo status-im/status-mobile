@@ -1,6 +1,9 @@
 (ns syng-im.handlers.sign-up
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [syng-im.persistence.simple-kv-store :as kv]
+            [syng-im.protocol.state.storage :as s]
             [syng-im.db :as db]
+            [syng-im.models.chat :refer [set-current-chat-id]]
             [syng-im.models.commands :as commands]
             [syng-im.utils.utils :refer [log on-error http-post toast]]
             [syng-im.utils.logging :as log]
@@ -18,6 +21,10 @@
    :content-type text-content-type
    :outgoing     true})
 
+(defn- set-signed-up [db signed-up]
+  (s/put kv/kv-store :signed-up signed-up)
+  (assoc db :signed-up signed-up))
+
 
 ;; -- Send confirmation code and synchronize contacts---------------------------
 (defn on-sync-contacts []
@@ -27,7 +34,8 @@
               :content-type text-content-type
               :outgoing false
               :from "console"
-              :to "me"}]))
+              :to "me"}])
+  (dispatch [:set-signed-up true]))
 
 (defn sync-contacts []
   (dispatch [:sync-contacts on-sync-contacts]))
@@ -129,7 +137,7 @@
                         :phone
                         (str "Your phone number is also required to use the app. Type the "
                              "exclamation mark or hit the icon to open the command list "
-                             "and choose the !phone command")                        )
+                             "and choose the !phone command"))
               :content-type content-type-command-request
               :outgoing false
               :from "console"
@@ -142,14 +150,14 @@
 
 (defn intro [db]
   (dispatch [:received-msg
-             {:msg-id "1"
+             {:msg-id (random/id)
               :content "Hello there! It's Syng, a Dapp browser in your phone."
               :content-type text-content-type
               :outgoing false
               :from "console"
               :to "me"}])
   (dispatch [:received-msg
-             {:msg-id "2"
+             {:msg-id (random/id)
               :content (str "Syng uses  a highly secure key-pair authentication type "
                             "to provide you a reliable way to access your account")
               :content-type text-content-type
@@ -157,7 +165,7 @@
               :from "console"
               :to "me"}])
   (dispatch [:received-msg
-             {:msg-id "3"
+             {:msg-id (random/id)
               :content (commands/format-command-request-msg-content
                         :keypair-password
                         (str "A key pair has been generated and saved to your device. "
@@ -180,3 +188,12 @@
    :content      (commands/format-command-msg-content command-key content)
    :content-type content-type-command
    :outgoing     true})
+
+(defn init [db]
+  (let [signed-up (s/get kv/kv-store :signed-up)
+        db (if signed-up
+             db
+             (-> db
+                 (set-current-chat-id "console")
+                 intro))]
+    (assoc db :signed-up signed-up)))

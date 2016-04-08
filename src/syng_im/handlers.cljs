@@ -195,10 +195,6 @@
   (fn [db [_ phone-number handler]]
     (server/sign-up db phone-number handler)))
 
-(register-handler :set-confirmation-code
-  (fn [db [_ value]]
-    (assoc db :confirmation-code value)))
-
 (register-handler :sign-up-confirm
   (fn [db [_ confirmation-code handler]]
     (server/sign-up-confirm confirmation-code handler)
@@ -224,11 +220,13 @@
       (dispatch [:navigate-to navigator {:view-id :chat}])
       db)))
 
-(register-handler :set-sign-up-chat
+(register-handler :init-console-chat
   (fn [db [_]]
-    (-> db
-        (set-current-chat-id "console")
-        sign-up-service/intro)))
+    (sign-up-service/init db)))
+
+(register-handler :set-signed-up
+  (fn [db [_ signed-up]]
+    (sign-up-service/set-signed-up db signed-up)))
 
 ;; -- Chat --------------------------------------------------------------
 

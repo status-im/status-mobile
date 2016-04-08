@@ -12,7 +12,8 @@
                                     :command nil}
              :chats                {}
              :chats-updated-signal 0
-             :new-group            #{}})
+             :new-group            #{}
+             :signed-up            false})
 
 
 (def protocol-initialized-path [:protocol-initialized])
