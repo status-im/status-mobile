@@ -1,13 +1,12 @@
  (ns ^:figwheel-no-load env.android.main
-   (:require [reagent.core :as r]
-             [syng-im.android.core :refer [app-root]]
-             [figwheel.client :as figwheel :include-macros true]
-             [syng-im.android.core :as core]))
+  (:require [reagent.core :as r]
+            [syng-im.android.core :as core]
+            [figwheel.client :as figwheel :include-macros true]))
 
  (enable-console-print!)
 
 (def cnt (r/atom 0))
-(defn reloader [] @cnt [app-root])
+(defn reloader [] @cnt [core/app-root])
 (def root-el (r/as-element [reloader]))
 
 (figwheel/watch-and-reload
