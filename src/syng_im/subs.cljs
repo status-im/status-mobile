@@ -7,6 +7,8 @@
             [syng-im.models.chats :refer [chats-list
                                           chats-updated?
                                           chat-by-id]]
+            [syng-im.models.discoveries :refer [discovery-list
+                                                discovery-updated?]]
             [syng-im.models.messages :refer [get-messages]]
             [syng-im.models.contacts :refer [contacts-list]]
             [syng-im.handlers.suggestions :refer [get-suggestions]]))
@@ -62,6 +64,16 @@
       (-> (when-let [chat-id @current-chat-id]
             (chat-by-id chat-id))
           (reaction)))))
+
+;; -- Discoveries list --------------------------------------------------------------
+
+(register-sub :get-discoveries
+              (fn [db _]
+                (let [discovery-updated (-> (discovery-updated? @db)
+                                            (reaction))]
+                  (reaction
+                    (let [_ @discovery-updated]
+                      (discovery-list))))))
 
 ;; -- User data --------------------------------------------------------------
 

@@ -44,7 +44,24 @@
                                   :group-chat "bool"
                                   :timestamp  "int"
                                   :contacts   {:type       "list"
-                                               :objectType "chat-contact"}}}]})
+                                               :objectType "chat-contact"}}}
+                    {:name        :tag
+                     :primaryKey  :name
+                     :properties  {:name         "string"
+                                   :count        {:type     "int"
+                                                  :optional true
+                                                  :default 1}}}
+                    {:name        :discoveries
+                     :primaryKey  :whisper-id
+                     :properties  {:name         "string"
+                                   :status       "string"
+                                   :whisper-id   "string"
+                                   :photo        "string"
+                                   :tags         {:type       "list"
+                                                  :objectType "tag"}
+                                   :last-updated "date"}}
+
+                    ]})
 
 
 (def realm (js/Realm. (clj->js opts)))
@@ -122,7 +139,7 @@
   (.-length objs))
 
 (defn get-list [schema-name]
-  (vals (js->clj (.objects realm (to-string schema-name)) :keywordize-keys true)))
+  (vals (js->clj (.slice (.objects realm (to-string schema-name)) 0) :keywordize-keys true)))
 
 
 (comment
