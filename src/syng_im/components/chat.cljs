@@ -57,10 +57,14 @@
                                                 :elevation       2}
                              :actions          [{:title        "Add Contact to chat"
                                                  :icon         res/add-icon
+                                                 :showWithText true}
+                                                {:title        "Remove Contact from chat"
+                                                 :icon         res/trash-icon
                                                  :showWithText true}]
                              :onActionSelected (fn [position]
                                                  (case position
-                                                   0 (dispatch [:show-add-participants navigator])))
+                                                   0 (dispatch [:show-add-participants navigator])
+                                                   1 (dispatch [:show-remove-participants navigator])))
                              :onIconClicked    (fn []
                                                  (nav-pop navigator))}])
          [list-view {:dataSource            datasource

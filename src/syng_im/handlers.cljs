@@ -19,7 +19,8 @@
     [syng-im.handlers.sign-up :as sign-up-service]
 
     [syng-im.models.chats :refer [create-chat
-                                  chat-add-participants]]
+                                  chat-add-participants
+                                  chat-remove-participants]]
     [syng-im.models.chat :refer [signal-chat-updated
                                  set-current-chat-id
                                  current-chat-id
@@ -33,8 +34,11 @@
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
     [syng-im.constants :refer [text-content-type]]
-    [syng-im.navigation :refer [nav-push]]
-    [syng-im.utils.crypt :refer [gen-random-bytes]]))
+    [syng-im.navigation :refer [nav-push
+                                nav-replace
+                                nav-pop]]
+    [syng-im.utils.crypt :refer [gen-random-bytes]]
+    [syng-im.utils.random :as random]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -82,9 +86,11 @@
     db))
 
 (register-handler :navigate-to
-  (fn [db [action navigator route]]
+  (fn [db [action navigator route nav-type]]
     (log/debug action route)
-    (nav-push navigator route)
+    (case nav-type
+      :push (nav-push navigator route)
+      :replace (nav-replace navigator route))
     db))
 
 ;; -- Protocol --------------------------------------------------------------
@@ -128,6 +134,13 @@
     (save-message chat-id {:from         "system"
                            :msg-id       msg-id
                            :content      (str (or inviter-name from) " invited " (or invitee-name identity))
+                           :content-type text-content-type})))
+
+(defn removed-participant-msg [chat-id identity]
+  (let [contact-name (:name (contacts/contact-by-identity identity))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       (random/id)
+                           :content      (str "You've removed " (or contact-name identity))
                            :content-type text-content-type})))
 
 (register-handler :group-chat-invite-acked
@@ -250,10 +263,10 @@
 ;; -- Chats --------------------------------------------------------------
 
 (register-handler :show-chat
-  (fn [db [action chat-id navigator]]
+  (fn [db [action chat-id navigator nav-type]]
     (log/debug action "chat-id" chat-id)
     (let [db (set-current-chat-id db chat-id)]
-      (dispatch [:navigate-to navigator {:view-id :chat}])
+      (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
       db)))
 
 (register-handler :set-sign-up-chat
@@ -287,6 +300,25 @@
     (log/debug action identity add?)
     (update-new-participants-selection db identity add?)))
 
+(register-handler :show-remove-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (nav-push navigator {:view-id :remove-participants})
+    (clear-new-participants db)))
+
+(register-handler :remove-selected-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (let [identities (-> (new-participants-selection db)
+                         (vec))
+          chat-id    (current-chat-id db)]
+      (chat-remove-participants chat-id identities)
+      (nav-pop navigator)
+      (doseq [ident identities]
+        (api/group-remove-participant chat-id ident)
+        (removed-participant-msg chat-id ident))
+      (signal-chat-updated db chat-id))))
+
 (register-handler :show-add-participants
   (fn [db [action navigator]]
     (log/debug action)
@@ -300,7 +332,7 @@
                          (vec))
           chat-id    (current-chat-id db)]
       (chat-add-participants chat-id identities)
-      (dispatch [:show-chat chat-id navigator])
+      (nav-pop navigator)
       (doseq [ident identities]
         (api/group-add-participant chat-id ident))
       db)))
@@ -323,7 +355,7 @@
                          (vec))
           group-id   (api/start-group-chat identities group-name)
           db         (create-chat db group-id identities true group-name)]
-      (dispatch [:show-chat group-id navigator])
+      (dispatch [:show-chat group-id navigator :replace])
       db)))
 
 (register-handler :group-chat-invite-received
