@@ -116,16 +116,30 @@
     (signal-chat-updated db chat-id)))
 
 (defn joined-chat-msg [chat-id from msg-id]
-  (let [contact-name (:name (contacts/contatct-by-identity from))]
+  (let [contact-name (:name (contacts/contact-by-identity from))]
     (save-message chat-id {:from         "system"
                            :msg-id       msg-id
                            :content      (str (or contact-name from) " received chat invitation")
+                           :content-type text-content-type})))
+
+(defn participant-invited-to-group-msg [chat-id identity from msg-id]
+  (let [inviter-name (:name (contacts/contact-by-identity from))
+        invitee-name (:name (contacts/contact-by-identity identity))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or inviter-name from) " invited " (or invitee-name identity))
                            :content-type text-content-type})))
 
 (register-handler :group-chat-invite-acked
   (fn [db [action from group-id ack-msg-id]]
     (log/debug action from group-id ack-msg-id)
     (joined-chat-msg group-id from ack-msg-id)
+    (signal-chat-updated db group-id)))
+
+(register-handler :participant-invited-to-group
+  (fn [db [action from group-id identity msg-id]]
+    (log/debug action msg-id from group-id identity)
+    (participant-invited-to-group-msg group-id identity from msg-id)
     (signal-chat-updated db group-id)))
 
 (register-handler :acked-msg
@@ -137,7 +151,7 @@
 
 (register-handler :msg-delivery-failed
   (fn [db [action msg-id]]
-    (log/debug action from msg-id)
+    (log/debug action msg-id)
     (update-message! {:msg-id          msg-id
                       :delivery-status :failed})
     (let [{:keys [chat-id]} (message-by-id msg-id)]

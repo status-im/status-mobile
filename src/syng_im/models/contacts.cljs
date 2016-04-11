@@ -101,29 +101,29 @@
         (r/filtered exclude-query)
         (r/sorted :name :asc))))
 
-(defn contatct-by-identity [identity]
+(defn contact-by-identity [identity]
   (-> (r/get-by-field :contacts :whisper-identity identity)
       (r/single-cljs)))
 
 (comment
 
   (r/write #(create-contact {:phone-number     "0543072333"
-                             :whisper-identity "0x045326d94f999c3e17d11d6a09e13cf9a34b30f62687a970053887b8f8d1fefac3f185e6ba6f02f8217b6947227c7dbfa8d4ee3a4a2864b0cac9968c819ba9c17c"
+                             :whisper-identity "0x043e3a8344049fb48fef030084212a9d41577a5dea18aeb4c8f285c16f783aa84e43f84c32eb8601e22827b12d5f93f14e545f9023034a0521dc18484bbbc44704"
                              :name             "Mr. Bean"
                              :photo-path       ""}))
 
   (r/write #(create-contact {:phone-number     "0544828649"
-                             :whisper-identity "0x0496152b9bb6640fddb3a156747baa961792762264ab459c8d7c9ac179ddceb2abb701357a9b6691ef858ef8ce2eb306754825b8267add96e7a01d854a576b9fda"
+                             :whisper-identity "0x04e9b01298dd12c4d8f0393d7890302b25762966d825158d1fdffe124703c0efcd7f23a6cf71c466ca50b2af3d54264ea5f224a19ba7775779c1ddbcb237258c5c"
                              :name             "Mr. Batman"
                              :photo-path       ""}))
 
   (r/write #(create-contact {:phone-number     "0522222222"
-                             :whisper-identity "0x04ef1f45303a14cb30af0458fabc2c7b1fd1bc9bb69fae5bb4ec63ae5b52cd53c2a194398b6674cc335899bbf6a24bfe48813a134ce9b8b85877690c1a99f0b19f"
+                             :whisper-identity "0x0487954e7fa746d8cf787403c2c491aadad540b9bb1f0f7b8184792e91c33b6a394079295f5777ec6d4af9ad5ba24794b3ff1ec8be9ff6a708c85a163733192665"
                              :name             "Mr. Eagle"
                              :photo-path       ""}))
 
   (r/write #(create-contact {:phone-number     "0533333333"
-                             :whisper-identity "0x04e9e31a92ab16dbac9cdce47f59545ac646175087f4eeb6e4442e36d37b09e20dcb6239ac743ddd3f1fa17377c1789dc60a1ebb8774d247f3df69ebd0082d46fe"
+                             :whisper-identity "0x04e43e861a6dd99ad9eee7bd58af89dcaa430188ebec8698de7b7bad54573324fff4ac5cb9bb277af317efd7abfc917b91bf48cc41e40bf70062fd79400016a1f9"
                              :name             "Mr. PiggyBear"
                              :photo-path       ""}))
 
