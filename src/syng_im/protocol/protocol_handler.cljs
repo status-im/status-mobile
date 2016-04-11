@@ -34,9 +34,8 @@
                                                     (dispatch [:group-chat-invite-acked from group-id ack-msg-id]))
                          :group-new-participant (let [{:keys [group-id identity from msg-id]} event]
                                                   (dispatch [:participant-invited-to-group from group-id identity msg-id]))
-                         ;:group-removed-participant (let [{:keys [group-id identity from]} event]
-                         ;                             (add-to-chat "group-chat" ":" (str (shorten from) " removed " (shorten identity) " from group chat"))
-                         ;                             (remove-identity-from-group-list identity))
+                         :group-removed-participant (let [{:keys [group-id identity from msg-id]} event]
+                                                      (dispatch [:participant-removed-from-group from group-id identity msg-id]))
                          ;:removed-from-group (let [{:keys [group-id from]} event]
                          ;                      (add-to-chat "group-chat" ":" (str (shorten from) " removed you from group chat")))
                          ;:participant-left-group (let [{:keys [group-id from]} event]

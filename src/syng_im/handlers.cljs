@@ -136,6 +136,14 @@
                            :content      (str (or inviter-name from) " invited " (or invitee-name identity))
                            :content-type text-content-type})))
 
+(defn participant-removed-from-group-msg [chat-id identity from msg-id]
+  (let [remover-name (:name (contacts/contact-by-identity from))
+        removed-name (:name (contacts/contact-by-identity identity))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or remover-name from) " removed " (or removed-name identity))
+                           :content-type text-content-type})))
+
 (defn removed-participant-msg [chat-id identity]
   (let [contact-name (:name (contacts/contact-by-identity identity))]
     (save-message chat-id {:from         "system"
@@ -147,6 +155,13 @@
   (fn [db [action from group-id ack-msg-id]]
     (log/debug action from group-id ack-msg-id)
     (joined-chat-msg group-id from ack-msg-id)
+    (signal-chat-updated db group-id)))
+
+(register-handler :participant-removed-from-group
+  (fn [db [action from group-id identity msg-id]]
+    (log/debug action msg-id from group-id identity)
+    (chat-remove-participants group-id [identity])
+    (participant-removed-from-group-msg group-id identity from msg-id)
     (signal-chat-updated db group-id)))
 
 (register-handler :participant-invited-to-group
