@@ -4,6 +4,8 @@
             [syng-im.utils.utils :refer [log toast]]
             [syng-im.persistence.realm :as realm]
             [syng-im.persistence.realm :as r]
+            [syng-im.persistence.realm-queries :refer [include-query
+                                                       exclude-query]]
             [clojure.string :as s]))
 
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
@@ -93,12 +95,15 @@
       (r/sorted :name :asc)))
 
 (defn contacts-list-exclude [exclude-idents]
-  (let [exclude-query (->> exclude-idents
-                           (map (fn [ident]
-                                  (str "whisper-identity != '" ident "'")))
-                           (s/join " && "))]
+  (let [query (exclude-query :whisper-identity exclude-idents)]
     (-> (r/get-all :contacts)
-        (r/filtered exclude-query)
+        (r/filtered query)
+        (r/sorted :name :asc))))
+
+(defn contacts-list-include [include-indents]
+  (let [query (include-query :whisper-identity include-indents)]
+    (-> (r/get-all :contacts)
+        (r/filtered query)
         (r/sorted :name :asc))))
 
 (defn contact-by-identity [identity]

@@ -115,8 +115,7 @@
   (read-string value))
 
 (defn delete [obj]
-  (write (fn []
-           (.delete realm obj))))
+  (.delete realm obj))
 
 (defn exists? [schema-name field value]
   (> (.-length (get-by-field schema-name field value))
