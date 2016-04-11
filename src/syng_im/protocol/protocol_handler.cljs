@@ -38,8 +38,6 @@
                                                       (dispatch [:participant-removed-from-group from group-id identity msg-id]))
                          :removed-from-group (let [{:keys [group-id from msg-id]} event]
                                                (dispatch [:you-removed-from-group from group-id msg-id]))
-                         ;:participant-left-group (let [{:keys [group-id from]} event]
-                         ;                          (add-to-chat "group-chat" ":" (str (shorten from) " left group chat")))
-                         ;(add-to-chat "chat" ":" (str "Don't know how to handle " event-type))
-                         (log/info "Don't know how to handle" event-type)
-                         ))})
+                         :participant-left-group (let [{:keys [group-id from msg-id]} event]
+                                                   (dispatch [:participant-left-group from group-id msg-id]))
+                         (log/info "Don't know how to handle" event-type)))})

@@ -152,6 +152,13 @@
                            :content      (str (or remover-name from) " removed you from group chat")
                            :content-type text-content-type})))
 
+(defn participant-left-group-msg [chat-id from msg-id]
+  (let [left-name (:name (contacts/contact-by-identity from))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or left-name from) " left")
+                           :content-type text-content-type})))
+
 (defn removed-participant-msg [chat-id identity]
   (let [contact-name (:name (contacts/contact-by-identity identity))]
     (save-message chat-id {:from         "system"
@@ -183,6 +190,12 @@
     (log/debug action msg-id from group-id)
     (you-removed-from-group-msg group-id from msg-id)
     (set-chat-active group-id false)
+    (signal-chat-updated db group-id)))
+
+(register-handler :participant-left-group
+  (fn [db [action from group-id msg-id]]
+    (log/debug action msg-id from group-id)
+    (participant-left-group-msg group-id from msg-id)
     (signal-chat-updated db group-id)))
 
 (register-handler :participant-invited-to-group
