@@ -20,7 +20,8 @@
 
     [syng-im.models.chats :refer [create-chat
                                   chat-add-participants
-                                  chat-remove-participants]]
+                                  chat-remove-participants
+                                  set-chat-active]]
     [syng-im.models.chat :refer [signal-chat-updated
                                  set-current-chat-id
                                  current-chat-id
@@ -144,12 +145,25 @@
                            :content      (str (or remover-name from) " removed " (or removed-name identity))
                            :content-type text-content-type})))
 
+(defn you-removed-from-group-msg [chat-id from msg-id]
+  (let [remover-name (:name (contacts/contact-by-identity from))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or remover-name from) " removed you from group chat")
+                           :content-type text-content-type})))
+
 (defn removed-participant-msg [chat-id identity]
   (let [contact-name (:name (contacts/contact-by-identity identity))]
     (save-message chat-id {:from         "system"
                            :msg-id       (random/id)
                            :content      (str "You've removed " (or contact-name identity))
                            :content-type text-content-type})))
+
+(defn left-chat-msg [chat-id]
+  (save-message chat-id {:from         "system"
+                         :msg-id       (random/id)
+                         :content      "You left this chat"
+                         :content-type text-content-type}))
 
 (register-handler :group-chat-invite-acked
   (fn [db [action from group-id ack-msg-id]]
@@ -162,6 +176,13 @@
     (log/debug action msg-id from group-id identity)
     (chat-remove-participants group-id [identity])
     (participant-removed-from-group-msg group-id identity from msg-id)
+    (signal-chat-updated db group-id)))
+
+(register-handler :you-removed-from-group
+  (fn [db [action from group-id msg-id]]
+    (log/debug action msg-id from group-id)
+    (you-removed-from-group-msg group-id from msg-id)
+    (set-chat-active group-id false)
     (signal-chat-updated db group-id)))
 
 (register-handler :participant-invited-to-group
@@ -201,6 +222,15 @@
                    :content-type text-content-type
                    :outgoing     true}))]
       (save-message chat-id msg)
+      (signal-chat-updated db chat-id))))
+
+(register-handler :leave-group-chat
+  (fn [db [action navigator]]
+    (log/debug action)
+    (let [chat-id (current-chat-id db)]
+      (api/leave-group-chat chat-id)
+      (set-chat-active chat-id false)
+      (left-chat-msg chat-id)
       (signal-chat-updated db chat-id))))
 
 (register-handler :send-chat-command

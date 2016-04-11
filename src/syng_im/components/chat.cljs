@@ -55,16 +55,22 @@
                              :style            {:backgroundColor "white"
                                                 :height          56
                                                 :elevation       2}
-                             :actions          [{:title        "Add Contact to chat"
-                                                 :icon         res/add-icon
-                                                 :showWithText true}
-                                                {:title        "Remove Contact from chat"
-                                                 :icon         res/trash-icon
-                                                 :showWithText true}]
+                             :actions          (when (and (:group-chat @chat)
+                                                          (:is-active @chat))
+                                                 [{:title        "Add Contact to chat"
+                                                   :icon         res/add-icon
+                                                   :showWithText true}
+                                                  {:title        "Remove Contact from chat"
+                                                   :icon         res/trash-icon
+                                                   :showWithText true}
+                                                  {:title        "Leave Chat"
+                                                   :icon         res/leave-icon
+                                                   :showWithText true}])
                              :onActionSelected (fn [position]
                                                  (case position
                                                    0 (dispatch [:show-add-participants navigator])
-                                                   1 (dispatch [:show-remove-participants navigator])))
+                                                   1 (dispatch [:show-remove-participants navigator])
+                                                   2 (dispatch [:leave-group-chat navigator])))
                              :onIconClicked    (fn []
                                                  (nav-pop navigator))}])
          [list-view {:dataSource            datasource
@@ -75,4 +81,5 @@
                                                             (add-msg-color contact-by-identity))]
                                                 (r/as-element [chat-message msg])))
                      :style                 {:backgroundColor "white"}}]
-         [chat-message-new]]))))
+         (when (:is-active @chat)
+           [chat-message-new])]))))

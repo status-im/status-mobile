@@ -43,6 +43,7 @@
                                   :name       "string"
                                   :group-chat {:type    "bool"
                                                :indexed true}
+                                  :is-active  "bool"
                                   :timestamp  "int"
                                   :contacts   {:type       "list"
                                                :objectType "chat-contact"}}}]})
@@ -129,23 +130,5 @@
 
 
 (comment
-
-  (write #(.create realm "msgs" (clj->js {:msg-id          "12"
-                                          :content         "sdfd"
-                                          :from            "sdfsd"
-                                          :chat-id         "56"
-                                          :content-type    "fg"
-                                          :timestamp       2
-                                          :outgoing        true
-                                          :to              "sfs"
-                                          :delivery-status "seen"}) true))
-
-  (.addListener realm "change" (fn [& args]
-                                 (log/debug args)))
-
-  ;realm.addListener('change', () => {
-  ;                                   // Update UI
-  ;                                   ...
-  ;                                   });
 
   )

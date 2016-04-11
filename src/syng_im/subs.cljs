@@ -60,10 +60,13 @@
 (register-sub :get-current-chat
   (fn [db _]
     (let [current-chat-id (-> (current-chat-id @db)
+                              (reaction))
+          chat-updated    (-> (chat-updated? @db @current-chat-id)
                               (reaction))]
-      (-> (when-let [chat-id @current-chat-id]
-            (chat-by-id chat-id))
-          (reaction)))))
+      (reaction
+        (let [_ @chat-updated]
+          (when-let [chat-id @current-chat-id]
+            (chat-by-id chat-id)))))))
 
 ;; -- User data --------------------------------------------------------------
 

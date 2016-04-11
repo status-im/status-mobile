@@ -47,6 +47,7 @@
                                    :background-color background
                                    :text-color       text}) identities group-chat-colors)]
              (r/create :chats {:chat-id    chat-id
+                               :is-active  true
                                :name       chat-name
                                :group-chat group-chat?
                                :timestamp  (timestamp)
@@ -94,10 +95,17 @@
 
 (defn active-group-chats []
   (let [results (-> (r/get-all :chats)
-                    (r/filtered "group-chat = true"))]
+                    (r/filtered "group-chat = true && is-active = true"))]
     (->> (.map results (fn [object index collection]
                          (aget object "chat-id")))
          (js->clj))))
+
+
+(defn set-chat-active [chat-id active?]
+  (r/write (fn []
+             (-> (r/get-by-field :chats :chat-id chat-id)
+                 (r/single)
+                 (aset "is-active" active?)))))
 
 (comment
   (active-group-chats)
