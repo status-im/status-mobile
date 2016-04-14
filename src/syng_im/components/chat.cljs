@@ -39,16 +39,16 @@
             contacts            (:contacts @chat)
             contact-by-identity (contacts-by-identity contacts)]
         [view {:style {:flex            1
-                       :backgroundColor "#eef2f5"}}
+                       :backgroundColor "#EBF0F4"}}
          (when android?
            ;; TODO add IOS version
-           [toolbar-android {:logo          res/logo-icon
+           [toolbar-android {:logo          res/logo-icon ;; todo contact/chat avatar
                              :title         (or (@chat :name)
                                                 "Chat name")
                              :titleColor    "#4A5258"
                              :subtitle      "Last seen just now"
                              :subtitleColor "#AAB2B2"
-                             :navIcon       res/nav-back-icon
+                             :navIcon       res/icon-back
                              :style         {:backgroundColor "white"
                                              :height          56
                                              :elevation       2}

@@ -13,3 +13,11 @@
 (def smile (js/require "./images/smile.png"))
 (def att (js/require "./images/att.png"))
 (def v (js/require "./images/v.png"))
+
+(def icon-back (js/require "./images/icon_back.png"))
+(def icon-dollar (js/require "./images/icon_dollar.png"))
+(def icon-list (js/require "./images/icon_list.png"))
+(def icon-lock-gray (js/require "./images/icon_lock_gray.png"))
+(def icon-lock-white (js/require "./images/icon_lock_white.png"))
+(def icon-ok-small (js/require "./images/icon_ok_small.png"))
+(def icon-smile (js/require "./images/icon_smile.png"))
