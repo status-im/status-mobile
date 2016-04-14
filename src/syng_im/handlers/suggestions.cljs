@@ -4,24 +4,37 @@
             [syng-im.models.chat :refer [current-chat-id]]
             [syng-im.models.commands :refer [commands
                                              suggestions
+                                             get-commands
                                              get-chat-command-request
                                              get-chat-command-to-msg-id]]
-            [syng-im.utils.utils :refer [log on-error http-post]]
+            [syng-im.utils.utils :refer [log on-error http-get]]
             [syng-im.utils.logging :as log]))
 
-(defn get-suggestions [text]
+(defn get-suggestions [db text]
   (if (= (get text 0) "!")
     ;; TODO change 'commands' to 'suggestions'
-    (filterv #(.startsWith (:text %) text) commands)
+    (filterv #(.startsWith (:text %) text) (get-commands db))
     []))
 
-(defn get-command [text]
+(defn get-command [db text]
   (when (= (get text 0) "!")
     ;; TODO change 'commands' to 'suggestions'
-    (first (filter #(= (:text %) text) commands))))
+    (first (filter #(= (:text %) text) (get-commands db)))))
 
 (defn handle-command [db command-key content]
   (when-let [command-handler (get-chat-command-request db)]
    (let [to-msg-id (get-chat-command-to-msg-id db)]
      (command-handler to-msg-id command-key content)))
   db)
+
+(defn execute-commands-js [body]
+  (.eval js/window body)
+  (let [commands (.-commands js/window)]
+    (dispatch [:set-commands (map (fn [command]
+                                    (update command :command
+                                            (fn [command-key]
+                                              (keyword command-key))))
+                                  (js->clj commands :keywordize-keys true))])))
+
+(defn load-commands []
+  (http-get "chat-commands.js" execute-commands-js nil))

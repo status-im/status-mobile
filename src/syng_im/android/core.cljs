@@ -57,5 +57,7 @@
   (dispatch [:initialize-protocol])
   (dispatch [:load-user-phone-number])
   (dispatch [:load-syng-contacts])
+  ;; load commands from remote server (todo: uncomment)
+  ;; (dispatch [:load-commands])
   (dispatch-sync [:init-console-chat])
   (.registerComponent app-registry "SyngIm" #(r/reactify-component app-root)))

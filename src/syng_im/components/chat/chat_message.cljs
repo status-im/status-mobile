@@ -7,7 +7,8 @@
                                               touchable-highlight
                                               navigator
                                               toolbar-android]]
-            [syng-im.models.commands :as commands]
+            [syng-im.models.commands :refer [parse-command-msg-content
+                                             parse-command-request-msg-content]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
@@ -65,62 +66,72 @@
 
 
 (defn message-content-command [content]
-  (let [{:keys [command content]} (commands/parse-command-msg-content content)]
-    [view {:style {:flexDirection "column"}}
-     [view {:style {:marginTop       -5
-                    :marginLeft      0
-                    :backgroundColor (:color command)
-                    :borderRadius    10}}
-      [text {:style {:marginTop        0
-                     :marginHorizontal 10
-                     :fontSize         14
-                     :fontFamily       "Avenir-Roman"
-                     :color            "white"}}
-       (:text command)]]
-     [text {:style {:marginTop        5
-                    :marginHorizontal 0
-                    :fontSize         14
-                    :fontFamily       "Avenir-Roman"
-                    :color            "black"}}
-      ;; TODO isn't smart
-      (if (= (:command command) :keypair-password)
-        "******"
-        content)]]))
+  (let [;; command-msg-atom (subscribe [:parse-command-msg-content content])
+        commands-atom (subscribe [:get-commands])]
+    (fn [content]
+      (let [;; {:keys [command content]} @command-msg-atom
+            commands @commands-atom
+            {:keys [command content]} (parse-command-msg-content commands content)]
+        [view {:style {:flexDirection "column"}}
+         [view {:style {:marginTop       -5
+                        :marginLeft      0
+                        :backgroundColor (:color command)
+                        :borderRadius    10}}
+          [text {:style {:marginTop        0
+                         :marginHorizontal 10
+                         :fontSize         14
+                         :fontFamily       "Avenir-Roman"
+                         :color            "white"}}
+           (:text command)]]
+         [text {:style {:marginTop        5
+                        :marginHorizontal 0
+                        :fontSize         14
+                        :fontFamily       "Avenir-Roman"
+                        :color            "black"}}
+          ;; TODO isn't smart
+          (if (= (:command command) :keypair-password)
+            "******"
+            content)]]))))
 
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (:command command)]))
 
 (defn message-content-command-request [msg-id content outgoing text-color background-color]
-  (let [{:keys [command content]} (commands/parse-command-request-msg-content content)]
-    [touchable-highlight {:onPress (fn []
-                                     (set-chat-command msg-id command))}
-     [view {}
-      [view {:style (merge {:marginTop         15
-                            :borderRadius      6
-                            :paddingVertical   12
-                            :paddingHorizontal 16}
-                           (if outgoing
-                             {:backgroundColor "#D3EEEF"}
-                             {:backgroundColor background-color}))}
-       [text {:style (merge {:fontSize   14
-                             :fontFamily "Avenir-Roman"}
-                            (if outgoing
-                              {:color "#4A5258"}
-                              {:color text-color}))}
-        content]]
-      [view {:style {:position        "absolute"
-                     :top             0
-                     :left            20
-                     :width           30
-                     :height          30
-                     :borderRadius    50
-                     :backgroundColor (:color command)}}
-       [image {:source res/att
-               :style  {:width    17
-                        :height   14
-                        :position "absolute"
-                        :top      8
-                        :left     6}}]]]]))
+  (let [;; command-request-atom (subscribe [:parse-command-request-msg-content content])
+        commands-atom (subscribe [:get-commands])]
+    (fn [msg-id content outgoing text-color background-color]
+      (let [;; {:keys [command content]} @command-request-atom
+            commands @commands-atom
+            {:keys [command content]} (parse-command-request-msg-content commands content)]
+        [touchable-highlight {:onPress (fn []
+                                         (set-chat-command msg-id command))}
+         [view {}
+          [view {:style (merge {:marginTop         15
+                                :borderRadius      6
+                                :paddingVertical   12
+                                :paddingHorizontal 16}
+                               (if outgoing
+                                 {:backgroundColor "#D3EEEF"}
+                                 {:backgroundColor background-color}))}
+           [text {:style (merge {:fontSize   14
+                                 :fontFamily "Avenir-Roman"}
+                                (if outgoing
+                                  {:color "#4A5258"}
+                                  {:color text-color}))}
+            content]]
+          [view {:style {:position        "absolute"
+                         :top             0
+                         :left            20
+                         :width           30
+                         :height          30
+                         :borderRadius    50
+                         :backgroundColor (:color command)}}
+           [image {:source res/att
+                   :style  {:width    17
+                            :height   14
+                            :position "absolute"
+                            :top      8
+                            :left     6}}]]]]))))
 
 (defn message-content [{:keys [msg-id content-type content outgoing text-color background-color]}]
   (if (= content-type content-type-command-request)

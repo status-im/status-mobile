@@ -15,11 +15,13 @@
     [syng-im.models.commands :refer [set-chat-command
                                      set-response-chat-command
                                      set-chat-command-content
-                                     set-chat-command-request]]
+                                     set-chat-command-request
+                                     set-commands]]
     [syng-im.handlers.server :as server]
     [syng-im.handlers.contacts :as contacts-service]
     [syng-im.handlers.suggestions :refer [get-command
-                                          handle-command]]
+                                          handle-command
+                                          load-commands]]
     [syng-im.handlers.sign-up :as sign-up-service]
 
     [syng-im.models.chats :refer [create-chat]]
@@ -86,6 +88,17 @@
     (nav-push navigator route)
     db))
 
+(register-handler :load-commands
+  (fn [db [action]]
+    (log/debug action)
+    (load-commands)
+    db))
+
+(register-handler :set-commands
+                  (fn [db [action commands]]
+                    (log/debug action commands)
+                    (set-commands db commands)))
+
 ;; -- Protocol --------------------------------------------------------------
 
 (register-handler :initialize-protocol
@@ -130,7 +143,7 @@
 (register-handler :send-chat-msg
   (fn [db [action chat-id text]]
     (log/debug action "chat-id" chat-id "text" text)
-    (if-let [command (get-command text)]
+    (if-let [command (get-command db text)]
       (dispatch [:set-chat-command (:command command)])
       (let [msg (if (= chat-id "console")
                   (sign-up-service/send-console-msg text)
