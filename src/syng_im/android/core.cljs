@@ -36,7 +36,10 @@
   (let [signed-up-atom (subscribe [:signed-up])]
     (fn []
       (let [signed-up @signed-up-atom]
-        [navigator {:initial-route (clj->js {:view-id :chat-list})
+        [navigator {:initial-route (clj->js {:view-id
+                                             ;:chat-list
+                                             :chat
+                                             })
                     :render-scene  (fn [route nav]
                                      (log/debug "route" route)
                                      (when true ;; nav/*nav-render*

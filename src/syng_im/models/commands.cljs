@@ -4,6 +4,7 @@
             [cljs.core.async :as async :refer [chan put! <! >!]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.db :as db]
+            [syng-im.resources :as res]
             [syng-im.models.chat :refer [current-chat-id]]
             [syng-im.utils.utils :refer [log toast]]
             [syng-im.utils.logging :as log]
@@ -14,6 +15,8 @@
                 :text "!money"
                 :description "Send money"
                 :color "#48ba30"
+                :request-icon res/icon-lock-white
+                :icon res/icon-lock-gray
                 :suggestion true}
                {:command :location
                 :text "!location"
@@ -28,7 +31,10 @@
                {:command :confirmation-code
                 :text "!confirmationCode"
                 :description "Send confirmation code"
-                :color "#019af0"
+                :request-text "Confirmation code request"
+                :color "#6581E7"
+                :request-icon res/icon-lock-white
+                :icon res/icon-lock-gray
                 :suggestion true}
                {:command :send
                 :text "!send"
@@ -43,7 +49,9 @@
                {:command :keypair-password
                 :text "!keypairPassword"
                 :description ""
-                :color "#019af0"
+                :color "#6581E7"
+                :request-icon res/icon-lock-white
+                :icon res/icon-lock-gray
                 :suggestion false}
                {:command :help
                 :text "!help"

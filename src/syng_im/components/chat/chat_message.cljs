@@ -66,23 +66,26 @@
 
 
 (defn message-content-command [content]
-  (let [;; command-msg-atom (subscribe [:parse-command-msg-content content])
-        commands-atom (subscribe [:get-commands])]
+  (let [commands-atom (subscribe [:get-commands])]
     (fn [content]
-      (let [;; {:keys [command content]} @command-msg-atom
-            commands @commands-atom
+      (let [commands @commands-atom
             {:keys [command content]} (parse-command-msg-content commands content)]
         [view {:style {:flexDirection "column"}}
-         [view {:style {:marginTop       -5
-                        :marginLeft      0
-                        :backgroundColor (:color command)
-                        :borderRadius    10}}
-          [text {:style {:marginTop        0
-                         :marginHorizontal 10
-                         :fontSize         14
-                         :fontFamily       "Avenir-Roman"
-                         :color            "white"}}
-           (:text command)]]
+         [view {:style {:flexDirection "row"
+                        :marginRight 32}}
+          [view {:style {:backgroundColor   (:color command)
+                         :height            24
+                         :borderRadius      50
+                         :paddingTop        2
+                         :paddingHorizontal 12}}
+           [text {:style {:fontSize         12
+                          :fontFamily       "Avenir-Roman"
+                          :color            "white"}}
+            (:text command)]]]
+         [image {:source (:icon command)
+                 :style {:position "absolute"
+                         :top      4
+                         :right    0}}]
          [text {:style {:marginTop        5
                         :marginHorizontal 0
                         :fontSize         14
@@ -97,21 +100,17 @@
   (dispatch [:set-response-chat-command msg-id (:command command)]))
 
 (defn message-content-command-request [msg-id content outgoing text-color background-color]
-  (let [;; command-request-atom (subscribe [:parse-command-request-msg-content content])
-        commands-atom (subscribe [:get-commands])]
+  (let [commands-atom (subscribe [:get-commands])]
     (fn [msg-id content outgoing text-color background-color]
-      (let [;; {:keys [command content]} @command-request-atom
-            commands @commands-atom
+      (let [commands @commands-atom
             {:keys [command content]} (parse-command-request-msg-content commands content)]
         [touchable-highlight {:onPress (fn []
                                          (set-chat-command msg-id command))}
-         [view {}
-          [view {:style (merge {:marginTop         15
-                                :borderRadius      6
-                                :paddingVertical   12
-                                :paddingHorizontal 16}
+         [view {:style {:paddingRight 16}}
+          [view {:style (merge {:borderRadius 7
+                                :padding      12}
                                (if outgoing
-                                 {:backgroundColor "#D3EEEF"}
+                                 {:backgroundColor "white"}
                                  {:backgroundColor background-color}))}
            [text {:style (merge {:fontSize   14
                                  :fontFamily "Avenir-Roman"}
@@ -120,30 +119,30 @@
                                   {:color text-color}))}
             content]]
           [view {:style {:position        "absolute"
-                         :top             0
-                         :left            20
-                         :width           30
-                         :height          30
+                         :top             12
+                         :right           0
+                         :width           32
+                         :height          32
                          :borderRadius    50
                          :backgroundColor (:color command)}}
-           [image {:source res/att
-                   :style  {:width    17
-                            :height   14
-                            :position "absolute"
-                            :top      8
-                            :left     6}}]]]]))))
+           [image {:source (:request-icon command)
+                   :style  {:position "absolute"
+                            :top      9
+                            :left     10}}]]
+          [text {:style {:marginTop  2
+                         :fontFamily "Avenir-Roman"
+                         :fontSize   12
+                         :color      "#AAB2B2"
+                         :opacity    0.8 }}
+           (str (:request-text command))]]]))))
 
 (defn message-content [{:keys [msg-id content-type content outgoing text-color background-color]}]
   (if (= content-type content-type-command-request)
     [message-content-command-request msg-id content outgoing text-color background-color]
-    [view {:style (merge {:borderRadius 6}
-                         (if (= content-type text-content-type)
-                           {:paddingVertical   12
-                            :paddingHorizontal 16}
-                           {:paddingVertical   14
-                            :paddingHorizontal 10})
+    [view {:style (merge {:borderRadius 7
+                          :padding 12}
                          (if outgoing
-                           {:backgroundColor "#D3EEEF"}
+                           {:backgroundColor "white"}
                            {:backgroundColor background-color}))}
      (cond
        (= content-type text-content-type)
@@ -168,7 +167,7 @@
            :style  {:marginTop 6
                     :opacity   0.6}}]
    [text {:style {:fontFamily "Avenir-Roman"
-                  :fontSize   11
+                  :fontSize   12
                   :color      "#AAB2B2"
                   :opacity    0.8
                   :marginLeft 5}}
@@ -178,31 +177,35 @@
       :failed "Failed")]])
 
 (defn message-body [{:keys [msg-id content content-type outgoing delivery-status text-color background-color]}]
-  [view {:style (merge {:flexDirection  "column"
-                        :width          260
-                        :marginVertical 5}
-                       (if outgoing
-                         {:alignSelf  "flex-end"
-                          :alignItems "flex-end"}
-                         {:alignSelf  "flex-start"
-                          :alignItems "flex-start"}))}
-   [message-content {:msg-id           msg-id
-                     :content-type     content-type
-                     :content          content
-                     :outgoing         outgoing
-                     :text-color       text-color
-                     :background-color background-color}]
-   (when (and outgoing delivery-status)
-     [message-delivery-status {:delivery-status delivery-status}])])
+  (let [delivery-status :seen]
+   [view {:style (merge {:flexDirection "column"
+                         :width         260
+                         :paddingTop    5
+                         :paddingRight  8
+                         :paddingBottom 5
+                         :paddingLeft   8}
+                        (if outgoing
+                          {:alignSelf  "flex-end"
+                           :alignItems "flex-end"}
+                          {:alignSelf  "flex-start"
+                           :alignItems "flex-start"}))}
+    [message-content {:msg-id           msg-id
+                      :content-type     content-type
+                      :content          content
+                      :outgoing         outgoing
+                      :text-color       text-color
+                      :background-color background-color}]
+    (when (and outgoing delivery-status)
+      [message-delivery-status {:delivery-status delivery-status}])]))
 
 (defn chat-message [{:keys [msg-id content content-type outgoing delivery-status date new-day text-color background-color] :as msg}]
-  [view {:paddingHorizontal 15}
+  [view {}
    (when new-day
      [message-date {:date date}])
    [message-body {:msg-id           msg-id
                   :content          content
                   :content-type     content-type
                   :outgoing         outgoing
-                  :text-color       text-color
-                  :background-color background-color
+                  :text-color       "black" ;text-color
+                  :background-color "white" ;background-color
                   :delivery-status  (keyword delivery-status)}]])
