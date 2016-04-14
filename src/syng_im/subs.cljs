@@ -9,9 +9,12 @@
                                           chat-by-id]]
             [syng-im.models.messages :refer [get-messages]]
             [syng-im.models.contacts :refer [contacts-list]]
-            [syng-im.models.commands :refer [get-chat-command
+            [syng-im.models.commands :refer [get-commands
+                                             get-chat-command
                                              get-chat-command-content
-                                             get-chat-command-request]]
+                                             get-chat-command-request
+                                             parse-command-msg-content
+                                             parse-command-request-msg-content]]
             [syng-im.handlers.suggestions :refer [get-suggestions]]))
 
 ;; -- Chat --------------------------------------------------------------
@@ -34,7 +37,11 @@
 (register-sub :get-suggestions
   (fn [db _]
     (let [input-text (reaction (get-in @db (db/chat-input-text-path (current-chat-id @db))))]
-      (reaction (get-suggestions @input-text)))))
+      (reaction (get-suggestions @db @input-text)))))
+
+(register-sub :get-commands
+              (fn [db _]
+                (reaction (get-commands @db))))
 
 (register-sub :get-chat-input-text
   (fn [db _]
@@ -103,7 +110,7 @@
   :get-contacts
   (fn [db _]
     (reaction
-      (get @db :contacts))))
+     (get @db :contacts))))
 
 (register-sub :all-contacts
   (fn [db _]
