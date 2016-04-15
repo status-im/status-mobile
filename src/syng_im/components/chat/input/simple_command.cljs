@@ -6,6 +6,7 @@
                                               text
                                               text-input
                                               touchable-highlight]]
+            [syng-im.components.styles :refer [font]]
             [syng-im.utils.utils :refer [log toast http-post]]
             [syng-im.utils.logging :as log]
             [syng-im.resources :as res]
@@ -44,7 +45,7 @@
              [text {:style {:marginTop -2
                             :marginHorizontal 10
                             :fontSize         14
-                            :fontFamily       "Avenir-Roman"
+                            :fontFamily       font
                             :color           "white"}}
               (:text command)]]
             [touchable-highlight {:style {:marginTop   14
@@ -61,7 +62,7 @@
                                                        :marginLeft 8
                                                        :lineHeight 42
                                                        :fontSize   14
-                                                       :fontFamily "Avenir-Roman"
+                                                       :fontFamily font
                                                        :color      "black"}
                                :underlineColorAndroid "transparent"
                                :autoFocus             true

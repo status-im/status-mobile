@@ -1,6 +1,7 @@
 (ns syng-im.components.contact-list.contact-inner
   (:require [clojure.string :as s]
             [syng-im.components.react :refer [view image text]]
+            [syng-im.components.styles :refer [font]]
             [syng-im.resources :as res]))
 
 (defn contact-photo [{:keys [photo-path]}]
@@ -54,10 +55,10 @@
                   :position      "relative"}}
     ;;; name
     [text {:style {:fontSize   15
-                   :fontFamily "Avenir-Roman"}} name]
+                   :fontFamily font}} name]
     ;;; last message
     [text {:style {:color        "#AAB2B2"
-                   :fontFamily   "Avenir-Roman"
+                   :fontFamily   font
                    :fontSize     14
                    :marginTop    2
                    :paddingRight 10}}
@@ -74,7 +75,7 @@
                          res/delivered-icon)
                :style  {:marginTop 5}}])
      ;;; datetime
-     [text {:style {:fontFamily    "Avenir-Roman"
+     [text {:style {:fontFamily    font
                     :fontSize      11
                     :color         "#AAB2B2"
                     :letterSpacing 1
@@ -94,7 +95,7 @@
                      :alignSelf       "flex-end"}}
        [text {:style {:width      18
                       :height     17
-                      :fontFamily "Avenir-Roman"
+                      :fontFamily font
                       :fontSize   10
                       :color      "#FFFFFF"
                       :lineHeight 19

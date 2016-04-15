@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view toolbar-android android? text-input]]
+            [syng-im.components.styles :refer [font]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.chats.new-group-contact :refer [new-group-contact]]
@@ -35,7 +36,7 @@
                       :style                 {:marginLeft  5
                                               :marginRight 5
                                               :fontSize    14
-                                              :fontFamily  "Avenir-Roman"
+                                              :fontFamily  font
                                               :color       "#9CBFC0"}
                       :autoFocus             true
                       :placeholder           "Group Name"

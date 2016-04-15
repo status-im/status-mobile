@@ -4,6 +4,7 @@
                                               text
                                               image
                                               touchable-highlight]]
+            [syng-im.components.styles :refer [font]]
             [syng-im.utils.logging :as log]
             [syng-im.resources :as res]))
 
@@ -21,6 +22,6 @@
                      :marginRight 5
                      :marginLeft  5}}]
     [text {:style {:fontSize   14
-                   :fontFamily "Avenir-Roman"
+                   :fontFamily font
                    :color      "#4A5258"}}
      (subs (aget chat-obj "name") 0 30)]]])
