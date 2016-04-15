@@ -6,6 +6,8 @@
             [syng-im.db :as db]
             [syng-im.resources :as res]
             [syng-im.models.chat :refer [current-chat-id]]
+            [syng-im.components.styles :refer [color-blue
+                                               color-dark-mint]]
             [syng-im.utils.utils :refer [log toast]]
             [syng-im.utils.logging :as log]
             [syng-im.persistence.realm :as realm]))
@@ -14,7 +16,7 @@
 (def commands [{:command :money
                 :text "!money"
                 :description "Send money"
-                :color "#48ba30"
+                :color color-dark-mint
                 :request-icon res/icon-lock-white
                 :icon res/icon-lock-gray
                 :suggestion true}
@@ -26,13 +28,13 @@
                {:command :phone
                 :text "!phone"
                 :description "Send phone number"
-                :color "#48ba30"
+                :color color-dark-mint
                 :suggestion true}
                {:command :confirmation-code
                 :text "!confirmationCode"
                 :description "Send confirmation code"
                 :request-text "Confirmation code request"
-                :color "#6581E7"
+                :color color-blue
                 :request-icon res/icon-lock-white
                 :icon res/icon-lock-gray
                 :suggestion true}
@@ -49,7 +51,7 @@
                {:command :keypair-password
                 :text "!keypairPassword"
                 :description ""
-                :color "#6581E7"
+                :color color-blue
                 :request-icon res/icon-lock-white
                 :icon res/icon-lock-gray
                 :suggestion false}
