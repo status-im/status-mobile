@@ -21,3 +21,8 @@
 (def icon-lock-white (js/require "./images/icon_lock_white.png"))
 (def icon-ok-small (js/require "./images/icon_ok_small.png"))
 (def icon-smile (js/require "./images/icon_smile.png"))
+
+(def icon-add (js/require "./images/icon_add.png"))
+(def icon-group (js/require "./images/icon_group.png"))
+(def icon-hamburger (js/require "./images/icon_hamburger.png"))
+(def icon-search (js/require "./images/icon_search.png"))
