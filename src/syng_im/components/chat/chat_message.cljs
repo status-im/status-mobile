@@ -7,7 +7,12 @@
                                               touchable-highlight
                                               navigator
                                               toolbar-android]]
-            [syng-im.components.styles :refer [font]]
+            [syng-im.components.styles :refer [font
+                                               color-light-blue-transparent
+                                               color-white
+                                               color-black
+                                               text1-color
+                                               text2-color]]
             [syng-im.models.commands :refer [parse-command-msg-content
                                              parse-command-request-msg-content]]
             [syng-im.utils.logging :as log]
@@ -18,15 +23,18 @@
                                        content-type-command-request]]))
 
 (defn message-date [{:keys [date]}]
-  [text {:style {:marginVertical 10
-                 :fontFamily     font
-                 :fontSize       11
-                 :color          "#AAB2B2"
-                 :letterSpacing  1
-                 :lineHeight     15
-                 :textAlign      "center"
-                 :opacity        0.8}}
-   date])
+  [view {:style {:backgroundColor   color-light-blue-transparent
+                 :height            24
+                 :borderRadius      50
+                 :alignSelf         "center"
+                 :marginVertical    15
+                 :paddingTop        3
+                 :paddingHorizontal 12}}
+   [text {:style {:fontFamily     font
+                  :fontSize       12
+                  :color          text2-color
+                  :textAlign      "center"}}
+    date]])
 
 (defn message-content-audio [{:keys [content-type content-type]}]
   [view {:style {:flexDirection "row"
@@ -76,11 +84,11 @@
           [view {:style {:backgroundColor   (:color command)
                          :height            24
                          :borderRadius      50
-                         :paddingTop        2
+                         :paddingTop        3
                          :paddingHorizontal 12}}
            [text {:style {:fontSize         12
                           :fontFamily       font
-                          :color            "white"}}
+                          :color            color-white}}
             (:text command)]]]
          [image {:source (:icon command)
                  :style {:position "absolute"
@@ -90,7 +98,7 @@
                         :marginHorizontal 0
                         :fontSize         14
                         :fontFamily       font
-                        :color            "black"}}
+                        :color            color-black}}
           ;; TODO isn't smart
           (if (= (:command command) :keypair-password)
             "******"
@@ -110,12 +118,12 @@
           [view {:style (merge {:borderRadius 7
                                 :padding      12}
                                (if outgoing
-                                 {:backgroundColor "white"}
+                                 {:backgroundColor color-white}
                                  {:backgroundColor background-color}))}
            [text {:style (merge {:fontSize   14
                                  :fontFamily font}
                                 (if outgoing
-                                  {:color "#4A5258"}
+                                  {:color color-black}
                                   {:color text-color}))}
             content]]
           [view {:style {:position        "absolute"
@@ -132,8 +140,7 @@
           [text {:style {:marginTop  2
                          :fontFamily font
                          :fontSize   12
-                         :color      "#AAB2B2"
-                         :opacity    0.8 }}
+                         :color      text2-color}}
            (str (:request-text command))]]]))))
 
 (defn message-content [{:keys [msg-id content-type content outgoing text-color background-color]}]
@@ -142,14 +149,14 @@
     [view {:style (merge {:borderRadius 7
                           :padding 12}
                          (if outgoing
-                           {:backgroundColor "white"}
+                           {:backgroundColor color-white}
                            {:backgroundColor background-color}))}
      (cond
        (= content-type text-content-type)
        [text {:style (merge {:fontSize   14
                              :fontFamily font}
                             (if outgoing
-                              {:color "#4A5258"}
+                              {:color color-black}
                               {:color text-color}))}
         content]
        (= content-type content-type-command)
@@ -168,8 +175,7 @@
                     :opacity   0.6}}]
    [text {:style {:fontFamily font
                   :fontSize   12
-                  :color      "#AAB2B2"
-                  :opacity    0.8
+                  :color      text2-color
                   :marginLeft 5}}
     (case delivery-status
       :delivered "Delivered"
@@ -206,6 +212,6 @@
                   :content          content
                   :content-type     content-type
                   :outgoing         outgoing
-                  :text-color       "black" ;text-color
-                  :background-color "white" ;background-color
+                  :text-color       color-black ;text-color
+                  :background-color color-white ;background-color
                   :delivery-status  (keyword delivery-status)}]])
