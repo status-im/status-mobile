@@ -37,8 +37,8 @@
     (fn []
       (let [signed-up @signed-up-atom]
         [navigator {:initial-route (clj->js {:view-id
-                                             ;:chat-list
-                                             :chat
+                                             :chat-list
+                                             ;:chat
                                              })
                     :render-scene  (fn [route nav]
                                      (log/debug "route" route)

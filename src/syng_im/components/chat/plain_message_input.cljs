@@ -4,6 +4,7 @@
                                               view
                                               image
                                               text-input]]
+            [syng-im.components.styles :refer [font]]
             [syng-im.components.chat.suggestions :refer [suggestions-view]]
             [syng-im.utils.utils :refer [log toast http-post]]
             [syng-im.utils.logging :as log]
@@ -35,7 +36,7 @@
                                               :marginLeft 18
                                               :lineHeight 42
                                               :fontSize   14
-                                              :fontFamily "Avenir-Roman"
+                                              :fontFamily font
                                               :color      "#9CBFC0"}
                       :autoFocus             false
                       :placeholder           "Type your message here"

@@ -7,6 +7,7 @@
                                               touchable-highlight
                                               navigator
                                               toolbar-android]]
+            [syng-im.components.styles :refer [font]]
             [syng-im.models.commands :refer [parse-command-msg-content
                                              parse-command-request-msg-content]]
             [syng-im.utils.logging :as log]
@@ -16,10 +17,9 @@
                                        content-type-command
                                        content-type-command-request]]))
 
-
 (defn message-date [{:keys [date]}]
   [text {:style {:marginVertical 10
-                 :fontFamily     "Avenir-Roman"
+                 :fontFamily     font
                  :fontSize       11
                  :color          "#AAB2B2"
                  :letterSpacing  1
@@ -57,7 +57,7 @@
     [text {:style {:position      "absolute"
                    :left          1
                    :top           11
-                   :fontFamily    "Avenir-Roman"
+                   :fontFamily    font
                    :fontSize      11
                    :color         "#4A5258"
                    :letterSpacing 1
@@ -79,7 +79,7 @@
                          :paddingTop        2
                          :paddingHorizontal 12}}
            [text {:style {:fontSize         12
-                          :fontFamily       "Avenir-Roman"
+                          :fontFamily       font
                           :color            "white"}}
             (:text command)]]]
          [image {:source (:icon command)
@@ -89,7 +89,7 @@
          [text {:style {:marginTop        5
                         :marginHorizontal 0
                         :fontSize         14
-                        :fontFamily       "Avenir-Roman"
+                        :fontFamily       font
                         :color            "black"}}
           ;; TODO isn't smart
           (if (= (:command command) :keypair-password)
@@ -113,7 +113,7 @@
                                  {:backgroundColor "white"}
                                  {:backgroundColor background-color}))}
            [text {:style (merge {:fontSize   14
-                                 :fontFamily "Avenir-Roman"}
+                                 :fontFamily font}
                                 (if outgoing
                                   {:color "#4A5258"}
                                   {:color text-color}))}
@@ -130,7 +130,7 @@
                             :top      9
                             :left     10}}]]
           [text {:style {:marginTop  2
-                         :fontFamily "Avenir-Roman"
+                         :fontFamily font
                          :fontSize   12
                          :color      "#AAB2B2"
                          :opacity    0.8 }}
@@ -147,7 +147,7 @@
      (cond
        (= content-type text-content-type)
        [text {:style (merge {:fontSize   14
-                             :fontFamily "Avenir-Roman"}
+                             :fontFamily font}
                             (if outgoing
                               {:color "#4A5258"}
                               {:color text-color}))}
@@ -166,7 +166,7 @@
                      :failed res/delivery-failed-icon)
            :style  {:marginTop 6
                     :opacity   0.6}}]
-   [text {:style {:fontFamily "Avenir-Roman"
+   [text {:style {:fontFamily font
                   :fontSize   12
                   :color      "#AAB2B2"
                   :opacity    0.8
