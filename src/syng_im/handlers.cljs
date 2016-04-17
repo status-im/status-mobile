@@ -9,7 +9,6 @@
                                      set-initialized]]
     [syng-im.models.user-data :as user-data]
     [syng-im.models.contacts :as contacts]
-    [syng-im.models.discoveries :as discoveries]
     [syng-im.models.messages :refer [save-message
                                      update-message!
                                      message-by-id]]
@@ -18,7 +17,7 @@
     [syng-im.handlers.commands :refer [set-chat-command
                                        set-chat-command-content]]
     [syng-im.handlers.sign-up :as sign-up-service]
-
+    [syng-im.handlers.discovery :as discovery]
     [syng-im.models.chats :refer [create-chat]]
     [syng-im.models.chat :refer [signal-chat-updated
                                  set-current-chat-id
@@ -275,11 +274,7 @@
     (log/debug action from group-id identities)
     (create-chat db group-id identities true group-name)))
 
-;; -- Discovery --------------------------------------------------------------
 
-(register-handler :generate-discoveries
-                  (fn [db _]
-                    (discoveries/save-discoveries (discoveries/generate-discoveries 10))))
 
 (comment
 

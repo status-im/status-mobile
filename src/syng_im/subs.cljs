@@ -2,12 +2,14 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.db :as db]
+            [syng-im.subscriptions.discovery :as discovery]
             [syng-im.models.chat :refer [current-chat-id
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
                                           chats-updated?
                                           chat-by-id]]
             [syng-im.models.discoveries :refer [discovery-list
+                                                signal-discovery-updated
                                                 discovery-updated?]]
             [syng-im.models.messages :refer [get-messages]]
             [syng-im.models.contacts :refer [contacts-list]]
@@ -65,15 +67,7 @@
             (chat-by-id chat-id))
           (reaction)))))
 
-;; -- Discoveries list --------------------------------------------------------------
 
-(register-sub :get-discoveries
-              (fn [db _]
-                (let [discovery-updated (-> (discovery-updated? @db)
-                                            (reaction))]
-                  (reaction
-                    (let [_ @discovery-updated]
-                      (discovery-list))))))
 
 ;; -- User data --------------------------------------------------------------
 

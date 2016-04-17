@@ -1,6 +1,6 @@
 (ns syng-im.persistence.realm
   (:require [cljs.reader :refer [read-string]]
-            [syng-im.utils.logging :as log]
+            [syng-im.utils.debug :refer [log]]
             [syng-im.utils.types :refer [to-string]])
   (:refer-clojure :exclude [exists?]))
 
@@ -57,6 +57,7 @@
                                    :status       "string"
                                    :whisper-id   "string"
                                    :photo        "string"
+                                   :location     "string"
                                    :tags         {:type       "list"
                                                   :objectType "tag"}
                                    :last-updated "date"}}
@@ -95,6 +96,11 @@
                                       (str "\"" value "\"")
                                       value))]
     query))
+
+(defn get-by-filter [schema-name filter]
+  (let [_ (log filter)]
+  (-> (.objects realm (name schema-name))
+      (.filtered filter))))
 
 (defn get-by-field [schema-name field value]
   (let [q (to-query schema-name :eq field value)]
