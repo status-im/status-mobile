@@ -1,5 +1,6 @@
 (ns syng-im.handlers.discovery
-  (:require [syng-im.models.discoveries :refer [save-discoveries
+  (:require [re-frame.core :refer [register-handler after dispatch]]
+            [syng-im.models.discoveries :refer [save-discoveries
                                                 discovery-list
                                                 signal-discovery-updated
                                                 discovery-updated?]]))
