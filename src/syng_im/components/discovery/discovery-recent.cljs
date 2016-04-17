@@ -4,14 +4,16 @@
 
     )
   (:require
+    [re-frame.core :refer [subscribe dispatch dispatch-sync]]
     [syng-im.components.react :refer [android?
                                       view
                                       scroll-view
-                                      list-view
                                       text
                                       image
                                       navigator
                                       toolbar-android]]
+    [syng-im.components.realm :refer [list-view]]
+    [syng-im.utils.listview :refer [to-realm-datasource]]
     [syng-im.components.carousel :refer [carousel]]
     [syng-im.components.discovery.discovery-popular-list-item :refer [discovery-popular-list-item]]
     [syng-im.models.discoveries :refer [generate-discoveries]]
@@ -35,10 +37,12 @@
                                                   (not= (:discovery-id row1) (:discovery-id row2)))})
                    elements))
 
-(defn discovery-recent [recent-discoveries]
-  [list-view {:dataSource (get-data-source recent-discoveries)
+(defn discovery-recent []
+  (let [discoveries (subscribe [:get-discoveries])
+        datasource (to-realm-datasource @discoveries)]
+    [list-view {:dataSource datasource
               :renderRow  render-row
               :renderSeparator render-separator
               :style      {:backgroundColor "white"
                            :paddingLeft 15}}]
-  )
+  ))

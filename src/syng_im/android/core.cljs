@@ -53,7 +53,6 @@
 
 (defn init []
   (dispatch-sync [:initialize-db])
-  ;;(dispatch-sync [:generate-discoveries])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-protocol])
   (dispatch [:load-user-phone-number])

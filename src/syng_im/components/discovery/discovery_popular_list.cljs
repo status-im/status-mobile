@@ -1,9 +1,10 @@
 (ns syng-im.components.discovery.discovery-popular-list
   (:require-macros
     [natal-shell.data-source :refer [data-source clone-with-rows]]
-
     )
   (:require
+    [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+    [syng-im.utils.debug :refer [log]]
     [syng-im.components.react :refer [android?
                                       view
                                       scroll-view
@@ -13,6 +14,8 @@
                                       navigator
                                       toolbar-android]]
     [reagent.core :as r]
+    [syng-im.components.realm :refer [list-view]]
+    [syng-im.utils.listview :refer [to-realm-datasource]]
     [syng-im.components.discovery.discovery-popular-list-item :refer [discovery-popular-list-item] ])
   )
 
@@ -33,8 +36,11 @@
                                                   (not= (:discovery-id row1) (:discovery-id row2)))})
                    elements))
 
-(defn discovery-popular-list [tag elements]
-  (r/as-element [view {:style {:flex 1
+(defn discovery-popular-list [tag]
+  (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])
+        _ (log (str "Got discoveries for tag (" tag "): ") @discoveries)
+        _ (log @discoveries)]
+    (r/as-element [view {:style {:flex 1
                                :backgroundColor "white"
                                :paddingLeft 10
                                :paddingTop 10}}
@@ -50,12 +56,12 @@
                                 :paddingBottom 2
                                 :alignItems "center"
                                 :justifyContent "center"}} (str " #" (name tag))]]]
-                 [list-view {:dataSource (get-data-source elements)
+                 [list-view {:dataSource (to-realm-datasource @discoveries)
                              :renderRow  render-row
                              :renderSeparator render-separator
                              :style      {:backgroundColor "white"}}]
                  ])
-  )
+  ))
 
 (comment
   list-view {:dataSource elements

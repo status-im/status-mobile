@@ -1,7 +1,7 @@
 (ns syng-im.models.discoveries
   (:require [cljs.core.async :as async :refer [chan put! <! >!]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.utils.utils :refer [log toast]]
+            [syng-im.utils.debug :refer [log]]
             [syng-im.persistence.realm :as realm]
             [syng-im.persistence.realm :as r]
             [syng-im.resources :as res]
@@ -10,24 +10,22 @@
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
 (def fake-discoveries? true)
 
-
-
 (defn signal-discovery-updated [db]
-  (update-in db db/updated-discovery-signal-path (fn [current]
+  (update-in db db/updated-discoveries-signal-path (fn [current]
                                                (if current
                                                  (inc current)
                                                  0))))
 
 (defn discovery-updated? [db]
-  (get-in db db/updated-discovery-signal-path))
+  (get-in db db/updated-discoveries-signal-path))
 
-(defn- generate-discovery [n]
-  {:discovery-id n
-   :name (str "Contact " n)
-   :status (apply str (repeat (+ n 3) "Contact Status "))
-   :whisper-id (str "id-" n)
-   :photo ""
-   :tags ["tag1" "tag2"]
+(defn generate-discovery [n]
+  {:name         (str "Contact " n)
+   :status       (apply str (repeat (+ n 3) "Contact Status "))
+   :whisper-id   (str "id-" n)
+   :location     ""
+   :photo        ""
+   :tags         ["tag1" "tag2"]
    :last-updated (js/Date. "10/01/2015")
    })
 
@@ -80,7 +78,7 @@
   (:tags (-> (r/get-by-field :discoveries :whisper-id whisper-id)
       (r/single-cljs))))
 
-(defn- create-discovery [{:keys [name status whisper-id photo tags last-updated]}]
+(defn- create-discovery [{:keys [name status whisper-id photo location tags last-updated]}]
   (do
     ;(add-tags tags)
     (realm/create :discoveries
@@ -88,6 +86,7 @@
                    :status       status
                    :whisper-id   whisper-id
                    :photo        photo
+                   :location     location
                    :tags         (mapv (fn [tag]
                                         {:name tag}) tags)
                    :last-updated last-updated} true)
@@ -96,7 +95,7 @@
 
 
 
-(defn- update-discovery [{:keys [name status whisper-id photo tags last-updated]}]
+(defn- update-discovery [{:keys [name status whisper-id photo location tags last-updated]}]
   (let [old-tags (get-tags whisper-id)]
     (do
       ;;(remove-tags old-tags)
@@ -106,6 +105,7 @@
                    :status       status
                    :whisper-id   whisper-id
                    :photo        photo
+                   :location     location
                    :tags         (mapv (fn [tag]
                                          {:name tag}) tags)
                    :last-updated last-updated}
@@ -131,13 +131,18 @@
 
 (defn discovery-list []
   (-> (r/get-all :discoveries)
-      (r/sorted :discovery-id :desc)))
+      (r/sorted :last-updated :desc)))
 
-(defn get-discovery-recent [limit]
+(defn discoveries-by-tag [tag limit]
+  (let [_ (log (str "discoveries by tag: " tag))]
+  (-> (r/get-by-filter :discoveries (str "tags.name = '" tag "'"))
+      (r/sorted :last-updated :desc)
+      (r/page 0 limit))))
+
+(defn get-discovery-recent [discoveries limit]
   (if fake-discoveries?
     (take limit fake-discoveries)
-    (-> (r/get-all :discoveries)
-        (r/sorted :last-updated :desc)
+    (-> (r/sorted discoveries :last-updated :desc)
         (r/page 0 limit)))
   )
 
@@ -163,15 +168,6 @@
             discoveries)
     )
 
-(defn get-discovery-popular [tag-limit]
-  (if fake-discoveries?
-    (group-by-tag fake-discoveries tag-limit)
-    (-> (r/get-all :discoveries)
-        (r/sorted :last-updated :desc)
-        (.slice 0)
-        (group-by-tag tag-limit))
-    )
-  )
 
 (comment
   (group-by-tag [{:tags ["a" "b" "c"]

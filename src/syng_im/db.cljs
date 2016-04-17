@@ -28,6 +28,6 @@
 (defn chat-command-content-path [chat-id]
   [:chats chat-id :command-input :content])
 (def new-group-path [:new-group])
-(def updated-discovery-signal-path [:discovery-updated-signal])
-(defn updated-discovery-signal-path [discovery-id]
-  [:discoveries discovery-id :discovery-updated-signal])
+(def updated-discoveries-signal-path [:discovery-updated-signal])
+(defn updated-discovery-signal-path [whisper-id]
+  [:discoveries whisper-id :discovery-updated-signal])

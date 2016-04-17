@@ -40,6 +40,8 @@
                          ;                      (add-to-chat "group-chat" ":" (str (shorten from) " removed you from group chat")))
                          ;:participant-left-group (let [{:keys [group-id from]} event]
                          ;                          (add-to-chat "group-chat" ":" (str (shorten from) " left group chat")))
+                         :discover-response (let [{:keys [from payload]} event]
+                                              (dispatch [:discovery-response-received from payload]))
                          ;(add-to-chat "chat" ":" (str "Don't know how to handle " event-type))
                          (log/info "Don't know how to handle" event-type)
                          ))})
