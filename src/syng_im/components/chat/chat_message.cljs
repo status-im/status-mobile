@@ -168,11 +168,10 @@
   [view {:style {:flexDirection "row"
                  :marginTop     2}}
    [image {:source (case delivery-status
-                     :delivered res/delivered-icon
-                     :seen res/seen-icon
+                     :delivered res/icon-ok-small
+                     :seen res/icon-ok-small
                      :failed res/delivery-failed-icon)
-           :style  {:marginTop 6
-                    :opacity   0.6}}]
+           :style  {:marginTop 6}}]
    [text {:style {:fontFamily font
                   :fontSize   12
                   :color      text2-color

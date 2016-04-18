@@ -16,6 +16,13 @@
             [syng-im.components.chats.chat-list-item :refer [chat-list-item]]
             [syng-im.components.action-button :refer [action-button
                                                       action-button-item]]
+            [syng-im.components.styles :refer [font
+                                               title-font
+                                               color-white
+                                               color-black
+                                               color-blue
+                                               text1-color
+                                               text2-color]]
             [syng-im.components.icons.ionicons :refer [icon]]))
 
 
@@ -29,22 +36,30 @@
                        :backgroundColor "white"}}
          (when android?
            ;; TODO add IOS version
-           [toolbar-android {:logo          res/logo-icon
-                             :title         "Chats"
-                             :titleColor    "#4A5258"
-                             :subtitle      "List of your recent chats"
-                             :subtitleColor "#AAB2B2"
-                             :navIcon       res/icon-list
+           [toolbar-android {:navIcon       res/icon-hamburger
                              :style         {:backgroundColor "white"
                                              :height          56
                                              :elevation       2}
                              :onIconClicked (fn []
-                                              (nav-pop navigator))}])
+                                              (nav-pop navigator))
+                             :actions [{:title "Search"
+                                        :icon res/icon-search
+                                        :show "always"}]}
+            [view {:style {:flex 1
+                           :alignItems "center"
+                           :justifyContent "center"
+                           :marginRight 112
+                           :backgroundColor "transparent"}}
+             [text {:style {:marginTop  -2.5
+                            :color      text1-color
+                            :fontSize   16
+                            :fontFamily font}}
+              "Chats"]]])
          [list-view {:dataSource datasource
                      :renderRow  (fn [row section-id row-id]
                                    (r/as-element [chat-list-item row navigator]))
                      :style      {:backgroundColor "white"}}]
-         [action-button {:buttonColor "rgba(231,76,60,1)"}
+         [action-button {:buttonColor color-blue}
           [action-button-item {:title       "New Chat"
                                :buttonColor "#9b59b6"
                                :onPress     (fn []

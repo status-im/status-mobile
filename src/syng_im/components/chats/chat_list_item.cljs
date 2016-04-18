@@ -10,8 +10,6 @@
             [syng-im.resources :as res]))
 
 (defn chat-list-item [chat-obj navigator]
-  (log/info "!!!!!")
-  (log/info chat-obj)
   [touchable-highlight {:on-press (fn []
                                     (dispatch [:show-chat (aget chat-obj "chat-id") navigator]))}
    ;; TODO add [photo-path delivery-status new-messages-count online] values to chat-obj
