@@ -26,3 +26,4 @@
 (def icon-group (js/require "./images/icon_group.png"))
 (def icon-hamburger (js/require "./images/icon_hamburger.png"))
 (def icon-search (js/require "./images/icon_search.png"))
+(def icon-send (js/require "./images/icon_send.png"))

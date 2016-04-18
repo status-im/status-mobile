@@ -99,14 +99,14 @@
                    :right         0}}
      (when delivery-status
        [image {:source (if (= (keyword delivery-status) :seen)
-                         res/seen-icon
-                         res/delivered-icon)
-               :style  {:marginTop 4}}])
+                         res/icon-ok-small
+                         res/icon-ok-small)
+               :style  {:marginTop 6}}])
 ;;; datetime
      [text {:style {:fontFamily font
                     :fontSize   12
                     :color      text2-color
-                    :marginLeft 4}}
+                    :marginLeft 5}}
       timestamp]]
 ;;; new messages count
     (when (< 0 new-messages-count)
