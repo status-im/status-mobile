@@ -4,7 +4,8 @@
             [clojure.string :refer [join blank?]]
             [syng-im.db :as db]
             [syng-im.utils.logging :as log]
-            [syng-im.constants :refer [group-chat-colors]]))
+            [syng-im.constants :refer [group-chat-colors]]
+            [syng-im.persistence.realm-queries :refer [include-query]]))
 
 (defn signal-chats-updated [db]
   (update-in db db/updated-chats-signal-path (fn [current]
@@ -46,6 +47,7 @@
                                    :background-color background
                                    :text-color       text}) identities group-chat-colors)]
              (r/create :chats {:chat-id    chat-id
+                               :is-active  true
                                :name       chat-name
                                :group-chat group-chat?
                                :timestamp  (timestamp)
@@ -61,8 +63,52 @@
       (r/single-cljs)
       (r/list-to-array :contacts)))
 
-(comment
+(defn chat-add-participants [chat-id identities]
+  (r/write
+    (fn []
+      (let [contacts      (-> (r/get-by-field :chats :chat-id chat-id)
+                              (r/single)
+                              (aget "contacts"))
+            colors-in-use (->> (.map contacts (fn [object index collection]
+                                                {:text-color       (aget object "text-color")
+                                                 :background-color (aget object "background-color")}))
+                               (set))
+            colors        (->> group-chat-colors
+                               (filter (fn [color]
+                                         (not (contains? colors-in-use color)))))
+            new-contacts  (mapv (fn [ident {:keys [background text]}]
+                                  {:identity         ident
+                                   :background-color background
+                                   :text-color       text}) identities colors)]
+        (doseq [contact new-contacts]
+          (.push contacts (clj->js contact)))))))
 
+(defn chat-remove-participants [chat-id identities]
+  (r/write
+    (fn []
+      (let [query (include-query :identity identities)
+            chat  (-> (r/get-by-field :chats :chat-id chat-id)
+                      (r/single))]
+        (-> (aget chat "contacts")
+            (r/filtered query)
+            (r/delete))))))
+
+(defn active-group-chats []
+  (let [results (-> (r/get-all :chats)
+                    (r/filtered "group-chat = true && is-active = true"))]
+    (->> (.map results (fn [object index collection]
+                         (aget object "chat-id")))
+         (js->clj))))
+
+
+(defn set-chat-active [chat-id active?]
+  (r/write (fn []
+             (-> (r/get-by-field :chats :chat-id chat-id)
+                 (r/single)
+                 (aset "is-active" active?)))))
+
+(comment
+  (active-group-chats)
 
 
   (-> (r/get-by-field :chats :chat-id "0x04ed4c3797026cddeb7d64a54ca58142e57ea03cda21072358d67455b506db90c56d95033e3d221992f70d01922c3d90bf0697c49e4be118443d03ae4a1cd3c15c")
