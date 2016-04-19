@@ -1,5 +1,6 @@
 (ns syng-im.components.chat.chat-message
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [clojure.string :as s]
+            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [android?
                                               view
                                               text
@@ -11,6 +12,8 @@
                                                color-light-blue-transparent
                                                color-white
                                                color-black
+                                               color-blue
+                                               selected-message-color
                                                text1-color
                                                text2-color]]
             [syng-im.models.commands :refer [parse-command-msg-content
@@ -115,7 +118,7 @@
         [touchable-highlight {:onPress (fn []
                                          (set-chat-command msg-id command))}
          [view {:style {:paddingRight 16}}
-          [view {:style (merge {:borderRadius 7
+          [view {:style (merge {:borderRadius 14
                                 :padding      12}
                                (if outgoing
                                  {:backgroundColor color-white}
@@ -143,20 +146,34 @@
                          :color      text2-color}}
            (str (:request-text command))]]]))))
 
-(defn message-content [{:keys [msg-id content-type content outgoing text-color background-color]}]
+(defn message-content [{:keys [msg-id content-type content outgoing text-color background-color group-chat selected]}]
   (if (= content-type content-type-command-request)
     [message-content-command-request msg-id content outgoing text-color background-color]
-    [view {:style (merge {:borderRadius 7
-                          :padding 12}
+    [view {:style (merge {:borderRadius 14
+                          :padding      12}
                          (if outgoing
-                           {:backgroundColor color-white}
-                           {:backgroundColor background-color}))}
+                           (if (and group-chat (= content-type text-content-type))
+                             {:backgroundColor color-blue}
+                             {:backgroundColor color-white})
+                           (if selected
+                             {:backgroundColor selected-message-color}
+                             {:backgroundColor background-color})))}
+     (when (and group-chat (not outgoing))
+       [text {:style {:marginTop  0
+                      :fontSize   12
+                      :fontFamily font}}
+        "Justas"])
      (cond
        (= content-type text-content-type)
-       [text {:style (merge {:fontSize   14
+       [text {:style (merge {:marginTop (if (and group-chat (not outgoing))
+                                          4
+                                          0)
+                             :fontSize   14
                              :fontFamily font}
                             (if outgoing
-                              {:color color-black}
+                              (if group-chat
+                                {:color color-white}
+                                {:color text1-color})
                               {:color text-color}))}
         content]
        (= content-type content-type-command)
@@ -166,10 +183,12 @@
 
 (defn message-delivery-status [{:keys [delivery-status]}]
   [view {:style {:flexDirection "row"
-                 :marginTop     2}}
+                 :marginTop     2
+                 :marginBottom  8}}
    [image {:source (case delivery-status
                      :delivered res/icon-ok-small
                      :seen res/icon-ok-small
+                     :seen-by-everyone res/icon-ok-small
                      :failed res/delivery-failed-icon)
            :style  {:marginTop 6}}]
    [text {:style {:fontFamily font
@@ -179,38 +198,87 @@
     (case delivery-status
       :delivered "Delivered"
       :seen "Seen"
+      :seen-by-everyone "Seen by everyone"
       :failed "Failed")]])
 
-(defn message-body [{:keys [msg-id content content-type outgoing delivery-status text-color background-color]}]
-  (let [delivery-status :seen]
-   [view {:style (merge {:flexDirection "column"
-                         :width         260
-                         :paddingTop    5
-                         :paddingRight  8
-                         :paddingBottom 5
-                         :paddingLeft   8}
-                        (if outgoing
-                          {:alignSelf  "flex-end"
-                           :alignItems "flex-end"}
-                          {:alignSelf  "flex-start"
-                           :alignItems "flex-start"}))}
-    [message-content {:msg-id           msg-id
-                      :content-type     content-type
-                      :content          content
-                      :outgoing         outgoing
-                      :text-color       text-color
-                      :background-color background-color}]
-    (when (and outgoing delivery-status)
-      [message-delivery-status {:delivery-status delivery-status}])]))
+(defn member-photo [{:keys [photo-path]}]
+  [view {:borderRadius 50}
+   [image {:source (if (s/blank? photo-path)
+                     res/user-no-photo
+                     {:uri photo-path})
+           :style  {:borderRadius 50
+                    :width        24
+                    :height       24}}]])
 
-(defn chat-message [{:keys [msg-id content content-type outgoing delivery-status date new-day text-color background-color] :as msg}]
+(defn incoming-group-message-body [{:keys [msg-id content content-type outgoing delivery-status text-color background-color selected]}]
+  (let [delivery-status :seen-by-everyone]
+    [view {:style {:flexDirection "column"}}
+     (when selected
+       [text {:style {:marginTop  18
+                      :marginLeft 40
+                      :fontFamily font
+                      :fontSize   12
+                      :color      text2-color}}
+        "Mar 7th, 15:22"])
+     [view {:style {:flexDirection "row"
+                    :alignSelf     "flex-start"
+                    :paddingTop    2
+                    :paddingRight  8
+                    :paddingBottom 2
+                    :paddingLeft   8}}
+      [member-photo {}]
+      [view {:style {:flexDirection "column"
+                     :width         260
+                     :paddingLeft   8
+                     :alignItems "flex-start"}}
+       [message-content {:msg-id           msg-id
+                         :content-type     content-type
+                         :content          content
+                         :outgoing         outgoing
+                         :text-color       text-color
+                         :background-color background-color
+                         :group-chat       true
+                         :selected         selected}]
+       ;; TODO show for last or selected
+       (when (and selected delivery-status)
+         [message-delivery-status {:delivery-status delivery-status}])]]]))
+
+(defn message-body [{:keys [msg-id content content-type outgoing delivery-status text-color background-color group-chat]}]
+  (let [delivery-status :seen]
+    [view {:style (merge {:flexDirection "column"
+                          :width         260
+                          :paddingTop    2
+                          :paddingRight  8
+                          :paddingBottom 2
+                          :paddingLeft   8}
+                         (if outgoing
+                           {:alignSelf  "flex-end"
+                            :alignItems "flex-end"}
+                           {:alignItems "flex-start"
+                            :alignSelf  "flex-start"}))}
+     [message-content {:msg-id           msg-id
+                       :content-type     content-type
+                       :content          content
+                       :outgoing         outgoing
+                       :text-color       text-color
+                       :background-color background-color
+                       :group-chat       group-chat}]
+     (when (and outgoing delivery-status)
+       [message-delivery-status {:delivery-status delivery-status}])]))
+
+(defn chat-message [{:keys [msg-id content content-type outgoing delivery-status date new-day text-color background-color group-chat selected] :as msg}]
   [view {}
    (when new-day
      [message-date {:date date}])
-   [message-body {:msg-id           msg-id
-                  :content          content
-                  :content-type     content-type
-                  :outgoing         outgoing
-                  :text-color       color-black ;text-color
-                  :background-color color-white ;background-color
-                  :delivery-status  (keyword delivery-status)}]])
+   (let [msg-data   {:msg-id           msg-id
+                     :content          content
+                     :content-type     content-type
+                     :outgoing         outgoing
+                     :text-color       color-black ;text-color
+                     :background-color color-white ;background-color
+                     :delivery-status  (keyword delivery-status)
+                     :group-chat       group-chat
+                     :selected         selected}]
+     (if (and group-chat (not outgoing))
+       [incoming-group-message-body msg-data]
+       [message-body msg-data]))])

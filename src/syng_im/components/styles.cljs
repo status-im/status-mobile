@@ -18,3 +18,4 @@
 (def online-color color-blue)
 (def new-messages-count-color "#7099e632")
 (def chat-background "#EBF0F4")
+(def selected-message-color "#E4E9ED")

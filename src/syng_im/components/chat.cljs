@@ -14,6 +14,7 @@
                                                color-white
                                                chat-background
                                                online-color
+                                               selected-message-color
                                                text1-color
                                                text2-color]]
             [syng-im.utils.logging :as log]
@@ -72,12 +73,76 @@
             :borderRadius    50
             :backgroundColor color-white}]]))
 
+(defn typing [member]
+  [view {:style {:width         260
+                 :paddingTop    2
+                 :paddingBottom 8
+                 :paddingLeft   8
+                 :paddingRight  8
+                 :alignItems    "flex-start"
+                 :alignSelf     "flex-start"}}
+   [view {:style {:borderRadius    14
+                  :padding         12
+                  :height          38
+                  :backgroundColor selected-message-color}}
+    [text {:style {:marginTop  -2
+                   :fontSize   12
+                   :fontFamily font
+                   :color      text2-color}}
+     (str member " is typing")]]])
+
+(defn typing-all []
+  [view {:style {:marginBottom 12}}
+   (for [member ["Geoff" "Justas"]]
+     ^{:key member} [typing member])])
+
+(defn toolbar-content-chat [chat]
+  (let [group? (:group-chat chat)]
+    [view {:style {:flex 1
+                   :flexDirection "row"
+                   :backgroundColor "transparent"}}
+     [view {:style {:flex 1
+                    :alignItems "flex-start"
+                    :justifyContent "center"
+                    :marginRight 112}}
+      [text {:style {:marginTop  -2.5
+                     :color      text1-color
+                     :fontSize   16
+                     :fontFamily font}}
+       (or (chat :name)
+           "Chat name")]
+      (if group?
+        [view {:style {:flexDirection "row"}}
+         [image {:source res/icon-group
+                 :style  {:marginTop 4}}]
+         [text {:style {:marginTop  -0.5
+                        :marginLeft 4
+                        :fontFamily font
+                        :fontSize   12
+                        :color      text2-color}}
+          (str (count (:contacts chat))
+               (if (< 1 (count (:contacts chat)))
+                 " members"
+                 " member")
+               ", " (count (:contacts chat)) " active")]]
+        [text {:style {:marginTop  1
+                       :color      text2-color
+                       :fontSize   12
+                       :fontFamily font}}
+         "Active a minute ago"])]
+     [view {:style {:position "absolute"
+                    :top      10
+                    :right    66}}
+      [chat-photo {}]
+      (when (not group?)
+        [contact-online {:online true}])]]))
+
 (defn chat [{:keys [navigator]}]
   (let [messages (subscribe [:get-chat-messages])
         chat     (subscribe [:get-current-chat])]
     (fn []
       (let [msgs                @messages
-            ;_                 (log/debug "messages=" msgs)
+                                        ;_                 (log/debug "messages=" msgs)
             datasource          (to-realm-datasource msgs)
             contacts            (:contacts @chat)
             contact-by-identity (contacts-by-identity contacts)]
@@ -91,35 +156,16 @@
                                              :elevation       2}
                              :onIconClicked (fn []
                                               (nav-pop navigator))}
-            [view {:style {:flex 1
-                           :flexDirection "row"
-                           :backgroundColor "transparent"}}
-             [view {:style {:flex 1
-                            :alignItems "flex-start"
-                            :justifyContent "center"
-                            :marginRight 112}}
-              [text {:style {:marginTop  -2.5
-                             :color      text1-color
-                             :fontSize   16
-                             :fontFamily font}}
-               (or (@chat :name)
-                   "Chat name")]
-              [text {:style {:marginTop  1
-                             :color      text2-color
-                             :fontSize   12
-                             :fontFamily font}}
-               "Active a minute ago"]]
-             [view {:style {:position "absolute"
-                            :top      10
-                            :right    66}}
-              [chat-photo {}]
-              [contact-online {:online true}]]]])
+            [toolbar-content-chat @chat]])
          [list-view {:dataSource            datasource
                      :renderScrollComponent (fn [props]
                                               (invertible-scroll-view nil))
                      :renderRow             (fn [row section-id row-id]
                                               (let [msg (-> (js->clj row :keywordize-keys true)
-                                                            (add-msg-color contact-by-identity))]
+                                                            (add-msg-color contact-by-identity)
+                                                            (assoc :group-chat (:group-chat @chat)))]
                                                 (r/as-element [chat-message msg])))
                      :style                 {:backgroundColor "white"}}]
+         (when (:group-chat @chat)
+           [typing-all])
          [chat-message-new]]))))
