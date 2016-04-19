@@ -86,28 +86,27 @@
         content)]]))
 
 (defn message-content [{:keys [content-type content outgoing text-color background-color]}]
-  (let [_ (log/debug color)]
-    [view {:style (merge {:borderRadius 6}
-                         (if (= content-type text-content-type)
-                           {:paddingVertical   12
-                            :paddingHorizontal 16}
-                           {:paddingVertical   14
-                            :paddingHorizontal 10})
-                         (if outgoing
-                           {:backgroundColor "#D3EEEF"}
-                           {:backgroundColor background-color}))}
-     (cond
-       (= content-type text-content-type)
-       [text {:style (merge {:fontSize   14
-                             :fontFamily "Avenir-Roman"}
-                            (if outgoing
-                              {:color "#4A5258"}
-                              {:color text-color}))}
-        content]
-       (= content-type content-type-command)
-       [message-content-command content]
-       :else [message-content-audio {:content      content
-                                     :content-type content-type}])]))
+  [view {:style (merge {:borderRadius 6}
+                       (if (= content-type text-content-type)
+                         {:paddingVertical   12
+                          :paddingHorizontal 16}
+                         {:paddingVertical   14
+                          :paddingHorizontal 10})
+                       (if outgoing
+                         {:backgroundColor "#D3EEEF"}
+                         {:backgroundColor background-color}))}
+   (cond
+     (= content-type text-content-type)
+     [text {:style (merge {:fontSize   14
+                           :fontFamily "Avenir-Roman"}
+                          (if outgoing
+                            {:color "#4A5258"}
+                            {:color text-color}))}
+      content]
+     (= content-type content-type-command)
+     [message-content-command content]
+     :else [message-content-audio {:content      content
+                                   :content-type content-type}])])
 
 (defn message-delivery-status [{:keys [delivery-status]}]
   [view {:style {:flexDirection "row"
