@@ -4,7 +4,8 @@
                                               view
                                               image
                                               touchable-highlight
-                                              text-input]]
+                                              text-input
+                                              dismiss-keyboard]]
             [syng-im.components.styles :refer [font
                                                text2-color
                                                color-white
@@ -25,7 +26,8 @@
                  input-message])
       (dispatch [:send-chat-msg chat-id
                  input-message])))
-  (set-input-message nil))
+  (set-input-message nil)
+  (dismiss-keyboard))
 
 (defn plain-message-input-view []
   (let [chat (subscribe [:get-current-chat])
