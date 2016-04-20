@@ -148,7 +148,7 @@
 (defn joined-chat-msg [chat-id from msg-id]
   (let [contact-name (:name (contacts/contact-by-identity from))]
     (save-message chat-id {:from         "system"
-                           :msg-id       msg-id
+                           :msg-id       (str msg-id "_" from)
                            :content      (str (or contact-name from) " received chat invitation")
                            :content-type text-content-type})))
 
