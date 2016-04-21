@@ -37,7 +37,7 @@
          (when android?
            ;; TODO add IOS version
            [toolbar-android {:navIcon       res/icon-hamburger
-                             :style         {:backgroundColor "white"
+                             :style         {:backgroundColor color-white
                                              :height          56
                                              :elevation       2}
                              :onIconClicked (fn []

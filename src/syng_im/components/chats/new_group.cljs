@@ -1,8 +1,12 @@
 (ns syng-im.components.chats.new-group
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.resources :as res]
-            [syng-im.components.react :refer [view toolbar-android android? text-input]]
-            [syng-im.components.styles :refer [font]]
+            [syng-im.components.react :refer [view toolbar-android android? text-input text]]
+            [syng-im.components.styles :refer [font
+                                               text1-color
+                                               text2-color
+                                               color-white
+                                               color-purple]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.chats.new-group-contact :refer [new-group-contact]]
@@ -15,39 +19,63 @@
     (fn []
       (let [contacts-ds (to-realm-datasource @contacts)]
         [view {:style {:flex            1
-                       :backgroundColor "white"}}
+                       :flexDirection   "column"
+                       :backgroundColor color-white}}
          (when android?
            ;; TODO add IOS version
-           [toolbar-android {:logo             res/logo-icon
-                             :title            "New Group Chat"
-                             :titleColor       "#4A5258"
-                             :style            {:backgroundColor "white"
+           [toolbar-android {:navIcon          res/icon-back
+                             :style            {:backgroundColor color-white
                                                 :height          56
                                                 :elevation       2}
-                             :actions          [{:title "Create"
-                                                 :icon  res/v
-                                                 :show  "always"}]
-                             :onActionSelected (fn [position]
-                                                 (dispatch [:create-new-group @group-name navigator]))
-                             :navIcon          res/nav-back-icon
                              :onIconClicked    (fn []
-                                                 (nav-pop navigator))}])
-         [text-input {:underlineColorAndroid "#9CBFC0"
-                      :style                 {:marginLeft  5
-                                              :marginRight 5
-                                              :fontSize    14
-                                              :fontFamily  font
-                                              :color       "#9CBFC0"}
-                      :autoFocus             true
-                      :placeholder           "Group Name"
-                      :value                 @group-name
-                      :onChangeText          (fn [new-text]
-                                               (reset! group-name new-text)
-                                               (r/flush))
-                      :onSubmitEditing       (fn [e]
-                                               ;(dispatch [:send-chat-msg @chat-id @text])
-                                               (reset! group-name nil))}]
-         [list-view {:dataSource contacts-ds
-                     :renderRow  (fn [row section-id row-id]
-                                   (r/as-element [new-group-contact (js->clj row :keywordize-keys true) navigator]))
-                     :style      {:backgroundColor "white"}}]]))))
+                                                 (nav-pop navigator))
+                             :actions          [{:title "Create"
+                                                 ;; :icon  res/icon-ok
+                                                 :show  "always"
+                                                 :showWithText true}]
+                             :onActionSelected (fn [position]
+                                                 (dispatch [:create-new-group @group-name navigator]))}
+            [view {:style {:flex            1
+                           :alignItems      "center"
+                           :justifyContent  "center"
+                           :marginRight     112
+                           :backgroundColor "transparent"}}
+             [text {:style {:marginTop  -2.5
+                            :color      text1-color
+                            :fontSize   16
+                            :fontFamily font}}
+              "New group chat"]]])
+         [view {:style {:marginHorizontal 16}}
+          [text {:style {:marginTop    24
+                         :marginBottom 16
+                         :color        text2-color
+                         :fontFamily   font
+                         :fontSize     14
+                         :lineHeight   20}}
+           "Chat name"]
+          [text-input {:underlineColorAndroid color-purple
+                       :style                 {:marginLeft  -4
+                                               :fontSize    14
+                                               :fontFamily  font
+                                               :color       text1-color}
+                       :autoFocus             true
+                       :placeholder           "Group Name"
+                       :placeholderTextColor  text2-color
+                       :onChangeText          (fn [new-text]
+                                                (reset! group-name new-text)
+                                                (r/flush))
+                       :onSubmitEditing       (fn [e]
+                                        ;(dispatch [:send-chat-msg @chat-id @text])
+                                                (reset! group-name nil))}
+           @group-name]
+          [text {:style {:marginTop    24
+                         :marginBottom 16
+                         :color        text2-color
+                         :fontFamily   font
+                         :fontSize     14
+                         :lineHeight   20}}
+           "Members"]
+          [list-view {:dataSource contacts-ds
+                      :renderRow  (fn [row section-id row-id]
+                                    (r/as-element [new-group-contact (js->clj row :keywordize-keys true) navigator]))
+                      :style      {:backgroundColor "white"}}]]]))))

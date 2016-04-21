@@ -31,3 +31,4 @@
 (def icon-search (js/require "./images/icon_search.png"))
 (def icon-send (js/require "./images/icon_send.png"))
 (def icon-close-gray (js/require "./images/icon_close_gray.png"))
+(def icon-ok (js/require "./images/icon_ok.png"))
