@@ -31,7 +31,8 @@
 
 (defn plain-message-input-view []
   (let [chat (subscribe [:get-current-chat])
-        input-message-atom (subscribe [:get-chat-input-text])]
+        input-message-atom (subscribe [:get-chat-input-text])
+        staged-commands-atom (subscribe [:get-chat-staged-commands])]
     (fn []
       (let [input-message @input-message-atom]
         [view {:style {:flexDirection "column"}}
@@ -67,7 +68,8 @@
                            :marginRight 18
                            :width       20
                            :height      20}}]
-          (when (< 0 (count input-message))
+          (when (or (< 0 (count input-message))
+                    (< 0 (count @staged-commands-atom)))
             [touchable-highlight {:on-press (fn []
                                               (send @chat input-message))}
              [view {:style {:marginTop       10

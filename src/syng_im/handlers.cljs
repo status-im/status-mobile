@@ -2,7 +2,7 @@
   (:require
    [re-frame.core :refer [register-handler after dispatch]]
    [schema.core :as s :include-macros true]
-   [syng-im.db :refer [app-db schema]]
+   [syng-im.db :as db :refer [app-db schema]]
    [syng-im.protocol.api :refer [init-protocol]]
    [syng-im.protocol.protocol-handler :refer [make-handler]]
    [syng-im.models.protocol :refer [update-identity
@@ -24,7 +24,8 @@
    [syng-im.handlers.suggestions :refer [get-command
                                          handle-command
                                          get-command-handler
-                                         load-commands]]
+                                         load-commands
+                                         apply-staged-commands]]
    [syng-im.handlers.sign-up :as sign-up-service]
 
    [syng-im.models.chats :refer [create-chat]]
@@ -36,7 +37,8 @@
                                 set-chat-input-text]]
    [syng-im.utils.logging :as log]
    [syng-im.protocol.api :as api]
-   [syng-im.constants :refer [text-content-type]]
+   [syng-im.constants :refer [text-content-type
+                              content-type-command]]
    [syng-im.navigation :refer [nav-push]]
    [syng-im.utils.crypt :refer [gen-random-bytes]]))
 
@@ -143,25 +145,56 @@
     (let [{:keys [chat-id]} (message-by-id msg-id)]
       (signal-chat-updated db chat-id))))
 
+(defn send-staged-commands [db chat-id]
+  (let [staged-commands (get-in db (db/chat-staged-commands-path chat-id))]
+    (dorun
+     (map
+      (fn [staged-command]
+        (let [command-key (get-in staged-command [:command :command])
+              content (commands/format-command-msg-content command-key
+                                                           (:content staged-command))
+              msg (if (= chat-id "console")
+                    (sign-up-service/send-console-command db command-key content)
+                    ;; TODO handle command, now sends as plain message
+                    (let [{msg-id :msg-id
+                           {from :from
+                            to   :to} :msg} (api/send-user-msg {:to      chat-id
+                            :content content})]
+                      {:msg-id       msg-id
+                       :from         from
+                       :to           to
+                       :content      content
+                       :content-type content-type-command
+                       :outgoing     true}))]
+          (save-message chat-id msg)))
+      staged-commands))
+    db))
+
 (register-handler :send-chat-msg
   (fn [db [action chat-id text]]
     (log/debug action "chat-id" chat-id "text" text)
     (if-let [command (get-command db text)]
-      (dispatch [:set-chat-command (:command command)])
-      (let [msg (if (= chat-id "console")
-                  (sign-up-service/send-console-msg text)
-                  (let [{msg-id :msg-id
-                         {from :from
-                          to   :to} :msg} (api/send-user-msg {:to      chat-id
-                                                              :content text})]
-                    {:msg-id       msg-id
-                     :from         from
-                     :to           to
-                     :content      text
-                     :content-type text-content-type
-                     :outgoing     true}))]
-        (save-message chat-id msg)
-        (signal-chat-updated db chat-id)))))
+      (do (dispatch [:set-chat-command (:command command)])
+          db)
+      (let [msg (when (< 0 (count text))
+                  (if (= chat-id "console")
+                    (sign-up-service/send-console-msg text)
+                    (let [{msg-id :msg-id
+                           {from :from
+                            to   :to} :msg} (api/send-user-msg {:to      chat-id
+                                                                :content text})]
+                      {:msg-id       msg-id
+                       :from         from
+                       :to           to
+                       :content      text
+                       :content-type text-content-type
+                       :outgoing     true})))]
+        (when msg
+          (save-message chat-id msg))
+        (-> db
+            (send-staged-commands chat-id)
+            (apply-staged-commands)
+            (signal-chat-updated chat-id))))))
 
 (register-handler :send-chat-command
   (fn [db [action chat-id command content]]
@@ -266,7 +299,7 @@
     (let [db (set-chat-input-text db nil)
           command-info {:command command
                         :content content
-                        :handler (get-command-handler db command content)}]
+                        :handler (get-command-handler db (:command command) content)}]
       (stage-command db command-info))))
 
 (register-handler :unstage-command

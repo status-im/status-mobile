@@ -188,7 +188,7 @@
   {:msg-id       (random/id)
    :from         "me"
    :to           "console"
-   :content      (commands/format-command-msg-content command-key content)
+   :content      content ;; (commands/format-command-msg-content command-key content)
    :content-type content-type-command
    :outgoing     true})
 

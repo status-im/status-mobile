@@ -114,6 +114,9 @@
              (fn [staged-commands]
                (filterv #(not= % staged-command) staged-commands))))
 
+(defn clear-staged-commands [db]
+  (assoc-in db (db/chat-staged-commands-path (current-chat-id db)) []))
+
 (defn get-chat-command-request [db]
   (get-in db (db/chat-command-request-path (current-chat-id db)
                                            (get-chat-command-to-msg-id db))))
