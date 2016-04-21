@@ -24,6 +24,8 @@
   [:chats chat-id :chat-updated-signal])
 (defn chat-input-text-path [chat-id]
   [:chats chat-id :input-text])
+(defn chat-staged-commands-path [chat-id]
+  [:chats chat-id :staged-commands])
 (defn chat-command-path [chat-id]
   [:chats chat-id :command-input :command])
 (defn chat-command-to-msg-id-path [chat-id]

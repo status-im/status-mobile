@@ -23,7 +23,7 @@
   (dispatch [:set-chat-command-content message]))
 
 (defn send-command [chat-id command text]
-  (dispatch [:send-chat-command chat-id (:command command) text])
+  (dispatch [:stage-command chat-id command text])
   (cancel-command-input))
 
 (defn simple-command-input-view [command input-options]
