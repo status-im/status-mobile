@@ -28,19 +28,29 @@
                                          apply-staged-commands]]
    [syng-im.handlers.sign-up :as sign-up-service]
 
-   [syng-im.models.chats :refer [create-chat]]
+   [syng-im.models.chats :refer [create-chat
+                                 chat-add-participants
+                                 chat-remove-participants
+                                 set-chat-active]]
    [syng-im.models.chat :refer [signal-chat-updated
                                 set-current-chat-id
+                                current-chat-id
                                 update-new-group-selection
+                                update-new-participants-selection
                                 clear-new-group
+                                clear-new-participants
                                 new-group-selection
-                                set-chat-input-text]]
+                                set-chat-input-text
+                                new-participants-selection]]
    [syng-im.utils.logging :as log]
    [syng-im.protocol.api :as api]
    [syng-im.constants :refer [text-content-type
                               content-type-command]]
-   [syng-im.navigation :refer [nav-push]]
-   [syng-im.utils.crypt :refer [gen-random-bytes]]))
+   [syng-im.navigation :refer [nav-push
+                               nav-replace
+                               nav-pop]]
+   [syng-im.utils.crypt :refer [gen-random-bytes]]
+   [syng-im.utils.random :as random]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -88,9 +98,11 @@
     db))
 
 (register-handler :navigate-to
-  (fn [db [action navigator route]]
+  (fn [db [action navigator route nav-type]]
     (log/debug action route)
-    (nav-push navigator route)
+    (case nav-type
+      :push (nav-push navigator route)
+      :replace (nav-replace navigator route))
     db))
 
 (register-handler :load-commands
@@ -132,14 +144,98 @@
     (save-message chat-id msg)
     (signal-chat-updated db chat-id)))
 
+(defn joined-chat-msg [chat-id from msg-id]
+  (let [contact-name (:name (contacts/contact-by-identity from))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or contact-name from) " received chat invitation")
+                           :content-type text-content-type})))
+
+(defn participant-invited-to-group-msg [chat-id identity from msg-id]
+  (let [inviter-name (:name (contacts/contact-by-identity from))
+        invitee-name (:name (contacts/contact-by-identity identity))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or inviter-name from) " invited " (or invitee-name identity))
+                           :content-type text-content-type})))
+
+(defn participant-removed-from-group-msg [chat-id identity from msg-id]
+  (let [remover-name (:name (contacts/contact-by-identity from))
+        removed-name (:name (contacts/contact-by-identity identity))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or remover-name from) " removed " (or removed-name identity))
+                           :content-type text-content-type})))
+
+(defn you-removed-from-group-msg [chat-id from msg-id]
+  (let [remover-name (:name (contacts/contact-by-identity from))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or remover-name from) " removed you from group chat")
+                           :content-type text-content-type})))
+
+(defn participant-left-group-msg [chat-id from msg-id]
+  (let [left-name (:name (contacts/contact-by-identity from))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       msg-id
+                           :content      (str (or left-name from) " left")
+                           :content-type text-content-type})))
+
+(defn removed-participant-msg [chat-id identity]
+  (let [contact-name (:name (contacts/contact-by-identity identity))]
+    (save-message chat-id {:from         "system"
+                           :msg-id       (random/id)
+                           :content      (str "You've removed " (or contact-name identity))
+                           :content-type text-content-type})))
+
+(defn left-chat-msg [chat-id]
+  (save-message chat-id {:from         "system"
+                         :msg-id       (random/id)
+                         :content      "You left this chat"
+                         :content-type text-content-type}))
+
+(register-handler :group-chat-invite-acked
+  (fn [db [action from group-id ack-msg-id]]
+    (log/debug action from group-id ack-msg-id)
+    (joined-chat-msg group-id from ack-msg-id)
+    (signal-chat-updated db group-id)))
+
+(register-handler :participant-removed-from-group
+  (fn [db [action from group-id identity msg-id]]
+    (log/debug action msg-id from group-id identity)
+    (chat-remove-participants group-id [identity])
+    (participant-removed-from-group-msg group-id identity from msg-id)
+    (signal-chat-updated db group-id)))
+
+(register-handler :you-removed-from-group
+  (fn [db [action from group-id msg-id]]
+    (log/debug action msg-id from group-id)
+    (you-removed-from-group-msg group-id from msg-id)
+    (set-chat-active group-id false)
+    (signal-chat-updated db group-id)))
+
+(register-handler :participant-left-group
+  (fn [db [action from group-id msg-id]]
+    (log/debug action msg-id from group-id)
+    (participant-left-group-msg group-id from msg-id)
+    (signal-chat-updated db group-id)))
+
+(register-handler :participant-invited-to-group
+  (fn [db [action from group-id identity msg-id]]
+    (log/debug action msg-id from group-id identity)
+    (participant-invited-to-group-msg group-id identity from msg-id)
+    (signal-chat-updated db group-id)))
+
 (register-handler :acked-msg
-  (fn [db [_ from msg-id]]
+  (fn [db [action from msg-id]]
+    (log/debug action from msg-id)
     (update-message! {:msg-id          msg-id
                       :delivery-status :delivered})
     (signal-chat-updated db from)))
 
 (register-handler :msg-delivery-failed
-  (fn [db [_ msg-id]]
+  (fn [db [action msg-id]]
+    (log/debug action msg-id)
     (update-message! {:msg-id          msg-id
                       :delivery-status :failed})
     (let [{:keys [chat-id]} (message-by-id msg-id)]
@@ -196,6 +292,15 @@
             (apply-staged-commands)
             (signal-chat-updated chat-id))))))
 
+(register-handler :leave-group-chat
+  (fn [db [action navigator]]
+    (log/debug action)
+    (let [chat-id (current-chat-id db)]
+      (api/leave-group-chat chat-id)
+      (set-chat-active chat-id false)
+      (left-chat-msg chat-id)
+      (signal-chat-updated db chat-id))))
+
 (register-handler :send-chat-command
   (fn [db [action chat-id command content]]
     (log/debug action "chat-id" chat-id "command" command "content" content)
@@ -203,7 +308,7 @@
           msg (if (= chat-id "console")
                 (sign-up-service/send-console-command db command content)
                 ;; TODO handle command, now sends as plain message
-                (let [{msg-id :msg-id
+                (let [{msg-id     :msg-id
                        {from :from
                         to   :to} :msg} (api/send-user-msg {:to      chat-id
                                                             :content content})]
@@ -269,10 +374,10 @@
 ;; -- Chats --------------------------------------------------------------
 
 (register-handler :show-chat
-  (fn [db [action chat-id navigator]]
+  (fn [db [action chat-id navigator nav-type]]
     (log/debug action "chat-id" chat-id)
     (let [db (set-current-chat-id db chat-id)]
-      (dispatch [:navigate-to navigator {:view-id :chat}])
+      (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
       db)))
 
 (register-handler :init-console-chat
@@ -326,6 +431,48 @@
     (nav-push navigator {:view-id :contact-list})
     db))
 
+(register-handler :select-new-participant
+  (fn [db [action identity add?]]
+    (log/debug action identity add?)
+    (update-new-participants-selection db identity add?)))
+
+(register-handler :show-remove-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (nav-push navigator {:view-id :remove-participants})
+    (clear-new-participants db)))
+
+(register-handler :remove-selected-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (let [identities (-> (new-participants-selection db)
+                         (vec))
+          chat-id    (current-chat-id db)]
+      (chat-remove-participants chat-id identities)
+      (nav-pop navigator)
+      (doseq [ident identities]
+        (api/group-remove-participant chat-id ident)
+        (removed-participant-msg chat-id ident))
+      (signal-chat-updated db chat-id))))
+
+(register-handler :show-add-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (nav-push navigator {:view-id :add-participants})
+    (clear-new-participants db)))
+
+(register-handler :add-new-participants
+  (fn [db [action navigator]]
+    (log/debug action)
+    (let [identities (-> (new-participants-selection db)
+                         (vec))
+          chat-id    (current-chat-id db)]
+      (chat-add-participants chat-id identities)
+      (nav-pop navigator)
+      (doseq [ident identities]
+        (api/group-add-participant chat-id ident))
+      db)))
+
 (register-handler :show-group-new
   (fn [db [action navigator]]
     (log/debug action)
@@ -344,7 +491,7 @@
                          (vec))
           group-id   (api/start-group-chat identities group-name)
           db         (create-chat db group-id identities true group-name)]
-      (dispatch [:show-chat group-id navigator])
+      (dispatch [:show-chat group-id navigator :replace])
       db)))
 
 (register-handler :group-chat-invite-received

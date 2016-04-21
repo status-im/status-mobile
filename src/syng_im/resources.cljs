@@ -13,6 +13,9 @@
 (def smile (js/require "./images/smile.png"))
 (def att (js/require "./images/att.png"))
 (def v (js/require "./images/v.png"))
+(def add-icon (js/require "./images/add.png"))
+(def trash-icon (js/require "./images/trash.png"))
+(def leave-icon (js/require "./images/leave.png"))
 
 (def icon-back (js/require "./images/icon_back.png"))
 (def icon-dollar (js/require "./images/icon_dollar.png"))
