@@ -20,7 +20,7 @@
                                                :new-messages-count 3
                                                :timestamp          "13:54"
                                                :online             true
-                                               :group-chat true})]]])
+                                               :group-chat         false})]]])
 
 (comment [view {:style {:flexDirection  "row"
                         :width          260

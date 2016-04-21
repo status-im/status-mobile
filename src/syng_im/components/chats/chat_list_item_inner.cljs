@@ -89,7 +89,8 @@
                    :color        text1-color
                    :fontFamily   font
                    :fontSize     14
-                   :lineHeight   20}}
+                   :lineHeight   20}
+           :numberOfLines 2}
      (repeatedly 5 #(str "Hi, I'm " name "! "))]]
    [view {}
 ;;; delivery status
