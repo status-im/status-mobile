@@ -9,10 +9,11 @@
              :identity-password    "replace-me-with-user-entered-password"
              :contacts             []
              :chat                 {:current-chat-id "0x0479a5ed1f38cadfad1db6cd56c4b659b0ebe052bbe9efa950f6660058519fa4ca6be2dda66afa80de96ab00eb97a2605d5267a1e8f4c2a166ab551f6826608cdd"
-                                    :command nil}
+                                    :command         nil}
              :chats                {}
              :chats-updated-signal 0
              :new-group            #{}
+             :new-participants     #{}
              :signed-up            false})
 
 
@@ -37,3 +38,4 @@
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
 (def new-group-path [:new-group])
+(def new-participants-path [:new-participants])

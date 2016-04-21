@@ -34,9 +34,12 @@
        (into {})))
 
 (defn add-msg-color [{:keys [from] :as msg} contact-by-identity]
-  (let [{:keys [text-color background-color]} (get contact-by-identity from)]
-    (assoc msg :text-color text-color
-               :background-color background-color)))
+  (if (= "system" from)
+    (assoc msg :text-color "#4A5258"
+               :background-color "#D3EEEF")
+    (let [{:keys [text-color background-color]} (get contact-by-identity from)]
+      (assoc msg :text-color text-color
+                 :background-color background-color))))
 
 (defn chat-photo [{:keys [photo-path]}]
   [view {:borderRadius 50}
@@ -152,10 +155,26 @@
            ;; TODO add IOS version
            [toolbar-android {:navIcon       res/icon-back
                              :style         {:backgroundColor color-white
-                                             :height          56
-                                             :elevation       2}
-                             :onIconClicked (fn []
-                                              (nav-pop navigator))}
+                                                :height          56
+                                                :elevation       2}
+                             :actions          (when (and (:group-chat @chat)
+                                                          (:is-active @chat))
+                                                 [{:title        "Add Contact to chat"
+                                                   :icon         res/add-icon
+                                                   :showWithText true}
+                                                  {:title        "Remove Contact from chat"
+                                                   :icon         res/trash-icon
+                                                   :showWithText true}
+                                                  {:title        "Leave Chat"
+                                                   :icon         res/leave-icon
+                                                   :showWithText true}])
+                             :onActionSelected (fn [position]
+                                                 (case position
+                                                   0 (dispatch [:show-add-participants navigator])
+                                                   1 (dispatch [:show-remove-participants navigator])
+                                                   2 (dispatch [:leave-group-chat navigator])))
+                             :onIconClicked    (fn []
+                                                 (nav-pop navigator))}
             [toolbar-content-chat @chat]])
          [list-view {:dataSource            datasource
                      :renderScrollComponent (fn [props]
@@ -168,4 +187,5 @@
                      :style                 {:backgroundColor "white"}}]
          (when (:group-chat @chat)
            [typing-all])
-         [chat-message-new]]))))
+         (when (:is-active @chat)
+           [chat-message-new])]))))

@@ -8,7 +8,9 @@
                                           chats-updated?
                                           chat-by-id]]
             [syng-im.models.messages :refer [get-messages]]
-            [syng-im.models.contacts :refer [contacts-list]]
+            [syng-im.models.contacts :refer [contacts-list
+                                             contacts-list-exclude
+                                             contacts-list-include]]
             [syng-im.models.commands :refer [get-commands
                                              get-chat-command
                                              get-chat-command-content
@@ -79,10 +81,13 @@
 (register-sub :get-current-chat
   (fn [db _]
     (let [current-chat-id (-> (current-chat-id @db)
+                              (reaction))
+          chat-updated    (-> (chat-updated? @db @current-chat-id)
                               (reaction))]
-      (-> (when-let [chat-id @current-chat-id]
-            (chat-by-id chat-id))
-          (reaction)))))
+      (reaction
+        (let [_ @chat-updated]
+          (when-let [chat-id @current-chat-id]
+            (chat-by-id chat-id)))))))
 
 ;; -- User data --------------------------------------------------------------
 
@@ -120,3 +125,31 @@
   (fn [db _]
     (reaction
       (contacts-list))))
+
+(register-sub :all-new-contacts
+  (fn [db _]
+    (let [current-chat-id (-> (current-chat-id @db)
+                              (reaction))
+          chat            (-> (when-let [chat-id @current-chat-id]
+                                (chat-by-id chat-id))
+                              (reaction))]
+      (reaction
+        (when @chat
+          (let [current-participants (->> @chat
+                                          :contacts
+                                          (map :identity))]
+            (contacts-list-exclude current-participants)))))))
+
+(register-sub :current-chat-contacts
+  (fn [db _]
+    (let [current-chat-id (-> (current-chat-id @db)
+                              (reaction))
+          chat            (-> (when-let [chat-id @current-chat-id]
+                                (chat-by-id chat-id))
+                              (reaction))]
+      (reaction
+        (when @chat
+          (let [current-participants (->> @chat
+                                          :contacts
+                                          (map :identity))]
+            (contacts-list-include current-participants)))))))
