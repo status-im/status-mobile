@@ -27,6 +27,12 @@
      (command-handler to-msg-id command-key content)))
   db)
 
+(defn get-command-handler [db command-key content]
+  (when-let [command-handler (get-chat-command-request db)]
+    (let [to-msg-id (get-chat-command-to-msg-id db)]
+      (fn []
+        (command-handler to-msg-id command-key content)))))
+
 (defn execute-commands-js [body]
   (.eval js/window body)
   (let [commands (.-commands js/window)]

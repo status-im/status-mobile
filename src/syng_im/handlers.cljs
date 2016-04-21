@@ -1,41 +1,44 @@
 (ns syng-im.handlers
   (:require
-    [re-frame.core :refer [register-handler after dispatch]]
-    [schema.core :as s :include-macros true]
-    [syng-im.db :refer [app-db schema]]
-    [syng-im.protocol.api :refer [init-protocol]]
-    [syng-im.protocol.protocol-handler :refer [make-handler]]
-    [syng-im.models.protocol :refer [update-identity
-                                     set-initialized]]
-    [syng-im.models.user-data :as user-data]
-    [syng-im.models.contacts :as contacts]
-    [syng-im.models.messages :refer [save-message
-                                     update-message!
-                                     message-by-id]]
-    [syng-im.models.commands :refer [set-chat-command
-                                     set-response-chat-command
-                                     set-chat-command-content
-                                     set-chat-command-request
-                                     set-commands]]
-    [syng-im.handlers.server :as server]
-    [syng-im.handlers.contacts :as contacts-service]
-    [syng-im.handlers.suggestions :refer [get-command
-                                          handle-command
-                                          load-commands]]
-    [syng-im.handlers.sign-up :as sign-up-service]
+   [re-frame.core :refer [register-handler after dispatch]]
+   [schema.core :as s :include-macros true]
+   [syng-im.db :refer [app-db schema]]
+   [syng-im.protocol.api :refer [init-protocol]]
+   [syng-im.protocol.protocol-handler :refer [make-handler]]
+   [syng-im.models.protocol :refer [update-identity
+                                    set-initialized]]
+   [syng-im.models.user-data :as user-data]
+   [syng-im.models.contacts :as contacts]
+   [syng-im.models.messages :refer [save-message
+                                    update-message!
+                                    message-by-id]]
+   [syng-im.models.commands :as commands :refer [set-chat-command
+                                                 set-response-chat-command
+                                                 set-chat-command-content
+                                                 set-chat-command-request
+                                                 stage-command
+                                                 unstage-command
+                                                 set-commands]]
+   [syng-im.handlers.server :as server]
+   [syng-im.handlers.contacts :as contacts-service]
+   [syng-im.handlers.suggestions :refer [get-command
+                                         handle-command
+                                         get-command-handler
+                                         load-commands]]
+   [syng-im.handlers.sign-up :as sign-up-service]
 
-    [syng-im.models.chats :refer [create-chat]]
-    [syng-im.models.chat :refer [signal-chat-updated
-                                 set-current-chat-id
-                                 update-new-group-selection
-                                 clear-new-group
-                                 new-group-selection
-                                 set-chat-input-text]]
-    [syng-im.utils.logging :as log]
-    [syng-im.protocol.api :as api]
-    [syng-im.constants :refer [text-content-type]]
-    [syng-im.navigation :refer [nav-push]]
-    [syng-im.utils.crypt :refer [gen-random-bytes]]))
+   [syng-im.models.chats :refer [create-chat]]
+   [syng-im.models.chat :refer [signal-chat-updated
+                                set-current-chat-id
+                                update-new-group-selection
+                                clear-new-group
+                                new-group-selection
+                                set-chat-input-text]]
+   [syng-im.utils.logging :as log]
+   [syng-im.protocol.api :as api]
+   [syng-im.constants :refer [text-content-type]]
+   [syng-im.navigation :refer [nav-push]]
+   [syng-im.utils.crypt :refer [gen-random-bytes]]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -256,6 +259,21 @@
 (register-handler :set-chat-command
   (fn [db [_ command-key]]
     (set-chat-command db command-key)))
+
+(register-handler :stage-command
+  (fn [db [action chat-id command content]]
+    (log/debug action "chat-id" chat-id "command" command "content" content)
+    (let [db (set-chat-input-text db nil)
+          command-info {:command command
+                        :content content
+                        :handler (get-command-handler db command content)}]
+      (stage-command db command-info))))
+
+(register-handler :unstage-command
+  (fn [db [action chat-id staged-command]]
+    (log/debug action "chat-id" chat-id "staged-command" staged-command)
+    (let []
+      (unstage-command db staged-command))))
 
 (register-handler :set-response-chat-command
   (fn [db [_ to-msg-id command-key]]

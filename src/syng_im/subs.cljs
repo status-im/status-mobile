@@ -47,6 +47,10 @@
   (fn [db _]
     (reaction (get-in @db (db/chat-input-text-path (current-chat-id @db))))))
 
+(register-sub :get-chat-staged-commands
+              (fn [db _]
+                (reaction (get-in @db (db/chat-staged-commands-path (current-chat-id @db))))))
+
 (register-sub :get-chat-command
   (fn [db _]
     (-> (get-chat-command @db)

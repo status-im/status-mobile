@@ -102,6 +102,18 @@
 (defn get-chat-command-to-msg-id [db]
   (get-in db (db/chat-command-to-msg-id-path (current-chat-id db))))
 
+(defn stage-command [db command-info]
+  (update-in db (db/chat-staged-commands-path (current-chat-id db))
+             (fn [staged-commands]
+               (if staged-commands
+                 (conj staged-commands command-info)
+                 [command-info]))))
+
+(defn unstage-command [db staged-command]
+  (update-in db (db/chat-staged-commands-path (current-chat-id db))
+             (fn [staged-commands]
+               (filterv #(not= % staged-command) staged-commands))))
+
 (defn get-chat-command-request [db]
   (get-in db (db/chat-command-request-path (current-chat-id db)
                                            (get-chat-command-to-msg-id db))))
