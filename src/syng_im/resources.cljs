@@ -26,6 +26,7 @@
 (def icon-smile (js/require "./images/icon_smile.png"))
 
 (def icon-add (js/require "./images/icon_add.png"))
+(def icon-add-gray (js/require "./images/icon_add_gray.png"))
 (def icon-group (js/require "./images/icon_group.png"))
 (def icon-hamburger (js/require "./images/icon_hamburger.png"))
 (def icon-search (js/require "./images/icon_search.png"))

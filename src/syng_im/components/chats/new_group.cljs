@@ -1,7 +1,13 @@
 (ns syng-im.components.chats.new-group
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.resources :as res]
-            [syng-im.components.react :refer [view toolbar-android android? text-input text]]
+            [syng-im.components.react :refer [view
+                                              toolbar-android
+                                              android?
+                                              text-input
+                                              text
+                                              image
+                                              touchable-highlight]]
             [syng-im.components.styles :refer [font
                                                text1-color
                                                text2-color
@@ -75,6 +81,20 @@
                          :fontSize     14
                          :lineHeight   20}}
            "Members"]
+          [touchable-highlight {:on-press (fn []
+                                            )}
+           [view {:style {:flexDirection "row"
+                          :marginBottom  16}}
+            [image {:style {:marginVertical   19
+                            :marginHorizontal 3}
+                    :source res/icon-add-gray}]
+            [text {:style {:marginTop    18
+                           :marginLeft   32
+                           :color        text2-color
+                           :fontFamily   font
+                           :fontSize     14
+                           :lineHeight   20}}
+             "Add members"]]]
           [list-view {:dataSource contacts-ds
                       :renderRow  (fn [row section-id row-id]
                                     (r/as-element [new-group-contact (js->clj row :keywordize-keys true) navigator]))
