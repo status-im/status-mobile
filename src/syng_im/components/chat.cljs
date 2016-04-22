@@ -20,6 +20,7 @@
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
+            [syng-im.constants :refer [content-type-status]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [reagent.core :as r]
@@ -146,6 +147,21 @@
     (fn []
       (let [msgs                @messages
                                         ;_                 (log/debug "messages=" msgs)
+            ;; temp to show first status
+            msgs-clj (assoc (js->clj msgs) "-1"
+                            {:msg-id "-1"
+                             :content (str "The brash businessman’s braggadocio "
+                                           "and public exchange with candidates "
+                                           "in the US presidential election")
+                             :delivery-status "seen"
+                             :from "Status"
+                             :chat-id "-"
+                             :content-type content-type-status
+                             :timestamp 1
+                             :outgoing false
+                             :to nil})
+            msgs (clj->js msgs-clj)
+            ;; end temp
             datasource          (to-realm-datasource msgs)
             contacts            (:contacts @chat)
             contact-by-identity (contacts-by-identity contacts)]
@@ -155,8 +171,8 @@
            ;; TODO add IOS version
            [toolbar-android {:navIcon       res/icon-back
                              :style         {:backgroundColor color-white
-                                                :height          56
-                                                :elevation       2}
+                                             :height          56
+                                             :elevation       2}
                              :actions          (when (and (:group-chat @chat)
                                                           (:is-active @chat))
                                                  [{:title        "Add Contact to chat"

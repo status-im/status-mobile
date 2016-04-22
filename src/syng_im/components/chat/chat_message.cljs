@@ -14,6 +14,7 @@
                                                color-black
                                                color-blue
                                                selected-message-color
+                                               online-color
                                                text1-color
                                                text2-color]]
             [syng-im.models.commands :refer [parse-command-msg-content
@@ -22,6 +23,7 @@
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
             [syng-im.constants :refer [text-content-type
+                                       content-type-status
                                        content-type-command
                                        content-type-command-request]]))
 
@@ -38,6 +40,64 @@
                   :color          text2-color
                   :textAlign      "center"}}
     date]])
+
+(defn contact-photo [{:keys [photo-path]}]
+  [view {:borderRadius 50}
+   [image {:source (if (s/blank? photo-path)
+                     res/user-no-photo
+                     {:uri photo-path})
+           :style  {:borderRadius 50
+                    :width        64
+                    :height       64}}]])
+
+(defn contact-online [{:keys [online]}]
+  (when online
+    [view {:position        "absolute"
+           :top             44
+           :left            44
+           :width           24
+           :height          24
+           :borderRadius    50
+           :backgroundColor online-color
+           :borderWidth     2
+           :borderColor     color-white}
+     [view {:position        "absolute"
+            :top             8
+            :left            5
+            :width           4
+            :height          4
+            :borderRadius    50
+            :backgroundColor color-white}]
+     [view {:position        "absolute"
+            :top             8
+            :left            11
+            :width           4
+            :height          4
+            :borderRadius    50
+            :backgroundColor color-white}]]))
+
+
+(defn message-content-status [from content]
+  [view {:style {:flex         1
+                 :marginBottom 20
+                 :alignSelf    "center"
+                 :alignItems   "center"
+                 :width        249}}
+   [view {:style {:marginTop 20}}
+    [contact-photo {}]
+    [contact-online {:online true}]]
+   [text {:style {:marginTop 20
+                  :fontSize   18
+                  :fontFamily font
+                  :color text1-color}}
+    from]
+   [text {:style {:marginTop  10
+                  :fontFamily font
+                  :fontSize   14
+                  :lineHeight 20
+                  :textAlign  "center"
+                  :color      text2-color}}
+    content]])
 
 (defn message-content-audio [{:keys [content-type content-type]}]
   [view {:style {:flexDirection "row"
@@ -164,7 +224,8 @@
                       :fontFamily font}}
         "Justas"])
      (cond
-       (= content-type text-content-type)
+       (or (= content-type text-content-type)
+           (= content-type content-type-status))
        [text {:style (merge {:marginTop (if (and group-chat (not outgoing))
                                           4
                                           0)
@@ -266,7 +327,7 @@
      (when (and outgoing delivery-status)
        [message-delivery-status {:delivery-status delivery-status}])]))
 
-(defn chat-message [{:keys [msg-id content content-type outgoing delivery-status date new-day text-color background-color group-chat selected] :as msg}]
+(defn chat-message [{:keys [msg-id from content content-type outgoing delivery-status date new-day text-color background-color group-chat selected] :as msg}]
   [view {}
    (when new-day
      [message-date {:date date}])
@@ -279,6 +340,9 @@
                      :delivery-status  (keyword delivery-status)
                      :group-chat       group-chat
                      :selected         selected}]
-     (if (and group-chat (not outgoing))
-       [incoming-group-message-body msg-data]
-       [message-body msg-data]))])
+     [view {}
+      (when (= content-type content-type-status)
+        [message-content-status from content])
+      (if (and group-chat (not outgoing))
+        [incoming-group-message-body msg-data]
+        [message-body msg-data])])])
