@@ -25,7 +25,7 @@ allprojects {
             dirs 'libs'
         }
         maven {
-            url "http://85.90.244.96:8081/artifactory/libs-release-local"
+            url "http://185.90.37.89:8081/artifactory/libs-release-local"
         }
     }
 }
