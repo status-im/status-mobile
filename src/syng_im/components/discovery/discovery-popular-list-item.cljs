@@ -3,12 +3,8 @@
     [syng-im.utils.debug :refer [log]]
     [syng-im.components.react :refer [android?
                                       view
-                                      scroll-view
-                                      list-view
                                       text
-                                      image
-                                      navigator
-                                      toolbar-android]]
+                                      image]]
     [syng-im.resources :as res]
     [reagent.core :as r])
   )
