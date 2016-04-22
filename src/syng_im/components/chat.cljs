@@ -134,12 +134,12 @@
                        :fontSize   12
                        :fontFamily font}}
          "Active a minute ago"])]
-     [view {:style {:position "absolute"
-                    :top      10
-                    :right    66}}
-      [chat-photo {}]
-      (when (not group?)
-        [contact-online {:online true}])]]))
+     (when (not group?)
+       [view {:style {:position "absolute"
+                      :top      10
+                      :right    66}}
+        [chat-photo {}]
+        [contact-online {:online true}]])]))
 
 (defn chat [{:keys [navigator]}]
   (let [messages (subscribe [:get-chat-messages])
