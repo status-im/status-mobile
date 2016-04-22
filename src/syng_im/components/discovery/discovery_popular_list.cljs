@@ -7,12 +7,9 @@
     [syng-im.utils.debug :refer [log]]
     [syng-im.components.react :refer [android?
                                       view
-                                      scroll-view
                                       list-view
                                       text
-                                      image
-                                      navigator
-                                      toolbar-android]]
+                                      image]]
     [reagent.core :as r]
     [syng-im.components.realm :refer [list-view]]
     [syng-im.utils.listview :refer [to-realm-datasource]]
@@ -30,11 +27,6 @@
                                :borderBottomColor "#eff2f3"}
                                   :key rowID}])]
     elem))
-
-(defn get-data-source [elements]
-  (clone-with-rows (data-source {:rowHasChanged (fn [row1 row2]
-                                                  (not= (:discovery-id row1) (:discovery-id row2)))})
-                   elements))
 
 (defn discovery-popular-list [tag]
   (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])
@@ -60,8 +52,7 @@
                              :renderRow  render-row
                              :renderSeparator render-separator
                              :style      {:backgroundColor "white"}}]
-                 ])
-  ))
+                 ])))
 
 (comment
   list-view {:dataSource elements

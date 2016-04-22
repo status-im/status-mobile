@@ -4,21 +4,13 @@
 
     )
   (:require
-    [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+    [re-frame.core :refer [subscribe]]
     [syng-im.components.react :refer [android?
-                                      view
-                                      scroll-view
-                                      text
-                                      image
-                                      navigator
-                                      toolbar-android]]
+                                      view]]
     [syng-im.components.realm :refer [list-view]]
     [syng-im.utils.listview :refer [to-realm-datasource]]
-    [syng-im.components.carousel :refer [carousel]]
     [syng-im.components.discovery.discovery-popular-list-item :refer [discovery-popular-list-item]]
-    [syng-im.models.discoveries :refer [generate-discoveries]]
-    [reagent.core :as r]
-    [syng-im.resources :as res]))
+    [reagent.core :as r]))
 
 
 (defn render-row [row section-id row-id]
@@ -31,11 +23,6 @@
                                :borderBottomColor "#eff2f3"}
                                   :key rowID}])]
     elem))
-
-(defn get-data-source [elements]
-  (clone-with-rows (data-source {:rowHasChanged (fn [row1 row2]
-                                                  (not= (:discovery-id row1) (:discovery-id row2)))})
-                   elements))
 
 (defn discovery-recent []
   (let [discoveries (subscribe [:get-discoveries])
