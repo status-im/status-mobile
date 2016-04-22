@@ -19,8 +19,7 @@
                                                :delivery-status    :seen
                                                :new-messages-count 3
                                                :timestamp          "13:54"
-                                               :online             true
-                                               :group-chat         false})]]])
+                                               :online             true})]]])
 
 (comment [view {:style {:flexDirection  "row"
                         :width          260
