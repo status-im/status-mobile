@@ -14,20 +14,19 @@
 (defn discovery-popular []
   (let [popular-tags (subscribe [:get-popular-tags 3])
         _ (log "Got popular tags: ")
-        _ (log @popular-tags)
-        popular-lists (mapv #(discovery-popular-list (.-name %)) @popular-tags)]
-    (if (> (count popular-lists) 0)
-      (apply carousel {:pageStyle {:borderRadius  1
-                                   :shadowColor   "black"
-                                   :shadowRadius  1
-                                   :shadowOpacity 0.8
-                                   :elevation     2
-                                   :marginBottom  10}
-                       :pageWidth (- (page-width) 60)
-
-                       }
-             popular-lists
-             )
+        _ (log @popular-tags)]
+    (if (> (count @popular-tags) 0)
+      [carousel {:pageStyle {:borderRadius  1
+                              :shadowColor   "black"
+                              :shadowRadius  1
+                              :shadowOpacity 0.8
+                              :elevation     2
+                              :marginBottom  10}
+                  :pageWidth (- (page-width) 60)
+                  :sneak     20}
+       (for [tag @popular-tags]
+         (discovery-popular-list (.-name tag)))
+       ]
       [text "None"]
       )
     )

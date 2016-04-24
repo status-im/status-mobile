@@ -30,7 +30,7 @@
                          :style            {:backgroundColor "#eef2f5"
                                             :justifyContent  "center"
                                             :height          56
-                                            :elevation       2}
+                                            :elevation       0}
                          :onIconClicked    (fn []
                                              (realm/write (fn []
                                                             (let [number (rand-int 30)]
