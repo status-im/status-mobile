@@ -32,7 +32,7 @@
   (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])
         _ (log (str "Got discoveries for tag (" tag "): ") @discoveries)
         _ (log @discoveries)]
-    (r/as-element [view {:style {:flex 1
+    [view {:style {:flex 1
                                :backgroundColor "white"
                                :paddingLeft 10
                                :paddingTop 10}}
@@ -52,7 +52,7 @@
                              :renderRow  render-row
                              :renderSeparator render-separator
                              :style      {:backgroundColor "white"}}]
-                 ])))
+                 ]))
 
 (comment
   list-view {:dataSource elements
