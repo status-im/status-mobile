@@ -17,8 +17,8 @@
                 :text "!money"
                 :description "Send money"
                 :color color-dark-mint
-                :request-icon res/icon-lock-white
-                :icon res/icon-lock-gray
+                :request-icon {:uri "icon_lock_white"}
+                :icon {:uri "icon_lock_gray"}
                 :suggestion true}
                {:command :location
                 :text "!location"
@@ -35,8 +35,8 @@
                 :description "Send confirmation code"
                 :request-text "Confirmation code request"
                 :color color-blue
-                :request-icon res/icon-lock-white
-                :icon res/icon-lock-gray
+                :request-icon {:uri "icon_lock_white"}
+                :icon {:uri "icon_lock_gray"}
                 :suggestion true}
                {:command :send
                 :text "!send"
@@ -52,8 +52,8 @@
                 :text "!keypairPassword"
                 :description ""
                 :color color-blue
-                :request-icon res/icon-lock-white
-                :icon res/icon-lock-gray
+                :request-icon {:uri "icon_lock_white"}
+                :icon {:uri "icon_lock_gray"}
                 :suggestion false}
                {:command :help
                 :text "!help"

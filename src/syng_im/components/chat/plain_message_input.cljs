@@ -40,7 +40,7 @@
          [view {:style {:flexDirection     "row"
                         :height            56
                         :backgroundColor   color-white}}
-          [image {:source res/icon-list
+          [image {:source {:uri "icon_list"}
                   :style  {:marginTop    22
                            :marginRight  6
                            :marginBottom 6
@@ -62,7 +62,7 @@
                        :onSubmitEditing       (fn [e]
                                                 (send @chat input-message))}
            input-message]
-          [image {:source res/icon-smile
+          [image {:source {:uri "icon_smile"}
                   :style  {:marginTop   18
                            :marginRight 18
                            :width       20
@@ -77,7 +77,7 @@
                             :height          36
                             :borderRadius    50
                             :backgroundColor color-blue}}
-              [image {:source res/icon-send
+              [image {:source {:uri "icon_send"}
                       :style  {:marginTop   10.5
                                :marginLeft  12
                                :width       15
