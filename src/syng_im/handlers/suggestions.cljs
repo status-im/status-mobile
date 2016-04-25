@@ -58,8 +58,9 @@
 (defn load-commands []
   (http-get "chat-commands.js" execute-commands-js nil))
 
-(defn check-suggestion [db text]
-  (when-let [suggestion-text (re-matches #"^![^\s]+\s" text)]
+(defn check-suggestion [db message]
+  (when-let [suggestion-text (when (string? message)
+                               (re-matches #"^![^\s]+\s" message))]
     (let [suggestion-text' (s/trim suggestion-text)
           [suggestion] (filter #(= suggestion-text' (:text %))
                                (get-commands db))]
