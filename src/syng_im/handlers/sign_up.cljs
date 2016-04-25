@@ -154,21 +154,21 @@
 
 (defn intro [db]
   (dispatch [:received-msg
-             {:msg-id :intro-message1
+             {:msg-id "intro-message1"
               :content "Hello there! It's Syng, a Dapp browser in your phone."
               :content-type text-content-type
               :outgoing false
               :from "console"
               :to "me"}])
   (dispatch [:received-msg
-             {:msg-id :intro-message2
+             {:msg-id "intro-message2"
               :content (str "Syng uses  a highly secure key-pair authentication type "
                             "to provide you a reliable way to access your account")
               :content-type text-content-type
               :outgoing false
               :from "console"
               :to "me"}])
-  (let [msg-id :intro-message3]
+  (let [msg-id "into-message3"]
     (dispatch [:received-msg
                {:msg-id msg-id
                 :content (commands/format-command-request-msg-content
