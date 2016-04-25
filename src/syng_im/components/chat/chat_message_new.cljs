@@ -11,6 +11,7 @@
    [syng-im.components.chat.input.simple-command :refer [simple-command-input-view]]
    [syng-im.components.chat.input.phone :refer [phone-input-view]]
    [syng-im.components.chat.input.password :refer [password-input-view]]
+   [syng-im.components.chat.input.confirmation-code :refer [confirmation-code-input-view]]
    [syng-im.components.chat.input.money :refer [money-input-view]]
    [syng-im.components.chat.input.simple-command-staged :refer [simple-command-staged-view]]
    [syng-im.utils.utils :refer [log toast http-post]]
@@ -33,6 +34,7 @@
   (case (:command command)
     :phone [phone-input-view command]
     :keypair-password [password-input-view command]
+    :confirmation-code [confirmation-code-input-view command]
     :money [money-input-view command]
     :request [money-input-view command]
     [default-command-input-view command]))
