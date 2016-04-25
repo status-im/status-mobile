@@ -36,15 +36,15 @@
                        :backgroundColor "white"}}
          (when android?
            ;; TODO add IOS version
-           [toolbar-android {:navIcon       res/icon-hamburger
+           [toolbar-android {:navIcon       {:uri "icon_hamburger"}
                              :style         {:backgroundColor color-white
                                              :height          56
                                              :elevation       2}
                              :onIconClicked (fn []
                                               (nav-pop navigator))
                              :actions [{:title "Search"
-                                        :icon res/icon-search
-                                        :show "always"}]}
+                                        :icon  {:uri "icon_search"}
+                                        :show  "always"}]}
             [view {:style {:flex 1
                            :alignItems "center"
                            :justifyContent "center"

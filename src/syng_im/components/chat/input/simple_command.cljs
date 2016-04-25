@@ -75,7 +75,7 @@
                            :height          36
                            :borderRadius    50
                            :backgroundColor color-blue}}
-             [image {:source res/icon-send
+             [image {:source {:uri "icon_send"}
                      :style  {:marginTop   10.5
                               :marginLeft  12
                               :width       15
