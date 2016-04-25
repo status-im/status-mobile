@@ -68,7 +68,8 @@
           message]
          (if (< 0 (count message))
            [touchable-highlight {:on-press (fn []
-                                             (send-command chat-id command message))}
+                                             (send-command chat-id command message))
+                                 :underlay-color :transparent}
             [view {:style {:marginTop       10
                            :marginRight     10
                            :width           36
