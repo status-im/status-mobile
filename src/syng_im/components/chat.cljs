@@ -148,19 +148,19 @@
       (let [msgs                @messages
                                         ;_                 (log/debug "messages=" msgs)
             ;; temp to show first status
-            ;; msgs-clj (assoc (js->clj msgs) "-1"
-            ;;                 {:msg-id "-1"
-            ;;                  :content (str "The brash businessman’s braggadocio "
-            ;;                                "and public exchange with candidates "
-            ;;                                "in the US presidential election")
-            ;;                  :delivery-status "seen"
-            ;;                  :from "Status"
-            ;;                  :chat-id "-"
-            ;;                  :content-type content-type-status
-            ;;                  :timestamp 1
-            ;;                  :outgoing false
-            ;;                  :to nil})
-            ;; msgs (clj->js msgs-clj)
+            msgs-clj (assoc (js->clj msgs) "-1"
+                            {:msg-id "-1"
+                             :content (str "The brash businessman’s braggadocio "
+                                           "and public exchange with candidates "
+                                           "in the US presidential election")
+                             :delivery-status "seen"
+                             :from "Status"
+                             :chat-id "-"
+                             :content-type content-type-status
+                             :timestamp 1
+                             :outgoing false
+                             :to nil})
+            msgs (clj->js msgs-clj)
             ;; end temp
             datasource          (to-realm-datasource msgs)
             contacts            (:contacts @chat)
