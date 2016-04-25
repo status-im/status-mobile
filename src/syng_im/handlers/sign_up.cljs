@@ -40,9 +40,10 @@
 (defn sync-contacts []
   (dispatch [:sync-contacts on-sync-contacts]))
 
-(defn on-send-code-response [body]
+(defn on-send-code-response [msg-id body]
   (if (:confirmed body)
-    (do (dispatch [:received-msg
+    (do (dispatch [:set-chat-command-request msg-id nil])
+        (dispatch [:received-msg
                    {:msg-id (random/id)
                     :content "Confirmed"
                     :content-type text-content-type
@@ -58,13 +59,12 @@
                 :from "console"
                 :to "me"}])))
 
-(defn send-code [code]
-  (dispatch [:sign-up-confirm code on-send-code-response]))
+(defn send-code [msg-id code]
+  (dispatch [:sign-up-confirm code (partial on-send-code-response msg-id)]))
 
 (defn- handle-confirmation-code [msg-id command-key content]
-  (dispatch [:set-chat-command-request msg-id nil])
   (when (= command-key :confirmation-code)
-    (send-code content)))
+    (send-code msg-id content)))
 
 ;; -- Send phone number ----------------------------------------
 (defn on-sign-up-response []
