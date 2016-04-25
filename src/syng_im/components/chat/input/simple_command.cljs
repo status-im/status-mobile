@@ -82,7 +82,8 @@
                               :width       15
                               :height      15}}]]]
            [touchable-highlight {:on-press (fn []
-                                             (cancel-command-input))}
+                                             (cancel-command-input))
+                                 :underlay-color :transparent}
             [view {:style {:marginTop       10
                            :marginRight     10
                            :width           36
