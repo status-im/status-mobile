@@ -39,8 +39,7 @@
          [suggestions-view]
          [view {:style {:flexDirection     "row"
                         :height            56
-                        :backgroundColor   color-white
-                        :elevation         4}}
+                        :backgroundColor   color-white}}
           [image {:source res/icon-list
                   :style  {:marginTop    22
                            :marginRight  6
