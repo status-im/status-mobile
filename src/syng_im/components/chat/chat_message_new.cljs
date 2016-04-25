@@ -7,6 +7,7 @@
                                      text
                                      text-input
                                      touchable-highlight]]
+   [syng-im.components.styles :refer [color-white]]
    [syng-im.components.chat.plain-message-input :refer [plain-message-input-view]]
    [syng-im.components.chat.input.simple-command :refer [simple-command-input-view]]
    [syng-im.components.chat.input.phone :refer [phone-input-view]]
@@ -23,7 +24,7 @@
   [simple-command-staged-view stage-command])
 
 (defn staged-commands-view [staged-commands]
-  [view {:style {:marginBottom 12}}
+  [view {}
    (for [command staged-commands]
      ^{:key command} [staged-command-view command])])
 
@@ -45,7 +46,8 @@
     (fn []
       (let [command @command-atom
             staged-commands @staged-commands-atom]
-        [view
+        [view {:style {:backgroundColor color-white
+                       :elevation       4}}
          (when (and staged-commands (< 0 (count staged-commands)))
            [staged-commands-view staged-commands])
          (if command
