@@ -273,7 +273,7 @@
     (if-let [command (get-command db text)]
       (do (dispatch [:set-chat-command (:command command)])
           db)
-      (let [msg (when (< 0 (count text))
+      (let [msg (when (pos? (count text))
                   (if (= chat-id "console")
                     (sign-up-service/send-console-msg text)
                     (let [{msg-id :msg-id
@@ -449,8 +449,7 @@
 (register-handler :remove-selected-participants
   (fn [db [action navigator]]
     (log/debug action)
-    (let [identities (-> (new-participants-selection db)
-                         (vec))
+    (let [identities (vec (new-participants-selection db))
           chat-id    (current-chat-id db)]
       (chat-remove-participants chat-id identities)
       (nav-pop navigator)
@@ -468,8 +467,7 @@
 (register-handler :add-new-participants
   (fn [db [action navigator]]
     (log/debug action)
-    (let [identities (-> (new-participants-selection db)
-                         (vec))
+    (let [identities (vec (new-participants-selection db))
           chat-id    (current-chat-id db)]
       (chat-add-participants chat-id identities)
       (nav-pop navigator)
@@ -491,8 +489,7 @@
 (register-handler :create-new-group
   (fn [db [action group-name navigator]]
     (log/debug action)
-    (let [identities (-> (new-group-selection db)
-                         (vec))
+    (let [identities (vec (new-group-selection db))
           group-id   (api/start-group-chat identities group-name)
           db         (create-chat db group-id identities true group-name)]
       (dispatch [:show-chat group-id navigator :replace])

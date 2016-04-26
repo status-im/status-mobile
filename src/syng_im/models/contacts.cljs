@@ -91,8 +91,7 @@
 ;;;;;;;;;;;;;;;;;;;;----------------------------------------------
 
 (defn contacts-list []
-  (-> (r/get-all :contacts)
-      (r/sorted :name :asc)))
+  (r/sorted (r/get-all :contacts) :name :asc))
 
 (defn contacts-list-exclude [exclude-idents]
   (let [query (exclude-query :whisper-identity exclude-idents)]
@@ -107,8 +106,7 @@
         (r/sorted :name :asc))))
 
 (defn contact-by-identity [identity]
-  (-> (r/get-by-field :contacts :whisper-identity identity)
-      (r/single-cljs)))
+  (r/single-cljs (r/get-by-field :contacts :whisper-identity identity)))
 
 (comment
 

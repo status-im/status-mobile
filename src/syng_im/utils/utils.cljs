@@ -43,8 +43,7 @@
        (.then (fn [response]
                 (log response)
                 (.text response)))
-       (.then (fn [text]
-                (on-success text)))
+       (.then on-success)
        (.catch (or on-error
                    (fn [error]
                      (toast (str error))))))))

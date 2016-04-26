@@ -14,8 +14,7 @@
                                                           0))))
 
 (defn chat-updated? [db chat-id]
-  (->> (db/updated-chat-signal-path chat-id)
-       (get-in db)))
+  (get-in db (db/updated-chat-signal-path chat-id)))
 
 (defn update-new-group-selection [db identity add?]
   (update-in db db/new-group-path (fn [new-group]
