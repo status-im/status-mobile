@@ -4,7 +4,6 @@
                                               view
                                               text
                                               image
-                                              touchable-highlight
                                               navigator
                                               toolbar-android]]
             [syng-im.components.realm :refer [list-view]]
