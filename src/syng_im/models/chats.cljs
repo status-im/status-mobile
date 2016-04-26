@@ -55,8 +55,7 @@
        (signal-chats-updated db)))))
 
 (defn chats-list []
-  (-> (r/get-all :chats)
-      (r/sorted :timestamp :desc)))
+  (r/sorted (r/get-all :chats) :timestamp :desc))
 
 (defn chat-by-id [chat-id]
   (-> (r/get-by-field :chats :chat-id chat-id)
@@ -69,13 +68,11 @@
       (let [contacts      (-> (r/get-by-field :chats :chat-id chat-id)
                               (r/single)
                               (aget "contacts"))
-            colors-in-use (->> (.map contacts (fn [object index collection]
+            colors-in-use (set (.map contacts (fn [object index collection]
                                                 {:text-color       (aget object "text-color")
-                                                 :background-color (aget object "background-color")}))
-                               (set))
-            colors        (->> group-chat-colors
-                               (filter (fn [color]
-                                         (not (contains? colors-in-use color)))))
+                                                 :background-color (aget object "background-color")})))
+            colors (filter (fn [color]
+                             (not (contains? colors-in-use color))) group-chat-colors)
             new-contacts  (mapv (fn [ident {:keys [background text]}]
                                   {:identity         ident
                                    :background-color background
@@ -87,18 +84,16 @@
   (r/write
     (fn []
       (let [query (include-query :identity identities)
-            chat  (-> (r/get-by-field :chats :chat-id chat-id)
-                      (r/single))]
+            chat (r/single (r/get-by-field :chats :chat-id chat-id))]
         (-> (aget chat "contacts")
             (r/filtered query)
             (r/delete))))))
 
 (defn active-group-chats []
-  (let [results (-> (r/get-all :chats)
-                    (r/filtered "group-chat = true && is-active = true"))]
-    (->> (.map results (fn [object index collection]
-                         (aget object "chat-id")))
-         (js->clj))))
+  (let [results (r/filtered (r/get-all :chats)
+                            "group-chat = true && is-active = true")]
+    (js->clj (.map results (fn [object index collection]
+                             (aget object "chat-id"))))))
 
 
 (defn set-chat-active [chat-id active?]
@@ -107,7 +102,7 @@
                  (r/single)
                  (aset "is-active" active?)))))
 
-(comment
+#_(comment
   (active-group-chats)
 
 

@@ -57,7 +57,7 @@
   (let [suggestions-atom (subscribe [:get-suggestions])]
     (fn []
       (let [suggestions @suggestions-atom]
-        (when (not (empty? suggestions))
+        (when (seq suggestions)
           [view {:style {:flexDirection    "row"
                          :marginVertical   1
                          :marginHorizontal 0
