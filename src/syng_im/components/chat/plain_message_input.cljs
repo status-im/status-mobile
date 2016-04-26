@@ -70,7 +70,8 @@
           (when (or (< 0 (count input-message))
                     (< 0 (count @staged-commands-atom)))
             [touchable-highlight {:on-press (fn []
-                                              (send @chat input-message))}
+                                              (send @chat input-message))
+                                  :underlay-color :transparent}
              [view {:style {:marginTop       10
                             :marginRight     10
                             :width           36
