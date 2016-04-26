@@ -9,7 +9,7 @@
             [clojure.string :as s]))
 
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
-(def fake-phone-contacts? true)
+(def fake-phone-contacts? false)
 (def fake-contacts? false)
 
 (def react-native-contacts (js/require "react-native-contacts"))
