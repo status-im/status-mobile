@@ -49,10 +49,7 @@
 (defn execute-commands-js [body]
   (.eval js/window body)
   (let [commands (.-commands js/window)]
-    (dispatch [:set-commands (map (fn [command]
-                                    (update command :command
-                                            (fn [command-key]
-                                              (keyword command-key))))
+    (dispatch [:set-commands (map #(update % :command keyword)
                                   (js->clj commands :keywordize-keys true))])))
 
 (defn load-commands []

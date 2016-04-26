@@ -61,6 +61,6 @@
                    :fontSize   16
                    :fontFamily font
                    :color      text1-color}}
-     (if (< 0 (count name))
+     (if (pos? (count name))
        name
        "Noname")]]])
