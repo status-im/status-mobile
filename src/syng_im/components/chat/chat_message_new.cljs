@@ -47,7 +47,7 @@
             staged-commands @staged-commands-atom]
         [view {:style {:backgroundColor color-white
                        :elevation       4}}
-         (when (and staged-commands (< 0 (count staged-commands)))
+         (when (and staged-commands (pos? (count staged-commands)))
            [staged-commands-view staged-commands])
          (if command
            [special-input-view command]

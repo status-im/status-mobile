@@ -114,7 +114,7 @@
                     :marginLeft 5}}
       timestamp]]
 ;;; new messages count
-    (when (< 0 new-messages-count)
+    (when (pos? new-messages-count)
       [view {:style {:position        "absolute"
                      :top             36
                      :right           0

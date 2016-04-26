@@ -83,8 +83,7 @@
 
 (defn get-by-field [schema-name field value]
   (let [q (to-query schema-name :eq field value)]
-    (-> (.objects realm (name schema-name))
-        (.filtered q))))
+    (.filtered (.objects realm (name schema-name)) q)))
 
 (defn get-all [schema-name]
   (.objects realm (to-string schema-name)))
@@ -108,9 +107,7 @@
           (js->clj :keywordize-keys true)))
 
 (defn list-to-array [record list-field]
-  (assoc record list-field (-> (get record list-field)
-                               vals
-                               vec)))
+  (update-in record [list-field] (comp vec vals)))
 
 (defn decode-value [{:keys [key value]}]
   (read-string value))
@@ -119,8 +116,7 @@
   (.delete realm obj))
 
 (defn exists? [schema-name field value]
-  (> (.-length (get-by-field schema-name field value))
-     0))
+  (pos? (.-length (get-by-field schema-name field value))))
 
 (defn get-count [objs]
   (.-length objs))
