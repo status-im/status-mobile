@@ -116,8 +116,10 @@
            "Chat name")]
       (if group?
         [view {:style {:flexDirection "row"}}
-         [image {:source res/icon-group
-                 :style  {:marginTop 4}}]
+         [image {:source {:uri "icon_group"}
+                 :style  {:marginTop 4
+                          :width     14
+                          :height    9}}]
          [text {:style {:marginTop  -0.5
                         :marginLeft 4
                         :fontFamily font
@@ -168,7 +170,7 @@
                        :backgroundColor chat-background}}
          (when android?
            ;; TODO add IOS version
-           [toolbar-android {:navIcon       res/icon-back
+           [toolbar-android {:navIcon       {:uri "icon_back"}
                              :style         {:backgroundColor color-white
                                              :height          56
                                              :elevation       2}

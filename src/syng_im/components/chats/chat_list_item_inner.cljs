@@ -71,9 +71,11 @@
                     :fontFamily title-font}} name]
 ;;; group size
      (when group-chat
-       [image {:source res/icon-group
-               :style  {:marginTop 4
-                        :marginLeft 8}}])
+       [image {:source {:uri "icon_group"}
+               :style  {:marginTop  4
+                        :marginLeft 8
+                        :width      14
+                        :height     9}}])
      (when group-chat
        [text {:style {:marginTop  -0.5
                       :marginLeft 4
@@ -100,9 +102,11 @@
                    :right         0}}
      (when delivery-status
        [image {:source (if (= (keyword delivery-status) :seen)
-                         res/icon-ok-small
-                         res/icon-ok-small)
-               :style  {:marginTop 6}}])
+                         {:uri "icon_ok_small"}
+                         {:uri "icon_ok_small"})
+               :style  {:marginTop 6
+                        :width     9
+                        :height    7}}])
 ;;; datetime
      [text {:style {:fontFamily font
                     :fontSize   12
