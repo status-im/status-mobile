@@ -50,11 +50,12 @@
           [text-input {:underlineColorAndroid "transparent"
                        :style                 {:flex       1
                                                :marginLeft 16
-                                               :marginTop  7
+                                               :marginTop  -2
+                                               :padding    0
                                                :fontSize   14
                                                :fontFamily font
                                                :color      text2-color}
-                       :autoFocus             false
+                       :autoFocus             (< 0 (count @staged-commands-atom))
                        :placeholder           "Type"
                        :placeholderTextColor  text2-color
                        :onChangeText          (fn [new-text]
