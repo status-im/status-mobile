@@ -168,7 +168,7 @@ function compileWarningsToYellowBox() {
         if (compileWarningRx.test(msg)) {
             console.warn(msg);
         } else {
-            log.call(window.console, msg);
+            log.apply(window.console, arguments);
         }
     };
 }
