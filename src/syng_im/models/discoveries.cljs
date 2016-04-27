@@ -35,7 +35,8 @@
 (def fake-discoveries (generate-discoveries 20))
 
 (defn- get-discoveries []
-  ( let [list (realm/get-list :discoveries)]
+  (let [list (realm/get-list :discoveries)
+        _ (log list)]
     (if (> (.-length list) 0) (.slice list 0) [])))
 
 (defn load-syng-discoveries [db]
@@ -118,7 +119,9 @@
 
 (defn- add-discoveries [discoveries]
   (realm/write (fn []
-                 (let [db-discoveries (get-discoveries)]
+                 (let [db-discoveries (.slice (discovery-list) 0)
+                       _ (log discoveries)
+                       _ (log (.slice db-discoveries 0))]
                    (dorun (map (fn [discovery]
                                  (if (not (discovery-exist? db-discoveries discovery))
                                    (create-discovery discovery)

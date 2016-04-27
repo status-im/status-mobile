@@ -17,6 +17,12 @@
 
 (def search-input (atom {:search "x"}))
 
+(defn get-hashtags [status]
+  (let [hashtags (map #(subs % 1) (re-seq #"#[^ !?,;:.]+" status))]
+    (if hashtags
+      hashtags
+      [])))
+
 (defn discovery [{:keys [navigator]}]
   (let [showSearch (r/atom false)]
     (fn []
@@ -50,7 +56,7 @@
                                                (reset! showSearch true)))}
         (if @showSearch
           [text-input {:underlineColorAndroid "transparent"
-                       :value                 (:search @search-input)
+                       ;:value                 (:search @search-input)
                        :style                 {:flex       1
                                                :marginLeft 18
                                                :lineHeight 42
@@ -61,12 +67,11 @@
                        :placeholder           "Type your search tags here"
                        :onChangeText          (fn [new-text]
                                                 (let [old-text (:search @search-input)]
-                                                  (log (str new-text "-" old-text))
-                                                  (if (not (= new-text old-text))
-                                                    (swap! search-input assoc :search new-text))
-                                                  ))
+                                                  (log (str new-text "-" old-text))))
                        :onSubmitEditing       (fn [e]
-                                                (log (aget e "nativeEvent" "text")))}]
+                                                (let [search (aget e "nativeEvent" "text")
+                                                      hashtags (get-hashtags search)]
+                                                  (dispatch [:broadcast-status search hashtags])))}]
           [text "Discover"])]
 
        [scroll-view {:style {}}

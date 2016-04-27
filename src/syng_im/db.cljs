@@ -12,6 +12,7 @@
                                     :command nil}
              :chats                {}
              :chats-updated-signal 0
+             :name                 "My Name"
              :new-group            #{}})
 
 
