@@ -28,15 +28,24 @@ function tab () {
 EOF
 }
 
+if [ ! -z $1 ]
+then
+ device_type="$1"
+else
+ device_type="genymotion"
+fi
+
+if [ "$device_type" = "genymotion" ]
+then
 # Find Device based on Android version 6.0.0
 device=$(/Applications/Genymotion\ Shell.app/Contents/MacOS/genyshell -c "devices list" | grep "6.0.0")
-
-echo ${device##*| }
+#echo ${device##*| }
 # Launch device in Genymotion
 open -a /Applications/Genymotion.app/Contents/MacOS/player.app --args --vm-name "${device##*| }"
+fi
 
 # Install deps, prepare for genymotion and figwheel
-re-natal deps && re-natal use-android-device genymotion && re-natal use-figwheel
+re-natal deps && re-natal use-android-device "${device_type}" && re-natal use-figwheel
 
 # open figwheel in new tab
 tab "lein figwheel android"
