@@ -149,18 +149,43 @@
       (let [msgs                @messages
                                         ;_                 (log/debug "messages=" msgs)
             ;; temp to show first status
-            msgs-clj (assoc (js->clj msgs) "-1"
-                            {:msg-id "-1"
-                             :content (str "The brash businessman’s braggadocio "
-                                           "and public exchange with candidates "
-                                           "in the US presidential election")
-                             :delivery-status "seen"
-                             :from "Status"
-                             :chat-id "-"
-                             :content-type content-type-status
-                             :timestamp 1
-                             :outgoing false
-                             :to nil})
+            msgs-clj (as-> (js->clj msgs) ms
+                       (assoc ms "-1"
+                              {:msg-id "-1"
+                               :content (str "The brash businessman’s braggadocio "
+                                             "and public exchange with candidates "
+                                             "in the US presidential election")
+                               :delivery-status "seen"
+                               :from "Status"
+                               :chat-id "-"
+                               :content-type content-type-status
+                               :timestamp 1
+                               "outgoing" false
+                               :to nil})
+                       (reduce (fn [items [n m]]
+                                 (assoc items (.parseInt js/window n) m
+                                        ;; (assoc m "from" (if (< 0.5 (rand))
+                                        ;;                   "Status"
+                                        ;;                   "abc"))
+                                        ))
+                               {}  ms)
+                       (into (sorted-map) ms)
+                       (map (fn [[n current] [_ next]]
+                              [n (-> current
+                                     (assoc :same-author
+                                            (if next
+                                              (= (get current "from") (get next "from"))
+                                              true))
+                                     (assoc :same-direction
+                                            (if next
+                                              (= (get current "outgoing") (get next "outgoing"))
+                                              true))
+                                     (assoc :last-msg (= 0 n)))
+                               current])
+                            ms (conj (vec (rest ms)) nil))
+                       (reduce (fn [items [n m]]
+                                 (assoc items n m))
+                               {}  ms))
             msgs (clj->js msgs-clj)
             ;; end temp
             datasource          (to-realm-datasource msgs)

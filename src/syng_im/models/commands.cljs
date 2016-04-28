@@ -28,6 +28,7 @@
                {:command :phone
                 :text "!phone"
                 :description "Send phone number"
+                :request-text "Phone number request"
                 :color color-dark-mint
                 :suggestion true}
                {:command :confirmation-code
