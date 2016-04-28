@@ -26,16 +26,20 @@
 
 
 (defn calculate-gap [component props]
-  (let [prop-page-width (:pageWidth props)
+  (let [prop-page-width (get-page-width props)
+        page-width (page-width)
         sneak (get-sneak props)
+        gap (quot (- (- page-width (* 2 sneak)) prop-page-width) 2)
         _ (log "calculate-gap")
         _ (log component)
         _ (log props)
+        _ (log page-width)
         _ (log prop-page-width)
-        _ (log sneak)]
-    (if (> prop-page-width (page-width))
+        _ (log sneak)
+        _ (log gap)]
+    (if (> prop-page-width page-width)
       (println "Invalid pageWidth"))
-    (reagent.core/set-state component {:gap (/ (- (- (page-width) (* 2 sneak)) prop-page-width) 2)})
+    (reagent.core/set-state component {:gap gap})
     ))
 
 (defn scroll-to [component x y]
@@ -58,7 +62,7 @@
         _ (log (str "gap: " gap))
         page-offset (+ prop-page-width gap)
         _ (log (str "page-offset: " page-offset))
-        current-position (+ (.-x (.-contentOffset (.-nativeEvent event))) (/ (page-width) 2))
+        current-position (+ (.-x (.-contentOffset (.-nativeEvent event))) (quot (page-width) 2))
         _ (log (str "current-position: " current-position))
         current-page (quot current-position page-offset)
         _ (log (str "current-page: " current-page))
@@ -122,14 +126,14 @@
                                                                                                           }
                                                                               [view {:style [{:width props-page-width
                                                                                              :justifyContent "center"
-                                                                                             :marginLeft (/ gap 2)
-                                                                                             :marginRight (/ gap 2)}
+                                                                                             :marginLeft (quot gap 2)
+                                                                                             :marginRight (quot gap 2)}
                                                                                              page-style]}
                                                                                child]])) children)]
 
                                                       [view {:style {:flex 1}}
-                                                       [scroll-view {:contentContainerStyle {:paddingLeft (+ sneak (/ gap 2))
-                                                                                             :paddingRight (+ sneak (/ gap 2))}
+                                                       [scroll-view {:contentContainerStyle {:paddingLeft (+ sneak (quot gap 2))
+                                                                                             :paddingRight (+ sneak (quot gap 2))}
                                                                      :automaticallyAdjustContentInsets false
                                                                      :bounces false
                                                                      :decelerationRate 0.9
