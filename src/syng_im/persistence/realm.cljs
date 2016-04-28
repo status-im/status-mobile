@@ -50,7 +50,7 @@
                      :properties  {:name         "string"
                                    :count        {:type     "int"
                                                   :optional true
-                                                  :default 1}}}
+                                                  :default 0}}}
                     {:name        :discoveries
                      :primaryKey  :whisper-id
                      :properties  {:name         "string"

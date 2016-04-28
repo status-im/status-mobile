@@ -3,6 +3,7 @@
   (:require
     [syng-im.utils.debug :refer [log]]
     [re-frame.core :refer [dispatch]]
+    [syng-im.models.discoveries :refer [save-discoveries]]
     [syng-im.components.react :refer [android?
                                       view
                                       scroll-view
@@ -38,17 +39,16 @@
                                             :height          56
                                             :elevation       0}
                          :onIconClicked    (fn []
-                                             (realm/write (fn []
-                                                            (let [number (rand-int 30)]
-                                                            (realm/create :discoveries
-                                                                          {:name         (str "c" number)
-                                                                           :status       (str "Status " number)
-                                                                           :whisper-id   (str number)
-                                                                           :photo        ""
-                                                                           :location     ""
-                                                                           :tags         [{:name "tag1"} {:name "tag2"}]
-                                                                           :last-updated (new js/Date)} true)
-                                                            (dispatch [:updated-discoveries])))))
+                                             (let [number (rand-int 999)]
+                                              (do
+                                                (save-discoveries [{:name         (str "Name " number)
+                                                                    :status       (str "Status " number)
+                                                                    :whisper-id   (str number)
+                                                                    :photo        ""
+                                                                    :location     ""
+                                                                    :tags         ["tag1" "tag2" "tag3"]
+                                                                    :last-updated (new js/Date)}])
+                                                (dispatch [:updated-discoveries]))))
                          ;; temporary dispatch for testing
                          :onActionSelected (fn [index]
                                              (if @showSearch
@@ -100,5 +100,4 @@
   (comment
     (def page-width (aget (natal-shell.dimensions/get "window") "width"))
     (def page-height (aget (natal-shell.dimensions/get "window") "height"))
-
     )
