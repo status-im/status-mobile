@@ -8,9 +8,6 @@
             [syng-im.models.chats :refer [chats-list
                                           chats-updated?
                                           chat-by-id]]
-            [syng-im.models.discoveries :refer [discovery-list
-                                                signal-discovery-updated
-                                                discovery-updated?]]
             [syng-im.models.messages :refer [get-messages]]
             [syng-im.models.contacts :refer [contacts-list]]
             [syng-im.handlers.suggestions :refer [get-suggestions]]))

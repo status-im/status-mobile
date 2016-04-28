@@ -12,7 +12,7 @@
 
 (def defaults {:gap 10
                :sneak 10
-               :pageWidth (- (page-width) 50)})
+               :pageWidth (- (page-width) 40)})
 
 
 (defn get-gap [data]
