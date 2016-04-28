@@ -23,7 +23,7 @@
 
 (register-sub :get-chat-messages
   (fn [db _]
-    (let [chat-id (reaction (current-chat-id @db))
+    (let [chat-id      (reaction (current-chat-id @db))
           chat-updated (reaction (chat-updated? @db @chat-id))]
       (reaction
         (let [_ @chat-updated]
@@ -42,16 +42,16 @@
       (reaction (get-suggestions @db @input-text)))))
 
 (register-sub :get-commands
-              (fn [db _]
-                (reaction (get-commands @db))))
+  (fn [db _]
+    (reaction (get-commands @db))))
 
 (register-sub :get-chat-input-text
   (fn [db _]
     (reaction (get-in @db (db/chat-input-text-path (current-chat-id @db))))))
 
 (register-sub :get-chat-staged-commands
-              (fn [db _]
-                (reaction (get-in @db (db/chat-staged-commands-path (current-chat-id @db))))))
+  (fn [db _]
+    (reaction (get-in @db (db/chat-staged-commands-path (current-chat-id @db))))))
 
 (register-sub :get-chat-command
   (fn [db _]
@@ -104,16 +104,16 @@
       (get @db :loading))))
 
 (register-sub
- :signed-up
- (fn [db _]
-   (reaction
-    (get @db :signed-up))))
+  :signed-up
+  (fn [db _]
+    (reaction
+      (get @db :signed-up))))
 
 (register-sub
   :get-contacts
   (fn [db _]
     (reaction
-     (get @db :contacts))))
+      (get @db :contacts))))
 
 (register-sub :all-contacts
   (fn [db _]
@@ -123,8 +123,8 @@
 (register-sub :all-new-contacts
   (fn [db _]
     (let [current-chat-id (reaction (current-chat-id @db))
-          chat (reaction (when-let [chat-id @current-chat-id]
-                           (chat-by-id chat-id)))]
+          chat            (reaction (when-let [chat-id @current-chat-id]
+                                      (chat-by-id chat-id)))]
       (reaction
         (when @chat
           (let [current-participants (->> @chat
@@ -135,8 +135,8 @@
 (register-sub :current-chat-contacts
   (fn [db _]
     (let [current-chat-id (reaction (current-chat-id @db))
-          chat (reaction (when-let [chat-id @current-chat-id]
-                           (chat-by-id chat-id)))]
+          chat            (reaction (when-let [chat-id @current-chat-id]
+                                      (chat-by-id chat-id)))]
       (reaction
         (when @chat
           (let [current-participants (->> @chat

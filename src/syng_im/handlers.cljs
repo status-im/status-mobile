@@ -29,10 +29,12 @@
                                          check-suggestion]]
    [syng-im.handlers.sign-up :as sign-up-service]
 
-   [syng-im.models.chats :refer [create-chat
+   [syng-im.models.chats :refer [chat-exists?
+                                 create-chat
                                  chat-add-participants
                                  chat-remove-participants
-                                 set-chat-active]]
+                                 set-chat-active
+                                 re-join-group-chat]]
    [syng-im.models.chat :refer [signal-chat-updated
                                 set-current-chat-id
                                 current-chat-id
@@ -498,8 +500,10 @@
 (register-handler :group-chat-invite-received
   (fn [db [action from group-id identities group-name]]
     (log/debug action from group-id identities)
-    (create-chat db group-id identities true group-name)))
+    (if (chat-exists? group-id)
+      (re-join-group-chat db group-id identities group-name)
+      (create-chat db group-id identities true group-name))))
 
 (comment
-
+  (dispatch [:set-signed-up true])
   )
