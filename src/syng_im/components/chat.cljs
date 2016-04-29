@@ -220,7 +220,7 @@
             [toolbar-content-chat @chat]])
          [list-view {:dataSource            datasource
                      :renderScrollComponent (fn [props]
-                                              (invertible-scroll-view nil))
+                                              (invertible-scroll-view (js->clj props)))
                      :renderRow             (fn [row section-id row-id]
                                               (let [msg (-> (js->clj row :keywordize-keys true)
                                                             (add-msg-color contact-by-identity)
