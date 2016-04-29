@@ -1,17 +1,25 @@
 (ns syng-im.models.chat
-  (:require [syng-im.db :as db]))
+  (:require [syng-im.db :as db]
+            [syng-im.models.messages :refer [update-chat-last-message]]))
+
+(defn on-chat-update [db chat-id]
+  (update-chat-last-message db chat-id))
 
 (defn set-current-chat-id [db chat-id]
-  (assoc-in db db/current-chat-id-path chat-id))
+  (-> db
+      (assoc-in db/current-chat-id-path chat-id)
+      (on-chat-update chat-id)))
 
 (defn current-chat-id [db]
   (get-in db db/current-chat-id-path))
 
 (defn signal-chat-updated [db chat-id]
-  (update-in db (db/updated-chat-signal-path chat-id) (fn [current]
-                                                        (if current
-                                                          (inc current)
-                                                          0))))
+  (-> db
+      (on-chat-update chat-id)
+      (update-in (db/updated-chat-signal-path chat-id) (fn [current]
+                                                         (if current
+                                                           (inc current)
+                                                           0)))))
 
 (defn chat-updated? [db chat-id]
   (get-in db (db/updated-chat-signal-path chat-id)))
