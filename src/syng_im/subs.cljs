@@ -7,7 +7,8 @@
             [syng-im.models.chats :refer [chats-list
                                           chats-updated?
                                           chat-by-id]]
-            [syng-im.models.messages :refer [get-messages]]
+            [syng-im.models.messages :refer [get-messages
+                                             get-chat-last-message]]
             [syng-im.models.contacts :refer [contacts-list
                                              contacts-list-exclude
                                              contacts-list-include]]
@@ -64,6 +65,10 @@
 (register-sub :chat-command-request
   (fn [db _]
     (reaction (get-chat-command-request @db))))
+
+(register-sub :get-chat-last-message
+  (fn [db _]
+    (reaction (get-chat-last-message @db (current-chat-id @db)))))
 
 ;; -- Chats list --------------------------------------------------------------
 
