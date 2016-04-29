@@ -5,30 +5,40 @@
             [syng-im.db :as db]
             [syng-im.utils.logging :as log]))
 
+(defn get-messages [chat-id]
+  (r/sorted (r/get-by-field :msgs :chat-id chat-id) :timestamp :desc))
+
+(defn select-chat-last-message [chat-id]
+  (r/single-cljs (get-messages chat-id)))
+
 (defn save-message [chat-id {:keys [from to msg-id content content-type outgoing] :or {outgoing false
                                                                                        to       nil} :as msg}]
   (log/debug "save-message" chat-id msg)
   (when-not (r/exists? :msgs :msg-id msg-id)
     (r/write
-      (fn []
-        (r/create :msgs {:chat-id         chat-id
-                         :msg-id          msg-id
-                         :from            from
-                         :to              to
-                         :content         content
-                         :content-type    content-type
-                         :outgoing        outgoing
-                         :timestamp       (timestamp)
-                         :delivery-status nil} true)))))
-
-(defn get-messages [chat-id]
-  (r/sorted (r/get-by-field :msgs :chat-id chat-id) :timestamp :desc))
+     (fn []
+       (let [last-message (select-chat-last-message chat-id)]
+         (r/create :msgs {:chat-id         chat-id
+                          :msg-id          msg-id
+                          :from            from
+                          :to              to
+                          :content         content
+                          :content-type    content-type
+                          :outgoing        outgoing
+                          :timestamp       (timestamp)
+                          :delivery-status nil
+                          :same-author     (if last-message
+                                             (= (:from last-message) from)
+                                             true)
+                          :same-direction  (if last-message
+                                             (= (:outgoing last-message) outgoing)
+                                             true)} true))))))
 
 (defn message-by-id [msg-id]
   (r/single-cljs (r/get-by-field :msgs :msg-id msg-id)))
 
 (defn update-chat-last-message [db chat-id]
-  (let [last-message (r/single-cljs (get-messages chat-id))]
+  (let [last-message (select-chat-last-message chat-id)]
     (assoc-in db (db/chat-last-message-path chat-id) last-message)))
 
 (defn get-chat-last-message [db chat-id]

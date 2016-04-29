@@ -32,7 +32,9 @@
                                                     :indexed true}
                                   :outgoing        "bool"
                                   :delivery-status {:type     "string"
-                                                    :optional true}}}
+                                                    :optional true}
+                                  :same-author     "bool"
+                                  :same-direction  "bool"}}
                     {:name       :chat-contact
                      :properties {:identity         "string"
                                   :text-color       "string"

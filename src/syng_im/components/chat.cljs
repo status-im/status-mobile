@@ -148,31 +148,6 @@
       (let [msgs                @messages
                                         ;_                 (log/debug "messages=" msgs)
             ;; temp
-            msgs-clj (as-> (js->clj msgs) ms
-                       (reduce (fn [items [n m]]
-                                 (assoc items (.parseInt js/window n) m
-                                        ;; (assoc m "from" (if (< 0.5 (rand))
-                                        ;;                   "Status"
-                                        ;;                   "abc"))
-                                        ))
-                               {}  ms)
-                       (into (sorted-map) ms)
-                       (map (fn [[n current] [_ next]]
-                              [n (-> current
-                                     (assoc :same-author
-                                            (if next
-                                              (= (get current "from") (get next "from"))
-                                              true))
-                                     (assoc :same-direction
-                                            (if next
-                                              (= (get current "outgoing") (get next "outgoing"))
-                                              true)))
-                               current])
-                            ms (conj (vec (rest ms)) nil))
-                       (reduce (fn [items [n m]]
-                                 (assoc items n m))
-                               {}  ms))
-            msgs (clj->js msgs-clj)
             typing (:group-chat @chat)
             ;; end temp
             datasource          (to-realm-datasource msgs)
