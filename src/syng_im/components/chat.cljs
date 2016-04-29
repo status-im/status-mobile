@@ -19,7 +19,6 @@
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
-            [syng-im.constants :refer [content-type-status]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [reagent.core :as r]
@@ -78,8 +77,7 @@
 
 (defn typing [member]
   [view {:style {:width         260
-                 :paddingTop    2
-                 :paddingBottom 8
+                 :marginTop     10
                  :paddingLeft   8
                  :paddingRight  8
                  :alignItems    "flex-start"
@@ -95,7 +93,7 @@
      (str member " is typing")]]])
 
 (defn typing-all []
-  [view {:style {:marginBottom 12}}
+  [view {:style {:marginBottom 20}}
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
 
@@ -143,25 +141,14 @@
         [contact-online {:online true}]])]))
 
 (defn chat [{:keys [navigator]}]
-  (let [messages (subscribe [:get-chat-messages])
-        chat     (subscribe [:get-current-chat])]
+  (let [messages          (subscribe [:get-chat-messages])
+        chat              (subscribe [:get-current-chat])
+        last-message-atom (subscribe [:get-chat-last-message])]
     (fn []
       (let [msgs                @messages
                                         ;_                 (log/debug "messages=" msgs)
-            ;; temp to show first status
+            ;; temp
             msgs-clj (as-> (js->clj msgs) ms
-                       (assoc ms "-1"
-                              {:msg-id "-1"
-                               :content (str "The brash businessman’s braggadocio "
-                                             "and public exchange with candidates "
-                                             "in the US presidential election")
-                               :delivery-status "seen"
-                               :from "Status"
-                               :chat-id "-"
-                               :content-type content-type-status
-                               :timestamp 1
-                               "outgoing" false
-                               :to nil})
                        (reduce (fn [items [n m]]
                                  (assoc items (.parseInt js/window n) m
                                         ;; (assoc m "from" (if (< 0.5 (rand))
@@ -179,14 +166,14 @@
                                      (assoc :same-direction
                                             (if next
                                               (= (get current "outgoing") (get next "outgoing"))
-                                              true))
-                                     (assoc :last-msg (= 0 n)))
+                                              true)))
                                current])
                             ms (conj (vec (rest ms)) nil))
                        (reduce (fn [items [n m]]
                                  (assoc items n m))
                                {}  ms))
             msgs (clj->js msgs-clj)
+            typing (:group-chat @chat)
             ;; end temp
             datasource          (to-realm-datasource msgs)
             contacts            (:contacts @chat)
@@ -218,15 +205,16 @@
                              :onIconClicked    (fn []
                                                  (nav-pop navigator))}
             [toolbar-content-chat @chat]])
-         [list-view {:dataSource            datasource
-                     :renderScrollComponent (fn [props]
-                                              (invertible-scroll-view (js->clj props)))
-                     :renderRow             (fn [row section-id row-id]
-                                              (let [msg (-> (js->clj row :keywordize-keys true)
-                                                            (add-msg-color contact-by-identity)
-                                                            (assoc :group-chat (:group-chat @chat)))]
-                                                (r/as-element [chat-message msg])))
-                     :style                 {:backgroundColor "white"}}]
+         (let [last-message @last-message-atom]
+           [list-view {:dataSource            datasource
+                       :renderScrollComponent (fn [props]
+                                                (invertible-scroll-view (js->clj props)))
+                       :renderRow             (fn [row section-id row-id]
+                                                (let [msg (-> (js->clj row :keywordize-keys true)
+                                                              (add-msg-color contact-by-identity)
+                                                              (assoc :group-chat (:group-chat @chat))
+                                                              (assoc :typing typing))]
+                                                  (r/as-element [chat-message msg last-message])))}])
          (when (:group-chat @chat)
            [typing-all])
          (when (:is-active @chat)

@@ -27,6 +27,13 @@
 (defn message-by-id [msg-id]
   (r/single-cljs (r/get-by-field :msgs :msg-id msg-id)))
 
+(defn update-chat-last-message [db chat-id]
+  (let [last-message (r/single-cljs (get-messages chat-id))]
+    (assoc-in db (db/chat-last-message-path chat-id) last-message)))
+
+(defn get-chat-last-message [db chat-id]
+  (get-in db (db/chat-last-message-path chat-id)))
+
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)
   (r/write
