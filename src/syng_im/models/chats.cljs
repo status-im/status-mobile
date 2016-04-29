@@ -140,7 +140,7 @@
   (-> (aget (aget (chats-list) 0) "contacts")
       (r/cljs-list))
 
-  (r/delete (chats-list))
+  (r/write (fn [] (r/delete (chats-list))))
 
   (swap! re-frame.db/app-db signal-chats-updated)
 
