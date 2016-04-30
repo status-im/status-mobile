@@ -1,7 +1,7 @@
 (ns syng-im.components.discovery.discovery
 
   (:require
-    [syng-im.utils.debug :refer [log]]
+    [syng-im.utils.logging :as log]
     [re-frame.core :refer [dispatch]]
     [syng-im.models.discoveries :refer [save-discoveries]]
     [syng-im.components.react :refer [android?
@@ -67,7 +67,7 @@
                        :placeholder           "Type your search tags here"
                        :onChangeText          (fn [new-text]
                                                 (let [old-text (:search @search-input)]
-                                                  (log (str new-text "-" old-text))))
+                                                  (log/debug (str new-text "-" old-text))))
                        :onSubmitEditing       (fn [e]
                                                 (let [search (aget e "nativeEvent" "text")
                                                       hashtags (get-hashtags search)]

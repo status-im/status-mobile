@@ -1,6 +1,6 @@
 (ns syng-im.handlers.discovery
   (:require [re-frame.core :refer [register-handler after dispatch]]
-            [syng-im.utils.debug :refer [log]]
+            [syng-im.utils.logging :as log]
             [syng-im.protocol.api :as api]
             [syng-im.models.discoveries :refer [save-discoveries
                                                 signal-discoveries-updated]]))
@@ -27,8 +27,7 @@
 
 (register-handler :broadcast-status
                   (fn [db [action status hashtags]]
-                    (let [_ (log "Status: " status)
-                          _ (log "Hashtags: " hashtags)
-                          name (:name db)]
+                    (let [name (:name db)]
+                      (log/debug "Status: " status ", Hashtags: " hashtags)
                       (api/broadcast-discover-status name status hashtags)
                       db)))

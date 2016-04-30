@@ -1,6 +1,5 @@
 (ns syng-im.persistence.realm
   (:require [cljs.reader :refer [read-string]]
-            [syng-im.utils.debug :refer [log]]
             [syng-im.utils.types :refer [to-string]])
   (:refer-clojure :exclude [exists?]))
 
@@ -100,9 +99,8 @@
     query))
 
 (defn get-by-filter [schema-name filter]
-  (let [_ (log filter)]
   (-> (.objects realm (name schema-name))
-      (.filtered filter))))
+      (.filtered filter)))
 
 (defn get-by-field [schema-name field value]
   (let [q (to-query schema-name :eq field value)]
