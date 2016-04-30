@@ -27,6 +27,7 @@ project.xcworkspace
 .idea
 .gradle
 local.properties
+syng-im.iml
 
 # node.js
 #

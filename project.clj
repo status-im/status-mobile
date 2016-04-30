@@ -8,10 +8,13 @@
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
                  [re-frame "0.6.0"]
                  [prismatic/schema "1.0.4"]
+                 ^{:voom {:repo "https://github.com/status-im/status-lib.git"
+                          :branch "project-structure"}}
                  [syng-im/protocol "0.1.1"]
                  [natal-shell "0.1.6"]]
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.0-2"]]
+            [lein-figwheel "0.5.0-2"]
+            [lein-voom "0.1.0-20160311_203101-g259fbfc"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
                          ["do" "clean"
