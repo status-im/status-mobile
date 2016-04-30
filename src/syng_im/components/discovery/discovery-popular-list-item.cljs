@@ -1,6 +1,6 @@
 (ns syng-im.components.discovery.discovery-popular-list-item
   (:require
-    [syng-im.utils.debug :refer [log]]
+    [syng-im.utils.logging :as log]
     [syng-im.components.react :refer [android?
                                       view
                                       text
@@ -10,8 +10,8 @@
   )
 
 (defn discovery-popular-list-item [discovery]
-  (let [_ (log discovery)]
-    (r/as-element [view {:style {:flexDirection "row"
+  (log/debug discovery)
+  (r/as-element [view {:style {:flexDirection "row"
                                :paddingTop 10
                                :paddingBottom 10}}
                  [view {:style {:flex 0.8
@@ -34,5 +34,4 @@
                                   :height 30}
                           :source res/user-no-photo}]
                   ]
-                 ])
-  ))
+                 ]))

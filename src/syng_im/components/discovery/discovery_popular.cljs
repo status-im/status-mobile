@@ -1,7 +1,7 @@
 (ns syng-im.components.discovery.discovery-popular
   (:require
     [re-frame.core :refer [subscribe]]
-    [syng-im.utils.debug :refer [log]]
+    [syng-im.utils.logging :as log]
     [syng-im.components.react :refer [android?
                                       text]]
     [syng-im.components.carousel :refer [carousel]]
@@ -12,9 +12,8 @@
   (.-width (.get (.. js/React -Dimensions) "window")))
 
 (defn discovery-popular []
-  (let [popular-tags (subscribe [:get-popular-tags 3])
-        _ (log "Got popular tags: ")
-        _ (log @popular-tags)]
+  (let [popular-tags (subscribe [:get-popular-tags 3])]
+    (log/debug "Got popular tags: " @popular-tags)
     (if (> (count @popular-tags) 0)
       [carousel {:pageStyle {:borderRadius  1
                               :shadowColor   "black"
@@ -25,14 +24,8 @@
                   :pageWidth (- (page-width) 60)
                   :sneak     20}
        (for [tag @popular-tags]
-         (discovery-popular-list (.-name tag)))
-       ]
+         (discovery-popular-list (.-name tag)))]
       [text "None"]
       )
     )
-  )
-
-(comment
-  (set! React (js/require "react-native"))
-  (.get (.Dimensions React) "window")
   )

@@ -20,7 +20,7 @@
 
 (defn render-separator [sectionID, rowID, adjacentRowHighlighted]
   (let [elem (r/as-element [view {:style {:borderBottomWidth 1
-                               :borderBottomColor "#eff2f3"}
+                                          :borderBottomColor "#eff2f3"}
                                   :key rowID}])]
     elem))
 
@@ -28,8 +28,8 @@
   (let [discoveries (subscribe [:get-discoveries])
         datasource (to-realm-datasource @discoveries)]
     [list-view {:dataSource datasource
-              :renderRow  render-row
-              :renderSeparator render-separator
-              :style      {:backgroundColor "white"
-                           :paddingLeft 15}}]
+                :renderRow  render-row
+                :renderSeparator render-separator
+                :style      {:backgroundColor "white"
+                             :paddingLeft 15}}]
   ))

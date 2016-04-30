@@ -1,10 +1,7 @@
 (ns syng-im.components.discovery.discovery-popular-list
-  (:require-macros
-    [natal-shell.data-source :refer [data-source clone-with-rows]]
-    )
   (:require
     [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-    [syng-im.utils.debug :refer [log]]
+    [syng-im.utils.logging :as log]
     [syng-im.components.react :refer [android?
                                       view
                                       list-view
@@ -29,33 +26,27 @@
     elem))
 
 (defn discovery-popular-list [tag]
-  (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])
-        _ (log (str "Got discoveries for tag (" tag "): ") @discoveries)
-        _ (log @discoveries)]
+  (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])]
+    (log/debug "Got discoveries for tag (" tag "): " @discoveries)
     [view {:style {:flex 1
-                               :backgroundColor "white"
-                               :paddingLeft 10
-                               :paddingTop 10}}
-                 [view {:style {:flexDirection "row"
-                                :backgroundColor "white"
-                                :padding 0}}
-                  [view {:style {:flexDirection "column"
-                                 :backgroundColor "#e9f7fe"
-                                 :borderRadius 5
-                                 :padding 0}}
-                  [text {:style {:color "#6092df"
-                                :paddingRight 5
-                                :paddingBottom 2
-                                :alignItems "center"
-                                :justifyContent "center"}} (str " #" (name tag))]]]
-                 [list-view {:dataSource (to-realm-datasource @discoveries)
-                             :renderRow  render-row
-                             :renderSeparator render-separator
-                             :style      {:backgroundColor "white"}}]
-                 ]))
-
-(comment
-  list-view {:dataSource elements
-             :renderRow  (partial render-row list-element)
-             :style      {:backgroundColor "white"}}
-  )
+                   :backgroundColor "white"
+                   :paddingLeft 10
+                   :paddingTop 10}}
+     [view {:style {:flexDirection "row"
+                    :backgroundColor "white"
+                    :padding 0}}
+      [view {:style {:flexDirection "column"
+                     :backgroundColor "#e9f7fe"
+                     :borderRadius 5
+                     :padding 0}}
+       [text {:style {:color "#6092df"
+                      :paddingRight 5
+                      :paddingBottom 2
+                      :alignItems "center"
+                      :justifyContent "center"}}
+        (str " #" (name tag))]]]
+     [list-view {:dataSource (to-realm-datasource @discoveries)
+                 :renderRow  render-row
+                 :renderSeparator render-separator
+                 :style      {:backgroundColor "white"}}]
+     ]))

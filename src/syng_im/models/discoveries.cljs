@@ -1,7 +1,7 @@
 (ns syng-im.models.discoveries
   (:require [cljs.core.async :as async :refer [chan put! <! >!]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.utils.debug :refer [log]]
+            [syng-im.utils.logging :as log]
             [syng-im.persistence.realm :as realm]
             [syng-im.persistence.realm :as r]
             [syng-im.resources :as res]
@@ -17,9 +17,9 @@
   (get-in db db/updated-discoveries-signal-path))
 
 (defn get-tag [tag]
-  (let [_ (log (str "Getting tag: " tag))]
+  (log/debug "Getting tag: " tag)
   (-> (r/get-by-field :tag :name tag)
-      (r/single-cljs))))
+      (r/single-cljs)))
 
 (defn decrease-tag-counter [tag]
   (let [tag (:name tag)
@@ -60,13 +60,10 @@
                    :photo        photo
                    :location     location
                    :tags         tags
-                   :last-updated last-updated}
-        _ (log "Creating discovery")
-        _ (log discovery)
-        _ (log tags)]
-    (do
-      (realm/create :discoveries discovery true)
-      (increase-tags-counter tags))))
+                   :last-updated last-updated}]
+    (log/debug "Creating discovery: " discovery tags)
+    (realm/create :discoveries discovery true)
+    (increase-tags-counter tags)))
 
 (defn- update-discovery [{:keys [name status whisper-id photo location tags last-updated]}]
   (let [old-tags (get-tags whisper-id)
@@ -78,10 +75,9 @@
                    :location     location
                    :tags         tags
                    :last-updated last-updated}]
-    (do
       (decrease-tags-counter old-tags)
       (realm/create :discoveries discovery true)
-      (increase-tags-counter tags))))
+      (increase-tags-counter tags)))
 
 (defn- discovery-exist? [discoveries discovery]
   (some #(= (:whisper-id discovery) (:whisper-id %)) discoveries))
@@ -92,9 +88,7 @@
 
 (defn- add-discoveries [discoveries]
   (realm/write (fn []
-                 (let [db-discoveries (.slice (discovery-list) 0)
-                       _ (log discoveries)
-                       _ (log (.slice db-discoveries 0))]
+                 (let [db-discoveries (.slice (discovery-list) 0)]
                    (dorun (map (fn [discovery]
                                  (if (not (discovery-exist? db-discoveries discovery))
                                    (create-discovery discovery)
@@ -106,10 +100,10 @@
   (add-discoveries discoveries))
 
 (defn discoveries-by-tag [tag limit]
-  (let [_ (log (str "discoveries by tag: " tag))]
+  (log/debug "Discoveries by tag: " tag)
   (-> (r/get-by-filter :discoveries (str "tags.name = '" tag "'"))
       (r/sorted :last-updated :desc)
-      (r/page 0 limit))))
+      (r/page 0 limit)))
 
 (defn get-tag-popular [limit]
   (-> (r/get-all :tag)

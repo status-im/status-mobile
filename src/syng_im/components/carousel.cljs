@@ -4,7 +4,7 @@
                                               scroll-view
                                               touchable-without-feedback
                                               text]]
-            [syng-im.utils.debug :refer [log]]))
+            [syng-im.utils.logging :as log]))
 
 
 (defn page-width []
@@ -24,21 +24,15 @@
 (defn get-page-width [data]
   (get data :pageWidth (:pageWidth defaults)))
 
-
 (defn calculate-gap [component props]
   (let [prop-page-width (get-page-width props)
         page-width (page-width)
         sneak (get-sneak props)
-        gap (quot (- (- page-width (* 2 sneak)) prop-page-width) 2)
-        _ (log "calculate-gap")
-        _ (log component)
-        _ (log props)
-        _ (log page-width)
-        _ (log prop-page-width)
-        _ (log sneak)
-        _ (log gap)]
-    (if (> prop-page-width page-width)
-      (println "Invalid pageWidth"))
+        gap (quot (- (- page-width (* 2 sneak)) prop-page-width) 2)]
+    (log/debug "calculate-gap: prop-page-width=" prop-page-width
+               "; page-width=" page-width"; sneak=" sneak "; gap=" gap)
+    (when (> prop-page-width page-width)
+      (log/warn "Invalid pageWidth"))
     (reagent.core/set-state component {:gap gap})
     ))
 
@@ -46,105 +40,99 @@
   (.scrollTo (.-scrollView component) (clj->js {:y y
                                                 :x x})))
 
+(defn get-current-position [event]
+  (+ (.-x (.-contentOffset (.-nativeEvent event))) (quot (page-width) 2)))
+
 (defn on-scroll-end [event component]
-  (let [_ (log "on-scroll-end")
-        _ (log event)
-        _ (log component)
-        props (reagent.core/props component)
-        _ (log props)
+  (let [props (reagent.core/props component)
         state (reagent.core/state component)
-        _ (log state)
         prop-page-width (get-page-width props)
-        _ (log (str "prop-page-width: " prop-page-width))
         sneak (get-sneak props)
-        _ (log (str "sneak: " sneak))
         gap (get-gap state)
-        _ (log (str "gap: " gap))
         page-offset (+ prop-page-width gap)
-        _ (log (str "page-offset: " page-offset))
-        current-position (+ (.-x (.-contentOffset (.-nativeEvent event))) (quot (page-width) 2))
-        _ (log (str "current-position: " current-position))
+        current-position (get-current-position event)
         current-page (quot current-position page-offset)
-        _ (log (str "current-page: " current-page))
         ]
+    (log/debug "on-scroll-end: prop-page-width=" prop-page-width
+               "; sneak=" sneak "; gap=" gap "; page-offset=" page-offset
+               "; current-position=" current-position
+               "; current-page=" current-page)
     (scroll-to component (* current-page page-offset) 0)
     (reagent.core/set-state component {:activePage current-page})
-    (if (:onPageChange props)
+    (when (:onPageChange props)
       ((:onPageChange props) current-page))))
 
 (defn go-to-page [component position]
-  (let [_ (log "go-to-page")
-        props (reagent.core/props component)
+  (let [props (reagent.core/props component)
         state (reagent.core/state component)
         props-page-width (get-page-width props)
-        _ (log (str "props page width: " props-page-width))
         gap (get-gap state)
-        _ (log (str "gap: " gap))
-        page-position (* position (+ props-page-width gap))
-        _ (log (str "page position: " page-position))]
+        page-position (* position (+ props-page-width gap))]
+    (log/debug "go-to-page: props-page-width=" props-page-width "; gap=" gap
+               "; page-position=" page-position)
     (scroll-to component page-position 0)))
 
+(defn component-will-mount [component new-args]
+  (let [props (reagent.core/props component)]
+    (log/debug "component-will-mount: component=" component "; new-args="new-args)
+    (calculate-gap component props)))
+
+(defn component-did-mount [component]
+  (let [props (reagent.core/props component)
+        initial-page (.-initialPage props)]
+    (log/debug "component-did-mount: initial-page="initial-page)
+    (when (pos? initial-page)
+      (go-to-page component initial-page))))
+
+(defn component-will-receive-props [component new-argv]
+  (log/debug "component-will-receive-props: component=" component
+             "; new-argv=" new-argv)
+  (calculate-gap component new-argv))
+
+(defn get-pages [component data children]
+  (let [props-page-width (get-page-width data)
+        page-style (get data :pageStyle {})
+        gap (get-gap data)
+        margin (quot gap 2)]
+    (map-indexed (fn [index child]
+                   (let [page-index index
+                         touchable-data {:key index
+                                         :onPress (fn [event]
+                                                    (go-to-page component page-index))}]
+                     (log/debug "page " index " - " child)
+                     [touchable-without-feedback touchable-data
+                      [view {:style [{:width props-page-width
+                                      :justifyContent "center"
+                                      :marginLeft margin
+                                      :marginRight margin}
+                                     page-style]}
+                       child]])) children)))
+
+(defn reagent-render [data children]
+  (let [component (reagent.core/current-component)
+        sneak (get-sneak data)
+        gap (get-gap data)
+        pages (get-pages component data children)]
+  (log/debug "reagent-render: ")
+  [view {:style {:flex 1}}
+   [scroll-view {:contentContainerStyle {:paddingLeft (+ sneak (quot gap 2))
+                                         :paddingRight (+ sneak (quot gap 2))}
+                 :automaticallyAdjustContentInsets false
+                 :bounces false
+                 :decelerationRate 0.9
+                 :horizontal true
+                 :onScrollEndDrag (fn [event] (on-scroll-end event component))
+                 :showsHorizontalScrollIndicator false
+                 :ref (fn [c] (set! (.-scrollView component) c))
+                 }
+    pages]]
+  ))
+
 (defn carousel [data children]
-  (let [_ (log "Creating carousel component: ")
-        _ (log data)
-        _ (log children)]
-    (reagent.core/create-class {:component-did-mount (fn [this]
-                                                       (let [_ (log this)]
-                                                       (if (> (.-initialPage (.-props this)) 0)
-                                                         (go-to-page this (.-initialPage (.-props this))))))
-
-                                :component-will-mount (fn [this]
-                                                        (let [_ (log "component-will-mount")
-                                                              _ (log this)]
-                                                        (calculate-gap this (reagent.core/props this))))
-                                :component-will-receive-props (fn [this new-argv]
-                                                                (let [_ (log "component-will-receive-props-mount")
-                                                                      _ (log this)
-                                                                      _ (log new-argv)]
-                                                                (calculate-gap this new-argv)))
-                                :display-name "carousel1"
-                                :reagent-render (fn [data children]
-                                                  (let [_ (log "reagent-render")
-                                                        _ (log data)
-                                                        _ (log children)
-                                                        component (reagent.core/current-component)
-                                                        props-page-width (get-page-width data)
-                                                        sneak (get-sneak data)
-                                                        gap (get-gap data)
-                                                        page-style (get data :pageStyle {})
-                                                        pages (map-indexed (fn [index child]
-                                                                             (let [page-index index
-                                                                                   _ (log (str "page index" index "-" page-index))
-                                                                                   _ (log child)]
-                                                                             [touchable-without-feedback {:key index
-                                                                                                          :onPress (fn [a b c]
-                                                                                                                     (let [_ (log "touchable pressed")
-                                                                                                                           _ (log (.-target a))
-                                                                                                                           _ (log component)
-                                                                                                                           _ (log page-index)]
-                                                                                                                       (go-to-page component page-index)))
-                                                                                                          }
-                                                                              [view {:style [{:width props-page-width
-                                                                                             :justifyContent "center"
-                                                                                             :marginLeft (quot gap 2)
-                                                                                             :marginRight (quot gap 2)}
-                                                                                             page-style]}
-                                                                               child]])) children)]
-
-                                                      [view {:style {:flex 1}}
-                                                       [scroll-view {:contentContainerStyle {:paddingLeft (+ sneak (quot gap 2))
-                                                                                             :paddingRight (+ sneak (quot gap 2))}
-                                                                     :automaticallyAdjustContentInsets false
-                                                                     :bounces false
-                                                                     :decelerationRate 0.9
-                                                                     :horizontal true
-                                                                     :onScrollEndDrag (fn [event] (on-scroll-end event component))
-                                                                     :showsHorizontalScrollIndicator false
-                                                                     :ref (fn [c] (set! (.-scrollView component) c))
-                                                                 }
-                                                    pages]]))})))
-
-(comment
-
-
-  )
+  (let [component-data {:component-did-mount component-did-mount
+                        :component-will-mount component-will-mount
+                        :component-will-receive-props component-will-receive-props
+                        :display-name "carousel"
+                        :reagent-render reagent-render}]
+    (log/debug "Creating carousel component: " data children)
+    (reagent.core/create-class component-data)))

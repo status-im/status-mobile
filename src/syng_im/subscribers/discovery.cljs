@@ -2,7 +2,7 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.db :as db]
-            [syng-im.utils.debug :refer [log]]
+            [syng-im.utils.logging :as log]
             [syng-im.models.discoveries :refer [discovery-list
                                                 get-tag-popular
                                                 discoveries-by-tag
@@ -21,8 +21,8 @@
 (register-sub :get-discoveries-by-tag
               (fn [db [_ tag limit]]
                 (let [discoveries-updated (-> (discoveries-updated? @db)
-                                            (reaction))
-                      _ (log (str "getting discoveries for: " tag))]
+                                            (reaction))]
+                  (log/debug "Getting discoveries for: " tag)
                   (reaction
                     (let [_ @discoveries-updated]
                       (discoveries-by-tag tag limit))))))
@@ -30,8 +30,8 @@
 (register-sub :get-popular-tags
               (fn [db [_ limit]]
                 (let [discoveries-updated (-> (discoveries-updated? @db)
-                                            (reaction))
-                      _ (log (str "getting tags limited: " limit))]
+                                            (reaction))]
+                  (log/debug  "Getting tags limited: " limit)
                   (reaction
                     (let [_ @discoveries-updated]
                       (get-tag-popular limit))))))
