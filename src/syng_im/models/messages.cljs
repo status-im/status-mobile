@@ -5,11 +5,9 @@
             [syng-im.db :as db]
             [syng-im.utils.logging :as log]))
 
-(defn get-messages [chat-id]
-  (r/sorted (r/get-by-field :msgs :chat-id chat-id) :timestamp :desc))
-
-(defn select-chat-last-message [chat-id]
-  (r/single-cljs (get-messages chat-id)))
+(defn select-chat-last-message [chat]
+  (when-let [last-msg-id (:last-msg-id chat)]
+    (r/single-cljs (r/get-by-field :msgs :msg-id last-msg-id))))
 
 (defn save-message [chat-id {:keys [from to msg-id content content-type outgoing] :or {outgoing false
                                                                                        to       nil} :as msg}]
@@ -17,7 +15,8 @@
   (when-not (r/exists? :msgs :msg-id msg-id)
     (r/write
      (fn []
-       (let [last-message (select-chat-last-message chat-id)]
+       (let [chat         (r/single-cljs (r/get-by-field :chats :chat-id chat-id))
+             last-message (select-chat-last-message chat)]
          (r/create :msgs {:chat-id         chat-id
                           :msg-id          msg-id
                           :from            from
@@ -32,17 +31,16 @@
                                              true)
                           :same-direction  (if last-message
                                              (= (:outgoing last-message) outgoing)
-                                             true)} true))))))
+                                             true)} true)
+         (r/create :chats {:chat-id     (:chat-id chat)
+                           :last-msg-id msg-id}
+                   true))))))
+
+(defn get-messages [chat-id]
+  (r/sorted (r/get-by-field :msgs :chat-id chat-id) :timestamp :desc))
 
 (defn message-by-id [msg-id]
   (r/single-cljs (r/get-by-field :msgs :msg-id msg-id)))
-
-(defn update-chat-last-message [db chat-id]
-  (let [last-message (select-chat-last-message chat-id)]
-    (assoc-in db (db/chat-last-message-path chat-id) last-message)))
-
-(defn get-chat-last-message [db chat-id]
-  (get-in db (db/chat-last-message-path chat-id)))
 
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)

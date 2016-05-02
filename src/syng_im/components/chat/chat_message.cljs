@@ -356,7 +356,7 @@
 (defn chat-message [{:keys [msg-id from content content-type outgoing delivery-status
                             date new-day group-chat selected same-author same-direction
                             last-msg typing] :as msg}
-                    last-message]
+                    last-msg-id]
   [view {}
    (when new-day
      [message-date {:date date}])
@@ -371,7 +371,7 @@
                    :new-day          new-day
                    :same-author      same-author
                    :same-direction   same-direction
-                   :last-msg         (= (:msg-id last-message) msg-id)
+                   :last-msg         (= last-msg-id msg-id)
                    :typing           typing}]
      [view {}
       (when (= content-type content-type-status)
