@@ -1,12 +1,10 @@
 (ns syng-im.models.chats
   (:require [syng-im.persistence.realm :as r]
-            [syng-im.utils.random :as random :refer [timestamp]]
+            [syng-im.utils.random :refer [timestamp]]
             [clojure.string :refer [join blank?]]
             [syng-im.db :as db]
             [syng-im.utils.logging :as log]
-            [syng-im.constants :refer [group-chat-colors
-                                       content-type-status]]
-            [syng-im.models.messages :refer [save-message]]
+            [syng-im.constants :refer [group-chat-colors]]
             [syng-im.persistence.realm-queries :refer [include-query]]))
 
 (defn signal-chats-updated [db]
@@ -33,18 +31,6 @@
   (or (chat-name-from-contacts identities)
       chat-id))
 
-(defn add-status-message [chat-id]
-  ;; TODO Get real status
-  (save-message chat-id
-                {:from         "Status"
-                 :to           nil
-                 :msg-id       (random/id)
-                 :content      (str "The brash businessman’s braggadocio "
-                                    "and public exchange with candidates "
-                                    "in the US presidential election")
-                 :content-type content-type-status
-                 :outgoing     false}))
-
 (defn create-chat
   ([db chat-id identities group-chat?]
    (create-chat db chat-id identities group-chat? nil))
@@ -66,7 +52,6 @@
                                :group-chat group-chat?
                                :timestamp  (timestamp)
                                :contacts   contacts}))))
-       (add-status-message chat-id)
        (signal-chats-updated db)))))
 
 (defn chats-list []
