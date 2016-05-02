@@ -38,7 +38,5 @@
   [:chats chat-id :command-requests])
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
-(defn chat-last-message-path [chat-id]
-  [:chats chat-id :last-message])
 (def new-group-path [:new-group])
 (def new-participants-path [:new-participants])

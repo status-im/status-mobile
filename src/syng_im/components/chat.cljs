@@ -142,8 +142,7 @@
 
 (defn chat [{:keys [navigator]}]
   (let [messages          (subscribe [:get-chat-messages])
-        chat              (subscribe [:get-current-chat])
-        last-message-atom (subscribe [:get-chat-last-message])]
+        chat              (subscribe [:get-current-chat])]
     (fn []
       (let [msgs                @messages
                                         ;_                 (log/debug "messages=" msgs)
@@ -180,7 +179,7 @@
                              :onIconClicked    (fn []
                                                  (nav-pop navigator))}
             [toolbar-content-chat @chat]])
-         (let [last-message @last-message-atom]
+         (let [last-msg-id (:last-msg-id @chat)]
            [list-view {:dataSource            datasource
                        :renderScrollComponent (fn [props]
                                                 (invertible-scroll-view (js->clj props)))
@@ -189,7 +188,7 @@
                                                               (add-msg-color contact-by-identity)
                                                               (assoc :group-chat (:group-chat @chat))
                                                               (assoc :typing typing))]
-                                                  (r/as-element [chat-message msg last-message])))}])
+                                                  (r/as-element [chat-message msg last-msg-id])))}])
          (when (:group-chat @chat)
            [typing-all])
          (when (:is-active @chat)

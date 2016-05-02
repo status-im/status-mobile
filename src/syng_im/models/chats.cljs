@@ -60,12 +60,13 @@
                                   {:identity         ident
                                    :background-color background
                                    :text-color       text}) identities group-chat-colors)]
-             (r/create :chats {:chat-id    chat-id
-                               :is-active  true
-                               :name       chat-name
-                               :group-chat group-chat?
-                               :timestamp  (timestamp)
-                               :contacts   contacts}))))
+             (r/create :chats {:chat-id     chat-id
+                               :is-active   true
+                               :name        chat-name
+                               :group-chat  group-chat?
+                               :timestamp   (timestamp)
+                               :contacts    contacts
+                               :last-msg-id ""}))))
        (add-status-message chat-id)
        (signal-chats-updated db)))))
 

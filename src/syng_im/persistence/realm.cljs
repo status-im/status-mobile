@@ -41,14 +41,15 @@
                                   :background-color "string"}}
                     {:name       :chats
                      :primaryKey :chat-id
-                     :properties {:chat-id    "string"
-                                  :name       "string"
-                                  :group-chat {:type    "bool"
+                     :properties {:chat-id     "string"
+                                  :name        "string"
+                                  :group-chat  {:type    "bool"
                                                :indexed true}
-                                  :is-active  "bool"
-                                  :timestamp  "int"
-                                  :contacts   {:type       "list"
-                                               :objectType "chat-contact"}}}]})
+                                  :is-active   "bool"
+                                  :timestamp   "int"
+                                  :contacts    {:type       "list"
+                                                :objectType "chat-contact"}
+                                  :last-msg-id "string"}}]})
 
 
 (def realm (js/Realm. (clj->js opts)))
