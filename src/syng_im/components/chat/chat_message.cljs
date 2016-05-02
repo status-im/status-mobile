@@ -287,7 +287,7 @@
 
 (defn incoming-group-message-body [{:keys [msg-id from content content-type outgoing
                                            delivery-status selected new-day same-author
-                                           same-direction last-msg]}]
+                                           same-direction last-msg typing]}]
   (let [delivery-status :seen-by-everyone]
     [view {:style {:flexDirection "column"}}
      (when selected
@@ -306,7 +306,7 @@
                                             :else          10)
                            :paddingRight  8
                            :paddingLeft   8}
-                          (when last-msg
+                          (when (and last-msg (not typing))
                             {:paddingBottom 20}))}
       [view {:style {:width 24}}
        (when (not same-author)
@@ -327,7 +327,7 @@
          [message-delivery-status {:delivery-status delivery-status}])]]]))
 
 (defn message-body [{:keys [msg-id content content-type outgoing delivery-status
-                            group-chat new-day same-author same-direction last-msg]}]
+                            group-chat new-day same-author same-direction last-msg typing]}]
   (let [delivery-status :seen]
     [view {:style (merge {:flexDirection "column"
                           :width         260
@@ -343,7 +343,7 @@
                             :alignItems "flex-end"}
                            {:alignItems "flex-start"
                             :alignSelf  "flex-start"})
-                         (when last-msg
+                         (when (and last-msg (not typing))
                            {:paddingBottom 20}))}
      [message-content {:msg-id           msg-id
                        :content-type     content-type
@@ -353,22 +353,26 @@
      (when (and outgoing delivery-status)
        [message-delivery-status {:delivery-status delivery-status}])]))
 
-(defn chat-message [{:keys [msg-id from content content-type outgoing delivery-status date new-day group-chat selected same-author same-direction last-msg] :as msg}]
+(defn chat-message [{:keys [msg-id from content content-type outgoing delivery-status
+                            date new-day group-chat selected same-author same-direction
+                            last-msg typing] :as msg}
+                    last-msg-id]
   [view {}
    (when new-day
      [message-date {:date date}])
-   (let [msg-data   {:msg-id           msg-id
-                     :from             from
-                     :content          content
-                     :content-type     content-type
-                     :outgoing         outgoing
-                     :delivery-status  (keyword delivery-status)
-                     :group-chat       group-chat
-                     :selected         selected
-                     :new-day          new-day
-                     :same-author      same-author
-                     :same-direction   same-direction
-                     :last-msg         last-msg}]
+   (let [msg-data {:msg-id           msg-id
+                   :from             from
+                   :content          content
+                   :content-type     content-type
+                   :outgoing         outgoing
+                   :delivery-status  (keyword delivery-status)
+                   :group-chat       group-chat
+                   :selected         selected
+                   :new-day          new-day
+                   :same-author      same-author
+                   :same-direction   same-direction
+                   :last-msg         (= last-msg-id msg-id)
+                   :typing           typing}]
      [view {}
       (when (= content-type content-type-status)
         [message-content-status from content])
