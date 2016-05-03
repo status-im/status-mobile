@@ -24,7 +24,7 @@
                   :pageWidth (- (page-width) 60)
                   :sneak     20}
        (for [tag @popular-tags]
-         (discovery-popular-list (.-name tag)))]
+         (discovery-popular-list (.-name tag) (.-count tag)))]
       [text "None"]
       )
     )

@@ -25,28 +25,44 @@
                                   :key rowID}])]
     elem))
 
-(defn discovery-popular-list [tag]
+(defn discovery-popular-list [tag count]
   (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])]
     (log/debug "Got discoveries for tag (" tag "): " @discoveries)
     [view {:style {:flex 1
                    :backgroundColor "white"
                    :paddingLeft 10
-                   :paddingTop 10}}
+                   :paddingTop 16}}
      [view {:style {:flexDirection "row"
                     :backgroundColor "white"
                     :padding 0}}
-      [view {:style {:flexDirection "column"
-                     :backgroundColor "#e9f7fe"
+      [view {:style {
+                     :flexDirection "column"}}
+      [view {:style {:backgroundColor "#eef2f5"
                      :borderRadius 5
-                     :padding 0}}
-       [text {:style {:color "#6092df"
+                     :padding 4}}
+       [text {:style {:color "#7099e6"
+                      :fontFamily "sans-serif-medium"
+                      :fontSize   14
                       :paddingRight 5
                       :paddingBottom 2
                       :alignItems "center"
                       :justifyContent "center"}}
         (str " #" (name tag))]]]
+      [view {:style {:flex 0.2
+                     :alignItems "flex-end"
+                     :paddingTop 10
+                     :paddingRight 9}}
+       [text {:style {:color "#838c93"
+                      :fontFamily "sans-serif"
+                      :fontSize   12
+                      :paddingRight 5
+                      :paddingBottom 2
+                      :alignItems "center"
+                      :justifyContent "center"}}
+        count]]]
      [list-view {:dataSource (to-realm-datasource @discoveries)
                  :renderRow  render-row
                  :renderSeparator render-separator
-                 :style      {:backgroundColor "white"}}]
+                 :style      {:backgroundColor "white"
+                              :paddingTop 13}}]
      ]))
