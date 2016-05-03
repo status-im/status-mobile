@@ -17,7 +17,8 @@
                                                selected-message-color
                                                separator-color
                                                text1-color
-                                               text2-color]]
+                                               text2-color
+                                               toolbar-background1]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
@@ -153,7 +154,7 @@
                          :icon-style {:width  20
                                       :height 13}
                          :handler    (fn [] )}])]
-    [view {:style {:backgroundColor color-white
+    [view {:style {:backgroundColor toolbar-background1
                    :elevation       2
                    :position        "absolute"
                    :top             56
@@ -186,7 +187,7 @@
 (defn toolbar [navigator chat show-actions]
   [view {:style {:flexDirection   "row"
                  :height          56
-                 :backgroundColor color-white
+                 :backgroundColor toolbar-background1
                  :elevation       2}}
    (when (not show-actions)
      [touchable-highlight {:on-press (fn []
