@@ -21,12 +21,13 @@
                                                color-black
                                                color-blue
                                                text1-color
-                                               text2-color]]
+                                               text2-color
+                                               toolbar-background1]]
             [syng-im.components.icons.ionicons :refer [icon]]))
 
 (defn toolbar []
   [view {:style {:flexDirection   "row"
-                 :backgroundColor color-white
+                 :backgroundColor toolbar-background1
                  :height          56
                  :elevation       2}}
    [touchable-highlight {:on-press (fn []
