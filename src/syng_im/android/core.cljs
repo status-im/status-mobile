@@ -8,6 +8,7 @@
             [syng-im.subs]
             [syng-im.components.react :refer [navigator app-registry]]
             [syng-im.components.contact-list.contact-list :refer [contact-list]]
+            [syng-im.components.discovery.discovery :refer [discovery]]
             [syng-im.components.chat :refer [chat]]
             [syng-im.components.sign-up :refer [sign-up-view]]
             [syng-im.components.sign-up-confirm :refer [sign-up-confirm-view]]
@@ -36,7 +37,7 @@
         (add-event-listener "hardwareBackPress" new-listener)))))
 
 (defn app-root []
-  [navigator {:initial-route (clj->js {:view-id :chat-list})
+  [navigator {:initial-route (clj->js {:view-id :discovery})
               :render-scene  (fn [route nav]
                                (log/debug "route" route)
                                (when true                   ;; nav/*nav-render*
@@ -44,6 +45,7 @@
                                        view-id (keyword view-id)]
                                    (init-back-button-handler! nav)
                                    (case view-id
+                                     :discovery (r/as-element [discovery {:navigator nav}])
                                      :add-participants (r/as-element [new-participants {:navigator nav}])
                                      :remove-participants (r/as-element [remove-participants {:navigator nav}])
                                      :chat-list (r/as-element [chats-list {:navigator nav}])

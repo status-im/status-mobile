@@ -17,7 +17,7 @@
     [syng-im.handlers.commands :refer [set-chat-command
                                        set-chat-command-content]]
     [syng-im.handlers.sign-up :as sign-up-service]
-
+    [syng-im.handlers.discovery :as discovery]
     [syng-im.models.chats :refer [create-chat
                                   chat-add-participants
                                   chat-remove-participants
@@ -420,6 +420,8 @@
   (fn [db [action from group-id identities group-name]]
     (log/debug action from group-id identities)
     (create-chat db group-id identities true group-name)))
+
+
 
 (comment
 

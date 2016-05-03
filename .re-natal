@@ -17,5 +17,10 @@
   ],
   "imageDirs": [
     "images"
-  ]
+  ],
+  "iosHost": "localhost",
+  "envRoots": {
+    "dev": "env/dev",
+    "prod": "env/prod"
+  }
 }

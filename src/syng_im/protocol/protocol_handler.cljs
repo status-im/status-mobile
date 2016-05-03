@@ -40,4 +40,6 @@
                                                (dispatch [:you-removed-from-group from group-id msg-id]))
                          :participant-left-group (let [{:keys [group-id from msg-id]} event]
                                                    (dispatch [:participant-left-group from group-id msg-id]))
+                         :discover-response (let [{:keys [from payload]} event]
+                                              (dispatch [:discovery-response-received from payload]))
                          (log/info "Don't know how to handle" event-type)))})

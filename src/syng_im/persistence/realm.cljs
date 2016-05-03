@@ -1,6 +1,5 @@
 (ns syng-im.persistence.realm
   (:require [cljs.reader :refer [read-string]]
-            [syng-im.utils.logging :as log]
             [syng-im.utils.types :refer [to-string]])
   (:refer-clojure :exclude [exists?]))
 
@@ -46,7 +45,25 @@
                                   :is-active  "bool"
                                   :timestamp  "int"
                                   :contacts   {:type       "list"
-                                               :objectType "chat-contact"}}}]})
+                                               :objectType "chat-contact"}}}
+                    {:name        :tag
+                     :primaryKey  :name
+                     :properties  {:name         "string"
+                                   :count        {:type     "int"
+                                                  :optional true
+                                                  :default 0}}}
+                    {:name        :discoveries
+                     :primaryKey  :whisper-id
+                     :properties  {:name         "string"
+                                   :status       "string"
+                                   :whisper-id   "string"
+                                   :photo        "string"
+                                   :location     "string"
+                                   :tags         {:type       "list"
+                                                  :objectType "tag"}
+                                   :last-updated "date"}}
+
+                    ]})
 
 
 (def realm (js/Realm. (clj->js opts)))
@@ -80,6 +97,10 @@
                                       (str "\"" value "\"")
                                       value))]
     query))
+
+(defn get-by-filter [schema-name filter]
+  (-> (.objects realm (name schema-name))
+      (.filtered filter)))
 
 (defn get-by-field [schema-name field value]
   (let [q (to-query schema-name :eq field value)]
@@ -126,7 +147,7 @@
   (.-length objs))
 
 (defn get-list [schema-name]
-  (vals (js->clj (.objects realm (to-string schema-name)) :keywordize-keys true)))
+  (vals (js->clj (.slice (.objects realm (to-string schema-name)) 0) :keywordize-keys true)))
 
 
 (comment
