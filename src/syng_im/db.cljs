@@ -13,6 +13,7 @@
                                     :last-message    nil}
              :chats                {}
              :chats-updated-signal 0
+             :show-actions         false
              :new-group            #{}
              :new-participants     #{}
              :signed-up            false})
@@ -38,5 +39,6 @@
   [:chats chat-id :command-requests])
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
+(def show-actions-path [:show-actions])
 (def new-group-path [:new-group])
 (def new-participants-path [:new-participants])

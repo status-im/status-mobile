@@ -117,6 +117,11 @@
                     (log/debug action commands)
                     (set-commands db commands)))
 
+(register-handler :set-show-actions
+  (fn [db [action show-actions]]
+    (log/debug action)
+    (assoc-in db db/show-actions-path show-actions)))
+
 ;; -- Protocol --------------------------------------------------------------
 
 (register-handler :initialize-protocol

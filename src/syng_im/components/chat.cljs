@@ -101,16 +101,18 @@
      ^{:key member} [typing member])])
 
 (defn action-view [action]
-  [touchable-highlight {:on-press (:handler action)
+  [touchable-highlight {:on-press (fn []
+                                    (dispatch [:set-show-actions false])
+                                    ((:handler action)))
                         :underlay-color :transparent}
    [view {:style {:flexDirection   "row"
                   :height          56}}
     [view {:width  56
-           :height 56}
+           :height 56
+           :alignItems "center"
+           :justifyContent "center"}
      [image {:source {:uri (:icon action)}
-             :style  (merge (:icon-style action)
-                            {:marginTop  21
-                             :marginLeft 23})}]]
+             :style  (:icon-style action)}]]
     [view {:style {:flex 1
                    :alignItems "flex-start"
                    :justifyContent "center"}}
@@ -126,95 +128,133 @@
                       :fontFamily font}}
         subtitle])]]])
 
-(defn actions-view [navigator chat]
-  (when-let [actions (when (or true (and (:group-chat chat) ;; temp
-                                         (:is-active chat)))
+(defn actions-list-view [navigator chat]
+  (when-let [actions (when (and (:group-chat chat)
+                                (:is-active chat))
                        [{:title      "Add Contact to chat"
-                         :icon       "icon_group"
-                         :icon-style {:width  14
-                                      :height 9}
+                         :icon       "icon_menu_group"
+                         :icon-style {:width  25
+                                      :height 19}
                          :handler    #(dispatch [:show-add-participants navigator])}
                         {:title      "Remove Contact from chat"
                          :subtitle   "Alex, John"
-                         :icon       "icon_search"
-                         :icon-style {:width  14
-                                      :height 9}
+                         :icon       "icon_search_gray_copy"
+                         :icon-style {:width  17
+                                      :height 17}
                          :handler    #(dispatch [:show-remove-participants navigator])}
                         {:title      "Leave Chat"
-                         :icon       "icon_search"
-                         :icon-style {:width  14
-                                      :height 9}
-                         :handler    #(dispatch [:leave-group-chat navigator])}])]
-    [view nil
-     [view {:style {:marginLeft 16
-                    :height 1.5
+                         :icon       "icon_muted"
+                         :icon-style {:width  18
+                                      :height 21}
+                         :handler    #(dispatch [:leave-group-chat navigator])}
+                        {:title      "Settings"
+                         :subtitle   "Not implemented"
+                         :icon       "icon_settings"
+                         :icon-style {:width  20
+                                      :height 13}
+                         :handler    (fn [] )}])]
+    [view {:style {:backgroundColor color-white
+                   :elevation       2
+                   :position        "absolute"
+                   :top             56
+                   :left            0
+                   :right           0}}
+     [view {:style {:marginLeft      16
+                    :height          1.5
                     :backgroundColor separator-color}}]
      [view {:style {:marginVertical  10}}
       (for [action actions]
         ^{:key action} [action-view action])]]))
 
-(defn toolbar [navigator chat]
-  (let [show-actions true]
-    [view {:style {:flexDirection "column"
-                   :backgroundColor color-white
-                   :elevation       2}}
-     [view {:style {:flexDirection   "row"
-                    :height          56}}
-      (when (not show-actions)
-        [touchable-highlight {:on-press (fn []
-                                          (nav-pop navigator))
-                              :underlay-color :transparent}
-         [view {:width  56
-                :height 56}
-          [image {:source {:uri "icon_back"}
-                  :style  {:marginTop  21
-                           :marginLeft 23
-                           :width      8
-                           :height     14}}]]])
-      [view {:style {:flex 1
-                     :marginLeft (if show-actions 16 0)
-                     :alignItems "flex-start"
-                     :justifyContent "center"}}
-       [text {:style {:marginTop  -2.5
-                      :color      text1-color
-                      :fontSize   16
-                      :fontFamily font}}
-        (or (chat :name)
-            "Chat name")]
-       (if (:group-chat chat)
-         [view {:style {:flexDirection "row"}}
-          [image {:source {:uri "icon_group"}
-                  :style  {:marginTop 4
-                           :width     14
-                           :height    9}}]
-          [text {:style {:marginTop  -0.5
-                         :marginLeft 4
-                         :fontFamily font
-                         :fontSize   12
-                         :color      text2-color}}
-           (str (count (:contacts chat))
-                (if (< 1 (count (:contacts chat)))
-                  " members"
-                  " member")
-                ", " (count (:contacts chat)) " active")]]
-         [text {:style {:marginTop  1
-                        :color      text2-color
+(defn overlay [{:keys [on-click-outside]} items]
+  [view {:position "absolute"
+         :top      0
+         :bottom   0
+         :left     0
+         :right    0}
+   [touchable-highlight {:on-press       on-click-outside
+                         :underlay-color :transparent
+                         :style          {:flex 1}}
+    [view nil]]
+   items])
+
+(defn actions-view [navigator chat]
+  [overlay {:on-click-outside (fn []
+                                (dispatch [:set-show-actions false]))}
+   [actions-list-view navigator chat]])
+
+(defn toolbar [navigator chat show-actions]
+  [view {:style {:flex (if show-actions 1 0)}}
+   [view {:style {:flexDirection "column"
+                  :backgroundColor color-white
+                  :elevation       2}}
+    [view {:style {:flexDirection   "row"
+                   :height          56}}
+     (when (not show-actions)
+       [touchable-highlight {:on-press (fn []
+                                         (nav-pop navigator))
+                             :underlay-color :transparent}
+        [view {:width  56
+               :height 56}
+         [image {:source {:uri "icon_back"}
+                 :style  {:marginTop  21
+                          :marginLeft 23
+                          :width      8
+                          :height     14}}]]])
+     [view {:style {:flex 1
+                    :marginLeft (if show-actions 16 0)
+                    :alignItems "flex-start"
+                    :justifyContent "center"}}
+      [text {:style {:marginTop  -2.5
+                     :color      text1-color
+                     :fontSize   16
+                     :fontFamily font}}
+       (or (chat :name)
+           "Chat name")]
+      (if (:group-chat chat)
+        [view {:style {:flexDirection "row"}}
+         [image {:source {:uri "icon_group"}
+                 :style  {:marginTop 4
+                          :width     14
+                          :height    9}}]
+         [text {:style {:marginTop  -0.5
+                        :marginLeft 4
+                        :fontFamily font
                         :fontSize   12
-                        :fontFamily font}}
-          "Active a minute ago"])]
-      (when-not (:group-chat chat)
-        [touchable-highlight {:on-press (fn []
-                                          (nav-pop navigator))
-                              :underlay-color :transparent}
-         [view {:style {:width  56
-                        :height 56}}
-          [chat-photo {}]
-          [contact-online {:online true}]]])]
-     [actions-view navigator chat]]))
+                        :color      text2-color}}
+          (str (count (:contacts chat))
+               (if (< 1 (count (:contacts chat)))
+                 " members"
+                 " member")
+               ", " (count (:contacts chat)) " active")]]
+        [text {:style {:marginTop  1
+                       :color      text2-color
+                       :fontSize   12
+                       :fontFamily font}}
+         "Active a minute ago"])]
+     (if show-actions
+       [touchable-highlight {:on-press (fn []
+                                         (dispatch [:set-show-actions false]))
+                             :underlay-color :transparent}
+        [view {:style {:width  56
+                       :height 56}}
+         [image {:source {:uri "icon_up"}
+                 :style  {:marginTop  23
+                          :marginLeft 21
+                          :width      14
+                          :height     8}}]]]
+       [touchable-highlight {:on-press (fn []
+                                         (dispatch [:set-show-actions true]))
+                             :underlay-color :transparent}
+        [view {:style {:width  56
+                       :height 56}}
+         [chat-photo {}]
+         [contact-online {:online true}]]])]]])
 
 (defn chat [{:keys [navigator]}]
   (let [messages          (subscribe [:get-chat-messages])
-        chat              (subscribe [:get-current-chat])]
+        chat              (subscribe [:get-current-chat])
+        show-actions-atom (subscribe [:show-actions])]
     (fn []
       (let [msgs                @messages
                                         ;_                 (log/debug "messages=" msgs)
@@ -226,7 +266,7 @@
             contact-by-identity (contacts-by-identity contacts)]
         [view {:style {:flex            1
                        :backgroundColor chat-background}}
-         [toolbar navigator @chat]
+         [toolbar navigator @chat @show-actions-atom]
          (let [last-msg-id (:last-msg-id @chat)]
            [list-view {:dataSource            datasource
                        :renderScrollComponent (fn [props]
@@ -240,4 +280,6 @@
          (when (:group-chat @chat)
            [typing-all])
          (when (:is-active @chat)
-           [chat-message-new])]))))
+           [chat-message-new])
+         (when @show-actions-atom
+           [actions-view navigator @chat])]))))
