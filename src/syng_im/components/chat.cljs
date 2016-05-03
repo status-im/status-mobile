@@ -184,72 +184,70 @@
    [actions-list-view navigator chat]])
 
 (defn toolbar [navigator chat show-actions]
-  [view {:style {:flex (if show-actions 1 0)}}
-   [view {:style {:flexDirection "column"
-                  :backgroundColor color-white
-                  :elevation       2}}
-    [view {:style {:flexDirection   "row"
-                   :height          56}}
-     (when (not show-actions)
-       [touchable-highlight {:on-press (fn []
-                                         (nav-pop navigator))
-                             :underlay-color :transparent}
-        [view {:width  56
-               :height 56}
-         [image {:source {:uri "icon_back"}
-                 :style  {:marginTop  21
-                          :marginLeft 23
-                          :width      8
-                          :height     14}}]]])
-     [view {:style {:flex 1
-                    :marginLeft (if show-actions 16 0)
-                    :alignItems "flex-start"
-                    :justifyContent "center"}}
-      [text {:style {:marginTop  -2.5
-                     :color      text1-color
-                     :fontSize   16
+  [view {:style {:flexDirection   "row"
+                 :height          56
+                 :backgroundColor color-white
+                 :elevation       2}}
+   (when (not show-actions)
+     [touchable-highlight {:on-press (fn []
+                                       (nav-pop navigator))
+                           :underlay-color :transparent}
+      [view {:width  56
+             :height 56}
+       [image {:source {:uri "icon_back"}
+               :style  {:marginTop  21
+                        :marginLeft 23
+                        :width      8
+                        :height     14}}]]])
+   [view {:style {:flex 1
+                  :marginLeft (if show-actions 16 0)
+                  :alignItems "flex-start"
+                  :justifyContent "center"}}
+    [text {:style {:marginTop  -2.5
+                   :color      text1-color
+                   :fontSize   16
+                   :fontFamily font}}
+     (or (chat :name)
+         "Chat name")]
+    (if (:group-chat chat)
+      [view {:style {:flexDirection "row"}}
+       [image {:source {:uri "icon_group"}
+               :style  {:marginTop 4
+                        :width     14
+                        :height    9}}]
+       [text {:style {:marginTop  -0.5
+                      :marginLeft 4
+                      :fontFamily font
+                      :fontSize   12
+                      :color      text2-color}}
+        (str (count (:contacts chat))
+             (if (< 1 (count (:contacts chat)))
+               " members"
+               " member")
+             ", " (count (:contacts chat)) " active")]]
+      [text {:style {:marginTop  1
+                     :color      text2-color
+                     :fontSize   12
                      :fontFamily font}}
-       (or (chat :name)
-           "Chat name")]
-      (if (:group-chat chat)
-        [view {:style {:flexDirection "row"}}
-         [image {:source {:uri "icon_group"}
-                 :style  {:marginTop 4
-                          :width     14
-                          :height    9}}]
-         [text {:style {:marginTop  -0.5
-                        :marginLeft 4
-                        :fontFamily font
-                        :fontSize   12
-                        :color      text2-color}}
-          (str (count (:contacts chat))
-               (if (< 1 (count (:contacts chat)))
-                 " members"
-                 " member")
-               ", " (count (:contacts chat)) " active")]]
-        [text {:style {:marginTop  1
-                       :color      text2-color
-                       :fontSize   12
-                       :fontFamily font}}
-         "Active a minute ago"])]
-     (if show-actions
-       [touchable-highlight {:on-press (fn []
-                                         (dispatch [:set-show-actions false]))
-                             :underlay-color :transparent}
-        [view {:style {:width  56
-                       :height 56}}
-         [image {:source {:uri "icon_up"}
-                 :style  {:marginTop  23
-                          :marginLeft 21
-                          :width      14
-                          :height     8}}]]]
-       [touchable-highlight {:on-press (fn []
-                                         (dispatch [:set-show-actions true]))
-                             :underlay-color :transparent}
-        [view {:style {:width  56
-                       :height 56}}
-         [chat-photo {}]
-         [contact-online {:online true}]]])]]])
+       "Active a minute ago"])]
+   (if show-actions
+     [touchable-highlight {:on-press (fn []
+                                       (dispatch [:set-show-actions false]))
+                           :underlay-color :transparent}
+      [view {:style {:width  56
+                     :height 56}}
+       [image {:source {:uri "icon_up"}
+               :style  {:marginTop  23
+                        :marginLeft 21
+                        :width      14
+                        :height     8}}]]]
+     [touchable-highlight {:on-press (fn []
+                                       (dispatch [:set-show-actions true]))
+                           :underlay-color :transparent}
+      [view {:style {:width  56
+                     :height 56}}
+       [chat-photo {}]
+       [contact-online {:online true}]]])])
 
 (defn chat [{:keys [navigator]}]
   (let [messages          (subscribe [:get-chat-messages])
