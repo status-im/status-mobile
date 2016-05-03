@@ -42,7 +42,7 @@
                                              (let [number (rand-int 999)]
                                               (do
                                                 (save-discoveries [{:name         (str "Name " number)
-                                                                    :status       (str "Status " number)
+                                                                    :status       (str "Status This is some longer status to get the second line " number)
                                                                     :whisper-id   (str number)
                                                                     :photo        ""
                                                                     :location     ""
@@ -72,26 +72,32 @@
                                                 (let [search (aget e "nativeEvent" "text")
                                                       hashtags (get-hashtags search)]
                                                   (dispatch [:broadcast-status search hashtags])))}]
-          [text "Discover"])]
+          [view {:style {;:flex 1
+                         ;:flexDirection "row"
+                         ;:justifyContent "center"
+                         ;:alignSelf "stretch"
+                         ;:alignItems "center"
+                         }}
+          [text {:style {:color      "#000000de"
+                         :alignSelf "center"
+                         :textAlign  "center"
+                         :fontFamily "sans-serif"
+                         :fontSize   16}} "Discover"]])]
 
        [scroll-view {:style {}}
-        [view {:style {:paddingTop 5}}
-         [text {:style {:color      "#b2bdc5"
-                        :fontSize   14
-                        :textAlign "center"}} "Discover popular contacts \n around the world"]]
         [view {:style {:paddingLeft   30
                        :paddingTop    15
                        :paddingBottom 15}}
-         [text {:style {:color      "#b2bdc5"
-                        :fontSize   14
-                        :fontWeight "bold"}} "Popular Tags"]]
+         [text {:style {:color      "#8f838c93"
+                        :fontFamily "sans-serif-medium"
+                        :fontSize   14}} "Popular tags"]]
         [discovery-popular]
         [view {:style {:paddingLeft   30
                        :paddingTop    15
                        :paddingBottom 15}}
-         [text {:style {:color      "#b2bdc5"
+         [text {:style {:color      "#8f838c93"
                         :fontSize   14
-                        :fontWeight "bold"}} "Recent"]]
+                        :fontFamily "sans-serif-medium"}} "Recent"]]
         [discovery-recent]
         ]
        ]
