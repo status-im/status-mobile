@@ -13,45 +13,21 @@
                                                text1-color
                                                text2-color
                                                toolbar-background1]]
+            [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.chats.new-group-contact :refer [new-group-contact]]
             [reagent.core :as r]
             [syng-im.navigation :refer [nav-pop]]))
 
-(defn toolbar [navigator group-name]
-  [view {:style {:flexDirection   "row"
-                 :backgroundColor toolbar-background1
-                 :height          56
-                 :elevation       2}}
-   [touchable-highlight {:on-press (fn []
-                                     (nav-pop navigator))
-                         :underlay-color :transparent}
-    [view {:width  56
-           :height 56}
-     [image {:source {:uri "icon_back"}
-             :style  {:marginTop  21
-                      :marginLeft 23
-                      :width      8
-                      :height     14}}]]]
-   [view {:style {:flex 1
-                  :alignItems "center"
-                  :justifyContent "center"}}
-    [text {:style {:marginTop  -2.5
-                   :color      text1-color
-                   :fontSize   16
-                   :fontFamily font}}
-     "New group chat"]]
-   [touchable-highlight {:on-press (fn []
-                                     (dispatch [:create-new-group group-name navigator]))
-                         :underlay-color :transparent}
-    [view {:width  56
-           :height 56}
-     [image {:source res/v ;; {:uri "icon_search"}
-             :style  {:marginTop 19
-                      :marginHorizontal 18
-                      :width  20
-                      :height 18}}]]]])
+(defn new-group-toolbar [navigator group-name]
+  [toolbar {:navigator navigator
+            :title     "New group chat"
+            :action    {:image {:source res/v ;; {:uri "icon_search"}
+                                :style  {:width  20
+                                         :height 18}}
+                        :handler (fn []
+                                   (dispatch [:create-new-group group-name navigator]))}}])
 
 (defn new-group [{:keys [navigator]}]
   (let [contacts   (subscribe [:all-contacts])
@@ -61,7 +37,7 @@
         [view {:style {:flex            1
                        :flexDirection   "column"
                        :backgroundColor color-white}}
-         [toolbar navigator @group-name]
+         [new-group-toolbar navigator @group-name]
          [view {:style {:marginHorizontal 16}}
           [text {:style {:marginTop    24
                          :marginBottom 16
