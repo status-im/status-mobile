@@ -2,55 +2,66 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view
-                                              toolbar-android
-                                              android?
                                               text-input
                                               text
                                               image
                                               touchable-highlight]]
             [syng-im.components.styles :refer [font
+                                               title-font
+                                               color-white
+                                               color-purple
                                                text1-color
                                                text2-color
-                                               color-white
-                                               color-purple]]
+                                               toolbar-background1]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.chats.new-group-contact :refer [new-group-contact]]
             [reagent.core :as r]
             [syng-im.navigation :refer [nav-pop]]))
 
+(defn toolbar [navigator group-name]
+  [view {:style {:flexDirection   "row"
+                 :backgroundColor toolbar-background1
+                 :height          56
+                 :elevation       2}}
+   [touchable-highlight {:on-press (fn []
+                                     (nav-pop navigator))
+                         :underlay-color :transparent}
+    [view {:width  56
+           :height 56}
+     [image {:source {:uri "icon_back"}
+             :style  {:marginTop  21
+                      :marginLeft 23
+                      :width      8
+                      :height     14}}]]]
+   [view {:style {:flex 1
+                  :alignItems "center"
+                  :justifyContent "center"}}
+    [text {:style {:marginTop  -2.5
+                   :color      text1-color
+                   :fontSize   16
+                   :fontFamily font}}
+     "New group chat"]]
+   [touchable-highlight {:on-press (fn []
+                                     (dispatch [:create-new-group group-name navigator]))
+                         :underlay-color :transparent}
+    [view {:width  56
+           :height 56}
+     [image {:source res/v ;; {:uri "icon_search"}
+             :style  {:marginTop 19
+                      :marginHorizontal 18
+                      :width  20
+                      :height 18}}]]]])
+
 (defn new-group [{:keys [navigator]}]
   (let [contacts   (subscribe [:all-contacts])
-        group-name (atom nil)]
-    (fn []
+        group-name (r/atom nil)]
+    (fn [{:keys [navigator]}]
       (let [contacts-ds (to-realm-datasource @contacts)]
         [view {:style {:flex            1
                        :flexDirection   "column"
                        :backgroundColor color-white}}
-         (when android?
-           ;; TODO add IOS version
-           [toolbar-android {:navIcon          {:uri "icon_back"}
-                             :style            {:backgroundColor color-white
-                                                :height          56
-                                                :elevation       2}
-                             :onIconClicked    (fn []
-                                                 (nav-pop navigator))
-                             :actions          [{:title "Create"
-                                                 ;; :icon  res/icon-ok
-                                                 :show  "always"
-                                                 :showWithText true}]
-                             :onActionSelected (fn [position]
-                                                 (dispatch [:create-new-group @group-name navigator]))}
-            [view {:style {:flex            1
-                           :alignItems      "center"
-                           :justifyContent  "center"
-                           :marginRight     112
-                           :backgroundColor "transparent"}}
-             [text {:style {:marginTop  -2.5
-                            :color      text1-color
-                            :fontSize   16
-                            :fontFamily font}}
-              "New group chat"]]])
+         [toolbar navigator @group-name]
          [view {:style {:marginHorizontal 16}}
           [text {:style {:marginTop    24
                          :marginBottom 16

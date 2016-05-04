@@ -6,8 +6,7 @@
                                               text
                                               image
                                               touchable-highlight
-                                              navigator
-                                              toolbar-android]]
+                                              navigator]]
             [syng-im.components.styles :refer [font
                                                color-light-blue-transparent
                                                color-white
