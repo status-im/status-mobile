@@ -1,13 +1,11 @@
 (ns syng-im.components.chat
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.components.react :refer [android?
-                                              view
+            [syng-im.components.react :refer [view
                                               text
                                               image
                                               navigator
-                                              touchable-highlight
-                                              toolbar-android]]
+                                              touchable-highlight]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.components.styles :refer [font
                                                title-font
