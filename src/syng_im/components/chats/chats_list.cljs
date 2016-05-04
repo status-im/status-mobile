@@ -21,42 +21,20 @@
                                                color-black
                                                color-blue
                                                text1-color
-                                               text2-color
-                                               toolbar-background1]]
+                                               text2-color]]
+            [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.components.icons.ionicons :refer [icon]]))
 
-(defn toolbar []
-  [view {:style {:flexDirection   "row"
-                 :backgroundColor toolbar-background1
-                 :height          56
-                 :elevation       2}}
-   [touchable-highlight {:on-press (fn []
-                                     )
-                         :underlay-color :transparent}
-    [view {:width  56
-           :height 56}
-     [image {:source {:uri "icon_hamburger"}
-             :style  {:marginTop  22
-                      :marginLeft 20
-                      :width      16
-                      :height     12}}]]]
-   [view {:style {:flex 1
-                  :alignItems "center"
-                  :justifyContent "center"}}
-    [text {:style {:marginTop  -2.5
-                   :color      text1-color
-                   :fontSize   16
-                   :fontFamily font}}
-     "Chats"]]
-   [touchable-highlight {:on-press (fn []
-                                     )
-                         :underlay-color :transparent}
-    [view {:width  56
-           :height 56}
-     [image {:source {:uri "icon_search"}
-             :style  {:margin 19.5
-                      :width  17
-                      :height 17}}]]]])
+(defn chats-list-toolbar []
+  [toolbar {:nav-action {:image {:source {:uri "icon_hamburger"}
+                                 :style  {:width      16
+                                          :height     12}}
+                         :handler (fn [])}
+            :title      "Chats"
+            :action     {:image {:source {:uri "icon_search"}
+                                 :style  {:width  17
+                                          :height 17}}
+                         :handler (fn [])}}])
 
 (defn chats-list [{:keys [navigator]}]
   (let [chats (subscribe [:get-chats])]
@@ -66,7 +44,7 @@
             datasource (to-realm-datasource chats)]
         [view {:style {:flex            1
                        :backgroundColor "white"}}
-         [toolbar]
+         [chats-list-toolbar]
          [list-view {:dataSource datasource
                      :renderRow  (fn [row section-id row-id]
                                    (r/as-element [chat-list-item row navigator]))
