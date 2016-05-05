@@ -91,18 +91,14 @@
          [text {:style {:color      "#8f838c93"
                         :fontFamily "sans-serif-medium"
                         :fontSize   14}} "Popular tags"]]
-        [discovery-popular]
+        [discovery-popular navigator]
         [view {:style {:paddingLeft   30
                        :paddingTop    15
                        :paddingBottom 15}}
          [text {:style {:color      "#8f838c93"
                         :fontSize   14
                         :fontFamily "sans-serif-medium"}} "Recent"]]
-        [discovery-recent]
-        ]
-       ]
-      )
-  ))
+        [discovery-recent]]])))
   (comment
     (def page-width (aget (natal-shell.dimensions/get "window") "width"))
     (def page-height (aget (natal-shell.dimensions/get "window") "height"))

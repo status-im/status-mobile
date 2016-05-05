@@ -4,8 +4,10 @@
             [syng-im.db :as db]
             [syng-im.utils.logging :as log]
             [syng-im.models.discoveries :refer [discovery-list
+                                                current-tag
                                                 get-tag-popular
                                                 discoveries-by-tag
+                                                current-tag-updated?
                                                 discoveries-updated?]]))
 
 
@@ -35,3 +37,12 @@
                   (reaction
                     (let [_ @discoveries-updated]
                       (get-tag-popular limit))))))
+
+(register-sub :get-current-tag
+              (fn [db _]
+                (let [current-tag-updated (-> (current-tag-updated? @db)
+                                              (reaction))]
+                  (reaction
+                    (let [_ @current-tag-updated]
+                      (current-tag @db))))))
+
