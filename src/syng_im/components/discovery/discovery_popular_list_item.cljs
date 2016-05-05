@@ -1,4 +1,4 @@
-(ns syng-im.components.discovery.discovery_popular_list_item
+(ns syng-im.components.discovery.discovery-popular-list-item
   (:require
     [syng-im.utils.logging :as log]
     [syng-im.components.react :refer [android?

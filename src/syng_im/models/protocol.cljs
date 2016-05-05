@@ -14,8 +14,7 @@
 
 (defn update-identity [db identity]
   (let [password  (get-in db db/identity-password-path)
-        encrypted (->> (to-edn-string identity)
-                       (password-encrypt password))]
+        encrypted (password-encrypt password (to-edn-string identity))]
     (s/put kv/kv-store :identity encrypted)
     (assoc db :user-identity identity)))
 
@@ -23,8 +22,7 @@
   (let [encrypted (s/get kv/kv-store :identity)
         password  (get-in db db/identity-password-path)]
     (when encrypted
-      (-> (password-decrypt password encrypted)
-          (read-string)))))
+      (read-string (password-decrypt password encrypted)))))
 
 (comment
 

@@ -10,6 +10,8 @@
                                               touchable-highlight
                                               list-view
                                               list-item]]
+            [syng-im.components.styles :refer [font
+                                               color-white]]
             [syng-im.utils.listview :refer [to-datasource]]
             [syng-im.utils.utils :refer [log toast http-post]]
             [syng-im.utils.logging :as log]))
@@ -19,12 +21,13 @@
 
 (defn suggestion-list-item [suggestion]
   [touchable-highlight {:onPress (fn []
-                                   (set-command-input (keyword (:command suggestion))))}
+                                   (set-command-input (keyword (:command suggestion))))
+                        :underlay-color :transparent}
    [view {:style {:flexDirection    "row"
                   :marginVertical   1
                   :marginHorizontal 0
                   :height           40
-                  :backgroundColor "white"}}
+                  :backgroundColor  color-white}}
     [view {:style {:flexDirection   "column"
                    :position        "absolute"
                    :top             10
@@ -34,8 +37,8 @@
      [text {:style {:marginTop -2
                     :marginHorizontal 10
                     :fontSize         14
-                    :fontFamily       "Avenir-Roman"
-                    :color            "white"}}
+                    :fontFamily       font
+                    :color            color-white}}
       (:text suggestion)]]
     [text {:style {:flex       1
                    :position   "absolute"
@@ -43,7 +46,7 @@
                    :left       190
                    :lineHeight 18
                    :fontSize   14
-                   :fontFamily "Avenir-Roman"
+                   :fontFamily font
                    :color      "black"}}
      (:description suggestion)]]])
 
@@ -54,12 +57,12 @@
   (let [suggestions-atom (subscribe [:get-suggestions])]
     (fn []
       (let [suggestions @suggestions-atom]
-        (when (not (empty? suggestions))
+        (when (seq suggestions)
           [view {:style {:flexDirection    "row"
                          :marginVertical   1
                          :marginHorizontal 0
                          :height           (min 105 (* 42 (count suggestions)))
-                         :backgroundColor  "#eef2f5"
+                         :backgroundColor  color-white
                          :borderRadius     5}}
            [list-view {:dataSource (to-datasource suggestions)
                        :renderRow  render-row

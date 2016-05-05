@@ -22,6 +22,8 @@
 (defn list-item [component]
   (r/as-element component))
 
+(def dismiss-keyboard (js/require "dismissKeyboard"))
+
 (comment
   (.-width (.get (.. js/React -Dimensions) "window"))
   )

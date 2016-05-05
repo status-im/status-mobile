@@ -5,8 +5,7 @@
                                               text
                                               image
                                               touchable-highlight
-                                              navigator
-                                              toolbar-android]]
+                                              navigator]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
@@ -16,8 +15,26 @@
             [syng-im.components.chats.chat-list-item :refer [chat-list-item]]
             [syng-im.components.action-button :refer [action-button
                                                       action-button-item]]
+            [syng-im.components.styles :refer [font
+                                               title-font
+                                               color-white
+                                               color-black
+                                               color-blue
+                                               text1-color
+                                               text2-color]]
+            [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.components.icons.ionicons :refer [icon]]))
 
+(defn chats-list-toolbar []
+  [toolbar {:nav-action {:image {:source {:uri "icon_hamburger"}
+                                 :style  {:width      16
+                                          :height     12}}
+                         :handler (fn [])}
+            :title      "Chats"
+            :action     {:image {:source {:uri "icon_search"}
+                                 :style  {:width  17
+                                          :height 17}}
+                         :handler (fn [])}}])
 
 (defn chats-list [{:keys [navigator]}]
   (let [chats (subscribe [:get-chats])]
@@ -27,24 +44,12 @@
             datasource (to-realm-datasource chats)]
         [view {:style {:flex            1
                        :backgroundColor "white"}}
-         (when android?
-           ;; TODO add IOS version
-           [toolbar-android {:logo          res/logo-icon
-                             :title         "Your Chats"
-                             :titleColor    "#4A5258"
-                             :subtitle      "List of your recent chats"
-                             :subtitleColor "#AAB2B2"
-                             :navIcon       res/nav-back-icon
-                             :style         {:backgroundColor "white"
-                                             :height          56
-                                             :elevation       2}
-                             :onIconClicked (fn []
-                                              (nav-pop navigator))}])
+         [chats-list-toolbar]
          [list-view {:dataSource datasource
                      :renderRow  (fn [row section-id row-id]
                                    (r/as-element [chat-list-item row navigator]))
                      :style      {:backgroundColor "white"}}]
-         [action-button {:buttonColor "rgba(231,76,60,1)"}
+         [action-button {:buttonColor color-blue}
           [action-button-item {:title       "New Chat"
                                :buttonColor "#9b59b6"
                                :onPress     (fn []

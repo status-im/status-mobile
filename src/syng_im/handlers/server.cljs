@@ -5,13 +5,14 @@
             [syng-im.utils.logging :as log]))
 
 (defn sign-up
-  [phone-number whisper-identity handler]
+  [db phone-number handler]
   (user-data/save-phone-number phone-number)
   (http-post "sign-up" {:phone-number phone-number
-                        :whisper-identity (:public whisper-identity)}
+                        :whisper-identity (get-in db [:user-identity :public])}
              (fn [body]
                (log body)
-               (handler))))
+               (handler)))
+  db)
 
 (defn sign-up-confirm
   [confirmation-code handler]
