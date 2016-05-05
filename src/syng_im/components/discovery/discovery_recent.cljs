@@ -28,6 +28,7 @@
   (let [discoveries (subscribe [:get-discoveries])
         datasource (to-realm-datasource @discoveries)]
     [list-view {:dataSource datasource
+                :enableEmptySections true
                 :renderRow  render-row
                 :renderSeparator render-separator
                 :style      {:backgroundColor "white"
