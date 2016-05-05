@@ -4,9 +4,19 @@
    [natal-shell.core :refer [with-error-view]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view text image touchable-highlight
-                                              navigator list-view toolbar-android
+                                              navigator list-view
                                               list-item]]
             [syng-im.components.contact-list.contact :refer [contact-view]]
+            [syng-im.components.styles :refer [font
+                                               title-font
+                                               color-white
+                                               color-black
+                                               color-blue
+                                               text1-color
+                                               text2-color
+                                               toolbar-background2]]
+            [syng-im.components.toolbar :refer [toolbar]]
+            [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
             [syng-im.utils.logging :as log]))
 
@@ -19,18 +29,22 @@
                                                   (not= row1 row2))})
                    contacts))
 
+(defn contact-list-toolbar [navigator]
+  [toolbar {:navigator        navigator
+            :title            "Contacts"
+            :background-color toolbar-background2
+            :action           {:image {:source {:uri "icon_search"}
+                                       :style  {:width  17
+                                                :height 17}}
+                               :handler (fn [])}}])
+
 (defn contact-list [{:keys [navigator]}]
   (let [contacts (subscribe [:get-contacts])]
     (fn []
       (let [contacts-ds (get-data-source @contacts)]
         [view {:style {:flex            1
                        :backgroundColor "white"}}
-         [toolbar-android {:logo       res/logo-icon
-                           :title      "Contacts"
-                           :titleColor "#4A5258"
-                           :style      {:backgroundColor "white"
-                                        :height          56
-                                        :elevation       2}}]
+         [contact-list-toolbar navigator]
          (when contacts-ds
            [list-view {:dataSource contacts-ds
                        :renderRow  (partial render-row navigator)

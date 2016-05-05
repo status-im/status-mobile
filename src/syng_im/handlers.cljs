@@ -119,6 +119,11 @@
     (log/debug action commands)
     (set-commands db commands)))
 
+(register-handler :set-show-actions
+  (fn [db [action show-actions]]
+    (log/debug action)
+    (assoc-in db db/show-actions-path show-actions)))
+
 ;; -- Protocol --------------------------------------------------------------
 
 (register-handler :initialize-protocol
@@ -136,10 +141,9 @@
   (fn [db [action {chat-id :from
                    msg-id  :msg-id :as msg}]]
     (log/debug action "msg" msg)
-    (save-message chat-id msg)
-    (-> db
-        (create-chat chat-id [chat-id] false)
-        (signal-chat-updated chat-id))))
+    (let [db (create-chat db chat-id [chat-id] false)]
+      (save-message chat-id msg)
+      (signal-chat-updated db chat-id))))
 
 (register-handler :group-received-msg
   (fn [db [action {chat-id :group-id :as msg}]]

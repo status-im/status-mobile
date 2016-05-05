@@ -1,10 +1,12 @@
 (ns syng-im.models.chats
   (:require [clojure.set :refer [difference]]
             [syng-im.persistence.realm :as r]
-            [syng-im.utils.random :refer [timestamp]]
+            [syng-im.utils.random :as random :refer [timestamp]]
             [clojure.string :refer [join blank?]]
             [syng-im.db :as db]
             [syng-im.utils.logging :as log]
+            [syng-im.constants :refer [content-type-status]]
+            [syng-im.models.messages :refer [save-message]]
             [syng-im.persistence.realm-queries :refer [include-query]]
             [syng-im.models.chat :refer [signal-chat-updated]]))
 
@@ -35,6 +37,18 @@
 (defn chat-exists? [chat-id]
   (r/exists? :chats :chat-id chat-id))
 
+(defn add-status-message [chat-id]
+  ;; TODO Get real status
+  (save-message chat-id
+                {:from         "Status"
+                 :to           nil
+                 :msg-id       (random/id)
+                 :content      (str "The brash businessman’s braggadocio "
+                                    "and public exchange with candidates "
+                                    "in the US presidential election")
+                 :content-type content-type-status
+                 :outgoing     false}))
+
 (defn create-chat
   ([db chat-id identities group-chat?]
    (create-chat db chat-id identities group-chat? nil))
@@ -48,12 +62,14 @@
          (fn []
            (let [contacts (mapv (fn [ident]
                                   {:identity ident}) identities)]
-             (r/create :chats {:chat-id    chat-id
-                               :is-active  true
-                               :name       chat-name
-                               :group-chat group-chat?
-                               :timestamp  (timestamp)
-                               :contacts   contacts}))))
+             (r/create :chats {:chat-id     chat-id
+                               :is-active   true
+                               :name        chat-name
+                               :group-chat  group-chat?
+                               :timestamp   (timestamp)
+                               :contacts    contacts
+                               :last-msg-id ""}))))
+       (add-status-message chat-id)
        (signal-chats-updated db)))))
 
 (defn chat-contacts [chat-id]

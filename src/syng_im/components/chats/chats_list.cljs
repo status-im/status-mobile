@@ -4,8 +4,8 @@
                                               view
                                               text
                                               image
-                                              navigator
-                                              toolbar-android]]
+                                              touchable-highlight
+                                              navigator]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
@@ -22,8 +22,19 @@
                                                color-blue
                                                text1-color
                                                text2-color]]
+            [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.components.icons.ionicons :refer [icon]]))
 
+(defn chats-list-toolbar []
+  [toolbar {:nav-action {:image {:source {:uri "icon_hamburger"}
+                                 :style  {:width      16
+                                          :height     12}}
+                         :handler (fn [])}
+            :title      "Chats"
+            :action     {:image {:source {:uri "icon_search"}
+                                 :style  {:width  17
+                                          :height 17}}
+                         :handler (fn [])}}])
 
 (defn chats-list [{:keys [navigator]}]
   (let [chats (subscribe [:get-chats])]
@@ -33,27 +44,7 @@
             datasource (to-realm-datasource chats)]
         [view {:style {:flex            1
                        :backgroundColor "white"}}
-         (when android?
-           ;; TODO add IOS version
-           [toolbar-android {:navIcon       {:uri "icon_hamburger"}
-                             :style         {:backgroundColor color-white
-                                             :height          56
-                                             :elevation       2}
-                             :onIconClicked (fn []
-                                              (nav-pop navigator))
-                             :actions [{:title "Search"
-                                        :icon  {:uri "icon_search"}
-                                        :show  "always"}]}
-            [view {:style {:flex 1
-                           :alignItems "center"
-                           :justifyContent "center"
-                           :marginRight 112
-                           :backgroundColor "transparent"}}
-             [text {:style {:marginTop  -2.5
-                            :color      text1-color
-                            :fontSize   16
-                            :fontFamily font}}
-              "Chats"]]])
+         [chats-list-toolbar]
          [list-view {:dataSource datasource
                      :renderRow  (fn [row section-id row-id]
                                    (r/as-element [chat-list-item row navigator]))

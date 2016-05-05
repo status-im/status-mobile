@@ -32,21 +32,24 @@
                                                     :indexed true}
                                   :outgoing        "bool"
                                   :delivery-status {:type     "string"
-                                                    :optional true}}}
+                                                    :optional true}
+                                  :same-author     "bool"
+                                  :same-direction  "bool"}}
                     {:name       :chat-contact
                      :properties {:identity   "string"
                                   :is-in-chat {:type    "bool"
                                                :default true}}}
                     {:name       :chats
                      :primaryKey :chat-id
-                     :properties {:chat-id    "string"
-                                  :name       "string"
-                                  :group-chat {:type    "bool"
+                     :properties {:chat-id     "string"
+                                  :name        "string"
+                                  :group-chat  {:type    "bool"
                                                :indexed true}
-                                  :is-active  "bool"
-                                  :timestamp  "int"
-                                  :contacts   {:type       "list"
-                                               :objectType "chat-contact"}}}]})
+                                  :is-active   "bool"
+                                  :timestamp   "int"
+                                  :contacts    {:type       "list"
+                                                :objectType "chat-contact"}
+                                  :last-msg-id "string"}}]})
 
 
 (def realm (js/Realm. (clj->js opts)))
