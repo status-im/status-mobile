@@ -1,4 +1,4 @@
-(ns syng-im.components.discovery.discovery_recent
+(ns syng-im.components.discovery.discovery-recent
   (:require-macros
     [natal-shell.data-source :refer [data-source clone-with-rows]]
 
@@ -9,7 +9,7 @@
                                       view]]
     [syng-im.components.realm :refer [list-view]]
     [syng-im.utils.listview :refer [to-realm-datasource]]
-    [syng-im.components.discovery.discovery_popular_list_item :refer [discovery-popular-list-item]]
+    [syng-im.components.discovery.discovery-popular-list-item :refer [discovery-popular-list-item]]
     [reagent.core :as r]))
 
 

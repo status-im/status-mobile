@@ -34,3 +34,16 @@
        (.catch (or on-error
                    (fn [error]
                      (toast (str error))))))))
+
+(defn http-get
+  ([action on-success on-error]
+   (-> (.fetch js/window
+               (str const/server-address action)
+               (clj->js {:method "GET"}))
+       (.then (fn [response]
+                (log response)
+                (.text response)))
+       (.then on-success)
+       (.catch (or on-error
+                   (fn [error]
+                     (toast (str error))))))))
