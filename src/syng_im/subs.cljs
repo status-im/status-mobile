@@ -110,6 +110,11 @@
       (get @db :signed-up))))
 
 (register-sub
+ :show-actions
+ (fn [db _]
+   (reaction (get-in @db db/show-actions-path))))
+
+(register-sub
   :get-contacts
   (fn [db _]
     (reaction
