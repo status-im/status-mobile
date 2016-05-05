@@ -2,7 +2,11 @@
   (:require [re-frame.core :refer [register-handler after dispatch]]
             [syng-im.utils.logging :as log]
             [syng-im.protocol.api :as api]
+            [syng-im.navigation :refer [nav-push
+                                        nav-replace
+                                        nav-pop]]
             [syng-im.models.discoveries :refer [save-discoveries
+                                                set-current-tag
                                                 signal-discoveries-updated]]))
 
 
@@ -30,4 +34,11 @@
                     (let [name (:name db)]
                       (log/debug "Status: " status ", Hashtags: " hashtags)
                       (api/broadcast-discover-status name status hashtags)
+                      db)))
+
+(register-handler :show-discovery-tag
+                  (fn [db [action tag navigator nav-type]]
+                    (log/debug action "setting current tag: " tag)
+                    (let [db (set-current-tag db tag)]
+                      (dispatch [:navigate-to navigator {:view-id :discovery-tag} nav-type])
                       db)))

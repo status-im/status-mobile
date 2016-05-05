@@ -14,7 +14,8 @@
              :chats-updated-signal 0
              :name                 "My Name"
              :new-group            #{}
-             :new-participants     #{}})
+             :new-participants     #{}
+             :current-tag          nil})
 
 
 (def protocol-initialized-path [:protocol-initialized])
@@ -34,3 +35,5 @@
 (def updated-discoveries-signal-path [:discovery-updated-signal])
 (defn updated-discovery-signal-path [whisper-id]
   [:discoveries whisper-id :discovery-updated-signal])
+(def current-tag-path [:current-tag])
+(def updated-current-tag-signal-path [:current-tag-updated-signal])

@@ -11,7 +11,7 @@
 (defn page-width []
   (.-width (.get (.. js/React -Dimensions) "window")))
 
-(defn discovery-popular []
+(defn discovery-popular [navigator]
   (let [popular-tags (subscribe [:get-popular-tags 3])]
     (log/debug "Got popular tags: " @popular-tags)
     (if (> (count @popular-tags) 0)
@@ -24,8 +24,5 @@
                   :pageWidth (- (page-width) 60)
                   :sneak     20}
        (for [tag @popular-tags]
-         (discovery-popular-list (.-name tag) (.-count tag)))]
-      [text "None"]
-      )
-    )
-  )
+         (discovery-popular-list (.-name tag) (.-count tag) navigator))]
+      [text "None"])))

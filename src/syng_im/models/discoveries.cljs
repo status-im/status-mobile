@@ -16,6 +16,17 @@
 (defn discoveries-updated? [db]
   (get-in db db/updated-discoveries-signal-path))
 
+(defn current-tag-updated? [db]
+  (get-in db db/updated-current-tag-signal-path))
+
+
+
+(defn current-tag [db]
+  (get-in db db/current-tag-path))
+
+(defn set-current-tag [db tag]
+  (assoc-in db db/current-tag-path tag))
+
 (defn get-tag [tag]
   (log/debug "Getting tag: " tag)
   (-> (r/get-by-field :tag :name tag)
@@ -100,10 +111,12 @@
   (add-discoveries discoveries))
 
 (defn discoveries-by-tag [tag limit]
-  (log/debug "Discoveries by tag: " tag)
-  (-> (r/get-by-filter :discoveries (str "tags.name = '" tag "'"))
-      (r/sorted :last-updated :desc)
-      (r/page 0 limit)))
+  (let [discoveries (-> (r/get-by-filter :discoveries (str "tags.name = '" tag "'"))
+                        (r/sorted :last-updated :desc))]
+    (log/debug "Discoveries by tag: " tag)
+    (if (pos? limit)
+      (r/page discoveries 0 limit)
+      discoveries)))
 
 (defn get-tag-popular [limit]
   (-> (r/get-all :tag)

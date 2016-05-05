@@ -5,6 +5,7 @@
     [syng-im.components.react :refer [android?
                                       view
                                       list-view
+                                      touchable-highlight
                                       text
                                       image]]
     [reagent.core :as r]
@@ -25,7 +26,7 @@
                                   :key rowID}])]
     elem))
 
-(defn discovery-popular-list [tag count]
+(defn discovery-popular-list [tag count navigator]
   (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])]
     (log/debug "Got discoveries for tag (" tag "): " @discoveries)
     [view {:style {:flex 1
@@ -37,17 +38,19 @@
                     :padding 0}}
       [view {:style {
                      :flexDirection "column"}}
-      [view {:style {:backgroundColor "#eef2f5"
+       [touchable-highlight {:onPress (fn [event]
+                                        (dispatch [:show-discovery-tag tag navigator :push]))}
+        [view {:style {:backgroundColor "#eef2f5"
                      :borderRadius 5
                      :padding 4}}
-       [text {:style {:color "#7099e6"
+         [text {:style {:color "#7099e6"
                       :fontFamily "sans-serif-medium"
                       :fontSize   14
                       :paddingRight 5
                       :paddingBottom 2
                       :alignItems "center"
                       :justifyContent "center"}}
-        (str " #" (name tag))]]]
+        (str " #" (name tag))]]]]
       [view {:style {:flex 0.2
                      :alignItems "flex-end"
                      :paddingTop 10
@@ -61,6 +64,7 @@
                       :justifyContent "center"}}
         count]]]
      [list-view {:dataSource (to-realm-datasource @discoveries)
+                 :enableEmptySections true
                  :renderRow  render-row
                  :renderSeparator render-separator
                  :style      {:backgroundColor "white"
