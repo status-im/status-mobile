@@ -1,57 +1,59 @@
 (ns syng-im.handlers
   (:require
-   [re-frame.core :refer [register-handler after dispatch]]
-   [schema.core :as s :include-macros true]
-   [syng-im.db :as db :refer [app-db schema]]
-   [syng-im.protocol.api :refer [init-protocol]]
-   [syng-im.protocol.protocol-handler :refer [make-handler]]
-   [syng-im.models.protocol :refer [update-identity
-                                    set-initialized]]
-   [syng-im.models.user-data :as user-data]
-   [syng-im.models.contacts :as contacts]
-   [syng-im.models.messages :refer [save-message
-                                    update-message!
-                                    message-by-id]]
-   [syng-im.models.commands :as commands :refer [set-chat-command
-                                                 set-response-chat-command
-                                                 set-chat-command-content
-                                                 set-chat-command-request
-                                                 stage-command
-                                                 unstage-command
-                                                 set-commands]]
-   [syng-im.handlers.server :as server]
-   [syng-im.handlers.contacts :as contacts-service]
-   [syng-im.handlers.suggestions :refer [get-command
-                                         handle-command
-                                         get-command-handler
-                                         load-commands
-                                         apply-staged-commands
-                                         check-suggestion]]
-   [syng-im.handlers.sign-up :as sign-up-service]
+    [re-frame.core :refer [register-handler after dispatch]]
+    [schema.core :as s :include-macros true]
+    [syng-im.db :as db :refer [app-db schema]]
+    [syng-im.protocol.api :refer [init-protocol]]
+    [syng-im.protocol.protocol-handler :refer [make-handler]]
+    [syng-im.models.protocol :refer [update-identity
+                                     set-initialized]]
+    [syng-im.models.user-data :as user-data]
+    [syng-im.models.contacts :as contacts]
+    [syng-im.models.messages :refer [save-message
+                                     update-message!
+                                     message-by-id]]
+    [syng-im.models.commands :as commands :refer [set-chat-command
+                                                  set-response-chat-command
+                                                  set-chat-command-content
+                                                  set-chat-command-request
+                                                  stage-command
+                                                  unstage-command
+                                                  set-commands]]
+    [syng-im.handlers.server :as server]
+    [syng-im.handlers.contacts :as contacts-service]
+    [syng-im.handlers.suggestions :refer [get-command
+                                          handle-command
+                                          get-command-handler
+                                          load-commands
+                                          apply-staged-commands
+                                          check-suggestion]]
+    [syng-im.handlers.sign-up :as sign-up-service]
 
-   [syng-im.models.chats :refer [create-chat
-                                 chat-add-participants
-                                 chat-remove-participants
-                                 set-chat-active]]
-   [syng-im.models.chat :refer [signal-chat-updated
-                                set-current-chat-id
-                                current-chat-id
-                                update-new-group-selection
-                                update-new-participants-selection
-                                clear-new-group
-                                clear-new-participants
-                                new-group-selection
-                                set-chat-input-text
-                                new-participants-selection]]
-   [syng-im.utils.logging :as log]
-   [syng-im.protocol.api :as api]
-   [syng-im.constants :refer [text-content-type
-                              content-type-command]]
-   [syng-im.navigation :refer [nav-push
-                               nav-replace
-                               nav-pop]]
-   [syng-im.utils.crypt :refer [gen-random-bytes]]
-   [syng-im.utils.random :as random]))
+    [syng-im.models.chats :refer [chat-exists?
+                                  create-chat
+                                  chat-add-participants
+                                  chat-remove-participants
+                                  set-chat-active
+                                  re-join-group-chat]]
+    [syng-im.models.chat :refer [signal-chat-updated
+                                 set-current-chat-id
+                                 current-chat-id
+                                 update-new-group-selection
+                                 update-new-participants-selection
+                                 clear-new-group
+                                 clear-new-participants
+                                 new-group-selection
+                                 set-chat-input-text
+                                 new-participants-selection]]
+    [syng-im.utils.logging :as log]
+    [syng-im.protocol.api :as api]
+    [syng-im.constants :refer [text-content-type
+                               content-type-command]]
+    [syng-im.navigation :refer [nav-push
+                                nav-replace
+                                nav-pop]]
+    [syng-im.utils.crypt :refer [gen-random-bytes]]
+    [syng-im.utils.random :as random]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -113,9 +115,9 @@
     db))
 
 (register-handler :set-commands
-                  (fn [db [action commands]]
-                    (log/debug action commands)
-                    (set-commands db commands)))
+  (fn [db [action commands]]
+    (log/debug action commands)
+    (set-commands db commands)))
 
 (register-handler :set-show-actions
   (fn [db [action show-actions]]
@@ -152,13 +154,15 @@
 (defn joined-chat-msg [chat-id from msg-id]
   (let [contact-name (:name (contacts/contact-by-identity from))]
     (save-message chat-id {:from         "system"
-                           :msg-id       msg-id
+                           :msg-id       (str msg-id "_" from)
                            :content      (str (or contact-name from) " received chat invitation")
                            :content-type text-content-type})))
 
 (defn participant-invited-to-group-msg [chat-id identity from msg-id]
   (let [inviter-name (:name (contacts/contact-by-identity from))
-        invitee-name (:name (contacts/contact-by-identity identity))]
+        invitee-name (if (= identity (api/my-identity))
+                       "You"
+                       (:name (contacts/contact-by-identity identity)))]
     (save-message chat-id {:from         "system"
                            :msg-id       msg-id
                            :content      (str (or inviter-name from) " invited " (or invitee-name identity))
@@ -222,8 +226,10 @@
 (register-handler :participant-left-group
   (fn [db [action from group-id msg-id]]
     (log/debug action msg-id from group-id)
-    (participant-left-group-msg group-id from msg-id)
-    (signal-chat-updated db group-id)))
+    (if (= (api/my-identity) from)
+      db
+      (do (participant-left-group-msg group-id from msg-id)
+          (signal-chat-updated db group-id)))))
 
 (register-handler :participant-invited-to-group
   (fn [db [action from group-id identity msg-id]]
@@ -249,26 +255,26 @@
 (defn send-staged-commands [db chat-id]
   (let [staged-commands (get-in db (db/chat-staged-commands-path chat-id))]
     (dorun
-     (map
-      (fn [staged-command]
-        (let [command-key (get-in staged-command [:command :command])
-              content (commands/format-command-msg-content command-key
-                                                           (:content staged-command))
-              msg (if (= chat-id "console")
-                    (sign-up-service/send-console-command db command-key content)
-                    ;; TODO handle command, now sends as plain message
-                    (let [{msg-id :msg-id
-                           {from :from
-                            to   :to} :msg} (api/send-user-msg {:to      chat-id
-                            :content content})]
-                      {:msg-id       msg-id
-                       :from         from
-                       :to           to
-                       :content      content
-                       :content-type content-type-command
-                       :outgoing     true}))]
-          (save-message chat-id msg)))
-      staged-commands))
+      (map
+        (fn [staged-command]
+          (let [command-key (get-in staged-command [:command :command])
+                content     (commands/format-command-msg-content command-key
+                                                                 (:content staged-command))
+                msg         (if (= chat-id "console")
+                              (sign-up-service/send-console-command db command-key content)
+                              ;; TODO handle command, now sends as plain message
+                              (let [{msg-id     :msg-id
+                                     {from :from
+                                      to   :to} :msg} (api/send-user-msg {:to      chat-id
+                                                                          :content content})]
+                                {:msg-id       msg-id
+                                 :from         from
+                                 :to           to
+                                 :content      content
+                                 :content-type content-type-command
+                                 :outgoing     true}))]
+            (save-message chat-id msg)))
+        staged-commands))
     db))
 
 (register-handler :send-chat-msg
@@ -280,7 +286,7 @@
       (let [msg (when (pos? (count text))
                   (if (= chat-id "console")
                     (sign-up-service/send-console-msg text)
-                    (let [{msg-id :msg-id
+                    (let [{msg-id     :msg-id
                            {from :from
                             to   :to} :msg} (api/send-user-msg {:to      chat-id
                                                                 :content text})]
@@ -309,7 +315,7 @@
 (register-handler :send-chat-command
   (fn [db [action chat-id command content]]
     (log/debug action "chat-id" chat-id "command" command "content" content)
-    (let [db (set-chat-input-text db nil)
+    (let [db  (set-chat-input-text db nil)
           msg (if (= chat-id "console")
                 (sign-up-service/send-console-command db command content)
                 ;; TODO handle command, now sends as plain message
@@ -409,7 +415,7 @@
 (register-handler :stage-command
   (fn [db [action chat-id command content]]
     (log/debug action "chat-id" chat-id "command" command "content" content)
-    (let [db (set-chat-input-text db nil)
+    (let [db           (set-chat-input-text db nil)
           command-info {:command command
                         :content content
                         :handler (get-command-handler db (:command command) content)}]
@@ -502,8 +508,10 @@
 (register-handler :group-chat-invite-received
   (fn [db [action from group-id identities group-name]]
     (log/debug action from group-id identities)
-    (create-chat db group-id identities true group-name)))
+    (if (chat-exists? group-id)
+      (re-join-group-chat db group-id identities group-name)
+      (create-chat db group-id identities true group-name))))
 
 (comment
-
+  (dispatch [:set-signed-up true])
   )

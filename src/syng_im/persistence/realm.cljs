@@ -36,9 +36,9 @@
                                   :same-author     "bool"
                                   :same-direction  "bool"}}
                     {:name       :chat-contact
-                     :properties {:identity         "string"
-                                  :text-color       "string"
-                                  :background-color "string"}}
+                     :properties {:identity   "string"
+                                  :is-in-chat {:type    "bool"
+                                               :default true}}}
                     {:name       :chats
                      :primaryKey :chat-id
                      :properties {:chat-id     "string"
@@ -108,6 +108,10 @@
 (defn single-cljs [result]
   (some-> (aget result 0)
           (js->clj :keywordize-keys true)))
+
+(defn cljs-list [results]
+  (-> (js->clj results :keywordize-keys true)
+      (vals)))
 
 (defn list-to-array [record list-field]
   (update-in record [list-field] (comp vec vals)))
