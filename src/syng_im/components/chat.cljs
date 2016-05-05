@@ -266,6 +266,7 @@
          [toolbar navigator @chat @show-actions-atom]
          (let [last-msg-id (:last-msg-id @chat)]
            [list-view {:dataSource            datasource
+                       :enableEmptySections   true
                        :renderScrollComponent (fn [props]
                                                 (invertible-scroll-view (js->clj props)))
                        :renderRow             (fn [row section-id row-id]
