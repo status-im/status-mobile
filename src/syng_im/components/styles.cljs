@@ -16,6 +16,7 @@
 
 (def text1-color color-black)
 (def text2-color color-gray)
+(def text3-color color-blue)
 (def online-color color-blue)
 (def new-messages-count-color "#7099e632")
 (def chat-background color-light-gray)

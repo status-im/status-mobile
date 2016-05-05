@@ -384,6 +384,12 @@
 
 ;; -- Chats --------------------------------------------------------------
 
+(register-handler :show-profile
+  (fn [db [action navigator]]
+    (log/debug action)
+    (nav-push navigator {:view-id :profile})
+    db))
+
 (register-handler :show-chat
   (fn [db [action chat-id navigator nav-type]]
     (log/debug action "chat-id" chat-id)
