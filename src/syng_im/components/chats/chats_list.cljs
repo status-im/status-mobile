@@ -52,8 +52,8 @@
          [action-button {:buttonColor color-blue}
           [action-button-item {:title       "New Chat"
                                :buttonColor "#9b59b6"
-                               :onPress     (fn []
-                                              (dispatch [:show-contacts navigator]))}
+                               :onPress     #(dispatch [:navigate-to
+                                                        :contact-list])}
            [icon {:name  "android-create"
                   :style {:fontSize 20
                           :height   22
