@@ -26,6 +26,9 @@
 (defn open-drawer []
   (.openDrawer @drawer-atom))
 
+(defn close-drawer []
+  (.closeDrawer @drawer-atom))
+
 (defn user-photo [{:keys [photo-path]}]
   [view {:borderRadius 50}
    [image {:source (if (s/blank? photo-path)
@@ -39,7 +42,9 @@
   [touchable-opacity {:style {:height      48
                               :paddingLeft 16
                               :paddingTop  14}
-                      :onPress handler}
+                      :onPress (fn []
+                                 (close-drawer)
+                                 (handler))}
    [text {:style {:fontSize   14
                   :fontFamily font
                   :lineHeight 21
