@@ -1,4 +1,4 @@
-(ns syng-im.components.chatmenu.profile
+(ns syng-im.components.profile
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [android?
@@ -30,14 +30,12 @@
                     :width        66
                     :height       66}}]])
 
-(defn chats-list-toolbar []
-  [toolbar {:title "Profile"}])
-
-(defn profile [navigator]
+(defn profile [{:keys [navigator]}]
   [view {:style {:flex            1
                  :backgroundColor "#FFF"
                  :flexDirection   "column"}}
-   [toolbar {:title "Profile"}]
+   [toolbar {:navigator navigator
+             :title "Profile"}]
    [view {:style {:flex           .20
                   :alignItems     "center"
                   :justifyContent "center"}}
