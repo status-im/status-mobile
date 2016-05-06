@@ -80,7 +80,10 @@
                 :handler (fn [])}]]
    [view {:style {:paddingVertical 36
                   :alignItems :center}}
-    [touchable-opacity {}
+    [touchable-opacity {:onPress (fn []
+                                   (close-drawer)
+                                   ;; TODO not implemented
+                                   )}
      [text {:style {:fontSize   14
                     :fontFamily font
                     :lineHeight 21
