@@ -6,161 +6,160 @@
                                               text
                                               text-input
                                               image
+                                              scroll-view
                                               navigator
-                                              toolbar-android
+                                              touchable-highlight
                                               touchable-opacity]]
             [syng-im.resources :as res]
             [syng-im.components.styles :refer [font
                                                title-font
                                                color-white
+                                               color-blue
+                                               color-blue-transparent
                                                chat-background
                                                online-color
                                                selected-message-color
+                                               separator-color
                                                text1-color
                                                text2-color
                                                text3-color]]
-            [syng-im.components.toolbar :refer [toolbar]]))
+            [syng-im.navigation :refer [nav-pop]]))
 
-(defn chat-photo [{:keys [photo-path]}]
+(defn user-photo [{:keys [photo-path]}]
   [view {:borderRadius 50}
    [image {:source (if (s/blank? photo-path)
                      res/user-no-photo
                      {:uri photo-path})
            :style  {:borderRadius 50
-                    :width        66
-                    :height       66}}]])
+                    :width        64
+                    :height       64}}]])
 
-(defn profile [{:keys [navigator]}]
-  [view {:style {:flex            1
-                 :backgroundColor "#FFF"
-                 :flexDirection   "column"}}
-   [toolbar {:navigator navigator
-             :title "Profile"}]
-   [view {:style {:flex           .20
-                  :alignItems     "center"
-                  :justifyContent "center"}}
-    [chat-photo {}]]
-   [view {:style {:flex       .07
-                  :alignItems "center"}}
-    [text {:style {:marginTop -2.5
-                   :color      text1-color
-                   :fontSize   18}}
-     "Status"]]
-   [view {:style {:flex       .13
-                  :alignItems "center"
-                  :marginRight 48
-                  :marginLeft  48}}
-    [text {:style {:marginTop  -2.5
-                   :color      text1-color
-                   :alignItems "center"
-                   :textAlign "center"
-                   :fontSize   14}}
-     (str "The brash businessman’s braggadocio "
-          "and public exchange with candidates "
-          "in the US presidential election")]]
-   [view {:style {:flex           .12
-                  :flexDirection  "row"
-                  :alignItems     "center"
-                  :justifyContent "center"}}
-    [view {:style {:height          37
-                   :justifyContent  "center"
-                   :backgroundColor "#7099E6"
-                   :padding         8
-                   :paddingLeft     20
-                   :paddingRight    20
-                   :marginRight     20
-                   :borderRadius    20}}
-     [touchable-opacity
-      [text {:style {:marginTop -2.5
-                     :color     "white"
-                     :fontSize  14}}
-       "Message"]]]
-    [view {:style {:width           38
-                   :height          37
-                   :alignItems      "center"
-                   :backgroundColor "#E3EBFA"
-                   :padding         8
-                   :borderRadius    19}}
-     [touchable-opacity
-      [text {:style {:marginTop -2.5
-                     :color     text3-color
-                     :fontSize  22}}
-       "˅"]]]]
-   [view {:style {:flex          .55
-                  :alignItems    "flex-start"
-                  :flexDirection "column"
-                  :paddingTop    10}}
-    [view {:style {:height            55
-                   :justifyContent    "center"
-                   :marginLeft        20
-                   :borderBottomWidth 1
-                   :borderBottomColor "#ddd"}}
-     [touchable-opacity
-      [text {:style {:marginTop -2.5
-                     :color     text2-color
-                     :fontSize  14}}
-       "Email"]]
-     [view {:style {:height            30
-                    :borderBottomWidth 0
-                    :marginLeft        -5}}
-      [text-input
-       {:style {:height        40
-                :fontSize      15
-                :paddingBottom 15
-                :paddingLeft   5}
-        :value "christonphe_t@gmail.com"}]]]
-    [view {:style {:height            55
-                   :justifyContent    "center"
-                   :marginLeft        20
-                   :borderBottomWidth 1
-                   :borderBottomColor "#ddd"
-                   :marginTop         5}}
-     [touchable-opacity
-      [text {:style {:marginTop -2.5
-                     :color     text2-color
-                     :fontSize  14}}
-       "Username"]]
-     [view {:style {:height            30
-                    :borderBottomWidth 0
-                    :marginLeft       -5}}
-      [text-input {:style {:height        40
-                           :fontSize      15
-                           :paddingBottom 15
-                           :paddingLeft   5}}
-       "christophe_t"]]]
-    [view {:style {:height            55
-                   :justifyContent    "center"
-                   :marginLeft        20
-                   :borderBottomWidth 1
-                   :borderBottomColor "#ddd"
-                   :marginTop 5}}
-     [touchable-opacity
-      [text {:style {:marginTop -2.5
-                     :color     text2-color
-                     :fontSize  14}}
-       "URL"]]
-     [view {:style {:height            30
-                    :borderBottomWidth 0
-                    :marginLeft        -5}}
-      [text-input {:style {:height        40
-                           :fontSize      15
-                           :paddingBottom 15
-                           :paddingLeft   5}}
-       "http://instagram.com/etherium-wallet"]]]
-    [view {:style {:height         55
-                   :justifyContent "center"
-                   :marginLeft     20
-                   :marginTop      5}}
-     [touchable-opacity
-      [text {:style {:marginTop -2.5
-                     :color     text2-color
-                     :fontSize  14}}
-       "Phone"]]
-     [view {:style {:height            30
-                    :borderBottomWidth 0
-                    :marginLeft        -5}}
-      [text-input {:style {:height        40
-                           :fontSize      15
-                           :paddingBottom 15
-                           :paddingLeft   5}}
-       "+1 548 093 98 66"]]]]])
+(defn user-online [{:keys [online]}]
+  (when online
+    [view {:position        :absolute
+           :top             44
+           :left            44
+           :width           24
+           :height          24
+           :borderRadius    50
+           :backgroundColor online-color
+           :borderWidth     2
+           :borderColor     color-white}
+     [view {:position        :absolute
+            :top             8
+            :left            5
+            :width           4
+            :height          4
+            :borderRadius    50
+            :backgroundColor color-white}]
+     [view {:position        :absolute
+            :top             8
+            :left            11
+            :width           4
+            :height          4
+            :borderRadius    50
+            :backgroundColor color-white}]]))
+
+(defn profile-property-view [{:keys [name value]}]
+  [view {:style {:height            85
+                 :paddingHorizontal 16}}
+   [view {:borderBottomWidth 1
+          :borderBottomColor separator-color}
+    [text {:style {:marginTop  16
+                   :fontSize   14
+                   :fontFamily font
+                   :color      text2-color}}
+     name]
+    [text {:style {:marginTop  11
+                   :height     40
+                   :fontSize   16
+                   :fontFamily font
+                   :color      text1-color}}
+     value]]])
+
+(defn profile [{:keys [navigator]} {:keys [name status phone-number email]}]
+  [scroll-view {:style {:flex            1
+                        :backgroundColor color-white
+                        :flexDirection   :column}}
+   [touchable-highlight {:style          {:position :absolute}
+                         :on-press       (fn []
+                                           (nav-pop navigator))
+                         :underlay-color :transparent}
+    [view {:width  56
+           :height 56}
+     [image {:source {:uri "icon_back"}
+             :style  {:marginTop  21
+                      :marginLeft 23
+                      :width      8
+                      :height     14}}]]]
+   
+   [view {:style {:alignSelf  :center
+                  :alignItems :center
+                  :width      249}}
+    [view {:marginTop 26}
+     [user-photo  {}]
+     [user-online {:online true}]]
+    [text {:style {:marginTop  20
+                   :fontSize   18
+                   :fontFamily font
+                   :color      text1-color}}
+     name]
+    [text {:style {:marginTop  10
+                   :fontFamily font
+                   :fontSize   14
+                   :lineHeight 20
+                   :textAlign  :center
+                   :color      text2-color}}
+     status]
+    [view {:style {:marginTop      18
+                   :flexDirection  :row}}
+     [touchable-highlight {:onPress (fn []
+                                      ;; TODO not implemented
+                                      )
+                           :underlay-color :transparent}
+      [view {:style {:height          40
+                     :justifyContent  :center
+                     :backgroundColor color-blue
+                     :paddingLeft     25
+                     :paddingRight    25
+                     :borderRadius    50}}
+       [text {:style {:marginTop  -2.5
+                      :fontSize   14
+                      :fontFamily font
+                      :color      color-white}}
+        "Message"]]]
+     [touchable-highlight {:onPress (fn []
+                                      ;; TODO not implemented
+                                      )
+                           :underlay-color :transparent}
+      [view {:style {:marginLeft      10
+                     :width           40
+                     :height          40
+                     :alignItems      :center
+                     :justifyContent  :center
+                     :backgroundColor color-blue-transparent
+                     :padding         8
+                     :borderRadius    50}}
+       [image {:source {:uri "icon_more_vertical_blue"}
+               :style  {:width  4
+                        :height 16}}]]]]]
+   [view {:style {:marginTop     20
+                  :alignItems    :stretch
+                  :flexDirection :column}}
+    [profile-property-view {:name "Username"
+                            :value name}]
+    [profile-property-view {:name "Phone number"
+                            :value phone-number}]
+    [profile-property-view {:name "Email"
+                            :value email}]
+    [view {:style {:marginTop       50
+                   :marginBottom    43
+                   :alignItems :center}}
+     [touchable-opacity {}
+      [text {:style {:fontSize      14
+                     :fontFamily    font
+                     :lineHeight    21
+                     :color         text2-color
+                     ;; IOS:
+                     :letterSpacing 0.5}}
+       "REPORT USER"]]]]])
