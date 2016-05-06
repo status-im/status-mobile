@@ -73,9 +73,16 @@
                 :handler (fn []
                            (dispatch [:show-profile navigator]))}]
     [menu-item {:name    "Settings"
-                :handler (fn [])}]
+                :handler (fn []
+                           ;; TODO not implemented
+                           )}]
+    [menu-item {:name    "Contacts"
+                :handler (fn []
+                           (dispatch [:show-contacts navigator]))}]
     [menu-item {:name    "Invite friends"
-                :handler (fn [])}]
+                :handler (fn []
+                           ;; TODO not implemented
+                           )}]
     [menu-item {:name    "FAQ"
                 :handler (fn [])}]]
    [view {:style {:paddingVertical 36

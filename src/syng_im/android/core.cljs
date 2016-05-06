@@ -57,14 +57,7 @@
                                              :new-group (r/as-element [new-group {:navigator nav}])
                                              :contact-list (r/as-element [contact-list {:navigator nav}])
                                              :chat (r/as-element [chat {:navigator nav}])
-                                             ;; TODO pass profile
-                                             :profile (r/as-element [profile {:navigator nav}
-                                                                     {:name   "Status"
-                                                                      :status (str "The brash businessman’s braggadocio "
-                                                                                   "and public exchange with candidates "
-                                                                                   "in the US presidential election")
-                                                                      :phone-number "+1 548 093 98 66"
-                                                                      :email "christonphe_t@gmail.com"}])))
+                                             :profile (r/as-element [profile {:navigator nav}])))
                                          (r/as-element [chat {:navigator nav}]))))}]))))
 
 (defn init []
