@@ -131,7 +131,6 @@
 (defn get-list [schema-name]
   (vals (js->clj (.objects realm (to-string schema-name)) :keywordize-keys true)))
 
-
-(comment
-
-  )
+(defn collection->map [collection]
+  (-> (.map collection (fn [object _ _] object))
+      (js->clj :keywordize-keys true)))
