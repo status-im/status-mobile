@@ -192,7 +192,6 @@
          [view {:style {:paddingRight 16}}
           [view {:style (merge {:borderRadius    14
                                 :padding         12
-                                :paddingRight    28
                                 :backgroundColor color-white})}
            (when (and group-chat (not outgoing))
              [text {:style (merge style-sub-text
@@ -259,15 +258,17 @@
 
 (defn message-view
   [{:keys [content-type outgoing background-color group-chat selected]} content]
-  [view {:style (merge {:borderRadius 14
-                        :padding      12}
+  [view {:style (merge {:borderRadius    14
+                        :padding         12
+                        :backgroundColor color-white}
+                       (when (= content-type content-type-command)
+                         {:paddingTop    10
+                          :paddingBottom 14})
                        (if outgoing
-                         (if (and group-chat (= content-type text-content-type))
-                           {:backgroundColor color-blue}
-                           {:backgroundColor color-white})
-                         (if selected
-                           {:backgroundColor selected-message-color}
-                           {:backgroundColor background-color})))}
+                         (when (and group-chat (= content-type text-content-type))
+                           {:backgroundColor color-blue})
+                         (when selected
+                           {:backgroundColor selected-message-color})))}
    #_(when (and group-chat (not outgoing))
        [text {:style {:marginTop  0
                       :fontSize   12
@@ -283,17 +284,14 @@
   [wrapper message [message-content-command-request message]])
 
 (defn text-message
-  [{:keys [content outgoing text-color group-chat] :as message}]
+  [{:keys [content outgoing group-chat] :as message}]
   [message-view message
-   [text {:style {:marginTop  (if (and group-chat (not outgoing))
-                                4
-                                0)
-                  :fontSize   14
-                  :fontFamily font
-                  :color      (cond
-                                (and outgoing group-chat) color-white
-                                outgoing text1-color
-                                :else text-color)}}
+   [text {:style (merge style-message-text
+                        {:marginTop (if (and group-chat (not outgoing))
+                                      4
+                                      0)}
+                        (when (and outgoing group-chat)
+                          {:color color-white}))}
     content]])
 
 (defmethod message-content text-content-type
@@ -302,9 +300,7 @@
 
 (defmethod message-content content-type-status
   [_ message]
-  ;; todo should it be rendered as text message?
-  [message-content-status message]
-  #_[text-message message])
+  [message-content-status message])
 
 (defmethod message-content content-type-command
   [wrapper {:keys [content] :as message}]
