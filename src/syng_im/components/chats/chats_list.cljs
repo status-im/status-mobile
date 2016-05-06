@@ -5,7 +5,6 @@
                                               text
                                               image
                                               touchable-highlight
-                                              drawer-layout-android
                                               navigator]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.logging :as log]
@@ -14,7 +13,7 @@
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [reagent.core :as r]
             [syng-im.components.chats.chat-list-item :refer [chat-list-item]]
-            [syng-im.components.chatmenu.chat_menu :refer [chat-menu]]
+            [syng-im.components.drawer :refer [drawer-view open-drawer]]
             [syng-im.components.action-button :refer [action-button
                                                       action-button-item]]
             [syng-im.components.styles :refer [font
@@ -28,11 +27,10 @@
             [syng-im.components.icons.ionicons :refer [icon]]))
 
 (defn chats-list-toolbar []
-  [toolbar {:nav-action {:image {:source {:uri "icon_hamburger"}
-                                 :style  {:width      16
-                                          :height     12}}
-                         :handler (fn []
-                                    (.openDrawer js/React.DrawerLayoutAndroid.drawer))}
+  [toolbar {:nav-action {:image   {:source {:uri "icon_hamburger"}
+                                   :style  {:width      16
+                                            :height     12}}
+                         :handler open-drawer}
             :title      "Chats"
             :action     {:image {:source {:uri "icon_search"}
                                  :style  {:width  17
@@ -45,11 +43,7 @@
       (let [chats      @chats
             _          (log/debug "chats=" chats)
             datasource (to-realm-datasource chats)]
-        [drawer-layout-android {:drawerWidth    300
-                                :drawerPosition js/React.DrawerLayoutAndroid.positions.Left
-                                :render-navigation-view #(r/as-element [chat-menu navigator])
-                                :ref  (fn [drawer]
-                                        (set! js/React.DrawerLayoutAndroid.drawer drawer))}
+        [drawer-view {:navigator navigator}
          [view {:style {:flex            1
                         :backgroundColor "white"}}
           [chats-list-toolbar]
