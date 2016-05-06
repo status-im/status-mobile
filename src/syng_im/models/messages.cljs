@@ -20,35 +20,29 @@
   (when-let [last-msg-id (:last-msg-id chat)]
     (r/single-cljs (r/get-by-field :msgs :msg-id last-msg-id))))
 
-(defn save-message [chat-id {:keys [from to msg-id content content-type outgoing] :or {outgoing false
-                                                                                       to       nil} :as msg}]
+(defn save-message
+  [chat-id {:keys [from to msg-id content content-type outgoing
+                   same-author same-direction]
+            :or {outgoing false
+                 to       nil} :as msg}]
   (log/debug "save-message" chat-id msg)
   (when-not (r/exists? :msgs :msg-id msg-id)
     (r/write
-     (fn []
-       (let [chat         (r/single-cljs (r/get-by-field :chats :chat-id chat-id))
-             last-message (select-chat-last-message chat)
-             content (if (string? content)
-                       content
-                       (map-to-str content))]
-         (r/create :msgs {:chat-id         chat-id
-                          :msg-id          msg-id
-                          :from            from
-                          :to              to
-                          :content         content
-                          :content-type    content-type
-                          :outgoing        outgoing
-                          :timestamp       (timestamp)
-                          :delivery-status nil
-                          :same-author     (if last-message
-                                             (= (:from last-message) from)
-                                             true)
-                          :same-direction  (if last-message
-                                             (= (:outgoing last-message) outgoing)
-                                             true)} true)
-         (r/create :chats {:chat-id     (:chat-id chat)
-                           :last-msg-id msg-id}
-                   true))))))
+      (fn []
+        (let [content      (if (string? content)
+                             content
+                             (map-to-str content))]
+          (r/create :msgs {:chat-id         chat-id
+                           :msg-id          msg-id
+                           :from            from
+                           :to              to
+                           :content         content
+                           :content-type    content-type
+                           :outgoing        outgoing
+                           :timestamp       (timestamp)
+                           :delivery-status nil
+                           :same-author     same-author
+                           :same-direction  same-direction} true))))))
 
 (defn get-messages [chat-id]
   (->> (-> (r/get-by-field :msgs :chat-id chat-id)

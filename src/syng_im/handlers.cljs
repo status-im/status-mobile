@@ -144,8 +144,18 @@
              :to           "me"})) (range n)))
 
 (defn store-message!
-  [_ [_ {chat-id :from :as msg}]]
-  (save-message chat-id msg))
+  [db [_ {chat-id :from
+          outgoing :outgoing
+          :as msg}]]
+  (let [previous-message (peek (get-in db [:chats chat-id :messages]))
+        msg (merge msg
+                   {:same-author     (if previous-message
+                                       (= (:from previous-message) outgoing)
+                                       true)
+                    :same-direction  (if previous-message
+                                       (= (:outgoing previous-message) outgoing)
+                                       true)})]
+    (save-message chat-id msg)))
 
 (defn receive-message
   [db [_ {chat-id :from :as msg}]]
@@ -273,18 +283,21 @@
 
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
-  (let [text (get-in db [:chats current-chat-id :input-text])
+  (let [text             (get-in db [:chats current-chat-id :input-text])
         {:keys [command]} (check-suggestion db (str text " "))]
     (if command
       (set-chat-command db command)
       (assoc db :new-message (when-not (str/blank? text)
-                               {:msg-id       (random/id)
-                                :chat-id      current-chat-id
-                                :content      text
-                                :to           current-chat-id
-                                :from         identity
-                                :content-type text-content-type
-                                :outgoing     true})))))
+                               {:msg-id         (random/id)
+                                :chat-id        current-chat-id
+                                :content        text
+                                :to             current-chat-id
+                                :from           identity
+                                :content-type   text-content-type
+                                :outgoing       true
+                                ;; todo should be refactored
+                                :same-author    false
+                                :same-direction false})))))
 
 (defn prepare-command [identity chat-id staged-command]
   (let [command-key (get-in staged-command [:command :command])
