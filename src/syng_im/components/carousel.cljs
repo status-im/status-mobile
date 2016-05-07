@@ -56,11 +56,10 @@
         gap (get-gap state)
         page-offset (+ prop-page-width gap)
         current-position (get-current-position event)
-        direction (if (> current-position (+ starting-position scroll-threshold))
-                    1
-                    (if (< current-position (- starting-position scroll-threshold))
-                      -1
-                      0))
+        direction (cond
+                    (> current-position (+ starting-position scroll-threshold)) 1
+                    (< current-position (- starting-position scroll-threshold)) -1
+                    :else 0)
         current-page (+ (quot starting-position page-offset) direction)
         ]
     (log/debug "on-scroll-end: prop-page-width=" prop-page-width
@@ -133,10 +132,8 @@
                  :bounces false
                  :decelerationRate 0.9
                  :horizontal true
-                 :onScrollBeginDrag (fn [event]
-                                      (let []
-                                        (reset! starting-position (get-current-position event))))
-                 :onScrollEndDrag (fn [event] (on-scroll-end event component @starting-position))
+                 :onScrollBeginDrag #(reset! starting-position (get-current-position %))
+                 :onScrollEndDrag #(on-scroll-end % component @starting-position)
                  :showsHorizontalScrollIndicator false
                  :ref (fn [c] (set! (.-scrollView component) c))
                  }

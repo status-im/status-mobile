@@ -1,5 +1,6 @@
 (ns syng-im.persistence.realm
   (:require [cljs.reader :refer [read-string]]
+            [syng-im.utils.logging :as log]
             [syng-im.utils.types :refer [to-string]])
   (:refer-clojure :exclude [exists?]))
 
@@ -147,7 +148,7 @@
   (.-length objs))
 
 (defn get-list [schema-name]
-  (vals (js->clj (.slice (.objects realm (to-string schema-name)) 0) :keywordize-keys true)))
+  (vals (js->clj (.objects realm (to-string schema-name)) :keywordize-keys true)))
 
 
 (comment
