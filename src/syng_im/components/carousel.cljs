@@ -12,7 +12,8 @@
 
 (def defaults {:gap 10
                :sneak 10
-               :pageWidth (- (page-width) 40)})
+               :pageWidth (- (page-width) 40)
+               :scrollThreshold 20})
 
 
 (defn get-gap [data]
@@ -23,6 +24,9 @@
 
 (defn get-page-width [data]
   (get data :pageWidth (:pageWidth defaults)))
+
+(defn get-scroll-threshold [data]
+  (get data :scrollThreshold (:scrollThreshold defaults)))
 
 (defn calculate-gap [component props]
   (let [prop-page-width (get-page-width props)
@@ -41,22 +45,29 @@
                                                 :x x})))
 
 (defn get-current-position [event]
-  (+ (.-x (.-contentOffset (.-nativeEvent event))) (quot (page-width) 2)))
+  (.-x (.-contentOffset (.-nativeEvent event))))
 
-(defn on-scroll-end [event component]
+(defn on-scroll-end [event component starting-position]
   (let [props (reagent.core/props component)
         state (reagent.core/state component)
         prop-page-width (get-page-width props)
         sneak (get-sneak props)
+        scroll-threshold (get-scroll-threshold props)
         gap (get-gap state)
         page-offset (+ prop-page-width gap)
         current-position (get-current-position event)
-        current-page (quot current-position page-offset)
+        direction (if (> current-position (+ starting-position scroll-threshold))
+                    1
+                    (if (< current-position (- starting-position scroll-threshold))
+                      -1
+                      0))
+        current-page (+ (quot starting-position page-offset) direction)
         ]
     (log/debug "on-scroll-end: prop-page-width=" prop-page-width
                "; sneak=" sneak "; gap=" gap "; page-offset=" page-offset
+               "; starting position=" starting-position
                "; current-position=" current-position
-               "; current-page=" current-page)
+               "; direction=" direction "; current-page=" current-page)
     (scroll-to component (* current-page page-offset) 0)
     (reagent.core/set-state component {:activePage current-page})
     (when (:onPageChange props)
@@ -109,7 +120,8 @@
                        child]])) children)))
 
 (defn reagent-render [data children]
-  (let [component (reagent.core/current-component)
+  (let [starting-position (atom 0)
+        component (reagent.core/current-component)
         sneak (get-sneak data)
         gap (get-gap data)
         pages (get-pages component data children)]
@@ -121,7 +133,10 @@
                  :bounces false
                  :decelerationRate 0.9
                  :horizontal true
-                 :onScrollEndDrag (fn [event] (on-scroll-end event component))
+                 :onScrollBeginDrag (fn [event]
+                                      (let []
+                                        (reset! starting-position (get-current-position event))))
+                 :onScrollEndDrag (fn [event] (on-scroll-end event component @starting-position))
                  :showsHorizontalScrollIndicator false
                  :ref (fn [c] (set! (.-scrollView component) c))
                  }
