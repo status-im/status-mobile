@@ -187,8 +187,7 @@
     (fn [{:keys [msg-id content outgoing group-chat from]}]
       (let [commands @commands-atom
             {:keys [command content]} (parse-command-request-msg-content commands content)]
-        [touchable-highlight {:onPress        #(set-chat-command msg-id command)
-                              :underlay-color :transparent}
+        [touchable-highlight {:onPress        #(set-chat-command msg-id command)}
          [view {:style {:paddingRight 16}}
           [view {:style (merge {:borderRadius    14
                                 :padding         12
