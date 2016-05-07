@@ -2,7 +2,7 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.db :as db]
-            [syng-im.subscriptions.discovery :as discovery]
+            [syng-im.components.discovery.subs :as discovery]
             [syng-im.models.chat :refer [current-chat-id
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
