@@ -1,4 +1,4 @@
-(ns syng-im.handlers.discovery
+(ns syng-im.components.discovery.handlers
   (:require [re-frame.core :refer [register-handler after dispatch]]
             [syng-im.utils.logging :as log]
             [syng-im.protocol.api :as api]
