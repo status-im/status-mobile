@@ -8,10 +8,19 @@
 (def text (r/adapt-react-class (.-Text js/React)))
 (def view (r/adapt-react-class (.-View js/React)))
 (def image (r/adapt-react-class (.-Image js/React)))
-(def touchable-highlight (r/adapt-react-class (.-TouchableHighlight js/React)))
+(def touchable-highlight-class (r/adapt-react-class (.-TouchableHighlight js/React)))
+(defn touchable-highlight [props content]
+  [touchable-highlight-class
+   (merge {:underlay-color :transparent} props)
+   content])
 (def toolbar-android (r/adapt-react-class (.-ToolbarAndroid js/React)))
 (def list-view (r/adapt-react-class (.-ListView js/React)))
 (def text-input (r/adapt-react-class (.-TextInput js/React)))
+
+
+(defn icon [n style]
+  [image {:source {:uri (keyword (str "icon_" (name n)))}
+          :style  style}])
 
 (def platform (.. js/React -Platform -OS))
 
