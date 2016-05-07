@@ -14,6 +14,7 @@
     [syng-im.components.discovery.discovery-popular :refer [discovery-popular]]
     [syng-im.components.discovery.discovery-recent :refer [discovery-recent]]
     [syng-im.resources :as res]
+    [syng-im.components.discovery.styles :as st]
     [syng-im.persistence.realm :as realm]))
 
 (def search-input (atom {:search "x"}))
@@ -27,30 +28,15 @@
 (defn title-content [showSearch]
   (if showSearch
     [text-input {:underlineColorAndroid "transparent"
-                 ;:value                 (:search @search-input)
-                 :style                 {:flex       1
-                                         :marginLeft 18
-                                         :lineHeight 42
-                                         :fontSize   14
-                                         :fontFamily "Avenir-Roman"
-                                         :color      "#9CBFC0"}
+                 :style                 st/discovery-search-input
                  :autoFocus             true
                  :placeholder           "Type your search tags here"
                  :onSubmitEditing       (fn [e]
                                           (let [search (aget e "nativeEvent" "text")
                                                 hashtags (get-hashtags search)]
                                             (dispatch [:broadcast-status search hashtags])))}]
-    [view {:style {;:flex 1
-                   ;:flexDirection "row"
-                   ;:justifyContent "center"
-                   ;:alignSelf "stretch"
-                   ;:alignItems "center"
-                   }}
-     [text {:style {:color      "#000000de"
-                    :alignSelf "center"
-                    :textAlign  "center"
-                    :fontFamily "sans-serif"
-                    :fontSize   16}} "Discover"]]))
+    [view
+     [text {:style st/discovery-title} "Discover"]]))
 
 (defn create-fake-discovery []
   (let [number (rand-int 999)]
@@ -69,8 +55,7 @@
     (fn []
       [view {:style {:flex            1
                      :backgroundColor "#eef2f5"}}
-       [toolbar {:style {:backgroundColor "#eef2f5"
-                         :elevation 0}
+       [toolbar {:style st/discovery-toolbar
                  :navigator navigator
                  :nav-action {:image {:source {:uri "icon_hamburger"}
                                       :style  {:width      16
@@ -86,19 +71,11 @@
                                           (reset! showSearch false)
                                           (reset! showSearch true)))}}]
        [scroll-view {:style {}}
-        [view {:style {:paddingLeft   30
-                       :paddingTop    15
-                       :paddingBottom 15}}
-         [text {:style {:color      "#8f838c93"
-                        :fontFamily "sans-serif-medium"
-                        :fontSize   14}} "Popular tags"]]
+        [view {:style st/section-spacing}
+         [text {:style st/discovery-subtitle} "Popular tags"]]
         [discovery-popular navigator]
-        [view {:style {:paddingLeft   30
-                       :paddingTop    15
-                       :paddingBottom 15}}
-         [text {:style {:color      "#8f838c93"
-                        :fontSize   14
-                        :fontFamily "sans-serif-medium"}} "Recent"]]
+        [view {:style st/section-spacing}
+         [text {:style st/discovery-subtitle} "Recent"]]
         [discovery-recent]]])))
   (comment
     (def page-width (aget (natal-shell.dimensions/get "window") "width"))

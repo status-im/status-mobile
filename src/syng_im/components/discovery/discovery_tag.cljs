@@ -12,7 +12,8 @@
     [syng-im.components.toolbar :refer [toolbar]]
     [reagent.core :as r]
     [syng-im.components.discovery.discovery-popular-list-item :refer [discovery-popular-list-item]]
-    [syng-im.resources :as res]))
+    [syng-im.resources :as res]
+    [syng-im.components.discovery.styles :as st]))
 
 (defn render-row [row section-id row-id]
   (log/debug "discovery-tag-row: " row section-id row-id)
@@ -23,21 +24,13 @@
   ))
 
 (defn render-separator [sectionID, rowID, adjacentRowHighlighted]
-  (let [elem (r/as-element [view {:style {:borderBottomWidth 1
-                                          :borderBottomColor "#eff2f3"}
+  (let [elem (r/as-element [view {:style st/row-separator
                                   :key   rowID}])]
     elem))
 
 (defn title-content [tag]
-  [view {:style {:backgroundColor "#eef2f5"
-                 :flexWrap :wrap
-                 :borderRadius 5
-                 :padding 4}}
-   [text {:style {:color "#7099e6"
-                  :fontFamily "sans-serif-medium"
-                  :fontSize   14
-                  :paddingRight 5
-                  :paddingBottom 2}}
+  [view {:style st/tag-title-container}
+   [text {:style st/tag-title}
     (str " #" tag)]])
 
 (defn discovery-tag [{:keys [tag navigator]}]
@@ -47,18 +40,15 @@
     (fn []
       (let [items @discoveries
             datasource (to-realm-datasource items)]
-    [view {:style {:flex            1
-                   :backgroundColor "#eef2f5"}}
+    [view {:style st/discovery-tag-container}
      [toolbar {:navigator navigator
                :nav-action {:image {:source {:uri "icon_back"}
-                                    :style  {:width      8
-                                             :height     14}}
+                                    :style  st/icon-back}
                             :handler (fn [] (nav-pop navigator))}
                :title     "Add Participants"
                :content   (title-content @tag)
                :action    {:image {:source {:uri "icon_search"}
-                                   :style  {:width  17
-                                            :height 17}}
+                                   :style  st/icon-search}
                            :handler (fn []
                                       ())}}]
 
@@ -66,6 +56,5 @@
                  :enableEmptySections true
                  :renderRow  render-row
                  :renderSeparator render-separator
-                 :style      {:backgroundColor "white"
-                              :paddingLeft 15}}]
+                 :style      st/recent-list}]
      ]))))
