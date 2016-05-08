@@ -79,7 +79,7 @@
    :height          1.5
    :backgroundColor separator-color})
 
-(def actions-view-st
+(def actions-view
   {:marginVertical 10})
 
 (def action-icon-row
@@ -91,7 +91,7 @@
          {:alignItems     :center
           :justifyContent :center}))
 
-(def action-view-st
+(def action-view
   {:flex           1
    :alignItems     :flex-start
    :justifyContent :center})
@@ -130,8 +130,9 @@
 (def online-dot-left (merge online-dot {:left 3}))
 (def online-dot-right (merge online-dot {:left 9}))
 
-(def typing-all-st
+(def typing-all
   {:marginBottom 20})
+
 (def typing-view
   {:width        260
    :marginTop    10
@@ -152,7 +153,7 @@
    :fontFamily font
    :color      text2-color})
 
-(def chat-photo-st
+(def chat-photo
   {:borderRadius 50
    :width        36
    :height       36})

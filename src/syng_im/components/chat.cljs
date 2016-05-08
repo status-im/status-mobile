@@ -41,7 +41,7 @@
    [image {:source (if (s/blank? photo-path)
                      res/user-no-photo
                      {:uri photo-path})
-           :style  st/chat-photo-st}]])
+           :style  st/chat-photo}]])
 
 (defn contact-online [{:keys [online]}]
   (when online
@@ -56,7 +56,7 @@
      (str member " is typing")]]])
 
 (defn typing-all []
-  [view st/typing-all-st
+  [view st/typing-all
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
 
@@ -89,7 +89,7 @@
    [view st/action-icon-row
     [view st/action-icon-view
      [icon icon-name icon-style]]
-    [view st/action-view-st
+    [view st/action-view
      [text {:style st/action-title} title]
      (when-let [subtitle subtitle]
        [text {:style st/action-subtitle}
@@ -126,7 +126,7 @@
                            :handler    (fn [])}])]
       [view st/actions-wrapper
        [view st/actions-separator]
-       [view st/actions-view-st
+       [view st/actions-view
         (for [action actions]
           ^{:key action} [action-view action])]])))
 
