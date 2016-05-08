@@ -130,5 +130,5 @@
 (defn parse-command-msg-content [commands content]
   (update content :command #(find-command commands (keyword %))))
 
-(defn parse-command-request-msg-content [commands content]
+(defn parse-command-request [commands content]
   (update content :command #(find-command commands (keyword %))))

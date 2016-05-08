@@ -61,10 +61,11 @@
      ^{:key member} [typing member])])
 
 (defn message-row [contact-by-identity group-chat]
-  (fn [row _ _]
+  (fn [row _ idx]
     (let [msg (-> row
                   (add-msg-color contact-by-identity)
-                  (assoc :group-chat group-chat))]
+                  (assoc :group-chat group-chat)
+                  (assoc :last-msg (zero? (js/parseInt idx))))]
       (list-item [chat-message msg]))))
 
 (defn on-action-selected [position]
