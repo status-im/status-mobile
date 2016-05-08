@@ -15,7 +15,7 @@
                                              get-chat-command
                                              get-chat-command-content
                                              get-chat-command-request
-                                             parse-command-request-msg-content]]
+                                             parse-command-request]]
             [syng-im.handlers.suggestions :refer [get-suggestions]]))
 
 ;; -- Chat --------------------------------------------------------------
