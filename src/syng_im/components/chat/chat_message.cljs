@@ -17,13 +17,6 @@
                                        content-type-command
                                        content-type-command-request]]))
 
-;-------------------------------------------------------------------------------
-;styles
-
-
-;-------------------------------------------------------------------------------
-;components
-
 (defn message-date [{:keys [date]}]
   [view {}
    [view st/message-date-container
@@ -34,7 +27,7 @@
    [image {:source (if (s/blank? photo-path)
                      res/user-no-photo
                      {:uri photo-path})
-           :style  st/contact-photo-st}]])
+           :style  st/contact-photo}]])
 
 (defn contact-online [{:keys [online]}]
   (when online
@@ -67,14 +60,14 @@
       (let [commands @commands-atom
             {:keys [command content]}
             (parse-command-msg-content commands content)]
-        [view st/conetent-command-view
+        [view st/content-command-view
          [view st/command-container
           [view (st/command-view command)
-           [text {:style st/command-text}
+           [text {:style st/command-name}
             (:text command)]]]
          [image {:source (:icon command)
                  :style  st/command-image}]
-         [text {:style st/command-text-st}
+         [text {:style st/command-text}
           ;; TODO isn't smart
           (if (= (:command command) :keypair-password)
             "******"
@@ -107,7 +100,7 @@
 
 (defn message-view
   [message content]
-  [view (st/message-view-st message)
+  [view (st/message-view message)
    #_(when incoming-group
        [text {:style message-author-text}
         "Justas"])
@@ -123,7 +116,7 @@
 (defn text-message
   [{:keys [content] :as message}]
   [message-view message
-   [text {:style (st/text-message-st message)}
+   [text {:style (st/text-message message)}
     content]])
 
 (defmethod message-content text-content-type
@@ -187,7 +180,7 @@
 (defn message-body
   [{:keys [outgoing] :as message} content]
   (let [delivery-status :seen]
-    [view (st/message-body-st message)
+    [view (st/message-body message)
      content
      (when (and outgoing delivery-status)
        [message-delivery-status {:delivery-status delivery-status}])]))

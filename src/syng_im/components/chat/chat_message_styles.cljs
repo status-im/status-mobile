@@ -43,7 +43,7 @@
   {:paddingRight 8
    :paddingLeft  8})
 
-(defn message-body-st
+(defn message-body
   [{:keys [outgoing] :as message}]
   (let [align (if outgoing :flex-end :flex-start)]
     (merge message-body-base
@@ -103,7 +103,7 @@
    :color      text2-color
    :marginLeft 5})
 
-(defn text-message-st
+(defn text-message
   [{:keys [outgoing group-chat incoming-group]}]
   (merge style-message-text
          {:marginTop (if incoming-group
@@ -112,7 +112,7 @@
          (when (and outgoing group-chat)
            {:color color-white})))
 
-(defn message-view-st
+(defn message-view
   [{:keys [content-type outgoing group-chat selected]}]
   (merge {:borderRadius    14
           :padding         12
@@ -159,7 +159,7 @@
    :height    14})
 
 
-(def conetent-command-view
+(def content-command-view
   {:flexDirection :column})
 
 (def command-container
@@ -173,7 +173,7 @@
    :paddingTop        3
    :paddingHorizontal 12})
 
-(def command-text
+(def command-name
   {:fontSize   12
    :fontFamily font
    :color      color-white})
@@ -185,7 +185,7 @@
    :width    12
    :height   13})
 
-(def command-text-st
+(def command-text
   (merge style-message-text
          {:marginTop        8
           :marginHorizontal 0}))
@@ -292,7 +292,7 @@
 (def contact-photo-container
   {:borderRadius 50})
 
-(def contact-photo-st
+(def contact-photo
   {:borderRadius 50
    :width        64
    :height       64})
