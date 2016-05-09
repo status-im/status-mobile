@@ -1,16 +1,13 @@
 (ns syng-im.components.chat.chat-message
   (:require [clojure.string :as s]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.components.react :refer [android?
-                                              view
+            [re-frame.core :refer [subscribe dispatch]]
+            [syng-im.components.react :refer [view
                                               text
                                               image
-                                              touchable-highlight
-                                              navigator]]
+                                              touchable-highlight]]
             [syng-im.components.chat.chat-message-styles :as st]
             [syng-im.models.commands :refer [parse-command-msg-content
                                              parse-command-request]]
-            [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
             [syng-im.constants :refer [text-content-type
                                        content-type-status
@@ -51,8 +48,7 @@
    [view st/track-container
     [view st/track]
     [view st/track-mark]
-    [text {:style st/track-duration-text}
-     "03:39"]]])
+    [text {:style st/track-duration-text} "03:39"]]])
 
 (defn message-content-command [content]
   (let [commands-atom (subscribe [:get-commands])]
