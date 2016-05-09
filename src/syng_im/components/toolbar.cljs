@@ -25,16 +25,13 @@
                       :elevation       2} style)]
     [view {:style style}
      (if nav-action
-       [touchable-highlight {:on-press       (:handler nav-action)
-                             :underlay-color :transparent}
+       [touchable-highlight {:on-press (:handler nav-action)}
         [view {:width          56
                :height         56
                :alignItems     "center"
                :justifyContent "center"}
          [image (:image nav-action)]]]
-       [touchable-highlight {:on-press (fn []
-                                         (nav-pop navigator))
-                             :underlay-color :transparent}
+       [touchable-highlight {:on-press #(nav-pop navigator)}
         [view {:width  56
                :height 56}
          [image {:source {:uri "icon_back"}
@@ -47,18 +44,18 @@
                       :alignItems "center"
                       :justifyContent "center"}}
         content]
-       [view {:style {:flex 1
-                      :alignItems "center"
+       [view {:style {:flex           1
+                      :alignItems     "center"
                       :justifyContent "center"}}
         [text {:style {:marginTop  -2.5
                        :color      text1-color
                        :fontSize   16
                        :fontFamily font}}
          title]])
-     [touchable-highlight {:on-press       (:handler action)
-                           :underlay-color :transparent}
+     [touchable-highlight {:on-press (:handler action)}
       [view {:width          56
              :height         56
              :alignItems     "center"
              :justifyContent "center"}
        [image (:image action)]]]]))
+
