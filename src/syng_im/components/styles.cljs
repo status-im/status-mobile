@@ -5,6 +5,7 @@
 (def title-font "sans-serif-medium")
 
 (def color-blue "#7099e6")
+(def color-blue-transparent "#7099e632")
 (def color-black "#000000de")
 (def color-purple "#a187d5")
 (def color-gray "#838c93de")
@@ -16,8 +17,9 @@
 
 (def text1-color color-black)
 (def text2-color color-gray)
+(def text3-color color-blue)
 (def online-color color-blue)
-(def new-messages-count-color "#7099e632")
+(def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
 (def selected-message-color "#E4E9ED")
 (def separator-color "#0000001f")

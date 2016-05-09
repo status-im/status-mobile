@@ -11,7 +11,10 @@
 (def touchable-highlight (r/adapt-react-class (.-TouchableHighlight js/React)))
 (def toolbar-android (r/adapt-react-class (.-ToolbarAndroid js/React)))
 (def list-view (r/adapt-react-class (.-ListView js/React)))
+(def scroll-view (r/adapt-react-class (.-ScrollView js/React)))
 (def text-input (r/adapt-react-class (.-TextInput js/React)))
+(def drawer-layout-android (r/adapt-react-class (.-DrawerLayoutAndroid js/React)))
+(def touchable-opacity (r/adapt-react-class (.-TouchableOpacity js/React)))
 
 (def platform (.. js/React -Platform -OS))
 

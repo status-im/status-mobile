@@ -10,7 +10,9 @@
             [syng-im.models.messages :refer [get-messages]]
             [syng-im.models.contacts :refer [contacts-list
                                              contacts-list-exclude
-                                             contacts-list-include]]
+                                             contacts-list-include
+                                             contact-identity
+                                             contact-by-identity]]
             [syng-im.models.commands :refer [get-commands
                                              get-chat-command
                                              get-chat-command-content
@@ -124,6 +126,11 @@
   (fn [db _]
     (reaction
       (contacts-list))))
+
+(register-sub :contact
+   (fn [db _]
+     (let [identity (reaction (get-in @db db/contact-identity-path))]
+       (reaction (contact-by-identity @identity)))))
 
 (register-sub :all-new-contacts
   (fn [db _]

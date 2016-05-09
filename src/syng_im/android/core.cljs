@@ -13,6 +13,7 @@
             [syng-im.components.chats.new-group :refer [new-group]]
             [syng-im.components.chat.new-participants :refer [new-participants]]
             [syng-im.components.chat.remove-participants :refer [remove-participants]]
+            [syng-im.components.profile :refer [profile]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.utils :refer [toast]]
             [syng-im.navigation :as nav]
@@ -55,7 +56,8 @@
                                              :chat-list (r/as-element [chats-list {:navigator nav}])
                                              :new-group (r/as-element [new-group {:navigator nav}])
                                              :contact-list (r/as-element [contact-list {:navigator nav}])
-                                             :chat (r/as-element [chat {:navigator nav}])))
+                                             :chat (r/as-element [chat {:navigator nav}])
+                                             :profile (r/as-element [profile {:navigator nav}])))
                                          (r/as-element [chat {:navigator nav}]))))}]))))
 
 (defn init []
