@@ -220,7 +220,7 @@
    :top             4
    :width           120
    :height          2
-   :backgroundColor "#EC7262"})
+   :backgroundColor :#EC7262})
 
 (def track-mark
   {:position        :absolute
@@ -228,7 +228,7 @@
    :top             0
    :width           2
    :height          10
-   :backgroundColor "#4A5258"})
+   :backgroundColor :#4A5258})
 
 (def track-duration-text
   {:position      :absolute
@@ -236,7 +236,7 @@
    :top           11
    :fontFamily    font
    :fontSize      11
-   :color         "#4A5258"
+   :color         :#4A5258
    :letterSpacing 1
    :lineHeight    15})
 
@@ -315,10 +315,10 @@
 
 (def participants-container
   {:flex            1
-   :backgroundColor "white"})
+   :backgroundColor :white})
 
 (def participants-list
-  {:backgroundColor "white"})
+  {:backgroundColor :white})
 
 (def new-participant-image
   {:width  20

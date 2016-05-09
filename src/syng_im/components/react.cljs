@@ -20,7 +20,8 @@
 (defn text-input [props text]
   [text-input-class (merge
                       {:underlineColorAndroid :transparent
-                       :placeholderTextColor  st/text2-color}
+                       :placeholderTextColor  st/text2-color
+                       :placeholder           "Type"}
                       props)
    text])
 

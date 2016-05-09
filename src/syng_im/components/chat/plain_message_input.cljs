@@ -30,7 +30,6 @@
           [icon :list st/list-icon]
           [text-input {:style           st/message-input
                        :autoFocus       (pos? (count @staged-commands-atom))
-                       :placeholder     "Type"
                        :onChangeText    set-input-message
                        :onSubmitEditing #(send @chat input-message)}
            input-message]
