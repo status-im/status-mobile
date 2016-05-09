@@ -1,4 +1,4 @@
-(ns syng-im.components.chat.chat-message-new
+(ns syng-im.chat.views.new-message
   (:require
     [re-frame.core :refer [subscribe]]
     [syng-im.components.react :refer [view]]
@@ -9,7 +9,7 @@
     [syng-im.components.chat.input.confirmation-code :refer [confirmation-code-input-view]]
     [syng-im.components.chat.input.money :refer [money-input-view]]
     [syng-im.components.chat.input.simple-command-staged :refer [simple-command-staged-view]]
-    [syng-im.components.chat.chat-message-styles :as st]))
+    [syng-im.chat.styles.message :as st]))
 
 (defn staged-command-view [stage-command]
   [simple-command-staged-view stage-command])

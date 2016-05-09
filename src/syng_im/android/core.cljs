@@ -8,11 +8,11 @@
             [syng-im.subs]
             [syng-im.components.react :refer [navigator app-registry]]
             [syng-im.components.contact-list.contact-list :refer [contact-list]]
-            [syng-im.components.chat :refer [chat]]
+            [syng-im.chat.screen :refer [chat]]
             [syng-im.components.chats.chats-list :refer [chats-list]]
             [syng-im.components.chats.new-group :refer [new-group]]
-            [syng-im.components.chat.new-participants :refer [new-participants]]
-            [syng-im.components.chat.remove-participants :refer [remove-participants]]
+            [syng-im.participants.views.new :refer [new-participants]]
+            [syng-im.participants.views.remove :refer [remove-participants]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.utils :refer [toast]]
             [syng-im.navigation :as nav]
@@ -34,7 +34,7 @@
 
 (defn app-root []
   (let [signed-up (subscribe [:signed-up])
-        view-id (subscribe [:view-id])]
+        view-id   (subscribe [:view-id])]
     (fn []
       (case (if @signed-up @view-id :chat)
         :add-participants [new-participants]
