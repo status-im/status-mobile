@@ -36,13 +36,13 @@
     name]])
 
 (defn drawer-menu [navigator]
-  [view {:style st/drawer-menu}
-   [view {:style st/user-photo-container}
+  [view st/drawer-menu
+   [view st/user-photo-container
     [user-photo {}]]
-   [view {:style st/name-container}
+   [view st/name-container
     [text {:style st/name-text}
      "Status"]]
-   [view {:style st/menu-items-container}
+   [view st/menu-items-container
     [menu-item {:name    "Profile"
                 :handler (fn []
                            (dispatch [:show-profile navigator]))}]
@@ -59,7 +59,7 @@
                            )}]
     [menu-item {:name    "FAQ"
                 :handler (fn [])}]]
-   [view {:style st/switch-users-container}
+   [view st/switch-users-container
     [touchable-opacity {:onPress (fn []
                                    (close-drawer)
                                    ;; TODO not implemented
