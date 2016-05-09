@@ -46,6 +46,7 @@
                        :backgroundColor "white"}}
          [chats-list-toolbar]
          [list-view {:dataSource datasource
+                     :enableEmptySections true
                      :renderRow  (fn [row section-id row-id]
                                    (r/as-element [chat-list-item row navigator]))
                      :style      {:backgroundColor "white"}}]
