@@ -153,7 +153,7 @@
 
 (register-sub :navigation-stack
   (fn [db _]
-    (:navigation-stack @db)))
+    (reaction (:navigation-stack @db))))
 
 (register-sub :db
   (fn [db _] (reaction @db)))
