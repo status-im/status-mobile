@@ -102,9 +102,9 @@
       (get @db :signed-up))))
 
 (register-sub
- :show-actions
- (fn [db _]
-   (reaction (get-in @db db/show-actions-path))))
+  :show-actions
+  (fn [db _]
+    (reaction (get-in @db db/show-actions-path))))
 
 (register-sub
   :get-contacts
@@ -159,10 +159,10 @@
   (fn [db _] (reaction @db)))
 
 (register-sub :chat-properties
-  (fn [{:keys [current-chat-id] :as db} [_ properties]]
+  (fn [db [_ properties]]
     (->> properties
          (map (fn [k]
                 [k (-> @db
-                       (get-in [:cgats current-chat-id k])
+                       (get-in [:chats (:current-chat-id @db) k])
                        (reaction))]))
          (into {}))))
