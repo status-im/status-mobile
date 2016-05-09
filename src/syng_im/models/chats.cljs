@@ -50,6 +50,9 @@
                  :outgoing     false}))
 
 (defn create-chat
+  ([{:keys [last-msg-id] :as chat}]
+   (let [chat (assoc chat :last-msg-id (or last-msg-id ""))]
+     (r/write #(r/create :chats chat))))
   ([db chat-id identities group-chat?]
    (create-chat db chat-id identities group-chat? nil))
   ([db chat-id identities group-chat? chat-name]
@@ -96,13 +99,25 @@
   (-> (signal-chats-updated db)
       (signal-chat-updated group-id)))
 
+(defn normalize-contacts
+  [chats]
+  (map #(update % :contacts vals) chats))
+
 (defn chats-list []
-  (r/sorted (r/get-all :chats) :timestamp :desc))
+  (-> (r/get-all :chats)
+      (r/sorted :timestamp :desc)
+      r/collection->map
+      normalize-contacts))
 
 (defn chat-by-id [chat-id]
   (-> (r/get-by-field :chats :chat-id chat-id)
       (r/single-cljs)
       (r/list-to-array :contacts)))
+
+(defn chat-by-id2 [chat-id]
+  (-> (r/get-by-field :chats :chat-id chat-id)
+      r/collection->map
+      first))
 
 (defn chat-add-participants [chat-id identities]
   (r/write
@@ -136,42 +151,3 @@
              (-> (r/get-by-field :chats :chat-id chat-id)
                  (r/single)
                  (aset "is-active" active?)))))
-
-(comment
-  (active-group-chats)
-
-
-  (-> (r/get-by-field :chats :chat-id "0x04ed4c3797026cddeb7d64a54ca58142e57ea03cda21072358d67455b506db90c56d95033e3d221992f70d01922c3d90bf0697c49e4be118443d03ae4a1cd3c15c")
-      (r/single)
-      (aget "contacts")
-      (.map (fn [object index collection]
-              object)))
-
-  (-> (chat-by-id "0x04ed4c3797026cddeb7d64a54ca58142e57ea03cda21072358d67455b506db90c56d95033e3d221992f70d01922c3d90bf0697c49e4be118443d03ae4a1cd3c15c")
-      :contacts
-      vals
-      vec)
-
-
-  (-> (aget (aget (chats-list) 0) "contacts")
-      (r/cljs-list))
-
-  (r/write (fn [] (r/delete (chats-list))))
-
-  (swap! re-frame.db/app-db signal-chats-updated)
-
-  (create-chat "0x0479a5ed1f38cadfad1db6cd56c4b659b0ebe052bbe9efa950f6660058519fa4ca6be2dda66afa80de96ab00eb97a2605d5267a1e8f4c2a166ab551f6826608cdd"
-               ["0x0479a5ed1f38cadfad1db6cd56c4b659b0ebe052bbe9efa950f6660058519fa4ca6be2dda66afa80de96ab00eb97a2605d5267a1e8f4c2a166ab551f6826608cdd"])
-
-  (+ 1 1)
-
-
-
-  (swap! re-frame.db/app-db (fn [db]
-                              (create-chat db "A group chat")))
-
-
-  (-> (chats-list)
-      (.find (fn [object index collection]
-               (= "console1" (aget object "chat-id")))))
-  )
