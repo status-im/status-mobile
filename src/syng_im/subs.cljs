@@ -19,7 +19,8 @@
                                              get-chat-command-request
                                              parse-command-msg-content
                                              parse-command-request-msg-content]]
-            [syng-im.handlers.suggestions :refer [get-suggestions]]))
+            [syng-im.handlers.suggestions :refer [get-suggestions]]
+            [syng-im.handlers.content-suggestions :refer [get-content-suggestions]]))
 
 ;; -- Chat --------------------------------------------------------------
 
@@ -42,6 +43,12 @@
                           (get-in @db)
                           (reaction))]
       (reaction (get-suggestions @db @input-text)))))
+
+(register-sub :get-content-suggestions
+  (fn [db _]
+    (let [command (reaction (get-chat-command @db))
+          text    (reaction (get-chat-command-content @db))]
+      (reaction (get-content-suggestions @db @command @text)))))
 
 (register-sub :get-commands
   (fn [db _]

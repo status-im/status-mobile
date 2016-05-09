@@ -62,15 +62,3 @@
    :fontFamily font
    :lineHeight 21
    :color      text3-color})
-
-
-(comment drawer-menu [navigator]
-  [view {:style st/drawer-menu}
-   
-   [view {:style }
-    [touchable-opacity {:onPress (fn []
-                                   (close-drawer)
-                                   ;; TODO not implemented
-                                   )}
-     [text {:style }
-      "Switch users"]]]])
