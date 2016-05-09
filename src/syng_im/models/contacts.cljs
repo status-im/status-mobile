@@ -107,7 +107,12 @@
         (r/sorted :name :asc))))
 
 (defn contact-by-identity [identity]
-  (r/single-cljs (r/get-by-field :contacts :whisper-identity identity)))
+  (if (= identity "console")
+    {:phone-number     ""
+     :whisper-identity "console"
+     :name             "Console"
+     :photo-path       ""}
+    (r/single-cljs (r/get-by-field :contacts :whisper-identity identity))))
 
 ;;;;;;;;;;;;;;;;;;;;----------------------------------------------
 
