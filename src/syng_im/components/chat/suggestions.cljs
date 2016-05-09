@@ -33,5 +33,6 @@
         (when (seq suggestions)
           [view (st/suggestions-container suggestions)
            [list-view {:dataSource (to-datasource suggestions)
+                       :enableEmptySections true
                        :renderRow  render-row
                        :style      {}}]])))))
