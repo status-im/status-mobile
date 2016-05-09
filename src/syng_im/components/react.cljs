@@ -1,5 +1,6 @@
 (ns syng-im.components.react
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [syng-im.components.styles :as st]))
 
 (set! js/window.React (js/require "react-native"))
 
@@ -15,7 +16,13 @@
    content])
 (def toolbar-android (r/adapt-react-class (.-ToolbarAndroid js/React)))
 (def list-view (r/adapt-react-class (.-ListView js/React)))
-(def text-input (r/adapt-react-class (.-TextInput js/React)))
+(def text-input-class (r/adapt-react-class (.-TextInput js/React)))
+(defn text-input [props text]
+  [text-input-class (merge
+                      {:underlineColorAndroid :transparent
+                       :placeholderTextColor  st/text2-color}
+                      props)
+   text])
 
 
 (defn icon [n style]
