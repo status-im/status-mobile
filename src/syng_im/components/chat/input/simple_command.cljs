@@ -26,10 +26,15 @@
   (dispatch [:stage-command chat-id command text])
   (cancel-command-input))
 
-(defn simple-command-input-view [command input-options]
+(defn valid? [message validator]
+  (if validator
+    (validator message)
+    (pos? (count message))))
+
+(defn simple-command-input-view [command input-options & {:keys [validator]}]
   (let [chat-id-atom (subscribe [:get-current-chat-id])
         message-atom (subscribe [:get-chat-command-content])]
-    (fn [command input-options]
+    (fn [command input-options & {:keys [validator]}]
       (let [chat-id @chat-id-atom
             message @message-atom]
         [view {:style {:flexDirection     "row"
@@ -63,10 +68,11 @@
                              :onChangeText          (fn [new-text]
                                                       (set-input-message new-text))
                              :onSubmitEditing       (fn [e]
-                                                      (send-command chat-id command message))}
+                                                      (when (valid? message validator)
+                                                        (send-command chat-id command message)))}
                             input-options)
           message]
-         (if (pos? (count message))
+         (if (valid? message validator)
            [touchable-highlight {:on-press (fn []
                                              (send-command chat-id command message))
                                  :underlay-color :transparent}

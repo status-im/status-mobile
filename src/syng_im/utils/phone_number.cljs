@@ -7,3 +7,9 @@
 
 (defn format-phone-number [number]
   (str (.getNumber (js/PhoneNumber. number country-code "international"))))
+
+(defn valid-mobile-number? [number]
+  (when (string? number)
+    (let [number-obj (js/PhoneNumber. number country-code "international")]
+      (and (.isValid number-obj)
+           (.isMobile number-obj)))))
