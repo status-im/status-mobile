@@ -34,9 +34,9 @@
   (let [message-atom (subscribe [:get-chat-command-content])]
     (fn [command input-options & {:keys [validator]}]
       (let [message @message-atom]
-        [view {:style {:flexDirection "column"}}
+        [view {:style {:flexDirection :column}}
          [content-suggestions-view]
-         [view {:style {:flexDirection     "row"
+         [view {:style {:flexDirection   :row
                         :height          56
                         :backgroundColor color-white
                         :elevation       4}}
@@ -65,11 +65,13 @@
                               :placeholder           "Type"
                               :placeholderTextColor  text2-color
                               :onChangeText          set-input-message
-                              :onSubmitEditing       send-command}
-                            input-options)
-          message]
-         (if (valid? message validator)
-           [touchable-highlight
+                              :onSubmitEditing       (fn []
+                                                       (when (valid? message validator)
+                                                         (send-command)))}
+                             input-options)
+           message]
+          (if (valid? message validator)
+            [touchable-highlight
              {:on-press       send-command
               :underlay-color :transparent}
              [view {:style {:marginTop       10

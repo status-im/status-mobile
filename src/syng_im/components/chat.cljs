@@ -214,9 +214,9 @@
         subtitle])]]])
 
 (defn actions-list-view []
-  (let [{:keys [group-chat active]}
-        (subscribe [:chat-properties [:group-chat :name :contacts :active]])]
-    (when-let [actions (when (and @group-chat @active)
+  (let [{:keys [group-chat chat-id]}
+        (subscribe [:chat-properties [:group-chat :chat-id]])]
+    (when-let [actions (if @group-chat
                          [{:title      "Add Contact to chat"
                            :icon       :icon_menu_group
                            :icon-style {:width  25
@@ -241,12 +241,12 @@
                            :icon       :icon_settings
                            :icon-style {:width  20
                                         :height 13}
-                         :handler    (fn [])}]
-                       [{:title      "Profile"
-                         :icon       "icon_menu_group"
-                         :icon-style {:width  25
-                                      :height 19}
-                         :handler    #(dispatch [:show-profile navigator (:chat-id chat)])}])]
+                           :handler    (fn [])}]
+                         [{:title      "Profile"
+                           :icon       "icon_menu_group"
+                           :icon-style {:width  25
+                                        :height 19}
+                           :handler    #(dispatch [:show-profile @chat-id])}])]
       [view {:style {:backgroundColor toolbar-background1
                      :elevation       2
                      :position        :absolute

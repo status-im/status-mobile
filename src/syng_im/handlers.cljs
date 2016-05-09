@@ -451,10 +451,10 @@
     (contacts/load-syng-contacts db)))
 
 (register-handler :show-profile
-  (fn [db [action navigator identity]]
+  (fn [db [action identity]]
     (log/debug action)
     (let [db (contacts/set-contact-identity db identity)]
-      (dispatch [:navigate-to navigator {:view-id :profile} :push])
+      (dispatch [:navigate-to :profile])
       db)))
 
 ;; -- Chats --------------------------------------------------------------
@@ -465,7 +465,8 @@
     (let [db (-> db
                  (create-chat chat-id [chat-id] false)
                  (set-current-chat-id chat-id))]
-      (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
+      ;; (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
+      (dispatch [:navigate-to :chat])
       db)))
 
 (register-handler :init-console-chat
