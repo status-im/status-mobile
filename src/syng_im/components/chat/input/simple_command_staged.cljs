@@ -15,8 +15,8 @@
             [syng-im.resources :as res]
             [reagent.core :as r]))
 
-(defn cancel-command-input [chat-id staged-command]
-  (dispatch [:unstage-command chat-id staged-command]))
+(defn cancel-command-input [staged-command]
+  (dispatch [:unstage-command staged-command]))
 
 (defn simple-command-staged-view [staged-command]
   (let [chat-id-atom (subscribe [:get-current-chat-id])]
@@ -43,11 +43,11 @@
                            :fontFamily       font
                            :color            color-white}}
              (:text command)]]
-           [touchable-highlight {:style {:position    "absolute"
-                                         :top         7
-                                         :right       4}
-                                 :onPress (fn []
-                                            (cancel-command-input chat-id staged-command))
+           [touchable-highlight {:style          {:position "absolute"
+                                                  :top      7
+                                                  :right    4}
+                                 :onPress        #(cancel-command-input
+                                                   staged-command)
                                  :underlay-color :transparent}
             [image {:source res/icon-close-gray
                     :style  {:width  10

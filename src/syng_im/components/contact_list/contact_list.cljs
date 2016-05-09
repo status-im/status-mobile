@@ -47,5 +47,6 @@
          [contact-list-toolbar navigator]
          (when contacts-ds
            [list-view {:dataSource contacts-ds
+                       :enableEmptySections true
                        :renderRow  (partial render-row navigator)
                        :style      {:backgroundColor "white"}}])]))))
