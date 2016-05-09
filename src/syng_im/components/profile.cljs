@@ -34,6 +34,10 @@
     [text {:style st/profile-property-view-value}
      value]]])
 
+(defn message-user [navigator identity]
+  (when identity
+    (dispatch [:show-chat identity navigator :push])))
+
 (defn profile [{:keys [navigator]}]
   (let [contact (subscribe [:contact])]
     (fn [{:keys [navigator]}]
@@ -54,9 +58,8 @@
         [text {:style st/status}
          "!not implemented"]
         [view {:style st/btns-container}
-         [touchable-highlight {:onPress (fn []
-                                          ;; TODO not implemented
-                                          )
+         [touchable-highlight {:onPress #(message-user navigator
+                                                       (:whisper-identity @contact))
                                :underlay-color :transparent}
           [view {:style st/message-btn}
            [text {:style st/message-btn-text}
