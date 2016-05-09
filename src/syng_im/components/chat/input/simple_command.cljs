@@ -6,6 +6,7 @@
                                               text
                                               text-input
                                               touchable-highlight]]
+            [syng-im.components.chat.content-suggestions :refer [content-suggestions-view]]
             [syng-im.components.styles :refer [font
                                                color-white
                                                color-blue
@@ -37,65 +38,67 @@
     (fn [command input-options & {:keys [validator]}]
       (let [chat-id @chat-id-atom
             message @message-atom]
-        [view {:style {:flexDirection     "row"
-                       :height            56
-                       :backgroundColor   color-white
-                       :elevation         4}}
-         [view {:style {:flexDirection   "column"
-                        :marginTop       16
-                        :marginBottom    16
-                        :marginLeft      16
-                        :marginRight     0
-                        :backgroundColor (:color command)
-                        :height          24
-                        :borderRadius    50}}
-          [text {:style {:marginTop        3
-                         :marginHorizontal 12
-                         :fontSize         12
-                         :fontFamily       font
-                         :color            color-white}}
-           (:text command)]]
-         [text-input (merge {:underlineColorAndroid "transparent"
-                             :style                 {:flex       1
-                                                     :marginLeft 8
-                                                     :marginTop  7
-                                                     :fontSize   14
-                                                     :fontFamily font
-                                                     :color      text1-color}
-                             :autoFocus             true
-                             :placeholder           "Type"
-                             :placeholderTextColor  text2-color
-                             :onChangeText          (fn [new-text]
-                                                      (set-input-message new-text))
-                             :onSubmitEditing       (fn [e]
-                                                      (when (valid? message validator)
-                                                        (send-command chat-id command message)))}
-                            input-options)
-          message]
-         (if (valid? message validator)
-           [touchable-highlight {:on-press (fn []
-                                             (send-command chat-id command message))
-                                 :underlay-color :transparent}
-            [view {:style {:marginTop       10
-                           :marginRight     10
-                           :width           36
-                           :height          36
-                           :borderRadius    50
-                           :backgroundColor color-blue}}
-             [image {:source {:uri "icon_send"}
-                     :style  {:marginTop   10.5
-                              :marginLeft  12
-                              :width       15
-                              :height      15}}]]]
-           [touchable-highlight {:on-press (fn []
-                                             (cancel-command-input))
-                                 :underlay-color :transparent}
-            [view {:style {:marginTop       10
-                           :marginRight     10
-                           :width           36
-                           :height          36}}
-             [image {:source res/icon-close-gray
-                     :style  {:marginTop   10.5
-                              :marginLeft  12
-                              :width       12
-                              :height      12}}]]])]))))
+        [view {:style {:flexDirection "column"}}
+         [content-suggestions-view]
+         [view {:style {:flexDirection     "row"
+                        :height            56
+                        :backgroundColor   color-white
+                        :elevation         4}}
+          [view {:style {:flexDirection   "column"
+                         :marginTop       16
+                         :marginBottom    16
+                         :marginLeft      16
+                         :marginRight     0
+                         :backgroundColor (:color command)
+                         :height          24
+                         :borderRadius    50}}
+           [text {:style {:marginTop        3
+                          :marginHorizontal 12
+                          :fontSize         12
+                          :fontFamily       font
+                          :color            color-white}}
+            (:text command)]]
+          [text-input (merge {:underlineColorAndroid "transparent"
+                              :style                 {:flex       1
+                                                      :marginLeft 8
+                                                      :marginTop  7
+                                                      :fontSize   14
+                                                      :fontFamily font
+                                                      :color      text1-color}
+                              :autoFocus             true
+                              :placeholder           "Type"
+                              :placeholderTextColor  text2-color
+                              :onChangeText          (fn [new-text]
+                                                       (set-input-message new-text))
+                              :onSubmitEditing       (fn [e]
+                                                       (when (valid? message validator)
+                                                         (send-command chat-id command message)))}
+                             input-options)
+           message]
+          (if (valid? message validator)
+            [touchable-highlight {:on-press (fn []
+                                              (send-command chat-id command message))
+                                  :underlay-color :transparent}
+             [view {:style {:marginTop       10
+                            :marginRight     10
+                            :width           36
+                            :height          36
+                            :borderRadius    50
+                            :backgroundColor color-blue}}
+              [image {:source {:uri "icon_send"}
+                      :style  {:marginTop   10.5
+                               :marginLeft  12
+                               :width       15
+                               :height      15}}]]]
+            [touchable-highlight {:on-press (fn []
+                                              (cancel-command-input))
+                                  :underlay-color :transparent}
+             [view {:style {:marginTop       10
+                            :marginRight     10
+                            :width           36
+                            :height          36}}
+              [image {:source res/icon-close-gray
+                      :style  {:marginTop   10.5
+                               :marginLeft  12
+                               :width       12
+                               :height      12}}]]])]]))))
