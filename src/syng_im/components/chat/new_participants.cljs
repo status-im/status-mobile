@@ -30,5 +30,6 @@
         [view st/participants-container
          [new-participants-toolbar navigator]
          [list-view {:dataSource contacts-ds
+                     :enableEmptySections true
                      :renderRow  (new-participants-row navigator)
                      :style      st/participants-list}]]))))
