@@ -28,14 +28,12 @@
 
 (defn discovery-popular-list [tag count navigator]
   (let [discoveries (subscribe [:get-discoveries-by-tag tag 3])]
-    (log/debug "Got discoveries for tag (" tag "): " @discoveries)
     [view {:style st/popular-list-container}
-     [view {:style st/row}
-      [view {:style st/column}
+     [view st/row
+      [view st/tag-name-container
        [touchable-highlight {:onPress #(dispatch [:show-discovery-tag tag navigator :push])}
-        [view {:style st/tag-name-container}
-         [text {:style st/tag-name}
-        (str " #" (name tag))]]]]
+        [text {:style st/tag-name}
+         (str " #" (name tag))]]]
       [view {:style st/tag-count-container}
        [text {:style st/tag-count}
         count]]]
@@ -43,5 +41,4 @@
                  :enableEmptySections true
                  :renderRow render-row
                  :renderSeparator render-separator
-                 :style st/popular-list}]
-     ]))
+                 :style st/popular-list}]]))

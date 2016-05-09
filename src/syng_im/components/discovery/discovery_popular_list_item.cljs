@@ -11,7 +11,6 @@
   )
 
 (defn discovery-popular-list-item [discovery]
-  (log/debug discovery)
   (r/as-element [view {:style st/popular-list-item}
                  [view {:style st/popular-list-item-name-container}
                   [text {:style st/popular-list-item-name} (aget discovery "name")]
