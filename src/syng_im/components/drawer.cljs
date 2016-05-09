@@ -11,15 +11,7 @@
                                               drawer-layout-android
                                               touchable-opacity]]
             [syng-im.resources :as res]
-            [syng-im.components.styles :refer [font
-                                               title-font
-                                               color-white
-                                               chat-background
-                                               online-color
-                                               selected-message-color
-                                               text1-color
-                                               text2-color
-                                               text3-color]]))
+            [syng-im.components.drawer-styles :as st]))
 
 (defonce drawer-atom (atom))
 
@@ -30,45 +22,27 @@
   (.closeDrawer @drawer-atom))
 
 (defn user-photo [{:keys [photo-path]}]
-  [view {:borderRadius 50}
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
-           :style  {:borderRadius 50
-                    :width        64
-                    :height       64}}]])
+  [image {:source (if (s/blank? photo-path)
+                    res/user-no-photo
+                    {:uri photo-path})
+          :style  st/user-photo}])
 
 (defn menu-item [{:keys [name handler]}]
-  [touchable-opacity {:style {:height      48
-                              :paddingLeft 16
-                              :paddingTop  14}
+  [touchable-opacity {:style st/menu-item-touchable
                       :onPress (fn []
                                  (close-drawer)
                                  (handler))}
-   [text {:style {:fontSize   14
-                  :fontFamily font
-                  :lineHeight 21
-                  :color      text1-color}}
+   [text {:style st/menu-item-text}
     name]])
 
 (defn drawer-menu [navigator]
-  [view {:style {:flex            1
-                 :backgroundColor color-white
-                 :flexDirection   :column}}
-   [view {:style {:marginTop      40
-                  :alignItems     :center
-                  :justifyContent :center}}
+  [view {:style st/drawer-menu}
+   [view {:style st/user-photo-container}
     [user-photo {}]]
-   [view {:style {:marginTop  20
-                  :alignItems :center}}
-    [text {:style {:marginTop -2.5
-                   :color     text1-color
-                   :fontSize  16}}
+   [view {:style st/name-container}
+    [text {:style st/name-text}
      "Status"]]
-   [view {:style {:flex          1
-                  :marginTop     80
-                  :alignItems    :stretch
-                  :flexDirection :column}}
+   [view {:style st/menu-items-container}
     [menu-item {:name    "Profile"
                 :handler (fn []
                            (dispatch [:show-profile navigator]))}]
@@ -85,16 +59,12 @@
                            )}]
     [menu-item {:name    "FAQ"
                 :handler (fn [])}]]
-   [view {:style {:paddingVertical 36
-                  :alignItems :center}}
+   [view {:style st/switch-users-container}
     [touchable-opacity {:onPress (fn []
                                    (close-drawer)
                                    ;; TODO not implemented
                                    )}
-     [text {:style {:fontSize   14
-                    :fontFamily font
-                    :lineHeight 21
-                    :color      text3-color}}
+     [text {:style st/switch-users-text}
       "Switch users"]]]])
 
 (defn drawer-view [{:keys [navigator]} items]
