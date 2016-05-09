@@ -1,23 +1,15 @@
 (ns syng-im.components.chat.chat-message-new
   (:require
-   [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-   [syng-im.components.react :refer [android?
-                                     view
-                                     image
-                                     text
-                                     text-input]]
-   [syng-im.components.styles :refer [color-white]]
-   [syng-im.components.chat.plain-message-input :refer [plain-message-input-view]]
-   [syng-im.components.chat.input.simple-command :refer [simple-command-input-view]]
-   [syng-im.components.chat.input.phone :refer [phone-input-view]]
-   [syng-im.components.chat.input.password :refer [password-input-view]]
-   [syng-im.components.chat.input.confirmation-code :refer [confirmation-code-input-view]]
-   [syng-im.components.chat.input.money :refer [money-input-view]]
-   [syng-im.components.chat.input.simple-command-staged :refer [simple-command-staged-view]]
-   [syng-im.utils.utils :refer [log toast http-post]]
-   [syng-im.utils.logging :as log]
-   [syng-im.resources :as res]
-   [reagent.core :as r]))
+    [re-frame.core :refer [subscribe]]
+    [syng-im.components.react :refer [view]]
+    [syng-im.components.chat.plain-message-input :refer [plain-message-input-view]]
+    [syng-im.components.chat.input.simple-command :refer [simple-command-input-view]]
+    [syng-im.components.chat.input.phone :refer [phone-input-view]]
+    [syng-im.components.chat.input.password :refer [password-input-view]]
+    [syng-im.components.chat.input.confirmation-code :refer [confirmation-code-input-view]]
+    [syng-im.components.chat.input.money :refer [money-input-view]]
+    [syng-im.components.chat.input.simple-command-staged :refer [simple-command-staged-view]]
+    [syng-im.components.chat.chat-message-styles :as st]))
 
 (defn staged-command-view [stage-command]
   [simple-command-staged-view stage-command])
@@ -40,13 +32,12 @@
     [default-command-input-view command]))
 
 (defn chat-message-new []
-  (let [command-atom (subscribe [:get-chat-command])
+  (let [command-atom         (subscribe [:get-chat-command])
         staged-commands-atom (subscribe [:get-chat-staged-commands])]
     (fn []
-      (let [command @command-atom
+      (let [command         @command-atom
             staged-commands @staged-commands-atom]
-        [view {:style {:backgroundColor color-white
-                       :elevation       4}}
+        [view st/new-message-container
          (when (and staged-commands (pos? (count staged-commands)))
            [staged-commands-view staged-commands])
          (if command
