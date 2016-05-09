@@ -1,11 +1,11 @@
-(ns syng-im.components.chat.input.simple-command-staged
+(ns syng-im.chat.views.staged-command
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               image
                                               text
                                               touchable-highlight]]
             [syng-im.resources :as res]
-            [syng-im.components.chat.input.input-styles :as st]))
+            [syng-im.chat.styles.input :as st]))
 
 (defn cancel-command-input [staged-command]
   (dispatch [:unstage-command staged-command]))

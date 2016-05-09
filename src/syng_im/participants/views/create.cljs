@@ -1,4 +1,4 @@
-(ns syng-im.participants.views.new
+(ns syng-im.participants.views.create
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view]]

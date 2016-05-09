@@ -11,7 +11,7 @@
             [syng-im.chat.screen :refer [chat]]
             [syng-im.components.chats.chats-list :refer [chats-list]]
             [syng-im.components.chats.new-group :refer [new-group]]
-            [syng-im.participants.views.new :refer [new-participants]]
+            [syng-im.participants.views.create :refer [new-participants]]
             [syng-im.participants.views.remove :refer [remove-participants]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.utils :refer [toast]]
