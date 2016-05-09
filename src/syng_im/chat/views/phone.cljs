@@ -1,6 +1,6 @@
-(ns syng-im.components.chat.input.phone
+(ns syng-im.chat.views.phone
   (:require
-   [syng-im.components.chat.input.simple-command
+   [syng-im.chat.views.command
     :refer [simple-command-input-view]]))
 
 (defn phone-input-view [command]

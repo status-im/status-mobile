@@ -2,13 +2,13 @@
   (:require
     [re-frame.core :refer [subscribe]]
     [syng-im.components.react :refer [view]]
-    [syng-im.components.chat.plain-message-input :refer [plain-message-input-view]]
-    [syng-im.components.chat.input.simple-command :refer [simple-command-input-view]]
-    [syng-im.components.chat.input.phone :refer [phone-input-view]]
-    [syng-im.components.chat.input.password :refer [password-input-view]]
-    [syng-im.components.chat.input.confirmation-code :refer [confirmation-code-input-view]]
-    [syng-im.components.chat.input.money :refer [money-input-view]]
-    [syng-im.components.chat.input.simple-command-staged :refer [simple-command-staged-view]]
+    [syng-im.chat.views.plain-input :refer [plain-message-input-view]]
+    [syng-im.chat.views.command :refer [simple-command-input-view]]
+    [syng-im.chat.views.phone :refer [phone-input-view]]
+    [syng-im.chat.views.password :refer [password-input-view]]
+    [syng-im.chat.views.confirmation-code :refer [confirmation-code-input-view]]
+    [syng-im.chat.views.money :refer [money-input-view]]
+    [syng-im.chat.views.staged-command :refer [simple-command-staged-view]]
     [syng-im.chat.styles.message :as st]))
 
 (defn staged-command-view [stage-command]
