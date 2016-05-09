@@ -17,8 +17,7 @@
     (log/debug "Got popular tags: " @popular-tags)
     (if (> (count @popular-tags) 0)
       [carousel {:pageStyle st/carousel-page-style
-                  :pageWidth (- (page-width) 60)
-                  :sneak     20}
+                 :sneak     20}
        (for [tag @popular-tags]
          (discovery-popular-list (.-name tag) (.-count tag) navigator))]
       [text "None"])))

@@ -75,7 +75,8 @@
    :justifyContent "center"})
 
 (def tag-name-container
-  {:backgroundColor "#eef2f5"
+  {:flexDirection "column"
+   :backgroundColor "#eef2f5"
    :borderRadius 5
    :padding 4})
 
@@ -90,6 +91,7 @@
 
 (def tag-count-container
   {:flex 0.2
+   :flexDirection "column"
    :alignItems "flex-end"
    :paddingTop 10
    :paddingRight 9})
