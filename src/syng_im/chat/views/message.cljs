@@ -1,11 +1,11 @@
-(ns syng-im.components.chat.chat-message
+(ns syng-im.chat.views.message
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text
                                               image
                                               touchable-highlight]]
-            [syng-im.components.chat.chat-message-styles :as st]
+            [syng-im.chat.styles.message :as st]
             [syng-im.models.commands :refer [parse-command-msg-content
                                              parse-command-request]]
             [syng-im.resources :as res]
