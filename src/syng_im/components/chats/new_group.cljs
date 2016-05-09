@@ -85,6 +85,7 @@
                            :lineHeight   20}}
              "Add members"]]]
           [list-view {:dataSource contacts-ds
+                      :enableEmptySections true
                       :renderRow  (fn [row section-id row-id]
                                     (r/as-element [new-group-contact (js->clj row :keywordize-keys true) navigator]))
                       :style      {:backgroundColor "white"}}]]]))))
