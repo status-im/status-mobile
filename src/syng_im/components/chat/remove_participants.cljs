@@ -35,6 +35,7 @@
                        :backgroundColor "white"}}
          [remove-participants-toolbar navigator]
          [list-view {:dataSource contacts-ds
+                     :enableEmptySections true
                      :renderRow  (fn [row section-id row-id]
                                    (r/as-element [new-participant-contact (js->clj row :keywordize-keys true) navigator]))
                      :style      {:backgroundColor "white"}}]]))))
