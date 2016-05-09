@@ -8,7 +8,9 @@
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
                  [re-frame "0.6.0"]
                  [prismatic/schema "1.0.4"]
-                 [syng-im/protocol "0.1.1"]
+                 ^{:voom {:repo "https://github.com/status-im/status-lib.git"
+                          :branch "master"}}
+                 [syng-im/protocol "0.1.1-20160430_080316-gf359cb7"]
                  [natal-shell "0.1.6"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]]
