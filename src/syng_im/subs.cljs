@@ -17,7 +17,6 @@
                                              get-chat-command
                                              get-chat-command-content
                                              get-chat-command-request
-                                             parse-command-msg-content
                                              parse-command-request-msg-content]]
             [syng-im.handlers.suggestions :refer [get-suggestions]]
             [syng-im.handlers.content-suggestions :refer [get-content-suggestions]]))
@@ -26,11 +25,8 @@
 
 (register-sub :get-chat-messages
   (fn [db _]
-    (let [chat-id      (reaction (current-chat-id @db))
-          chat-updated (reaction (chat-updated? @db @chat-id))]
-      (reaction
-        (let [_ @chat-updated]
-          (get-messages @chat-id))))))
+    (let [chat-id (current-chat-id @db)]
+      (reaction (get-in @db [:chats chat-id :messages])))))
 
 (register-sub :get-current-chat-id
   (fn [db _]
@@ -85,12 +81,8 @@
 
 (register-sub :get-current-chat
   (fn [db _]
-    (let [current-chat-id (reaction (current-chat-id @db))
-          chat-updated    (reaction (chat-updated? @db @current-chat-id))]
-      (reaction
-        (let [_ @chat-updated]
-          (when-let [chat-id @current-chat-id]
-            (chat-by-id chat-id)))))))
+    (let [current-chat-id (current-chat-id @db)]
+      (reaction (get-in @db [:chats current-chat-id])))))
 
 ;; -- User data --------------------------------------------------------------
 
@@ -162,3 +154,29 @@
                                           :contacts
                                           (map :identity))]
             (contacts-list-include current-participants)))))))
+
+(register-sub :view-id
+  (fn [db _]
+    (reaction (@db :view-id))))
+
+(register-sub :chat
+  (fn [db [_ k]]
+    (-> @db
+        (get-in [:chats (current-chat-id @db) k])
+        (reaction))))
+
+(register-sub :navigation-stack
+  (fn [db _]
+    (:navigation-stack @db)))
+
+(register-sub :db
+  (fn [db _] (reaction @db)))
+
+(register-sub :chat-properties
+  (fn [{:keys [current-chat-id] :as db} [_ properties]]
+    (->> properties
+         (map (fn [k]
+                [k (-> @db
+                       (get-in [:cgats current-chat-id k])
+                       (reaction))]))
+         (into {}))))
