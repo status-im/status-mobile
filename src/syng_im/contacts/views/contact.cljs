@@ -1,8 +1,8 @@
-(ns syng-im.components.contact-list.contact
+(ns syng-im.contacts.views.contact
   (:require [syng-im.components.react :refer [view text image touchable-highlight]]
             [syng-im.resources :as res]
             [syng-im.navigation :as nav]
-            [syng-im.components.contact-list.contact-inner :refer [contact-inner-view]]))
+            [syng-im.contacts.views.contact-inner :refer [contact-inner-view]]))
 
 (defn show-chat [navigator whisper-identity]
   (nav/nav-push navigator {:view-id :chat}))

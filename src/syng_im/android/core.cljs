@@ -7,7 +7,7 @@
             [syng-im.handlers]
             [syng-im.subs]
             [syng-im.components.react :refer [navigator app-registry]]
-            [syng-im.components.contact-list.contact-list :refer [contact-list]]
+            [syng-im.contacts.screen :refer [contact-list]]
             [syng-im.components.discovery.discovery :refer [discovery]]
             [syng-im.components.discovery.discovery-tag :refer [discovery-tag]]
             [syng-im.chat.screen :refer [chat]]
