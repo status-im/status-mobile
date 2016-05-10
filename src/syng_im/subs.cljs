@@ -18,7 +18,8 @@
                                              get-chat-command-content
                                              get-chat-command-request
                                              parse-command-request]]
-            [syng-im.handlers.suggestions :refer [get-suggestions]]
+            [syng-im.handlers.suggestions :refer [get-suggestions
+                                                  typing-command?]]
             [syng-im.handlers.content-suggestions :refer [get-content-suggestions]]))
 
 ;; -- Chat --------------------------------------------------------------
@@ -39,6 +40,10 @@
                           (get-in @db)
                           (reaction))]
       (reaction (get-suggestions @db @input-text)))))
+
+(register-sub :typing-command?
+  (fn [db _]
+    (reaction (typing-command? @db))))
 
 (register-sub :get-content-suggestions
   (fn [db _]

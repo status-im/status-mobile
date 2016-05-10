@@ -6,5 +6,4 @@
 
 (defn money-input-view [command]
   [simple-command-input-view command
-   {:keyboardType :numeric
-    :style        st/money-input}])
+   {:keyboardType :numeric}])

@@ -45,8 +45,8 @@
    :borderRadius     5})
 
 (def drag-down-touchable
-  {:height 22
-   :alignItems :center
+  {:height         22
+   :alignItems     :center
    :justifyContent :center})
 
 (def drag-down-icon

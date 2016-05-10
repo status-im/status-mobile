@@ -5,7 +5,7 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view
-                                              image
+                                              icon
                                               text
                                               touchable-highlight
                                               list-view
@@ -22,9 +22,7 @@
   [touchable-highlight {:onPress (fn []
                                    (set-command-content (:value suggestion)))
                         :underlay-color :transparent}
-   [view (merge st/suggestion-container
-                (when (= (:description suggestion) "Number format 12")
-                  {:backgroundColor "blue"}))
+   [view st/suggestion-container
     [view st/suggestion-sub-container
      [text {:style st/value-text}
       (:value suggestion)]
@@ -45,8 +43,8 @@
                                                    ;; TODO hide suggestions?
                                                    )
                                  :underlay-color :transparent}
-            [image {:source {:uri "icon_drag_down"}
-                    :style  st/drag-down-icon}]]
+            [view nil
+             [icon :drag_down st/drag-down-icon]]]
            [view (st/suggestions-container (count suggestions))
             [list-view {:dataSource (to-datasource suggestions)
                         :renderRow  render-row}]]])))))
