@@ -125,7 +125,7 @@
                                         :height 13}
                            :handler    (fn [])}]
                          [{:title      "Profile"
-                           :icon       "icon_menu_group"
+                           :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
                            :handler    #(dispatch [:show-profile @chat-id])}])]

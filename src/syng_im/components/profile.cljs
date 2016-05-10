@@ -6,13 +6,12 @@
                                               text
                                               text-input
                                               image
+                                              icon
                                               scroll-view
-                                              navigator
                                               touchable-highlight
                                               touchable-opacity]]
             [syng-im.resources :as res]
-            [syng-im.components.profile-styles :as st]
-            [syng-im.navigation :refer [nav-pop]]))
+            [syng-im.components.profile-styles :as st]))
 
 (defn user-photo [{:keys [photo-path]}]
   [image {:source (if (s/blank? photo-path)
@@ -34,21 +33,19 @@
     [text {:style st/profile-property-view-value}
      value]]])
 
-(defn message-user [navigator identity]
+(defn message-user [identity]
   (when identity
-    (dispatch [:show-chat identity navigator :push])))
+    (dispatch [:show-chat identity nil :push])))
 
-(defn profile [{:keys [navigator]}]
+(defn profile []
   (let [contact (subscribe [:contact])]
-    (fn [{:keys [navigator]}]
+    (fn []
       [scroll-view {:style st/profile}
        [touchable-highlight {:style          st/profile-back-button-touchable
-                             :on-press       (fn []
-                                               (nav-pop navigator))
+                             :on-press       #(dispatch [:navigate-back])
                              :underlay-color :transparent}
         [view st/profile-back-button-container
-         [image {:source {:uri "icon_back"}
-                 :style  st/profile-back-button-icon}]]]
+         [icon :back st/profile-back-button-icon]]]
        [view st/status-block
         [view st/user-photo-container
          [user-photo  {}]
@@ -58,8 +55,7 @@
         [text {:style st/status}
          "!not implemented"]
         [view st/btns-container
-         [touchable-highlight {:onPress #(message-user navigator
-                                                       (:whisper-identity @contact))
+         [touchable-highlight {:onPress #(message-user (:whisper-identity @contact))
                                :underlay-color :transparent}
           [view st/message-btn
            [text {:style st/message-btn-text}
@@ -69,8 +65,7 @@
                                           )
                                :underlay-color :transparent}
           [view st/more-btn
-           [image {:source {:uri "icon_more_vertical_blue"}
-                   :style  st/more-btn-image}]]]]]
+           [icon :more_vertical_blue st/more-btn-image]]]]]
        [view st/profile-properties-container
         [profile-property-view {:name "Username"
                                 :value (:name @contact)}]

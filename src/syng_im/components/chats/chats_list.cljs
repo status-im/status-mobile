@@ -64,7 +64,7 @@
            [action-button-item {:title       "New Group Chat"
                                 :buttonColor "#1abc9c"
                                 :onPress     (fn []
-                                               (dispatch [:show-group-new navigator]))}
+                                               (dispatch [:show-group-new]))}
             [icon {:name  "person-stalker"
                    :style {:fontSize 20
                            :height   22

@@ -561,9 +561,9 @@
       db)))
 
 (register-handler :show-group-new
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
-    (nav-push navigator {:view-id :new-group})
+    (dispatch [:navigate-to :new-group])
     (clear-new-group db)))
 
 (register-handler :select-for-new-group
