@@ -1,5 +1,5 @@
 (ns syng-im.chat.views.plain-input
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               icon
                                               touchable-highlight

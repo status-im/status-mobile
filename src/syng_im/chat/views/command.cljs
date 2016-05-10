@@ -1,5 +1,5 @@
 (ns syng-im.chat.views.command
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               image
                                               icon

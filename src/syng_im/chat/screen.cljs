@@ -1,22 +1,16 @@
 (ns syng-im.chat.screen
   (:require [clojure.string :as s]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text
                                               image
                                               icon
-                                              navigator
                                               touchable-highlight
-                                              toolbar-android
                                               list-view
-                                              list-item
-                                              android?]]
+                                              list-item]]
             [syng-im.chat.styles.chat :as st]
-            [syng-im.utils.logging :as log]
             [syng-im.resources :as res]
-            [syng-im.constants :refer [content-type-status]]
-            [syng-im.utils.listview :refer [to-datasource
-                                            to-datasource2]]
+            [syng-im.utils.listview :refer [to-datasource2]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [syng-im.chat.views.message :refer [chat-message]]
             [syng-im.chat.views.new-message :refer [chat-message-new]]))
@@ -29,8 +23,8 @@
 
 (defn add-msg-color [{:keys [from] :as msg} contact-by-identity]
   (if (= "system" from)
-    (assoc msg :text-color "#4A5258"
-               :background-color "#D3EEEF")
+    (assoc msg :text-color :#4A5258
+               :background-color :#D3EEEF)
     (let [{:keys [text-color background-color]} (get contact-by-identity from)]
       (assoc msg :text-color text-color
                  :background-color background-color))))
