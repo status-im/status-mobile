@@ -45,12 +45,27 @@
                                   :name        "string"
                                   :group-chat  {:type    "bool"
                                                :indexed true}
-                                  :is-active   "bool"
-                                  :timestamp   "int"
-                                  :contacts    {:type       "list"
-                                                :objectType "chat-contact"}
-                                  :last-msg-id "string"}}]})
-
+                                  :is-active  "bool"
+                                  :timestamp  "int"
+                                  :contacts   {:type       "list"
+                                               :objectType "chat-contact"}
+                                  :last-msg-id "string"}}
+                    {:name        :tag
+                     :primaryKey  :name
+                     :properties  {:name         "string"
+                                   :count        {:type     "int"
+                                                  :optional true
+                                                  :default 0}}}
+                    {:name        :discoveries
+                     :primaryKey  :whisper-id
+                     :properties  {:name         "string"
+                                   :status       "string"
+                                   :whisper-id   "string"
+                                   :photo        "string"
+                                   :location     "string"
+                                   :tags         {:type       "list"
+                                                  :objectType "tag"}
+                                   :last-updated "date"}}]})
 
 (def realm (js/Realm. (clj->js opts)))
 
@@ -83,6 +98,10 @@
                                       (str "\"" value "\"")
                                       value))]
     query))
+
+(defn get-by-filter [schema-name filter]
+  (-> (.objects realm (name schema-name))
+      (.filtered filter)))
 
 (defn get-by-field [schema-name field value]
   (let [q (to-query schema-name :eq field value)]

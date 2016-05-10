@@ -8,6 +8,8 @@
             [syng-im.subs]
             [syng-im.components.react :refer [navigator app-registry]]
             [syng-im.components.contact-list.contact-list :refer [contact-list]]
+            [syng-im.components.discovery.discovery :refer [discovery]]
+            [syng-im.components.discovery.discovery-tag :refer [discovery-tag]]
             [syng-im.chat.screen :refer [chat]]
             [syng-im.components.chats.chats-list :refer [chats-list]]
             [syng-im.components.chats.new-group :refer [new-group]]
@@ -37,6 +39,8 @@
         view-id   (subscribe [:view-id])]
     (fn []
       (case (if @signed-up @view-id :chat)
+        :discovery [discovery]
+        :discovery-tag [discovery-tag]
         :add-participants [new-participants]
         :remove-participants [remove-participants]
         :chat-list [chats-list]
