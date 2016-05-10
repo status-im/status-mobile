@@ -4,7 +4,6 @@
             [syng-im.utils.logging :as log]
             [syng-im.persistence.realm :as realm]
             [syng-im.persistence.realm :as r]
-            [syng-im.resources :as res]
             [syng-im.db :as db]))
 
 (defn signal-discoveries-updated [db]
