@@ -1,7 +1,7 @@
 (ns syng-im.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
-            [syng-im.models.chats :refer [chats-list chats-updated? chat-by-id]]
+            [syng-im.models.chats :refer [chats-list chat-by-id]]
             [syng-im.models.contacts :refer [contacts-list
                                              contacts-list-exclude
                                              contacts-list-include]]
@@ -13,10 +13,7 @@
 
 (register-sub :get-chats
   (fn [db _]
-    (let [chats-updated (reaction (chats-updated? @db))]
-      (reaction
-        (let [_ @chats-updated]
-          (chats-list))))))
+    (reaction (:chats @db))))
 
 ;; -- User data --------------------------------------------------------------
 
@@ -27,33 +24,18 @@
 ;;       (get @db :user-phone-number))))
 
 (register-sub
-  :get-user-identity
-  (fn [db _]
-    (reaction
-      (get @db :user-identity))))
-
-(register-sub
-  :get-loading
-  (fn [db _]
-    (reaction
-      (get @db :loading))))
-
-(register-sub
   :signed-up
   (fn [db _]
-    (reaction
-      (get @db :signed-up))))
+    (reaction (:signed-up @db))))
 
 (register-sub
   :get-contacts
   (fn [db _]
-    (reaction
-      (get @db :contacts))))
+    (reaction (:contacts @db))))
 
 (register-sub :all-contacts
-  (fn [db _]
-    (reaction
-      (contacts-list))))
+  (fn [_ _]
+    (reaction (contacts-list))))
 
 (register-sub :all-new-contacts
   (fn [db _]
@@ -81,4 +63,3 @@
 
 (register-sub :db
   (fn [db _] (reaction @db)))
-

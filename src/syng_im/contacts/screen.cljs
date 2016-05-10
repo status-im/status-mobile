@@ -1,12 +1,12 @@
-(ns syng-im.components.contact-list.contact-list
+(ns syng-im.contacts.screen
   (:require-macros
-   [natal-shell.data-source :refer [data-source clone-with-rows]]
-   [natal-shell.core :refer [with-error-view]])
+    [natal-shell.data-source :refer [data-source clone-with-rows]]
+    [natal-shell.core :refer [with-error-view]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view text image touchable-highlight
                                               navigator list-view
                                               list-item]]
-            [syng-im.components.contact-list.contact :refer [contact-view]]
+            [syng-im.contacts.views.contact :refer [contact-view]]
             [syng-im.components.styles :refer [font
                                                title-font
                                                color-white

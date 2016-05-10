@@ -1,4 +1,4 @@
-(ns syng-im.components.contact-list.contact-inner
+(ns syng-im.contacts.views.contact-inner
   (:require [clojure.string :as s]
             [syng-im.components.react :refer [view image text]]
             [syng-im.components.styles :refer [font
