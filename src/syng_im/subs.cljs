@@ -17,7 +17,7 @@
                                              get-chat-command
                                              get-chat-command-content
                                              get-chat-command-request
-                                             parse-command-request-msg-content]]
+                                             parse-command-request]]
             [syng-im.handlers.suggestions :refer [get-suggestions]]
             [syng-im.handlers.content-suggestions :refer [get-content-suggestions]]))
 
@@ -111,9 +111,9 @@
       (get @db :signed-up))))
 
 (register-sub
- :show-actions
- (fn [db _]
-   (reaction (get-in @db db/show-actions-path))))
+  :show-actions
+  (fn [db _]
+    (reaction (get-in @db db/show-actions-path))))
 
 (register-sub
   :get-contacts
@@ -167,16 +167,16 @@
 
 (register-sub :navigation-stack
   (fn [db _]
-    (:navigation-stack @db)))
+    (reaction (:navigation-stack @db))))
 
 (register-sub :db
   (fn [db _] (reaction @db)))
 
 (register-sub :chat-properties
-  (fn [{:keys [current-chat-id] :as db} [_ properties]]
+  (fn [db [_ properties]]
     (->> properties
          (map (fn [k]
                 [k (-> @db
-                       (get-in [:cgats current-chat-id k])
+                       (get-in [:chats (:current-chat-id @db) k])
                        (reaction))]))
          (into {}))))

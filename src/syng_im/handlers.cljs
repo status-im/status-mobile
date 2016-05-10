@@ -144,35 +144,31 @@
              :to           "me"})) (range n)))
 
 (defn store-message!
-  [db [_ {chat-id  :from
-          outgoing :outgoing
-          :as      msg}]]
-  (let [previous-message (first (get-in db [:chats chat-id :messages]))
-        msg              (merge msg
-                                {:same-author    (if previous-message
-                                                   (= (:from previous-message) outgoing)
-                                                   true)
-                                 :same-direction (if previous-message
-                                                   (= (:outgoing previous-message) outgoing)
-                                                   true)})]
-    (save-message chat-id msg)))
+  [{:keys [new-message]} [_ {chat-id  :from}]]
+  (save-message chat-id new-message))
 
 (defn add-message-to-db
-  [db chat-id {:keys [from outgoing] :as message}]
-  (let [messages         [:chats chat-id :messages]
-        previous-message (first (get-in db [:chats chat-id :messages]))
-        message          (merge message
-                                {:same-author    (if previous-message
-                                                   (= (:from previous-message) from)
-                                                   true)
-                                 :same-direction (if previous-message
-                                                   (= (:outgoing previous-message) outgoing)
-                                                   true)})]
+  [db chat-id message]
+  (let [messages [:chats chat-id :messages]]
     (update-in db messages conj message)))
 
+(defn check-author-direction
+  [db chat-id {:keys [from outgoing] :as message}]
+  (let [previous-message (first (get-in db [:chats chat-id :messages]))]
+    (merge message
+           {:same-author    (if previous-message
+                              (= (:from previous-message) from)
+                              true)
+            :same-direction (if previous-message
+                              (= (:outgoing previous-message) outgoing)
+                              true)})))
+
 (defn receive-message
-  [db [_ {chat-id :from :as msg}]]
-  (add-message-to-db db chat-id msg))
+  [db [_ {chat-id :from :as message}]]
+  (let [message' (check-author-direction db chat-id message)]
+    (-> db
+        (add-message-to-db chat-id message')
+        (assoc :new-message message'))))
 
 (register-handler :received-msg
   (-> receive-message
@@ -295,41 +291,40 @@
 
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
-  (let [text (get-in db [:chats current-chat-id :input-text])
-        {:keys [command]} (check-suggestion db (str text " "))]
+  (let [text    (get-in db [:chats current-chat-id :input-text])
+        {:keys [command]} (check-suggestion db (str text " "))
+        message (check-author-direction
+                  db current-chat-id
+                  {:msg-id       (random/id)
+                   :chat-id      current-chat-id
+                   :content      text
+                   :to           current-chat-id
+                   :from         identity
+                   :content-type text-content-type
+                   :outgoing     true})]
     (if command
       (set-chat-command db command)
-      (assoc db :new-message (when-not (str/blank? text)
-                               {:msg-id         (random/id)
-                                :chat-id        current-chat-id
-                                :content        text
-                                :to             current-chat-id
-                                :from           identity
-                                :content-type   text-content-type
-                                :outgoing       true
-                                ;; todo should be refactored
-                                :same-author    false
-                                :same-direction false})))))
+      (assoc db :new-message (when-not (str/blank? text) message)))))
 
 (defn prepare-command [identity chat-id staged-command]
   (let [command-key (get-in staged-command [:command :command])
         content     {:command (name command-key)
                      :content (:content staged-command)}]
-    {:msg-id         (random/id)
-     :from           identity
-     :to             chat-id
-     :content        content
-     :content-type   content-type-command
-     :outgoing       true
-     :handler        (:handler staged-command)
-     :same-author    false
-     :same-direction false}))
+    {:msg-id       (random/id)
+     :from         identity
+     :to           chat-id
+     :content      content
+     :content-type content-type-command
+     :outgoing     true
+     :handler      (:handler staged-command)}))
 
 (defn prepare-staged-commans
   [{:keys [current-chat-id identity] :as db} _]
   (let [staged-commands (get-in db [:chats current-chat-id :staged-commands])]
     (->> staged-commands
          (map #(prepare-command identity current-chat-id %))
+         ;todo this is wrong :(
+         (map #(check-author-direction db current-chat-id %))
          (assoc db :new-commands))))
 
 (defn add-message
@@ -373,7 +368,6 @@
 
 (defn handle-commands
   [{:keys [new-commands]}]
-  (println new-commands)
   (doseq [{{content :content} :content
            handler            :handler} new-commands]
     (when handler

@@ -1,56 +1,29 @@
 (ns syng-im.components.chat.suggestions
   (:require-macros
    [natal-shell.core :refer [with-error-view]])
-  (:require [clojure.string :as cstr]
-            [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
-                                              image
                                               text
                                               touchable-highlight
                                               list-view
                                               list-item]]
-            [syng-im.components.styles :refer [font
-                                               color-white]]
             [syng-im.utils.listview :refer [to-datasource]]
-            [syng-im.utils.utils :refer [log toast http-post]]
-            [syng-im.utils.logging :as log]))
+            [syng-im.components.chat.suggestions-styles :as st]))
 
 (defn set-command-input [command]
   (dispatch [:set-chat-command command]))
 
 (defn suggestion-list-item [suggestion]
-  [touchable-highlight {:onPress (fn []
-                                   (set-command-input (keyword (:command suggestion))))
-                        :underlay-color :transparent}
-   [view {:style {:flexDirection    "row"
-                  :marginVertical   1
-                  :marginHorizontal 0
-                  :height           40
-                  :backgroundColor  color-white}}
-    [view {:style {:flexDirection   "column"
-                   :position        "absolute"
-                   :top             10
-                   :left            60
-                   :backgroundColor (:color suggestion)
-                   :borderRadius    10}}
-     [text {:style {:marginTop -2
-                    :marginHorizontal 10
-                    :fontSize         14
-                    :fontFamily       font
-                    :color            color-white}}
+  [touchable-highlight
+   {:onPress #(set-command-input (keyword (:command suggestion)))}
+   [view st/suggestion-item-container
+    [view (st/suggestion-background suggestion)
+     [text {:style st/suggestion-text}
       (:text suggestion)]]
-    [text {:style {:flex       1
-                   :position   "absolute"
-                   :top        7
-                   :left       190
-                   :lineHeight 18
-                   :fontSize   14
-                   :fontFamily font
-                   :color      "black"}}
+    [text {:style st/suggestion-description}
      (:description suggestion)]]])
 
-(defn render-row [row section-id row-id]
+(defn render-row [row _ _]
   (list-item [suggestion-list-item (js->clj row :keywordize-keys true)]))
 
 (defn suggestions-view []
@@ -58,12 +31,7 @@
     (fn []
       (let [suggestions @suggestions-atom]
         (when (seq suggestions)
-          [view {:style {:flexDirection    "row"
-                         :marginVertical   1
-                         :marginHorizontal 0
-                         :height           (min 105 (* 42 (count suggestions)))
-                         :backgroundColor  color-white
-                         :borderRadius     5}}
+          [view (st/suggestions-container suggestions)
            [list-view {:dataSource (to-datasource suggestions)
                        :enableEmptySections true
                        :renderRow  render-row
