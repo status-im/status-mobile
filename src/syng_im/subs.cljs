@@ -10,13 +10,16 @@
             [syng-im.models.messages :refer [get-messages]]
             [syng-im.models.contacts :refer [contacts-list
                                              contacts-list-exclude
-                                             contacts-list-include]]
+                                             contacts-list-include
+                                             contact-identity
+                                             contact-by-identity]]
             [syng-im.models.commands :refer [get-commands
                                              get-chat-command
                                              get-chat-command-content
                                              get-chat-command-request
                                              parse-command-request]]
-            [syng-im.handlers.suggestions :refer [get-suggestions]]))
+            [syng-im.handlers.suggestions :refer [get-suggestions]]
+            [syng-im.handlers.content-suggestions :refer [get-content-suggestions]]))
 
 ;; -- Chat --------------------------------------------------------------
 
@@ -36,6 +39,12 @@
                           (get-in @db)
                           (reaction))]
       (reaction (get-suggestions @db @input-text)))))
+
+(register-sub :get-content-suggestions
+  (fn [db _]
+    (let [command (reaction (get-chat-command @db))
+          text    (reaction (get-chat-command-content @db))]
+      (reaction (get-content-suggestions @db @command @text)))))
 
 (register-sub :get-commands
   (fn [db _]
@@ -116,6 +125,11 @@
   (fn [db _]
     (reaction
       (contacts-list))))
+
+(register-sub :contact
+   (fn [db _]
+     (let [identity (reaction (get-in @db db/contact-identity-path))]
+       (reaction (contact-by-identity @identity)))))
 
 (register-sub :all-new-contacts
   (fn [db _]

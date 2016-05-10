@@ -15,6 +15,9 @@
    :fontFamily font
    :color      :black})
 
+(def command-input-and-suggestions-container
+  {:flexDirection :column})
+
 (def command-input-container
   {:flexDirection   :row
    :height          56

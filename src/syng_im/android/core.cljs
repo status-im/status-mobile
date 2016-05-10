@@ -13,6 +13,7 @@
             [syng-im.components.chats.new-group :refer [new-group]]
             [syng-im.components.chat.new-participants :refer [new-participants]]
             [syng-im.components.chat.remove-participants :refer [remove-participants]]
+            [syng-im.components.profile :refer [profile]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.utils :refer [toast]]
             [syng-im.navigation :as nav]
@@ -42,7 +43,8 @@
         :chat-list [chats-list]
         :new-group [new-group]
         :contact-list [contact-list]
-        :chat [chat]))))
+        :chat [chat]
+        :profile [profile]))))
 
 (defn init []
   (dispatch-sync [:initialize-db])
