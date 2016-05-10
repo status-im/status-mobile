@@ -1,7 +1,6 @@
 (ns syng-im.components.chat.input.simple-command
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view
-                                              image
                                               icon
                                               text
                                               text-input
@@ -47,5 +46,4 @@
              [view st/send-container [icon :send st/send-icon]]]
             [touchable-highlight {:on-press cancel-command-input}
              [view st/cancel-container
-              [image {:source res/icon-close-gray
-                      :style  st/cancel-icon}]]])]]))))
+              [icon :close-gray st/cancel-icon]]])]]))))

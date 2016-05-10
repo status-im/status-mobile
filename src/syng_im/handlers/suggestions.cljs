@@ -65,6 +65,9 @@
                                (get-commands db))]
       suggestion)))
 
-(defn switch-command-suggestions [db]
+(defn typing-command? [db]
   (let [text (get-chat-input-text db)]
-    (set-chat-input-text db (if (suggestion? text) nil "!"))))
+    (suggestion? text)))
+
+(defn switch-command-suggestions [db]
+  (set-chat-input-text db (if (typing-command? db) nil "!")))
