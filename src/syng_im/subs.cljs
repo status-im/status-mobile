@@ -78,10 +78,6 @@
                                           (map :identity))]
             (contacts-list-include current-participants)))))))
 
-(register-sub :view-id
-  (fn [db _]
-    (reaction (@db :view-id))))
-
 (register-sub :db
   (fn [db _] (reaction @db)))
 

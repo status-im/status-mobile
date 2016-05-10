@@ -112,8 +112,7 @@
 (defn text-message
   [{:keys [content] :as message}]
   [message-view message
-   [text {:style (st/text-message message)}
-    content]])
+   [text {:style (st/text-message message)} content]])
 
 (defmethod message-content text-content-type
   [wrapper message]
