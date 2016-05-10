@@ -33,7 +33,6 @@
                                  current-chat-id
                                  update-new-group-selection
                                  update-new-participants-selection
-                                 clear-new-group
                                  clear-new-participants
                                  new-group-selection
                                  set-chat-input-text
@@ -116,18 +115,6 @@
     (-> db
         (update-identity identity)
         (set-initialized true))))
-
-(defn gen-messages [n]
-  (mapv (fn [_]
-          (let [id (random-uuid)]
-            {:msg-id       id
-             :content      (str id
-                                "ooops sdfg  dsfg"
-                                "s dfg\ndsfg dfg\ndsfgdsfgdsfg")
-             :content-type text-content-type
-             :outgoing     false
-             :from         "console"
-             :to           "me"})) (range n)))
 
 (defn system-message [msg-id content]
   {:from         "system"
@@ -267,28 +254,10 @@
 
 ;; -- Chats --------------------------------------------------------------
 
-(register-handler :show-chat
-  (fn [db [action chat-id navigator nav-type]]
-    (log/debug action "chat-id" chat-id)
-    (let [db (set-current-chat-id db chat-id)]
-      (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
-      db)))
-
-(register-handler :show-contacts
-  (fn [db [_ navigator]]
-    (nav-push navigator {:view-id :contact-list})
-    db))
-
 (register-handler :select-new-participant
   (fn [db [action identity add?]]
     (log/debug action identity add?)
     (update-new-participants-selection db identity add?)))
-
-(register-handler :show-remove-participants
-  (fn [db [action navigator]]
-    (log/debug action)
-    (nav-push navigator {:view-id :remove-participants})
-    (clear-new-participants db)))
 
 (register-handler :remove-selected-participants
   (fn [db [action navigator]]
@@ -302,12 +271,6 @@
         (removed-participant-msg chat-id ident))
       (signal-chat-updated db chat-id))))
 
-(register-handler :show-add-participants
-  (fn [db [action navigator]]
-    (log/debug action)
-    (nav-push navigator {:view-id :add-participants})
-    (clear-new-participants db)))
-
 (register-handler :add-new-participants
   (fn [db [action navigator]]
     (log/debug action)
@@ -318,12 +281,6 @@
       (doseq [ident identities]
         (api/group-add-participant chat-id ident))
       db)))
-
-(register-handler :show-group-new
-  (fn [db [action navigator]]
-    (log/debug action)
-    (nav-push navigator {:view-id :new-group})
-    (clear-new-group db)))
 
 (register-handler :select-for-new-group
   (fn [db [action identity add?]]
@@ -336,7 +293,7 @@
     (let [identities (vec (new-group-selection db))
           group-id   (api/start-group-chat identities group-name)
           db         (create-chat db group-id identities true group-name)]
-      (dispatch [:show-chat group-id navigator :replace])
+      (dispatch [:show-chat group-id :replace])
       db)))
 
 (register-handler :group-chat-invite-received
