@@ -27,7 +27,8 @@
         [view st/input-container
          [suggestions-view]
          [view st/input-view
-          [icon :list st/list-icon]
+          [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions])}
+           [view nil [icon :list st/list-icon]]]
           [text-input {:style           st/message-input
                        :autoFocus       (pos? (count @staged-commands-atom))
                        :onChangeText    set-input-message
