@@ -16,5 +16,6 @@
 (def add-icon (js/require "./images/add.png"))
 (def trash-icon (js/require "./images/trash.png"))
 (def leave-icon (js/require "./images/leave.png"))
-
 (def icon-close-gray (js/require "./images/icon_close_gray.png"))
+(def menu (js/require "./images/ic_menu_black_24dp_1x.png"))
+(def search (js.require "./images/ic_search_black_24dp_1x.png"))
