@@ -32,6 +32,7 @@
                                           check-suggestion
                                           switch-command-suggestions]]
     [syng-im.handlers.sign-up :as sign-up-service]
+    [syng-im.components.discovery.handlers :as discovery]
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
                                   chat-add-participants
