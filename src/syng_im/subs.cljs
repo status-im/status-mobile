@@ -2,6 +2,7 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.db :as db]
+            [syng-im.components.discovery.subs :as discovery]
             [syng-im.models.chat :refer [current-chat-id
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
@@ -88,6 +89,8 @@
   (fn [db _]
     (let [current-chat-id (current-chat-id @db)]
       (reaction (get-in @db [:chats current-chat-id])))))
+
+
 
 ;; -- User data --------------------------------------------------------------
 

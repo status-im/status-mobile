@@ -182,6 +182,7 @@
         [list-view {:renderRow             (message-row contacts' group-chat)
                     :renderScrollComponent #(invertible-scroll-view (js->clj %))
                     :onEndReached          #(dispatch [:load-more-messages])
+                    :enableEmptySections   true
                     :dataSource            (to-datasource2 @messages)}]))))
 
 (defn chat []
