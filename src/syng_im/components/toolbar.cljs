@@ -15,8 +15,7 @@
                                                toolbar-background1]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.listview :refer [to-realm-datasource]]
-            [reagent.core :as r]
-            [syng-im.navigation :refer [nav-pop]]))
+            [reagent.core :as r]))
 
 (defn toolbar [{:keys [navigator title nav-action action background-color]}]
   [view {:style {:flexDirection   "row"
@@ -30,7 +29,7 @@
              :alignItems     "center"
              :justifyContent "center"}
        [image (:image nav-action)]]]
-     [touchable-highlight {:on-press #(nav-pop navigator)}
+     [touchable-highlight {:on-press #(dispatch [:navigate-back])}
       [view {:width  56
              :height 56}
        [image {:source {:uri "icon_back"}
