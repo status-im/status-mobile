@@ -13,36 +13,36 @@
 
 
 (register-sub :get-discoveries
-              (fn [db _]
-                (let [discoveries-updated (-> (discoveries-updated? @db)
-                                              (reaction))]
-                  (reaction
-                    (let [_ @discoveries-updated]
-                      (discovery-list))))))
+  (fn [db _]
+    (let [discoveries-updated (-> (discoveries-updated? @db)
+                                  (reaction))]
+      (reaction
+        (let [_ @discoveries-updated]
+          (discovery-list))))))
 
 (register-sub :get-discoveries-by-tag
-              (fn [db [_ tag limit]]
-                (let [discoveries-updated (-> (discoveries-updated? @db)
-                                              (reaction))]
-                  (log/debug "Getting discoveries for: " tag)
-                  (reaction
-                    (let [_ @discoveries-updated]
-                      (discoveries-by-tag tag limit))))))
+  (fn [db [_ tag limit]]
+    (let [discoveries-updated (-> (discoveries-updated? @db)
+                                  (reaction))]
+      (log/debug "Getting discoveries for: " tag)
+      (reaction
+        (let [_ @discoveries-updated]
+          (discoveries-by-tag tag limit))))))
 
 (register-sub :get-popular-tags
-              (fn [db [_ limit]]
-                (let [discoveries-updated (-> (discoveries-updated? @db)
-                                              (reaction))]
-                  (log/debug  "Getting tags limited: " limit)
-                  (reaction
-                    (let [_ @discoveries-updated]
-                      (get-tag-popular limit))))))
+  (fn [db [_ limit]]
+    (let [discoveries-updated (-> (discoveries-updated? @db)
+                                  (reaction))]
+      (log/debug "Getting tags limited: " limit)
+      (reaction
+        (let [_ @discoveries-updated]
+          (get-tag-popular limit))))))
 
 (register-sub :get-current-tag
-              (fn [db _]
-                (let [current-tag-updated (-> (current-tag-updated? @db)
-                                              (reaction))]
-                  (reaction
-                    (let [_ @current-tag-updated]
-                      (current-tag @db))))))
+  (fn [db _]
+    (let [current-tag-updated (-> (current-tag-updated? @db)
+                                  (reaction))]
+      (reaction
+        (let [_ @current-tag-updated]
+          (current-tag @db))))))
 

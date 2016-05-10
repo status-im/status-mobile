@@ -1,12 +1,13 @@
 (ns syng-im.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
-            [syng-im.models.chat :refer [current-chat-id chat-updated?]]
             [syng-im.models.chats :refer [chats-list chats-updated? chat-by-id]]
             [syng-im.models.contacts :refer [contacts-list
                                              contacts-list-exclude
                                              contacts-list-include]]
-            syng-im.chat.subs))
+            syng-im.chat.subs
+            syng-im.navigation.subs
+            syng-im.components.discovery.subs))
 
 ;; -- Chats list --------------------------------------------------------------
 
@@ -56,7 +57,7 @@
 
 (register-sub :all-new-contacts
   (fn [db _]
-    (let [current-chat-id (reaction (current-chat-id @db))
+    (let [current-chat-id (reaction (:current-chat-id @db))
           chat            (reaction (when-let [chat-id @current-chat-id]
                                       (chat-by-id chat-id)))]
       (reaction
@@ -68,7 +69,7 @@
 
 (register-sub :current-chat-contacts
   (fn [db _]
-    (let [current-chat-id (reaction (current-chat-id @db))
+    (let [current-chat-id (reaction (:current-chat-id @db))
           chat            (reaction (when-let [chat-id @current-chat-id]
                                       (chat-by-id chat-id)))]
       (reaction

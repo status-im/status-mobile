@@ -4,7 +4,6 @@
             [cljs.core.async :as async :refer [chan put! <! >!]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.db :as db]
-            [syng-im.models.chat :refer [current-chat-id]]
             [syng-im.components.styles :refer [color-blue
                                                color-dark-mint]]
             [syng-im.utils.utils :refer [log toast]]))
@@ -80,18 +79,18 @@
   (first (filter #(= command-key (:command %)) commands)))
 
 (defn get-chat-command-content [db]
-  (get-in db (db/chat-command-content-path (current-chat-id db))))
+  (get-in db (db/chat-command-content-path (:current-chat-id db))))
 
 (defn set-chat-command-content [db content]
   (assoc-in db
-            [:chats (get-in db db/current-chat-id-path) :command-input :content]
+            [:chats (:current-chat-id db) :command-input :content]
             content))
 
 (defn get-chat-command [db]
-  (get-in db (db/chat-command-path (current-chat-id db))))
+  (get-in db (db/chat-command-path (:current-chat-id db))))
 
 (defn set-response-chat-command [db msg-id command-key]
-  (let [chat-id (current-chat-id db)]
+  (let [chat-id (:current-chat-id db)]
     (-> db
         (assoc-in [:chats chat-id :command-input :content] nil)
         (assoc-in [:chats chat-id :command-input :command]
@@ -102,29 +101,29 @@
   (set-response-chat-command db nil command-key))
 
 (defn get-chat-command-to-msg-id [db]
-  (get-in db (db/chat-command-to-msg-id-path (current-chat-id db))))
+  (get-in db (db/chat-command-to-msg-id-path (:current-chat-id db))))
 
 (defn stage-command [db command-info]
-  (update-in db (db/chat-staged-commands-path (current-chat-id db))
+  (update-in db (db/chat-staged-commands-path (:current-chat-id db))
              (fn [staged-commands]
                (if staged-commands
                  (conj staged-commands command-info)
                  [command-info]))))
 
 (defn unstage-command [db staged-command]
-  (update-in db (db/chat-staged-commands-path (current-chat-id db))
+  (update-in db (db/chat-staged-commands-path (:current-chat-id db))
              (fn [staged-commands]
                (filterv #(not= % staged-command) staged-commands))))
 
 (defn clear-staged-commands [db]
-  (assoc-in db (db/chat-staged-commands-path (current-chat-id db)) []))
+  (assoc-in db (db/chat-staged-commands-path (:current-chat-id db)) []))
 
 (defn get-chat-command-request [db]
-  (get-in db (db/chat-command-request-path (current-chat-id db)
+  (get-in db (db/chat-command-request-path (:current-chat-id db)
                                            (get-chat-command-to-msg-id db))))
 
 (defn set-chat-command-request [db msg-id handler]
-  (update-in db (db/chat-command-requests-path (current-chat-id db))
+  (update-in db (db/chat-command-requests-path (:current-chat-id db))
              #(assoc % msg-id handler)))
 
 (defn parse-command-msg-content [commands content]

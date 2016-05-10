@@ -1,7 +1,6 @@
 (ns syng-im.handlers.suggestions
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.db :as db]
-            [syng-im.models.chat :refer [current-chat-id]]
             [syng-im.models.commands :refer [commands
                                              suggestions
                                              get-commands
@@ -39,7 +38,8 @@
         (command-handler to-msg-id command-key content)))))
 
 (defn apply-staged-commands [db]
-  (let [staged-commands (get-in db (db/chat-staged-commands-path (current-chat-id db)))]
+  (let [staged-commands (get-in db (db/chat-staged-commands-path
+                                     (:current-chat-id db)))]
     (dorun (map (fn [staged-command]
                   (when-let [handler (:handler staged-command)]
                     (handler)))
