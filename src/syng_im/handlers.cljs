@@ -2,6 +2,8 @@
   (:require
     [re-frame.core :refer [register-handler after dispatch debug enrich]]
     [schema.core :as s :include-macros true]
+    [syng-im.persistence.simple-kv-store :as kv]
+    [syng-im.protocol.state.storage :as storage]
     [syng-im.db :as db :refer [app-db schema]]
     [syng-im.protocol.api :refer [init-protocol]]
     [syng-im.protocol.protocol-handler :refer [make-handler]]
@@ -75,7 +77,9 @@
 ;; -- Common --------------------------------------------------------------
 
 (register-handler :initialize-db
-  (fn [_ _] app-db))
+  (fn [_ _]
+    (assoc app-db
+           :signed-up (storage/get kv/kv-store :signed-up))))
 
 (register-handler :set-loading
   (fn [db [_ value]]
