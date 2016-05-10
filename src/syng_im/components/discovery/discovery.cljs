@@ -13,7 +13,6 @@
     [syng-im.components.toolbar :refer [toolbar]]
     [syng-im.components.discovery.discovery-popular :refer [discovery-popular]]
     [syng-im.components.discovery.discovery-recent :refer [discovery-recent]]
-    [syng-im.resources :as res]
     [syng-im.components.discovery.styles :as st]
     [syng-im.persistence.realm :as realm]))
 
