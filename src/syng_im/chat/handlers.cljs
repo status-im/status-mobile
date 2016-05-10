@@ -1,9 +1,7 @@
 (ns syng-im.chat.handlers
-  (:require [syng-im.db :as db]
-            [re-frame.core :refer [register-handler enrich after debug]]
+  (:require [re-frame.core :refer [register-handler enrich after debug]]
             [syng-im.models.commands :as commands]
             [clojure.string :as str]
-            [syng-im.models.chat :as chat]
             [syng-im.handlers.suggestions :as suggestions]
             [syng-im.protocol.api :as api]
             [syng-im.models.messages :as messages]
@@ -16,7 +14,7 @@
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
-    (assoc-in db db/show-actions-path show-actions)))
+    (assoc db :show-actions show-actions)))
 
 (register-handler :load-more-messages
   (fn [db _]
@@ -41,9 +39,13 @@
   (fn [db [_ content]]
     (commands/set-chat-command-content db content)))
 
+(defn update-input-text
+  [{:keys [current-chat-id] :as db} text]
+  (assoc-in db [:chats current-chat-id :input-text] text))
+
 (register-handler :stage-command
   (fn [{:keys [current-chat-id] :as db} _]
-    (let [db           (chat/set-chat-input-text db nil)
+    (let [db           (update-input-text db nil)
           {:keys [command content]}
           (get-in db [:chats current-chat-id :command-input])
           command-info {:command command
@@ -55,8 +57,9 @@
   (fn [db [_ to-msg-id command-key]]
     (commands/set-response-chat-command db to-msg-id command-key)))
 
-(defn update-text [db [_ text]]
-  (chat/set-chat-input-text db text))
+(defn update-text
+  [db [_ text]]
+  (update-input-text db text))
 
 (defn update-command [db [_ text]]
   (let [{:keys [command]} (suggestions/check-suggestion db text)]
@@ -76,8 +79,7 @@
                :content      text
                :content-type text-content-type
                :outgoing     true}]
-      (messages/save-message chat-id msg)
-      (chat/signal-chat-updated db chat-id))))
+      (messages/save-message chat-id msg))))
 
 (defn console? [s]
   (= "console" s))
@@ -225,7 +227,7 @@
 (register-handler :sign-up-confirm
   (fn [db [_ confirmation-code]]
     (sign-up-service/on-send-code-response confirmation-code)
-    db))
+    (sign-up-service/set-signed-up db true)))
 
 (register-handler :set-signed-up
   (fn [db [_ signed-up]]
@@ -284,4 +286,4 @@
 (register-handler :group-received-msg
   (fn [db [_ {chat-id :group-id :as msg}]]
     (messages/save-message chat-id msg)
-    (chat/signal-chat-updated db chat-id)))
+    db))

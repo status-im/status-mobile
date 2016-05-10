@@ -1,6 +1,5 @@
 (ns syng-im.navigation.handlers
-  (:require [re-frame.core :refer [register-handler dispatch]]
-            [syng-im.models.chat :as chat]))
+  (:require [re-frame.core :refer [register-handler dispatch]]))
 
 (defn push-view [db view-id]
   (-> db
@@ -39,27 +38,30 @@
   (fn [db _]
     (-> db
         (push-view :new-group)
-        chat/clear-new-group)))
+        (assoc-in :new-group #{}))))
 
 (register-handler :show-chat
   (fn [db [_ chat-id nav-type]]
     (let [update-view-id-fn (if (= :replace nav-type) replace-view push-view)]
       (-> db
           (update-view-id-fn :chat)
-          (chat/set-current-chat-id chat-id)))))
+          (assoc :current-chat-id chat-id)))))
 
 (register-handler :show-contacts
   (fn [db _]
     (push-view db :contact-list)))
 
+(defn clear-new-participants [db]
+  (assoc-in db :new-participants #{}))
+
 (register-handler :show-remove-participants
   (fn [db _]
     (-> db
         (push-view :remove-participants)
-        chat/clear-new-participants)))
+        clear-new-participants)))
 
 (register-handler :show-add-participants
   (fn [db _]
     (-> db
         (push-view :add-participants)
-        chat/clear-new-participants)))
+        clear-new-participants)))

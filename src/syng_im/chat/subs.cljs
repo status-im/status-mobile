@@ -18,7 +18,7 @@
 (register-sub
   :show-actions
   (fn [db _]
-    (reaction (get-in @db db/show-actions-path))))
+    (reaction (:show-actions @db))))
 
 (register-sub :chat
   (fn [db [_ k]]
@@ -50,13 +50,13 @@
 
 (register-sub :get-chat-input-text
   (fn [db _]
-    (->> (db/chat-input-text-path (:current-chat-id @db))
+    (->> [:chats (:current-chat-id @db) :input-text]
          (get-in @db)
          (reaction))))
 
 (register-sub :get-chat-staged-commands
   (fn [db _]
-    (->> (db/chat-staged-commands-path (:current-chat-id @db))
+    (->> [:chats (:current-chat-id @db) :staged-commands]
          (get-in @db)
          (reaction))))
 

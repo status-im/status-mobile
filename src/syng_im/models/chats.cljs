@@ -7,8 +7,7 @@
             [syng-im.utils.logging :as log]
             [syng-im.constants :refer [content-type-status]]
             [syng-im.models.messages :refer [save-message]]
-            [syng-im.persistence.realm-queries :refer [include-query]]
-            [syng-im.models.chat :refer [signal-chat-updated]]))
+            [syng-im.persistence.realm-queries :refer [include-query]]))
 
 (defn signal-chats-updated [db]
   (update-in db db/updated-chats-signal-path (fn [current]
@@ -96,8 +95,7 @@
                           :is-active true
                           :name      group-name
                           :contacts  contacts} true))))
-  (-> (signal-chats-updated db)
-      (signal-chat-updated group-id)))
+  (signal-chats-updated db))
 
 (defn normalize-contacts
   [chats]
