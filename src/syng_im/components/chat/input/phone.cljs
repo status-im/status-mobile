@@ -6,5 +6,4 @@
 
 (defn phone-input-view [command]
   [simple-command-input-view command {:keyboardType :phone-pad}
-   :validator (fn [message]
-                (valid-mobile-number? message))])
+   :validator valid-mobile-number?])
