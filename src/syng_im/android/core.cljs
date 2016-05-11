@@ -15,6 +15,7 @@
             [syng-im.components.chats.new-group :refer [new-group]]
             [syng-im.components.chat.new-participants :refer [new-participants]]
             [syng-im.components.chat.remove-participants :refer [remove-participants]]
+            [syng-im.components.profile :refer [profile]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.utils :refer [toast]]
             [syng-im.navigation :as nav]
@@ -29,7 +30,7 @@
                        ;; this listener and handle application's closing
                        ;; in handlers
                        (let [stack (subscribe [:navigation-stack])]
-                         (when (< 1 (count stack))
+                         (when (< 1 (count @stack))
                            (dispatch [:navigate-back])
                            true)))]
     (add-event-listener "hardwareBackPress" new-listener)))
@@ -46,7 +47,8 @@
         :chat-list [chats-list]
         :new-group [new-group]
         :contact-list [contact-list]
-        :chat [chat]))))
+        :chat [chat]
+        :profile [profile]))))
 
 (defn init []
   (dispatch-sync [:initialize-db])
