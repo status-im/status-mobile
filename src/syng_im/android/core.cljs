@@ -11,13 +11,11 @@
             [syng-im.components.discovery.discovery :refer [discovery]]
             [syng-im.components.discovery.discovery-tag :refer [discovery-tag]]
             [syng-im.chat.screen :refer [chat]]
-            [syng-im.components.chats.chats-list :refer [chats-list]]
-            [syng-im.components.chats.new-group :refer [new-group]]
+            [syng-im.chats-list.screen :refer [chats-list]]
+            [syng-im.new-group.screen :refer [new-group]]
             [syng-im.participants.views.create :refer [new-participants]]
             [syng-im.participants.views.remove :refer [remove-participants]]
-            [syng-im.utils.logging :as log]
             [syng-im.utils.utils :refer [toast]]
-            [syng-im.navigation :as nav]
             [syng-im.utils.encryption]))
 
 (def back-button-handler (cljs/atom {:nav     nil

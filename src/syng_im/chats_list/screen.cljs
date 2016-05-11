@@ -1,4 +1,4 @@
-(ns syng-im.components.chats.chats-list
+(ns syng-im.chats-list.screen
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [android?
                                               view
@@ -9,10 +9,9 @@
             [syng-im.components.realm :refer [list-view]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
-            [syng-im.resources :as res]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [reagent.core :as r]
-            [syng-im.components.chats.chat-list-item :refer [chat-list-item]]
+            [syng-im.chats-list.views.chat-list-item :refer [chat-list-item]]
             [syng-im.components.action-button :refer [action-button
                                                       action-button-item]]
             [syng-im.components.styles :refer [font
@@ -26,43 +25,42 @@
             [syng-im.components.icons.ionicons :refer [icon]]))
 
 (defn chats-list-toolbar []
-  [toolbar {:nav-action {:image {:source {:uri "icon_hamburger"}
-                                 :style  {:width      16
-                                          :height     12}}
+  [toolbar {:nav-action {:image   {:source {:uri "icon_hamburger"}
+                                   :style  {:width  16
+                                            :height 12}}
                          :handler (fn [])}
             :title      "Chats"
-            :action     {:image {:source {:uri "icon_search"}
-                                 :style  {:width  17
-                                          :height 17}}
+            :action     {:image   {:source {:uri "icon_search"}
+                                   :style  {:width  17
+                                            :height 17}}
                          :handler (fn [])}}])
 
-(defn chats-list [{:keys [navigator]}]
+(defn chats-list []
   (let [chats (subscribe [:get-chats])]
     (fn []
       (let [chats      @chats
-            _          (log/debug "chats=" chats)
             datasource (to-realm-datasource chats)]
-        [view {:style {:flex            1
-                       :backgroundColor "white"}}
+        [view {:flex            1
+               :backgroundColor :white}
          [chats-list-toolbar]
          [list-view {:dataSource datasource
-                     :enableEmptySections true
-                     :renderRow  (fn [row section-id row-id]
-                                   (r/as-element [chat-list-item row navigator]))
-                     :style      {:backgroundColor "white"}}]
+                     :renderRow  (fn [row _ _]
+                                   (r/as-element [chat-list-item row]))
+                     :style      {:backgroundColor :white}}]
          [action-button {:buttonColor color-blue}
-          [action-button-item {:title       "New Chat"
-                               :buttonColor "#9b59b6"
-                               :onPress     #(dispatch [:navigate-to
-                                                        :contact-list])}
-           [icon {:name  "android-create"
+          [action-button-item
+           {:title       "New Chat"
+            :buttonColor :#9b59b6
+            :onPress     #(dispatch [:navigate-to :contact-list])}
+           [icon {:name  :android-create
                   :style {:fontSize 20
                           :height   22
-                          :color    "white"}}]]
-          [action-button-item {:title       "New Group Chat"
-                               :buttonColor "#1abc9c"
-                               :onPress     #(dispatch [:show-group-new])}
-           [icon {:name  "person-stalker"
+                          :color    :white}}]]
+          [action-button-item
+           {:title       "New Group Chat"
+            :buttonColor :#1abc9c
+            :onPress     #(dispatch [:show-group-new])}
+           [icon {:name  :person-stalker
                   :style {:fontSize 20
                           :height   22
-                          :color    "white"}}]]]]))))
+                          :color    :white}}]]]]))))

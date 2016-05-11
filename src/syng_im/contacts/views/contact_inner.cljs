@@ -43,8 +43,7 @@
             :borderRadius    50
             :backgroundColor color-white}]]))
 
-(defn contact-inner-view [{:keys [name photo-path delivery-status datetime new-messages-count
-                                  online whisper-identity]}]
+(defn contact-inner-view [{:keys [name photo-path online]}]
   [view {:style {:flexDirection "row"
                  :height        56}}
    [view {:style {:marginTop 8

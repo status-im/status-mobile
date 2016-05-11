@@ -30,7 +30,6 @@
       (let [contacts-ds (to-realm-datasource @contacts)]
         [view st/participants-container
          [remove-participants-toolbar navigator]
-         [list-view {:dataSource          contacts-ds
-                     :enableEmptySections true
-                     :renderRow           remove-participants-row
-                     :style               st/participants-list}]]))))
+         [list-view {:dataSource contacts-ds
+                     :renderRow  remove-participants-row
+                     :style      st/participants-list}]]))))

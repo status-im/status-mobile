@@ -29,7 +29,6 @@
       (let [contacts-ds (to-realm-datasource @contacts)]
         [view st/participants-container
          [new-participants-toolbar navigator]
-         [list-view {:dataSource          contacts-ds
-                     :enableEmptySections true
-                     :renderRow           new-participants-row
-                     :style               st/participants-list}]]))))
+         [list-view {:dataSource contacts-ds
+                     :renderRow  new-participants-row
+                     :style      st/participants-list}]]))))
