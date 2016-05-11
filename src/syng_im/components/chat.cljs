@@ -7,7 +7,6 @@
                                               icon
                                               navigator
                                               touchable-highlight
-                                              toolbar-android
                                               list-view
                                               list-item
                                               android?]]
@@ -18,6 +17,7 @@
             [syng-im.utils.listview :refer [to-datasource
                                             to-datasource2]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
+            [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.components.chat.chat-message :refer [chat-message]]
             [syng-im.components.chat.chat-message-new :refer [chat-message-new]]))
 
@@ -139,40 +139,48 @@
   [overlay {:on-click-outside #(dispatch [:set-show-actions false])}
    [actions-list-view]])
 
-(defn toolbar []
+(defn toolbar-content []
   (let [{:keys [group-chat name contacts]}
         (subscribe [:chat-properties [:group-chat :name :contacts]])
         show-actions (subscribe [:show-actions])]
     (fn []
-      [view st/toolbar-view
-       (when (not @show-actions)
-         [touchable-highlight {:on-press #(dispatch [:navigate-back])}
-          [view st/icon-view
-           [icon :back st/back-icon]]])
-       [view (st/chat-name-view @show-actions)
-        [text {:style st/chat-name-text}
-         (or @name "Chat name")]
-        (if @group-chat
-          [view {:flexDirection :row}
-           [icon :group st/group-icon]
-           [text {:style st/members}
-            (let [cnt (count @contacts)]
-              (str cnt
-                   (if (< 1 cnt)
-                     " members"
-                     " member")
-                   ", " cnt " active"))]]
-          [text {:style st/last-activity} "Active a minute ago"])]
-       (if @show-actions
-         [touchable-highlight
-          {:on-press #(dispatch [:set-show-actions false])}
-          [view st/icon-view
-           [icon :up st/up-icon]]]
-         [touchable-highlight
-          {:on-press #(dispatch [:set-show-actions true])}
-          [view st/icon-view
-           [chat-photo {}]
-           [contact-online {:online true}]]])])))
+      [view (st/chat-name-view @show-actions)
+       [text {:style st/chat-name-text}
+        (or @name "Chat name")]
+       (if @group-chat
+         [view {:flexDirection :row}
+          [icon :group st/group-icon]
+          [text {:style st/members}
+           (let [cnt (count @contacts)]
+             (str cnt
+                  (if (< 1 cnt)
+                    " members"
+                    " member")
+                  ", " cnt " active"))]]
+         [text {:style st/last-activity} "Active a minute ago"])])))
+
+(defn toolbar-action []
+  (let [show-actions (subscribe [:show-actions])]
+    (fn []
+      (if @show-actions
+        [touchable-highlight
+         {:on-press #(dispatch [:set-show-actions false])}
+         [view st/icon-view
+          [icon :up st/up-icon]]]
+        [touchable-highlight
+         {:on-press #(dispatch [:set-show-actions true])}
+         [view st/icon-view
+          [chat-photo {}]
+          [contact-online {:online true}]]]))))
+
+(defn chat-toolbar []
+  (let [{:keys [group-chat name contacts]}
+        (subscribe [:chat-properties [:group-chat :name :contacts]])
+        show-actions (subscribe [:show-actions])]
+    (fn []
+      [toolbar {:hide-nav?      @show-actions
+                :custom-content [toolbar-content]
+                :custom-action  [toolbar-action]}])))
 
 (defn messages-view [group-chat]
   (let [messages (subscribe [:chat :messages])
@@ -191,7 +199,7 @@
         show-actions-atom (subscribe [:show-actions])]
     (fn []
       [view st/chat-view
-       [toolbar]
+       [chat-toolbar]
        [messages-view @group-chat]
        (when @group-chat [typing-all])
        (when is-active [chat-message-new])

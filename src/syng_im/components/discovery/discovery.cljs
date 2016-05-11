@@ -26,17 +26,18 @@
       [])))
 
 (defn title-content [showSearch]
-  (if showSearch
-    [text-input {:underlineColorAndroid "transparent"
-                 :style                 st/discovery-search-input
-                 :autoFocus             true
-                 :placeholder           "Type your search tags here"
-                 :onSubmitEditing       (fn [e]
-                                          (let [search (aget e "nativeEvent" "text")
-                                                hashtags (get-hashtags search)]
-                                            (dispatch [:broadcast-status search hashtags])))}]
-    [view
-     [text {:style st/discovery-title} "Discover"]]))
+  [view st/discovery-toolbar-content
+   (if showSearch
+     [text-input {:underlineColorAndroid "transparent"
+                  :style                 st/discovery-search-input
+                  :autoFocus             true
+                  :placeholder           "Type your search tags here"
+                  :onSubmitEditing       (fn [e]
+                                           (let [search (aget e "nativeEvent" "text")
+                                                 hashtags (get-hashtags search)]
+                                             (dispatch [:broadcast-status search hashtags])))}]
+     [view
+      [text {:style st/discovery-title} "Discover"]])])
 
 (defn create-fake-discovery []
   (let [number (rand-int 999)]
@@ -62,7 +63,7 @@
                                                :height     12}}
                               :handler create-fake-discovery}
                  :title     "Add Participants"
-                 :content   (title-content @showSearch)
+                 :custom-content [title-content @showSearch]
                  :action    {:image {:source {:uri "icon_search"}
                                      :style  {:width  17
                                               :height 17}}
