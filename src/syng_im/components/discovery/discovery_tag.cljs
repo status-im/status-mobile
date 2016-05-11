@@ -12,7 +12,6 @@
     [syng-im.components.toolbar :refer [toolbar]]
     [reagent.core :as r]
     [syng-im.components.discovery.discovery-popular-list-item :refer [discovery-popular-list-item]]
-    [syng-im.resources :as res]
     [syng-im.components.discovery.styles :as st]))
 
 (defn render-row [row section-id row-id]
