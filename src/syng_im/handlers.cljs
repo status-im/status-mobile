@@ -2,6 +2,8 @@
   (:require
     [re-frame.core :refer [register-handler after dispatch debug enrich]]
     [schema.core :as s :include-macros true]
+    [syng-im.persistence.simple-kv-store :as kv]
+    [syng-im.protocol.state.storage :as storage]
     [syng-im.db :as db :refer [app-db schema]]
     [syng-im.protocol.api :refer [init-protocol]]
     [syng-im.protocol.protocol-handler :refer [make-handler]]
@@ -27,7 +29,8 @@
                                           get-command-handler
                                           load-commands
                                           apply-staged-commands
-                                          check-suggestion]]
+                                          check-suggestion
+                                          switch-command-suggestions]]
     [syng-im.handlers.sign-up :as sign-up-service]
     [syng-im.components.discovery.handlers :as discovery]
     [syng-im.models.chats :refer [chat-exists?
@@ -76,7 +79,9 @@
 ;; -- Common --------------------------------------------------------------
 
 (register-handler :initialize-db
-  (fn [_ _] app-db))
+  (fn [_ _]
+    (assoc app-db
+           :signed-up (storage/get kv/kv-store :signed-up))))
 
 (register-handler :set-loading
   (fn [db [_ value]]
@@ -445,13 +450,23 @@
   (fn [db [_ value]]
     (contacts/load-syng-contacts db)))
 
+(register-handler :show-profile
+  (fn [db [action identity]]
+    (log/debug action)
+    (let [db (contacts/set-contact-identity db identity)]
+      (dispatch [:navigate-to :profile])
+      db)))
+
 ;; -- Chats --------------------------------------------------------------
 
 (register-handler :show-chat
   (fn [db [action chat-id navigator nav-type]]
     (log/debug action "chat-id" chat-id)
-    (let [db (set-current-chat-id db chat-id)]
-      (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
+    (let [db (-> db
+                 (create-chat chat-id [chat-id] false)
+                 (set-current-chat-id chat-id))]
+      ;; (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
+      (dispatch [:navigate-to :chat])
       db)))
 
 (register-handler :init-console-chat
@@ -473,6 +488,10 @@
 
 (register-handler :set-chat-input-text
   ((enrich update-command) update-text))
+
+(register-handler :switch-command-suggestions
+  (fn [db [_]]
+    (switch-command-suggestions db)))
 
 (register-handler :set-chat-command
   (fn [db [_ command-key]]
@@ -552,9 +571,9 @@
       db)))
 
 (register-handler :show-group-new
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
-    (nav-push navigator {:view-id :new-group})
+    (dispatch [:navigate-to :new-group])
     (clear-new-group db)))
 
 (register-handler :select-for-new-group

@@ -4,6 +4,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text
+                                              icon
                                               touchable-highlight
                                               list-view
                                               list-item]]
@@ -16,12 +17,15 @@
 (defn suggestion-list-item [suggestion]
   [touchable-highlight
    {:onPress #(set-command-input (keyword (:command suggestion)))}
-   [view st/suggestion-item-container
-    [view (st/suggestion-background suggestion)
-     [text {:style st/suggestion-text}
-      (:text suggestion)]]
-    [text {:style st/suggestion-description}
-     (:description suggestion)]]])
+   [view st/suggestion-container
+    [view st/suggestion-sub-container
+     [view (st/suggestion-background suggestion)
+      [text {:style st/suggestion-text}
+       (:text suggestion)]]
+     [text {:style st/value-text}
+      (:text suggestion)]
+     [text {:style st/description-text}
+      (:description suggestion)]]]])
 
 (defn render-row [row _ _]
   (list-item [suggestion-list-item (js->clj row :keywordize-keys true)]))
@@ -31,8 +35,14 @@
     (fn []
       (let [suggestions @suggestions-atom]
         (when (seq suggestions)
-          [view (st/suggestions-container suggestions)
-           [list-view {:dataSource (to-datasource suggestions)
-                       :enableEmptySections true
-                       :renderRow  render-row
-                       :style      {}}]])))))
+          [view nil
+           [touchable-highlight {:style   st/drag-down-touchable
+                                 :onPress (fn []
+                                            ;; TODO hide suggestions?
+                                            )}
+            [view nil
+             [icon :drag_down st/drag-down-icon]]]
+           [view (st/suggestions-container (count suggestions))
+            [list-view {:dataSource (to-datasource suggestions)
+                        :enableEmptySections true
+                        :renderRow  render-row}]]])))))
