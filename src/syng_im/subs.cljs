@@ -15,6 +15,10 @@
   (fn [db _]
     (reaction (:chats @db))))
 
+(register-sub :get
+  (fn [db [_ k]]
+    (reaction (k @db))))
+
 ;; -- User data --------------------------------------------------------------
 
 ;; (register-sub

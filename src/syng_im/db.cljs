@@ -19,15 +19,13 @@
              :show-actions         false
              :new-group            #{}
              :new-participants     #{}
-             :signed-up            false
+             :signed-up            true
              :view-id              default-view
              :navigation-stack     (list default-view)
              :name                 "My Name"
              :current-tag          nil})
 
 (def protocol-initialized-path [:protocol-initialized])
-(def identity-password-path [:identity-password])
-(def updated-chats-signal-path [:chats-updated-signal])
 (defn chat-input-text-path [chat-id]
   [:chats chat-id :input-text])
 (defn chat-staged-commands-path [chat-id]

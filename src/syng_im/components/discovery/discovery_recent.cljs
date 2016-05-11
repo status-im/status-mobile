@@ -21,15 +21,13 @@
 
 (defn render-separator [sectionID, rowID, adjacentRowHighlighted]
   (let [elem (r/as-element [view {:style st/row-separator
-                                  :key rowID}])]
+                                  :key   rowID}])]
     elem))
 
 (defn discovery-recent []
   (let [discoveries (subscribe [:get-discoveries])
-        datasource (to-realm-datasource @discoveries)]
-    [list-view {:dataSource datasource
-                :enableEmptySections true
-                :renderRow  render-row
+        datasource  (to-realm-datasource @discoveries)]
+    [list-view {:dataSource      datasource
+                :renderRow       render-row
                 :renderSeparator render-separator
-                :style st/recent-list}]
-  ))
+                :style           st/recent-list}]))

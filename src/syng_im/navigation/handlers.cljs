@@ -1,5 +1,5 @@
 (ns syng-im.navigation.handlers
-  (:require [re-frame.core :refer [register-handler dispatch]]))
+  (:require [re-frame.core :refer [register-handler dispatch debug]]))
 
 (defn push-view [db view-id]
   (-> db
@@ -35,10 +35,11 @@
             (assoc :navigation-stack navigation-stack'))))))
 
 (register-handler :show-group-new
-  (fn [db _]
-    (-> db
-        (push-view :new-group)
-        (assoc-in :new-group #{}))))
+  (debug
+    (fn [db _]
+      (-> db
+          (push-view :new-group)
+          (assoc :new-group #{})))))
 
 (register-handler :show-chat
   (fn [db [_ chat-id nav-type]]

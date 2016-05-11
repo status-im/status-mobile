@@ -13,14 +13,14 @@
   (assoc-in db db/protocol-initialized-path initialized?))
 
 (defn update-identity [db identity]
-  (let [password  (get-in db db/identity-password-path)
+  (let [password  (:identity-password db)
         encrypted (password-encrypt password (to-edn-string identity))]
     (s/put kv/kv-store :identity encrypted)
     (assoc db :user-identity identity)))
 
 (defn stored-identity [db]
   (let [encrypted (s/get kv/kv-store :identity)
-        password  (get-in db db/identity-password-path)]
+        password  (:identity-password db)]
     (when encrypted
       (read-string (password-decrypt password encrypted)))))
 

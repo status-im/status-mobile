@@ -1,7 +1,7 @@
 (ns syng-im.participants.views.contact
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view]]
-            [syng-im.components.contact-list.contact-inner :refer [contact-inner-view]]
+            [syng-im.contacts.views.contact-inner :refer [contact-inner-view]]
             [syng-im.components.item-checkbox :refer [item-checkbox]]
             [reagent.core :as r]
             [syng-im.participants.styles :as st]))

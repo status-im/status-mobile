@@ -57,6 +57,11 @@
 
 ;; -- Common --------------------------------------------------------------
 
+(register-handler :set
+  (debug
+    (fn [db [_ k v]]
+      (assoc db k v))))
+
 (register-handler :initialize-db
   (fn [_ _] app-db))
 
