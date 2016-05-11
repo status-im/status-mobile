@@ -30,7 +30,7 @@
                        ;; this listener and handle application's closing
                        ;; in handlers
                        (let [stack (subscribe [:navigation-stack])]
-                         (when (< 1 (count stack))
+                         (when (< 1 (count @stack))
                            (dispatch [:navigate-back])
                            true)))]
     (add-event-listener "hardwareBackPress" new-listener)))

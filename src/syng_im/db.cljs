@@ -4,7 +4,7 @@
 ;; schema of app-db
 (def schema {:greeting s/Str})
 
-(def default-view :discovery)
+(def default-view :chat-list)
 
 ;; initial state of app-db
 (def app-db {:greeting             "Hello Clojure in iOS and Android!"
