@@ -68,18 +68,32 @@
    :backgroundColor color-white
    :flexDirection   :column})
 
-(def profile-back-button-touchable
+(def back-btn-touchable
   {:position :absolute})
 
-(def profile-back-button-container
+(def back-btn-container
   {:width  56
    :height 56})
 
-(def profile-back-button-icon
+(def back-btn-icon
   {:marginTop  21
    :marginLeft 23
    :width      8
    :height     14})
+
+(def actions-btn-touchable
+  {:position :absolute
+   :right    0})
+
+(def actions-btn-container
+  {:width          56
+   :height         56
+   :alignItems     :center
+   :justifyContent :center})
+
+(def actions-btn-icon
+  {:width  4
+   :height 16})
 
 (def status-block
   {:alignSelf  :center

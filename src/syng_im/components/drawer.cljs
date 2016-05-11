@@ -36,42 +36,44 @@
     name]])
 
 (defn drawer-menu [navigator]
-  [view st/drawer-menu
-   [view st/user-photo-container
-    [user-photo {}]]
-   [view st/name-container
-    [text {:style st/name-text}
-     "Status"]]
-   [view st/menu-items-container
-    [menu-item {:name    "Profile"
-                :handler (fn []
-                           (dispatch [:show-profile navigator]))}]
-    [menu-item {:name    "Settings"
-                :handler (fn []
-                           ;; TODO not implemented
-                           )}]
-    [menu-item {:name    "Discovery"
-                :handler (fn []
-                           (dispatch [:navigate-to :discovery]))}]
-    [menu-item {:name    "Contacts"
-                :handler (fn []
-                           (dispatch [:show-contacts navigator]))}]
-    [menu-item {:name    "Invite friends"
-                :handler (fn []
-                           ;; TODO not implemented
-                           )}]
-    [menu-item {:name    "FAQ"
-                :handler (fn [])}]]
-   [view st/switch-users-container
-    [touchable-opacity {:onPress (fn []
-                                   (close-drawer)
-                                   ;; TODO not implemented
-                                   )}
-     [text {:style st/switch-users-text}
-      "Switch users"]]]])
+  (let [username (subscribe [:username])]
+    (fn [navigator]
+      [view st/drawer-menu
+      [view st/user-photo-container
+       [user-photo {}]]
+      [view st/name-container
+       [text {:style st/name-text}
+        @username]]
+      [view st/menu-items-container
+       [menu-item {:name    "Profile"
+                   :handler (fn []
+                              (dispatch [:show-my-profile]))}]
+       [menu-item {:name    "Settings"
+                   :handler (fn []
+                              ;; TODO not implemented
+                              )}]
+       [menu-item {:name    "Discovery"
+                   :handler (fn []
+                              (dispatch [:navigate-to :discovery]))}]
+       [menu-item {:name    "Contacts"
+                   :handler (fn []
+                              (dispatch [:show-contacts navigator]))}]
+       [menu-item {:name    "Invite friends"
+                   :handler (fn []
+                              ;; TODO not implemented
+                              )}]
+       [menu-item {:name    "FAQ"
+                   :handler (fn [])}]]
+      [view st/switch-users-container
+       [touchable-opacity {:onPress (fn []
+                                      (close-drawer)
+                                      ;; TODO not implemented
+                                      )}
+        [text {:style st/switch-users-text}
+         "Switch users"]]]])))
 
 (defn drawer-view [{:keys [navigator]} items]
-  [drawer-layout-android {:drawerWidth            300
+  [drawer-layout-android {:drawerWidth            260
                           :drawerPosition         js/React.DrawerLayoutAndroid.positions.Left
                           :render-navigation-view #(r/as-element [drawer-menu navigator])
                           :ref  (fn [drawer]
