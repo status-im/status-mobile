@@ -50,6 +50,9 @@
                 :handler (fn []
                            ;; TODO not implemented
                            )}]
+    [menu-item {:name    "Discovery"
+                :handler (fn []
+                           (dispatch [:navigate-to :discovery]))}]
     [menu-item {:name    "Contacts"
                 :handler (fn []
                            (dispatch [:show-contacts navigator]))}]
