@@ -41,9 +41,8 @@
   (let [contact (subscribe [:contact])]
     (fn []
       [scroll-view {:style st/profile}
-       [touchable-highlight {:style          st/profile-back-button-touchable
-                             :on-press       #(dispatch [:navigate-back])
-                             :underlay-color :transparent}
+       [touchable-highlight {:style    st/profile-back-button-touchable
+                             :on-press #(dispatch [:navigate-back])}
         [view st/profile-back-button-container
          [icon :back st/profile-back-button-icon]]]
        [view st/status-block
@@ -55,15 +54,13 @@
         [text {:style st/status}
          "!not implemented"]
         [view st/btns-container
-         [touchable-highlight {:onPress #(message-user (:whisper-identity @contact))
-                               :underlay-color :transparent}
+         [touchable-highlight {:onPress #(message-user (:whisper-identity @contact))}
           [view st/message-btn
            [text {:style st/message-btn-text}
             "Message"]]]
          [touchable-highlight {:onPress (fn []
                                           ;; TODO not implemented
-                                          )
-                               :underlay-color :transparent}
+                                          )}
           [view st/more-btn
            [icon :more_vertical_blue st/more-btn-image]]]]]
        [view st/profile-properties-container
