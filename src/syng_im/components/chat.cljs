@@ -81,19 +81,38 @@
     [view nil]]
    items])
 
-(defn action-view [{:keys     [icon-style handler title subtitle]
+(defn action-view [{:keys     [icon-style custom-icon handler title subtitle]
                     icon-name :icon}]
   [touchable-highlight {:on-press (fn []
                                     (dispatch [:set-show-actions false])
-                                    (handler))}
+                                    (when handler
+                                      (handler)))}
    [view st/action-icon-row
     [view st/action-icon-view
-     [icon icon-name icon-style]]
+     (or custom-icon
+         [icon icon-name icon-style])]
     [view st/action-view
      [text {:style st/action-title} title]
      (when-let [subtitle subtitle]
        [text {:style st/action-subtitle}
         subtitle])]]])
+
+(defn menu-item-contact-photo [{:keys [photo-path]}]
+  [image {:source (if (s/blank? photo-path)
+                    res/user-no-photo
+                    {:uri photo-path})
+          :style  st/menu-item-profile-contact-photo}])
+
+(defn menu-item-contact-online [{:keys [online]}]
+  (when online
+    [view st/menu-item-profile-online-view
+     [view st/menu-item-profile-online-dot-left]
+     [view st/menu-item-profile-online-dot-right]]))
+
+(defn menu-item-icon-profile []
+  [view st/icon-view
+   [menu-item-contact-photo {}]
+   [menu-item-contact-online {:online true}]])
 
 (defn actions-list-view []
   (let [{:keys [group-chat chat-id]}
@@ -125,10 +144,31 @@
                                         :height 13}
                            :handler    (fn [])}]
                          [{:title      "Profile"
+                           :custom-icon [menu-item-icon-profile]
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
-                           :handler    #(dispatch [:show-profile @chat-id])}])]
+                           :handler    #(dispatch [:show-profile @chat-id])}
+                          {:title      "Search chat"
+                           :subtitle   "!not implemented"
+                           :icon       :search_gray_copy
+                           :icon-style {:width  17
+                                        :height 17}
+                           :handler    nil #_#(dispatch
+                                               [:show-remove-participants navigator])}
+                          {:title      "Notifications and sounds"
+                           :subtitle   "!not implemented"
+                           :icon       :muted
+                           :icon-style {:width  18
+                                        :height 21}
+                           :handler    nil #_#(dispatch [:leave-group-chat
+                                                         navigator])}
+                          {:title      "Settings"
+                           :subtitle   "!not implemented"
+                           :icon       :settings
+                           :icon-style {:width  20
+                                        :height 13}
+                           :handler    (fn [])}])]
       [view st/actions-wrapper
        [view st/actions-separator]
        [view st/actions-view
