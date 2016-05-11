@@ -39,7 +39,8 @@
     [syng-im.utils.random :as random]
     syng-im.chat.handlers
     syng-im.navigation.handlers
-    syng-im.components.discovery.handlers))
+    syng-im.components.discovery.handlers
+    syng-im.contacts.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;

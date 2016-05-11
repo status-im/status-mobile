@@ -7,13 +7,10 @@
                                              contacts-list-include]]
             syng-im.chat.subs
             syng-im.navigation.subs
-            syng-im.components.discovery.subs))
+            syng-im.components.discovery.subs
+            syng-im.contacts.subs))
 
 ;; -- Chats list --------------------------------------------------------------
-
-(register-sub :get-chats
-  (fn [db _]
-    (reaction (:chats @db))))
 
 (register-sub :get
   (fn [db [_ k]]

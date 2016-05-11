@@ -1,65 +1,30 @@
 (ns syng-im.contacts.views.contact-inner
   (:require [clojure.string :as s]
             [syng-im.components.react :refer [view image text]]
-            [syng-im.components.styles :refer [font
-                                               title-font
-                                               text1-color
-                                               color-white
-                                               online-color]]
-            [syng-im.resources :as res]))
+            [syng-im.resources :as res]
+            [syng-im.contacts.styles :as st]))
 
 (defn contact-photo [{:keys [photo-path]}]
-  [view {:borderRadius 50}
+  [view st/contact-photo-container
    [image {:source (if (s/blank? photo-path)
                      res/user-no-photo
                      {:uri photo-path})
-           :style  {:borderRadius 50
-                    :width        40
-                    :height       40}}]])
+           :style  st/photo-image}]])
 
 (defn contact-online [{:keys [online]}]
   (when online
-    [view {:position        "absolute"
-           :top             24
-           :left            24
-           :width           20
-           :height          20
-           :borderRadius    50
-           :backgroundColor online-color
-           :borderWidth     2
-           :borderColor     color-white}
-     [view {:position        "absolute"
-            :top             6
-            :left            3
-            :width           4
-            :height          4
-            :borderRadius    50
-            :backgroundColor color-white}]
-     [view {:position        "absolute"
-            :top             6
-            :left            9
-            :width           4
-            :height          4
-            :borderRadius    50
-            :backgroundColor color-white}]]))
+    [view st/online-container
+     [view st/online-dot-left]
+     [view st/online-dot-right]]))
 
 (defn contact-inner-view [{:keys [name photo-path online]}]
-  [view {:style {:flexDirection "row"
-                 :height        56}}
-   [view {:style {:marginTop 8
-                  :marginLeft 16
-                  :width     44
-                  :height    44}}
-;;; photo
+  [view st/contact-container
+   [view st/photo-container
     [contact-photo {:photo-path photo-path}]
-;;; online
     [contact-online {:online online}]]
-;;; name
-   [view {:style {:justifyContent "center"}}
-    [text {:style {:marginLeft 16
-                   :fontSize   16
-                   :fontFamily font
-                   :color      text1-color}}
+   [view st/name-container
+    [text {:style st/name-text}
      (if (pos? (count name))
        name
+       ;; todo is this correct behaviour?
        "Noname")]]])
