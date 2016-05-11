@@ -120,3 +120,28 @@
    :fontSize   10
    :color      color-blue
    :textAlign  :center})
+
+(def hamburger-icon
+  {:width  16
+   :height 12})
+
+(def search-icon
+  {:width  17
+   :height 17})
+
+(def chats-container
+  {:flex            1
+   :backgroundColor :white})
+
+(def list-container
+  {:backgroundColor :white})
+
+(def create-icon
+  {:fontSize 20
+   :height   22
+   :color    :white})
+
+(def person-stalker-icon
+  {:fontSize 20
+   :height   22
+   :color    :white})
