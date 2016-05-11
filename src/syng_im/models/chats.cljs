@@ -123,13 +123,13 @@
             chat  (r/single (r/get-by-field :chats :chat-id chat-id))]
         (-> (aget chat "contacts")
             (r/filtered query)
-            (.forEach (fn [object index collection]
+            (.forEach (fn [object _ _]
                         (aset object "is-in-chat" false))))))))
 
 (defn active-group-chats []
   (let [results (r/filtered (r/get-all :chats)
                             "group-chat = true && is-active = true")]
-    (js->clj (.map results (fn [object index collection]
+    (js->clj (.map results (fn [object _ _]
                              (aget object "chat-id"))))))
 
 
