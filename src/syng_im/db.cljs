@@ -7,8 +7,7 @@
 (def default-view :chat-list)
 
 ;; initial state of app-db
-(def app-db {:greeting             "Hello Clojure in iOS and Android!"
-             :identity-password    "replace-me-with-user-entered-password"
+(def app-db {:identity-password    "replace-me-with-user-entered-password"
              :identity             "me"
              :contacts             []
              :current-chat-id      "console"
@@ -22,7 +21,11 @@
              :signed-up            false
              :view-id              default-view
              :navigation-stack     (list default-view)
-             :name                 "My Name"
+             ;; TODO fix hardcoded values
+             :username             "My Name"
+             :phone-number         "3147984309"
+             :email                "myemail@gmail.com"
+             :status               "Hi, this is my status"
              :current-tag          nil})
 
 (def protocol-initialized-path [:protocol-initialized])
