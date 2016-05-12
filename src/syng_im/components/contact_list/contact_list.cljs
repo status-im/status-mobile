@@ -7,6 +7,7 @@
                                               navigator list-view
                                               list-item]]
             [syng-im.components.contact-list.contact :refer [contact-view]]
+            [syng-im.components.main-tabs :refer [main-tabs]]
             [syng-im.components.styles :refer [font
                                                title-font
                                                color-white
@@ -49,4 +50,5 @@
            [list-view {:dataSource contacts-ds
                        :enableEmptySections true
                        :renderRow  (partial render-row navigator)
-                       :style      {:backgroundColor "white"}}])]))))
+                       :style      {:backgroundColor "white"}}])
+         [main-tabs]]))))

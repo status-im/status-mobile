@@ -7,6 +7,7 @@
                                               touchable-highlight
                                               navigator]]
             [syng-im.components.realm :refer [list-view]]
+            [syng-im.components.main-tabs :refer [main-tabs]]
             [syng-im.utils.logging :as log]
             [syng-im.navigation :refer [nav-pop]]
             [syng-im.resources :as res]
@@ -28,13 +29,13 @@
 
 (defn chats-list-toolbar []
   [toolbar {:nav-action {:image   {:source {:uri "icon_hamburger"}
-                                   :style  {:width      16
-                                            :height     12}}
+                                   :style  {:width  16
+                                            :height 12}}
                          :handler open-drawer}
             :title      "Chats"
-            :action     {:image {:source {:uri "icon_search"}
-                                 :style  {:width  17
-                                          :height 17}}
+            :action     {:image   {:source {:uri "icon_search"}
+                                   :style  {:width  17
+                                            :height 17}}
                          :handler (fn [])}}])
 
 (defn chats-list [{:keys [navigator]}]
@@ -48,11 +49,13 @@
                         :backgroundColor "white"}}
           [chats-list-toolbar]
           [list-view {:dataSource datasource
-                     :enableEmptySections true
+                      :enableEmptySections true
                       :renderRow  (fn [row section-id row-id]
                                     (r/as-element [chat-list-item row navigator]))
                       :style      {:backgroundColor "white"}}]
-          [action-button {:buttonColor color-blue}
+          [action-button {:buttonColor color-blue
+                          :offsetY     72
+                          :offsetX     16}
            [action-button-item {:title       "New Chat"
                                 :buttonColor "#9b59b6"
                                 :onPress     #(dispatch [:navigate-to
@@ -68,4 +71,5 @@
             [icon {:name  "person-stalker"
                    :style {:fontSize 20
                            :height   22
-                           :color    "white"}}]]]]]))))
+                           :color    "white"}}]]]
+          [main-tabs]]]))))

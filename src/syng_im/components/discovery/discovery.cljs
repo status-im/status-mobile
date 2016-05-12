@@ -11,10 +11,10 @@
                                       text-input]]
     [reagent.core :as r]
     [syng-im.components.toolbar :refer [toolbar]]
+    [syng-im.components.main-tabs :refer [main-tabs]]
     [syng-im.components.discovery.discovery-popular :refer [discovery-popular]]
     [syng-im.components.discovery.discovery-recent :refer [discovery-recent]]
-    [syng-im.components.discovery.styles :as st]
-    [syng-im.persistence.realm :as realm]))
+    [syng-im.components.discovery.styles :as st]))
 
 (def search-input (atom {:search "x"}))
 
@@ -55,11 +55,11 @@
     (fn []
       [view {:style {:flex            1
                      :backgroundColor "#eef2f5"}}
-       [toolbar {:style st/discovery-toolbar
-                 :navigator navigator
-                 :nav-action {:image {:source {:uri "icon_hamburger"}
-                                      :style  {:width      16
-                                               :height     12}}
+       [toolbar {:style      st/discovery-toolbar
+                 :navigator  navigator
+                 :nav-action {:image   {:source {:uri "icon_hamburger"}
+                                        :style  {:width  16
+                                                 :height 12}}
                               :handler create-fake-discovery}
                  :title     "Add Participants"
                  :custom-content [title-content @showSearch]
@@ -76,8 +76,5 @@
         [discovery-popular navigator]
         [view {:style st/section-spacing}
          [text {:style st/discovery-subtitle} "Recent"]]
-        [discovery-recent]]])))
-  (comment
-    (def page-width (aget (natal-shell.dimensions/get "window") "width"))
-    (def page-height (aget (natal-shell.dimensions/get "window") "height"))
-    )
+        [discovery-recent]]
+        [main-tabs]])))
