@@ -34,11 +34,9 @@
    :flexDirection   :column
    :backgroundColor color-white})
 
-(def properties-container
-  {:marginHorizontal 16})
-
 (def chat-name-text
   {:marginTop    24
+   :marginLeft   16
    :marginBottom 16
    :color        text2-color
    :fontFamily   font
@@ -46,13 +44,14 @@
    :lineHeight   20})
 
 (def chat-name-input
-  {:marginLeft -4
+  {:marginLeft 12
    :fontSize   14
    :fontFamily font
    :color      text1-color})
 
 (def members-text
   {:marginTop    24
+   :marginLeft   16
    :marginBottom 16
    :color        text2-color
    :fontFamily   font
@@ -61,6 +60,7 @@
 
 (def add-members-icon
   {:marginVertical   19
+   :marginLeft       19
    :marginHorizontal 3
    :width            17
    :height           17})
@@ -79,6 +79,7 @@
 
 (def settings-text
   {:marginTop    24
+   :marginLeft   16
    :marginBottom 16
    :color        text2-color
    :fontFamily   font
