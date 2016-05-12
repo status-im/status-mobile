@@ -94,14 +94,28 @@
 
 ;; -- User data --------------------------------------------------------------
 
-;; (register-sub
-;;   :get-user-phone-number
-;;   (fn [db _]
-;;     (reaction
-;;       (get @db :user-phone-number))))
+(register-sub :username
+  (fn [db _]
+    (reaction
+     (get @db :username))))
+
+(register-sub :phone-number
+  (fn [db _]
+    (reaction
+     (get @db :phone-number))))
+
+(register-sub :email
+  (fn [db _]
+    (reaction
+     (get @db :email))))
+
+(register-sub :status
+  (fn [db _]
+    (reaction
+     (get @db :status))))
 
 (register-sub
-  :get-user-identity
+ :get-user-identity
   (fn [db _]
     (reaction
       (get @db :user-identity))))

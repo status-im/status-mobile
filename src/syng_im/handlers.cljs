@@ -457,6 +457,12 @@
       (dispatch [:navigate-to :profile])
       db)))
 
+(register-handler :show-my-profile
+  (fn [db [action]]
+    (log/debug action)
+    (dispatch [:navigate-to :my-profile])
+    db))
+
 ;; -- Chats --------------------------------------------------------------
 
 (register-handler :show-chat
