@@ -41,10 +41,10 @@
   (let [contact (subscribe [:contact])]
     (fn []
       [scroll-view {:style st/profile}
-       [touchable-highlight {:style    st/profile-back-button-touchable
+       [touchable-highlight {:style    st/back-btn-touchable
                              :on-press #(dispatch [:navigate-back])}
-        [view st/profile-back-button-container
-         [icon :back st/profile-back-button-icon]]]
+        [view st/back-btn-container
+         [icon :back st/back-btn-icon]]]
        [view st/status-block
         [view st/user-photo-container
          [user-photo  {}]
@@ -74,3 +74,36 @@
          [touchable-opacity {}
           [text {:style st/report-user-text}
            "REPORT USER"]]]]])))
+
+(defn my-profile []
+  (let [username     (subscribe [:username])
+        phone-number (subscribe [:phone-number])
+        email        (subscribe [:email])
+        status       (subscribe [:status])]
+    (fn []
+      [scroll-view {:style st/profile}
+       [touchable-highlight {:style    st/back-btn-touchable
+                             :on-press #(dispatch [:navigate-back])}
+        [view st/back-btn-container
+         [icon :back st/back-btn-icon]]]
+       [touchable-highlight {:style    st/actions-btn-touchable
+                             :on-press (fn []
+                                         ;; TODO not implemented
+                                         )}
+        [view st/actions-btn-container
+         [icon :dots st/actions-btn-icon]]]
+       [view st/status-block
+        [view st/user-photo-container
+         [user-photo  {}]
+         [user-online {:online true}]]
+        [text {:style st/user-name}
+         @username]
+        [text {:style st/status}
+         @status]]
+       [view st/profile-properties-container
+        [profile-property-view {:name "Username"
+                                :value @username}]
+        [profile-property-view {:name "Phone number"
+                                :value @phone-number}]
+        [profile-property-view {:name "Email"
+                                :value @email}]]])))
