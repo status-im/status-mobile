@@ -61,7 +61,6 @@
                                         :style  {:width  16
                                                  :height 12}}
                               :handler create-fake-discovery}
-                 :title     "Add Participants"
                  :custom-content [title-content @showSearch]
                  :action    {:image {:source {:uri "icon_search"}
                                      :style  {:width  17
@@ -73,7 +72,7 @@
        [scroll-view {:style {}}
         [view {:style st/section-spacing}
          [text {:style st/discovery-subtitle} "Popular tags"]]
-        [discovery-popular navigator]
+        [discovery-popular]
         [view {:style st/section-spacing}
          [text {:style st/discovery-subtitle} "Recent"]]
         [discovery-recent]]
