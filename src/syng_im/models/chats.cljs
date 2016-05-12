@@ -83,7 +83,8 @@
     (r/write
      (fn []
        ;; TODO UNDONE contacts
-       (r/create :chats (select-keys chat-settings [:chat-id :name]) true)))
+       (r/create :chats
+                 (select-keys chat-settings [:chat-id :name :contacts]) true)))
     ;; TODO update chat in db atom
     (dispatch [:initialize-chats])
     (-> db

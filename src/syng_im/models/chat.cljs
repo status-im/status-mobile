@@ -24,7 +24,8 @@
 
 (defn set-group-settings [db]
   (let [group-chat (current-chat db)]
-    (assoc-in db db/group-settings-path group-chat)))
+    (assoc-in db db/group-settings-path
+              (select-keys group-chat [:chat-id :name :contacts]))))
 
 (defn update-new-group-selection [db identity add?]
   (update-in db db/new-group-path (fn [new-group]

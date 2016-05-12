@@ -5,16 +5,13 @@
                                               text-input
                                               text
                                               image
+                                              icon
                                               touchable-highlight]]
-            [syng-im.components.styles :refer [font
-                                               title-font
-                                               color-white
-                                               color-purple
-                                               text1-color
-                                               text2-color
-                                               toolbar-background1]]
             [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.components.realm :refer [list-view]]
+            [syng-im.components.styles :refer [color-purple
+                                               text2-color]]
+            [syng-im.components.group-settings-styles :as st]
             [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.components.contact-list.contact-inner :refer [contact-inner-view]]
             [syng-im.components.chats.new-group-contact :refer [new-group-contact]]
@@ -23,74 +20,50 @@
 (defn set-group-settings-name [chat-name]
   (dispatch [:set-group-settings-name chat-name]))
 
+(defn save-group-chat []
+  (dispatch [:save-group-chat]))
+
 (defn chat-members [members]
-  [view {:style {:marginBottom 10}}
+  [view st/chat-members-container
    (for [member members]
      ^{:key member} [contact-inner-view member]
      ;; [new-group-contact member nil]
      )])
 
-(defn new-group-toolbar [chat-name]
+(defn action-save []
+  [touchable-highlight
+   {:on-press save-group-chat}
+   [view st/save-btn
+    [text {:style st/save-btn-text} "S"]]])
+
+(defn new-group-toolbar []
   [toolbar {:title  "Chat settings"
-            :action {:image {:source res/v ;; {:uri "icon_search"}
-                             :style  {:width  20
-                                      :height 18}}
-                     :handler (fn []
-                                (dispatch [:save-group-chat chat-name]))}}])
+            :custom-action [action-save]}])
 
 (defn group-settings []
   (let [chat-name (subscribe [:group-settings-name])
         members   (subscribe [:group-settings-members])]
     (fn []
-      [view {:style {:flex            1
-                     :flexDirection   "column"
-                     :backgroundColor color-white}}
-       [new-group-toolbar @chat-name]
-       [view {:style {:marginHorizontal 16}}
-        [text {:style {:marginTop    24
-                       :marginBottom 16
-                       :color        text2-color
-                       :fontFamily   font
-                       :fontSize     14
-                       :lineHeight   20}}
+      [view st/group-settings
+       [new-group-toolbar]
+       [view st/properties-container
+        [text {:style st/chat-name-text}
          "Chat name"]
-        [text-input {:underlineColorAndroid color-purple
-                     :style                 {:marginLeft -4
-                                             :fontSize   14
-                                             :fontFamily font
-                                             :color      text1-color}
+        [text-input {:style                 st/chat-name-input
+                     :underlineColorAndroid color-purple
                      :autoFocus             true
                      :placeholderTextColor  text2-color
                      :onChangeText          set-group-settings-name}
          @chat-name]
-        [text {:style {:marginTop    24
-                       :marginBottom 16
-                       :color        text2-color
-                       :fontFamily   font
-                       :fontSize     14
-                       :lineHeight   20}}
+        [text {:style st/members-text}
          "Members"]
-        [touchable-highlight {:on-press (fn [])
-                              :underlay-color :transparent}
-         [view {:style {:flexDirection "row"
-                        :marginBottom  16}}
-          [image {:source {:uri "icon_add_gray"}
-                  :style  {:marginVertical   19
-                           :marginHorizontal 3
-                           :width            17
-                           :height           17}}]
-          [text {:style {:marginTop    18
-                         :marginLeft   32
-                         :color        text2-color
-                         :fontFamily   font
-                         :fontSize     14
-                         :lineHeight   20}}
+        [touchable-highlight {:on-press (fn []
+                                          ;; TODO not implemented
+                                          )}
+         [view st/add-members-container
+          [icon :add-gray st/add-members-icon]
+          [text {:style st/add-members-text}
            "Add members"]]]
         [chat-members (vals (js->clj @members :keywordize-keys true))]
-        [text {:style {:marginTop    24
-                       :marginBottom 16
-                       :color        text2-color
-                       :fontFamily   font
-                       :fontSize     14
-                       :lineHeight   20}}
+        [text {:style st/settings-text}
          "Settings"]]])))
