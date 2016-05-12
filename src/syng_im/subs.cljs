@@ -4,6 +4,7 @@
             [syng-im.db :as db]
             [syng-im.components.discovery.subs :as discovery]
             [syng-im.models.chat :refer [current-chat-id
+                                         get-group-settings
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
                                           chats-updated?
@@ -176,6 +177,17 @@
                                           :contacts
                                           (map :identity))]
             (contacts-list-include current-participants)))))))
+
+(register-sub :group-settings-name
+  (fn [db [_]]
+    (reaction (get-in @db db/group-settings-name-path))))
+
+(register-sub :group-settings-members
+  (fn [db [_]]
+    (let [members (reaction (get-in @db db/group-settings-members-path))]
+      (reaction
+       (let [current-participants (map :identity @members)]
+         (contacts-list-include current-participants))))))
 
 (register-sub :view-id
   (fn [db _]

@@ -35,6 +35,7 @@
     [syng-im.components.discovery.handlers :as discovery]
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
+                                  save-chat
                                   chat-add-participants
                                   chat-remove-participants
                                   set-chat-active
@@ -43,6 +44,7 @@
     [syng-im.models.chat :refer [signal-chat-updated
                                  set-current-chat-id
                                  current-chat-id
+                                 set-group-settings
                                  update-new-group-selection
                                  update-new-participants-selection
                                  clear-new-group
@@ -393,7 +395,7 @@
       ((after handle-commands))))
 
 (register-handler :leave-group-chat
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
     (let [chat-id (current-chat-id db)]
       (api/leave-group-chat chat-id)
@@ -542,9 +544,9 @@
     (update-new-participants-selection db identity add?)))
 
 (register-handler :show-remove-participants
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
-    (nav-push navigator {:view-id :remove-participants})
+    (dispatch [:navigate-to :remove-participants])
     (clear-new-participants db)))
 
 (register-handler :remove-selected-participants
@@ -560,9 +562,9 @@
       (signal-chat-updated db chat-id))))
 
 (register-handler :show-add-participants
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
-    (nav-push navigator {:view-id :add-participants})
+    (dispatch [:navigate-to :add-participants])
     (clear-new-participants db)))
 
 (register-handler :add-new-participants
@@ -594,6 +596,25 @@
           group-id   (api/start-group-chat identities group-name)
           db         (create-chat db group-id identities true group-name)]
       (dispatch [:show-chat group-id navigator :replace])
+      db)))
+
+(register-handler :show-group-settings
+  (fn [db [action]]
+    (log/debug action)
+    (let [db (set-group-settings db)]
+      (dispatch [:navigate-to :group-settings])
+      db)))
+
+(register-handler :set-group-settings-name
+  (fn [db [action chat-name]]
+    (log/debug action)
+    (assoc-in db db/group-settings-name-path chat-name)))
+
+(register-handler :save-group-chat
+  (fn [db [action]]
+    (log/debug action)
+    (let [db (save-chat db)]
+      (dispatch [:navigate-back])
       db)))
 
 (register-handler :group-chat-invite-received

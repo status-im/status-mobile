@@ -50,6 +50,9 @@
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
 (def show-actions-path [:show-actions])
+(def group-settings-path [:group-settings])
+(def group-settings-name-path [:group-settings :name])
+(def group-settings-members-path [:group-settings :contacts])
 (def new-group-path [:new-group])
 (def new-participants-path [:new-participants])
 (def updated-discoveries-signal-path [:discovery-updated-signal])
