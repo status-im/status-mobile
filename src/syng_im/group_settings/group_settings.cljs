@@ -1,4 +1,4 @@
-(ns syng-im.components.group-settings
+(ns syng-im.group-settings.group-settings
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view
@@ -11,9 +11,9 @@
             [syng-im.components.realm :refer [list-view]]
             [syng-im.components.styles :refer [color-purple
                                                text2-color]]
-            [syng-im.components.group-settings-styles :as st]
+            [syng-im.group-settings.styles.group-settings :as st]
             [syng-im.utils.listview :refer [to-realm-datasource]]
-            [syng-im.components.group-settings-member :refer [contact-inner-view]]
+            [syng-im.group-settings.views.member :refer [contact-inner-view]]
             [reagent.core :as r]))
 
 (defn set-group-settings-name [chat-name]
