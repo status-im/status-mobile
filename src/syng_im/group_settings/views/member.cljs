@@ -1,8 +1,8 @@
-(ns syng-im.components.group-settings-member
+(ns syng-im.group-settings.views.member
   (:require [clojure.string :as s]
             [syng-im.components.react :refer [view image text icon touchable-highlight]]
             [syng-im.resources :as res]
-            [syng-im.components.group-settings-member-styles :as st]))
+            [syng-im.group-settings.styles.member :as st]))
 
 (defn contact-photo [{:keys [photo-path]}]
   [view st/contact-photo-container

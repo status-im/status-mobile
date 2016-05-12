@@ -15,7 +15,7 @@
             [syng-im.components.chats.new-group :refer [new-group]]
             [syng-im.components.chat.new-participants :refer [new-participants]]
             [syng-im.components.chat.remove-participants :refer [remove-participants]]
-            [syng-im.components.group-settings :refer [group-settings]]
+            [syng-im.group-settings.group-settings :refer [group-settings]]
             [syng-im.components.profile :refer [profile my-profile]]
             [syng-im.utils.logging :as log]
             [syng-im.utils.utils :refer [toast]]

@@ -1,4 +1,4 @@
-(ns syng-im.components.group-settings-styles
+(ns syng-im.group-settings.styles.group-settings
   (:require [syng-im.components.styles :refer [font
                                                title-font
                                                color-white

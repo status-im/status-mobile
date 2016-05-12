@@ -1,21 +1,10 @@
-(ns syng-im.components.group-settings-member-styles
+(ns syng-im.group-settings.styles.member
   (:require [syng-im.components.styles :refer [font
                                                title-font
                                                text1-color
                                                text2-color
                                                color-white
                                                online-color]]))
-
-(def search-icon
-  {:width  17
-   :height 17})
-
-(def contacts-list-container
-  {:flex            1
-   :backgroundColor :white})
-
-(def contacts-list
-  {:backgroundColor :white})
 
 (def contact-photo-container
   {:borderRadius 50})
