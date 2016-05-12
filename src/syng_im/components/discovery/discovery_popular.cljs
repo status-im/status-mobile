@@ -12,12 +12,12 @@
 (defn page-width []
   (.-width (.get (.. js/React -Dimensions) "window")))
 
-(defn discovery-popular [navigator]
+(defn discovery-popular []
   (let [popular-tags (subscribe [:get-popular-tags 3])]
     (log/debug "Got popular tags: " @popular-tags)
     (if (> (count @popular-tags) 0)
       [carousel {:pageStyle st/carousel-page-style
                  :sneak     20}
        (for [tag @popular-tags]
-         (discovery-popular-list (.-name tag) (.-count tag) navigator))]
+         (discovery-popular-list (.-name tag) (.-count tag)))]
       [text "None"])))

@@ -37,8 +37,8 @@
                       db)))
 
 (register-handler :show-discovery-tag
-                  (fn [db [action tag navigator nav-type]]
+                  (fn [db [action tag]]
                     (log/debug action "setting current tag: " tag)
                     (let [db (set-current-tag db tag)]
-                      (dispatch [:navigate-to navigator {:view-id :discovery-tag} nav-type])
+                      (dispatch [:navigate-to :discovery-tag])
                       db)))

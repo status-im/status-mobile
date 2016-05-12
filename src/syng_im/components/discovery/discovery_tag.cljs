@@ -19,8 +19,7 @@
   (if row
     (let [elem (discovery-popular-list-item row)]
       elem)
-    (r/as-element [text "null"])
-  ))
+    (r/as-element [text "null"])))
 
 (defn render-separator [sectionID, rowID, adjacentRowHighlighted]
   (let [elem (r/as-element [view {:style st/row-separator
@@ -29,8 +28,9 @@
 
 (defn title-content [tag]
   [view {:style st/tag-title-container}
-   [text {:style st/tag-title}
-    (str " #" tag)]])
+   [view {:style st/tag-container}
+    [text {:style st/tag-title}
+     (str " #" tag)]]])
 
 (defn discovery-tag [{:keys [tag navigator]}]
   (let [tag (subscribe [:get-current-tag])
@@ -39,21 +39,17 @@
     (fn []
       (let [items @discoveries
             datasource (to-realm-datasource items)]
-    [view {:style st/discovery-tag-container}
-     [toolbar {:navigator navigator
-               :nav-action {:image {:source {:uri "icon_back"}
-                                    :style  st/icon-back}
-                            :handler (fn [] (nav-pop navigator))}
-               :title     "Add Participants"
-               :content   (title-content @tag)
-               :action    {:image {:source {:uri "icon_search"}
-                                   :style  st/icon-search}
-                           :handler (fn []
-                                      ())}}]
+        [view {:style st/discovery-tag-container}
+         [toolbar {:navigator      navigator
+                   :custom-content [title-content @tag]
+                   :action         {:image   {:source {:uri "icon_search"}
+                                              :style  st/icon-search}
+                                    :handler (fn []
+                                               ())}}]
 
-     [list-view {:dataSource datasource
-                 :enableEmptySections true
-                 :renderRow  render-row
-                 :renderSeparator render-separator
-                 :style      st/recent-list}]
-     ]))))
+         [list-view {:dataSource          datasource
+                     :enableEmptySections true
+                     :renderRow           render-row
+                     :renderSeparator     render-separator
+                     :style               st/recent-list}]
+         ]))))
