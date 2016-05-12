@@ -5,12 +5,9 @@
             [syng-im.persistence.realm :as realm]
             [syng-im.persistence.realm :as r]
             [syng-im.persistence.realm-queries :refer [include-query
-                                                       exclude-query]]
-            [clojure.string :as s]))
+                                                       exclude-query]]))
 
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
-(def fake-phone-contacts? false)
-(def fake-contacts? false)
 
 (def react-native-contacts (js/require "react-native-contacts"))
 
@@ -26,43 +23,26 @@
 (defn- generate-contacts [n]
   (map generate-contact (range 1 (inc n))))
 
-(defn load-phone-contacts []
-  (let [ch (chan)]
-    (if fake-phone-contacts?
-      (put! ch {:error nil, :contacts (generate-contacts 10)})
-      (.getAll react-native-contacts
-               (fn [error raw-contacts]
-                 (put! ch
-                       {:error error
-                        :contacts
-                               (when (not error)
-                                 (log raw-contacts)
-                                 (map (fn [contact]
-                                        (merge contact
-                                               (generate-contact 1)
-                                               {:name          (:givenName contact)
-                                                :photo-path    (:thumbnailPath contact)
-                                                :phone-numbers (:phoneNumbers contact)}))
-                                      (js->clj raw-contacts :keywordize-keys true)))}))))
-    ch))
+(defn load-phone-contacts
+  ([callback] (.getAll react-native-contacts callback))
+  ([]
+   (.getAll react-native-contacts
+            (fn [error raw-contacts]
+              (println raw-contacts)
+              {:error error
+               :contacts
+                      (when (not error)
+                        (log raw-contacts)
+                        (map (fn [contact]
+                               (merge contact
+                                      (generate-contact 1)
+                                      {:name          (:givenName contact)
+                                       :photo-path    (:thumbnailPath contact)
+                                       :phone-numbers (:phoneNumbers contact)}))
+                             (js->clj raw-contacts :keywordize-keys true)))}))))
 
-(defn- get-contacts []
-  (if fake-contacts?
-    [{:phone-number     "123"
-      :whisper-identity "abc"
-      :name             "fake"
-      :photo-path       ""}]
-    (realm/get-list :contacts)))
-
-(defn load-syng-contacts [db]
-  (let [contacts (map (fn [contact]
-                        (merge contact
-                               {:delivery-status    (if (< (rand) 0.5) :delivered :seen)
-                                :datetime           "15:30"
-                                :new-messages-count (rand-int 3)
-                                :online             (< (rand) 0.5)}))
-                      (get-contacts))]
-    (assoc db :contacts contacts)))
+(defn get-contacts []
+  (realm/collection->map (realm/get-all :contacts)))
 
 (defn- create-contact [{:keys [phone-number whisper-identity name photo-path]}]
   (realm/create :contacts

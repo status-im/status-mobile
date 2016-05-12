@@ -11,10 +11,11 @@
             [syng-im.contacts.views.contact :refer [contact-view]]
             [syng-im.components.styles :refer [toolbar-background2]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.contacts.styles :as st]))
+            [syng-im.contacts.styles :as st]
+            [syng-im.utils.listview :as lw]))
 
 (defn render-row [row _ _]
-  (list-item [contact-view (js->clj row :keywordize-keys true)]))
+  (list-item [contact-view row]))
 
 (defn get-data-source [contacts]
   (clone-with-rows (data-source {:rowHasChanged not=}) contacts))
@@ -22,14 +23,14 @@
 (defn contact-list-toolbar []
   [toolbar {:title            "Contacts"
             :background-color toolbar-background2
-            :action           {:image {:source {:uri :icon_search}
-                                       :style  st/search-icon}
+            :action           {:image   {:source {:uri :icon_search}
+                                         :style  st/search-icon}
                                :handler (fn [])}}])
 
 (defn contact-list []
-  (let [contacts (subscribe [:get-contacts])]
+  (let [contacts (subscribe [:get :contacts])]
     (fn []
-      (let [contacts-ds (get-data-source @contacts)]
+      (let [contacts-ds (lw/to-datasource2 @contacts)]
         [view st/contacts-list-container
          [contact-list-toolbar]
          (when contacts-ds

@@ -7,13 +7,12 @@
 (def default-view :discovery)
 
 ;; initial state of app-db
-(def app-db {:greeting             "Hello Clojure in iOS and Android!"
-             :identity-password    "replace-me-with-user-entered-password"
+(def app-db {:identity-password    "replace-me-with-user-entered-password"
              :identity             "me"
              :contacts             []
              :current-chat-id      "console"
-             :chat                 {:command nil
-                                    :last-message    nil}
+             :chat                 {:command      nil
+                                    :last-message nil}
              :chats                {}
              :chats-updated-signal 0
              :show-actions         false

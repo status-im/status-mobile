@@ -1,6 +1,15 @@
 (ns syng-im.contacts.handlers
-  (:require [re-frame.core :refer [register-handler after]]
-            [syng-im.models.contacts :as contacts]))
+  (:require [re-frame.core :refer [register-handler after dispatch]]
+            [syng-im.models.contacts :as contacts]
+            [syng-im.utils.crypt :refer [encrypt]]
+            [clojure.string :as s]
+            [syng-im.utils.utils :refer [http-post]]
+            [syng-im.utils.phone-number :refer [format-phone-number]]))
+
+(defn side-effect! [handler]
+  (fn [db params]
+    (handler db params)
+    db))
 
 (defn save-contact
   [_ [_ contact]]
@@ -11,4 +20,82 @@
         (update db :contacts conj contact))
       ((after save-contact))))
 
+(defn load-contacts! [db _]
+  (let [contacts (contacts/get-contacts)]
+    (assoc db :contacts contacts)))
 
+(register-handler :load-syng-contacts load-contacts!)
+
+(def react-native-contacts (js/require "react-native-contacts"))
+
+(defn contact-name [contact]
+  (->> contact
+       ((juxt :givenName :middleName :familyName))
+       (remove s/blank?)
+       (s/join " ")))
+
+(defn normalize-phone-contacts [contacts]
+  (let [contacts' (js->clj contacts :keywordize-keys true)]
+    (map (fn [{:keys [thumbnailPath phoneNumbers] :as contact}]
+           {:name          (contact-name contact)
+            :photo-path    thumbnailPath
+            :phone-numbers phoneNumbers}) contacts')))
+
+(defn fetch-contacts-from-phone!
+  [_ _]
+  (.getAll react-native-contacts
+           (fn [error contacts]
+             (if error
+               (dispatch [:error-on-fetching-loading error])
+               (let [contacts' (normalize-phone-contacts contacts)]
+                 (dispatch [:get-contacts-identities contacts']))))))
+
+(register-handler :sync-contacts
+  (side-effect! fetch-contacts-from-phone!))
+
+(defn get-contacts-by-hash [contacts]
+  (->> contacts
+       (mapcat (fn [{:keys [phone-numbers] :as contact}]
+                 (map (fn [{:keys [number]}]
+                        (let [number' (format-phone-number number)]
+                          [(encrypt number')
+                           (-> contact
+                               (assoc :phone-number number')
+                               (dissoc :phone-numbers))]))
+                      phone-numbers)))
+       (into {})))
+
+(defn add-identity [contacts-by-hash contacts]
+  (map (fn [{:keys [phone-number-hash whisper-identity]}]
+         (let [contact (contacts-by-hash phone-number-hash)]
+           (assoc contact :whisper-identity whisper-identity)))
+       (js->clj contacts)))
+
+(defn request-stored-contacts [contacts]
+  (let [contacts-by-hash (get-contacts-by-hash contacts)
+        data             (keys contacts-by-hash)]
+    (http-post "get-contacts" {:phone-number-hashes data}
+               (fn [{:keys [contacts]}]
+                 (let [contacts' (add-identity contacts-by-hash contacts)]
+                   (dispatch [:add-contacts contacts']))))))
+
+(defn get-identities-by-contacts! [_ [_ contacts]]
+  (request-stored-contacts contacts))
+
+(register-handler :get-contacts-identities
+  (side-effect! get-identities-by-contacts!))
+
+(defn save-contacts! [{:keys [new-contacts]} _]
+  (contacts/save-syng-contacts new-contacts))
+
+(defn add-new-contacts
+  [{:keys [contacts] :as db} [_ new-contacts]]
+  (let [identities    (set (map :whisper-identity contacts))
+        new-contacts' (remove #(identities (:whisper-identity %)) new-contacts)]
+    (-> db
+        (update :contacts concat new-contacts')
+        (assoc :new-contacts new-contacts'))))
+
+(register-handler :add-contacts
+  (after save-contacts!)
+  add-new-contacts)

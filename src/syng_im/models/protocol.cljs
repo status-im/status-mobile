@@ -6,8 +6,7 @@
             [syng-im.utils.types :refer [to-edn-string]]
             [re-frame.db :refer [app-db]]
             [syng-im.db :as db]
-            [syng-im.persistence.simple-kv-store :as kv]
-            [syng-im.utils.logging :as log]))
+            [syng-im.persistence.simple-kv-store :as kv]))
 
 (defn set-initialized [db initialized?]
   (assoc-in db db/protocol-initialized-path initialized?))
@@ -23,8 +22,3 @@
         password  (:identity-password db)]
     (when encrypted
       (read-string (password-decrypt password encrypted)))))
-
-(comment
-
-  (stored-identity @re-frame.db/app-db)
-  )

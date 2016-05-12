@@ -14,7 +14,6 @@
                                      message-by-id]]
     [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
-    [syng-im.handlers.contacts :as contacts-service]
     [syng-im.handlers.suggestions :refer [get-command
                                           handle-command
                                           get-command-handler
@@ -228,19 +227,6 @@
   (fn [db [_]]
     (user-data/load-phone-number)
     db))
-
-;; -- Sign up --------------------------------------------------------------
-
-(register-handler :sync-contacts
-  (fn [db [_ handler]]
-    (contacts-service/sync-contacts handler)
-    db))
-
-;; -- Contacts --------------------------------------------------------------
-
-(register-handler :load-syng-contacts
-  (fn [db [_ value]]
-    (contacts/load-syng-contacts db)))
 
 ;; -- Chats --------------------------------------------------------------
 (defn update-new-participants-selection [db identity add?]
