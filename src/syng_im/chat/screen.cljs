@@ -64,9 +64,9 @@
 
 (defn on-action-selected [position]
   (case position
-    0 (dispatch [:show-add-participants #_navigator])
-    1 (dispatch [:show-remove-participants #_navigator])
-    2 (dispatch [:leave-group-chat #_navigator])))
+    0 (dispatch [:show-add-participants])
+    1 (dispatch [:show-remove-participants])
+    2 (dispatch [:leave-group-chat])))
 
 (defn overlay [{:keys [on-click-outside]} items]
   [view st/actions-overlay
@@ -97,21 +97,18 @@
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
-                           :handler    nil #_#(dispatch [:show-add-participants
-                                                         navigator])}
+                           :handler    #(dispatch [:show-add-participants])}
                           {:title      "Remove Contact from chat"
                            :subtitle   "Alex, John"
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
-                           :handler    nil #_#(dispatch
-                                               [:show-remove-participants navigator])}
+                           :handler    #(dispatch [:show-remove-participants])}
                           {:title      "Leave Chat"
                            :icon       :muted
                            :icon-style {:width  18
                                         :height 21}
-                           :handler    nil #_#(dispatch [:leave-group-chat
-                                                         navigator])}
+                           :handler    #(dispatch [:leave-group-chat])}
                           {:title      "Settings"
                            :subtitle   "Not implemented"
                            :icon       :settings
