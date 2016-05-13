@@ -30,7 +30,7 @@
 (defn contact-list []
   (let [contacts (subscribe [:get :contacts])]
     (fn []
-      (let [contacts-ds (lw/to-datasource2 @contacts)]
+      (let [contacts-ds (lw/to-datasource @contacts)]
         [view st/contacts-list-container
          [contact-list-toolbar]
          (when contacts-ds

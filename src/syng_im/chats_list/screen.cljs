@@ -6,7 +6,7 @@
                                               text
                                               image
                                               touchable-highlight]]
-            [syng-im.utils.listview :refer [to-datasource2]]
+            [syng-im.utils.listview :refer [to-datasource]]
             [reagent.core :as r]
             [syng-im.chats-list.views.chat-list-item :refer [chat-list-item]]
             [syng-im.components.action-button :refer [action-button
@@ -31,7 +31,7 @@
     (fn []
       [view st/chats-container
        [chats-list-toolbar]
-       [list-view {:dataSource (to-datasource2 (vals @chats))
+       [list-view {:dataSource (to-datasource (vals @chats))
                    :renderRow  (fn [row _ _]
                                  (list-item [chat-list-item row]))
                    :style      st/list-container}]

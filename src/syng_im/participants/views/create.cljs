@@ -3,7 +3,7 @@
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view list-view list-item]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.utils.listview :refer [to-datasource2]]
+            [syng-im.utils.listview :refer [to-datasource]]
             [syng-im.participants.views.contact
              :refer [participant-contact]]
             [reagent.core :as r]
@@ -24,7 +24,7 @@
 (defn new-participants [{:keys [navigator]}]
   (let [contacts (subscribe [:all-new-contacts])]
     (fn []
-      (let [contacts-ds (to-datasource2 @contacts)]
+      (let [contacts-ds (to-datasource @contacts)]
         [view st/participants-container
          [new-participants-toolbar navigator]
          [list-view {:dataSource contacts-ds

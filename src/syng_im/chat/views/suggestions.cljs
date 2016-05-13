@@ -1,6 +1,4 @@
 (ns syng-im.chat.views.suggestions
-  (:require-macros
-    [natal-shell.core :refer [with-error-view]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text
@@ -25,7 +23,7 @@
     [text {:style st/suggestion-description} description]]])
 
 (defn render-row [row _ _]
-  (list-item [suggestion-list-item (js->clj row :keywordize-keys true)]))
+  (list-item [suggestion-list-item row]))
 
 (defn suggestions-view []
   (let [suggestions-atom (subscribe [:get-suggestions])]
