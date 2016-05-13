@@ -38,14 +38,14 @@
 (def chat-members-container
   {:marginBottom 10})
 
-(def save-btn
+(def chat-icon
   {:margin          10
    :width           36
    :height          36
    :borderRadius    50
    :backgroundColor color-purple})
 
-(def save-btn-text
+(def chat-icon-text
   {:marginTop  7
    :marginLeft 13
    :color      color-white
