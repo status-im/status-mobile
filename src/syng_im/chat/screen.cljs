@@ -10,7 +10,7 @@
                                               list-item]]
             [syng-im.chat.styles.chat :as st]
             [syng-im.resources :as res]
-            [syng-im.utils.listview :refer [to-datasource2]]
+            [syng-im.utils.listview :refer [to-datasource]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [syng-im.chat.views.message :refer [chat-message]]
             [syng-im.chat.views.new-message :refer [chat-message-new]]))
@@ -169,7 +169,7 @@
                     :renderScrollComponent #(invertible-scroll-view (js->clj %))
                     :onEndReached          #(dispatch [:load-more-messages])
                     :enableEmptySections   true
-                    :dataSource            (to-datasource2 @messages)}]))))
+                    :dataSource            (to-datasource @messages)}]))))
 
 (defn chat []
   (let [is-active         (subscribe [:chat :is-active])

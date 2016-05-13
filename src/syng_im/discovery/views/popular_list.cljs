@@ -7,7 +7,7 @@
                                       touchable-highlight
                                       text]]
     [syng-im.discovery.styles :as st]
-    [syng-im.utils.listview :refer [to-datasource2]]
+    [syng-im.utils.listview :refer [to-datasource]]
     [syng-im.discovery.views.popular-list-item :refer [popular-list-item]]))
 
 (defn render-row [row _ _]
@@ -27,7 +27,7 @@
           [text {:style st/tag-name} (str " #" (name tag))]]]
         [view st/tag-count-container
          [text {:style st/tag-count} count]]]
-       [list-view {:dataSource          (to-datasource2 @discoveries)
+       [list-view {:dataSource          (to-datasource @discoveries)
                    :enableEmptySections true
                    :renderRow           render-row
                    :renderSeparator     render-separator

@@ -11,7 +11,7 @@
                                               list-item]]
             [syng-im.components.styles :refer [color-purple]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.utils.listview :refer [to-datasource2]]
+            [syng-im.utils.listview :refer [to-datasource]]
             [syng-im.new-group.views.contact :refer [new-group-contact]]
             [syng-im.new-group.styles :as st]))
 
@@ -40,7 +40,7 @@
 (defn new-group []
   (let [contacts (subscribe [:all-contacts])]
     (fn []
-      (let [contacts-ds (to-datasource2 @contacts)]
+      (let [contacts-ds (to-datasource @contacts)]
         [view st/new-group-container
          [new-group-toolbar]
          [view st/chat-name-container

@@ -2,7 +2,7 @@
   (:require
     [re-frame.core :refer [subscribe dispatch]]
     [syng-im.utils.logging :as log]
-    [syng-im.utils.listview :refer [to-datasource2]]
+    [syng-im.utils.listview :refer [to-datasource]]
     [syng-im.components.react :refer [view text list-view list-item]]
     [syng-im.components.toolbar :refer [toolbar]]
     [syng-im.discovery.views.popular-list-item :refer [popular-list-item]]
@@ -25,7 +25,7 @@
     (log/debug "Got discoveries: " @discoveries)
     (fn []
       (let [items      @discoveries
-            datasource (to-datasource2 items)]
+            datasource (to-datasource items)]
         [view st/discovery-tag-container
          [toolbar {:nav-action {:image   {:source {:uri :icon_back}
                                           :style  st/icon-back}

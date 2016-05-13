@@ -5,7 +5,7 @@
                                               touchable-highlight list-view
                                               list-item]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.utils.listview :refer [to-datasource2]]
+            [syng-im.utils.listview :refer [to-datasource]]
             [syng-im.participants.views.contact
              :refer [participant-contact]]
             [reagent.core :as r]
@@ -25,7 +25,7 @@
 (defn remove-participants []
   (let [contacts (subscribe [:current-chat-contacts])]
     (fn []
-      (let [contacts-ds (to-datasource2 @contacts)]
+      (let [contacts-ds (to-datasource @contacts)]
         [view st/participants-container
          [remove-participants-toolbar]
          [list-view {:dataSource contacts-ds
