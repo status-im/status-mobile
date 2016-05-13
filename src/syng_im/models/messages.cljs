@@ -51,9 +51,6 @@
                 (update message :content str-to-map)
                 message)))))
 
-(defn message-by-id [msg-id]
-  (r/single-cljs (r/get-by-field :msgs :msg-id msg-id)))
-
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)
   (r/write

@@ -1,10 +1,8 @@
 (ns syng-im.discovery.handlers
-  (:require [re-frame.core :refer [register-handler after dispatch enrich
-                                   log-ex debug]]
+  (:require [re-frame.core :refer [register-handler after dispatch enrich]]
             [syng-im.protocol.api :as api]
-            [syng-im.models.discoveries :refer [save-discoveries]]
             [syng-im.navigation.handlers :as nav]
-            [syng-im.models.discoveries :as discoveries]
+            [syng-im.discovery.model :as discoveries]
             [syng-im.utils.handlers :as u]))
 
 (defmethod nav/preload-data! :discovery
@@ -12,6 +10,9 @@
   (if-not (seq discoveries)
     (-> db
         (assoc :tags (discoveries/all-tags))
+        ;; todo add limit
+        ;; todo hash-map with whisper-id as key and sorted by last-update
+        ;; may be more efficient here
         (assoc :discoveries (discoveries/discovery-list)))
     db))
 
@@ -71,6 +72,5 @@
 
 (register-handler :add-discovery
   (-> add-discovery
-      debug
       ((after save-discovery!))
       ((enrich reload-tags!))))

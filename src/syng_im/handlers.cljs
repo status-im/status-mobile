@@ -8,9 +8,7 @@
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
     [syng-im.models.contacts :as contacts]
-    [syng-im.models.messages :refer [save-message
-                                     update-message!
-                                     message-by-id]]
+    [syng-im.models.messages :refer [save-message update-message!]]
     [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
     [syng-im.chat.suggestions :refer [get-command
