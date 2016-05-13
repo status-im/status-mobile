@@ -69,8 +69,7 @@
   (->> (-> (r/get-all :discoveries)
            (r/sorted :last-updated :desc)
            r/collection->map)
-       (map #(update % :tags vals))
-       (into '())))
+       (map #(update % :tags vals))))
 
 (defn- add-discoveries [discoveries]
   (realm/write (fn []
