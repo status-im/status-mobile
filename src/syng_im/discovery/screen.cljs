@@ -1,27 +1,21 @@
 (ns syng-im.discovery.screen
-
   (:require
-    [syng-im.utils.logging :as log]
     [re-frame.core :refer [dispatch subscribe]]
-    [syng-im.models.discoveries :refer [save-discoveries]]
-    [syng-im.components.react :refer [android?
-                                      view
+    [syng-im.components.react :refer [view
                                       scroll-view
                                       text
                                       text-input]]
-    [reagent.core :as r]
     [syng-im.components.toolbar :refer [toolbar]]
     [syng-im.discovery.views.popular :refer [popular]]
-    [syng-im.discovery.discovery-recent :refer [discovery-recent]]
-    [syng-im.discovery.styles :as st]
-    [syng-im.persistence.realm :as realm]))
+    [syng-im.discovery.views.recent :refer [discovery-recent]]
+    [syng-im.discovery.styles :as st]))
 
 (defn get-hashtags [status]
   (let [hashtags (map #(subs % 1) (re-seq #"#[^ !?,;:.]+" status))]
     (or hashtags [])))
 
-(defn title-content [showSearch]
-  (if showSearch
+(defn title-content [show-search]
+  (if show-search
     [text-input {:style           st/discovery-search-input
                  :autoFocus       true
                  :placeholder     "Type your search tags here"
@@ -48,7 +42,7 @@
                                          :height 12}}
                       :handler #(dispatch [:create-fake-discovery!])}
          :title      "Add Participants"
-         :content    (title-content @show-search)
+         :content    [title-content @show-search]
          :action     {:image   {:source {:uri :icon_search}
                                 :style  {:width  17
                                          :height 17}}

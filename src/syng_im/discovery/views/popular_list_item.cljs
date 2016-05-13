@@ -1,9 +1,10 @@
-(ns syng-im.discovery.discovery-popular-list-item
+(ns syng-im.discovery.views.popular-list-item
+  ;syng-im.discovery.views.popular-list-item
   (:require [syng-im.components.react :refer [view text image]]
             [syng-im.discovery.styles :as st]
             [reagent.core :as r]))
 
-(defn discovery-popular-list-item
+(defn popular-list-item
   [{:keys [name status]}]
   [view st/popular-list-item
    [view st/popular-list-item-name-container

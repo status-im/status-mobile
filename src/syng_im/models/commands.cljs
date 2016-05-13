@@ -1,12 +1,9 @@
 (ns syng-im.models.commands
   (:require [clojure.string :refer [join split]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
-            [cljs.core.async :as async :refer [chan put! <! >!]]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [re-frame.core :refer [subscribe dispatch]]
             [syng-im.db :as db]
-            [syng-im.components.styles :refer [color-blue
-                                               color-dark-mint]]
-            [syng-im.utils.utils :refer [log toast]]))
+            [syng-im.components.styles :refer [color-blue color-dark-mint]]))
 
 ;; todo delete
 (def commands [{:command      :money
