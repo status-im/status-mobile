@@ -9,7 +9,7 @@
             [syng-im.components.react :refer [navigator app-registry]]
             [syng-im.contacts.screen :refer [contact-list]]
             [syng-im.discovery.screen :refer [discovery]]
-            [syng-im.discovery.discovery-tag :refer [discovery-tag]]
+            [syng-im.discovery.tag :refer [discovery-tag]]
             [syng-im.chat.screen :refer [chat]]
             [syng-im.chats-list.screen :refer [chats-list]]
             [syng-im.new-group.screen :refer [new-group]]

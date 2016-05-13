@@ -39,6 +39,4 @@
   [:chats chat-id :command-requests])
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
-(def updated-discoveries-signal-path [:discovery-updated-signal])
-(def current-tag-path [:current-tag])
 (def updated-current-tag-signal-path [:current-tag-updated-signal])

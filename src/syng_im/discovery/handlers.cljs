@@ -2,17 +2,18 @@
   (:require [re-frame.core :refer [register-handler after dispatch enrich
                                    log-ex debug]]
             [syng-im.protocol.api :as api]
-            [syng-im.models.discoveries :refer [save-discoveries
-                                                set-current-tag]]
+            [syng-im.models.discoveries :refer [save-discoveries]]
             [syng-im.navigation.handlers :as nav]
             [syng-im.models.discoveries :as discoveries]
             [syng-im.utils.handlers :as u]))
 
 (defmethod nav/preload-data! :discovery
-  [{:keys [] :as db} _]
-  (-> db
-      (assoc :tags (discoveries/all-tags))
-      (assoc :discoveries (discoveries/discovery-list))))
+  [{:keys [discoveries] :as db} _]
+  (if-not (seq discoveries)
+    (-> db
+        (assoc :tags (discoveries/all-tags))
+        (assoc :discoveries (discoveries/discovery-list)))
+    db))
 
 (register-handler :discovery-response-received
   (u/side-effect!
@@ -29,15 +30,14 @@
         (dispatch [:add-discovery discovery])))))
 
 (register-handler :broadcast-status
-  (fn [{:keys [name] :as db} [_ status hashtags]]
-    (api/broadcast-discover-status name status hashtags)
-    db))
+  (u/side-effect!
+    (fn [{:keys [name]} [_ status hashtags]]
+      (api/broadcast-discover-status name status hashtags))))
 
 (register-handler :show-discovery-tag
   (fn [db [_ tag]]
-    (let [db (set-current-tag db tag)]
-      (dispatch [:navigate-to :discovery-tag])
-      db)))
+    (dispatch [:navigate-to :discovery-tag])
+    (assoc db :current-tag tag)))
 
 ;; todo remove this
 (register-handler :create-fake-discovery!

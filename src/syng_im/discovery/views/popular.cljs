@@ -6,7 +6,7 @@
                                       text]]
     [syng-im.components.carousel.carousel :refer [carousel]]
     [syng-im.discovery.styles :as st]
-    [syng-im.discovery.discovery-popular-list :refer [discovery-popular-list]]))
+    [syng-im.discovery.views.popular-list :refer [discovery-popular-list]]))
 
 (defn page-width []
   (.-width (.get (.. js/React -Dimensions) "window")))

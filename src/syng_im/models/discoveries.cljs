@@ -5,15 +5,6 @@
             [syng-im.persistence.realm :as r]
             [syng-im.db :as db]))
 
-(defn current-tag-updated? [db]
-  (get-in db db/updated-current-tag-signal-path))
-
-(defn current-tag [db]
-  (get-in db db/current-tag-path))
-
-(defn set-current-tag [db tag]
-  (assoc-in db db/current-tag-path tag))
-
 (defn get-tag [tag]
   (log/debug "Getting tag: " tag)
   (-> (r/get-by-field :tag :name tag)
