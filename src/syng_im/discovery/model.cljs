@@ -1,9 +1,8 @@
-(ns syng-im.models.discoveries
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.utils.logging :as log]
+(ns syng-im.discovery.model
+  ;syng-im.models.discoveries
+  (:require [syng-im.utils.logging :as log]
             [syng-im.persistence.realm :as realm]
-            [syng-im.persistence.realm :as r]
-            [syng-im.db :as db]))
+            [syng-im.persistence.realm :as r]))
 
 (defn get-tag [tag]
   (log/debug "Getting tag: " tag)
@@ -87,9 +86,4 @@
   (-> (r/get-all :tag)
       (r/sorted :count :desc)
       r/collection->map))
-
-(defn get-tag-popular [limit]
-  (-> (r/get-all :tag)
-      (r/sorted :count :desc)
-      (r/page 0 limit)))
 

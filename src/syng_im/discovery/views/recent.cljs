@@ -17,6 +17,7 @@
 (defn discovery-recent []
   (let [discoveries (subscribe [:get :discoveries])]
     (fn []
+      ;; todo fetch more on :onEndReached
       [list-view {:dataSource      (to-datasource2 @discoveries)
                   :renderRow       render-row
                   :renderSeparator render-separator
