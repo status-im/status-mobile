@@ -11,6 +11,30 @@
                                                text2-color
                                                toolbar-background1]]))
 
+(def modal-container
+  {:flex           1
+   :justifyContent :center
+   :padding        20})
+
+(def modal-inner-container
+  {:borderRadius    10
+   :alignItems      :center
+   :padding         5
+   :backgroundColor color-white})
+
+(def modal-member-name
+  {:color        text2-color
+   :fontFamily   font
+   :fontSize     14
+   :lineHeight   20})
+
+(def modal-remove-text
+  {:margin       10
+   :color        text1-color
+   :fontFamily   font
+   :fontSize     14
+   :lineHeight   20})
+
 (def chat-members-container
   {:marginBottom 10})
 

@@ -1,6 +1,11 @@
 (ns syng-im.group-settings.views.member
   (:require [clojure.string :as s]
-            [syng-im.components.react :refer [view image text icon touchable-highlight]]
+            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [syng-im.components.react :refer [view
+                                              image
+                                              text
+                                              icon
+                                              touchable-highlight]]
             [syng-im.resources :as res]
             [syng-im.group-settings.styles.member :as st]))
 
@@ -17,7 +22,7 @@
      [view st/online-dot-left]
      [view st/online-dot-right]]))
 
-(defn contact-inner-view [{:keys [name photo-path online role]}]
+(defn contact-inner-view [{:keys [whisper-identity name photo-path online role]}]
   [view st/contact-container
    [view st/photo-container
     [contact-photo {:photo-path photo-path}]
@@ -32,8 +37,7 @@
     (when role
       [text {:style st/role-text}
        role])]
-   [touchable-highlight {:on-press (fn []
-                                     ;; TODO not implemented
-                                     )}
+   [touchable-highlight
+    {:on-press #(dispatch [:select-group-chat-member whisper-identity])}
     [view st/more-btn
      [icon :more-vertical st/more-btn-icon]]]])
