@@ -36,6 +36,7 @@
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
                                   save-chat
+                                  chat-remove-member
                                   chat-add-participants
                                   chat-remove-participants
                                   set-chat-active
@@ -555,7 +556,7 @@
     (let [identities (vec (new-participants-selection db))
           chat-id    (current-chat-id db)]
       (chat-remove-participants chat-id identities)
-      (nav-pop navigator)
+      (dispatch [:navigate-back])
       (doseq [ident identities]
         (api/group-remove-participant chat-id ident)
         (removed-participant-msg chat-id ident))
@@ -573,7 +574,7 @@
     (let [identities (vec (new-participants-selection db))
           chat-id    (current-chat-id db)]
       (chat-add-participants chat-id identities)
-      (nav-pop navigator)
+      (dispatch [:navigate-back])
       (doseq [ident identities]
         (api/group-add-participant chat-id ident))
       db)))
@@ -609,6 +610,22 @@
   (fn [db [action chat-name]]
     (log/debug action)
     (assoc-in db db/group-settings-name-path chat-name)))
+
+(register-handler :select-group-chat-member
+  (fn [db [action identity]]
+    (log/debug action)
+    (assoc-in db db/group-settings-selected-member-path identity)))
+
+(register-handler :chat-remove-member
+  (fn [db [action identity]]
+    (log/debug action)
+    (let [chat-id (current-chat-id db)
+          db      (chat-remove-member db identity)]
+      (dispatch [:select-group-chat-member nil])
+      ;; TODO uncomment
+      ;; (api/group-remove-participant chat-id identity)
+      ;; (removed-participant-msg chat-id identity)
+      (signal-chat-updated db chat-id))))
 
 (register-handler :save-group-chat
   (fn [db [action]]

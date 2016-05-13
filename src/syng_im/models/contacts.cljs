@@ -95,16 +95,20 @@
   (r/sorted (r/get-all :contacts) :name :asc))
 
 (defn contacts-list-exclude [exclude-idents]
-  (let [query (exclude-query :whisper-identity exclude-idents)]
-    (-> (r/get-all :contacts)
-        (r/filtered query)
-        (r/sorted :name :asc))))
+  (if (empty? exclude-idents)
+    (contacts-list)
+    (let [query (exclude-query :whisper-identity exclude-idents)]
+      (-> (r/get-all :contacts)
+          (r/filtered query)
+          (r/sorted :name :asc)))))
 
 (defn contacts-list-include [include-indents]
-  (let [query (include-query :whisper-identity include-indents)]
-    (-> (r/get-all :contacts)
-        (r/filtered query)
-        (r/sorted :name :asc))))
+  (if (empty? include-indents)
+    ()
+    (let [query (include-query :whisper-identity include-indents)]
+      (-> (r/get-all :contacts)
+          (r/filtered query)
+          (r/sorted :name :asc)))))
 
 (defn contact-by-identity [identity]
   (if (= identity "console")
