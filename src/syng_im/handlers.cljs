@@ -7,14 +7,13 @@
     [syng-im.protocol.protocol-handler :refer [make-handler]]
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
-    [syng-im.models.user-data :as user-data]
     [syng-im.models.contacts :as contacts]
     [syng-im.models.messages :refer [save-message
                                      update-message!
                                      message-by-id]]
     [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
-    [syng-im.handlers.suggestions :refer [get-command
+    [syng-im.chat.suggestions :refer [get-command
                                           handle-command
                                           get-command-handler
                                           load-commands
@@ -37,8 +36,8 @@
     [syng-im.utils.crypt :refer [gen-random-bytes]]
     [syng-im.utils.random :as random]
     syng-im.chat.handlers
-    syng-im.navigation.handlers
-    syng-im.components.discovery.handlers
+    [syng-im.navigation.handlers :as nav]
+    syng-im.discovery.handlers
     syng-im.contacts.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
@@ -62,7 +61,12 @@
     (fn [db [_ k v]]
       (assoc db k v))))
 
+(defn preload-data!
+  [{:keys [view-id] :as db} _]
+  (nav/preload-data! db [nil view-id]))
+
 (register-handler :initialize-db
+  (enrich preload-data!)
   (fn [_ _] app-db))
 
 (register-handler :set-loading
@@ -218,15 +222,10 @@
       (left-chat-msg chat-id))))
 
 ;; -- User data --------------------------------------------------------------
-
-(register-handler :set-user-phone-number
-  (fn [db [_ value]]
-    (assoc db :user-phone-number value)))
-
 (register-handler :load-user-phone-number
   (fn [db [_]]
-    (user-data/load-phone-number)
-    db))
+    ;; todo fetch phone number from db
+    (assoc db :user-phone-number "123")))
 
 ;; -- Chats --------------------------------------------------------------
 (defn update-new-participants-selection [db identity add?]

@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [register-handler enrich after debug]]
             [syng-im.models.commands :as commands]
             [clojure.string :as str]
-            [syng-im.handlers.suggestions :as suggestions]
+            [syng-im.chat.suggestions :as suggestions]
             [syng-im.protocol.api :as api]
             [syng-im.models.messages :as messages]
             [syng-im.constants :refer [text-content-type
@@ -221,6 +221,7 @@
 
 (register-handler :sign-up
   (-> (fn [db [_ phone-number]]
+        ;; todo save phone number to db
         (assoc db :user-phone-number phone-number))
       ((after (fn [& _] (sign-up-service/on-sign-up-response))))))
 

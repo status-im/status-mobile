@@ -1,4 +1,4 @@
-(ns syng-im.components.discovery.discovery-tag
+(ns syng-im.discovery.discovery-tag
   (:require
     [re-frame.core :refer [subscribe]]
     [syng-im.utils.logging :as log]
@@ -11,8 +11,8 @@
     [syng-im.components.realm :refer [list-view]]
     [syng-im.components.toolbar :refer [toolbar]]
     [reagent.core :as r]
-    [syng-im.components.discovery.discovery-popular-list-item :refer [discovery-popular-list-item]]
-    [syng-im.components.discovery.styles :as st]))
+    [syng-im.discovery.discovery-popular-list-item :refer [discovery-popular-list-item]]
+    [syng-im.discovery.styles :as st]))
 
 (defn render-row [row section-id row-id]
   (log/debug "discovery-tag-row: " row section-id row-id)

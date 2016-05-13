@@ -1,5 +1,5 @@
 (ns syng-im.navigation.handlers
-  (:require [re-frame.core :refer [register-handler dispatch debug]]))
+  (:require [re-frame.core :refer [register-handler dispatch debug enrich]]))
 
 (defn push-view [db view-id]
   (-> db
@@ -17,7 +17,11 @@
       (update :navigation-stack replace-top-element view-id)
       (assoc :view-id view-id)))
 
+(defmulti preload-data! (fn [_ [_ view-id]] view-id))
+(defmethod preload-data! :default [db _] db)
+
 (register-handler :navigate-to
+  (enrich preload-data!)
   (fn [db [_ view-id]]
     (push-view db view-id)))
 

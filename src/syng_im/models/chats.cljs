@@ -8,7 +8,6 @@
             [syng-im.models.messages :refer [save-message]]
             [syng-im.persistence.realm-queries :refer [include-query]]))
 
-
 (defn chat-name-from-contacts [identities]
   (let [chat-name (->> identities
                        (map (fn [identity]

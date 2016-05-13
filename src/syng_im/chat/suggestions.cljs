@@ -1,4 +1,4 @@
-(ns syng-im.handlers.suggestions
+(ns syng-im.chat.suggestions
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.db :as db]
             [syng-im.models.commands :refer [commands
@@ -8,7 +8,6 @@
                                              get-chat-command-to-msg-id
                                              clear-staged-commands]]
             [syng-im.utils.utils :refer [log on-error http-get]]
-            [syng-im.utils.logging :as log]
             [clojure.string :as s]))
 
 (defn suggestion? [text]

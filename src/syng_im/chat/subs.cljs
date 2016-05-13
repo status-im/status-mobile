@@ -3,7 +3,7 @@
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.db :as db]
     ;todo handlers in subs?...
-            [syng-im.handlers.suggestions :refer [get-suggestions]]
+            [syng-im.chat.suggestions :refer [get-suggestions]]
             [syng-im.models.commands :as commands]))
 
 (register-sub :chat-properties

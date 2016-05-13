@@ -2,12 +2,12 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.models.chats :refer [chats-list chat-by-id]]
-            [syng-im.models.contacts :refer [contacts-list
+            [syng-im.models.contacts :refer [get-contacts
                                              contacts-list-exclude
                                              contacts-list-include]]
             syng-im.chat.subs
             syng-im.navigation.subs
-            syng-im.components.discovery.subs
+            syng-im.discovery.subs
             syng-im.contacts.subs))
 
 ;; -- Chats list --------------------------------------------------------------
@@ -17,12 +17,6 @@
     (reaction (k @db))))
 
 ;; -- User data --------------------------------------------------------------
-
-;; (register-sub
-;;   :get-user-phone-number
-;;   (fn [db _]
-;;     (reaction
-;;       (get @db :user-phone-number))))
 
 (register-sub
   :signed-up
@@ -36,7 +30,7 @@
 
 (register-sub :all-contacts
   (fn [_ _]
-    (reaction (contacts-list))))
+    (reaction (get-contacts))))
 
 (register-sub :all-new-contacts
   (fn [db _]

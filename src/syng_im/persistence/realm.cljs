@@ -44,28 +44,28 @@
                      :properties {:chat-id     "string"
                                   :name        "string"
                                   :group-chat  {:type    "bool"
-                                               :indexed true}
-                                  :is-active  "bool"
-                                  :timestamp  "int"
-                                  :contacts   {:type       "list"
-                                               :objectType "chat-contact"}
+                                                :indexed true}
+                                  :is-active   "bool"
+                                  :timestamp   "int"
+                                  :contacts    {:type       "list"
+                                                :objectType "chat-contact"}
                                   :last-msg-id "string"}}
-                    {:name        :tag
-                     :primaryKey  :name
-                     :properties  {:name         "string"
-                                   :count        {:type     "int"
-                                                  :optional true
-                                                  :default 0}}}
-                    {:name        :discoveries
-                     :primaryKey  :whisper-id
-                     :properties  {:name         "string"
-                                   :status       "string"
-                                   :whisper-id   "string"
-                                   :photo        "string"
-                                   :location     "string"
-                                   :tags         {:type       "list"
-                                                  :objectType "tag"}
-                                   :last-updated "date"}}]})
+                    {:name       :tag
+                     :primaryKey :name
+                     :properties {:name  "string"
+                                  :count {:type     "int"
+                                          :optional true
+                                          :default  0}}}
+                    {:name       :discoveries
+                     :primaryKey :whisper-id
+                     :properties {:name         "string"
+                                  :status       "string"
+                                  :whisper-id   "string"
+                                  :photo        "string"
+                                  :location     "string"
+                                  :tags         {:type       "list"
+                                                 :objectType "tag"}
+                                  :last-updated "date"}}]})
 
 (def realm (js/Realm. (clj->js opts)))
 
