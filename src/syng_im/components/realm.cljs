@@ -7,15 +7,3 @@
 
 (defn list-view [props]
   [list-view-class (merge {:enableEmptySections true} props)])
-
-(comment
-
-
-  ;(set! js/wat (js/require "realm.react-native.ListView"))
-  ;(.-Results js/Realm)
-  ;
-  ;(r/realm)
-  ;
-  ;(require '[syng-im.persistence.realm :as r])
-
-  )

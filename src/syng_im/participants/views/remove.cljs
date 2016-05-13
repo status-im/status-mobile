@@ -2,34 +2,32 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view text-input text image
-                                              touchable-highlight]]
-            [syng-im.components.realm :refer [list-view]]
+                                              touchable-highlight list-view
+                                              list-item]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.utils.listview :refer [to-realm-datasource]]
+            [syng-im.utils.listview :refer [to-datasource2]]
             [syng-im.participants.views.contact
              :refer [participant-contact]]
             [reagent.core :as r]
             [syng-im.participants.styles :as st]))
 
-(defn remove-participants-toolbar [navigator]
+(defn remove-participants-toolbar []
   [toolbar
-   {:navigator navigator
-    :title     "Remove Participants"
-    :action    {:handler #(dispatch [:remove-selected-participants navigator])
+   {:title     "Remove Participants"
+    :action    {:handler #(dispatch [:remove-selected-participants])
                 :image   {:source res/trash-icon            ;; {:uri "icon_search"}
                           :style  st/remove-participants-image}}}])
 
 (defn remove-participants-row
   [row _ _]
-  (r/as-element
-    [participant-contact (js->clj row :keywordize-keys true)]))
+  (r/as-element [participant-contact row]))
 
-(defn remove-participants [{:keys [navigator]}]
+(defn remove-participants []
   (let [contacts (subscribe [:current-chat-contacts])]
     (fn []
-      (let [contacts-ds (to-realm-datasource @contacts)]
+      (let [contacts-ds (to-datasource2 @contacts)]
         [view st/participants-container
-         [remove-participants-toolbar navigator]
+         [remove-participants-toolbar]
          [list-view {:dataSource contacts-ds
                      :renderRow  remove-participants-row
                      :style      st/participants-list}]]))))

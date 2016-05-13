@@ -6,39 +6,46 @@
                                               text
                                               image
                                               icon
-                                              touchable-highlight]]
+                                              touchable-highlight
+                                              list-view
+                                              list-item]]
             [syng-im.components.styles :refer [color-purple]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.components.realm :refer [list-view]]
-            [syng-im.utils.listview :refer [to-realm-datasource]]
+            [syng-im.utils.listview :refer [to-datasource2]]
             [syng-im.new-group.views.contact :refer [new-group-contact]]
-            [reagent.core :as r]
             [syng-im.new-group.styles :as st]))
 
 
-(defn new-group-toolbar [group-name]
-  [toolbar {:title  "New group chat"
-            :action {:image   {:source res/v                ;; {:uri "icon_search"}
-                               :style  st/toolbar-icon}
-                     :handler #(dispatch [:create-new-group group-name])}}])
+(defn new-group-toolbar []
+  (let [group-name (subscribe [:get ::group-name])]
+    (fn []
+      [toolbar
+       {:title  "New group chat"
+        :action {:image   {:source res/v                    ;; {:uri "icon_search"}
+                           :style  st/toolbar-icon}
+                 :handler #(dispatch [:create-new-group @group-name])}}])))
+
+(defn group-name-input []
+  (let [group-name (subscribe [:get ::group-name])]
+    (fn []
+      [text-input
+       {:underlineColorAndroid color-purple
+        :style                 st/group-name-input
+        :autoFocus             true
+        :placeholder           "Group Name"
+        :onChangeText          #(dispatch [:set ::group-name %])
+        :onSubmitEditing       #(dispatch [:set ::group-name nil])}
+       @group-name])))
 
 (defn new-group []
-  (let [contacts   (subscribe [:all-contacts])
-        group-name (subscribe [:get ::group-name])]
+  (let [contacts (subscribe [:all-contacts])]
     (fn []
-      (let [contacts-ds (to-realm-datasource @contacts)]
+      (let [contacts-ds (to-datasource2 @contacts)]
         [view st/new-group-container
-         [new-group-toolbar @group-name]
+         [new-group-toolbar]
          [view st/chat-name-container
           [text {:style st/chat-name-text} "Chat name"]
-          [text-input
-           {:underlineColorAndroid color-purple
-            :style                 st/group-name-input
-            :autoFocus             true
-            :placeholder           "Group Name"
-            :onChangeText          #(dispatch [:set ::group-name %])
-            :onSubmitEditing       #(dispatch [:set ::group-name nil])}
-           @group-name]
+          [group-name-input]
           [text {:style st/members-text} "Members"]
           [touchable-highlight {:on-press (fn [])}
            [view st/add-container
@@ -47,6 +54,5 @@
           [list-view
            {:dataSource contacts-ds
             :renderRow  (fn [row _ _]
-                          (let [row' (js->clj row :keywordize-keys true)]
-                            (r/as-element [new-group-contact row'])))
+                          (list-item [new-group-contact row]))
             :style      st/contacts-list}]]]))))

@@ -29,32 +29,30 @@
     (reaction (:contacts @db))))
 
 (register-sub :all-contacts
-  (fn [_ _]
-    (reaction (get-contacts))))
+  (fn [db _]
+    (let [contacts (reaction (:contacts @db))]
+      (reaction (sort-by :name @contacts)))))
+
+(defn contacts-by-current-chat [fn db]
+  (let [current-chat-id (:current-chat-id @db)
+        chat            (reaction (get-in @db [:chats current-chat-id]))
+        contacts        (reaction (:contacts @db))]
+    (reaction
+      (when @chat
+        (let [current-participants (->> @chat
+                                        :contacts
+                                        (map :identity)
+                                        set)]
+          (fn #(current-participants (:whisper-identity %))
+                  @contacts))))))
 
 (register-sub :all-new-contacts
   (fn [db _]
-    (let [current-chat-id (reaction (:current-chat-id @db))
-          chat            (reaction (when-let [chat-id @current-chat-id]
-                                      (chat-by-id chat-id)))]
-      (reaction
-        (when @chat
-          (let [current-participants (->> @chat
-                                          :contacts
-                                          (map :identity))]
-            (contacts-list-exclude current-participants)))))))
+    (contacts-by-current-chat remove db)))
 
 (register-sub :current-chat-contacts
   (fn [db _]
-    (let [current-chat-id (reaction (:current-chat-id @db))
-          chat            (reaction (when-let [chat-id @current-chat-id]
-                                      (chat-by-id chat-id)))]
-      (reaction
-        (when @chat
-          (let [current-participants (->> @chat
-                                          :contacts
-                                          (map :identity))]
-            (contacts-list-include current-participants)))))))
+    (contacts-by-current-chat filter db)))
 
 (register-sub :db
   (fn [db _] (reaction @db)))
