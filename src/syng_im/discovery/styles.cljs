@@ -173,3 +173,15 @@
 (def icon-search
   {:width  17
    :height 17})
+
+(def discovery-container
+  {:flex            1
+   :backgroundColor :#eef2f5})
+
+(def hamburger-icon
+  {:width  16
+   :height 12})
+
+(def search-icon
+  {:width  17
+   :height 17})

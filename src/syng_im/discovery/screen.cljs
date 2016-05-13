@@ -33,24 +33,21 @@
   []
   (let [show-search (subscribe [:get ::show-search])]
     (fn []
-      [view {:flex            1
-             :backgroundColor :#eef2f5}
+      [view st/discovery-container
        [toolbar
         {:style      st/discovery-toolbar
          :nav-action {:image   {:source {:uri :icon_hamburger}
-                                :style  {:width  16
-                                         :height 12}}
+                                :style  st/hamburger-icon}
                       :handler #(dispatch [:create-fake-discovery!])}
          :title      "Add Participants"
          :content    [title-content @show-search]
          :action     {:image   {:source {:uri :icon_search}
-                                :style  {:width  17
-                                         :height 17}}
+                                :style  st/search-icon}
                       :handler #(toogle-search @show-search)}}]
        [scroll-view {:style {}}
-          [view st/section-spacing
-           [text {:style st/discovery-subtitle} "Popular tags"]]
-          [popular]
-          [view st/section-spacing
-           [text {:style st/discovery-subtitle} "Recent"]]
-          [discovery-recent]]])))
+        [view st/section-spacing
+         [text {:style st/discovery-subtitle} "Popular tags"]]
+        [popular]
+        [view st/section-spacing
+         [text {:style st/discovery-subtitle} "Recent"]]
+        [discovery-recent]]])))
