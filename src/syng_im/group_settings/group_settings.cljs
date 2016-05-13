@@ -36,29 +36,26 @@
       [text {:style st/modal-remove-text}
        "Remove"]]]]])
 
-(defn set-group-settings-name [chat-name]
-  (dispatch [:set-group-settings-name chat-name]))
-
-(defn save-group-chat []
-  (dispatch [:save-group-chat]))
+(defn set-group-chat-name [chat-name]
+  (dispatch [:set-group-chat-name chat-name]))
 
 (defn chat-members [members]
   [view st/chat-members-container
    (for [member members]
      ^{:key member} [contact-inner-view member])])
 
-(defn action-save []
-  [touchable-highlight
-   {:on-press save-group-chat}
-   [view st/save-btn
-    [text {:style st/save-btn-text} "S"]]])
+(defn chat-icon []
+  (let [chat-name (subscribe [:get-current-chat-name])]
+    (fn []
+      [view st/chat-icon
+       [text {:style st/chat-icon-text} (nth @chat-name 0)]])))
 
 (defn new-group-toolbar []
   [toolbar {:title         "Chat settings"
-            :custom-action [action-save]}])
+            :custom-action [chat-icon]}])
 
 (defn group-settings []
-  (let [chat-name       (subscribe [:group-settings-name])
+  (let [chat-name       (subscribe [:get-current-chat-name])
         members         (subscribe [:current-chat-contacts])
         selected-member (subscribe [:selected-group-chat-member])]
     (fn []
@@ -70,7 +67,7 @@
                     :underlineColorAndroid color-purple
                     :autoFocus             true
                     :placeholderTextColor  text2-color
-                    :onChangeText          set-group-settings-name}
+                    :onChangeText          set-group-chat-name}
         @chat-name]
        [text {:style st/members-text}
         "Members"]

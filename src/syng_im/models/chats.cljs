@@ -9,9 +9,9 @@
             [syng-im.constants :refer [content-type-status]]
             [syng-im.models.messages :refer [save-message]]
             [syng-im.persistence.realm-queries :refer [include-query]]
-            [syng-im.models.chat :refer [current-chat
-                                         signal-chat-updated
-                                         get-group-settings]]))
+            [syng-im.models.chat :refer [current-chat-id
+                                         current-chat
+                                         signal-chat-updated]]))
 
 (defn signal-chats-updated [db]
   (update-in db db/updated-chats-signal-path (fn [current]
@@ -78,19 +78,13 @@
        (add-status-message chat-id)
        (signal-chats-updated db)))))
 
-(defn save-chat [db]
-  (let [chat-settings (get-group-settings db)
-        chat-id       (:chat-id chat-settings)]
-    (r/write
-     (fn []
-       ;; TODO UNDONE contacts
-       (r/create :chats
-                 (select-keys chat-settings [:chat-id :name]) true)))
-    ;; TODO update chat in db atom
-    (dispatch [:initialize-chats])
-    (-> db
-        (signal-chats-updated)
-        (signal-chat-updated chat-id))))
+(defn set-group-chat-name [db name]
+  (let [chat-id (current-chat-id db)]
+    (r/write (fn []
+               (-> (r/get-by-field :chats :chat-id chat-id)
+                   (r/single)
+                   (aset "name" name))))
+    (assoc-in db (db/chat-name-path chat-id) name)))
 
 (defn chat-contacts [chat-id]
   (-> (r/get-by-field :chats :chat-id chat-id)
@@ -160,7 +154,7 @@
                         (aset object "is-in-chat" false))))))))
 
 (defn chat-remove-member [db identity]
-  (let [chat    (current-chat db)]
+  (let [chat (current-chat db)]
     (r/write
      (fn []
        (r/create :chats

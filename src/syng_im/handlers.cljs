@@ -35,7 +35,7 @@
     [syng-im.components.discovery.handlers :as discovery]
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
-                                  save-chat
+                                  set-group-chat-name
                                   chat-remove-member
                                   chat-add-participants
                                   chat-remove-participants
@@ -45,7 +45,6 @@
     [syng-im.models.chat :refer [signal-chat-updated
                                  set-current-chat-id
                                  current-chat-id
-                                 set-group-settings
                                  update-new-group-selection
                                  update-new-participants-selection
                                  clear-new-group
@@ -602,14 +601,13 @@
 (register-handler :show-group-settings
   (fn [db [action]]
     (log/debug action)
-    (let [db (set-group-settings db)]
-      (dispatch [:navigate-to :group-settings])
-      db)))
+    (dispatch [:navigate-to :group-settings])
+    db))
 
-(register-handler :set-group-settings-name
+(register-handler :set-group-chat-name
   (fn [db [action chat-name]]
     (log/debug action)
-    (assoc-in db db/group-settings-name-path chat-name)))
+    (set-group-chat-name db chat-name)))
 
 (register-handler :select-group-chat-member
   (fn [db [action identity]]
@@ -622,17 +620,10 @@
     (let [chat-id (current-chat-id db)
           db      (chat-remove-member db identity)]
       (dispatch [:select-group-chat-member nil])
-      ;; TODO uncomment
+      ;; TODO fix and uncomment
       ;; (api/group-remove-participant chat-id identity)
       ;; (removed-participant-msg chat-id identity)
       (signal-chat-updated db chat-id))))
-
-(register-handler :save-group-chat
-  (fn [db [action]]
-    (log/debug action)
-    (let [db (save-chat db)]
-      (dispatch [:navigate-back])
-      db)))
 
 (register-handler :group-chat-invite-received
   (fn [db [action from group-id identities group-name]]

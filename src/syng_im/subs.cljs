@@ -5,7 +5,6 @@
             [syng-im.components.discovery.subs :as discovery]
             [syng-im.models.chat :refer [current-chat-id
                                          current-chat
-                                         get-group-settings
                                          chat-updated?]]
             [syng-im.models.chats :refer [chats-list
                                           chats-updated?
@@ -92,6 +91,10 @@
     (let [current-chat-id (current-chat-id @db)]
       (reaction (get-in @db [:chats current-chat-id])))))
 
+(register-sub :get-current-chat-name
+  (fn [db _]
+    (let [current-chat-id (current-chat-id @db)]
+      (reaction (get-in @db (db/chat-name-path current-chat-id :name))))))
 
 
 ;; -- User data --------------------------------------------------------------
@@ -177,13 +180,8 @@
                                           (map :identity))]
             (contacts-list-include current-participants)))))))
 
-;; TODO for new group only?
-(register-sub :group-settings-name
-  (fn [db [_]]
-    (reaction (get-in @db db/group-settings-name-path))))
-
 (register-sub :selected-group-chat-member
-  (fn [db [_]]
+              (fn [db [_]]
     (reaction
      (let [identity (get-in @db db/group-settings-selected-member-path)]
        (contact-by-identity identity)))))
