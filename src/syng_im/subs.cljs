@@ -94,7 +94,7 @@
 (register-sub :get-current-chat-name
   (fn [db _]
     (let [current-chat-id (current-chat-id @db)]
-      (reaction (get-in @db (db/chat-name-path current-chat-id :name))))))
+      (reaction (get-in @db (db/chat-name-path current-chat-id))))))
 
 
 ;; -- User data --------------------------------------------------------------

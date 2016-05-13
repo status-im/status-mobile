@@ -14,7 +14,7 @@
                                                text2-color]]
             [syng-im.group-settings.styles.group-settings :as st]
             [syng-im.utils.listview :refer [to-realm-datasource]]
-            [syng-im.group-settings.views.member :refer [contact-inner-view]]
+            [syng-im.group-settings.views.member :refer [member-view]]
             [reagent.core :as r]))
 
 (defn remove-member [{:keys [whisper-identity]}]
@@ -36,13 +36,13 @@
       [text {:style st/modal-remove-text}
        "Remove"]]]]])
 
-(defn set-group-chat-name [chat-name]
-  (dispatch [:set-group-chat-name chat-name]))
-
 (defn chat-members [members]
   [view st/chat-members-container
    (for [member members]
-     ^{:key member} [contact-inner-view member])])
+     ^{:key member} [member-view member])])
+
+(defn show-chat-name-edit []
+  (dispatch [:navigate-to :chat-name-edit]))
 
 (defn chat-icon []
   (let [chat-name (subscribe [:get-current-chat-name])]
@@ -63,12 +63,13 @@
        [new-group-toolbar]
        [text {:style st/chat-name-text}
         "Chat name"]
-       [text-input {:style                 st/chat-name-input
-                    :underlineColorAndroid color-purple
-                    :autoFocus             true
-                    :placeholderTextColor  text2-color
-                    :onChangeText          set-group-chat-name}
-        @chat-name]
+       [view st/chat-name-value-container
+        [text {:style st/chat-name-value}
+         @chat-name]
+        [touchable-highlight {:style st/chat-name-btn-edit-container
+                              :on-press show-chat-name-edit}
+         [text {:style st/chat-name-btn-edit-text}
+          "Edit"]]]
        [text {:style st/members-text}
         "Members"]
        [touchable-highlight {:on-press (fn []

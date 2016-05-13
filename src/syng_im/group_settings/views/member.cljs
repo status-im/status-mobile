@@ -22,7 +22,7 @@
      [view st/online-dot-left]
      [view st/online-dot-right]]))
 
-(defn contact-inner-view [{:keys [whisper-identity name photo-path online role]}]
+(defn member-view [{:keys [whisper-identity name photo-path online role]}]
   [view st/contact-container
    [view st/photo-container
     [contact-photo {:photo-path photo-path}]
