@@ -12,8 +12,7 @@
                                                color-purple
                                                text1-color
                                                text2-color
-                                               toolbar-background1]]
-            [syng-im.utils.listview :refer [to-realm-datasource]]))
+                                               toolbar-background1]]))
 
 (defn toolbar [{:keys [title nav-action action background-color content style]}]
   (let [style (merge {:flexDirection   :row

@@ -1,11 +1,12 @@
 (ns syng-im.chats-list.screen
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [syng-im.components.react :refer [view
+            [syng-im.components.react :refer [list-view
+                                              list-item
+                                              view
                                               text
                                               image
                                               touchable-highlight]]
-            [syng-im.components.realm :refer [list-view]]
-            [syng-im.utils.listview :refer [to-realm-datasource]]
+            [syng-im.utils.listview :refer [to-datasource2]]
             [reagent.core :as r]
             [syng-im.chats-list.views.chat-list-item :refer [chat-list-item]]
             [syng-im.components.action-button :refer [action-button
@@ -28,24 +29,22 @@
 (defn chats-list []
   (let [chats (subscribe [:get :chats])]
     (fn []
-      (let [chats      @chats
-            datasource (to-realm-datasource chats)]
-        [view st/chats-container
-         [chats-list-toolbar]
-         [list-view {:dataSource datasource
-                     :renderRow  (fn [row _ _]
-                                   (r/as-element [chat-list-item row]))
-                     :style      st/list-container}]
-         [action-button {:buttonColor color-blue}
-          [action-button-item
-           {:title       "New Chat"
-            :buttonColor :#9b59b6
-            :onPress     #(dispatch [:navigate-to :contact-list])}
-           [icon {:name  :android-create
-                  :style st/create-icon}]]
-          [action-button-item
-           {:title       "New Group Chat"
-            :buttonColor :#1abc9c
-            :onPress     #(dispatch [:show-group-new])}
-           [icon {:name  :person-stalker
-                  :style st/person-stalker-icon}]]]]))))
+      [view st/chats-container
+       [chats-list-toolbar]
+       [list-view {:dataSource (to-datasource2 (vals @chats))
+                   :renderRow  (fn [row _ _]
+                                 (list-item [chat-list-item row]))
+                   :style      st/list-container}]
+       [action-button {:buttonColor color-blue}
+        [action-button-item
+         {:title       "New Chat"
+          :buttonColor :#9b59b6
+          :onPress     #(dispatch [:navigate-to :contact-list])}
+         [icon {:name  :android-create
+                :style st/create-icon}]]
+        [action-button-item
+         {:title       "New Group Chat"
+          :buttonColor :#1abc9c
+          :onPress     #(dispatch [:show-group-new])}
+         [icon {:name  :person-stalker
+                :style st/person-stalker-icon}]]]])))

@@ -2,7 +2,7 @@
   (:require
     [re-frame.core :refer [subscribe]]
     [syng-im.components.react :refer [view list-view list-item]]
-    [syng-im.utils.listview :refer [to-realm-datasource to-datasource2]]
+    [syng-im.utils.listview :refer [to-datasource2]]
     [syng-im.discovery.styles :as st]
     [syng-im.discovery.views.popular-list-item
      :refer [popular-list-item]]))

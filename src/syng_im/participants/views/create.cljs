@@ -1,10 +1,9 @@
 (ns syng-im.participants.views.create
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.resources :as res]
-            [syng-im.components.react :refer [view]]
-            [syng-im.components.realm :refer [list-view]]
+            [syng-im.components.react :refer [view list-view list-item]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.utils.listview :refer [to-realm-datasource]]
+            [syng-im.utils.listview :refer [to-datasource2]]
             [syng-im.participants.views.contact
              :refer [participant-contact]]
             [reagent.core :as r]
@@ -20,13 +19,12 @@
 
 (defn new-participants-row
   [row _ _]
-  (r/as-element
-    [participant-contact (js->clj row :keywordize-keys true)]))
+  (list-item [participant-contact row]))
 
 (defn new-participants [{:keys [navigator]}]
   (let [contacts (subscribe [:all-new-contacts])]
     (fn []
-      (let [contacts-ds (to-realm-datasource @contacts)]
+      (let [contacts-ds (to-datasource2 @contacts)]
         [view st/participants-container
          [new-participants-toolbar navigator]
          [list-view {:dataSource contacts-ds

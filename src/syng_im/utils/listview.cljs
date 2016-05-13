@@ -5,12 +5,6 @@
 (defn to-datasource [items]
   (clone-with-rows (data-source {:rowHasChanged not=}) items))
 
-(defn to-realm-datasource [items]
-  (-> (cljs.core/clj->js {:rowHasChanged not=})
-      (js/RealmReactNative.ListView.DataSource.)
-      (clone-with-rows items)))
-
-
 (defn clone-with-rows2 [ds rows]
   (.cloneWithRows ds (reduce (fn [ac el] (.push ac el) ac)
                              (clj->js []) rows)))

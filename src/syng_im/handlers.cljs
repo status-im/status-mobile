@@ -238,12 +238,12 @@
     (update-new-participants-selection db identity add?)))
 
 (register-handler :remove-selected-participants
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
     (let [identities (vec (:new-participants db))
           chat-id    (:current-chat-id db)]
       (chat-remove-participants chat-id identities)
-      (nav-pop navigator)
+      (dispatch [:navigate-back])
       (doseq [ident identities]
         (api/group-remove-participant chat-id ident)
         (removed-participant-msg chat-id ident)))))
