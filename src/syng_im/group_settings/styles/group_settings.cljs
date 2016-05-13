@@ -1,5 +1,6 @@
 (ns syng-im.group-settings.styles.group-settings
   (:require [syng-im.components.styles :refer [font
+                                               font-medium
                                                title-font
                                                color-white
                                                color-purple
@@ -63,22 +64,42 @@
    :marginLeft   16
    :marginBottom 16
    :color        text2-color
-   :fontFamily   font
+   :fontFamily   font-medium
    :fontSize     14
    :lineHeight   20})
 
-(def chat-name-input
-  {:marginLeft 12
-   :fontSize   14
+(def chat-name-value-container
+  {:flexDirection     :row
+   :marginLeft        16
+   :height            56
+   :alignItems        :center
+   :justifyContent    :center
+   :borderBottomWidth 1
+   :borderBottomColor separator-color})
+
+(def chat-name-value
+  {:flex       1
+   :fontSize   16
    :fontFamily font
    :color      text1-color})
+
+(def chat-name-btn-edit-container
+  {:padding        16
+   :justifyContent :center})
+
+(def chat-name-btn-edit-text
+  {:marginTop    -1
+   :color        text2-color
+   :fontFamily   font
+   :fontSize     16
+   :lineHeight   20})
 
 (def members-text
   {:marginTop    24
    :marginLeft   16
    :marginBottom 16
    :color        text2-color
-   :fontFamily   font
+   :fontFamily   font-medium
    :fontSize     14
    :lineHeight   20})
 
@@ -90,15 +111,14 @@
    :height           17})
 
 (def add-members-container
-  {:flexDirection :row
-   :marginBottom  16})
+  {:flexDirection :row})
 
 (def add-members-text
   {:marginTop  18
    :marginLeft 32
    :color      text2-color
    :fontFamily font
-   :fontSize   14
+   :fontSize   16
    :lineHeight 20})
 
 (def settings-text
@@ -106,6 +126,6 @@
    :marginLeft   16
    :marginBottom 16
    :color        text2-color
-   :fontFamily   font
+   :fontFamily   font-medium
    :fontSize     14
    :lineHeight   20})
