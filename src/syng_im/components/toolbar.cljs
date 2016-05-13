@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text-input
+                                              icon
                                               text
                                               image
                                               touchable-highlight]]
@@ -30,23 +31,22 @@
        [touchable-highlight {:on-press #(dispatch [:navigate-back])}
         [view {:width  56
                :height 56}
-         [image {:source {:uri "icon_back"}
-                 :style  {:marginTop  21
-                          :marginLeft 23
-                          :width      8
-                          :height     14}}]]])
+         [icon :back {:marginTop  21
+                       :marginLeft 23
+                       :width      8
+                       :height     14}]]])
      (if content
-       [view {:style {:flex 1
-                      :alignItems :center
-                      :justifyContent :center}}
+       [view {:flex           1
+              :alignItems     :center
+              :justifyContent :center}
         content]
-       [view {:style {:flex           1
-                      :alignItems     :center
-                      :justifyContent :center}}
-        [text {:style {:marginTop  -2.5
-                       :color      text1-color
-                       :fontSize   16
-                       :fontFamily font}}
+       [view {:flex           1
+              :alignItems     :center
+              :justifyContent :center}
+        [text {:marginTop  -2.5
+               :color      text1-color
+               :fontSize   16
+               :fontFamily font}
          title]])
      [touchable-highlight {:on-press (:handler action)}
       [view {:width          56

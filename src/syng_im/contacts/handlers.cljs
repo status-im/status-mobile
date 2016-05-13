@@ -4,16 +4,12 @@
             [syng-im.utils.crypt :refer [encrypt]]
             [clojure.string :as s]
             [syng-im.utils.utils :refer [http-post]]
-            [syng-im.utils.phone-number :refer [format-phone-number]]))
-
-(defn side-effect! [handler]
-  (fn [db params]
-    (handler db params)
-    db))
+            [syng-im.utils.phone-number :refer [format-phone-number]]
+            [syng-im.utils.handlers :as u]))
 
 (defn save-contact
   [_ [_ contact]]
-  (contacts/save-syng-contacts [contact]))
+  (contacts/save-contacts [contact]))
 
 (register-handler :add-contact
   (-> (fn [db [_ contact]]
@@ -26,6 +22,7 @@
 
 (register-handler :load-syng-contacts load-contacts!)
 
+;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
 (def react-native-contacts (js/require "react-native-contacts"))
 
 (defn contact-name [contact]
@@ -51,7 +48,7 @@
                  (dispatch [:get-contacts-identities contacts']))))))
 
 (register-handler :sync-contacts
-  (side-effect! fetch-contacts-from-phone!))
+  (u/side-effect! fetch-contacts-from-phone!))
 
 (defn get-contacts-by-hash [contacts]
   (->> contacts
@@ -83,10 +80,10 @@
   (request-stored-contacts contacts))
 
 (register-handler :get-contacts-identities
-  (side-effect! get-identities-by-contacts!))
+  (u/side-effect! get-identities-by-contacts!))
 
 (defn save-contacts! [{:keys [new-contacts]} _]
-  (contacts/save-syng-contacts new-contacts))
+  (contacts/save-contacts new-contacts))
 
 (defn add-new-contacts
   [{:keys [contacts] :as db} [_ new-contacts]]

@@ -1,4 +1,4 @@
-(ns syng-im.components.discovery.styles
+(ns syng-im.discovery.styles
   (:require [syng-im.components.styles :refer [font
                                                title-font
                                                color-white
