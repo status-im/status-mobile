@@ -1,4 +1,5 @@
 (ns syng-im.discovery.views.popular
+  (:require-macros [syng-im.utils.views :refer [defview]])
   (:require
     [re-frame.core :refer [subscribe]]
     [syng-im.utils.logging :as log]
@@ -11,12 +12,11 @@
 (defn page-width []
   (.-width (.get (.. js/React -Dimensions) "window")))
 
-(defn popular []
-  (let [popular-tags (subscribe [:get-popular-tags 3])]
-    (log/debug "Got popular tags: " @popular-tags)
-    (if (pos? (count @popular-tags))
-      [carousel {:pageStyle st/carousel-page-style
-                 :sneak     20}
-       (for [{:keys [name count]} @popular-tags]
-         [discovery-popular-list name count])]
-      [text "None"])))
+(defview popular []
+  [popular-tags [:get-popular-tags 3]]
+  (if (pos? (count popular-tags))
+    [carousel {:pageStyle st/carousel-page-style
+               :sneak     20}
+     (for [{:keys [name count]} popular-tags]
+       [discovery-popular-list name count])]
+    [text "None"]))

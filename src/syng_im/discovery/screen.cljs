@@ -1,4 +1,5 @@
 (ns syng-im.discovery.screen
+  (:require-macros [syng-im.utils.views :refer [defview]])
   (:require
     [re-frame.core :refer [dispatch subscribe]]
     [syng-im.components.react :refer [view
@@ -29,25 +30,23 @@
 (defn toogle-search [current-value]
   (dispatch [:set ::show-search (not current-value)]))
 
-(defn discovery []
-  []
-  (let [show-search (subscribe [:get ::show-search])]
-    (fn []
-      [view st/discovery-container
-       [toolbar
-        {:style      st/discovery-toolbar
-         :nav-action {:image   {:source {:uri :icon_hamburger}
-                                :style  st/hamburger-icon}
-                      :handler #(dispatch [:create-fake-discovery!])}
-         :title      "Add Participants"
-         :content    [title-content @show-search]
-         :action     {:image   {:source {:uri :icon_search}
-                                :style  st/search-icon}
-                      :handler #(toogle-search @show-search)}}]
-       [scroll-view {:style {}}
-        [view st/section-spacing
-         [text {:style st/discovery-subtitle} "Popular tags"]]
-        [popular]
-        [view st/section-spacing
-         [text {:style st/discovery-subtitle} "Recent"]]
-        [discovery-recent]]])))
+(defview discovery []
+  [show-search [:get ::show-search]]
+  [view st/discovery-container
+   [toolbar
+    {:style      st/discovery-toolbar
+     :nav-action {:image   {:source {:uri :icon_hamburger}
+                            :style  st/hamburger-icon}
+                  :handler #(dispatch [:create-fake-discovery!])}
+     :title      "Add Participants"
+     :content    [title-content show-search]
+     :action     {:image   {:source {:uri :icon_search}
+                            :style  st/search-icon}
+                  :handler #(toogle-search show-search)}}]
+   [scroll-view {:style {}}
+    [view st/section-spacing
+     [text {:style st/discovery-subtitle} "Popular tags"]]
+    [popular]
+    [view st/section-spacing
+     [text {:style st/discovery-subtitle} "Recent"]]
+    [discovery-recent]]])
