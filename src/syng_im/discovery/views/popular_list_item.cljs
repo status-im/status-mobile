@@ -1,5 +1,4 @@
 (ns syng-im.discovery.views.popular-list-item
-  ;syng-im.discovery.views.popular-list-item
   (:require [syng-im.components.react :refer [view text image]]
             [syng-im.discovery.styles :as st]
             [reagent.core :as r]))
