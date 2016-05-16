@@ -96,6 +96,10 @@
     (let [current-chat-id (current-chat-id @db)]
       (reaction (get-in @db (db/chat-name-path current-chat-id))))))
 
+(register-sub :get-current-chat-color
+  (fn [db _]
+    (let [current-chat-id (current-chat-id @db)]
+      (reaction (get-in @db (db/chat-color-path current-chat-id))))))
 
 ;; -- User data --------------------------------------------------------------
 
@@ -181,10 +185,14 @@
             (contacts-list-include current-participants)))))))
 
 (register-sub :selected-group-chat-member
-              (fn [db [_]]
+  (fn [db [_]]
     (reaction
      (let [identity (get-in @db db/group-settings-selected-member-path)]
        (contact-by-identity identity)))))
+
+(register-sub :group-settings-show-color-picker
+  (fn [db [_]]
+    (reaction (get-in @db db/group-settings-show-color-picker))))
 
 (register-sub :view-id
   (fn [db _]

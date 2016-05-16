@@ -36,15 +36,28 @@
    :fontSize     14
    :lineHeight   20})
 
+(def modal-color-picker-inner-container
+  {:borderRadius    10
+   :padding         5
+   :backgroundColor color-white})
+
+(def modal-color-picker-save-btn-text
+  {:margin       10
+   :alignSelf    :center
+   :color        text1-color
+   :fontFamily   font
+   :fontSize     14
+   :lineHeight   20})
+
 (def chat-members-container
   {:marginBottom 10})
 
-(def chat-icon
+(defn chat-icon [color]
   {:margin          10
    :width           36
    :height          36
    :borderRadius    50
-   :backgroundColor color-purple})
+   :backgroundColor color})
 
 (def chat-icon-text
   {:marginTop  7
@@ -58,6 +71,10 @@
   {:flex            1
    :flexDirection   :column
    :backgroundColor color-white})
+
+(def body
+  {:flex          1
+   :flexDirection :column})
 
 (def chat-name-text
   {:marginTop    24
@@ -129,3 +146,40 @@
    :fontFamily   font-medium
    :fontSize     14
    :lineHeight   20})
+
+(def settings-container
+  {:flexDirection :column})
+
+(def setting-row
+  {:flexDirection :row
+   :height        56})
+
+(def setting-icon-view
+  {:width          56
+   :height         56
+   :alignItems     :center
+   :justifyContent :center})
+
+(def setting-view
+  {:flex           1
+   :marginLeft     16
+   :alignItems     :flex-start
+   :justifyContent :center})
+
+(def setting-title
+  {:marginTop  -2.5
+   :color      text1-color
+   :fontSize   16
+   :fontFamily font})
+
+(def setting-subtitle
+  {:marginTop  1
+   :color      text2-color
+   :fontSize   12
+   :fontFamily font})
+
+(defn chat-color-icon [color]
+  {:borderRadius    50
+   :width           24
+   :height          24
+   :backgroundColor color})
