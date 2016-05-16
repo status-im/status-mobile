@@ -1,4 +1,4 @@
-(ns syng-im.chat.styles.suggestions
+(ns syng-im.components.chat.content-suggestions-styles
   (:require [syng-im.components.styles :refer [font
                                                color-light-blue-transparent
                                                color-white
@@ -12,7 +12,7 @@
                                                text2-color
                                                text3-color]]))
 
-(def suggestion-height 88)
+(def suggestion-height 56)
 
 (def suggestion-container
   {:flexDirection   :column
@@ -24,30 +24,15 @@
    :borderBottomWidth 1
    :borderBottomColor separator-color})
 
-(defn suggestion-background
-  [{:keys [color]}]
-  {:alignSelf       :flex-start
-   :marginTop       10
-   :height          24
-   :backgroundColor color
-   :borderRadius    50})
-
-(def suggestion-text
-  {:marginTop        2.5
-   :marginHorizontal 12
-   :fontSize         12
-   :fontFamily       font
-   :color            color-white})
-
 (def value-text
-  {:marginTop  6
+  {:marginTop  9
    :fontSize   14
    :fontFamily font
    :color      text1-color})
 
 (def description-text
-  {:marginTop  2
-   :fontSize   12
+  {:marginTop  1.5
+   :fontSize   14
    :fontFamily font
    :color      text2-color})
 
@@ -55,7 +40,7 @@
   {:flexDirection    :row
    :marginVertical   1
    :marginHorizontal 0
-   :height           (min 168 (* suggestion-height suggestions-count))
+   :height           (min 150 (* suggestion-height suggestions-count))
    :backgroundColor  color-white
    :borderRadius     5})
 

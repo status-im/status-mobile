@@ -3,8 +3,10 @@
   (:require [re-frame.core :refer [register-sub]]
             [syng-im.db :as db]
     ;todo handlers in subs?...
-            [syng-im.chat.suggestions :refer [get-suggestions]]
-            [syng-im.models.commands :as commands]))
+            [syng-im.chat.suggestions :refer
+             [get-suggestions typing-command? get-content-suggestions]]
+            [syng-im.models.commands :as commands]
+            [syng-im.handlers.content-suggestions :refer [get-content-suggestions]]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]
@@ -80,3 +82,13 @@
 (register-sub :get-chat
   (fn [db [_ chat-id]]
     (reaction (get-in @db [:chats chat-id]))))
+
+(register-sub :typing-command?
+  (fn [db _]
+    (reaction (typing-command? @db))))
+
+(register-sub :get-content-suggestions
+  (fn [db _]
+    (let [command (reaction (commands/get-chat-command @db))
+          text    (reaction (commands/get-chat-command-content @db))]
+      (reaction (get-content-suggestions @db @command @text)))))

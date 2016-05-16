@@ -70,3 +70,14 @@
     (-> db
         (push-view :add-participants)
         clear-new-participants)))
+
+(register-handler :show-profile
+  (fn [db [_ identity]]
+    (let [db (assoc db :contact-identity identity)]
+      (dispatch [:navigate-to :profile])
+      db)))
+
+(register-handler :show-my-profile
+  (fn [db _]
+    (dispatch [:navigate-to :my-profile])
+    db))

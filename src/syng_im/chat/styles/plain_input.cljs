@@ -12,17 +12,22 @@
    :height          56
    :backgroundColor color-white})
 
+(def switch-commands-touchable
+  {:width          56
+   :height         56
+   :alignItems     :center
+   :justifyContent :center})
+
 (def list-icon
-  {:marginTop    22
-   :marginRight  6
-   :marginBottom 6
-   :marginLeft   21
-   :width        13
-   :height       12})
+  {:width  13
+   :height 12})
+
+(def close-icon
+  {:width  12
+   :height 12})
 
 (def message-input
   {:flex       1
-   :marginLeft 16
    :marginTop  -2
    :padding    0
    :fontSize   14

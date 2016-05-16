@@ -3,6 +3,9 @@
     [re-frame.core :refer [register-handler after dispatch debug enrich]]
     [schema.core :as s :include-macros true]
     [syng-im.db :refer [app-db schema]]
+    [syng-im.persistence.simple-kv-store :as kv]
+    [syng-im.protocol.state.storage :as storage]
+    [syng-im.db :as db :refer [app-db schema]]
     [syng-im.protocol.api :refer [init-protocol]]
     [syng-im.protocol.protocol-handler :refer [make-handler]]
     [syng-im.models.protocol :refer [update-identity
@@ -11,12 +14,8 @@
     [syng-im.models.messages :refer [save-message update-message!]]
     [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
-    [syng-im.chat.suggestions :refer [get-command
-                                          handle-command
-                                          get-command-handler
-                                          load-commands
-                                          apply-staged-commands
-                                          check-suggestion]]
+    [syng-im.chat.suggestions :refer [load-commands]]
+    [syng-im.handlers.sign-up :as sign-up-service]
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
                                   chat-add-participants
@@ -64,8 +63,9 @@
   (nav/preload-data! db [nil view-id]))
 
 (register-handler :initialize-db
-  (enrich preload-data!)
-  (fn [_ _] app-db))
+  (fn [_ _]
+    (assoc app-db
+      :signed-up (storage/get kv/kv-store :signed-up))))
 
 (register-handler :set-loading
   (fn [db [_ value]]

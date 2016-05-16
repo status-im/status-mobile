@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text
+                                              icon
                                               touchable-highlight
                                               list-view
                                               list-item]]
@@ -17,10 +18,12 @@
     :as   suggestion}]
   [touchable-highlight
    {:onPress #(set-command-input (keyword command))}
-   [view st/suggestion-item-container
-    [view (st/suggestion-background suggestion)
-     [text {:style st/suggestion-text} label]]
-    [text {:style st/suggestion-description} description]]])
+   [view st/suggestion-container
+    [view st/suggestion-sub-container
+     [view (st/suggestion-background suggestion)
+      [text {:style st/suggestion-text} label]]
+     [text {:style st/value-text} label]
+     [text {:style st/description-text} description]]]])
 
 (defn render-row [row _ _]
   (list-item [suggestion-list-item row]))
@@ -30,8 +33,14 @@
     (fn []
       (let [suggestions @suggestions-atom]
         (when (seq suggestions)
-          [view (st/suggestions-container suggestions)
-           [list-view {:dataSource          (to-datasource suggestions)
-                       :enableEmptySections true
-                       :renderRow           render-row
-                       :style               {}}]])))))
+          [view
+           [touchable-highlight {:style   st/drag-down-touchable
+                                 :onPress (fn []
+                                            ;; TODO hide suggestions?
+                                            )}
+            [view
+             [icon :drag_down st/drag-down-icon]]]
+           [view (st/suggestions-container (count suggestions))
+            [list-view {:dataSource (to-datasource suggestions)
+                        :enableEmptySections true
+                        :renderRow  render-row}]]])))))

@@ -340,3 +340,7 @@
       ((after save-chat!))
       ((after open-chat!))
       debug))
+
+(register-handler :switch-command-suggestions
+  (fn [db [_]]
+    (suggestions/switch-command-suggestions db)))
