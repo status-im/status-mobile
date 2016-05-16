@@ -35,9 +35,9 @@
    [text {:style st/menu-item-text}
     name]])
 
-(defn drawer-menu [navigator]
+(defn drawer-menu []
   (let [username (subscribe [:get :username])]
-    (fn [navigator]
+    (fn []
       [view st/drawer-menu
       [view st/user-photo-container
        [user-photo {}]]
@@ -72,10 +72,10 @@
         [text {:style st/switch-users-text}
          "Switch users"]]]])))
 
-(defn drawer-view [{:keys [navigator]} items]
+(defn drawer-view [items]
   [drawer-layout-android {:drawerWidth            260
                           :drawerPosition         js/React.DrawerLayoutAndroid.positions.Left
-                          :render-navigation-view #(r/as-element [drawer-menu navigator])
+                          :render-navigation-view #(r/as-element [drawer-menu])
                           :ref  (fn [drawer]
                                   (reset! drawer-atom drawer))}
    items])
