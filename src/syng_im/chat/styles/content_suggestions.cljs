@@ -1,4 +1,4 @@
-(ns syng-im.components.chat.content-suggestions-styles
+(ns syng-im.chat.styles.content-suggestions
   (:require [syng-im.components.styles :refer [font
                                                color-light-blue-transparent
                                                color-white
