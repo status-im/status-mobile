@@ -52,7 +52,7 @@
   (dispatch [:initialize-chats])
   (dispatch [:initialize-protocol])
   (dispatch [:load-user-phone-number])
-  (dispatch [:load-syng-contacts])
+  (dispatch [:load-contacts])
   ;; load commands from remote server (todo: uncomment)
   ;; (dispatch [:load-commands])
   (dispatch [:init-console-chat])

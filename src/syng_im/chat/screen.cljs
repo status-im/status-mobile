@@ -1,4 +1,5 @@
 (ns syng-im.chat.screen
+  (:require-macros [syng-im.utils.views :refer [defview]])
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
@@ -8,7 +9,7 @@
                                               touchable-highlight
                                               list-view
                                               list-item]]
-            [syng-im.chat.styles.chat :as st]
+            [syng-im.chat.styles.screen :as st]
             [syng-im.resources :as res]
             [syng-im.utils.listview :refer [to-datasource]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
@@ -91,7 +92,7 @@
 
 (defn actions-list-view []
   (let [{:keys [group-chat active]}
-        (subscribe [:chat-properties [:group-chat :name :contacts :active]])]
+        (subscribe [:chat-properties [:group-chat :active]])]
     (when-let [actions (when (and @group-chat @active)
                          [{:title      "Add Contact to chat"
                            :icon       :menu_group
@@ -160,25 +161,23 @@
            [chat-photo {}]
            [contact-online {:online true}]]])])))
 
-(defn messages-view [group-chat]
-  (let [messages (subscribe [:chat :messages])
-        contacts (subscribe [:chat :contacts])]
-    (fn [group-chat]
-      (let [contacts' (contacts-by-identity @contacts)]
-        [list-view {:renderRow             (message-row contacts' group-chat)
-                    :renderScrollComponent #(invertible-scroll-view (js->clj %))
-                    :onEndReached          #(dispatch [:load-more-messages])
-                    :enableEmptySections   true
-                    :dataSource            (to-datasource @messages)}]))))
+(defview messages-view [group-chat]
+  [messages [:chat :messages]
+   contacts [:chat :contacts]]
+  (let [contacts' (contacts-by-identity contacts)]
+    [list-view {:renderRow             (message-row contacts' group-chat)
+                :renderScrollComponent #(invertible-scroll-view (js->clj %))
+                :onEndReached          #(dispatch [:load-more-messages])
+                :enableEmptySections   true
+                :dataSource            (to-datasource messages)}]))
 
-(defn chat []
-  (let [is-active         (subscribe [:chat :is-active])
-        group-chat        (subscribe [:chat :group-chat])
-        show-actions-atom (subscribe [:show-actions])]
-    (fn []
-      [view st/chat-view
-       [toolbar]
-       [messages-view @group-chat]
-       (when @group-chat [typing-all])
-       (when is-active [chat-message-new])
-       (when @show-actions-atom [actions-view])])))
+(defview chat []
+  [is-active [:chat :is-active]
+   group-chat [:chat :group-chat]
+   show-actions-atom [:show-actions]]
+  [view st/chat-view
+   [toolbar]
+   [messages-view group-chat]
+   (when group-chat [typing-all])
+   (when is-active [chat-message-new])
+   (when show-actions-atom [actions-view])])

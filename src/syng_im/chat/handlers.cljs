@@ -1,5 +1,5 @@
 (ns syng-im.chat.handlers
-  (:require [re-frame.core :refer [register-handler enrich after debug]]
+  (:require [re-frame.core :refer [register-handler enrich after debug dispatch]]
             [syng-im.models.commands :as commands]
             [clojure.string :as str]
             [syng-im.chat.suggestions :as suggestions]
@@ -10,7 +10,9 @@
             [syng-im.utils.random :as random]
             [syng-im.components.react :as r]
             [syng-im.handlers.sign-up :as sign-up-service]
-            [syng-im.models.chats :as chats]))
+            [syng-im.models.chats :as chats]
+            [syng-im.navigation.handlers :as nav]
+            [syng-im.models.chats :as c]))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -236,15 +238,16 @@
 
 
 (defn load-messages!
-  [db _]
-  db
-  (->> (:current-chat-id db)
-       messages/get-messages
-       (assoc db :messages)))
+  ([db] (load-messages! db nil))
+  ([db _]
+   (->> (:current-chat-id db)
+        messages/get-messages
+        (assoc db :messages))))
 
 (defn init-chat
-  [{:keys [messages current-chat-id] :as db} _]
-  (assoc-in db [:chats current-chat-id :messages] messages))
+  ([db] (init-chat db nil))
+  ([{:keys [messages current-chat-id] :as db} _]
+   (assoc-in db [:chats current-chat-id :messages] messages)))
 
 (register-handler :init-chat
   (-> load-messages!
@@ -256,9 +259,11 @@
   (let [chats (->> loaded-chats
                    (map (fn [{:keys [chat-id] :as chat}]
                           [chat-id chat]))
-                   (into {}))]
+                   (into {}))
+        ids   (set (keys chats))]
     (-> db
         (assoc :chats chats)
+        (assoc :chats-ids ids)
         (dissoc :loaded-chats))))
 
 (defn load-chats!
@@ -267,7 +272,6 @@
 
 (register-handler :initialize-chats
   ((enrich initialize-chats) load-chats!))
-
 
 (defn store-message!
   [{:keys [new-message]} [_ {chat-id :from}]]
@@ -288,3 +292,51 @@
   (fn [db [_ {chat-id :group-id :as msg}]]
     (messages/save-message chat-id msg)
     db))
+
+(defn load-chat!
+  [{:keys [chats current-chat-id] :as db}]
+  (when-not (chats current-chat-id)
+    (c/create-chat {}))
+  db)
+
+(defmethod nav/preload-data! :chat
+  [{:keys [current-chat-id] :as db} [_ _ id]]
+  (-> db
+      (assoc :current-chat-id (or id current-chat-id))
+      load-messages!
+      init-chat))
+
+(defn prepare-chat
+  [{:keys [contacts] :as db} [_ contcat-id]]
+  (let [name (get-in contacts [contcat-id :name])
+        chat {:chat-id    contcat-id
+              :name       name
+              :group-chat false
+              :is-active  true
+              :timestamp  (.getTime (js/Date.))
+              ;; todo how to choose color?
+              ;; todo do we need to have some color for not group chat?
+              :contacts   [{:identity         contcat-id
+                            :text-color       :#FFFFFF
+                            :background-color :#AB7967}]}]
+    (assoc db :new-chat chat)))
+
+(defn add-chat [{:keys [new-chat] :as db} [_ chat-id]]
+  (-> db
+      (update :chats assoc chat-id new-chat)
+      (update :chats-ids conj chat-id)))
+
+(defn save-chat!
+  [{:keys [new-chat]} _]
+  (chats/create-chat new-chat))
+
+(defn open-chat!
+  [_ [_ chat-id]]
+  (dispatch [:navigate-to :chat chat-id]))
+
+(register-handler :start-chat
+  (-> prepare-chat
+      ((enrich add-chat))
+      ((after save-chat!))
+      ((after open-chat!))
+      debug))

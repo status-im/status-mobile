@@ -10,6 +10,7 @@
 (def app-db {:identity-password    "replace-me-with-user-entered-password"
              :identity             "me"
              :contacts             []
+             :contacts-ids         #{}
              :current-chat-id      "console"
              :chat                 {:command      nil
                                     :last-message nil}
@@ -39,4 +40,3 @@
   [:chats chat-id :command-requests])
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
-(def updated-current-tag-signal-path [:current-tag-updated-signal])

@@ -12,15 +12,18 @@
   (contacts/save-contacts [contact]))
 
 (register-handler :add-contact
-  (-> (fn [db [_ contact]]
-        (update db :contacts conj contact))
+  (-> (fn [db [_ {:keys [whisper-identity] :as contact}]]
+        (update db :contacts assoc whisper-identity contact))
       ((after save-contact))))
 
 (defn load-contacts! [db _]
-  (let [contacts (contacts/get-contacts)]
+  (let [contacts (->> (contacts/get-contacts)
+                      (map (fn [{:keys [whisper-identity] :as contact}]
+                             [whisper-identity contact]))
+                      (into {}))]
     (assoc db :contacts contacts)))
 
-(register-handler :load-syng-contacts load-contacts!)
+(register-handler :load-contacts load-contacts!)
 
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
 (def react-native-contacts (js/require "react-native-contacts"))

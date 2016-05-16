@@ -1,7 +1,5 @@
 (ns syng-im.contacts.screen
-  (:require-macros
-    [natal-shell.data-source :refer [data-source clone-with-rows]]
-    [natal-shell.core :refer [with-error-view]])
+  (:require-macros [syng-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.components.react :refer [view text
                                               image
@@ -17,9 +15,6 @@
 (defn render-row [row _ _]
   (list-item [contact-view row]))
 
-(defn get-data-source [contacts]
-  (clone-with-rows (data-source {:rowHasChanged not=}) contacts))
-
 (defn contact-list-toolbar []
   [toolbar {:title            "Contacts"
             :background-color toolbar-background2
@@ -27,14 +22,14 @@
                                          :style  st/search-icon}
                                :handler (fn [])}}])
 
-(defn contact-list []
-  (let [contacts (subscribe [:get :contacts])]
-    (fn []
-      (let [contacts-ds (lw/to-datasource @contacts)]
-        [view st/contacts-list-container
-         [contact-list-toolbar]
-         (when contacts-ds
-           [list-view {:dataSource          contacts-ds
-                       :enableEmptySections true
-                       :renderRow           render-row
-                       :style               st/contacts-list}])]))))
+(defview contact-list []
+  [contacts [:get-contacts]]
+  [view st/contacts-list-container
+   [contact-list-toolbar]
+   ;; todo what if there is no contacts, should we show some information
+   ;; about this?
+   (when contacts
+     [list-view {:dataSource          (lw/to-datasource contacts)
+                 :enableEmptySections true
+                 :renderRow           render-row
+                 :style               st/contacts-list}])])
