@@ -14,7 +14,8 @@
     [syng-im.models.messages :refer [save-message
                                      update-message!
                                      message-by-id
-                                     get-messages]]
+                                     get-messages
+                                     clear-history]]
     [syng-im.models.commands :as commands :refer [set-chat-command
                                                   set-response-chat-command
                                                   set-chat-command-content
@@ -41,6 +42,7 @@
                                   chat-add-participants
                                   chat-remove-participants
                                   set-chat-active
+                                  delete-chat
                                   re-join-group-chat
                                   chat-by-id2] :as chats]
     [syng-im.models.chat :refer [signal-chat-updated
@@ -395,6 +397,13 @@
       ((after save-commands-to-realm!))
       ((after handle-commands))))
 
+(register-handler :clear-history
+  (fn [db [action]]
+    (log/debug action)
+    (let [chat-id (current-chat-id db)]
+      (clear-history chat-id)
+      (signal-chat-updated db chat-id))))
+
 (register-handler :leave-group-chat
   (fn [db [action]]
     (log/debug action)
@@ -402,6 +411,8 @@
       (api/leave-group-chat chat-id)
       (set-chat-active chat-id false)
       (left-chat-msg chat-id)
+      (delete-chat chat-id)
+      (dispatch [:navigate-back])
       (signal-chat-updated db chat-id))))
 
 (register-handler :send-group-chat-msg
