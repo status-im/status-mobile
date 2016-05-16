@@ -61,3 +61,12 @@
           [suggestion] (filter #(= suggestion-text' (:text %))
                                (get-commands db))]
       suggestion)))
+
+(defn typing-command? [db]
+  (-> db
+      (get-in [:chats (:current-chat-id db) :input-text])
+      suggestion?))
+
+(defn switch-command-suggestions [db]
+  (let [text (if (typing-command? db) nil "!")]
+    (assoc-in db [:chats (:current-chat-id db) :input-text] text)))

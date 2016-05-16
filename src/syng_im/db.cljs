@@ -4,7 +4,7 @@
 ;; schema of app-db
 (def schema {:greeting s/Str})
 
-(def default-view :discovery)
+(def default-view :chat-list)
 
 ;; initial state of app-db
 (def app-db {:identity-password    "replace-me-with-user-entered-password"
@@ -22,7 +22,11 @@
              :signed-up            true
              :view-id              default-view
              :navigation-stack     (list default-view)
-             :name                 "My Name"
+             ;; TODO fix hardcoded values
+             :username             "My Name"
+             :phone-number         "3147984309"
+             :email                "myemail@gmail.com"
+             :status               "Hi, this is my status"
              :current-tag          nil})
 
 (def protocol-initialized-path [:protocol-initialized])

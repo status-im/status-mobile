@@ -2,7 +2,6 @@
   (:require-macros
     [natal-shell.back-android :refer [add-event-listener remove-event-listener]])
   (:require [reagent.core :as r :refer [atom]]
-            [cljs.core :as cljs]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.handlers]
             [syng-im.subs]
@@ -15,11 +14,9 @@
             [syng-im.new-group.screen :refer [new-group]]
             [syng-im.participants.views.create :refer [new-participants]]
             [syng-im.participants.views.remove :refer [remove-participants]]
+            [syng-im.components.profile :refer [profile my-profile]]
             [syng-im.utils.utils :refer [toast]]
             [syng-im.utils.encryption]))
-
-(def back-button-handler (cljs/atom {:nav     nil
-                                     :handler nil}))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -44,7 +41,9 @@
         :chat-list [chats-list]
         :new-group [new-group]
         :contact-list [contact-list]
-        :chat [chat]))))
+        :chat [chat]
+        :profile [profile]
+        :my-profile [my-profile]))))
 
 (defn init []
   (dispatch-sync [:initialize-db])

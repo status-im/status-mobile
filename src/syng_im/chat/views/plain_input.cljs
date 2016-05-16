@@ -18,24 +18,39 @@
       (dispatch [:send-group-chat-msg chat-id input-message])
       (dispatch [:send-chat-msg]))))
 
+(defn message-valid? [staged-commands message]
+  (or (and (pos? (count message))
+           (not= "!" message))
+      (pos? (count staged-commands))))
+
+(defn try-send [chat staged-commands message]
+  (when (message-valid? staged-commands message)
+    (send chat message)))
+
 (defn plain-message-input-view []
   (let [chat                 (subscribe [:get-current-chat])
         input-message-atom   (subscribe [:get-chat-input-text])
-        staged-commands-atom (subscribe [:get-chat-staged-commands])]
+        staged-commands-atom (subscribe [:get-chat-staged-commands])
+        typing-command?      (subscribe [:typing-command?])]
     (fn []
       (let [input-message @input-message-atom]
         [view st/input-container
          [suggestions-view]
          [view st/input-view
-          [icon :list st/list-icon]
+          [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions])
+                                :style    st/switch-commands-touchable}
+           [view nil
+            (if @typing-command?
+              [icon :close-gray st/close-icon]
+              [icon :list st/list-icon])]]
           [text-input {:style           st/message-input
                        :autoFocus       (pos? (count @staged-commands-atom))
                        :onChangeText    set-input-message
-                       :onSubmitEditing #(send @chat input-message)}
+                       :onSubmitEditing #(try-send @chat @staged-commands-atom
+                                                   input-message)}
            input-message]
           [icon :smile st/smile-icon]
-          (when (or (pos? (count input-message))
-                    (pos? (count @staged-commands-atom)))
+          (when (message-valid? @staged-commands-atom input-message)
             [touchable-highlight {:on-press #(send @chat input-message)}
              [view st/send-container
               [icon :send st/send-icon]]])]]))))
