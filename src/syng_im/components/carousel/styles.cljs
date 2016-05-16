@@ -19,6 +19,6 @@
 
 (defn page [page-width margin]
   {:width          page-width
-   :justifyContent "center"
+   :justifyContent :center
    :marginLeft     margin
    :marginRight    margin})
