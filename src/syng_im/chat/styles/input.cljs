@@ -6,13 +6,6 @@
                                                text2-color
                                                chat-background
                                                color-black]]))
-(def money-input
-  {:flex       1
-   :marginLeft 8
-   :lineHeight 42
-   :fontSize   32
-   :fontFamily font
-   :color      :black})
 
 (def command-input-and-suggestions-container
   {:flexDirection :column})
