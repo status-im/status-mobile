@@ -13,8 +13,6 @@
     [syng-im.models.contacts :as contacts]
     [syng-im.models.messages :refer [save-message
                                      update-message!
-                                     message-by-id
-                                     get-messages
                                      clear-history]]
     [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
@@ -22,13 +20,9 @@
     [syng-im.handlers.sign-up :as sign-up-service]
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
-                                  set-group-chat-name
-                                  set-chat-color
-                                  chat-remove-member
                                   chat-add-participants
                                   chat-remove-participants
                                   set-chat-active
-                                  delete-chat
                                   re-join-group-chat
                                   chat-by-id2]]
     [syng-im.utils.logging :as log]
@@ -41,6 +35,7 @@
     [syng-im.utils.crypt :refer [gen-random-bytes]]
     [syng-im.utils.random :as random]
     syng-im.chat.handlers
+    [syng-im.group-settings.handlers :refer [delete-chat]]
     [syng-im.navigation.handlers :as nav]
     syng-im.discovery.handlers
     syng-im.contacts.handlers))
@@ -219,13 +214,6 @@
     (update-message! {:msg-id          msg-id
                       :delivery-status :failed})))
 
-(register-handler :clear-history
-  (fn [db [action]]
-    (log/debug action)
-    (let [chat-id (current-chat-id db)]
-      (clear-history chat-id)
-      (signal-chat-updated db chat-id))))
-
 (register-handler :leave-group-chat
   (fn [db [action]]
     (log/debug action)
@@ -294,43 +282,6 @@
           db         (create-chat db group-id identities true group-name)]
       (dispatch [:show-chat group-id :replace])
       db)))
-
-(register-handler :show-group-settings
-  (fn [db [action]]
-    (log/debug action)
-    (dispatch [:navigate-to :group-settings])
-    db))
-
-(register-handler :set-group-chat-name
-  (fn [db [action chat-name]]
-    (log/debug action)
-    (set-group-chat-name db chat-name)))
-
-(register-handler :set-chat-color
-  (fn [db [action color]]
-    (log/debug action)
-    (set-chat-color db color)))
-
-(register-handler :select-group-chat-member
-  (fn [db [action identity]]
-    (log/debug action)
-    (assoc-in db db/group-settings-selected-member-path identity)))
-
-(register-handler :show-group-settings-color-picker
-  (fn [db [action show?]]
-    (log/debug action)
-    (assoc-in db db/group-settings-show-color-picker show?)))
-
-(register-handler :chat-remove-member
-  (fn [db [action identity]]
-    (log/debug action)
-    (let [chat-id (current-chat-id db)
-          db      (chat-remove-member db identity)]
-      (dispatch [:select-group-chat-member nil])
-      ;; TODO fix and uncomment
-      ;; (api/group-remove-participant chat-id identity)
-      ;; (removed-participant-msg chat-id identity)
-      (signal-chat-updated db chat-id))))
 
 (register-handler :group-chat-invite-received
   (fn [db [action from group-id identities group-name]]
