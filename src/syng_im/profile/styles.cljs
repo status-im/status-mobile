@@ -1,4 +1,4 @@
-(ns syng-im.components.profile-styles
+(ns syng-im.profile.styles
   (:require [syng-im.components.styles :refer [font
                                                color-light-blue-transparent
                                                color-white

@@ -28,7 +28,7 @@
 (register-sub :contact
   (fn [db _]
     (let [identity (:contact-identity @db)]
-      (reaction (get-in db [:contacts identity])))))
+      (reaction (get-in @db [:contacts identity])))))
 
 (register-sub :all-new-contacts
   (fn [db _]

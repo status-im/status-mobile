@@ -11,7 +11,7 @@
             [syng-im.chats-list.views.chat-list-item :refer [chat-list-item]]
             [syng-im.components.action-button :refer [action-button
                                                       action-button-item]]
-            [syng-im.components.drawer :refer [drawer-view open-drawer]]
+            [syng-im.components.drawer.view :refer [drawer-view open-drawer]]
             [syng-im.components.styles :refer [color-blue]]
             [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.components.icons.ionicons :refer [icon]]

@@ -72,10 +72,11 @@
         clear-new-participants)))
 
 (register-handler :show-profile
-  (fn [db [_ identity]]
-    (let [db (assoc db :contact-identity identity)]
-      (dispatch [:navigate-to :profile])
-      db)))
+  (debug
+    (fn [db [_ identity]]
+      (let [db (assoc db :contact-identity identity)]
+        (dispatch [:navigate-to :profile])
+        db))))
 
 (register-handler :show-my-profile
   (fn [db _]
