@@ -113,14 +113,12 @@
                    :icon-style  {:width  12
                                  :height 12}
                    :title       "Clear history"
-                   :subtitle    "!not implemented"
-                   :handler     nil}
+                   :handler     #(dispatch [:clear-history])}
                   {:icon        :bin
                    :icon-style  {:width  12
                                  :height 18}
                    :title       "Delete and leave"
-                   :subtitle    "!not implemented"
-                   :handler     nil}]]
+                   :handler     #(dispatch [:leave-group-chat])}]]
     [view st/settings-container
      (for [setting settings]
        ^{:key setting} [setting-view setting])]))

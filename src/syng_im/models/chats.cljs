@@ -186,3 +186,12 @@
              (-> (r/get-by-field :chats :chat-id chat-id)
                  (r/single)
                  (aset "is-active" active?)))))
+
+(defn delete-chat [chat-id]
+  (r/write
+   (fn []
+     (-> (r/get-by-field :chats :chat-id chat-id)
+         (r/single)
+         (r/delete))))
+  ;; TODO temp. Update chat in db atom
+  (dispatch [:initialize-chats]))
