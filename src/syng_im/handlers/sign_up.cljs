@@ -2,7 +2,6 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.persistence.simple-kv-store :as kv]
             [syng-im.protocol.state.storage :as s]
-            [syng-im.models.chat :refer [set-current-chat-id]]
             [syng-im.models.chats :as c]
             [syng-im.utils.utils :refer [log on-error http-post toast]]
             [syng-im.utils.random :as random]
@@ -196,5 +195,5 @@
         (-> db
             (assoc-in [:chats "console"] console-chat)
             (assoc :new-chat console-chat)
-            (set-current-chat-id "console")
+            (assoc :current-chat-id "console")
             (intro))))))
