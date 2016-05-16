@@ -76,3 +76,7 @@
   (fn [db _]
     (let [current-chat-id (:current-chat-id @db)]
       (reaction (get-in @db [:chats current-chat-id])))))
+
+(register-sub :get-chat
+  (fn [db [_ chat-id]]
+    (reaction (get-in @db [:chats chat-id]))))

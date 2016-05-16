@@ -23,11 +23,6 @@
   (fn [db _]
     (reaction (:signed-up @db))))
 
-(register-sub
-  :get-contacts
-  (fn [db _]
-    (reaction (:contacts @db))))
-
 (register-sub :all-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
@@ -44,7 +39,7 @@
                                         (map :identity)
                                         set)]
           (fn #(current-participants (:whisper-identity %))
-                  @contacts))))))
+              (vals @contacts)))))))
 
 (register-sub :all-new-contacts
   (fn [db _]
