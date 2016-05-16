@@ -5,7 +5,8 @@
                                               text
                                               text-input
                                               touchable-highlight]]
-            [syng-im.components.chat.content-suggestions :refer [content-suggestions-view]]
+            [syng-im.chat.views.content-suggestions :refer
+             [content-suggestions-view]]
             [syng-im.chat.styles.input :as st]))
 
 (defn cancel-command-input []
