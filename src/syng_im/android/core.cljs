@@ -2,29 +2,23 @@
   (:require-macros
     [natal-shell.back-android :refer [add-event-listener remove-event-listener]])
   (:require [reagent.core :as r :refer [atom]]
-            [cljs.core :as cljs]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.handlers]
             [syng-im.subs]
             [syng-im.components.react :refer [navigator app-registry]]
-            [syng-im.components.contact-list.contact-list :refer [contact-list]]
-            [syng-im.components.discovery.discovery :refer [discovery]]
-            [syng-im.components.discovery.discovery-tag :refer [discovery-tag]]
-            [syng-im.components.chat :refer [chat]]
-            [syng-im.components.chats.chats-list :refer [chats-list]]
-            [syng-im.components.chats.new-group :refer [new-group]]
-            [syng-im.components.chat.new-participants :refer [new-participants]]
-            [syng-im.components.chat.remove-participants :refer [remove-participants]]
+            [syng-im.contacts.screen :refer [contact-list]]
+            [syng-im.discovery.screen :refer [discovery]]
+            [syng-im.discovery.tag :refer [discovery-tag]]
+            [syng-im.chat.screen :refer [chat]]
+            [syng-im.chats-list.screen :refer [chats-list]]
+            [syng-im.new-group.screen :refer [new-group]]
+            [syng-im.participants.views.create :refer [new-participants]]
+            [syng-im.participants.views.remove :refer [remove-participants]]
             [syng-im.group-settings.group-settings :refer [group-settings]]
             [syng-im.group-settings.views.chat-name-edit :refer [chat-name-edit]]
-            [syng-im.components.profile :refer [profile my-profile]]
-            [syng-im.utils.logging :as log]
+            [syng-im.profile.screen :refer [profile my-profile]]
             [syng-im.utils.utils :refer [toast]]
-            [syng-im.navigation :as nav]
             [syng-im.utils.encryption]))
-
-(def back-button-handler (cljs/atom {:nav     nil
-                                     :handler nil}))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -39,7 +33,7 @@
 
 (defn app-root []
   (let [signed-up (subscribe [:signed-up])
-        view-id (subscribe [:view-id])]
+        view-id   (subscribe [:view-id])]
     (fn []
       (case (if @signed-up @view-id :chat)
         :discovery [discovery]
@@ -61,7 +55,7 @@
   (dispatch [:initialize-chats])
   (dispatch [:initialize-protocol])
   (dispatch [:load-user-phone-number])
-  (dispatch [:load-syng-contacts])
+  (dispatch [:load-contacts])
   ;; load commands from remote server (todo: uncomment)
   ;; (dispatch [:load-commands])
   (dispatch [:init-console-chat])
