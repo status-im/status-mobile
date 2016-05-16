@@ -1,4 +1,4 @@
-(ns syng-im.components.drawer-styles
+(ns syng-im.components.drawer.styles
   (:require [syng-im.components.styles :refer [font
                                                color-light-blue-transparent
                                                color-white

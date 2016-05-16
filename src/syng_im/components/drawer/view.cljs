@@ -1,4 +1,4 @@
-(ns syng-im.components.drawer
+(ns syng-im.components.drawer.view
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
@@ -11,7 +11,7 @@
                                               drawer-layout-android
                                               touchable-opacity]]
             [syng-im.resources :as res]
-            [syng-im.components.drawer-styles :as st]))
+            [syng-im.components.drawer.styles :as st]))
 
 (defonce drawer-atom (atom))
 

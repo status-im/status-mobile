@@ -14,7 +14,7 @@
             [syng-im.new-group.screen :refer [new-group]]
             [syng-im.participants.views.create :refer [new-participants]]
             [syng-im.participants.views.remove :refer [remove-participants]]
-            [syng-im.components.profile :refer [profile my-profile]]
+            [syng-im.profile.screen :refer [profile my-profile]]
             [syng-im.utils.utils :refer [toast]]
             [syng-im.utils.encryption]))
 
