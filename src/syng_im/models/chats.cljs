@@ -7,10 +7,7 @@
             [syng-im.utils.logging :as log]
             [syng-im.constants :refer [content-type-status]]
             [syng-im.models.messages :refer [save-message]]
-            [syng-im.persistence.realm-queries :refer [include-query]]
-            [syng-im.models.chat :refer [current-chat-id
-                                         current-chat
-                                         signal-chat-updated]]))
+            [syng-im.persistence.realm-queries :refer [include-query]]))
 
 (defn chat-name-from-contacts [identities]
   (let [chat-name (->> identities
@@ -65,22 +62,6 @@
                                :last-msg-id ""}))))
        (add-status-message chat-id)
        db))))
-
-(defn set-group-chat-name [db name]
-  (let [chat-id (current-chat-id db)]
-    (r/write (fn []
-               (-> (r/get-by-field :chats :chat-id chat-id)
-                   (r/single)
-                   (aset "name" name))))
-    (assoc-in db (db/chat-name-path chat-id) name)))
-
-(defn set-chat-color [db color]
-  (let [chat-id (current-chat-id db)]
-    (r/write (fn []
-               (-> (r/get-by-field :chats :chat-id chat-id)
-                   (r/single)
-                   (aset "color" color))))
-    (assoc-in db (db/chat-color-path chat-id) color)))
 
 (defn chat-contacts [chat-id]
   (-> (r/get-by-field :chats :chat-id chat-id)
@@ -148,37 +129,14 @@
             (.forEach (fn [object _ _]
                         (aset object "is-in-chat" false))))))))
 
-(defn chat-remove-member [db identity]
-  (let [chat (current-chat db)]
-    (r/write
-     (fn []
-       (r/create :chats
-                 (update chat :contacts
-                         (fn [members]
-                           (filter #(not= (:identity %) identity) members)))
-                 true)))
-    ;; TODO temp. Update chat in db atom
-    (dispatch [:initialize-chats])
-    db))
-
 (defn active-group-chats []
   (let [results (r/filtered (r/get-all :chats)
                             "group-chat = true && is-active = true")]
     (js->clj (.map results (fn [object _ _]
                              (aget object "chat-id"))))))
 
-
 (defn set-chat-active [chat-id active?]
   (r/write (fn []
              (-> (r/get-by-field :chats :chat-id chat-id)
                  (r/single)
                  (aset "is-active" active?)))))
-
-(defn delete-chat [chat-id]
-  (r/write
-   (fn []
-     (-> (r/get-by-field :chats :chat-id chat-id)
-         (r/single)
-         (r/delete))))
-  ;; TODO temp. Update chat in db atom
-  (dispatch [:initialize-chats]))

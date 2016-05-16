@@ -16,9 +16,7 @@
             [syng-im.components.styles :refer [color-purple
                                                text2-color]]
             [syng-im.group-settings.styles.group-settings :as st]
-            [syng-im.utils.listview :refer [to-realm-datasource]]
             [syng-im.group-settings.views.member :refer [member-view]]
-            [syng-im.utils.logging :as log]
             [reagent.core :as r]))
 
 (defn remove-member [{:keys [whisper-identity]}]
