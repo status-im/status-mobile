@@ -36,6 +36,7 @@
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
                                   set-group-chat-name
+                                  set-chat-color
                                   chat-remove-member
                                   chat-add-participants
                                   chat-remove-participants
@@ -609,10 +610,20 @@
     (log/debug action)
     (set-group-chat-name db chat-name)))
 
+(register-handler :set-chat-color
+  (fn [db [action color]]
+    (log/debug action)
+    (set-chat-color db color)))
+
 (register-handler :select-group-chat-member
   (fn [db [action identity]]
     (log/debug action)
     (assoc-in db db/group-settings-selected-member-path identity)))
+
+(register-handler :show-group-settings-color-picker
+  (fn [db [action show?]]
+    (log/debug action)
+    (assoc-in db db/group-settings-show-color-picker show?)))
 
 (register-handler :chat-remove-member
   (fn [db [action identity]]

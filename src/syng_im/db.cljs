@@ -37,6 +37,8 @@
   [:chats chat-id :chat-updated-signal])
 (defn chat-name-path [chat-id]
   [:chats chat-id :name])
+(defn chat-color-path [chat-id]
+  [:chats chat-id :color])
 (defn chat-input-text-path [chat-id]
   [:chats chat-id :input-text])
 (defn chat-staged-commands-path [chat-id]
@@ -52,7 +54,8 @@
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
 (def show-actions-path [:show-actions])
-(def group-settings-selected-member-path [:selected-member])
+(def group-settings-selected-member-path [:group-settings-selected-member])
+(def group-settings-show-color-picker [:group-settings-show-color-picker])
 (def new-group-path [:new-group])
 (def new-participants-path [:new-participants])
 (def updated-discoveries-signal-path [:discovery-updated-signal])

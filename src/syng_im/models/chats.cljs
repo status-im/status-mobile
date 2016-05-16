@@ -86,6 +86,14 @@
                    (aset "name" name))))
     (assoc-in db (db/chat-name-path chat-id) name)))
 
+(defn set-chat-color [db color]
+  (let [chat-id (current-chat-id db)]
+    (r/write (fn []
+               (-> (r/get-by-field :chats :chat-id chat-id)
+                   (r/single)
+                   (aset "color" color))))
+    (assoc-in db (db/chat-color-path chat-id) color)))
+
 (defn chat-contacts [chat-id]
   (-> (r/get-by-field :chats :chat-id chat-id)
       (r/single)
