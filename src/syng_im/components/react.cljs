@@ -15,7 +15,9 @@
    (merge {:underlay-color :transparent} props)
    content])
 (def toolbar-android (r/adapt-react-class (.-ToolbarAndroid js/React)))
-(def list-view (r/adapt-react-class (.-ListView js/React)))
+(def list-view-class (r/adapt-react-class (.-ListView js/React)))
+(defn list-view [props]
+  [list-view-class (merge {:enableEmptySections true} props)])
 (def scroll-view (r/adapt-react-class (.-ScrollView js/React)))
 (def touchable-without-feedback (r/adapt-react-class (.-TouchableWithoutFeedback js/React)))
 (def text-input-class (r/adapt-react-class (.-TextInput js/React)))
