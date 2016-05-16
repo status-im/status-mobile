@@ -16,10 +16,6 @@
   [s]
   (keywordize-keys (apply hash-map (split s #"[;=]"))))
 
-(defn select-chat-last-message [chat]
-  (when-let [last-msg-id (:last-msg-id chat)]
-    (r/single-cljs (r/get-by-field :msgs :msg-id last-msg-id))))
-
 (defn save-message
   [chat-id {:keys [from to msg-id content content-type outgoing
                    same-author same-direction]
@@ -54,9 +50,6 @@
                     content-type)
                 (update message :content str-to-map)
                 message)))))
-
-(defn message-by-id [msg-id]
-  (r/single-cljs (r/get-by-field :msgs :msg-id msg-id)))
 
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)
