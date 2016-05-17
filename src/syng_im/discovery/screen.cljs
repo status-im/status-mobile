@@ -9,6 +9,7 @@
     [syng-im.components.toolbar :refer [toolbar]]
     [syng-im.discovery.views.popular :refer [popular]]
     [syng-im.discovery.views.recent :refer [discovery-recent]]
+    [syng-im.components.main-tabs :refer [main-tabs]]
     [syng-im.discovery.styles :as st]))
 
 (defn get-hashtags [status]
@@ -49,4 +50,5 @@
     [popular]
     [view st/section-spacing
      [text {:style st/discovery-subtitle} "Recent"]]
-    [discovery-recent]]])
+    [discovery-recent]]
+   [main-tabs]])

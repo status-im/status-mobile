@@ -14,6 +14,7 @@
             [syng-im.components.drawer.view :refer [drawer-view open-drawer]]
             [syng-im.components.styles :refer [color-blue]]
             [syng-im.components.toolbar :refer [toolbar]]
+            [syng-im.components.main-tabs :refer [main-tabs]]
             [syng-im.components.icons.ionicons :refer [icon]]
             [syng-im.chats-list.styles :as st]))
 
@@ -37,7 +38,9 @@
                     :renderRow  (fn [row _ _]
                                   (list-item [chat-list-item row]))
                     :style      st/list-container}]
-        [action-button {:buttonColor color-blue}
+        [action-button {:buttonColor color-blue
+                        :offsetY     72
+                        :offsetX     16}
          [action-button-item
           {:title       "New Chat"
            :buttonColor :#9b59b6
@@ -49,4 +52,5 @@
            :buttonColor :#1abc9c
            :onPress     #(dispatch [:show-group-new])}
           [icon {:name  :person-stalker
-                 :style st/person-stalker-icon}]]]]])))
+                 :style st/person-stalker-icon}]]]
+        [main-tabs]]])))
