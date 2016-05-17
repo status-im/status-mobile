@@ -1,4 +1,5 @@
 (ns syng-im.group-settings.group-settings
+  (:require-macros [syng-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view
@@ -38,7 +39,8 @@
       [text {:style st/modal-remove-text}
        "Remove"]]]]])
 
-(defn chat-members [members]
+(defview chat-members []
+  [members [:current-chat-contacts]]
   [view st/chat-members-container
    (for [member members]
      ^{:key member} [member-view member])])
@@ -87,10 +89,9 @@
           [text {:style st/modal-color-picker-save-btn-text}
            "Save"]]]]])))
 
-(defn chat-color-icon []
-  (let [chat-color (subscribe [:get-current-chat-color])]
-    (fn []
-      [view {:style (st/chat-color-icon @chat-color)}])))
+(defview chat-color-icon []
+  [chat-color [:get-current-chat-color]]
+  [view {:style (st/chat-color-icon chat-color)}])
 
 (defn settings-view []
   ;; TODO implement settings handlers
@@ -121,48 +122,44 @@
      (for [setting settings]
        ^{:key setting} [setting-view setting])]))
 
-(defn chat-icon []
-  (let [chat-name  (subscribe [:get-current-chat-name])
-        chat-color (subscribe [:get-current-chat-color])]
-    (fn []
-      [view (st/chat-icon @chat-color)
-       [text {:style st/chat-icon-text} (nth @chat-name 0)]])))
+(defview chat-icon []
+  [chat-name  [:get-current-chat-name]
+   chat-color [:get-current-chat-color]]
+  [view (st/chat-icon chat-color)
+   [text {:style st/chat-icon-text} (nth chat-name 0)]])
 
 (defn new-group-toolbar []
   [toolbar {:title         "Chat settings"
             :custom-action [chat-icon]}])
 
-(defn group-settings []
-  (let [chat-name         (subscribe [:get-current-chat-name])
-        members           (subscribe [:current-chat-contacts])
-        selected-member   (subscribe [:selected-group-chat-member])
-        show-color-picker (subscribe [:group-settings-show-color-picker])]
-    (fn []
-      [view st/group-settings
-       [new-group-toolbar]
-       [scroll-view st/body
-        [text {:style st/chat-name-text}
-                     "Chat name"]
-        [view st/chat-name-value-container
-         [text {:style st/chat-name-value}
-          @chat-name]
-         [touchable-highlight {:style st/chat-name-btn-edit-container
-                               :on-press show-chat-name-edit}
-          [text {:style st/chat-name-btn-edit-text}
-           "Edit"]]]
-        [text {:style st/members-text}
-         "Members"]
-        [touchable-highlight {:on-press (fn []
-                                          (dispatch [:show-add-participants]))}
-         [view st/add-members-container
-          [icon :add-gray st/add-members-icon]
-          [text {:style st/add-members-text}
-           "Add members"]]]
-        [chat-members (vals (js->clj @members :keywordize-keys true))]
-        [text {:style st/settings-text}
-         "Settings"]
-        [settings-view]]
-       (when @show-color-picker
-         [chat-color-picker])
-       (when @selected-member
-         [member-menu @selected-member])])))
+(defview group-settings []
+  [chat-name         [:get-current-chat-name]
+   selected-member   [:selected-group-chat-member]
+   show-color-picker [:group-settings-show-color-picker]]
+  [view st/group-settings
+   [new-group-toolbar]
+   [scroll-view st/body
+    [text {:style st/chat-name-text}
+     "Chat name"]
+    [view st/chat-name-value-container
+     [text {:style st/chat-name-value}
+      chat-name]
+     [touchable-highlight {:style st/chat-name-btn-edit-container
+                           :on-press show-chat-name-edit}
+      [text {:style st/chat-name-btn-edit-text}
+       "Edit"]]]
+    [text {:style st/members-text}
+     "Members"]
+    [touchable-highlight {:on-press #(dispatch [:show-add-participants])}
+     [view st/add-members-container
+      [icon :add-gray st/add-members-icon]
+      [text {:style st/add-members-text}
+       "Add members"]]]
+    [chat-members]
+    [text {:style st/settings-text}
+     "Settings"]
+    [settings-view]]
+   (when show-color-picker
+     [chat-color-picker])
+   (when selected-member
+     [member-menu selected-member])])

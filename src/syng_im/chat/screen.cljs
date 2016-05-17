@@ -224,12 +224,11 @@
                 :dataSource            (to-datasource messages)}]))
 
 (defview chat []
-  [is-active [:chat :is-active]
-   group-chat [:chat :group-chat]
+  [group-chat [:chat :group-chat]
    show-actions-atom [:show-actions]]
   [view st/chat-view
    [chat-toolbar]
    [messages-view group-chat]
    (when group-chat [typing-all])
-   (when is-active [chat-message-new])
+   [chat-message-new]
    (when show-actions-atom [actions-view])])

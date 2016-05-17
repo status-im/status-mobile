@@ -57,7 +57,7 @@
     (push-view db :contact-list)))
 
 (defn clear-new-participants [db]
-  (assoc-in db :new-participants #{}))
+  (assoc db :new-participants #{}))
 
 (register-handler :show-remove-participants
   (fn [db _]
