@@ -8,7 +8,6 @@
             [syng-im.constants :refer [text-content-type
                                        content-type-command]]
             [syng-im.utils.random :as random]
-            [syng-im.components.react :as r]
             [syng-im.chat.sign-up :as sign-up-service]
             [syng-im.models.chats :as chats]
             [syng-im.navigation.handlers :as nav]
@@ -198,7 +197,6 @@
       ((enrich add-commands))
       ((enrich clear-input))
       ((enrich clear-staged-commands))
-      ((after (fn [_ _] (r/dismiss-keyboard!))))
       ((after send-message!))
       ((after save-message-to-realm!))
       ((after save-commands-to-realm!))
