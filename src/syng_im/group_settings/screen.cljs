@@ -1,4 +1,4 @@
-(ns syng-im.group-settings.group-settings
+(ns syng-im.group-settings.screen
   (:require-macros [syng-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [syng-im.resources :as res]
