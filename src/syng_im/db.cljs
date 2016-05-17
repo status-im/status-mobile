@@ -30,10 +30,6 @@
              :current-tag          nil})
 
 (def protocol-initialized-path [:protocol-initialized])
-(defn chat-name-path [chat-id]
-  [:chats chat-id :name])
-(defn chat-color-path [chat-id]
-  [:chats chat-id :color])
 (defn chat-input-text-path [chat-id]
   [:chats chat-id :input-text])
 (defn chat-staged-commands-path [chat-id]
@@ -48,5 +44,3 @@
   [:chats chat-id :command-requests])
 (defn chat-command-request-path [chat-id msg-id]
   [:chats chat-id :command-requests msg-id])
-(def group-settings-selected-member-path [:group-settings-selected-member])
-(def group-settings-show-color-picker [:group-settings-show-color-picker])
