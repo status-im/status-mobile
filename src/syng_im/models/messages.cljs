@@ -18,29 +18,28 @@
   (keywordize-keys (apply hash-map (split s #"[;=]"))))
 
 (defn save-message
-  [chat-id {:keys [from to msg-id content content-type outgoing
-                   same-author same-direction]
+  ;; todo remove chat-id parameter
+  [chat-id {:keys [to msg-id content outgoing]
+            ;; outgoing should be explicitely defined in handlers
             :or {outgoing false
-                 to       nil} :as msg}]
-  (log/debug "save-message" chat-id msg)
+                 to       nil} :as message}]
   (when-not (r/exists? :msgs :msg-id msg-id)
     (r/write
       (fn []
-        (let [content      (if (string? content)
-                             content
-                             (map-to-str content))]
-          (r/create :msgs {:chat-id         chat-id
-                           :msg-id          msg-id
-                           :from            from
-                           :to              to
-                           :content         content
-                           :content-type    content-type
-                           :outgoing        outgoing
-                           :timestamp       (timestamp)
-                           :delivery-status nil
-                           ;; TODO 'some?' is temp
-                           :same-author     (some? same-author)
-                           :same-direction  (some? same-direction)} true))))))
+        (let [content' (if (string? content)
+                         content
+                         (map-to-str content))
+              message' (merge message
+                              {:chat-id         chat-id
+                               :content         content'
+                               :timestamp       (timestamp)
+                               :delivery-status nil})]
+          (r/create :msgs message' true))))))
+
+(defn command-type? [type]
+  (contains?
+    #{c/content-type-command c/content-type-command-request}
+    type))
 
 (defn get-messages [chat-id]
   (->> (-> (r/get-by-field :msgs :chat-id chat-id)
@@ -48,8 +47,7 @@
            (r/collection->map))
        (into '())
        (map (fn [{:keys [content-type] :as message}]
-              (if (#{c/content-type-command c/content-type-command-request}
-                    content-type)
+              (if (command-type? content-type)
                 (update message :content str-to-map)
                 message)))))
 

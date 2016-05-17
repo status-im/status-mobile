@@ -17,7 +17,6 @@
     [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
     [syng-im.chat.suggestions :refer [load-commands]]
-    [syng-im.handlers.sign-up :as sign-up-service]
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
                                   chat-add-participants
