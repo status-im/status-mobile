@@ -2,6 +2,7 @@
   (:require
     [re-frame.core :refer [register-handler after dispatch debug enrich]]
     [schema.core :as s :include-macros true]
+    [syng-im.persistence.realm :as r]
     [syng-im.db :refer [app-db schema]]
     [syng-im.persistence.simple-kv-store :as kv]
     [syng-im.protocol.state.storage :as storage]
@@ -261,6 +262,31 @@
       (dispatch [:navigate-back])
       (doseq [ident identities]
         (api/group-add-participant chat-id ident))
+      db)))
+
+(defn chat-remove-member [db]
+  (let [chat     (get-in db [:chats (:current-chat-id db)])
+        identity (:group-settings-selected-member db)]
+    (r/write
+     (fn []
+       (r/create :chats
+                 (update chat :contacts
+                         (fn [members]
+                           (filter #(not= (:identity %) identity) members)))
+                 true)))
+    ;; TODO temp. Update chat in db atom
+    (dispatch [:initialize-chats])
+    db))
+
+(register-handler :chat-remove-member
+  (fn [db [action]]
+    (let [chat-id  (:current-chat-id db)
+          identity (:group-settings-selected-member db)
+          db       (chat-remove-member db)]
+      (dispatch [:select-group-chat-member nil])
+      ;; TODO fix and uncomment
+      (api/group-remove-participant chat-id identity)
+      (removed-participant-msg chat-id identity)
       db)))
 
 (defn update-new-group-selection [db identity add?]

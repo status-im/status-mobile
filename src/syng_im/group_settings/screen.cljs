@@ -26,7 +26,8 @@
 (defn close-member-menu []
   (dispatch [:select-group-chat-member nil]))
 
-(defn member-menu [member]
+(defview member-menu []
+  [member [:group-settings-selected-member]]
   [modal {:animated       false
           :transparent    false
           :onRequestClose close-member-menu}
@@ -62,42 +63,43 @@
         subtitle])]]])
 
 (defn close-chat-color-picker []
-  (dispatch [:show-group-settings-color-picker false]))
+  (dispatch [:set-group-settings-show-color-picker false]))
 
-(defn set-chat-color [color]
+(defn set-chat-color []
   (close-chat-color-picker)
-  (dispatch [:set-chat-color color]))
+  (dispatch [:set-chat-color]))
 
-(defn chat-color-picker []
-  (let [show-color-picker (subscribe [:group-settings-show-color-picker])
-        chat-color        (subscribe [:get-current-chat-color])
-        selected-color    (r/atom @chat-color)]
-    (fn []
-      [modal {:animated       false
-              :transparent    false
-              :onRequestClose close-chat-color-picker}
-       [touchable-highlight {:style    st/modal-container
-                             :on-press close-chat-color-picker}
-        [view st/modal-color-picker-inner-container
-         [picker {:selectedValue @selected-color
-                  :onValueChange #(reset! selected-color %)}
-          [picker-item {:label "Blue"       :value "#7099e6"}]
-          [picker-item {:label "Purple"     :value "#a187d5"}]
-          [picker-item {:label "Green"      :value "green"}]
-          [picker-item {:label "Red"        :value "red"}]]
-         [touchable-highlight {:on-press #(set-chat-color @selected-color)}
-          [text {:style st/modal-color-picker-save-btn-text}
-           "Save"]]]]])))
+(defview chat-color-picker []
+  [show-color-picker [:group-settings-show-color-picker]
+   new-color         [:get :new-chat-color]]
+  [modal {:animated       false
+          :transparent    false
+          :onRequestClose close-chat-color-picker}
+   [touchable-highlight {:style    st/modal-container
+                         :on-press close-chat-color-picker}
+    [view st/modal-color-picker-inner-container
+     [picker {:selectedValue new-color
+              :onValueChange #(dispatch [:set-new-chat-color %])}
+      [picker-item {:label "Blue"       :value "#7099e6"}]
+      [picker-item {:label "Purple"     :value "#a187d5"}]
+      [picker-item {:label "Green"      :value "green"}]
+      [picker-item {:label "Red"        :value "red"}]]
+     [touchable-highlight {:on-press set-chat-color}
+      [text {:style st/modal-color-picker-save-btn-text}
+       "Save"]]]]])
 
 (defview chat-color-icon []
-  [chat-color [:get-current-chat-color]]
+  [chat-color [:chat :color]]
   [view {:style (st/chat-color-icon chat-color)}])
+
+(defn show-chat-color-picker []
+  (dispatch [:set-group-settings-show-color-picker true]))
 
 (defn settings-view []
   ;; TODO implement settings handlers
   (let [settings [{:custom-icon [chat-color-icon]
                    :title       "Change color"
-                   :handler     #(dispatch [:show-group-settings-color-picker true])}
+                   :handler     show-chat-color-picker}
                   (merge {:title    "Notifications and sounds"
                           :subtitle "!not implemented"
                           :handler  nil}
@@ -123,19 +125,19 @@
        ^{:key setting} [setting-view setting])]))
 
 (defview chat-icon []
-  [chat-name  [:get-current-chat-name]
-   chat-color [:get-current-chat-color]]
-  [view (st/chat-icon chat-color)
-   [text {:style st/chat-icon-text} (nth chat-name 0)]])
+  [name  [:chat :name]
+   color [:chat :color]]
+  [view (st/chat-icon color)
+   [text {:style st/chat-icon-text} (nth name 0)]])
 
 (defn new-group-toolbar []
   [toolbar {:title         "Chat settings"
             :custom-action [chat-icon]}])
 
 (defview group-settings []
-  [chat-name         [:get-current-chat-name]
-   selected-member   [:selected-group-chat-member]
-   show-color-picker [:group-settings-show-color-picker]]
+  [chat-name         [:chat :name]
+   selected-member   [:group-settings-selected-member]
+   show-color-picker [:get :group-settings-show-color-picker]]
   [view st/group-settings
    [new-group-toolbar]
    [scroll-view st/body
@@ -162,4 +164,4 @@
    (when show-color-picker
      [chat-color-picker])
    (when selected-member
-     [member-menu selected-member])])
+     [member-menu])])
