@@ -25,15 +25,15 @@
                        ;; todo: it might be better always return false from
                        ;; this listener and handle application's closing
                        ;; in handlers
-                       (let [stack (subscribe [:navigation-stack])]
+                       (let [stack (subscribe [:get :navigation-stack])]
                          (when (< 1 (count @stack))
                            (dispatch [:navigate-back])
                            true)))]
     (add-event-listener "hardwareBackPress" new-listener)))
 
 (defn app-root []
-  (let [signed-up (subscribe [:signed-up])
-        view-id   (subscribe [:view-id])]
+  (let [signed-up (subscribe [:get :signed-up])
+        view-id   (subscribe [:get :view-id])]
     (fn []
       (case (if @signed-up @view-id :chat)
         :discovery [discovery]
