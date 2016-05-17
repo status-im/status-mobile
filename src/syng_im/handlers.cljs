@@ -2,6 +2,7 @@
   (:require
     [re-frame.core :refer [register-handler after dispatch debug enrich]]
     [schema.core :as s :include-macros true]
+    [syng-im.db :refer [app-db schema]]
     [syng-im.persistence.simple-kv-store :as kv]
     [syng-im.protocol.state.storage :as storage]
     [syng-im.db :as db :refer [app-db schema]]
@@ -9,47 +10,18 @@
     [syng-im.protocol.protocol-handler :refer [make-handler]]
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
-    [syng-im.models.user-data :as user-data]
     [syng-im.models.contacts :as contacts]
-    [syng-im.models.messages :refer [save-message
-                                     update-message!
-                                     message-by-id
-                                     get-messages]]
-    [syng-im.models.commands :as commands :refer [set-chat-command
-                                                  set-response-chat-command
-                                                  set-chat-command-content
-                                                  set-chat-command-request
-                                                  stage-command
-                                                  unstage-command
-                                                  set-commands]]
+    [syng-im.models.messages :refer [save-message update-message!]]
+    [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
-    [syng-im.handlers.contacts :as contacts-service]
-    [syng-im.handlers.suggestions :refer [get-command
-                                          handle-command
-                                          get-command-handler
-                                          load-commands
-                                          apply-staged-commands
-                                          check-suggestion
-                                          switch-command-suggestions]]
-    [syng-im.handlers.sign-up :as sign-up-service]
-    [syng-im.components.discovery.handlers :as discovery]
+    [syng-im.chat.suggestions :refer [load-commands]]
     [syng-im.models.chats :refer [chat-exists?
                                   create-chat
                                   chat-add-participants
                                   chat-remove-participants
                                   set-chat-active
                                   re-join-group-chat
-                                  chat-by-id2] :as chats]
-    [syng-im.models.chat :refer [signal-chat-updated
-                                 set-current-chat-id
-                                 current-chat-id
-                                 update-new-group-selection
-                                 update-new-participants-selection
-                                 clear-new-group
-                                 clear-new-participants
-                                 new-group-selection
-                                 set-chat-input-text
-                                 new-participants-selection]]
+                                  chat-by-id2]]
     [syng-im.utils.logging :as log]
     [syng-im.protocol.api :as api]
     [syng-im.constants :refer [text-content-type
@@ -59,8 +31,10 @@
                                 nav-pop]]
     [syng-im.utils.crypt :refer [gen-random-bytes]]
     [syng-im.utils.random :as random]
-    [clojure.string :as str]
-    [syng-im.components.react :as r]))
+    syng-im.chat.handlers
+    [syng-im.navigation.handlers :as nav]
+    syng-im.discovery.handlers
+    syng-im.contacts.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -78,10 +52,19 @@
 
 ;; -- Common --------------------------------------------------------------
 
+(register-handler :set
+  (debug
+    (fn [db [_ k v]]
+      (assoc db k v))))
+
+(defn preload-data!
+  [{:keys [view-id] :as db} _]
+  (nav/preload-data! db [nil view-id]))
+
 (register-handler :initialize-db
   (fn [_ _]
     (assoc app-db
-           :signed-up (storage/get kv/kv-store :signed-up))))
+      :signed-up (storage/get kv/kv-store :signed-up))))
 
 (register-handler :set-loading
   (fn [db [_ value]]
@@ -119,11 +102,6 @@
     (log/debug action commands)
     (set-commands db commands)))
 
-(register-handler :set-show-actions
-  (fn [db [action show-actions]]
-    (log/debug action)
-    (assoc-in db db/show-actions-path show-actions)))
-
 ;; -- Protocol --------------------------------------------------------------
 
 (register-handler :initialize-protocol
@@ -136,55 +114,6 @@
     (-> db
         (update-identity identity)
         (set-initialized true))))
-
-(defn gen-messages [n]
-  (mapv (fn [_]
-          (let [id (random-uuid)]
-            {:msg-id       id
-             :content      (str id
-                                "ooops sdfg  dsfg"
-                                "s dfg\ndsfg dfg\ndsfgdsfgdsfg")
-             :content-type text-content-type
-             :outgoing     false
-             :from         "console"
-             :to           "me"})) (range n)))
-
-(defn store-message!
-  [{:keys [new-message]} [_ {chat-id  :from}]]
-  (save-message chat-id new-message))
-
-(defn add-message-to-db
-  [db chat-id message]
-  (let [messages [:chats chat-id :messages]]
-    (update-in db messages conj message)))
-
-(defn check-author-direction
-  [db chat-id {:keys [from outgoing] :as message}]
-  (let [previous-message (first (get-in db [:chats chat-id :messages]))]
-    (merge message
-           {:same-author    (if previous-message
-                              (= (:from previous-message) from)
-                              true)
-            :same-direction (if previous-message
-                              (= (:outgoing previous-message) outgoing)
-                              true)})))
-
-(defn receive-message
-  [db [_ {chat-id :from :as message}]]
-  (let [message' (check-author-direction db chat-id message)]
-    (-> db
-        (add-message-to-db chat-id message')
-        (assoc :new-message message'))))
-
-(register-handler :received-msg
-  (-> receive-message
-      ((after store-message!))))
-
-(register-handler :group-received-msg
-  (fn [db [action {chat-id :group-id :as msg}]]
-    (log/debug action "msg" msg)
-    (save-message chat-id msg)
-    (signal-chat-updated db chat-id)))
 
 (defn system-message [msg-id content]
   {:from         "system"
@@ -243,357 +172,109 @@
 (register-handler :group-chat-invite-acked
   (fn [db [action from group-id ack-msg-id]]
     (log/debug action from group-id ack-msg-id)
-    (joined-chat-msg group-id from ack-msg-id)
-    (signal-chat-updated db group-id)))
+    (joined-chat-msg group-id from ack-msg-id)))
 
 (register-handler :participant-removed-from-group
   (fn [db [action from group-id identity msg-id]]
     (log/debug action msg-id from group-id identity)
     (chat-remove-participants group-id [identity])
-    (participant-removed-from-group-msg group-id identity from msg-id)
-    (signal-chat-updated db group-id)))
+    (participant-removed-from-group-msg group-id identity from msg-id)))
 
 (register-handler :you-removed-from-group
   (fn [db [action from group-id msg-id]]
     (log/debug action msg-id from group-id)
     (you-removed-from-group-msg group-id from msg-id)
-    (set-chat-active group-id false)
-    (signal-chat-updated db group-id)))
+    (set-chat-active group-id false)))
 
 (register-handler :participant-left-group
   (fn [db [action from group-id msg-id]]
     (log/debug action msg-id from group-id)
     (if (= (api/my-identity) from)
       db
-      (do (participant-left-group-msg group-id from msg-id)
-          (signal-chat-updated db group-id)))))
+      (participant-left-group-msg group-id from msg-id))))
 
 (register-handler :participant-invited-to-group
   (fn [db [action from group-id identity msg-id]]
     (log/debug action msg-id from group-id identity)
-    (participant-invited-to-group-msg group-id identity from msg-id)
-    (signal-chat-updated db group-id)))
+    (participant-invited-to-group-msg group-id identity from msg-id)))
 
 (register-handler :acked-msg
   (fn [db [action from msg-id]]
     (log/debug action from msg-id)
     (update-message! {:msg-id          msg-id
-                      :delivery-status :delivered})
-    (signal-chat-updated db from)))
+                      :delivery-status :delivered})))
 
 (register-handler :msg-delivery-failed
   (fn [db [action msg-id]]
     (log/debug action msg-id)
     (update-message! {:msg-id          msg-id
-                      :delivery-status :failed})
-    (let [{:keys [chat-id]} (message-by-id msg-id)]
-      (signal-chat-updated db chat-id))))
-
-(defn console? [s]
-  (= "console" s))
-
-(def not-console?
-  (complement console?))
-
-(defn prepare-message
-  [{:keys [identity current-chat-id] :as db} _]
-  (let [text    (get-in db [:chats current-chat-id :input-text])
-        {:keys [command]} (check-suggestion db (str text " "))
-        message (check-author-direction
-                  db current-chat-id
-                  {:msg-id       (random/id)
-                   :chat-id      current-chat-id
-                   :content      text
-                   :to           current-chat-id
-                   :from         identity
-                   :content-type text-content-type
-                   :outgoing     true})]
-    (if command
-      (set-chat-command db command)
-      (assoc db :new-message (when-not (str/blank? text) message)))))
-
-(defn prepare-command [identity chat-id staged-command]
-  (let [command-key (get-in staged-command [:command :command])
-        content     {:command (name command-key)
-                     :content (:content staged-command)}]
-    {:msg-id       (random/id)
-     :from         identity
-     :to           chat-id
-     :content      content
-     :content-type content-type-command
-     :outgoing     true
-     :handler      (:handler staged-command)}))
-
-(defn prepare-staged-commans
-  [{:keys [current-chat-id identity] :as db} _]
-  (let [staged-commands (get-in db [:chats current-chat-id :staged-commands])]
-    (->> staged-commands
-         (map #(prepare-command identity current-chat-id %))
-         ;todo this is wrong :(
-         (map #(check-author-direction db current-chat-id %))
-         (assoc db :new-commands))))
-
-(defn add-message
-  [{:keys [new-message current-chat-id] :as db}]
-  (if new-message
-    (add-message-to-db db current-chat-id new-message)
-    db))
-
-(defn add-commands
-  [{:keys [new-commands current-chat-id] :as db}]
-  (reduce
-    #(add-message-to-db %1 current-chat-id %2)
-    db
-    new-commands))
-
-(defn clear-input
-  [{:keys [current-chat-id new-message] :as db} _]
-  (if new-message
-    (assoc-in db [:chats current-chat-id :input-text] nil)
-    db))
-
-(defn clear-staged-commands
-  [{:keys [current-chat-id] :as db} _]
-  (assoc-in db [:chats current-chat-id :staged-commands] []))
-
-(defn send-message!
-  [{:keys [new-message current-chat-id]} _]
-  (when (and new-message (not-console? current-chat-id))
-    (api/send-user-msg {:to      current-chat-id
-                        :content (:content new-message)})))
-
-(defn save-message-to-realm!
-  [{:keys [new-message current-chat-id]} _]
-  (when new-message
-    (save-message current-chat-id new-message)))
-
-(defn save-commands-to-realm!
-  [{:keys [new-commands current-chat-id]} _]
-  (doseq [new-command new-commands]
-    (save-message current-chat-id (dissoc new-command :handler))))
-
-(defn handle-commands
-  [{:keys [new-commands]}]
-  (doseq [{{content :content} :content
-           handler            :handler} new-commands]
-    (when handler
-      (handler content))))
-
-(register-handler :send-chat-msg
-  (-> prepare-message
-      ((enrich prepare-staged-commans))
-      ((enrich add-message))
-      ((enrich add-commands))
-      ((enrich clear-input))
-      ((enrich clear-staged-commands))
-      ((after (fn [_ _] (r/dismiss-keyboard!))))
-      ((after send-message!))
-      ((after save-message-to-realm!))
-      ((after save-commands-to-realm!))
-      ((after handle-commands))))
+                      :delivery-status :failed})))
 
 (register-handler :leave-group-chat
   (fn [db [action navigator]]
     (log/debug action)
-    (let [chat-id (current-chat-id db)]
+    (let [chat-id (:current-chat-id db)]
       (api/leave-group-chat chat-id)
       (set-chat-active chat-id false)
-      (left-chat-msg chat-id)
-      (signal-chat-updated db chat-id))))
-
-(register-handler :send-group-chat-msg
-  (fn [db [action chat-id text]]
-    (log/debug action "chat-id" chat-id "text" text)
-    (let [{msg-id       :msg-id
-           {from :from} :msg} (api/send-group-user-msg {:group-id chat-id
-                                                        :content  text})
-          msg {:msg-id       msg-id
-               :from         from
-               :to           nil
-               :content      text
-               :content-type text-content-type
-               :outgoing     true}]
-      (save-message chat-id msg)
-      (signal-chat-updated db chat-id))))
+      (left-chat-msg chat-id))))
 
 ;; -- User data --------------------------------------------------------------
-
-(register-handler :set-user-phone-number
-  (fn [db [_ value]]
-    (assoc db :user-phone-number value)))
-
 (register-handler :load-user-phone-number
   (fn [db [_]]
-    (user-data/load-phone-number)
-    db))
-
-;; -- Sign up --------------------------------------------------------------
-
-(register-handler :sign-up
-  (-> (fn [db [_ phone-number]]
-        (assoc db :user-phone-number phone-number))
-      ((after (fn [& _] (sign-up-service/on-sign-up-response))))))
-
-(register-handler :sign-up-confirm
-  (fn [db [_ confirmation-code]]
-    (sign-up-service/on-send-code-response confirmation-code)
-    db))
-
-(register-handler :sync-contacts
-  (fn [db [_ handler]]
-    (contacts-service/sync-contacts handler)
-    db))
-
-;; -- Contacts --------------------------------------------------------------
-
-(register-handler :load-syng-contacts
-  (fn [db [_ value]]
-    (contacts/load-syng-contacts db)))
-
-(register-handler :show-profile
-  (fn [db [action identity]]
-    (log/debug action)
-    (let [db (contacts/set-contact-identity db identity)]
-      (dispatch [:navigate-to :profile])
-      db)))
-
-(register-handler :show-my-profile
-  (fn [db [action]]
-    (log/debug action)
-    (dispatch [:navigate-to :my-profile])
-    db))
+    ;; todo fetch phone number from db
+    (assoc db :user-phone-number "123")))
 
 ;; -- Chats --------------------------------------------------------------
-
-(register-handler :show-chat
-  (fn [db [action chat-id navigator nav-type]]
-    (log/debug action "chat-id" chat-id)
-    (let [db (-> db
-                 (create-chat chat-id [chat-id] false)
-                 (set-current-chat-id chat-id))]
-      ;; (dispatch [:navigate-to navigator {:view-id :chat} nav-type])
-      (dispatch [:navigate-to :chat])
-      db)))
-
-(register-handler :init-console-chat
-  (fn [db [_]]
-    (sign-up-service/init db)))
-
-(register-handler :set-signed-up
-  (fn [db [_ signed-up]]
-    (sign-up-service/set-signed-up db signed-up)))
-
-;; -- Chat --------------------------------------------------------------
-
-(defn update-text [db [_ text]]
-  (set-chat-input-text db text))
-
-(defn update-command [db [_ text]]
-  (let [{:keys [command]} (check-suggestion db text)]
-    (set-chat-command db command)))
-
-(register-handler :set-chat-input-text
-  ((enrich update-command) update-text))
-
-(register-handler :switch-command-suggestions
-  (fn [db [_]]
-    (switch-command-suggestions db)))
-
-(register-handler :set-chat-command
-  (fn [db [_ command-key]]
-    ;; todo what is going on there?!
-    (set-chat-command db command-key)))
-
-(register-handler :stage-command
-  (fn [{:keys [current-chat-id] :as db} _]
-    (let [db           (set-chat-input-text db nil)
-          {:keys [command content]}
-          (get-in db [:chats current-chat-id :command-input])
-          command-info {:command command
-                        :content content
-                        :handler (:handler command)}]
-      (stage-command db command-info))))
-
-(register-handler :unstage-command
-  (fn [db [_ staged-command]]
-    (let []
-      (unstage-command db staged-command))))
-
-(register-handler :set-response-chat-command
-  (fn [db [_ to-msg-id command-key]]
-    (set-response-chat-command db to-msg-id command-key)))
-
-(register-handler :set-chat-command-content
-  (fn [db [_ content]]
-    (set-chat-command-content db content)))
-
-(register-handler :set-chat-command-request
-  (fn [db [_ msg-id handler]]
-    (set-chat-command-request db msg-id handler)))
-
-(register-handler :show-contacts
-  (fn [db [action navigator]]
-    (nav-push navigator {:view-id :contact-list})
-    db))
+(defn update-new-participants-selection [db identity add?]
+  (update db :new-participants (fn [new-participants]
+                                 (if add?
+                                   (conj new-participants identity)
+                                   (disj new-participants identity)))))
 
 (register-handler :select-new-participant
   (fn [db [action identity add?]]
     (log/debug action identity add?)
     (update-new-participants-selection db identity add?)))
 
-(register-handler :show-remove-participants
-  (fn [db [action navigator]]
-    (log/debug action)
-    (nav-push navigator {:view-id :remove-participants})
-    (clear-new-participants db)))
-
 (register-handler :remove-selected-participants
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
-    (let [identities (vec (new-participants-selection db))
-          chat-id    (current-chat-id db)]
+    (let [identities (vec (:new-participants db))
+          chat-id    (:current-chat-id db)]
       (chat-remove-participants chat-id identities)
-      (nav-pop navigator)
+      (dispatch [:navigate-back])
       (doseq [ident identities]
         (api/group-remove-participant chat-id ident)
-        (removed-participant-msg chat-id ident))
-      (signal-chat-updated db chat-id))))
-
-(register-handler :show-add-participants
-  (fn [db [action navigator]]
-    (log/debug action)
-    (nav-push navigator {:view-id :add-participants})
-    (clear-new-participants db)))
+        (removed-participant-msg chat-id ident)))))
 
 (register-handler :add-new-participants
   (fn [db [action navigator]]
     (log/debug action)
-    (let [identities (vec (new-participants-selection db))
-          chat-id    (current-chat-id db)]
+    (let [identities (vec (:new-participants db))
+          chat-id    (:current-chat-id db)]
       (chat-add-participants chat-id identities)
       (nav-pop navigator)
       (doseq [ident identities]
         (api/group-add-participant chat-id ident))
       db)))
 
-(register-handler :show-group-new
-  (fn [db [action]]
-    (log/debug action)
-    (dispatch [:navigate-to :new-group])
-    (clear-new-group db)))
+(defn update-new-group-selection [db identity add?]
+  (update-in db :new-group (fn [new-group]
+                             (if add?
+                               (conj new-group identity)
+                               (disj new-group identity)))))
 
 (register-handler :select-for-new-group
-  (fn [db [action identity add?]]
-    (log/debug action identity add?)
+  (fn [db [_ identity add?]]
     (update-new-group-selection db identity add?)))
 
 (register-handler :create-new-group
-  (fn [db [action group-name navigator]]
+  (fn [db [action group-name]]
     (log/debug action)
-    (let [identities (vec (new-group-selection db))
+    (let [identities (vec (:new-group db))
           group-id   (api/start-group-chat identities group-name)
           db         (create-chat db group-id identities true group-name)]
-      (dispatch [:show-chat group-id navigator :replace])
+      (dispatch [:show-chat group-id :replace])
       db)))
 
 (register-handler :group-chat-invite-received
@@ -602,77 +283,3 @@
     (if (chat-exists? group-id)
       (re-join-group-chat db group-id identities group-name)
       (create-chat db group-id identities true group-name))))
-
-(register-handler :navigate-to
-  (fn [db [_ view-id]]
-    (-> db
-        (assoc :view-id view-id)
-        (update :navigation-stack conj view-id))))
-
-(register-handler :navigate-back
-  (fn [{:keys [navigation-stack] :as db} _]
-    (log/debug :navigate-back)
-    (if (>= 1 (count navigation-stack))
-      db
-      (let [[view-id :as navigation-stack'] (pop navigation-stack)]
-        (-> db
-            (assoc :view-id view-id)
-            (assoc :navigation-stack navigation-stack'))))))
-
-(register-handler :load-more-messages
-  (fn [db _]
-    db
-    ;; TODO implement
-    #_(let [chat-id      (get-in db [:chat :current-chat-id])
-            messages     [:chats chat-id :messages]
-            new-messages (gen-messages 10)]
-        (update-in db messages concat new-messages))))
-
-(defn load-messages!
-  [db _]
-  db
-  (->> (current-chat-id db)
-       get-messages
-       (assoc db :messages)))
-
-(defn init-chat
-  [{:keys [messages] :as db} _]
-  (let [id (current-chat-id db)]
-    (assoc-in db [:chats id :messages] messages)))
-
-(register-handler :init-chat
-  (-> load-messages!
-      ((enrich init-chat))
-      debug))
-
-(defn initialize-chats
-  [{:keys [loaded-chats] :as db} _]
-  (let [chats (->> loaded-chats
-                   (map (fn [{:keys [chat-id] :as chat}]
-                          [chat-id chat]))
-                   (into {}))]
-    (-> db
-        (assoc :chats chats)
-        (dissoc :loaded-chats))))
-
-(defn load-chats!
-  [db _]
-  (assoc db :loaded-chats (chats/chats-list)))
-
-(register-handler :initialize-chats
-  ((enrich initialize-chats) load-chats!))
-
-(defn safe-trim [s]
-  (when (string? s)
-    (str/trim s)))
-
-(register-handler :cancel-command
-  (fn [{:keys [current-chat-id] :as db} _]
-    (-> db
-        (assoc-in [:chats current-chat-id :command-input] {})
-        (update-in [:chats current-chat-id :input-text] safe-trim))))
-
-(register-handler :save-password
-  (fn [db [_ password]]
-    (sign-up-service/save-password password)
-    (assoc db :password-saved true)))

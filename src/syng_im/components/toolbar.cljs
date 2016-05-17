@@ -1,8 +1,8 @@
 (ns syng-im.components.toolbar
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.resources :as res]
+  (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text-input
+                                              icon
                                               text
                                               image
                                               touchable-highlight]]
@@ -14,10 +14,9 @@
                                                text2-color
                                                toolbar-background1]]
             [syng-im.components.realm :refer [list-view]]
-            [syng-im.utils.listview :refer [to-realm-datasource]]
             [reagent.core :as r]))
 
-(defn toolbar [{:keys [navigator title nav-action hide-nav? action custom-action
+(defn toolbar [{:keys [title nav-action hide-nav? action custom-action
                        background-color custom-content style]}]
   (let [style (merge {:flexDirection   "row"
                       :backgroundColor (or background-color toolbar-background1)
@@ -54,6 +53,7 @@
        [touchable-highlight {:on-press (:handler action)}
         [view {:width          56
                :height         56
+
                :alignItems     "center"
                :justifyContent "center"}
          [image (:image action)]]])]))
