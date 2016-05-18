@@ -51,6 +51,7 @@
               :from         "console"
               :to           "me"}])
   (when (:confirmed body)
+    (dispatch [:stop-listening-confirmation-code-sms])
     (sync-contacts)
     ;; TODO should be called after sync-contacts?
     (dispatch [:set-signed-up true])))
@@ -75,9 +76,18 @@
                 :from         "console"
                 :to           "me"}])))
 
-(defn start-listen-confirmation-code-sms []
-  ;; TODO UNDONE listen sms
-  )
+(defn handle-sms [{body :body}]
+  (when-let [matches (re-matches #"(\d{4})" body)]
+    (dispatch [:sign-up-confirm (second matches)])))
+
+(defn start-listening-confirmation-code-sms [db]
+  (when (not (:confirmation-code-sms-listener db))
+    (assoc db :confirmation-code-sms-listener (add-sms-listener handle-sms))))
+
+(defn stop-listening-confirmation-code-sms [db]
+  (when-let [listener (:confirmation-code-sms-listener db)]
+    (remove-sms-listener listener)
+    (dissoc db :confirmation-code-sms-listener)))
 
 ;; -- Saving password ----------------------------------------
 (defn save-password [password]
