@@ -37,19 +37,21 @@
   (dispatch [:set-signed-up true]))
 
 (defn sync-contacts []
+  ;; TODO 'on-sync-contacts' is never called
   (dispatch [:sync-contacts on-sync-contacts]))
 
 (defn on-send-code-response [body]
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              ;; todo replace by real check
-              :content      (if (= "1111" body)
-                              "Confirmed"
-                              "Wrong code")
+              :content      (:message body)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
-              :to           "me"}]))
+              :to           "me"}])
+  (when (:confirmed body)
+    (sync-contacts)
+    ;; TODO should be called after sync-contacts?
+    (dispatch [:set-signed-up true])))
 
 ; todo fn name is not too smart, but...
 (defn command-content

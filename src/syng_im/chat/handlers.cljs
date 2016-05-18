@@ -12,6 +12,8 @@
             [syng-im.models.chats :as chats]
             [syng-im.navigation.handlers :as nav]
             [syng-im.models.chats :as c]
+            [syng-im.handlers.server :as server]
+            [syng-im.utils.phone-number :refer [format-phone-number]]
             [syng-im.utils.handlers :as u]))
 
 (register-handler :set-show-actions
@@ -222,15 +224,17 @@
     (assoc db :password-saved true)))
 
 (register-handler :sign-up
-  (-> (fn [db [_ phone-number]]
-        ;; todo save phone number to db
-        (assoc db :user-phone-number phone-number))
-      ((after (fn [& _] (sign-up-service/on-sign-up-response))))))
+  (fn [db [_ phone-number]]
+    ;; todo save phone number to db
+    (let [formatted (format-phone-number phone-number)]
+      (-> db
+          (assoc :user-phone-number formatted)
+          (server/sign-up formatted sign-up-service/on-sign-up-response)))))
 
 (register-handler :sign-up-confirm
   (fn [db [_ confirmation-code]]
-    (sign-up-service/on-send-code-response confirmation-code)
-    (sign-up-service/set-signed-up db true)))
+    (server/sign-up-confirm confirmation-code sign-up-service/on-send-code-response)
+    db))
 
 (register-handler :set-signed-up
   (fn [db [_ signed-up]]
