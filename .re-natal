@@ -14,7 +14,8 @@
     "react-native-vector-icons/Ionicons",
     "react-native-circle-checkbox",
     "react-native-randombytes",
-    "dismissKeyboard"
+    "dismissKeyboard",
+    "react-native-android-sms-listener"
   ],
   "imageDirs": [
     "images"
