@@ -19,12 +19,12 @@
          :tab-list       [{:handler #(dispatch [:navigate-to
                                                 :chat-list])
                            :title   "Chats"
-                           :icon    "icon_tab_chats"}
+                           :icon    :icon_tab_chats}
                           {:handler #(dispatch [:navigate-to
                                                 :discovery])
                            :title   "Discover"
-                           :icon    "icon_tab_discovery"}
+                           :icon    :icon_tab_discovery}
                           {:handler #(dispatch [:navigate-to
                                                 :contact-list])
                            :title   "Contacts"
-                           :icon    "icon_tab_contacts"}]}])
+                           :icon    :icon_tab_contacts}]}])
