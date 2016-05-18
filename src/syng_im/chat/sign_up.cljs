@@ -6,6 +6,8 @@
             [syng-im.models.chats :as c]
             [syng-im.utils.utils :refer [log on-error http-post toast]]
             [syng-im.utils.random :as random]
+            [syng-im.utils.sms-listener :refer [add-sms-listener
+                                                remove-sms-listener]]
             [syng-im.utils.phone-number :refer [format-phone-number]]
             [syng-im.constants :refer [text-content-type
                                        content-type-command
@@ -72,6 +74,10 @@
                 :outgoing     false
                 :from         "console"
                 :to           "me"}])))
+
+(defn start-listen-confirmation-code-sms []
+  ;; TODO UNDONE listen sms
+  )
 
 ;; -- Saving password ----------------------------------------
 (defn save-password [password]
