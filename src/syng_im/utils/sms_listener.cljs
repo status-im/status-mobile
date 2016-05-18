@@ -1,14 +1,19 @@
-(ns syng-im.utils.sms-listener)
+(ns syng-im.utils.sms-listener
+  (:require [syng-im.components.react :refer [android?]]))
 
-(def sms-listener (js/require "react-native-android-sms-listener"))
+(def sms-listener (.-default (js/require "react-native-android-sms-listener")))
 
 ;; Only android is supported!
 
 (defn add-sms-listener
-   "Message format: {originatingAddress: string, body:
-  string}. Returns cancelable subscription."
+  "Message format: {:originatingAddress string, :body string}. Returns
+  cancelable subscription."
   [listen-fn]
-  (.addListener sms-listener listen-fn))
+  (when android?
+    (.addListener sms-listener
+                  (fn [message]
+                    (listen-fn (js->clj message :keywordize-keys true))))))
 
 (defn remove-sms-listener [subscription]
-  (.remove subscription))
+  (when android?
+    (.remove subscription)))

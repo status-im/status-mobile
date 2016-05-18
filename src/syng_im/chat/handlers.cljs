@@ -229,7 +229,12 @@
     (let [formatted (format-phone-number phone-number)]
       (-> db
           (assoc :user-phone-number formatted)
+          sign-up-service/start-listening-confirmation-code-sms
           (server/sign-up formatted sign-up-service/on-sign-up-response)))))
+
+(register-handler :stop-listening-confirmation-code-sms
+  (fn [db [_]]
+    (sign-up-service/stop-listening-confirmation-code-sms db)))
 
 (register-handler :sign-up-confirm
   (fn [db [_ confirmation-code]]
