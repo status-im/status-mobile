@@ -1,7 +1,6 @@
 (ns syng-im.group-settings.screen
   (:require-macros [syng-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.resources :as res]
+  (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text-input
                                               text
@@ -13,12 +12,8 @@
                                               scroll-view
                                               touchable-highlight]]
             [syng-im.components.toolbar :refer [toolbar]]
-            [syng-im.components.realm :refer [list-view]]
-            [syng-im.components.styles :refer [color-purple
-                                               text2-color]]
             [syng-im.group-settings.styles.group-settings :as st]
-            [syng-im.group-settings.views.member :refer [member-view]]
-            [reagent.core :as r]))
+            [syng-im.group-settings.views.member :refer [member-view]]))
 
 (defn remove-member [{:keys [whisper-identity]}]
   (dispatch [:chat-remove-member whisper-identity]))
@@ -70,7 +65,7 @@
   (dispatch [:set-chat-color]))
 
 (defview chat-color-picker []
-  [show-color-picker [:group-settings-show-color-picker]
+  [show-color-picker [:get :group-settings-show-color-picker]
    new-color         [:get :new-chat-color]]
   [modal {:animated       false
           :transparent    false
@@ -128,7 +123,7 @@
   [name  [:chat :name]
    color [:chat :color]]
   [view (st/chat-icon color)
-   [text {:style st/chat-icon-text} (nth name 0)]])
+   [text {:style st/chat-icon-text} (first name)]])
 
 (defn new-group-toolbar []
   [toolbar {:title         "Chat settings"

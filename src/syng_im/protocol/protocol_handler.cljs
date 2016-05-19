@@ -10,6 +10,7 @@
 (defn make-handler [db]
   {:ethereum-rpc-url ethereum-rpc-url
    :identity         (stored-identity db)
+   ;; :active-group-ids is never used in protocol
    :active-group-ids (active-group-chats)
    :storage          kv/kv-store
    :handler          (fn [{:keys [event-type] :as event}]
