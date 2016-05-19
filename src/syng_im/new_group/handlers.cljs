@@ -58,12 +58,29 @@
   [{:keys [new-group-id]} _]
   (dispatch [:show-chat new-group-id :replace]))
 
+(defn enable-creat-buttion
+  [db _]
+  (assoc db :disable-group-creation false))
+
 (register-handler :create-new-group
   (-> start-group-chat!
       ((enrich prepare-chat))
       ((enrich add-chat))
       ((after create-chat!))
-      ((after show-chat!))))
+      ((after show-chat!))
+      ((enrich enable-creat-buttion))))
+
+(defn disable-creat-button
+  [db _]
+  (assoc db :disable-group-creation true))
+
+(defn dispatch-create-group
+  [_ [_ group-name]]
+  (dispatch [:create-new-group group-name]))
+
+(register-handler :init-group-creation
+  (after dispatch-create-group)
+  disable-creat-button)
 
 ; todo rewrite
 (register-handler :group-chat-invite-received

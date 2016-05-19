@@ -18,12 +18,14 @@
 
 
 (defview new-group-toolbar []
-  [group-name [:get ::group-name]]
+  [group-name [:get ::group-name]
+   creation-disabled? [:get :disable-group-creation]]
   [toolbar
    {:title  "New group chat"
     :action {:image   {:source res/v                        ;; {:uri "icon_search"}
                        :style  st/toolbar-icon}
-             :handler #(dispatch [:create-new-group group-name])}}])
+             :handler (when-not creation-disabled?
+                        #(dispatch [:init-group-creation group-name]))}}])
 
 (defview group-name-input []
   [group-name [:get ::group-name]]
