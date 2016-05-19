@@ -1,7 +1,6 @@
 (ns syng-im.chat.screen
   (:require-macros [syng-im.utils.views :refer [defview]])
-  (:require [clojure.string :as s]
-            [re-frame.core :refer [subscribe dispatch]]
+  (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.components.react :refer [view
                                               text
                                               image
@@ -9,8 +8,9 @@
                                               touchable-highlight
                                               list-view
                                               list-item]]
+            [syng-im.components.chat-icon.screen :refer [chat-icon-view-action
+                                                         chat-icon-view-menu-item]]
             [syng-im.chat.styles.screen :as st]
-            [syng-im.resources :as res]
             [syng-im.utils.listview :refer [to-datasource]]
             [syng-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [syng-im.components.toolbar :refer [toolbar]]
@@ -32,25 +32,13 @@
       (assoc msg :text-color text-color
                  :background-color background-color))))
 
-(defview default-chat-icon []
-  [name  [:chat :name]
-   color [:chat :color]]
-  [view (st/default-chat-icon color)
-   [text {:style st/default-chat-icon-text} (nth name 0)]])
-
-(defview chat-photo []
-  [photo-path [:chat-photo]]
-  (if photo-path
-    [view st/contact-photo-container
-     [image {:source {:uri photo-path}
-             :style  st/chat-photo}]]
-    [default-chat-icon]))
-
-(defn contact-online [{:keys [online]}]
-  (when online
-    [view st/online-view
-     [view st/online-dot-left]
-     [view st/online-dot-right]]))
+(defview chat-icon []
+  [chat-id    [:chat :chat-id]
+   group-chat [:chat :group-chat]
+   name       [:chat :name]
+   color      [:chat :color]]
+  ;; TODO stub data ('online' property)
+  [chat-icon-view-action chat-id group-chat name color true])
 
 (defn typing [member]
   [view st/typing-view
@@ -100,22 +88,13 @@
        [text {:style st/action-subtitle}
         subtitle])]]])
 
-(defn menu-item-contact-photo [{:keys [photo-path]}]
-  [image {:source (if (s/blank? photo-path)
-                    res/user-no-photo
-                    {:uri photo-path})
-          :style  st/menu-item-profile-contact-photo}])
-
-(defn menu-item-contact-online [{:keys [online]}]
-  (when online
-    [view st/menu-item-profile-online-view
-     [view st/menu-item-profile-online-dot-left]
-     [view st/menu-item-profile-online-dot-right]]))
-
-(defn menu-item-icon-profile []
-  [view st/icon-view
-   [menu-item-contact-photo {}]
-   [menu-item-contact-online {:online true}]])
+(defview menu-item-icon-profile []
+  [chat-id    [:chat :chat-id]
+   group-chat [:chat :group-chat]
+   name       [:chat :name]
+   color      [:chat :color]]
+  ;; TODO stub data ('online' property)
+  [chat-icon-view-menu-item chat-id group-chat name color true])
 
 (defn actions-list-view []
   (let [{:keys [group-chat chat-id]}
@@ -202,13 +181,12 @@
       (if @show-actions
         [touchable-highlight
          {:on-press #(dispatch [:set-show-actions false])}
-         [view st/icon-view
+         [view st/action
           [icon :up st/up-icon]]]
         [touchable-highlight
          {:on-press #(dispatch [:set-show-actions true])}
-         [view st/icon-view
-          [chat-photo {}]
-          [contact-online {:online true}]]]))))
+         [view st/action
+          [chat-icon]]]))))
 
 (defn chat-toolbar []
   (let [{:keys [group-chat name contacts]}

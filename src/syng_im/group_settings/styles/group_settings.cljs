@@ -52,21 +52,11 @@
 (def chat-members-container
   {:marginBottom 10})
 
-(defn chat-icon [color]
-  {:margin          10
-   :width           36
-   :height          36
-   :alignItems      :center
-   :justifyContent  :center
-   :borderRadius    50
-   :backgroundColor color})
-
-(def chat-icon-text
-  {:marginTop  -2
-   :color      color-white
-   :fontFamily font
-   :fontSize   16
-   :lineHeight 20})
+(def action
+  {:width          56
+   :height         56
+   :alignItems     :center
+   :justifyContent :center})
 
 (def group-settings
   {:flex            1
