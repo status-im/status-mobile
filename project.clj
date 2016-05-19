@@ -1,4 +1,4 @@
-(defproject syng-im "0.1.0-SNAPSHOT"
+(defproject status-im "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -10,7 +10,7 @@
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo "https://github.com/status-im/status-lib.git"
                           :branch "feature-discover"}}
-                 [syng-im/protocol "0.1.1-20160506_171115-ge2c95c1"]
+                 [status-im/protocol "0.1.1-20160506_171115-ge2c95c1"]
                  [natal-shell "0.1.6"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]]
