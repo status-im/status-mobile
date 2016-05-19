@@ -145,14 +145,14 @@
   (dispatch [:received-msg intro-status])
   (dispatch [:received-msg
              {:msg-id       "intro-message1"
-              :content      "Hello there! It's Syng a Dapp browser in your phone."
+              :content      "Hello there! It's Status a Dapp browser in your phone."
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       "intro-message2"
-              :content      (str "Syng uses  a highly secure key-pair authentication type "
+              :content      (str "Status uses  a highly secure key-pair authentication type "
                                  "to provide you a reliable way to access your account")
               :content-type text-content-type
               :outgoing     false

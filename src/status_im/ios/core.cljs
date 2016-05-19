@@ -30,4 +30,4 @@
 
 (defn init []
       (dispatch-sync [:initialize-db])
-      (.registerComponent app-registry "SyngIm" #(r/reactify-component app-root)))
+      (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)))
