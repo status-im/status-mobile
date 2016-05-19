@@ -1,5 +1,6 @@
 (ns syng-im.models.messages
   (:require [syng-im.persistence.realm :as r]
+            [re-frame.core :refer [dispatch]]
             [cljs.reader :refer [read-string]]
             [syng-im.utils.random :refer [timestamp]]
             [syng-im.db :as db]
@@ -56,3 +57,10 @@
     (fn []
       (when (r/exists? :msgs :msg-id msg-id)
         (r/create :msgs msg true)))))
+
+(defn clear-history [chat-id]
+  (r/write
+   (fn []
+     (r/delete (r/get-by-field :msgs :chat-id chat-id))))
+  ;; TODO temp. Update chat in db atom
+  (dispatch [:initialize-chats]))

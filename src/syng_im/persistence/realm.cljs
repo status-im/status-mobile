@@ -43,6 +43,8 @@
                      :primaryKey :chat-id
                      :properties {:chat-id     "string"
                                   :name        "string"
+                                  :color       {:type    "string"
+                                                :default "#a187d5"}
                                   :group-chat  {:type    "bool"
                                                 :indexed true}
                                   :is-active   "bool"
