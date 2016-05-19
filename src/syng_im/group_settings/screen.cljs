@@ -1,7 +1,6 @@
 (ns syng-im.group-settings.screen
   (:require-macros [syng-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [syng-im.resources :as res]
             [syng-im.components.react :refer [view
                                               text-input
                                               text
@@ -13,6 +12,7 @@
                                               scroll-view
                                               touchable-highlight]]
             [syng-im.components.toolbar :refer [toolbar]]
+            [syng-im.components.chat-icon.screen :refer [chat-icon-view-action]]
             [syng-im.components.realm :refer [list-view]]
             [syng-im.components.styles :refer [color-purple
                                                text2-color]]
@@ -125,10 +125,12 @@
        ^{:key setting} [setting-view setting])]))
 
 (defview chat-icon []
-  [name  [:chat :name]
-   color [:chat :color]]
-  [view (st/chat-icon color)
-   [text {:style st/chat-icon-text} (nth name 0)]])
+  [chat-id    [:chat :chat-id]
+   group-chat [:chat :group-chat]
+   name       [:chat :name]
+   color      [:chat :color]]
+  [view st/action
+   [chat-icon-view-action chat-id group-chat name color false]])
 
 (defn new-group-toolbar []
   [toolbar {:title         "Chat settings"
