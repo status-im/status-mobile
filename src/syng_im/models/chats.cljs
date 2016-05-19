@@ -44,8 +44,7 @@
    (let [chat (assoc chat :last-msg-id (or last-msg-id ""))]
      (r/write #(r/create :chats chat))))
   ([db chat-id identities group-chat? chat-name]
-   (if (chat-exists? chat-id)
-     db
+   (when-not (chat-exists? chat-id)
      (let [chat-name (or chat-name
                          (get-chat-name chat-id identities))
            _         (log/debug "creating chat" chat-name)]
@@ -60,8 +59,7 @@
                                :timestamp   (timestamp)
                                :contacts    contacts
                                :last-msg-id ""}))))
-       (add-status-message chat-id)
-       db))))
+       (add-status-message chat-id)))))
 
 (defn chat-contacts [chat-id]
   (-> (r/get-by-field :chats :chat-id chat-id)

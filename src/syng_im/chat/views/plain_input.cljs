@@ -12,11 +12,7 @@
 
 (defn send [chat input-message]
   (let [{:keys [group-chat chat-id]} chat]
-    (if group-chat
-      ;; todo how much are different both events? is there real reason
-      ;; for differentiation here?
-      (dispatch [:send-group-chat-msg chat-id input-message])
-      (dispatch [:send-chat-msg]))))
+    (dispatch [:send-chat-msg])))
 
 (defn message-valid? [staged-commands message]
   (or (and (pos? (count message))
