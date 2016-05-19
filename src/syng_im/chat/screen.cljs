@@ -32,13 +32,19 @@
       (assoc msg :text-color text-color
                  :background-color background-color))))
 
-(defn chat-photo [{:keys [photo-path]}]
-  [view {:margin       10
-         :borderRadius 50}
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
-           :style  st/chat-photo}]])
+(defview default-chat-icon []
+  [name  [:chat :name]
+   color [:chat :color]]
+  [view (st/default-chat-icon color)
+   [text {:style st/default-chat-icon-text} (nth name 0)]])
+
+(defview chat-photo []
+  [photo-path [:chat-photo]]
+  (if photo-path
+    [view st/contact-photo-container
+     [image {:source {:uri photo-path}
+             :style  st/chat-photo}]]
+    [default-chat-icon]))
 
 (defn contact-online [{:keys [online]}]
   (when online

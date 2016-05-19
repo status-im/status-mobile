@@ -56,12 +56,13 @@
   {:margin          10
    :width           36
    :height          36
+   :alignItems      :center
+   :justifyContent  :center
    :borderRadius    50
    :backgroundColor color})
 
 (def chat-icon-text
-  {:marginTop  7
-   :marginLeft 13
+  {:marginTop  -2
    :color      color-white
    :fontFamily font
    :fontSize   16

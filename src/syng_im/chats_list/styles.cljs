@@ -8,6 +8,21 @@
                                                text2-color
                                                new-messages-count-color]]))
 
+(defn default-chat-icon [color]
+  {:width           40
+   :height          40
+   :alignItems      :center
+   :justifyContent  :center
+   :borderRadius    50
+   :backgroundColor color})
+
+(def default-chat-icon-text
+  {:marginTop  -2
+   :color      color-white
+   :fontFamily font
+   :fontSize   16
+   :lineHeight 20})
+
 (def contact-photo-container
   {:borderRadius 50})
 
