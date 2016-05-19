@@ -5,7 +5,8 @@
                                               text-input
                                               text
                                               image
-                                              touchable-highlight]]
+                                              touchable-highlight
+                                              linear-gradient]]
             [reagent.core :as r]
             [syng-im.components.tabs.styles :as st]
             [syng-im.components.tabs.tab :refer [tab]]))
@@ -19,4 +20,7 @@
 (defview tabs [{:keys [style tab-list selected-index]}]
   (let [style (merge st/tabs style)]
     [view {:style style}
-     (doall (map-indexed #(create-tab %1 %2 selected-index) tab-list))]))
+     [linear-gradient {:colors [ "rgba(24, 52, 76, 0.01)" "rgba(24, 52, 76, 0.085)" "rgba(24, 52, 76, 0.165)"]
+                       :style st/top-gradient}]
+     [view st/tabs-container
+      (doall (map-indexed #(create-tab %1 %2 selected-index) tab-list))]]))

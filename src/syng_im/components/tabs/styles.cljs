@@ -13,18 +13,24 @@
 (def tab-height 56)
 
 (def tabs
+  {:flex 1
+   :position       :absolute
+   :bottom         0
+   :right          0
+   :left           0
+   })
+
+(def top-gradient
+  {:flexDirection :row
+   :height        3})
+
+(def tabs-container
   {:flexDirection   :row
-   :position        :absolute
-   :bottom          0
-   :right           0
-   :left            0
    :height          tab-height
    :opacity         1
    :backgroundColor :white
-   :justifyContent  :center
-   :alignItems      :center
-   :borderTopColor  "#1c18354c"
-   :borderTopWidth  1})
+   :justifyContent :center
+   :alignItems     :center})
 
 (def tab
   {:flex           1
@@ -47,3 +53,4 @@
    :height         tab-height
    :justifyContent :center
    :alignItems     :center})
+
