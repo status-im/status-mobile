@@ -2,6 +2,7 @@
   (:require
     [re-frame.core :refer [register-handler after dispatch debug enrich]]
     [schema.core :as s :include-macros true]
+    [syng-im.persistence.realm :as r]
     [syng-im.db :refer [app-db schema]]
     [syng-im.persistence.simple-kv-store :as kv]
     [syng-im.protocol.state.storage :as storage]
@@ -11,7 +12,9 @@
     [syng-im.models.protocol :refer [update-identity
                                      set-initialized]]
     [syng-im.models.contacts :as contacts]
-    [syng-im.models.messages :refer [save-message update-message!]]
+    [syng-im.models.messages :refer [save-message
+                                     update-message!
+                                     clear-history]]
     [syng-im.models.commands :refer [set-commands]]
     [syng-im.handlers.server :as server]
     [syng-im.chat.suggestions :refer [load-commands]]
@@ -32,6 +35,7 @@
     [syng-im.utils.crypt :refer [gen-random-bytes]]
     [syng-im.utils.random :as random]
     syng-im.chat.handlers
+    [syng-im.group-settings.handlers :refer [delete-chat]]
     [syng-im.navigation.handlers :as nav]
     syng-im.discovery.handlers
     syng-im.contacts.handlers))
@@ -211,12 +215,14 @@
                       :delivery-status :failed})))
 
 (register-handler :leave-group-chat
-  (fn [db [action navigator]]
+  (fn [db [action]]
     (log/debug action)
     (let [chat-id (:current-chat-id db)]
       (api/leave-group-chat chat-id)
       (set-chat-active chat-id false)
-      (left-chat-msg chat-id))))
+      (left-chat-msg chat-id)
+      (delete-chat chat-id)
+      (dispatch [:navigate-back]))))
 
 ;; -- User data --------------------------------------------------------------
 (register-handler :load-user-phone-number
@@ -253,9 +259,34 @@
     (let [identities (vec (:new-participants db))
           chat-id    (:current-chat-id db)]
       (chat-add-participants chat-id identities)
-      (nav-pop navigator)
+      (dispatch [:navigate-back])
       (doseq [ident identities]
         (api/group-add-participant chat-id ident))
+      db)))
+
+(defn chat-remove-member [db]
+  (let [chat     (get-in db [:chats (:current-chat-id db)])
+        identity (:group-settings-selected-member db)]
+    (r/write
+     (fn []
+       (r/create :chats
+                 (update chat :contacts
+                         (fn [members]
+                           (filter #(not= (:identity %) identity) members)))
+                 true)))
+    ;; TODO temp. Update chat in db atom
+    (dispatch [:initialize-chats])
+    db))
+
+(register-handler :chat-remove-member
+  (fn [db [action]]
+    (let [chat-id  (:current-chat-id db)
+          identity (:group-settings-selected-member db)
+          db       (chat-remove-member db)]
+      (dispatch [:select-group-chat-member nil])
+      ;; TODO fix and uncomment
+      (api/group-remove-participant chat-id identity)
+      (removed-participant-msg chat-id identity)
       db)))
 
 (defn update-new-group-selection [db identity add?]

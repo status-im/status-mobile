@@ -30,6 +30,9 @@
    text])
 (def drawer-layout-android (r/adapt-react-class (.-DrawerLayoutAndroid js/React)))
 (def touchable-opacity (r/adapt-react-class (.-TouchableOpacity js/React)))
+(def modal (r/adapt-react-class (.-Modal js/React)))
+(def picker (r/adapt-react-class (.-Picker js/React)))
+(def picker-item (r/adapt-react-class (.-Item (.-Picker js/React))))
 
 
 (defn icon [n style]

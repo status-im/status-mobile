@@ -14,6 +14,8 @@
             [syng-im.new-group.screen :refer [new-group]]
             [syng-im.participants.views.create :refer [new-participants]]
             [syng-im.participants.views.remove :refer [remove-participants]]
+            [syng-im.group-settings.screen :refer [group-settings]]
+            [syng-im.group-settings.views.chat-name-edit :refer [chat-name-edit]]
             [syng-im.profile.screen :refer [profile my-profile]]
             [syng-im.utils.utils :refer [toast]]
             [syng-im.utils.encryption]))
@@ -40,6 +42,8 @@
         :remove-participants [remove-participants]
         :chat-list [chats-list]
         :new-group [new-group]
+        :group-settings [group-settings]
+        :chat-name-edit [chat-name-edit]
         :contact-list [contact-list]
         :chat [chat]
         :profile [profile]
