@@ -34,11 +34,13 @@
                                 nav-pop]]
     [syng-im.utils.crypt :refer [gen-random-bytes]]
     [syng-im.utils.random :as random]
+    [syng-im.utils.handlers :as u]
     syng-im.chat.handlers
     [syng-im.group-settings.handlers :refer [delete-chat]]
-    [syng-im.navigation.handlers :as nav]
+    syng-im.navigation.handlers
     syng-im.discovery.handlers
-    syng-im.contacts.handlers))
+    syng-im.contacts.handlers
+    syng-im.new-group.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -61,45 +63,37 @@
     (fn [db [_ k v]]
       (assoc db k v))))
 
-(defn preload-data!
-  [{:keys [view-id] :as db} _]
-  (nav/preload-data! db [nil view-id]))
-
 (register-handler :initialize-db
   (fn [_ _]
     (assoc app-db
       :signed-up (storage/get kv/kv-store :signed-up))))
 
-(register-handler :set-loading
-  (fn [db [_ value]]
-    (assoc db :loading value)))
-
 (register-handler :initialize-crypt
-  (fn [db _]
-    (log/debug "initializing crypt")
-    (gen-random-bytes 1024 (fn [{:keys [error buffer]}]
-                             (if error
-                               (do
-                                 (log/error "Failed to generate random bytes to initialize sjcl crypto")
-                                 (dispatch [:notify-user {:type  :error
-                                                          :error error}]))
-                               (do
-                                 (->> (.toString buffer "hex")
-                                      (.toBits (.. js/ecc -sjcl -codec -hex))
-                                      (.addEntropy (.. js/ecc -sjcl -random)))
-                                 (dispatch [:crypt-initialized])))))
-    db))
+  (u/side-effect!
+    (fn [_ _]
+      (log/debug "initializing crypt")
+      (gen-random-bytes 1024 (fn [{:keys [error buffer]}]
+                               (if error
+                                 (do
+                                   (log/error "Failed to generate random bytes to initialize sjcl crypto")
+                                   (dispatch [:notify-user {:type  :error
+                                                            :error error}]))
+                                 (do
+                                   (->> (.toString buffer "hex")
+                                        (.toBits (.. js/ecc -sjcl -codec -hex))
+                                        (.addEntropy (.. js/ecc -sjcl -random)))
+                                   (dispatch [:crypt-initialized]))))))))
 
 (register-handler :crypt-initialized
-  (fn [db _]
-    (log/debug "crypt initialized")
-    db))
+  (u/side-effect!
+    (fn [_ _]
+      (log/debug "crypt initialized"))))
 
 (register-handler :load-commands
-  (fn [db [action]]
-    (log/debug action)
-    (load-commands)
-    db))
+  (u/side-effect!
+    (fn [_ [action]]
+      (log/debug action)
+      (load-commands))))
 
 (register-handler :set-commands
   (fn [db [action commands]]
@@ -109,9 +103,9 @@
 ;; -- Protocol --------------------------------------------------------------
 
 (register-handler :initialize-protocol
-  (fn [db [_]]
-    (init-protocol (make-handler db))
-    db))
+  (u/side-effect!
+    (fn [db [_]]
+      (init-protocol (make-handler db)))))
 
 (register-handler :protocol-initialized
   (fn [db [_ identity]]
@@ -174,55 +168,62 @@
                          :content-type text-content-type}))
 
 (register-handler :group-chat-invite-acked
-  (fn [db [action from group-id ack-msg-id]]
-    (log/debug action from group-id ack-msg-id)
-    (joined-chat-msg group-id from ack-msg-id)))
+  (u/side-effect!
+    (fn [_ [action from group-id ack-msg-id]]
+      (log/debug action from group-id ack-msg-id)
+      (joined-chat-msg group-id from ack-msg-id))))
 
 (register-handler :participant-removed-from-group
-  (fn [db [action from group-id identity msg-id]]
-    (log/debug action msg-id from group-id identity)
-    (chat-remove-participants group-id [identity])
-    (participant-removed-from-group-msg group-id identity from msg-id)))
+  (u/side-effect!
+    (fn [_ [action from group-id identity msg-id]]
+      (log/debug action msg-id from group-id identity)
+      (chat-remove-participants group-id [identity])
+      (participant-removed-from-group-msg group-id identity from msg-id))))
 
 (register-handler :you-removed-from-group
-  (fn [db [action from group-id msg-id]]
-    (log/debug action msg-id from group-id)
-    (you-removed-from-group-msg group-id from msg-id)
-    (set-chat-active group-id false)))
+  (u/side-effect!
+    (fn [_ [action from group-id msg-id]]
+      (log/debug action msg-id from group-id)
+      (you-removed-from-group-msg group-id from msg-id)
+      (set-chat-active group-id false))))
 
 (register-handler :participant-left-group
-  (fn [db [action from group-id msg-id]]
-    (log/debug action msg-id from group-id)
-    (if (= (api/my-identity) from)
-      db
-      (participant-left-group-msg group-id from msg-id))))
+  (u/side-effect!
+    (fn [_ [action from group-id msg-id]]
+      (log/debug action msg-id from group-id)
+      (when-not (= (api/my-identity) from)
+        (participant-left-group-msg group-id from msg-id)))))
 
 (register-handler :participant-invited-to-group
-  (fn [db [action from group-id identity msg-id]]
-    (log/debug action msg-id from group-id identity)
-    (participant-invited-to-group-msg group-id identity from msg-id)))
+  (u/side-effect!
+    (fn [_ [action from group-id identity msg-id]]
+      (log/debug action msg-id from group-id identity)
+      (participant-invited-to-group-msg group-id identity from msg-id))))
 
 (register-handler :acked-msg
-  (fn [db [action from msg-id]]
-    (log/debug action from msg-id)
-    (update-message! {:msg-id          msg-id
-                      :delivery-status :delivered})))
+  (u/side-effect!
+    (fn [_ [action from msg-id]]
+      (log/debug action from msg-id)
+      (update-message! {:msg-id          msg-id
+                        :delivery-status :delivered}))))
 
 (register-handler :msg-delivery-failed
-  (fn [db [action msg-id]]
-    (log/debug action msg-id)
-    (update-message! {:msg-id          msg-id
-                      :delivery-status :failed})))
+  (u/side-effect!
+    (fn [_ [action msg-id]]
+      (log/debug action msg-id)
+      (update-message! {:msg-id          msg-id
+                        :delivery-status :failed}))))
 
 (register-handler :leave-group-chat
-  (fn [db [action]]
-    (log/debug action)
-    (let [chat-id (:current-chat-id db)]
-      (api/leave-group-chat chat-id)
-      (set-chat-active chat-id false)
-      (left-chat-msg chat-id)
-      (delete-chat chat-id)
-      (dispatch [:navigate-back]))))
+  (u/side-effect!
+    (fn [db [action]]
+      (log/debug action)
+      (let [chat-id (:current-chat-id db)]
+        (api/leave-group-chat chat-id)
+        (set-chat-active chat-id false)
+        (left-chat-msg chat-id)
+        (delete-chat chat-id)
+        (dispatch [:navigate-back])))))
 
 ;; -- User data --------------------------------------------------------------
 (register-handler :load-user-phone-number
@@ -288,29 +289,3 @@
       (api/group-remove-participant chat-id identity)
       (removed-participant-msg chat-id identity)
       db)))
-
-(defn update-new-group-selection [db identity add?]
-  (update-in db :new-group (fn [new-group]
-                             (if add?
-                               (conj new-group identity)
-                               (disj new-group identity)))))
-
-(register-handler :select-for-new-group
-  (fn [db [_ identity add?]]
-    (update-new-group-selection db identity add?)))
-
-(register-handler :create-new-group
-  (fn [db [action group-name]]
-    (log/debug action)
-    (let [identities (vec (:new-group db))
-          group-id   (api/start-group-chat identities group-name)
-          db         (create-chat db group-id identities true group-name)]
-      (dispatch [:show-chat group-id :replace])
-      db)))
-
-(register-handler :group-chat-invite-received
-  (fn [db [action from group-id identities group-name]]
-    (log/debug action from group-id identities)
-    (if (chat-exists? group-id)
-      (re-join-group-chat db group-id identities group-name)
-      (create-chat db group-id identities true group-name))))
