@@ -38,10 +38,10 @@ fi
 if [ "$device_type" = "genymotion" ]
 then
 # Find Device based on Android version 6.0.0
-device=$(genyshell -c "devices list" | grep "6.0.0")
+device=$(/Applications/Genymotion\ Shell.app/Contents/MacOS/genyshell -c "devices list" | grep "6.0.0")
 #echo ${device##*| }
 # Launch device in Genymotion
-open -a ~/Applications/Genymotion.app/Contents/MacOS/player.app --args --vm-name "${device##*| }"
+open -a /Applications/Genymotion.app/Contents/MacOS/player.app --args --vm-name "${device##*| }"
 fi
 
 # Install deps, prepare for genymotion and figwheel
@@ -56,6 +56,6 @@ tab "react-native start"
 # echo "Press any key when emulator, figwheel and packager are ready" && read -n 1
 sleep 10s
 
-adb reverse tcp:8081 tcp:8081 && adb reverse tcp:3449 tcp:3449 && adb forward tcp:8082 tcp:8082
+adb reverse tcp:8081 tcp:8081 && adb reverse tcp:3449 tcp:3449
 
 react-native run-android
