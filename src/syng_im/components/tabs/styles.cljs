@@ -17,7 +17,7 @@
    :position        :absolute
    :bottom          0
    :right           0
-   :left            0,
+   :left            0
    :height          tab-height
    :opacity         1
    :backgroundColor :white
@@ -40,7 +40,7 @@
 (def tab-icon
   {:width        24
    :height       24
-   :marginBottom 2})
+   :marginBottom 1})
 
 (def tab-container
   {:flex           1
