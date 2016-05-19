@@ -1,16 +1,19 @@
 (ns syng-im.chats-list.views.inner-item
-  (:require [clojure.string :as s]
-            [syng-im.components.react :refer [view image icon text]]
-            [syng-im.chats-list.styles :as st]
-            [syng-im.resources :as res]))
+  (:require-macros [syng-im.utils.views :refer [defview]])
+  (:require [syng-im.components.react :refer [view image icon text]]
+            [syng-im.chats-list.styles :as st]))
 
+(defn default-chat-icon [{:keys [name color]}]
+  [view (st/default-chat-icon color)
+   [text {:style st/default-chat-icon-text} (nth name 0)]])
 
-(defn contact-photo [photo-path]
-  [view st/contact-photo-container
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
-           :style  st/contact-photo-image}]])
+(defview contact-photo [chat]
+  [photo-path [:chat-photo (:chat-id chat)]]
+  (if photo-path
+    [view st/contact-photo-container
+     [image {:source {:uri photo-path}
+             :style  st/contact-photo-image}]]
+    [default-chat-icon chat]))
 
 (defn contact-online [online]
   (when online
@@ -19,11 +22,11 @@
      [view st/online-dot-right]]))
 
 (defn chat-list-item-inner-view
-  [{:keys [name photo-path delivery-status timestamp new-messages-count online
-           group-chat contacts]}]
+  [{:keys [chat-id name photo-path delivery-status timestamp new-messages-count online
+           group-chat contacts] :as chat}]
   [view st/chat-container
    [view st/photo-container
-    [contact-photo photo-path]
+    [contact-photo chat]
     [contact-online online]]
    [view st/item-container
     [view st/name-view
@@ -37,7 +40,8 @@
           "1 member")])]
     [text {:style         st/last-message-text
            :numberOfLines 2}
-     (repeatedly 5 #(str "Hi, I'm " name "! "))]]
+     (when-let [last-message (first (:messages chat))]
+       (:content last-message))]]
    [view
     [view st/status-container
      (when delivery-status

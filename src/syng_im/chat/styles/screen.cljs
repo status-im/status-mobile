@@ -21,8 +21,10 @@
    :elevation       2})
 
 (def icon-view
-  {:width  56
-   :height 56})
+  {:width       56
+   :height      56
+   :paddingTop  10
+   :paddingLeft 10})
 
 (def back-icon
   {:marginTop  21
@@ -152,6 +154,24 @@
    :fontSize   12
    :fontFamily font
    :color      text2-color})
+
+(defn default-chat-icon [color]
+  {:width           36
+   :height          36
+   :alignItems      :center
+   :justifyContent  :center
+   :borderRadius    50
+   :backgroundColor color})
+
+(def default-chat-icon-text
+  {:marginTop  -2
+   :color      color-white
+   :fontFamily font
+   :fontSize   16
+   :lineHeight 20})
+
+(def contact-photo-container
+  {:borderRadius 50})
 
 (def chat-photo
   {:borderRadius 50

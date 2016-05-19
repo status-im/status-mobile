@@ -13,8 +13,8 @@
    {:on-press #(dispatch [:show-chat chat-id :push])}
    ;; TODO add [photo-path delivery-status new-messages-count online] values to chat-obj
    [view [chat-list-item-inner-view (merge chat
-                                           {:photo-path         nil
-                                            :delivery-status    :seen
+                                           ;; TODO stub data
+                                           {:delivery-status    :seen
                                             :new-messages-count 3
                                             :timestamp          "13:54"
                                             :online             true})]]])
