@@ -11,13 +11,13 @@
              :identity             "me"
              :contacts             []
              :contacts-ids         #{}
+             :selected-contacts    #{}
              :current-chat-id      "console"
              :chat                 {:command      nil
                                     :last-message nil}
              :chats                {}
              :chats-updated-signal 0
              :show-actions         false
-             :new-group            #{}
              :new-participants     #{}
              :signed-up            true
              :view-id              default-view

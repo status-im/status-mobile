@@ -31,7 +31,7 @@
   (dispatch [:initialize-chats]))
 
 (register-handler :show-group-settings
-  (fn [db [action]]
+  (fn [db _]
     (let [chat-id    (:current-chat-id db)
           chat-name  (get-in db [:chats chat-id :name])
           chat-color (get-in db [:chats chat-id :color])
