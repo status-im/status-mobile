@@ -26,7 +26,7 @@
 (defview chat-icon-view [chat-id group-chat name color online styles]
   [photo-path [:chat-photo chat-id]]
   [view (:container styles)
-   (if photo-path
+   (if (and photo-path (not (empty? photo-path)))
      [chat-icon photo-path styles]
      [default-chat-icon name color styles])
    (when (not group-chat)
@@ -81,7 +81,7 @@
                 :default-chat-icon      (st/default-chat-icon-profile color)
                 :default-chat-icon-text st/default-chat-icon-text}]
     [view (:container styles)
-     (if photo-path
+     (if (and photo-path (not (empty? photo-path)))
        [chat-icon photo-path styles]
        [default-chat-icon name color styles])
      [contact-online online styles]]))
