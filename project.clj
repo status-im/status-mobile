@@ -1,4 +1,4 @@
-(defproject syng-im "0.1.0-SNAPSHOT"
+(defproject status-im "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -9,8 +9,8 @@
                  [re-frame "0.6.0"]
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo "https://github.com/status-im/status-lib.git"
-                          :branch "feature-discover"}}
-                 [syng-im/protocol "0.1.1-20160506_171115-ge2c95c1"]
+                          :branch "syng-rename"}}
+                 [status-im/protocol "0.1.1-20160519_164302-g92930a0"]
                  [natal-shell "0.1.6"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
