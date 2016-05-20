@@ -9,8 +9,8 @@
 
   <repositories>
     <repository>
-      <id>ci.syng.im</id>
-      <url>http://ci.syng.im:8081/artifactory/libs-release-local/</url>
+      <id>ci.status.im</id>
+      <url>http://ci.status.im:8081/artifactory/libs-release-local/</url>
     </repository>
  </repositories>
 
@@ -23,7 +23,7 @@
          <configuration>
            <artifactItems>
              <artifactItem>
-               <groupId>syng-im</groupId>
+               <groupId>status-im</groupId>
                <artifactId>ios-geth</artifactId>
                <version>1.4.0-201603151613-92d65cf</version>
                <type>zip</type>

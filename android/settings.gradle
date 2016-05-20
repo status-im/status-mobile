@@ -1,4 +1,4 @@
-rootProject.name = 'SyngIm'
+rootProject.name = 'StatusIm'
 
 include ':app'
 

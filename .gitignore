@@ -27,7 +27,7 @@ project.xcworkspace
 .idea
 .gradle
 local.properties
-syng-im.iml
+status-im.iml
 
 # node.js
 #
