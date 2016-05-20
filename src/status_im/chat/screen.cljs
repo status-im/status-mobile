@@ -101,22 +101,29 @@
   (let [{:keys [group-chat chat-id]}
         (subscribe [:chat-properties [:group-chat :chat-id]])]
     (when-let [actions (if @group-chat
-                         [{:title      "Add Contact to chat"
+                         [{:title      "Members"
+                           ;; TODO stub data: members
+                           :subtitle   "Justas, Geoff, Alex and you"
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
-                           :handler    #(dispatch [:show-add-participants])}
-                          {:title      "Remove Contact from chat"
-                           :subtitle   "Alex, John"
+                           ;; TODO not implemented: action Members
+                           :handler    nil}
+                          {:title      "Search chat"
+                           :subtitle   "!not implemented"
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
-                           :handler    #(dispatch [:show-remove-participants])}
-                          {:title      "Leave Chat"
+                           ;; TODO not implemented: action Search chat
+                           :handler    nil}
+                          {:title      "Notifications and sounds"
+                           :subtitle   "!not implemented"
+                           ;;:subtitle   "Chat muted"
                            :icon       :muted
                            :icon-style {:width  18
                                         :height 21}
-                           :handler    #(dispatch [:leave-group-chat])}
+                           ;; TODO not implemented: action Notifications
+                           :handler    nil}
                           {:title      "Settings"
                            :icon       :settings
                            :icon-style {:width  20
@@ -133,19 +140,23 @@
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
+                           ;; TODO not implemented: action Search chat
                            :handler    nil}
                           {:title      "Notifications and sounds"
                            :subtitle   "!not implemented"
+                           ;;:subtitle   "Notifications on"
                            :icon       :muted
                            :icon-style {:width  18
                                         :height 21}
+                           ;; TODO not implemented: action Notifications
                            :handler    nil}
                           {:title      "Settings"
                            :subtitle   "!not implemented"
                            :icon       :settings
                            :icon-style {:width  20
                                         :height 13}
-                           :handler    (fn [])}])]
+                           ;; TODO not implemented: action Settings
+                           :handler    nil}])]
       [view st/actions-wrapper
        [view st/actions-separator]
        [view st/actions-view
@@ -173,7 +184,9 @@
                   (if (< 1 cnt)
                     " members"
                     " member")
+                  ;; TODO stub data: active members
                   ", " cnt " active"))]]
+         ;; TODO stub data: last activity
          [text {:style st/last-activity} "Active a minute ago"])])))
 
 (defn toolbar-action []

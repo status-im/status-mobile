@@ -22,6 +22,7 @@
 (defn close-member-menu []
   (dispatch [:select-group-chat-member nil]))
 
+;; TODO not in design
 (defview member-menu []
   [member [:group-settings-selected-member]]
   [modal {:animated       false
@@ -65,6 +66,7 @@
   (close-chat-color-picker)
   (dispatch [:set-chat-color]))
 
+;; TODO not in design
 (defview chat-color-picker []
   [show-color-picker [:get :group-settings-show-color-picker]
    new-color         [:get :new-chat-color]]
@@ -92,10 +94,10 @@
   (dispatch [:set-group-settings-show-color-picker true]))
 
 (defn settings-view []
-  ;; TODO implement settings handlers
   (let [settings [{:custom-icon [chat-color-icon]
                    :title       "Change color"
                    :handler     show-chat-color-picker}
+                  ;; TODO not implemented: Notifications
                   (merge {:title    "Notifications and sounds"
                           :subtitle "!not implemented"
                           :handler  nil}
@@ -110,11 +112,13 @@
                    :icon-style  {:width  12
                                  :height 12}
                    :title       "Clear history"
+                   ;; TODO show confirmation dialog?
                    :handler     #(dispatch [:clear-history])}
                   {:icon        :bin
                    :icon-style  {:width  12
                                  :height 18}
                    :title       "Delete and leave"
+                   ;; TODO show confirmation dialog?
                    :handler     #(dispatch [:leave-group-chat])}]]
     [view st/settings-container
      (for [setting settings]
@@ -150,6 +154,7 @@
        "Edit"]]]
     [text {:style st/members-text}
      "Members"]
+    ;; TODO add participants view is not in design
     [touchable-highlight {:on-press #(dispatch [:show-add-participants])}
      [view st/add-members-container
       [icon :add-gray st/add-members-icon]
