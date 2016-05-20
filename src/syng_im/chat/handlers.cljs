@@ -187,7 +187,8 @@
       ((enrich add-commands))
       ((enrich clear-input))
       ((enrich clear-staged-commands))
-      ((after send-message!))
+      ;; todo uncomment once
+      ;((after send-message!))
       ((after save-message-to-realm!))
       ((after save-commands-to-realm!))
       ((after handle-commands))))
@@ -283,10 +284,13 @@
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
-  (-> db
-      (assoc :current-chat-id (or id current-chat-id))
-      load-messages!
-      init-chat))
+  (let [messages (get-in db [:chats current-chat-id :messages])]
+    (if (seq messages)
+      (-> db
+          (assoc :current-chat-id (or id current-chat-id))
+          load-messages!
+          init-chat)
+      db)))
 
 (defn prepare-chat
   [{:keys [contacts] :as db} [_ contcat-id]]

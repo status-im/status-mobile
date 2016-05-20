@@ -38,6 +38,6 @@
       [text {:style st/role-text}
        role])]
    [touchable-highlight
-    {:on-press #(dispatch [:select-group-chat-member whisper-identity])}
+    {:on-press #(dispatch [:set :group-settings-selected-member whisper-identity])}
     [view st/more-btn
      [icon :more-vertical st/more-btn-icon]]]])

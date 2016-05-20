@@ -1,4 +1,5 @@
-(ns syng-im.participants.views.create
+(ns syng-im.participants.views.add
+  (:require-macros [syng-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view list-view list-item]]
@@ -19,12 +20,10 @@
   [row _ _]
   (list-item [participant-contact row]))
 
-(defn new-participants []
-  (let [contacts (subscribe [:all-new-contacts])]
-    (fn []
-      (let [contacts-ds (to-datasource @contacts)]
-        [view st/participants-container
-         [new-participants-toolbar]
-         [list-view {:dataSource contacts-ds
-                     :renderRow  new-participants-row
-                     :style      st/participants-list}]]))))
+(defview new-participants []
+  [contacts [:all-new-contacts]]
+  [view st/participants-container
+   [new-participants-toolbar]
+   [list-view {:dataSource (to-datasource contacts)
+               :renderRow  new-participants-row
+               :style      st/participants-list}]])

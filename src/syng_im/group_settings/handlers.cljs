@@ -1,72 +1,59 @@
 (ns syng-im.group-settings.handlers
-  (:require [re-frame.core :refer [register-handler debug dispatch]]
+  (:require [re-frame.core :refer [register-handler debug dispatch after]]
             [syng-im.persistence.realm :as r]
-            [syng-im.models.messages :refer [clear-history]]))
+            [syng-im.models.messages :refer [clear-history]]
+            [clojure.string :as s]))
 
-(defn set-chat-name [db]
-  (let [chat-id (:current-chat-id db)
-        name    (:new-chat-name db)]
-    (r/write (fn []
-               (-> (r/get-by-field :chats :chat-id chat-id)
-                   (r/single)
-                   (aset "name" name))))
-    (assoc-in db [:chats chat-id :name] name)))
+(defn save-chat-property!
+  [db-name property-name]
+  (fn [{:keys [current-chat-id] :as db} _]
+    (let [property (db-name db)]
+      (r/write (fn []
+                 (-> (r/get-by-field :chats :chat-id current-chat-id)
+                     (r/single)
+                     (aset (name property-name) property)))))))
 
-(defn set-chat-color [db]
-  (let [chat-id (:current-chat-id db)
-        color   (:new-chat-color db)]
-    (r/write (fn []
-               (-> (r/get-by-field :chats :chat-id chat-id)
-                   (r/single)
-                   (aset "color" color))))
-    (assoc-in db [:chats chat-id :color] color)))
+(defn update-chat-property
+  [db-name property-name]
+  (fn [{:keys [current-chat-id] :as db} _]
+    (let [property (db-name db)]
+      (assoc-in db [:chats current-chat-id property-name] property))))
 
 (defn delete-chat [chat-id]
   (r/write
-   (fn []
-     (-> (r/get-by-field :chats :chat-id chat-id)
-         (r/single)
-         (r/delete))))
+    (fn []
+      (-> (r/get-by-field :chats :chat-id chat-id)
+          (r/single)
+          (r/delete))))
   ;; TODO temp. Update chat in db atom
   (dispatch [:initialize-chats]))
 
+(defn prepare-chat-settings
+  [{:keys [current-chat-id] :as db} _]
+  (let [{:keys [name color]} (-> db
+                                 (get-in [:chats current-chat-id])
+                                 (select-keys [:name :color]))]
+    (-> db
+        (assoc :new-chat-name name
+               :new-chat-color color
+               :group-settings {}))))
+
 (register-handler :show-group-settings
-  (fn [db _]
-    (let [chat-id    (:current-chat-id db)
-          chat-name  (get-in db [:chats chat-id :name])
-          chat-color (get-in db [:chats chat-id :color])
-          db         (assoc db
-                            :new-chat-name                    chat-name
-                            :new-chat-color                   chat-color
-                            :group-settings-show-color-picker false
-                            :group-settings-selected-member   nil)]
-      (dispatch [:navigate-to :group-settings])
-      db)))
+  (after (fn [_ _] (dispatch [:navigate-to :group-settings])))
+  prepare-chat-settings)
 
 (register-handler :set-chat-name
-  (fn [db [action]]
-    (set-chat-name db)))
+  (after (save-chat-property! :new-chat-name :name))
+  (update-chat-property :new-chat-name :name))
 
 (register-handler :set-chat-color
-  (fn [db [action]]
-    (set-chat-color db)))
-
-(register-handler :set-new-chat-name
-  (fn [db [action name]]
-    (assoc db :new-chat-name name)))
-
-(register-handler :set-new-chat-color
-  (fn [db [action color]]
-    (assoc db :new-chat-color color)))
-
-(register-handler :select-group-chat-member
-  (fn [db [action identity]]
-    (assoc db :group-settings-selected-member identity)))
-
-(register-handler :set-group-settings-show-color-picker
-  (fn [db [action show?]]
-    (assoc db :group-settings-show-color-picker show?)))
+  (after (save-chat-property! :new-chat-color :color))
+  (update-chat-property :new-chat-color :color))
 
 (register-handler :clear-history
-  (fn [db [action]]
+  (fn [db _]
     (clear-history (:current-chat-id db))))
+
+(register-handler :group-settings
+  (fn [db [_ k v]]
+    (assoc-in db [:group-settings k] v)))

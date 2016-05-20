@@ -10,7 +10,7 @@
 
 (defn chat-list-item [{:keys [chat-id] :as chat}]
   [touchable-highlight
-   {:on-press #(dispatch [:show-chat chat-id :push])}
+   {:on-press #(dispatch [:navigate-to :chat chat-id])}
    ;; TODO add [photo-path delivery-status new-messages-count online] values to chat-obj
    [view [chat-list-item-inner-view (merge chat
                                            {:photo-path         nil
