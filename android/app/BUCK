@@ -46,13 +46,13 @@ android_library(
 
 android_build_config(
   name = 'build_config',
-  package = 'com.syngim',
+  package = 'com.statusim',
 )
 
 android_resource(
   name = 'res',
   res = 'src/main/res',
-  package = 'com.syngim',
+  package = 'com.statusim',
 )
 
 android_binary(

@@ -20,5 +20,5 @@ All notable changes to this project will be documented in this file. This change
 - Files from the new template.
 - Widget maker public API - `make-widget-sync`.
 
-[unreleased]: https://github.com/your-name/syng-im/compare/0.1.1...HEAD
-[0.1.1]: https://github.com/your-name/syng-im/compare/0.1.0...0.1.1
+[unreleased]: https://github.com/your-name/status-im/compare/0.1.1...HEAD
+[0.1.1]: https://github.com/your-name/status-im/compare/0.1.0...0.1.1
