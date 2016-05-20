@@ -14,6 +14,7 @@
             [syng-im.models.chats :as c]
             [syng-im.handlers.server :as server]
             [syng-im.utils.phone-number :refer [format-phone-number]]
+            [syng-im.utils.datetime :as time]
             [syng-im.utils.handlers :as u]))
 
 (register-handler :set-show-actions
@@ -114,13 +115,14 @@
         {:keys [command]} (suggestions/check-suggestion db (str text " "))
         message (check-author-direction
                   db current-chat-id
-                  {:msg-id       (random/id)
-                   :chat-id      current-chat-id
-                   :content      text
-                   :to           current-chat-id
-                   :from         identity
-                   :content-type text-content-type
-                   :outgoing     true})]
+                  {:msg-id          (random/id)
+                   :chat-id         current-chat-id
+                   :content         text
+                   :to              current-chat-id
+                   :from            identity
+                   :content-type    text-content-type
+                   :outgoing        true
+                   :timestamp       (time/now-ms)})]
     (if command
       (commands/set-chat-command db command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
