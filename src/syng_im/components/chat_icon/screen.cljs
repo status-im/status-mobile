@@ -5,7 +5,8 @@
                                               text
                                               image
                                               icon]]
-            [syng-im.components.chat-icon.styles :as st]))
+            [syng-im.components.chat-icon.styles :as st]
+            [syng-im.components.styles :refer [color-purple]]))
 
 (defn default-chat-icon [name color styles]
   [view (:default-chat-icon styles)
@@ -60,3 +61,42 @@
     :chat-icon              st/chat-icon-menu-item
     :default-chat-icon      (st/default-chat-icon-menu-item color)
     :default-chat-icon-text st/default-chat-icon-text}])
+
+(defn chat-icon-view-profile [chat-id group-chat name color online]
+  [chat-icon-view chat-id group-chat name color online
+   {:container              st/container-profile
+    :online-view            st/online-view-profile
+    :online-dot-left        st/online-dot-left-profile
+    :online-dot-right       st/online-dot-right-profile
+    :chat-icon              st/chat-icon-profile
+    :default-chat-icon      (st/default-chat-icon-profile color)
+    :default-chat-icon-text st/default-chat-icon-text}])
+
+(defn profile-icon-view [photo-path name color online]
+  (let [styles {:container              st/container-profile
+                :online-view            st/online-view-profile
+                :online-dot-left        st/online-dot-left-profile
+                :online-dot-right       st/online-dot-right-profile
+                :chat-icon              st/chat-icon-profile
+                :default-chat-icon      (st/default-chat-icon-profile color)
+                :default-chat-icon-text st/default-chat-icon-text}]
+    [view (:container styles)
+     (if photo-path
+       [chat-icon photo-path styles]
+       [default-chat-icon name color styles])
+     [contact-online online styles]]))
+
+(defview profile-icon []
+  [contact [:contact]]
+  (let [ ;; TODO stub data
+        online true
+        color  color-purple]
+    [profile-icon-view (:photo-path contact) (:name contact) color online]))
+
+(defview my-profile-icon []
+  [name       [:get :username]
+   photo-path [:get :photo-path]]
+  (let [ ;; TODO stub data
+        online true
+        color  color-purple]
+    [profile-icon-view photo-path name color online]))

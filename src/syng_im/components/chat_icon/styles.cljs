@@ -29,6 +29,11 @@
          {:width  24
           :height 24}))
 
+(defn default-chat-icon-profile [color]
+  (merge (default-chat-icon color)
+         {:width  64
+          :height 64}))
+
 (def default-chat-icon-text
   {:marginTop  -2
    :color      color-white
@@ -52,6 +57,11 @@
          {:width  24
           :height 24}))
 
+(def chat-icon-profile
+  (merge chat-icon
+         {:width  64
+          :height 64}))
+
 (def online-view
   {:position        :absolute
    :bottom          0
@@ -65,8 +75,13 @@
 
 (def online-view-menu-item
   (merge online-view
-         {:width 15
+         {:width  15
           :height 15}))
+
+(def online-view-profile
+  (merge online-view
+         {:width  24
+          :height 24}))
 
 (def online-dot
   {:position        :absolute
@@ -75,7 +90,6 @@
    :height          4
    :borderRadius    50
    :backgroundColor color-white})
-
 (def online-dot-left (merge online-dot {:left 3}))
 (def online-dot-right (merge online-dot {:left 9}))
 
@@ -84,11 +98,20 @@
          {:top    4
           :width  3
           :height 3}))
-
 (def online-dot-left-menu-item
   (merge online-dot-menu-item {:left 1.7}))
 (def online-dot-right-menu-item
   (merge online-dot-menu-item {:left 6.3}))
+
+(def online-dot-profile
+  (merge online-dot
+         {:top    8
+          :width  4
+          :height 4}))
+(def online-dot-left-profile
+  (merge online-dot-profile {:left 5}))
+(def online-dot-right-profile
+  (merge online-dot-profile {:left 11}))
 
 (def container
   {:width  44
@@ -101,3 +124,7 @@
 (def container-menu-item
   {:width  32
    :height 32})
+
+(def container-profile
+  {:width  72
+   :height 72})
