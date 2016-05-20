@@ -38,9 +38,10 @@
     syng-im.chat.handlers
     [syng-im.group-settings.handlers :refer [delete-chat]]
     syng-im.navigation.handlers
-    syng-im.discovery.handlers
     syng-im.contacts.handlers
-    syng-im.new-group.handlers))
+    syng-im.discovery.handlers
+    syng-im.new-group.handlers
+    syng-im.participants.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;

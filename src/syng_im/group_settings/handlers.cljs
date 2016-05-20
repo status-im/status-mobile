@@ -1,8 +1,7 @@
 (ns syng-im.group-settings.handlers
   (:require [re-frame.core :refer [register-handler debug dispatch after]]
             [syng-im.persistence.realm :as r]
-            [syng-im.models.messages :refer [clear-history]]
-            [clojure.string :as s]))
+            [syng-im.models.messages :refer [clear-history]]))
 
 (defn save-chat-property!
   [db-name property-name]
