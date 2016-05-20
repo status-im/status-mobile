@@ -19,8 +19,8 @@
          [icon :group st/group-icon])
        (when group-chat
          [text {:style st/memebers-text}
-          (if (< 1 (count contacts))
-            (str (count contacts) " members")
+          (if (< 0 (count contacts))
+            (str (inc (count contacts)) " members")
             "1 member")])]
       [text {:style         st/last-message-text
              :numberOfLines 2}

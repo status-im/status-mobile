@@ -48,6 +48,7 @@
 
 (defn typing-all []
   [view st/typing-all
+   ;; TODO stub data
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
 
@@ -167,7 +168,7 @@
          [view {:flexDirection :row}
           [icon :group st/group-icon]
           [text {:style st/members}
-           (let [cnt (count @contacts)]
+           (let [cnt (inc (count @contacts))]
              (str cnt
                   (if (< 1 cnt)
                     " members"
