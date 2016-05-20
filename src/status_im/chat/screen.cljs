@@ -13,6 +13,7 @@
                                                            chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.utils.listview :refer [to-datasource]]
+            [status-im.utils.utils :refer [truncate-str]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
@@ -99,11 +100,7 @@
   [chat-icon-view-menu-item chat-id group-chat name color true])
 
 (defn members-text [members]
-  (let [max  35
-        text (str (s/join ", " (map #(:name %) members)) " and you")]
-    (if (< max (count text))
-      (str (subs text 0 (- max 3)) "...")
-      text)))
+  (truncate-str (str (s/join ", " (map #(:name %) members)) " and you") 35))
 
 (defn actions-list-view []
   (let [{:keys [group-chat chat-id]}
@@ -182,7 +179,7 @@
     (fn []
       [view (st/chat-name-view @show-actions)
        [text {:style st/chat-name-text}
-        (or @name "Chat name")]
+        (truncate-str (or @name "Chat name") 30)]
        (if @group-chat
          [view {:flexDirection :row}
           [icon :group st/group-icon]

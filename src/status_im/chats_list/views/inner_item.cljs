@@ -3,6 +3,7 @@
   (:require [status-im.components.react :refer [view image icon text]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
             [status-im.chats-list.styles :as st]
+            [status-im.utils.utils :refer [truncate-str]]
             [status-im.utils.datetime :as time]))
 
 (defn chat-list-item-inner-view
@@ -14,7 +15,7 @@
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/item-container
       [view st/name-view
-       [text {:style st/name-text} name]
+       [text {:style st/name-text} (truncate-str name 20)]
        (when group-chat
          [icon :group st/group-icon])
        (when group-chat

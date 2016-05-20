@@ -47,3 +47,8 @@
        (.catch (or on-error
                    (fn [error]
                      (toast (str error))))))))
+
+(defn truncate-str [s max]
+  (if (< max (count s))
+    (str (subs s 0 (- max 3)) "...")
+    s))
