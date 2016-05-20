@@ -11,37 +11,6 @@
                                                text1-color
                                                text2-color]]))
 
-(def user-photo
-  {:borderRadius 50
-   :width        64
-   :height       64})
-
-(def user-online-container
-  {:position        :absolute
-   :top             44
-   :left            44
-   :width           24
-   :height          24
-   :borderRadius    50
-   :backgroundColor online-color
-   :borderWidth     2
-   :borderColor     color-white})
-
-(def user-online-dot
-  {:position        :absolute
-   :top             8
-   :left            5
-   :width           4
-   :height          4
-   :borderRadius    50
-   :backgroundColor color-white})
-
-(def user-online-dot-left
-  (assoc user-online-dot :left 5))
-
-(def user-online-dot-right
-  (assoc user-online-dot :left 11))
-
 (def profile-property-view-container
   {:height            85
    :paddingHorizontal 16})
@@ -101,10 +70,10 @@
    :width      249})
 
 (def user-photo-container
-  {:marginTop 26})
+  {:marginTop 22})
 
 (def user-name
-  {:marginTop  20
+  {:marginTop  16
    :fontSize   18
    :fontFamily font
    :color      text1-color})

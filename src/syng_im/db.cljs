@@ -23,6 +23,7 @@
              :view-id              default-view
              :navigation-stack     (list default-view)
              ;; TODO fix hardcoded values
+             :photo-path           nil
              :username             "My Name"
              :phone-number         "3147984309"
              :email                "myemail@gmail.com"
