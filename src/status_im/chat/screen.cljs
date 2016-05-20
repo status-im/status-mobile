@@ -1,6 +1,7 @@
 (ns status-im.chat.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
+            [clojure.string :as s]
             [status-im.components.react :refer [view
                                               text
                                               image
@@ -97,13 +98,20 @@
   ;; TODO stub data ('online' property)
   [chat-icon-view-menu-item chat-id group-chat name color true])
 
+(defn members-text [members]
+  (let [max  35
+        text (str (s/join ", " (map #(:name %) members)) " and you")]
+    (if (< max (count text))
+      (str (subs text 0 (- max 3)) "...")
+      text)))
+
 (defn actions-list-view []
   (let [{:keys [group-chat chat-id]}
-        (subscribe [:chat-properties [:group-chat :chat-id]])]
+        (subscribe [:chat-properties [:group-chat :chat-id]])
+        members (subscribe [:current-chat-contacts])]
     (when-let [actions (if @group-chat
                          [{:title      "Members"
-                           ;; TODO stub data: members
-                           :subtitle   "Justas, Geoff, Alex and you"
+                           :subtitle   (members-text @members)
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
