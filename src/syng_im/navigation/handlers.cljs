@@ -51,21 +51,6 @@
   (fn [db _]
     (push-view db :contact-list)))
 
-(defn clear-new-participants [db]
-  (assoc db :new-participants #{}))
-
-(register-handler :show-remove-participants
-  (fn [db _]
-    (-> db
-        (push-view :remove-participants)
-        clear-new-participants)))
-
-(register-handler :show-add-participants
-  (fn [db _]
-    (-> db
-        (push-view :add-participants)
-        clear-new-participants)))
-
 (defn show-profile
   [db [_ identity]]
   (-> db

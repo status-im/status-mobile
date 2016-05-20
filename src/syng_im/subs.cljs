@@ -5,7 +5,8 @@
             syng-im.group-settings.subs
             syng-im.discovery.subs
             syng-im.contacts.subs
-            syng-im.new-group.subs))
+            syng-im.new-group.subs
+            syng-im.participants.subs))
 
 (register-sub :get
   (fn [db [_ k]]

@@ -168,7 +168,7 @@
    [scroll-view st/body
     [chat-name]
     [text {:style st/members-text} "Members"]
-    [touchable-highlight {:on-press #(dispatch [:show-add-participants])}
+    [touchable-highlight {:on-press #(dispatch [:navigate-to :add-participants])}
      [view st/add-members-container
       [icon :add-gray st/add-members-icon]
       [text {:style st/add-members-text}
