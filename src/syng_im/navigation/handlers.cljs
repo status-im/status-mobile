@@ -27,6 +27,7 @@
     (push-view db view-id)))
 
 (register-handler :navigation-replace
+  (enrich preload-data!)
   (fn [db [_ view-id]]
     (replace-view db view-id)))
 
@@ -45,13 +46,6 @@
       (-> db
           (push-view :new-group)
           (assoc :new-group #{})))))
-
-(register-handler :show-chat
-  (fn [db [_ chat-id nav-type]]
-    (let [update-view-id-fn (if (= :replace nav-type) replace-view push-view)]
-      (-> db
-          (update-view-id-fn :chat)
-          (assoc :current-chat-id chat-id)))))
 
 (register-handler :show-contacts
   (fn [db _]

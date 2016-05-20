@@ -56,7 +56,7 @@
 
 (defn show-chat!
   [{:keys [new-group-id]} _]
-  (dispatch [:show-chat new-group-id :replace]))
+  (dispatch [:navigation-replace :chat new-group-id]))
 
 (defn enable-creat-buttion
   [db _]

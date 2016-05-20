@@ -1,4 +1,5 @@
 (ns syng-im.participants.views.remove
+  (:require-macros [syng-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [syng-im.resources :as res]
             [syng-im.components.react :refer [view text-input text image
@@ -22,12 +23,10 @@
   [row _ _]
   (r/as-element [participant-contact row]))
 
-(defn remove-participants []
-  (let [contacts (subscribe [:current-chat-contacts])]
-    (fn []
-      (let [contacts-ds (to-datasource @contacts)]
-        [view st/participants-container
-         [remove-participants-toolbar]
-         [list-view {:dataSource contacts-ds
-                     :renderRow  remove-participants-row
-                     :style      st/participants-list}]]))))
+(defview remove-participants []
+  [contacts [:current-chat-contacts]]
+  [view st/participants-container
+   [remove-participants-toolbar]
+   [list-view {:dataSource (to-datasource contacts)
+               :renderRow  remove-participants-row
+               :style      st/participants-list}]])

@@ -63,6 +63,11 @@
     (fn [db [_ k v]]
       (assoc db k v))))
 
+(register-handler :set-in
+  (debug
+    (fn [db [_ path v]]
+      (assoc-in db path v))))
+
 (register-handler :initialize-db
   (fn [_ _]
     (assoc app-db
@@ -279,12 +284,13 @@
     (dispatch [:initialize-chats])
     db))
 
+
 (register-handler :chat-remove-member
   (fn [db [action]]
     (let [chat-id  (:current-chat-id db)
           identity (:group-settings-selected-member db)
           db       (chat-remove-member db)]
-      (dispatch [:select-group-chat-member nil])
+      (dispatch [:set :group-settings-selected-member nil])
       ;; TODO fix and uncomment
       (api/group-remove-participant chat-id identity)
       (removed-participant-msg chat-id identity)

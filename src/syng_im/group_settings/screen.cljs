@@ -13,13 +13,14 @@
                                               touchable-highlight]]
             [syng-im.components.toolbar :refer [toolbar]]
             [syng-im.group-settings.styles.group-settings :as st]
-            [syng-im.group-settings.views.member :refer [member-view]]))
+            [syng-im.group-settings.views.member :refer [member-view]]
+            [clojure.string :as s]))
 
 (defn remove-member [{:keys [whisper-identity]}]
   (dispatch [:chat-remove-member whisper-identity]))
 
 (defn close-member-menu []
-  (dispatch [:select-group-chat-member nil]))
+  (dispatch [:set :group-settings-selected-member nil]))
 
 (defview member-menu []
   [member [:group-settings-selected-member]]
@@ -58,15 +59,15 @@
         subtitle])]]])
 
 (defn close-chat-color-picker []
-  (dispatch [:set-group-settings-show-color-picker false]))
+  (dispatch [:group-settings :show-color-picker false]))
 
 (defn set-chat-color []
   (close-chat-color-picker)
   (dispatch [:set-chat-color]))
 
 (defview chat-color-picker []
-  [show-color-picker [:get :group-settings-show-color-picker]
-   new-color         [:get :new-chat-color]]
+  [show-color-picker [:group-settings :show-color-picker]
+   new-color [:get :new-chat-color]]
   [modal {:animated       false
           :transparent    false
           :onRequestClose close-chat-color-picker}
@@ -74,11 +75,11 @@
                          :on-press close-chat-color-picker}
     [view st/modal-color-picker-inner-container
      [picker {:selectedValue new-color
-              :onValueChange #(dispatch [:set-new-chat-color %])}
-      [picker-item {:label "Blue"       :value "#7099e6"}]
-      [picker-item {:label "Purple"     :value "#a187d5"}]
-      [picker-item {:label "Green"      :value "green"}]
-      [picker-item {:label "Red"        :value "red"}]]
+              :onValueChange #(dispatch [:set :new-chat-color %])}
+      [picker-item {:label "Blue" :value "#7099e6"}]
+      [picker-item {:label "Purple" :value "#a187d5"}]
+      [picker-item {:label "Green" :value "green"}]
+      [picker-item {:label "Red" :value "red"}]]
      [touchable-highlight {:on-press set-chat-color}
       [text {:style st/modal-color-picker-save-btn-text}
        "Save"]]]]])
@@ -88,7 +89,7 @@
   [view {:style (st/chat-color-icon chat-color)}])
 
 (defn show-chat-color-picker []
-  (dispatch [:set-group-settings-show-color-picker true]))
+  (dispatch [:group-settings :show-color-picker true]))
 
 (defn settings-view []
   ;; TODO implement settings handlers
@@ -105,22 +106,22 @@
                            {:icon       :muted
                             :icon-style {:width  18
                                          :height 21}}))
-                  {:icon        :close-gray
-                   :icon-style  {:width  12
-                                 :height 12}
-                   :title       "Clear history"
-                   :handler     #(dispatch [:clear-history])}
-                  {:icon        :bin
-                   :icon-style  {:width  12
-                                 :height 18}
-                   :title       "Delete and leave"
-                   :handler     #(dispatch [:leave-group-chat])}]]
+                  {:icon       :close-gray
+                   :icon-style {:width  12
+                                :height 12}
+                   :title      "Clear history"
+                   :handler    #(dispatch [:clear-history])}
+                  {:icon       :bin
+                   :icon-style {:width  12
+                                :height 18}
+                   :title      "Delete and leave"
+                   :handler    #(dispatch [:leave-group-chat])}]]
     [view st/settings-container
      (for [setting settings]
        ^{:key setting} [setting-view setting])]))
 
 (defview chat-icon []
-  [name  [:chat :name]
+  [name [:chat :name]
    color [:chat :color]]
   [view (st/chat-icon color)
    [text {:style st/chat-icon-text} (first name)]])
@@ -129,24 +130,44 @@
   [toolbar {:title         "Chat settings"
             :custom-action [chat-icon]}])
 
+(defn focus []
+  (dispatch [:set ::name-input-focused true]))
+
+(defn blur []
+  (dispatch [:set ::name-input-focused false]))
+
+(defn save []
+  (dispatch [:set-chat-name]))
+
+(defview chat-name []
+  [name [:chat :name]
+   new-name [:get :new-chat-name]
+   focused? [:get ::name-input-focused]]
+  [view
+   [text {:style st/chat-name-text} "Chat name"]
+   [view (st/chat-name-value-container focused?)
+    [text-input {:style          st/chat-name-value
+                 :ref            #(when (and % focused?) (.focus %))
+                 :on-change-text #(dispatch [:set :new-chat-name %])
+                 :on-focus       focus
+                 :on-blur        blur}
+     name]
+    (if (or focused? (not= name new-name))
+      [touchable-highlight {:style    st/chat-name-btn-edit-container
+                            :on-press save}
+       [view [icon :ok-purple st/add-members-icon]]]
+      [touchable-highlight {:style    st/chat-name-btn-edit-container
+                            :on-press focus}
+       [text {:style st/chat-name-btn-edit-text} "Edit"]])]])
+
 (defview group-settings []
-  [chat-name         [:chat :name]
-   selected-member   [:group-settings-selected-member]
-   show-color-picker [:get :group-settings-show-color-picker]]
+  [selected-member [:group-settings-selected-member]
+   show-color-picker [:group-settings :show-color-picker]]
   [view st/group-settings
    [new-group-toolbar]
    [scroll-view st/body
-    [text {:style st/chat-name-text}
-     "Chat name"]
-    [view st/chat-name-value-container
-     [text {:style st/chat-name-value}
-      chat-name]
-     [touchable-highlight {:style st/chat-name-btn-edit-container
-                           :on-press show-chat-name-edit}
-      [text {:style st/chat-name-btn-edit-text}
-       "Edit"]]]
-    [text {:style st/members-text}
-     "Members"]
+    [chat-name]
+    [text {:style st/members-text} "Members"]
     [touchable-highlight {:on-press #(dispatch [:show-add-participants])}
      [view st/add-members-container
       [icon :add-gray st/add-members-icon]
