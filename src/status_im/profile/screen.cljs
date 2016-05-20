@@ -33,6 +33,7 @@
     [view st/user-photo-container
      [profile-icon]]
     [text {:style st/user-name} name]
+    ;; TODO stub data
     [text {:style st/status} "!not implemented"]
     [view st/btns-container
      [touchable-highlight {:onPress #(message-user whisper-identity)}
@@ -48,10 +49,13 @@
                             :value name}]
     [profile-property-view {:name  "Phone number"
                             :value phone-number}]
+    ;; TODO stub data
     [profile-property-view {:name  "Email"
                             :value "!not implemented"}]
     [view st/report-user-container
-     [touchable-opacity {}
+     [touchable-highlight {:on-press (fn []
+                                       ;; TODO not implemented
+                                       )}
       [text {:style st/report-user-text} "REPORT USER"]]]]])
 
 (defview my-profile []
