@@ -288,7 +288,6 @@
   (let [chat-id (or id current-chat-id)
         messages (get-in db [:chats chat-id :messages])
         db' (assoc db :current-chat-id chat-id)]
-    (println "wuuut..." chat-id messages)
     (if (seq messages)
       db'
       (-> db'
