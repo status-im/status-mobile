@@ -285,13 +285,15 @@
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
-  (let [messages (get-in db [:chats current-chat-id :messages])]
+  (let [chat-id (or id current-chat-id)
+        messages (get-in db [:chats chat-id :messages])
+        db' (assoc db :current-chat-id chat-id)]
+    (println "wuuut..." chat-id messages)
     (if (seq messages)
-      (-> db
-          (assoc :current-chat-id (or id current-chat-id))
+      db'
+      (-> db'
           load-messages!
-          init-chat)
-      db)))
+          init-chat))))
 
 (defn prepare-chat
   [{:keys [contacts] :as db} [_ contcat-id]]
