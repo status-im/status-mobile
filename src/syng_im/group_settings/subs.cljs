@@ -2,10 +2,10 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]))
 
-(register-sub :group-settings-selected-member
+(register-sub :selected-participant
   (fn [db [_]]
     (reaction
-     (let [identity (get @db :group-settings-selected-member)]
+     (let [identity (first (get @db :selected-participants))]
        (get-in @db [:contacts identity])))))
 
 (register-sub :group-settings

@@ -14,10 +14,11 @@
 
 (defn remove-participants-toolbar []
   [toolbar
-   {:title     "Remove Participants"
-    :action    {:handler #(dispatch [:remove-selected-participants])
-                :image   {:source res/trash-icon            ;; {:uri "icon_search"}
-                          :style  st/remove-participants-image}}}])
+   {:title  "Remove Participants"
+    :action {:handler #(do (dispatch [:remove-participants])
+                           (dispatch [:navigate-back]))
+             :image   {:source res/trash-icon            ;; {:uri "icon_search"}
+                       :style  st/remove-participants-image}}}])
 
 (defn remove-participants-row
   [row _ _]

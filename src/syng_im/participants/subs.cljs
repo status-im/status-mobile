@@ -4,4 +4,4 @@
             [syng-im.utils.subs :as u]))
 
 (register-sub :is-participant-selected?
-  (u/contains-sub :new-participants))
+  (u/contains-sub :selected-participants))

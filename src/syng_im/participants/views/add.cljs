@@ -11,10 +11,11 @@
 
 (defn new-participants-toolbar []
   [toolbar
-   {:title     "Add Participants"
-    :action    {:image   {:source res/v                     ;; {:uri "icon_search"}
-                          :style  st/new-participant-image}
-                :handler #(dispatch [:add-new-participants])}}])
+   {:title  "Add Participants"
+    :action {:image   {:source res/v                     ;; {:uri "icon_search"}
+                       :style  st/new-participant-image}
+             :handler #(do (dispatch [:add-new-participants])
+                           (dispatch [:navigate-back]))}}])
 
 (defn new-participants-row
   [row _ _]

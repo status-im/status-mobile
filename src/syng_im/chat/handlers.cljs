@@ -11,7 +11,8 @@
             [syng-im.chat.sign-up :as sign-up-service]
             [syng-im.models.chats :as chats]
             [syng-im.navigation.handlers :as nav]
-            [syng-im.utils.handlers :as u]))
+            [syng-im.utils.handlers :as u]
+            [syng-im.persistence.realm :as r]))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -325,3 +326,45 @@
 (register-handler :switch-command-suggestions
   (fn [db [_]]
     (suggestions/switch-command-suggestions db)))
+
+(defn remove-chat
+  [{:keys [current-chat-id] :as db} _]
+  (update db :chats dissoc current-chat-id))
+
+(defn notify-about-leaving!
+  [{:keys [current-chat-id]} _]
+  (api/leave-group-chat current-chat-id))
+
+; todo do we really need this message?
+(defn leaving-message!
+  [{:keys [current-chat-id]} _]
+  (messages/save-message
+    current-chat-id
+    {:from         "system"
+     :msg-id       (random/id)
+     :content      "You left this chat"
+     :content-type text-content-type}))
+
+(defn delete-messages!
+  [{:keys [current-chat-id]} _]
+  (r/write
+    (fn []
+      (r/delete (r/get-by-field :msgs :chat-id current-chat-id)))))
+
+(defn delete-chat!
+  [{:keys [current-chat-id]} _]
+  (r/write
+    (fn []
+      (-> (r/get-by-field :chats :chat-id current-chat-id)
+          (r/single)
+          (r/delete)))))
+
+(register-handler :leave-group-chat
+  ;; todo oreder of operations tbd
+  (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
+  (-> remove-chat
+      ;; todo uncomment
+      ;((after notify-about-leaving!))
+      ;((after leaving-message!))
+      ((after delete-messages!))
+      ((after delete-chat!))))

@@ -18,7 +18,9 @@
       (update :navigation-stack replace-top-element view-id)
       (assoc :view-id view-id)))
 
-(defmulti preload-data! (fn [_ [_ view-id]] view-id))
+(defmulti preload-data!
+          (fn [db [_ view-id]] (or view-id (:view-id db))))
+
 (defmethod preload-data! :default [db _] db)
 
 (register-handler :navigate-to
@@ -32,6 +34,7 @@
     (replace-view db view-id)))
 
 (register-handler :navigate-back
+  (enrich preload-data!)
   (fn [{:keys [navigation-stack] :as db} _]
     (if (>= 1 (count navigation-stack))
       db
