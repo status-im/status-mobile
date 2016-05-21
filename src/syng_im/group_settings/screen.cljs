@@ -16,34 +16,31 @@
             [syng-im.group-settings.views.member :refer [member-view]]
             [clojure.string :as s]))
 
-(defn remove-member [{:keys [whisper-identity]}]
-  (dispatch [:chat-remove-member whisper-identity]))
+(defn remove-member []
+  (dispatch [:remove-participants]))
 
 (defn close-member-menu []
-  (dispatch [:set :group-settings-selected-member nil]))
+  (dispatch [:set :selected-participants #{}]))
 
 (defview member-menu []
-  [member [:group-settings-selected-member]]
-  [modal {:animated       false
-          :transparent    false
-          :onRequestClose close-member-menu}
-   [touchable-highlight {:style    st/modal-container
-                         :on-press close-member-menu}
-    [view st/modal-inner-container
-     [text {:style st/modal-member-name}
-      (:name member)]
-     [touchable-highlight {:on-press #(remove-member member)}
-      [text {:style st/modal-remove-text}
-       "Remove"]]]]])
+  [{:keys [name] :as participant} [:selected-participant]]
+  (when participant
+    [modal {:animated       false
+            :transparent    false
+            :onRequestClose close-member-menu}
+     [touchable-highlight {:style    st/modal-container
+                           :on-press close-member-menu}
+      [view st/modal-inner-container
+       [text {:style st/modal-member-name} name]
+       [touchable-highlight {:on-press remove-member}
+        [text {:style st/modal-remove-text}
+         "Remove"]]]]]))
 
 (defview chat-members []
   [members [:current-chat-contacts]]
   [view st/chat-members-container
    (for [member members]
      ^{:key member} [member-view member])])
-
-(defn show-chat-name-edit []
-  (dispatch [:navigate-to :chat-name-edit]))
 
 (defn setting-view [{:keys     [icon-style custom-icon handler title subtitle]
                      icon-name :icon}]
@@ -161,8 +158,7 @@
        [text {:style st/chat-name-btn-edit-text} "Edit"]])]])
 
 (defview group-settings []
-  [selected-member [:group-settings-selected-member]
-   show-color-picker [:group-settings :show-color-picker]]
+  [show-color-picker [:group-settings :show-color-picker]]
   [view st/group-settings
    [new-group-toolbar]
    [scroll-view st/body
@@ -179,5 +175,4 @@
     [settings-view]]
    (when show-color-picker
      [chat-color-picker])
-   (when selected-member
-     [member-menu])])
+   [member-menu]])

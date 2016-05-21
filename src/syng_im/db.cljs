@@ -18,7 +18,7 @@
              :chats                  {}
              :chats-updated-signal   0
              :show-actions           false
-             :new-participants       #{}
+             :selected-participants  #{}
              :signed-up              true
              :view-id                default-view
              :navigation-stack       (list default-view)
