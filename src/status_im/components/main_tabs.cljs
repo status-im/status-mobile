@@ -1,4 +1,4 @@
-(ns status-im.components.main_tabs
+(ns status-im.components.main-tabs
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
