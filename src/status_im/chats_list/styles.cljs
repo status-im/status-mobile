@@ -134,7 +134,8 @@
    :backgroundColor :white})
 
 (def list-container
-  {:backgroundColor :white})
+  {:backgroundColor :white
+   :marginBottom    56})
 
 (def create-icon
   {:fontSize 20

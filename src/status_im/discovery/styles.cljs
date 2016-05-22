@@ -58,6 +58,9 @@
    :paddingTop    15
    :paddingBottom 15})
 
+(def scroll-view-container
+  {:marginBottom    56})
+
 ;; discovery_popular.cljs
 
 (def carousel-page-style
