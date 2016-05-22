@@ -14,7 +14,8 @@
    :backgroundColor :white})
 
 (def contacts-list
-  {:backgroundColor :white})
+  {:backgroundColor :white
+   :marginBottom    56})
 
 (def contact-photo-container
   {:borderRadius 50})

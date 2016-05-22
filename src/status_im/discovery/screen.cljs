@@ -44,7 +44,7 @@
      :action         {:image   {:source {:uri :icon_search}
                                 :style  st/search-icon}
                       :handler #(toogle-search show-search)}}]
-   [scroll-view {:style {}}
+   [scroll-view st/scroll-view-container
     [view st/section-spacing
      [text {:style st/discovery-subtitle} "Popular tags"]]
     [popular]
