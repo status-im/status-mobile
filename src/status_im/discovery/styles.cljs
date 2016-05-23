@@ -8,8 +8,7 @@
                                                  separator-color
                                                  text1-color
                                                  text2-color
-                                                 toolbar-background1]]
-            [status-im.components.tabs.styles :refer [tab-height]]))
+                                                 toolbar-background1]]))
 
 ;; common
 
@@ -60,7 +59,7 @@
    :paddingBottom 15})
 
 (def scroll-view-container
-  {:marginBottom tab-height})
+  {})
 
 ;; discovery_popular.cljs
 

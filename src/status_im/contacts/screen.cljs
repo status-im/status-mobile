@@ -9,7 +9,6 @@
             [status-im.contacts.views.contact :refer [contact-view]]
             [status-im.components.styles :refer [toolbar-background2]]
             [status-im.components.toolbar :refer [toolbar]]
-            [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.styles :as st]
             [status-im.utils.listview :as lw]))
 
@@ -33,5 +32,4 @@
      [list-view {:dataSource          (lw/to-datasource contacts)
                  :enableEmptySections true
                  :renderRow           render-row
-                 :style               st/contacts-list}])
-   [main-tabs]])
+                 :style               st/contacts-list}])])
