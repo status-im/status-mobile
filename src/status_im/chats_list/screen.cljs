@@ -10,9 +10,10 @@
             [reagent.core :as r]
             [status-im.chats-list.views.chat-list-item :refer [chat-list-item]]
             [status-im.components.action-button :refer [action-button
-                                                      action-button-item]]
+                                                        action-button-item]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
-            [status-im.components.styles :refer [color-blue]]
+            [status-im.components.styles :refer [color-blue
+                                                 toolbar-background2]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.icons.ionicons :refer [icon]]
             [status-im.chats-list.styles :as st]))
@@ -23,6 +24,7 @@
                                    :style  st/hamburger-icon}
                          :handler open-drawer}
             :title      "Chats"
+            :background-color toolbar-background2
             ;; TODO implement search
             :action     {:image   {:source {:uri :icon_search}
                                    :style  st/search-icon}
