@@ -67,8 +67,8 @@
 
 (defn on-action-selected [position]
   (case position
-    0 (dispatch [:show-add-participants])
-    1 (dispatch [:show-remove-participants])
+    0 (dispatch [:navigate-to :add-participants])
+    1 (dispatch [:navigate-to :remove-participants])
     2 (dispatch [:leave-group-chat])))
 
 (defn overlay [{:keys [on-click-outside]} items]
@@ -119,13 +119,13 @@
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
-                           :handler    #(dispatch [:show-add-participants])}
+                           :handler    #(dispatch [:navigate-to :add-participants])}
                           {:title      "Remove Contact from chat"
                            :subtitle   "Alex, John"
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
-                           :handler    #(dispatch [:show-remove-participants])}
+                           :handler    #(dispatch [:navigate-to :remove-participants])}
                           {:title      "Leave Chat"
                            :icon       :muted
                            :icon-style {:width  18
