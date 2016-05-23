@@ -41,6 +41,7 @@
             [view
              [icon :drag_down st/drag-down-icon]]]
            [view (st/suggestions-container (count suggestions))
-            [list-view {:dataSource (to-datasource suggestions)
-                        :enableEmptySections true
-                        :renderRow  render-row}]]])))))
+            [list-view {:dataSource                (to-datasource suggestions)
+                        :enableEmptySections       true
+                        :keyboardShouldPersistTaps true
+                        :renderRow                 render-row}]]])))))
