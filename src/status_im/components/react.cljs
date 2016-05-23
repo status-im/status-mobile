@@ -35,9 +35,11 @@
 (def picker-item (r/adapt-react-class (.-Item (.-Picker js/React))))
 
 
-(defn icon [n style]
-  [image {:source {:uri (keyword (str "icon_" (name n)))}
-          :style  style}])
+(defn icon
+  ([n] (icon n {}))
+  ([n style]
+   [image {:source {:uri (keyword (str "icon_" (name n)))}
+           :style  style}]))
 
 ;(def react-linear-gradient (.-default (js/require "react-native-linear-gradient")))
 ;(def linear-gradient (r/adapt-react-class react-linear-gradient))
