@@ -4,6 +4,6 @@
     :refer [simple-command-input-view]]
    [status-im.utils.phone-number :refer [valid-mobile-number?]]))
 
-(defn phone-input-view [command]
-  [simple-command-input-view command {:keyboardType :phone-pad}
+(defn phone-input-view [command input]
+  [simple-command-input-view command input {:keyboardType :phone-pad}
    :validator valid-mobile-number?])

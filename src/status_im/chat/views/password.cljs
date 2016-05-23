@@ -3,5 +3,5 @@
    [status-im.chat.views.command
     :refer [simple-command-input-view]]))
 
-(defn password-input-view [command]
-  [simple-command-input-view command {:secureTextEntry true}])
+(defn password-input-view [command input]
+  [simple-command-input-view command input {:secureTextEntry true}])
