@@ -18,7 +18,9 @@
       (update :navigation-stack replace-top-element view-id)
       (assoc :view-id view-id)))
 
-(defmulti preload-data! (fn [_ [_ view-id]] view-id))
+(defmulti preload-data!
+          (fn [db [_ view-id]] (or view-id (:view-id db))))
+
 (defmethod preload-data! :default [db _] db)
 
 (register-handler :navigate-to
@@ -27,10 +29,12 @@
     (push-view db view-id)))
 
 (register-handler :navigation-replace
+  (enrich preload-data!)
   (fn [db [_ view-id]]
     (replace-view db view-id)))
 
 (register-handler :navigate-back
+  (enrich preload-data!)
   (fn [{:keys [navigation-stack] :as db} _]
     (if (>= 1 (count navigation-stack))
       db
@@ -46,31 +50,9 @@
           (push-view :new-group)
           (assoc :new-group #{})))))
 
-(register-handler :show-chat
-  (fn [db [_ chat-id nav-type]]
-    (let [update-view-id-fn (if (= :replace nav-type) replace-view push-view)]
-      (-> db
-          (update-view-id-fn :chat)
-          (assoc :current-chat-id chat-id)))))
-
 (register-handler :show-contacts
   (fn [db _]
     (push-view db :contact-list)))
-
-(defn clear-new-participants [db]
-  (assoc db :new-participants #{}))
-
-(register-handler :show-remove-participants
-  (fn [db _]
-    (-> db
-        (push-view :remove-participants)
-        clear-new-participants)))
-
-(register-handler :show-add-participants
-  (fn [db _]
-    (-> db
-        (push-view :add-participants)
-        clear-new-participants)))
 
 (defn show-profile
   [db [_ identity]]

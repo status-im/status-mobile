@@ -8,7 +8,6 @@
 
 (defn on-toggle [whisper-identity]
   (fn [checked?]
-    (println checked?)
     (let [action (if checked? :select-contact :deselect-contact)]
       (dispatch [action whisper-identity]))))
 
