@@ -1,14 +1,15 @@
 (ns status-im.discovery.styles
   (:require [status-im.components.styles :refer [font
-                                               title-font
-                                               color-white
-                                               chat-background
-                                               online-color
-                                               selected-message-color
-                                               separator-color
-                                               text1-color
-                                               text2-color
-                                               toolbar-background1]]))
+                                                 title-font
+                                                 color-white
+                                                 chat-background
+                                                 online-color
+                                                 selected-message-color
+                                                 separator-color
+                                                 text1-color
+                                                 text2-color
+                                                 toolbar-background1]]
+            [status-im.components.tabs.styles :refer [tab-height]]))
 
 ;; common
 
@@ -39,7 +40,7 @@
 
 (def discovery-title
   {:color      "#000000de"
-   :alignSelf :center
+   :alignSelf  :center
    :textAlign  :center
    :fontFamily "sans-serif"
    :fontSize   16})
@@ -59,7 +60,7 @@
    :paddingBottom 15})
 
 (def scroll-view-container
-  {:marginBottom    56})
+  {:marginBottom tab-height})
 
 ;; discovery_popular.cljs
 
@@ -74,12 +75,12 @@
 ;; discovery_populat_list.cljs
 
 (def tag-name
-  {:color "#7099e6"
-   :fontFamily "sans-serif-medium"
-   :fontSize   14
-   :paddingRight 5
-   :paddingBottom 2
-   :alignItems :center
+  {:color          "#7099e6"
+   :fontFamily     "sans-serif-medium"
+   :fontSize       14
+   :paddingRight   5
+   :paddingBottom  2
+   :alignItems     :center
    :justifyContent :center})
 
 (def tag-name-container
@@ -89,12 +90,12 @@
    :padding         4})
 
 (def tag-count
-  {:color "#838c93"
-   :fontFamily "sans-serif"
-   :fontSize   12
-   :paddingRight 5
-   :paddingBottom 2
-   :alignItems :center
+  {:color          "#838c93"
+   :fontFamily     "sans-serif"
+   :fontSize       12
+   :paddingRight   5
+   :paddingBottom  2
+   :alignItems     :center
    :justifyContent :center})
 
 (def tag-count-container
@@ -105,20 +106,20 @@
    :paddingRight  9})
 
 (def popular-list-container
-  {:flex 1
+  {:flex            1
    :backgroundColor :white
-   :paddingLeft 10
-   :paddingTop 16})
+   :paddingLeft     10
+   :paddingTop      16})
 
 (def popular-list
   {:backgroundColor :white
-   :paddingTop 13})
+   :paddingTop      13})
 
 ;; discover_popular_list_item.cjls
 
 (def popular-list-item
   {:flexDirection :row
-   :paddingTop 10
+   :paddingTop    10
    :paddingBottom 10})
 
 (def popular-list-item-status
@@ -140,8 +141,8 @@
 (def popular-list-item-avatar-container
   {:flex          0.2
    :flexDirection "column"
-   :alignItems :center
-   :paddingTop 5})
+   :alignItems    :center
+   :paddingTop    5})
 
 (def popular-list-item-avatar
   {:resizeMode   "contain"
@@ -153,7 +154,7 @@
 
 (def recent-list
   {:backgroundColor :white
-   :paddingLeft 15})
+   :paddingLeft     15})
 
 ;; discovery_tag
 
@@ -162,8 +163,8 @@
    :backgroundColor "#eef2f5"})
 
 (def tag-title-container
-  {:flex 1
-   :alignItems "center"
+  {:flex           1
+   :alignItems     "center"
    :justifyContent "center"})
 
 (def tag-title
