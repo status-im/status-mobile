@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [register-handler enrich after debug dispatch]]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
+            [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.api :as api]
             [status-im.models.messages :as messages]
@@ -304,6 +305,7 @@
   (let [name (get-in contacts [contcat-id :name])
         chat {:chat-id    contcat-id
               :name       name
+              :color      default-chat-color
               :group-chat false
               :is-active  true
               :timestamp  (.getTime (js/Date.))
