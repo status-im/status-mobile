@@ -6,12 +6,13 @@
             [status-im.protocol.api :as api]
             [status-im.models.messages :as messages]
             [status-im.constants :refer [text-content-type
-                                       content-type-command]]
+                                         content-type-command]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.models.chats :as chats]
             [status-im.navigation.handlers :as nav]
-            [status-im.utils.handlers :as u]))
+            [status-im.utils.handlers :as u]
+            [status-im.persistence.realm :as r]))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -187,7 +188,8 @@
       ((enrich add-commands))
       ((enrich clear-input))
       ((enrich clear-staged-commands))
-      ((after send-message!))
+      ;; todo uncomment once
+      ;((after send-message!))
       ((after save-message-to-realm!))
       ((after save-commands-to-realm!))
       ((after handle-commands))))
@@ -283,10 +285,14 @@
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
-  (-> db
-      (assoc :current-chat-id (or id current-chat-id))
-      load-messages!
-      init-chat))
+  (let [chat-id (or id current-chat-id)
+        messages (get-in db [:chats chat-id :messages])
+        db' (assoc db :current-chat-id chat-id)]
+    (if (seq messages)
+      db'
+      (-> db'
+          load-messages!
+          init-chat))))
 
 (defn prepare-chat
   [{:keys [contacts] :as db} [_ contcat-id]]
@@ -321,3 +327,45 @@
 (register-handler :switch-command-suggestions
   (fn [db [_]]
     (suggestions/switch-command-suggestions db)))
+
+(defn remove-chat
+  [{:keys [current-chat-id] :as db} _]
+  (update db :chats dissoc current-chat-id))
+
+(defn notify-about-leaving!
+  [{:keys [current-chat-id]} _]
+  (api/leave-group-chat current-chat-id))
+
+; todo do we really need this message?
+(defn leaving-message!
+  [{:keys [current-chat-id]} _]
+  (messages/save-message
+    current-chat-id
+    {:from         "system"
+     :msg-id       (random/id)
+     :content      "You left this chat"
+     :content-type text-content-type}))
+
+(defn delete-messages!
+  [{:keys [current-chat-id]} _]
+  (r/write
+    (fn []
+      (r/delete (r/get-by-field :msgs :chat-id current-chat-id)))))
+
+(defn delete-chat!
+  [{:keys [current-chat-id]} _]
+  (r/write
+    (fn []
+      (-> (r/get-by-field :chats :chat-id current-chat-id)
+          (r/single)
+          (r/delete)))))
+
+(register-handler :leave-group-chat
+  ;; todo oreder of operations tbd
+  (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
+  (-> remove-chat
+      ;; todo uncomment
+      ;((after notify-about-leaving!))
+      ;((after leaving-message!))
+      ((after delete-messages!))
+      ((after delete-chat!))))
