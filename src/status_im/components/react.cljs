@@ -39,6 +39,15 @@
   [image {:source {:uri (keyword (str "icon_" (name n)))}
           :style  style}])
 
+;(def react-linear-gradient (.-default (js/require "react-native-linear-gradient")))
+;(def linear-gradient (r/adapt-react-class react-linear-gradient))
+
+(set! js/window.LinearGradient (js/require "react-native-linear-gradient"))
+(defn linear-gradient [props]
+  (js/React.createElement js/LinearGradient
+                          (clj->js (merge {:inverted true} props))))
+
+
 (def platform (.. js/React -Platform -OS))
 
 (def android? (= platform "android"))
