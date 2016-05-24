@@ -11,7 +11,8 @@
                  ^{:voom {:repo "https://github.com/status-im/status-lib.git"
                           :branch "syng-rename"}}
                  [status-im/protocol "0.1.1-20160519_164302-g92930a0"]
-                 [natal-shell "0.1.6"]]
+                 [natal-shell "0.1.6"]
+                 [com.andrewmcveigh/cljs-time "0.4.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]

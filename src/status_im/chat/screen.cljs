@@ -1,7 +1,7 @@
 (ns status-im.chat.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [clojure.string :as s]
-            [re-frame.core :refer [subscribe dispatch]]
+  (:require [re-frame.core :refer [subscribe dispatch]]
+            [clojure.string :as s]
             [status-im.components.react :refer [view
                                               text
                                               image
@@ -9,9 +9,11 @@
                                               touchable-highlight
                                               list-view
                                               list-item]]
+            [status-im.components.chat-icon.screen :refer [chat-icon-view-action
+                                                           chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
-            [status-im.resources :as res]
             [status-im.utils.listview :refer [to-datasource]]
+            [status-im.utils.utils :refer [truncate-str]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
@@ -32,19 +34,13 @@
       (assoc msg :text-color text-color
                  :background-color background-color))))
 
-(defn chat-photo [{:keys [photo-path]}]
-  [view {:margin       10
-         :borderRadius 50}
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
-           :style  st/chat-photo}]])
-
-(defn contact-online [{:keys [online]}]
-  (when online
-    [view st/online-view
-     [view st/online-dot-left]
-     [view st/online-dot-right]]))
+(defview chat-icon []
+  [chat-id    [:chat :chat-id]
+   group-chat [:chat :group-chat]
+   name       [:chat :name]
+   color      [:chat :color]]
+  ;; TODO stub data ('online' property)
+  [chat-icon-view-action chat-id group-chat name color true])
 
 (defn typing [member]
   [view st/typing-view
@@ -54,6 +50,7 @@
 
 (defn typing-all []
   [view st/typing-all
+   ;; TODO stub data
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
 
@@ -94,43 +91,44 @@
        [text {:style st/action-subtitle}
         subtitle])]]])
 
-(defn menu-item-contact-photo [{:keys [photo-path]}]
-  [image {:source (if (s/blank? photo-path)
-                    res/user-no-photo
-                    {:uri photo-path})
-          :style  st/menu-item-profile-contact-photo}])
+(defview menu-item-icon-profile []
+  [chat-id    [:chat :chat-id]
+   group-chat [:chat :group-chat]
+   name       [:chat :name]
+   color      [:chat :color]]
+  ;; TODO stub data ('online' property)
+  [chat-icon-view-menu-item chat-id group-chat name color true])
 
-(defn menu-item-contact-online [{:keys [online]}]
-  (when online
-    [view st/menu-item-profile-online-view
-     [view st/menu-item-profile-online-dot-left]
-     [view st/menu-item-profile-online-dot-right]]))
-
-(defn menu-item-icon-profile []
-  [view st/icon-view
-   [menu-item-contact-photo {}]
-   [menu-item-contact-online {:online true}]])
+(defn members-text [members]
+  (truncate-str (str (s/join ", " (map #(:name %) members)) " and you") 35))
 
 (defn actions-list-view []
   (let [{:keys [group-chat chat-id]}
-        (subscribe [:chat-properties [:group-chat :chat-id]])]
+        (subscribe [:chat-properties [:group-chat :chat-id]])
+        members (subscribe [:current-chat-contacts])]
     (when-let [actions (if @group-chat
-                         [{:title      "Add Contact to chat"
+                         [{:title      "Members"
+                           :subtitle   (members-text @members)
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
-                           :handler    #(dispatch [:navigate-to :add-participants])}
-                          {:title      "Remove Contact from chat"
-                           :subtitle   "Alex, John"
+                           ;; TODO not implemented: action Members
+                           :handler    nil}
+                          {:title      "Search chat"
+                           :subtitle   "!not implemented"
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
-                           :handler    #(dispatch [:navigate-to :remove-participants])}
-                          {:title      "Leave Chat"
+                           ;; TODO not implemented: action Search chat
+                           :handler    nil}
+                          {:title      "Notifications and sounds"
+                           :subtitle   "!not implemented"
+                           ;;:subtitle   "Chat muted"
                            :icon       :muted
                            :icon-style {:width  18
                                         :height 21}
-                           :handler    #(dispatch [:leave-group-chat])}
+                           ;; TODO not implemented: action Notifications
+                           :handler    nil}
                           {:title      "Settings"
                            :icon       :settings
                            :icon-style {:width  20
@@ -147,19 +145,23 @@
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
+                           ;; TODO not implemented: action Search chat
                            :handler    nil}
                           {:title      "Notifications and sounds"
                            :subtitle   "!not implemented"
+                           ;;:subtitle   "Notifications on"
                            :icon       :muted
                            :icon-style {:width  18
                                         :height 21}
+                           ;; TODO not implemented: action Notifications
                            :handler    nil}
                           {:title      "Settings"
                            :subtitle   "!not implemented"
                            :icon       :settings
                            :icon-style {:width  20
                                         :height 13}
-                           :handler    (fn [])}])]
+                           ;; TODO not implemented: action Settings
+                           :handler    nil}])]
       [view st/actions-wrapper
        [view st/actions-separator]
        [view st/actions-view
@@ -177,17 +179,19 @@
     (fn []
       [view (st/chat-name-view @show-actions)
        [text {:style st/chat-name-text}
-        (or @name "Chat name")]
+        (truncate-str (or @name "Chat name") 30)]
        (if @group-chat
          [view {:flexDirection :row}
           [icon :group st/group-icon]
           [text {:style st/members}
-           (let [cnt (count @contacts)]
+           (let [cnt (inc (count @contacts))]
              (str cnt
                   (if (< 1 cnt)
                     " members"
                     " member")
+                  ;; TODO stub data: active members
                   ", " cnt " active"))]]
+         ;; TODO stub data: last activity
          [text {:style st/last-activity} "Active a minute ago"])])))
 
 (defn toolbar-action []
@@ -196,13 +200,12 @@
       (if @show-actions
         [touchable-highlight
          {:on-press #(dispatch [:set-show-actions false])}
-         [view st/icon-view
+         [view st/action
           [icon :up st/up-icon]]]
         [touchable-highlight
          {:on-press #(dispatch [:set-show-actions true])}
-         [view st/icon-view
-          [chat-photo {}]
-          [contact-online {:online true}]]]))))
+         [view st/action
+          [chat-icon]]]))))
 
 (defn chat-toolbar []
   (let [{:keys [group-chat name contacts]}

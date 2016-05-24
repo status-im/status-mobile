@@ -12,7 +12,8 @@
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
-            [status-im.components.styles :refer [color-blue]]
+            [status-im.components.styles :refer [color-blue
+                                                 toolbar-background2]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.components.icons.ionicons :refer [icon]]
@@ -23,6 +24,8 @@
                                    :style  st/hamburger-icon}
                          :handler open-drawer}
             :title      "Chats"
+            :background-color toolbar-background2
+            ;; TODO implement search
             :action     {:image   {:source {:uri :icon_search}
                                    :style  st/search-icon}
                          :handler (fn [])}}])
