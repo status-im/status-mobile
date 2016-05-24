@@ -193,8 +193,7 @@
       ((enrich add-commands))
       ((enrich clear-input))
       ((enrich clear-staged-commands))
-      ;; todo uncomment once
-      ;((after send-message!))
+      ((after send-message!))
       ((after save-message-to-realm!))
       ((after save-commands-to-realm!))
       ((after handle-commands))))
