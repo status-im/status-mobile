@@ -4,13 +4,16 @@
             [status-im.persistence.simple-kv-store :as kv]
             [status-im.protocol.state.storage :as s]
             [status-im.models.chats :as c]
+            [status-im.components.styles :refer [default-chat-color]]
             [status-im.utils.utils :refer [log on-error http-post toast]]
             [status-im.utils.random :as random]
+            [status-im.utils.sms-listener :refer [add-sms-listener
+                                                  remove-sms-listener]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.constants :refer [text-content-type
-                                       content-type-command
-                                       content-type-command-request
-                                       content-type-status]]))
+                                         content-type-command
+                                         content-type-command-request
+                                         content-type-status]]))
 
 (defn send-console-msg [text]
   {:msg-id       (random/id)
@@ -37,19 +40,22 @@
   (dispatch [:set-signed-up true]))
 
 (defn sync-contacts []
+  ;; TODO 'on-sync-contacts' is never called
   (dispatch [:sync-contacts on-sync-contacts]))
 
 (defn on-send-code-response [body]
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              ;; todo replace by real check
-              :content      (if (= "1111" body)
-                              "Confirmed"
-                              "Wrong code")
+              :content      (:message body)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
-              :to           "me"}]))
+              :to           "me"}])
+  (when (:confirmed body)
+    (dispatch [:stop-listening-confirmation-code-sms])
+    (sync-contacts)
+    ;; TODO should be called after sync-contacts?
+    (dispatch [:set-signed-up true])))
 
 ; todo fn name is not too smart, but...
 (defn command-content
@@ -71,9 +77,22 @@
                 :from         "console"
                 :to           "me"}])))
 
+(defn handle-sms [{body :body}]
+  (when-let [matches (re-matches #"(\d{4})" body)]
+    (dispatch [:sign-up-confirm (second matches)])))
+
+(defn start-listening-confirmation-code-sms [db]
+  (when (not (:confirmation-code-sms-listener db))
+    (assoc db :confirmation-code-sms-listener (add-sms-listener handle-sms))))
+
+(defn stop-listening-confirmation-code-sms [db]
+  (when-let [listener (:confirmation-code-sms-listener db)]
+    (remove-sms-listener listener)
+    (dissoc db :confirmation-code-sms-listener)))
+
 ;; -- Saving password ----------------------------------------
 (defn save-password [password]
-  ;; TODO validate and save password  
+  ;; TODO validate and save password
   (dispatch [:received-msg
              {:msg-id       (random/id)
               :content      (str "OK great! Your password has been saved. Just to let you "
@@ -174,6 +193,7 @@
 (def console-chat
   {:chat-id    "console"
    :name       "console"
+   :color      default-chat-color
    :group-chat false
    :is-active  true
    :timestamp  (.getTime (js/Date.))

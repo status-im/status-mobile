@@ -26,3 +26,4 @@
 (def separator-color "#0000001f")
 (def toolbar-background1 color-white)
 (def toolbar-background2 color-light-gray)
+(def default-chat-color color-purple)

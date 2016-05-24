@@ -1,52 +1,45 @@
 (ns status-im.chats-list.views.inner-item
-  (:require [clojure.string :as s]
-            [status-im.components.react :refer [view image icon text]]
+  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require [status-im.components.react :refer [view image icon text]]
+            [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
             [status-im.chats-list.styles :as st]
-            [status-im.resources :as res]))
-
-
-(defn contact-photo [photo-path]
-  [view st/contact-photo-container
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
-           :style  st/contact-photo-image}]])
-
-(defn contact-online [online]
-  (when online
-    [view st/online-container
-     [view st/online-dot-left]
-     [view st/online-dot-right]]))
+            [status-im.utils.utils :refer [truncate-str]]
+            [status-im.utils.datetime :as time]))
 
 (defn chat-list-item-inner-view
-  [{:keys [name photo-path delivery-status timestamp new-messages-count online
-           group-chat contacts]}]
-  [view st/chat-container
-   [view st/photo-container
-    [contact-photo photo-path]
-    [contact-online online]]
-   [view st/item-container
-    [view st/name-view
-     [text {:style st/name-text} name]
-     (when group-chat
-       [icon :group st/group-icon])
-     (when group-chat
-       [text {:style st/memebers-text}
-        (if (< 1 (count contacts))
-          (str (count contacts) " members")
-          "1 member")])]
-    [text {:style         st/last-message-text
-           :numberOfLines 2}
-     (repeatedly 5 #(str "Hi, I'm " name "! "))]]
-   [view
-    [view st/status-container
-     (when delivery-status
-       [image {:source (if (= (keyword delivery-status) :seen)
-                         {:uri :icon_ok_small}
-                         ;; todo change icon
-                         {:uri :icon_ok_small})
-               :style  st/status-image}])
-     [text {:style st/datetime-text} timestamp]]
-    (when (pos? new-messages-count)
-      [view st/new-messages-container
-       [text {:style st/new-messages-text} new-messages-count]])]])
+  [{:keys [chat-id name color photo-path new-messages-count
+           online group-chat contacts] :as chat}]
+  (let [last-message (first (:messages chat))]
+    [view st/chat-container
+     [view st/chat-icon-container
+      [chat-icon-view-chat-list chat-id group-chat name color online]]
+     [view st/item-container
+      [view st/name-view
+       [text {:style st/name-text} (truncate-str name 20)]
+       (when group-chat
+         [icon :group st/group-icon])
+       (when group-chat
+         [text {:style st/memebers-text}
+          (if (< 0 (count contacts))
+            (str (inc (count contacts)) " members")
+            "1 member")])]
+      [text {:style         st/last-message-text
+             :numberOfLines 2}
+       (when last-message
+         (:content last-message))]]
+     [view
+      (when last-message
+        [view st/status-container
+         ;; TODO currently there is not :delivery-status in last-message
+         (when (:delivery-status last-message)
+           [image {:source (if (= (keyword (:delivery-status last-message)) :seen)
+                             {:uri :icon_ok_small}
+                             ;; todo change icon
+                             {:uri :icon_ok_small})
+                   :style  st/status-image}])
+         (when (:timestamp last-message)
+           [text {:style st/datetime-text}
+            (time/to-short-str (:timestamp last-message))])])
+      (when (pos? new-messages-count)
+        [view st/new-messages-container
+         [text {:style st/new-messages-text} new-messages-count]])]]))

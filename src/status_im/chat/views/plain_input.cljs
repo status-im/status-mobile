@@ -45,6 +45,7 @@
                        :onSubmitEditing #(try-send @chat @staged-commands-atom
                                                    input-message)}
            input-message]
+          ;; TODO emoticons: not implemented
           [icon :smile st/smile-icon]
           (when (message-valid? @staged-commands-atom input-message)
             [touchable-highlight {:on-press #(send @chat input-message)}

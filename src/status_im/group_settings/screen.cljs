@@ -2,16 +2,17 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                              text-input
-                                              text
-                                              image
-                                              icon
-                                              modal
-                                              picker
-                                              picker-item
-                                              scroll-view
-                                              touchable-highlight]]
+                                                text-input
+                                                text
+                                                image
+                                                icon
+                                                modal
+                                                picker
+                                                picker-item
+                                                scroll-view
+                                                touchable-highlight]]
             [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.chat-icon.screen :refer [chat-icon-view-action]]
             [status-im.group-settings.styles.group-settings :as st]
             [status-im.group-settings.views.member :refer [member-view]]))
 
@@ -21,6 +22,7 @@
 (defn close-member-menu []
   (dispatch [:set :selected-participants #{}]))
 
+;; TODO not in design
 (defview member-menu []
   [{:keys [name] :as participant} [:selected-participant]]
   (when participant
@@ -61,6 +63,7 @@
   (close-chat-color-picker)
   (dispatch [:set-chat-color]))
 
+;; TODO not in design
 (defview chat-color-picker []
   [show-color-picker [:group-settings :show-color-picker]
    new-color [:get :new-chat-color]]
@@ -88,10 +91,10 @@
   (dispatch [:group-settings :show-color-picker true]))
 
 (defn settings-view []
-  ;; TODO implement settings handlers
   (let [settings [{:custom-icon [chat-color-icon]
                    :title       "Change color"
                    :handler     show-chat-color-picker}
+                  ;; TODO not implemented: Notifications
                   (merge {:title    "Notifications and sounds"
                           :subtitle "!not implemented"
                           :handler  nil}
@@ -106,21 +109,25 @@
                    :icon-style {:width  12
                                 :height 12}
                    :title      "Clear history"
+                   ;; TODO show confirmation dialog?
                    :handler    #(dispatch [:clear-history])}
                   {:icon       :bin
                    :icon-style {:width  12
                                 :height 18}
                    :title      "Delete and leave"
+                   ;; TODO show confirmation dialog?
                    :handler    #(dispatch [:leave-group-chat])}]]
     [view st/settings-container
      (for [setting settings]
        ^{:key setting} [setting-view setting])]))
 
 (defview chat-icon []
-  [name [:chat :name]
-   color [:chat :color]]
-  [view (st/chat-icon color)
-   [text {:style st/chat-icon-text} (first name)]])
+  [chat-id    [:chat :chat-id]
+   group-chat [:chat :group-chat]
+   name       [:chat :name]
+   color      [:chat :color]]
+  [view st/action
+   [chat-icon-view-action chat-id group-chat name color false]])
 
 (defn new-group-toolbar []
   [toolbar {:title         "Chat settings"
@@ -164,6 +171,7 @@
     [chat-name]
     [text {:style st/members-text} "Members"]
     [touchable-highlight {:on-press #(dispatch [:navigate-to :add-participants])}
+    ;; TODO add participants view is not in design
      [view st/add-members-container
       [icon :add-gray st/add-members-icon]
       [text {:style st/add-members-text}

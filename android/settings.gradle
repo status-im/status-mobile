@@ -16,3 +16,5 @@ include ':randombytes'
 project(':randombytes').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-randombytes/app')
 include ':react-native-linear-gradient'
 project(':react-native-linear-gradient').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-linear-gradient/android')
+include ':ReactNativeAndroidSmsListener'
+project(':ReactNativeAndroidSmsListener').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-sms-listener/android')
