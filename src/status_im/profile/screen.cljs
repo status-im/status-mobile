@@ -1,7 +1,6 @@
 (ns status-im.profile.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [clojure.string :as s]
-            [re-frame.core :refer [subscribe dispatch]]
+  (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
                                               text
                                               image
@@ -9,20 +8,9 @@
                                               scroll-view
                                               touchable-highlight
                                               touchable-opacity]]
-            [status-im.resources :as res]
+            [status-im.components.chat-icon.screen :refer [profile-icon
+                                                         my-profile-icon]]
             [status-im.profile.styles :as st]))
-
-(defn user-photo [{:keys [photo-path]}]
-  [image {:source (if (s/blank? photo-path)
-                    res/user-no-photo
-                    {:uri photo-path})
-          :style  st/user-photo}])
-
-(defn user-online [{:keys [online]}]
-  (when online
-    [view st/user-online-container
-     [view st/user-online-dot-left]
-     [view st/user-online-dot-right]]))
 
 (defn profile-property-view [{:keys [name value]}]
   [view st/profile-property-view-container
@@ -43,9 +31,9 @@
      [icon :back st/back-btn-icon]]]
    [view st/status-block
     [view st/user-photo-container
-     [user-photo {}]
-     [user-online {:online true}]]
+     [profile-icon]]
     [text {:style st/user-name} name]
+    ;; TODO stub data
     [text {:style st/status} "!not implemented"]
     [view st/btns-container
      [touchable-highlight {:onPress #(message-user whisper-identity)}
@@ -61,17 +49,21 @@
                             :value name}]
     [profile-property-view {:name  "Phone number"
                             :value phone-number}]
+    ;; TODO stub data
     [profile-property-view {:name  "Email"
                             :value "!not implemented"}]
     [view st/report-user-container
-     [touchable-opacity {}
+     [touchable-highlight {:on-press (fn []
+                                       ;; TODO not implemented
+                                       )}
       [text {:style st/report-user-text} "REPORT USER"]]]]])
 
 (defview my-profile []
-  [username [:get :username]
+  [username     [:get :username]
+   photo-path   [:get :photo-path]
    phone-number [:get :phone-number]
-   email [:get :email]
-   status [:get :status]]
+   email        [:get :email]
+   status       [:get :status]]
   [scroll-view {:style st/profile}
    [touchable-highlight {:style    st/back-btn-touchable
                          :on-press #(dispatch [:navigate-back])}
@@ -85,8 +77,7 @@
      [icon :dots st/actions-btn-icon]]]
    [view st/status-block
     [view st/user-photo-container
-     [user-photo {}]
-     [user-online {:online true}]]
+     [my-profile-icon]]
     [text {:style st/user-name} username]
     [text {:style st/status} status]]
    [view st/profile-properties-container

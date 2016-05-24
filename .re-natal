@@ -15,7 +15,8 @@
     "react-native-circle-checkbox",
     "react-native-randombytes",
     "dismissKeyboard",
-    "react-native-linear-gradient"
+    "react-native-linear-gradient",
+    "react-native-android-sms-listener"
   ],
   "imageDirs": [
     "images"
