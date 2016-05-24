@@ -73,7 +73,7 @@
 
 (defn request-stored-contacts [contacts]
   (let [contacts-by-hash (get-contacts-by-hash contacts)
-        data             (keys contacts-by-hash)]
+        data             (or (keys contacts-by-hash) ())]
     (http-post "get-contacts" {:phone-number-hashes data}
                (fn [{:keys [contacts]}]
                  (let [contacts' (add-identity contacts-by-hash contacts)]

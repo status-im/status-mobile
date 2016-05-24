@@ -10,7 +10,7 @@
 
 (defn chat-list-item [{:keys [chat-id] :as chat}]
   [touchable-highlight
-   {:on-press #(dispatch [:show-chat chat-id :push])}
+   {:on-press #(dispatch [:navigate-to :chat chat-id])}
    [view [chat-list-item-inner-view (merge chat
                                            ;; TODO stub data
                                            {:new-messages-count 3

@@ -3,7 +3,8 @@
                                                title-font
                                                text1-color
                                                color-white
-                                               online-color]]))
+                                               online-color]]
+            [status-im.components.tabs.styles :refer [tab-height]]))
 
 (def search-icon
   {:width  17
@@ -14,7 +15,8 @@
    :backgroundColor :white})
 
 (def contacts-list
-  {:backgroundColor :white})
+  {:backgroundColor :white
+   :marginBottom    tab-height})
 
 (def contact-photo-container
   {:borderRadius 50})

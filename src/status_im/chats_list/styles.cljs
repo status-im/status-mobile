@@ -6,7 +6,8 @@
                                                online-color
                                                text1-color
                                                text2-color
-                                               new-messages-count-color]]))
+                                               new-messages-count-color]]
+            [status-im.components.tabs.styles :refer [tab-height]]))
 
 (def chat-container
   {:flexDirection     :row
@@ -102,7 +103,8 @@
    :backgroundColor :white})
 
 (def list-container
-  {:backgroundColor :white})
+  {:backgroundColor :white
+   :marginBottom    tab-height})
 
 (def create-icon
   {:fontSize 20

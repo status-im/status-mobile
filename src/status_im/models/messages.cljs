@@ -62,10 +62,3 @@
     (fn []
       (when (r/exists? :msgs :msg-id msg-id)
         (r/create :msgs msg true)))))
-
-(defn clear-history [chat-id]
-  (r/write
-    (fn []
-      (r/delete (r/get-by-field :msgs :chat-id chat-id))))
-  ;; TODO temp. Update chat in db atom
-  (dispatch [:initialize-chats]))
