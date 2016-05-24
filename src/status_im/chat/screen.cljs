@@ -64,8 +64,8 @@
 
 (defn on-action-selected [position]
   (case position
-    0 (dispatch [:show-add-participants])
-    1 (dispatch [:show-remove-participants])
+    0 (dispatch [:navigate-to :add-participants])
+    1 (dispatch [:navigate-to :remove-participants])
     2 (dispatch [:leave-group-chat])))
 
 (defn overlay [{:keys [on-click-outside]} items]

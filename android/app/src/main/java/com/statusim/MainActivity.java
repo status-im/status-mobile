@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import com.github.ethereum.go_ethereum.cmd.Geth;
 import com.bitgo.randombytes.RandomBytesPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 import com.centaurwarchief.smslistener.SmsListener;
 
 import java.util.Arrays;
@@ -80,6 +81,7 @@ public class MainActivity extends ReactActivity {
                 new ReactNativeContacts(),
                 new ReactNativeI18n(),
                 new RandomBytesPackage(),
+                new LinearGradientPackage(),
                 new SmsListener(this)
         );
     }

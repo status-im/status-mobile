@@ -3,10 +3,11 @@
   (:require
     [re-frame.core :refer [dispatch subscribe]]
     [status-im.components.react :refer [view
-                                      scroll-view
-                                      text
-                                      text-input]]
+                                        scroll-view
+                                        text
+                                        text-input]]
     [status-im.components.toolbar :refer [toolbar]]
+    [status-im.components.main-tabs :refer [main-tabs]]
     [status-im.discovery.views.popular :refer [popular]]
     [status-im.discovery.views.recent :refer [discovery-recent]]
     [status-im.discovery.styles :as st]))
@@ -22,7 +23,7 @@
                   :autoFocus       true
                   :placeholder     "Type your search tags here"
                   :onSubmitEditing (fn [e]
-                                     (let [search   (aget e "nativeEvent" "text")
+                                     (let [search (aget e "nativeEvent" "text")
                                            hashtags (get-hashtags search)]
                                        (dispatch [:broadcast-status search hashtags])))}]
      [view
@@ -43,10 +44,11 @@
      :action         {:image   {:source {:uri :icon_search}
                                 :style  st/search-icon}
                       :handler #(toogle-search show-search)}}]
-   [scroll-view {:style {}}
+   [scroll-view st/scroll-view-container
     [view st/section-spacing
      [text {:style st/discovery-subtitle} "Popular tags"]]
     [popular]
     [view st/section-spacing
      [text {:style st/discovery-subtitle} "Recent"]]
-    [discovery-recent]]])
+    [discovery-recent]]
+   [main-tabs]])
