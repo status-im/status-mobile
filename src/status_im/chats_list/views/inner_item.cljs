@@ -14,7 +14,7 @@
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/item-container
-      [view st/name-view
+      #_[view st/name-view
        [text {:style st/name-text} (truncate-str name 20)]
        (when group-chat
          [icon :group st/group-icon])
@@ -26,7 +26,10 @@
       [text {:style         st/last-message-text
              :numberOfLines 2}
        (when last-message
-         (:content last-message))]]
+         (let [content (:content last-message)]
+           (if (string? content)
+             content
+             (:content content))))]]
      [view
       (when last-message
         [view st/status-container
