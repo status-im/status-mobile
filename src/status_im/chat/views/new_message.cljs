@@ -3,12 +3,7 @@
   (:require
     [re-frame.core :refer [subscribe]]
     [status-im.components.react :refer [view]]
-    [status-im.chat.views.plain-input :refer [plain-message-input-view input]]
-    [status-im.chat.views.command :refer [simple-command-input-view]]
-    [status-im.chat.views.phone :refer [phone-input-view]]
-    [status-im.chat.views.password :refer [password-input-view]]
-    [status-im.chat.views.confirmation-code :refer [confirmation-code-input-view]]
-    [status-im.chat.views.money :refer [money-input-view]]
+    [status-im.chat.views.plain-input :refer [plain-message-input-view]]
     [status-im.chat.views.staged-command :refer [simple-command-staged-view]]
     [status-im.utils.phone-number :refer [valid-mobile-number?]]
     [status-im.chat.styles.message :as st]))
@@ -21,31 +16,16 @@
    (for [command staged-commands]
      ^{:key command} [staged-command-view command])])
 
-
-
-(comment
-  (defn default-command-input-view [command input]
-    [simple-command-input-view command input {}])
-
-  (defn special-input-view [input command]
-           (case (:command command)
-             :phone [phone-input-view command input]
-             :keypair-password [password-input-view command input]
-             :confirmation-code [confirmation-code-input-view command input]
-             :money [money-input-view command input]
-             :request [money-input-view command input]
-             [default-command-input-view command input])))
-
 (defn show-input [command]
   [plain-message-input-view
    (merge {:command command}
           (case (:command command)
-            :phone {:keyboardType :phone-pad
+            :phone {:input-options {:keyboardType :phone-pad}
                     :validator    valid-mobile-number?}
-            :keypair-password {:secureTextEntry true}
-            :confirmation-code {:keyboardType :numeric}
-            :money {:keyboardType :numeric}
-            :request {:keyboardType :numeric}
+            :keypair-password {:input-options {:secureTextEntry true}}
+            :confirmation-code {:input-options {:keyboardType :numeric}}
+            :money {:input-options {:keyboardType :numeric}}
+            :request {:input-options {:keyboardType :numeric}}
             nil))])
 
 (defn chat-message-new []
@@ -57,8 +37,3 @@
          (when (and staged-commands (pos? (count staged-commands)))
            [staged-commands-view staged-commands])
          [show-input @command-atom]]))))
-
-(comment
-  (if command
-    [special-input-view command]
-    ))

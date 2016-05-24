@@ -27,60 +27,51 @@
     (send)))
 
 (defn plain-message-input-view [{:keys [command input-options validator]}]
-  (let [chat (subscribe [:get-current-chat])
-        input-message-atom (subscribe [:get-chat-input-text])
-        staged-commands-atom (subscribe [:get-chat-staged-commands])
+  (let [input-message (subscribe [:get-chat-input-text])
+        input-command (subscribe [:get-chat-command-content])
+        staged-commands (subscribe [:get-chat-staged-commands])
         typing-command? (subscribe [:typing-command?])]
     (fn [{:keys [command input-options validator]}]
-      (let [input-message @input-message-atom]
-        [view st/input-container
+      [view st/input-container
+       (if command
+         [content-suggestions-view]
+         [suggestions-view])
+       [view st/input-view
+        (if command
+          [command/command-icon command]
+          [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions])
+                                :style    st/switch-commands-touchable}
+           [view nil
+            (if @typing-command?
+              [icon :close-gray st/close-icon]
+              [icon :list st/list-icon])]])
+        [text-input (merge {:style           (if command st-command/command-input st/message-input) ;; st-command/command-input
+                            :autoFocus       false
+                            :onChangeText    (fn [text]
+                                               ((if command
+                                                  command/set-input-message
+                                                  set-input-message)
+                                                 text))
+                            :onSubmitEditing (fn []
+                                               (if command
+                                                 (command/try-send @input-command validator)
+                                                 (try-send @staged-commands
+                                                           @input-message)))}
+                           input-options)
          (if command
-           [content-suggestions-view]
-           [suggestions-view])
-         [view st/input-view
-          (if command
-            [command/command-icon command]
-            [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions])
-                                  :style    st/switch-commands-touchable}
-             [view nil
-              (if @typing-command?
-                [icon :close-gray st/close-icon]
-                [icon :list st/list-icon])]])
-          [text-input (if command
-                        (merge {:style           st-command/command-input
-                                :autoFocus       true
-                                :onChangeText    command/set-input-message
-                                :onSubmitEditing (fn []
-                                                   (when (command/valid? input-message validator)
-                                                     (command/send-command)))}
-                               input-options)
-                        ;; plain
-                        {:style           st/message-input
-                         :autoFocus       (pos? (count @staged-commands-atom))
-                         :onChangeText    set-input-message
-                         :onSubmitEditing #(try-send @staged-commands-atom
-                                                     input-message)})
-           input-message]
-          ;; TODO emoticons: not implemented
-          (when (not command)
-            [icon :smile st/smile-icon])
-          (if command
-            (if (command/valid? input-message validator)
-              [touchable-highlight {:on-press command/send-command}
-               [view st/send-container [icon :send st/send-icon]]]
-              [touchable-highlight {:on-press command/cancel-command-input}
-               [view st-command/cancel-container
-                [icon :close-gray st-command/cancel-icon]]])
-            (when (message-valid? @staged-commands-atom input-message)
-              [touchable-highlight {:on-press send}
-               [view st/send-container
-                [icon :send st/send-icon]]]))]]))))
-
-(comment
-  [text-input {:style           st/message-input
-               :autoFocus       (pos? (count @staged-commands-atom))
-               ;:keyboardType (if (< 3 (count input-message)) :default :numeric)
-               :onChangeText    set-input-message
-               :onSubmitEditing #(try-send @chat @staged-commands-atom
-                                           input-message)}
-   input-message])
+           @input-command
+           @input-message)]
+        ;; TODO emoticons: not implemented
+        (when (not command)
+          [icon :smile st/smile-icon])
+        (if command
+          (if (command/valid? @input-command validator)
+            [touchable-highlight {:on-press command/send-command}
+             [view st/send-container [icon :send st/send-icon]]]
+            [touchable-highlight {:on-press command/cancel-command-input}
+             [view st-command/cancel-container
+              [icon :close-gray st-command/cancel-icon]]])
+          (when (message-valid? @staged-commands @input-message)
+            [touchable-highlight {:on-press send}
+             [view st/send-container
+              [icon :send st/send-icon]]]))]])))
