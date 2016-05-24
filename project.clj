@@ -9,8 +9,8 @@
                  [re-frame "0.6.0"]
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo "https://github.com/status-im/status-lib.git"
-                          :branch "syng-rename"}}
-                 [status-im/protocol "0.1.1-20160519_164302-g92930a0"]
+                          :branch "master"}}
+                 [status-im/protocol "0.1.1-20160524_084524-gae39f36"]
                  [natal-shell "0.1.6"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
