@@ -7,7 +7,6 @@
                                         text
                                         text-input]]
     [status-im.components.toolbar :refer [toolbar]]
-    [status-im.components.main-tabs :refer [main-tabs]]
     [status-im.discovery.views.popular :refer [popular]]
     [status-im.discovery.views.recent :refer [discovery-recent]]
     [status-im.discovery.styles :as st]))
@@ -50,5 +49,4 @@
     [popular]
     [view st/section-spacing
      [text {:style st/discovery-subtitle} "Recent"]]
-    [discovery-recent]]
-   [main-tabs]])
+    [discovery-recent]]])

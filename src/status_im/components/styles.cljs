@@ -27,3 +27,6 @@
 (def toolbar-background1 color-white)
 (def toolbar-background2 color-light-gray)
 (def default-chat-color color-purple)
+
+(def flex
+  {:style {:flex 1}})
