@@ -8,26 +8,26 @@
 
 ;; todo delete
 (def commands [{:command      :money
-                :text         (t :commands.money.text)
+                :text         "!money"
                 :description  (t :commands.money.description)
                 :color        color-dark-mint
                 :request-icon {:uri "icon_lock_white"}
                 :icon         {:uri "icon_lock_gray"}
                 :suggestion   true}
                {:command     :location
-                :text        (t :commands.location.text)
+                :text        "!location"
                 :description (t :commands.location.description)
                 :color       "#9a5dcf"
                 :suggestion  true}
                {:command      :phone
-                :text         (t :commands.phone.text)
+                :text         "!phone"
                 :description  (t :commands.phone.description)
                 :color        color-dark-mint
                 :request-text (t :commands.phone.request-text)
                 :suggestion   true
                 :handler      #(dispatch [:sign-up %])}
                {:command      :confirmation-code
-                :text         (t :commands.confirmation-code.text)
+                :text         "!confirmationCode"
                 :description  (t :commands.confirmation-code.description)
                 :request-text (t :commands.confirmation-code.request-text)
                 :color        color-blue
@@ -36,17 +36,17 @@
                 :suggestion   true
                 :handler      #(dispatch [:sign-up-confirm %])}
                {:command     :send
-                :text        (t :commands.send.text)
+                :text        "!send"
                 :description (t :commands.send.description)
                 :color       "#9a5dcf"
                 :suggestion  true}
                {:command     :request
-                :text        (t :commands.request.text)
+                :text        "!request"
                 :description (t :commands.request.description)
                 :color       "#48ba30"
                 :suggestion  true}
                {:command      :keypair-password
-                :text         (t :commands.keypair-password.text)
+                :text         "!keypair-password"
                 :description  (t :commands.keypair-password.description)
                 :color        color-blue
                 :request-icon {:uri "icon_lock_white"}
@@ -54,7 +54,7 @@
                 :suggestion   false
                 :handler      #(dispatch [:save-password %])}
                {:command     :help
-                :text        (t :commands.help.text)
+                :text        "!help"
                 :description (t :commands.help.description)
                 :color       "#9a5dcf"
                 :suggestion  true}])

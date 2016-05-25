@@ -63,24 +63,16 @@
                      :group-name "Group Name"}
    :participants    {:add "Add Participants"
                      :remove "Remove Participants"}
-   :commands        {:money             {:text        "!money"
-                                         :description "Send money"}
-                     :location          {:text        "!location"
-                                         :description "Send location"}
-                     :phone             {:text         "!phone"
-                                         :description  "Send phone number"
+   :commands        {:money             {:description "Send money"}
+                     :location          {:description "Send location"}
+                     :phone             {:description  "Send phone number"
                                          :request-text "Phone number request"}
-                     :confirmation-code {:text         "!confirmationCode"
-                                         :description  "Send confirmation code"
+                     :confirmation-code {:description  "Send confirmation code"
                                          :request-text "Confirmation code request"}
-                     :send              {:text        "!send"
-                                         :description "Send location"}
-                     :request           {:text        "!request"
-                                         :description "Send request"}
-                     :keypair-password  {:text        "!keypair-password"
-                                         :description ""}
-                     :help              {:text        "!help"
-                                         :description "Help"}}
+                     :send              {:description "Send location"}
+                     :request           {:description "Send request"}
+                     :keypair-password  {:text:description ""}
+                     :help              {:description "Help"}}
    :protocol        {:received-invitation "received chat invitation"
                      :removed-from-chat   "removed you from group chat"}
    :colors          {:blue   "Blue"
@@ -94,6 +86,4 @@
    :left            "left"
    :invited         "invited"
    :removed         "removed"
-   :You             "You"
-   :me              "me"
-   :console         "console"})
+   :You             "You"})
