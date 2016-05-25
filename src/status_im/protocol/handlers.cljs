@@ -12,7 +12,8 @@
                                              set-initialized]]
             [status-im.constants :refer [text-content-type]]
             [status-im.models.messages :as messages]
-            [status-im.models.chats :as chats]))
+            [status-im.models.chats :as chats]
+            [status-im.i18n :refer [t]]))
 
 (register-handler :initialize-protocol
   (u/side-effect!
@@ -35,35 +36,35 @@
   (let [contact-name (:name (contacts/contact-by-identity from))]
     (messages/save-message chat-id {:from         "system"
                                     :msg-id       (str msg-id "_" from)
-                                    :content      (str (or contact-name from) " received chat invitation")
+                                    :content      (str (or contact-name from) " " (t :protocol.received-invitation))
                                     :content-type text-content-type})))
 
 (defn participant-invited-to-group-msg [chat-id identity from msg-id]
   (let [inviter-name (:name (contacts/contact-by-identity from))
         invitee-name (if (= identity (api/my-identity))
-                       "You"
+                       (t :You)
                        (:name (contacts/contact-by-identity identity)))]
     (messages/save-message chat-id {:from         "system"
                                     :msg-id       msg-id
-                                    :content      (str (or inviter-name from) " invited " (or invitee-name identity))
+                                    :content      (str (or inviter-name from) " " (t :invited) " " (or invitee-name identity))
                                     :content-type text-content-type})))
 
 (defn participant-removed-from-group-msg [chat-id identity from msg-id]
   (let [remover-name (:name (contacts/contact-by-identity from))
         removed-name (:name (contacts/contact-by-identity identity))]
-    (->> (str (or remover-name from) " removed " (or removed-name identity))
+    (->> (str (or remover-name from) " " (t :removed) " " (or removed-name identity))
          (system-message msg-id)
          (messages/save-message chat-id))))
 
 (defn you-removed-from-group-msg [chat-id from msg-id]
   (let [remover-name (:name (contacts/contact-by-identity from))]
-    (->> (str (or remover-name from) " removed you from group chat")
+    (->> (str (or remover-name from) " " (t :protocol.removed-from-chat))
          (system-message msg-id)
          (messages/save-message chat-id))))
 
 (defn participant-left-group-msg [chat-id from msg-id]
   (let [left-name (:name (contacts/contact-by-identity from))]
-    (->> (str (or left-name from) " left")
+    (->> (str (or left-name from) " " (t :left))
          (system-message msg-id)
          (messages/save-message chat-id))))
 

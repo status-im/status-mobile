@@ -18,7 +18,7 @@
 
 (defn toolbar [{:keys [title nav-action hide-nav? action custom-action
                        background-color custom-content style]}]
-  (let [style (merge {:flexDirection   "row"
+  (let [style (merge {:flexDirection   :row
                       :backgroundColor (or background-color toolbar-background1)
                       :height          56
                       :elevation       2} style)]
@@ -28,21 +28,21 @@
          [touchable-highlight {:on-press (:handler nav-action)}
           [view {:width          56
                  :height         56
-                 :alignItems     "center"
-                 :justifyContent "center"}
+                 :alignItems     :center
+                 :justifyContent :center}
            [image (:image nav-action)]]]
          [touchable-highlight {:on-press #(dispatch [:navigate-back])}
           [view {:width  56
                  :height 56}
-           [image {:source {:uri "icon_back"}
+           [image {:source {:uri :icon_back}
                    :style  {:marginTop  21
                             :marginLeft 23
                             :width      8
                             :height     14}}]]]))
      (or custom-content
          [view {:style {:flex           1
-                        :alignItems     "center"
-                        :justifyContent "center"}}
+                        :alignItems     :center
+                        :justifyContent :center}}
           [text {:style {:marginTop  -2.5
                          :color      text1-color
                          :fontSize   16
@@ -54,7 +54,7 @@
         [view {:width          56
                :height         56
 
-               :alignItems     "center"
-               :justifyContent "center"}
+               :alignItems     :center
+               :justifyContent :center}
          [image (:image action)]]])]))
 
