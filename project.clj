@@ -10,7 +10,7 @@
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo "https://github.com/status-im/status-lib.git"
                           :branch "master"}}
-                 [status-im/protocol "0.1.1-20160524_084524-gae39f36"]
+                 [status-im/protocol "0.1.1-20160525_083359-g53ab2c2"]
                  [natal-shell "0.1.6"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
