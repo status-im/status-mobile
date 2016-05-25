@@ -11,7 +11,8 @@
                                               drawer-layout-android
                                               touchable-opacity]]
             [status-im.resources :as res]
-            [status-im.components.drawer.styles :as st]))
+            [status-im.components.drawer.styles :as st]
+            [status-im.i18n :refer [label]]))
 
 (defonce drawer-atom (atom))
 
@@ -45,21 +46,21 @@
        [text {:style st/name-text}
         @username]]
       [view st/menu-items-container
-       [menu-item {:name    "Profile"
+       [menu-item {:name    (label :t/profile)
                    :handler #(dispatch [:navigate-to :my-profile])}]
-       [menu-item {:name    "Settings"
+       [menu-item {:name    (label :t/settings)
                    :handler (fn []
                               ;; TODO not implemented
                               )}]
-       [menu-item {:name    "Discovery"
+       [menu-item {:name    (label :t/discovery)
                    :handler #(dispatch [:navigate-to :discovery])}]
-       [menu-item {:name    "Contacts"
+       [menu-item {:name    (label :t/contacts)
                    :handler #(dispatch [:show-contacts navigator])}]
-       [menu-item {:name    "Invite friends"
+       [menu-item {:name    (label :t/invite-friends)
                    :handler (fn []
                               ;; TODO not implemented
                               )}]
-       [menu-item {:name    "FAQ"
+       [menu-item {:name    (label :t/faq)
                    :handler (fn [])}]]
       [view st/switch-users-container
        [touchable-opacity {:onPress (fn []
@@ -67,7 +68,7 @@
                                       ;; TODO not implemented
                                       )}
         [text {:style st/switch-users-text}
-         "Switch users"]]]])))
+         (label :t/switch-users)]]]])))
 
 (defn drawer-view [items]
   [drawer-layout-android {:drawerWidth            260
