@@ -13,7 +13,8 @@
             [status-im.constants :refer [text-content-type
                                          content-type-command
                                          content-type-command-request
-                                         content-type-status]]))
+                                         content-type-status]]
+            [status-im.i18n :refer [label]]))
 
 (defn send-console-msg [text]
   {:msg-id       (random/id)
@@ -32,7 +33,7 @@
 (defn on-sync-contacts []
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (str "Your contacts have been synchronized")
+              :content      (label :t/contacts-syncronized)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -70,8 +71,7 @@
                {:msg-id       msg-id
                 :content      (command-content
                                 :confirmation-code
-                                (str "Thanks! We've sent you a text message with a confirmation "
-                                     "code. Please provide that code to confirm your phone number"))
+                                (label :t/confirmation-code))
                 :content-type content-type-command-request
                 :outgoing     false
                 :from         "console"
@@ -95,24 +95,21 @@
   ;; TODO validate and save password
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (str "OK great! Your password has been saved. Just to let you "
-                                 "know you can always change it in the Console by the way "
-                                 "it's me the Console nice to meet you!")
+              :content      (label :t/password-saved)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (str "I'll generate a passphrase for you so you can restore your "
-                                 "access or log in from another device")
+              :content      (label :t/generate-passphrase)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      "Here's your passphrase:"
+              :content      (label :t/passphrase)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -129,7 +126,7 @@
                 :to           "me"}]))
   (dispatch [:received-msg
              {:msg-id       "8"
-              :content      "Make sure you had securely written it down"
+              :content      (label :t/written-down)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -140,9 +137,7 @@
                {:msg-id       msg-id
                 :content      (command-content
                                 :phone
-                                (str "Your phone number is also required to use the app. Type the "
-                                     "exclamation mark or hit the icon to open the command list "
-                                     "and choose the !phone command"))
+                                (label :t/phone-number-required))
                 :content-type content-type-command-request
                 :outgoing     false
                 :from         "console"
@@ -150,9 +145,7 @@
 
 (def intro-status
   {:msg-id          "intro-status"
-   :content         (str "The brash businessman’s braggadocio "
-                         "and public exchange with candidates "
-                         "in the US presidential election")
+   :content         (label :t/intro-status)
    :delivery-status "seen"
    :from            "console"
    :chat-id         "console"
@@ -164,15 +157,14 @@
   (dispatch [:received-msg intro-status])
   (dispatch [:received-msg
              {:msg-id       "intro-message1"
-              :content      "Hello there! It's Status a Dapp browser in your phone."
+              :content      (label :t/intro-message1)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       "intro-message2"
-              :content      (str "Status uses  a highly secure key-pair authentication type "
-                                 "to provide you a reliable way to access your account")
+              :content      (label :t/intro-message2)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -182,8 +174,7 @@
                {:msg-id       msg-id
                 :content      (command-content
                                 :keypair-password
-                                (str "A key pair has been generated and saved to your device. "
-                                     "Create a password to secure your key"))
+                                (label :t/keypair-generated))
                 :content-type content-type-command-request
                 :outgoing     false
                 :from         "console"
