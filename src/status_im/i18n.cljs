@@ -8,7 +8,7 @@
 (set! (.-translations js.I18n) (clj->js {:en en/translations}))
 
 (defn t [path & options]
-  (.t js/I18n (name path) options))
+  (.t js/I18n (name path) (clj->js options)))
 
 (comment
   (defn deep-merge [& maps]
