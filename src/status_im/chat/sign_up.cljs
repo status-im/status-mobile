@@ -18,8 +18,8 @@
 
 (defn send-console-msg [text]
   {:msg-id       (random/id)
-   :from         (t :me)
-   :to           (t :console)
+   :from         "me"
+   :to           "console"
    :content      text
    :content-type text-content-type
    :outgoing     true})
@@ -36,8 +36,8 @@
               :content      (t :sign-up.contacts-syncronized)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   (dispatch [:set-signed-up true]))
 
 (defn sync-contacts []
@@ -50,8 +50,8 @@
               :content      (:message body)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   (when (:confirmed body)
     (dispatch [:stop-listening-confirmation-code-sms])
     (sync-contacts)
@@ -74,8 +74,8 @@
                                 (t :sign-up.confirmation-code))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         (t :console)
-                :to           (t :me)}])))
+                :from         "console"
+                :to           "me"}])))
 
 (defn handle-sms [{body :body}]
   (when-let [matches (re-matches #"(\d{4})" body)]
@@ -98,22 +98,22 @@
               :content      (t :sign-up.password-saved)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
               :content      (t :sign-up.generate-passphrase)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
               :content      (t :sign-up.passphrase)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   ;; TODO generate passphrase
   (let [passphrase (str "The brash businessman's braggadocio and public squabbing with "
                         "candidates in the US presidential election")]
@@ -122,15 +122,15 @@
                 :content      passphrase
                 :content-type text-content-type
                 :outgoing     false
-                :from         (t :console)
-                :to           (t :me)}]))
+                :from         "console"
+                :to           "me"}]))
   (dispatch [:received-msg
              {:msg-id       "8"
               :content      (t :sign-up.written-down)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   ;; TODO highlight '!phone'
   (let [msg-id (random/id)]
     (dispatch [:received-msg
@@ -140,18 +140,18 @@
                                 (t :sign-up.phone-number-required))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         (t :console)
-                :to           (t :me)}])))
+                :from         "console"
+                :to           "me"}])))
 
 (def intro-status
   {:msg-id          "intro-status"
    :content         (t :sign-up.intro-status)
    :delivery-status "seen"
-   :from            (t :console)
-   :chat-id         (t :console)
+   :from            "console"
+   :chat-id         "console"
    :content-type    content-type-status
    :outgoing        false
-   :to              (t :me)})
+   :to              "me"})
 
 (defn intro [db]
   (dispatch [:received-msg intro-status])
@@ -160,15 +160,15 @@
               :content      (t :sign-up.intro-message1)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       "intro-message2"
               :content      (t :sign-up.intro-message2)
               :content-type text-content-type
               :outgoing     false
-              :from         (t :console)
-              :to           (t :me)}])
+              :from         "console"
+              :to           "me"}])
   (let [msg-id "into-message3"]
     (dispatch [:received-msg
                {:msg-id       msg-id
@@ -177,18 +177,18 @@
                                 (t :sign-up.keypair-generated))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         (t :console)
-                :to           (t :me)}]))
+                :from         "console"
+                :to           "me"}]))
   db)
 
 (def console-chat
-  {:chat-id    (t :console)
-   :name       (t :console)
+  {:chat-id    "console"
+   :name       "console"
    :color      default-chat-color
    :group-chat false
    :is-active  true
    :timestamp  (.getTime (js/Date.))
-   :contacts   [{:identity         (t :console)
+   :contacts   [{:identity         "console"
                  :text-color       "#FFFFFF"
                  :background-color "#AB7967"}]})
 
@@ -202,10 +202,10 @@
 (def init
   (create-chat
     (fn [{:keys [chats] :as db}]
-      (if (chats (t :console))
+      (if (chats "console")
         db
         (-> db
-            (assoc-in [:chats (t :console)] console-chat)
+            (assoc-in [:chats "console"] console-chat)
             (assoc :new-chat console-chat)
-            (assoc :current-chat-id (t :console))
+            (assoc :current-chat-id "console")
             (intro))))))
