@@ -11,13 +11,13 @@
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.contacts.styles :as st]
             [status-im.utils.listview :as lw]
-            [status-im.i18n :refer [t]]))
+            [status-im.i18n :refer [label]]))
 
 (defn render-row [row _ _]
   (list-item [contact-view row]))
 
 (defn contact-list-toolbar []
-  [toolbar {:title            (t :contacts.title)
+  [toolbar {:title            (label :t/contacts)
             :background-color toolbar-background2
             :action           {:image   {:source {:uri :icon_search}
                                          :style  st/search-icon}

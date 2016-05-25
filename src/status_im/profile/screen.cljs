@@ -11,7 +11,7 @@
             [status-im.components.chat-icon.screen :refer [profile-icon
                                                          my-profile-icon]]
             [status-im.profile.styles :as st]
-            [status-im.i18n :refer [t]]))
+            [status-im.i18n :refer [label]]))
 
 (defn profile-property-view [{:keys [name value]}]
   [view st/profile-property-view-container
@@ -35,29 +35,29 @@
      [profile-icon]]
     [text {:style st/user-name} name]
     ;; TODO stub data
-    [text {:style st/status} (t :not-implemented)]
+    [text {:style st/status} (label :t/not-implemented)]
     [view st/btns-container
      [touchable-highlight {:onPress #(message-user whisper-identity)}
       [view st/message-btn
-       [text {:style st/message-btn-text} (t :profile.message)]]]
+       [text {:style st/message-btn-text} (label :t/message)]]]
      [touchable-highlight {:onPress (fn []
                                       ;; TODO not implemented
                                       )}
       [view st/more-btn
        [icon :more_vertical_blue st/more-btn-image]]]]]
    [view st/profile-properties-container
-    [profile-property-view {:name  (t :profile.username)
+    [profile-property-view {:name  (label :t/username)
                             :value name}]
-    [profile-property-view {:name  (t :profile.phone-number)
+    [profile-property-view {:name  (label :t/phone-number)
                             :value phone-number}]
     ;; TODO stub data
-    [profile-property-view {:name  (t :profile.email)
-                            :value (t :not-implemented)}]
+    [profile-property-view {:name  (label :t/email)
+                            :value (label :t/not-implemented)}]
     [view st/report-user-container
      [touchable-highlight {:on-press (fn []
                                        ;; TODO not implemented
                                        )}
-      [text {:style st/report-user-text} (t :profile.report-user)]]]]])
+      [text {:style st/report-user-text} (label :t/report-user)]]]]])
 
 (defview my-profile []
   [username     [:get :username]
@@ -82,9 +82,9 @@
     [text {:style st/user-name} username]
     [text {:style st/status} status]]
    [view st/profile-properties-container
-    [profile-property-view {:name  (t :profile.username)
+    [profile-property-view {:name  (label :t/username)
                             :value username}]
-    [profile-property-view {:name  (t :profile.phone-number)
+    [profile-property-view {:name  (label :t/phone-number)
                             :value phone-number}]
-    [profile-property-view {:name  (t :profile.email)
+    [profile-property-view {:name  (label :t/email)
                             :value email}]]])

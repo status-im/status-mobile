@@ -10,7 +10,7 @@
     [status-im.discovery.views.popular :refer [popular]]
     [status-im.discovery.views.recent :refer [discovery-recent]]
     [status-im.discovery.styles :as st]
-    [status-im.i18n :refer [t]]))
+    [status-im.i18n :refer [label]]))
 
 (defn get-hashtags [status]
   (let [hashtags (map #(subs % 1) (re-seq #"#[^ !?,;:.]+" status))]
@@ -21,13 +21,13 @@
    (if show-search
      [text-input {:style           st/discovery-search-input
                   :autoFocus       true
-                  :placeholder     (t :discovery.search-tags)
+                  :placeholder     (label :t/search-tags)
                   :onSubmitEditing (fn [e]
                                      (let [search (aget e "nativeEvent" "text")
                                            hashtags (get-hashtags search)]
                                        (dispatch [:broadcast-status search hashtags])))}]
      [view
-      [text {:style st/discovery-title} (t :discovery.title)]])])
+      [text {:style st/discovery-title} (label :t/discovery)]])])
 
 (defn toogle-search [current-value]
   (dispatch [:set ::show-search (not current-value)]))
@@ -46,8 +46,8 @@
                       :handler #(toogle-search show-search)}}]
    [scroll-view st/scroll-view-container
     [view st/section-spacing
-     [text {:style st/discovery-subtitle} (t :discovery.popular-tags)]]
+     [text {:style st/discovery-subtitle} (label :t/popular-tags)]]
     [popular]
     [view st/section-spacing
-     [text {:style st/discovery-subtitle} (t :discovery.recent)]]
+     [text {:style st/discovery-subtitle} (label :t/recent)]]
     [discovery-recent]]])

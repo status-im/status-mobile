@@ -14,7 +14,7 @@
                                          content-type-command
                                          content-type-command-request
                                          content-type-status]]
-            [status-im.i18n :refer [t]]))
+            [status-im.i18n :refer [label]]))
 
 (defn send-console-msg [text]
   {:msg-id       (random/id)
@@ -33,7 +33,7 @@
 (defn on-sync-contacts []
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (t :sign-up.contacts-syncronized)
+              :content      (label :t/contacts-syncronized)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -71,7 +71,7 @@
                {:msg-id       msg-id
                 :content      (command-content
                                 :confirmation-code
-                                (t :sign-up.confirmation-code))
+                                (label :t/confirmation-code))
                 :content-type content-type-command-request
                 :outgoing     false
                 :from         "console"
@@ -95,21 +95,21 @@
   ;; TODO validate and save password
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (t :sign-up.password-saved)
+              :content      (label :t/password-saved)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (t :sign-up.generate-passphrase)
+              :content      (label :t/generate-passphrase)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (t :sign-up.passphrase)
+              :content      (label :t/passphrase)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -126,7 +126,7 @@
                 :to           "me"}]))
   (dispatch [:received-msg
              {:msg-id       "8"
-              :content      (t :sign-up.written-down)
+              :content      (label :t/written-down)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -137,7 +137,7 @@
                {:msg-id       msg-id
                 :content      (command-content
                                 :phone
-                                (t :sign-up.phone-number-required))
+                                (label :t/phone-number-required))
                 :content-type content-type-command-request
                 :outgoing     false
                 :from         "console"
@@ -145,7 +145,7 @@
 
 (def intro-status
   {:msg-id          "intro-status"
-   :content         (t :sign-up.intro-status)
+   :content         (label :t/intro-status)
    :delivery-status "seen"
    :from            "console"
    :chat-id         "console"
@@ -157,14 +157,14 @@
   (dispatch [:received-msg intro-status])
   (dispatch [:received-msg
              {:msg-id       "intro-message1"
-              :content      (t :sign-up.intro-message1)
+              :content      (label :t/intro-message1)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
   (dispatch [:received-msg
              {:msg-id       "intro-message2"
-              :content      (t :sign-up.intro-message2)
+              :content      (label :t/intro-message2)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -174,7 +174,7 @@
                {:msg-id       msg-id
                 :content      (command-content
                                 :keypair-password
-                                (t :sign-up.keypair-generated))
+                                (label :t/keypair-generated))
                 :content-type content-type-command-request
                 :outgoing     false
                 :from         "console"
