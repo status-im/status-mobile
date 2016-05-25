@@ -14,7 +14,7 @@
 
 (defn remove-participants-toolbar []
   [toolbar
-   {:title  "Remove Participants"
+   {:title  (t :participants.remove)
     :action {:handler #(do (dispatch [:remove-participants])
                            (dispatch [:navigate-back]))
              :image   {:source res/trash-icon            ;; {:uri "icon_search"}

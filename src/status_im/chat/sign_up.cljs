@@ -13,12 +13,13 @@
             [status-im.constants :refer [text-content-type
                                          content-type-command
                                          content-type-command-request
-                                         content-type-status]]))
+                                         content-type-status]]
+            [status-im.i18n :refer [t]]))
 
 (defn send-console-msg [text]
   {:msg-id       (random/id)
-   :from         "me"
-   :to           "console"
+   :from         (t :me)
+   :to           (t :console)
    :content      text
    :content-type text-content-type
    :outgoing     true})
@@ -32,11 +33,11 @@
 (defn on-sync-contacts []
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (str "Your contacts have been synchronized")
+              :content      (t :sign-up.contacts-syncronized)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   (dispatch [:set-signed-up true]))
 
 (defn sync-contacts []
@@ -49,8 +50,8 @@
               :content      (:message body)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   (when (:confirmed body)
     (dispatch [:stop-listening-confirmation-code-sms])
     (sync-contacts)
@@ -70,12 +71,11 @@
                {:msg-id       msg-id
                 :content      (command-content
                                 :confirmation-code
-                                (str "Thanks! We've sent you a text message with a confirmation "
-                                     "code. Please provide that code to confirm your phone number"))
+                                (t :sign-up.confirmation-code))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         "console"
-                :to           "me"}])))
+                :from         (t :console)
+                :to           (t :me)}])))
 
 (defn handle-sms [{body :body}]
   (when-let [matches (re-matches #"(\d{4})" body)]
@@ -95,28 +95,25 @@
   ;; TODO validate and save password
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (str "OK great! Your password has been saved. Just to let you "
-                                 "know you can always change it in the Console by the way "
-                                 "it's me the Console nice to meet you!")
+              :content      (t :sign-up.password-saved)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      (str "I'll generate a passphrase for you so you can restore your "
-                                 "access or log in from another device")
+              :content      (t :sign-up.generate-passphrase)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   (dispatch [:received-msg
              {:msg-id       (random/id)
-              :content      "Here's your passphrase:"
+              :content      (t :sign-up.passphrase)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   ;; TODO generate passphrase
   (let [passphrase (str "The brash businessman's braggadocio and public squabbing with "
                         "candidates in the US presidential election")]
@@ -125,79 +122,73 @@
                 :content      passphrase
                 :content-type text-content-type
                 :outgoing     false
-                :from         "console"
-                :to           "me"}]))
+                :from         (t :console)
+                :to           (t :me)}]))
   (dispatch [:received-msg
              {:msg-id       "8"
-              :content      "Make sure you had securely written it down"
+              :content      (t :sign-up.written-down)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   ;; TODO highlight '!phone'
   (let [msg-id (random/id)]
     (dispatch [:received-msg
                {:msg-id       msg-id
                 :content      (command-content
                                 :phone
-                                (str "Your phone number is also required to use the app. Type the "
-                                     "exclamation mark or hit the icon to open the command list "
-                                     "and choose the !phone command"))
+                                (t :sign-up.phone-number-required))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         "console"
-                :to           "me"}])))
+                :from         (t :console)
+                :to           (t :me)}])))
 
 (def intro-status
   {:msg-id          "intro-status"
-   :content         (str "The brash businessman’s braggadocio "
-                         "and public exchange with candidates "
-                         "in the US presidential election")
+   :content         (t :sign-up.intro-status)
    :delivery-status "seen"
-   :from            "console"
-   :chat-id         "console"
+   :from            (t :console)
+   :chat-id         (t :console)
    :content-type    content-type-status
    :outgoing        false
-   :to              "me"})
+   :to              (t :me)})
 
 (defn intro [db]
   (dispatch [:received-msg intro-status])
   (dispatch [:received-msg
              {:msg-id       "intro-message1"
-              :content      "Hello there! It's Status a Dapp browser in your phone."
+              :content      (t :sign-up.intro-message1)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   (dispatch [:received-msg
              {:msg-id       "intro-message2"
-              :content      (str "Status uses  a highly secure key-pair authentication type "
-                                 "to provide you a reliable way to access your account")
+              :content      (t :sign-up.intro-message2)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
-              :to           "me"}])
+              :from         (t :console)
+              :to           (t :me)}])
   (let [msg-id "into-message3"]
     (dispatch [:received-msg
                {:msg-id       msg-id
                 :content      (command-content
                                 :keypair-password
-                                (str "A key pair has been generated and saved to your device. "
-                                     "Create a password to secure your key"))
+                                (t :sign-up.keypair-generated))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         "console"
-                :to           "me"}]))
+                :from         (t :console)
+                :to           (t :me)}]))
   db)
 
 (def console-chat
-  {:chat-id    "console"
-   :name       "console"
+  {:chat-id    (t :console)
+   :name       (t :console)
    :color      default-chat-color
    :group-chat false
    :is-active  true
    :timestamp  (.getTime (js/Date.))
-   :contacts   [{:identity         "console"
+   :contacts   [{:identity         (t :console)
                  :text-color       "#FFFFFF"
                  :background-color "#AB7967"}]})
 
@@ -211,10 +202,10 @@
 (def init
   (create-chat
     (fn [{:keys [chats] :as db}]
-      (if (chats "console")
+      (if (chats (t :console))
         db
         (-> db
-            (assoc-in [:chats "console"] console-chat)
+            (assoc-in [:chats (t :console)] console-chat)
             (assoc :new-chat console-chat)
-            (assoc :current-chat-id "console")
+            (assoc :current-chat-id (t :console))
             (intro))))))

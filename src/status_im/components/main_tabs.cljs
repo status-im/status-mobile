@@ -12,19 +12,19 @@
             [status-im.components.tabs.tabs :refer [tabs]]
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
-            [status-im.utils.logging :as log]))
+            [status-im.i18n :refer [t]]))
 
 (def tab-list
   [{:view-id :chat-list
-    :title   "Chats"
+    :title   (t :chats.title)
     :screen  chats-list
     :icon    :icon_tab_chats}
    {:view-id :discovery
-    :title   "Discover"
+    :title   (t :discovery.title)
     :screen  discovery
     :icon    :icon_tab_discovery}
    {:view-id :contact-list
-    :title   "Contacts"
+    :title   (t :contacts.title)
     :screen  contact-list
     :icon    :icon_tab_contacts}])
 

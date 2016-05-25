@@ -7,11 +7,12 @@
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.participants.views.contact :refer [participant-contact]]
             [reagent.core :as r]
-            [status-im.participants.styles :as st]))
+            [status-im.participants.styles :as st]
+            [status-im.i18n :refer [t]]))
 
 (defn new-participants-toolbar []
   [toolbar
-   {:title  "Add Participants"
+   {:title  (t :participants.add)
     :action {:image   {:source res/v                     ;; {:uri "icon_search"}
                        :style  st/new-participant-image}
              :handler #(do (dispatch [:add-new-participants])
