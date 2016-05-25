@@ -7,14 +7,14 @@
             [status-im.utils.datetime :as time]))
 
 (defn chat-list-item-inner-view
-  [{:keys [chat-id name color photo-path new-messages-count
+  [{:keys [chat-id name color new-messages-count
            online group-chat contacts] :as chat}]
   (let [last-message (first (:messages chat))]
     [view st/chat-container
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/item-container
-      #_[view st/name-view
+      [view st/name-view
        [text {:style st/name-text} (truncate-str name 20)]
        (when group-chat
          [icon :group st/group-icon])
