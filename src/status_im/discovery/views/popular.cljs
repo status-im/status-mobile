@@ -8,7 +8,7 @@
     [status-im.components.carousel.carousel :refer [carousel]]
     [status-im.discovery.styles :as st]
     [status-im.discovery.views.popular-list :refer [discovery-popular-list]]
-    [status-im.i18n :refer [t]]))
+    [status-im.i18n :refer [label]]))
 
 (defn page-width []
   (.-width (.get (.. js/React -Dimensions) "window")))
@@ -20,4 +20,4 @@
                :sneak     20}
      (for [{:keys [name count]} popular-tags]
        [discovery-popular-list name count])]
-    [text (t :discovery.none)]))
+    [text (label :t/none)]))

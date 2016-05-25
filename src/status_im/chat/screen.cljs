@@ -18,7 +18,7 @@
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
-            [status-im.i18n :refer [t]]))
+            [status-im.i18n :refer [label]]))
 
 
 (defn contacts-by-identity [contacts]
@@ -47,7 +47,7 @@
   [view st/typing-view
    [view st/typing-background
     [text {:style st/typing-text}
-     (str member " " (t :chat.is-typing))]]])
+     (str member " " (label :t/is-typing))]]])
 
 (defn typing-all []
   [view st/typing-all
@@ -101,63 +101,63 @@
   [chat-icon-view-menu-item chat-id group-chat name color true])
 
 (defn members-text [members]
-  (truncate-str (str (s/join ", " (map #(:name %) members)) " " (t :chat.and-you)) 35))
+  (truncate-str (str (s/join ", " (map #(:name %) members)) " " (label :t/and-you)) 35))
 
 (defn actions-list-view []
   (let [{:keys [group-chat chat-id]}
         (subscribe [:chat-properties [:group-chat :chat-id]])
         members (subscribe [:current-chat-contacts])]
     (when-let [actions (if @group-chat
-                         [{:title      (t :members-title)
+                         [{:title      (label :t/members-title)
                            :subtitle   (members-text @members)
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
                            ;; TODO not implemented: action Members
                            :handler    nil}
-                          {:title      (t :chat.search-chat)
-                           :subtitle   (t :not-implemented)
+                          {:title      (label :t/search-chat)
+                           :subtitle   (label :t/not-implemented)
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
                            ;; TODO not implemented: action Search chat
                            :handler    nil}
-                          {:title      (t :notifications.title)
-                           :subtitle   (t :not-implemented)
+                          {:title      (label :t/notifications-title)
+                           :subtitle   (label :t/not-implemented)
                            ;;:subtitle   "Chat muted"
                            :icon       :muted
                            :icon-style {:width  18
                                         :height 21}
                            ;; TODO not implemented: action Notifications
                            :handler    nil}
-                          {:title      (t :settings.title)
+                          {:title      (label :t/settings)
                            :icon       :settings
                            :icon-style {:width  20
                                         :height 13}
                            :handler    #(dispatch [:show-group-settings])}]
-                         [{:title      (t :profile.title)
+                         [{:title      (label :t/profile)
                            :custom-icon [menu-item-icon-profile]
                            :icon       :menu_group
                            :icon-style {:width  25
                                         :height 19}
                            :handler    #(dispatch [:show-profile @chat-id])}
-                          {:title      (t :chat.search-chat)
-                           :subtitle   (t :not-implemented)
+                          {:title      (label :t/search-chat)
+                           :subtitle   (label :t/not-implemented)
                            :icon       :search_gray_copy
                            :icon-style {:width  17
                                         :height 17}
                            ;; TODO not implemented: action Search chat
                            :handler    nil}
-                          {:title      (t :notifications.title)
-                           :subtitle   (t :not-implemented)
+                          {:title      (label :t/notifications-title)
+                           :subtitle   (label :t/not-implemented)
                            ;;:subtitle   "Notifications on"
                            :icon       :muted
                            :icon-style {:width  18
                                         :height 21}
                            ;; TODO not implemented: action Notifications
                            :handler    nil}
-                          {:title      (t :settings.title)
-                           :subtitle   (t :not-implemented)
+                          {:title      (label :t/settings)
+                           :subtitle   (label :t/not-implemented)
                            :icon       :settings
                            :icon-style {:width  20
                                         :height 13}
@@ -180,15 +180,15 @@
     (fn []
       [view (st/chat-name-view @show-actions)
        [text {:style st/chat-name-text}
-        (truncate-str (or @name (t :chat-name)) 30)]
+        (truncate-str (or @name (label :t/chat-name)) 30)]
        (if @group-chat
          [view {:flexDirection :row}
           [icon :group st/group-icon]
           [text {:style st/members}
            (let [cnt (inc (count @contacts))]
-             (t :chat.members {:count cnt}))]]
+             (label :t/members {:count cnt}))]]
          ;; TODO stub data: last activity
-         [text {:style st/last-activity} (t :chat.last-active)])])))
+         [text {:style st/last-activity} (label :t/last-active)])])))
 
 (defn toolbar-action []
   (let [show-actions (subscribe [:show-actions])]

@@ -4,10 +4,11 @@
 
 (set! js/window.I18n (js/require "react-native-i18n"))
 (set! (.-fallbacks js/I18n) true)
+(set! (.-defaultSeparator js/I18n) "/")
 
 (set! (.-translations js.I18n) (clj->js {:en en/translations}))
 
-(defn t [path & options]
+(defn label [path & options]
   (.t js/I18n (name path) (clj->js options)))
 
 (comment

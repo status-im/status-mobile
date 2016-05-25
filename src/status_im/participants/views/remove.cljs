@@ -10,11 +10,12 @@
             [status-im.participants.views.contact
              :refer [participant-contact]]
             [reagent.core :as r]
-            [status-im.participants.styles :as st]))
+            [status-im.participants.styles :as st]
+            [status-im.i18n :refer [label]]))
 
 (defn remove-participants-toolbar []
   [toolbar
-   {:title  (t :participants.remove)
+   {:title  (label :t/remove-participants)
     :action {:handler #(do (dispatch [:remove-participants])
                            (dispatch [:navigate-back]))
              :image   {:source res/trash-icon            ;; {:uri "icon_search"}
