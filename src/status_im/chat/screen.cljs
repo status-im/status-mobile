@@ -220,11 +220,12 @@
   [messages [:chat :messages]
    contacts [:chat :contacts]]
   (let [contacts' (contacts-by-identity contacts)]
-    [list-view {:renderRow             (message-row contacts' group-chat)
-                :renderScrollComponent #(invertible-scroll-view (js->clj %))
-                :onEndReached          #(dispatch [:load-more-messages])
-                :enableEmptySections   true
-                :dataSource            (to-datasource messages)}]))
+    [list-view {:renderRow                 (message-row contacts' group-chat)
+                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
+                :onEndReached              #(dispatch [:load-more-messages])
+                :enableEmptySections       true
+                :keyboardShouldPersistTaps true
+                :dataSource                (to-datasource messages)}]))
 
 (defview chat []
   [group-chat [:chat :group-chat]
