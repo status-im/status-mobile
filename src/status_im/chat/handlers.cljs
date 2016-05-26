@@ -70,7 +70,7 @@
   (update-input-text db text))
 
 (defn update-command [db [_ text]]
-  (if (not (commands/get-chat-command db))
+  (if-not (commands/get-chat-command db)
     (let [{:keys [command]} (suggestions/check-suggestion db text)]
       (if command
         (commands/set-chat-command db command)
