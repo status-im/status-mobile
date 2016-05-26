@@ -18,15 +18,14 @@
 
 (defn show-input [command]
   [plain-message-input-view
-   (merge {:command command}
-          (case (:command command)
-            :phone {:input-options {:keyboardType :phone-pad}
-                    :validator    valid-mobile-number?}
-            :keypair-password {:input-options {:secureTextEntry true}}
-            :confirmation-code {:input-options {:keyboardType :numeric}}
-            :money {:input-options {:keyboardType :numeric}}
-            :request {:input-options {:keyboardType :numeric}}
-            nil))])
+   (case (:command command)
+     :phone {:input-options {:keyboardType :phone-pad}
+             :validator     valid-mobile-number?}
+     :keypair-password {:input-options {:secureTextEntry true}}
+     :confirmation-code {:input-options {:keyboardType :numeric}}
+     :money {:input-options {:keyboardType :numeric}}
+     :request {:input-options {:keyboardType :numeric}}
+     nil)])
 
 (defn chat-message-new []
   (let [command-atom (subscribe [:get-chat-command])

@@ -70,6 +70,10 @@
   (fn [db _]
     (reaction (commands/get-chat-command-content @db))))
 
+(register-sub :get-chat-command-to-msg-id
+  (fn [db _]
+    (reaction (commands/get-chat-command-to-msg-id @db))))
+
 (register-sub :chat-command-request
   (fn [db _]
     (reaction (commands/get-chat-command-request @db))))
