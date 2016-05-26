@@ -32,11 +32,19 @@
 (defn elements-by-xpath [driver xpath]
   (.findElements driver (By/xpath xpath)))
 
-(defn click [driver xpath]
-  (.click (by-xpath driver xpath)))
+(defn by-id [driver id]
+  (.findElementByAccessibilityId driver (name id)))
+
+(defn get-element [driver id]
+  (if (keyword? id)
+    (by-id driver id)
+    (by-xpath driver id)))
+
+(defn click [driver id]
+  (.click (get-element driver id)))
 
 (defn write [driver input-xpath text]
-  (.sendKeys (by-xpath driver input-xpath) (into-array [text])))
+  (.sendKeys (get-element driver input-xpath) (into-array [text])))
 
 (defn get-text [driver xpath]
   (.getText (by-xpath driver xpath)))
