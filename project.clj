@@ -8,7 +8,7 @@
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
                  [re-frame "0.6.0"]
                  [prismatic/schema "1.0.4"]
-                 ^{:voom {:repo "https://github.com/status-im/status-lib.git"
+                 ^{:voom {:repo "git@github.com:status-im/status-lib.git"
                           :branch "master"}}
                  [status-im/protocol "0.1.1-20160525_083359-g53ab2c2"]
                  [natal-shell "0.1.6"]
@@ -22,7 +22,9 @@
                           ["with-profile" "prod" "cljsbuild" "once" "android"]]}
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.0-2"]
-                                   [com.cemerick/piggieback "0.2.1"]]
+                                   [com.cemerick/piggieback "0.2.1"]
+                                   [io.appium/java-client "3.4.1"]
+                                   ]
                     :source-paths ["src" "env/dev"]
                     :cljsbuild    {:builds {:ios     {:source-paths ["src" "env/dev"]
                                                       :figwheel     true
@@ -46,5 +48,4 @@
                                                    :compiler     {:output-to     "index.android.js"
                                                                   :main          "env.android.main"
                                                                   :output-dir    "target/android"
-                                                                  :optimizations :simple}}}}
-                    }})
+                                                                  :optimizations :simple}}}}}})
