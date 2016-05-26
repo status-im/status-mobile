@@ -50,3 +50,7 @@ target/
 #
 figwheel_server.log
 .nrepl-port
+
+# Lein
+#
+.lein-failures
