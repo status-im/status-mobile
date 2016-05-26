@@ -50,7 +50,7 @@
   (.getText (by-xpath driver xpath)))
 
 (defn xpath-by-text [text]
-  (str ".//*[@text='" text "']" ))
+  (str ".//*[@text='" text "']"))
 
 (defn contains-text [driver text]
   (is (= 1 (->> (xpath-by-text text)
@@ -59,3 +59,11 @@
 
 (defn quit [driver]
   (.quit driver))
+
+(defmacro appium-test [name & body]
+  (let [sym (gensym)]
+    `(deftest ~name
+       (let [~sym (init)]
+         ~@(for [[f & rest] body]
+             `(~f ~sym ~@rest))
+         (quit ~sym)))))
