@@ -8,6 +8,7 @@
                                                 dismiss-keyboard!]]
             [status-im.chat.views.suggestions :refer [suggestions-view]]
             [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
+            [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.views.command :as command]
             [status-im.chat.views.response :as response]
             [status-im.chat.styles.plain-input :as st]
@@ -44,9 +45,10 @@
             response? (and command @to-msg-id)]
         [view st/input-container
          (if response? [response/request-info command])
-         (if command
-           [content-suggestions-view]
-           [suggestions-view])
+         (cond
+           response? [response-suggestions-view]
+           command [content-suggestions-view]
+           :else [suggestions-view])
          [view st/input-view
           (if command
             (when-not response?
