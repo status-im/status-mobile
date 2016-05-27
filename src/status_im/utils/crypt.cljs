@@ -3,7 +3,7 @@
             [clojure.string :as s])
   (:import goog.crypt.Sha256))
 
-(set! js/window.RnRandomBytes (js/require "react-native-randombytes"))
+(def random-bytes (js/require "react-native-randombytes"))
 
 (def sha-256 (Sha256.))
 
@@ -19,7 +19,7 @@
   (byteArrayToHex (.digest sha-256)))
 
 (defn gen-random-bytes [length cb]
-  (.randomBytes js/window.RnRandomBytes length (fn [& [err buf]]
-                                                 (if err
-                                                   (cb {:error err})
-                                                   (cb {:buffer buf})))))
+  (.randomBytes random-bytes length (fn [& [err buf]]
+                                      (if err
+                                        (cb {:error err})
+                                        (cb {:buffer buf})))))
