@@ -5,8 +5,6 @@
             [status-im.utils.types :refer [to-string]])
   (:refer-clojure :exclude [exists?]))
 
-(set! js/window.Realm (js/require "realm"))
-
 (def opts {:schema [{:name       :contacts
                      :primaryKey :whisper-identity
                      :properties {:phone-number     {:type     "string"
@@ -70,7 +68,9 @@
                                                  :objectType "tag"}
                                   :last-updated "date"}}]})
 
-(def realm (js/Realm. (clj->js opts)))
+(def realm-class (js/require "realm"))
+
+(def realm (realm-class. (clj->js opts)))
 
 (def schema-by-name (->> (:schema opts)
                          (mapv (fn [{:keys [name] :as schema}]
