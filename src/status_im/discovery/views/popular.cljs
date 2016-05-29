@@ -2,16 +2,16 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require
     [re-frame.core :refer [subscribe]]
-    [status-im.utils.logging :as log]
     [status-im.components.react :refer [android?
                                       text]]
     [status-im.components.carousel.carousel :refer [carousel]]
     [status-im.discovery.styles :as st]
     [status-im.discovery.views.popular-list :refer [discovery-popular-list]]
-    [status-im.i18n :refer [label]]))
+    [status-im.i18n :refer [label]]
+    [status-im.components.react :as r]))
 
 (defn page-width []
-  (.-width (.get (.. js/React -Dimensions) "window")))
+  (.-width (.get (.. r/react -Dimensions) "window")))
 
 (defview popular []
   [popular-tags [:get-popular-tags 3]]

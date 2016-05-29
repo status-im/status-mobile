@@ -12,7 +12,8 @@
                                               touchable-opacity]]
             [status-im.resources :as res]
             [status-im.components.drawer.styles :as st]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [status-im.components.react :refer [react]]))
 
 (defonce drawer-atom (atom))
 
@@ -72,7 +73,7 @@
 
 (defn drawer-view [items]
   [drawer-layout-android {:drawerWidth            260
-                          :drawerPosition         js/React.DrawerLayoutAndroid.positions.Left
+                          :drawerPosition         react.DrawerLayoutAndroid.positions.Left
                           :render-navigation-view #(r/as-element [drawer-menu])
                           :ref  (fn [drawer]
                                   (reset! drawer-atom drawer))}
