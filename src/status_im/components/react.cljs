@@ -1,29 +1,39 @@
 (ns status-im.components.react
   (:require [reagent.core :as r]
-            [status-im.components.styles :as st]))
+            [status-im.components.styles :as st]
+            [status-im.utils.utils :as u]))
 
 (when (exists? js/window)
   (set! js/window.React (js/require "react-native")))
 
-(def react (js/require "react-native"))
+(def react (u/require "react-native"))
 
-(def app-registry (.-AppRegistry react))
-(def navigator (r/adapt-react-class (.-Navigator react)))
-(def text (r/adapt-react-class (.-Text react)))
-(def view (r/adapt-react-class (.-View react)))
-(def image (r/adapt-react-class (.-Image react)))
-(def touchable-highlight-class (r/adapt-react-class (.-TouchableHighlight react)))
+(defn get-react-property [name]
+  (aget react name))
+
+(defn adapt-class [class]
+  (when class (r/adapt-react-class class)))
+
+(defn get-class [name]
+  (adapt-class (get-react-property name)))
+
+(def app-registry (get-react-property "AppRegistry"))
+(def navigator (get-class "Navigator"))
+(def text (get-class "Text"))
+(def view (get-class "View"))
+(def image (get-class "Image"))
+(def touchable-highlight-class (get-class "TouchableHighlight"))
 (defn touchable-highlight [props content]
   [touchable-highlight-class
    (merge {:underlay-color :transparent} props)
    content])
-(def toolbar-android (r/adapt-react-class (.-ToolbarAndroid react)))
-(def list-view-class (r/adapt-react-class (.-ListView react)))
+(def toolbar-android (get-class "ToolbarAndroid"))
+(def list-view-class (get-class "ListView"))
 (defn list-view [props]
   [list-view-class (merge {:enableEmptySections true} props)])
-(def scroll-view (r/adapt-react-class (.-ScrollView react)))
-(def touchable-without-feedback (r/adapt-react-class (.-TouchableWithoutFeedback react)))
-(def text-input-class (r/adapt-react-class (.-TextInput react)))
+(def scroll-view (get-class "ScrollView"))
+(def touchable-without-feedback (get-class "TouchableWithoutFeedback"))
+(def text-input-class (get-class "TextInput"))
 (defn text-input [props text]
   [text-input-class (merge
                       {:underlineColorAndroid :transparent
@@ -31,11 +41,13 @@
                        :placeholder           "Type"}
                       props)
    text])
-(def drawer-layout-android (r/adapt-react-class (.-DrawerLayoutAndroid react)))
-(def touchable-opacity (r/adapt-react-class (.-TouchableOpacity react)))
-(def modal (r/adapt-react-class (.-Modal react)))
-(def picker (r/adapt-react-class (.-Picker react)))
-(def picker-item (r/adapt-react-class (.-Item (.-Picker react))))
+(def drawer-layout-android (get-class "DrawerLayoutAndroid"))
+(def touchable-opacity (get-class "TouchableOpacity"))
+(def modal (get-class "Modal"))
+(def picker (get-class "Picker"))
+(def picker-item
+  (when-let [picker (get-react-property "Picker")]
+    (adapt-class (.-Item picker))))
 
 
 (defn icon
@@ -44,20 +56,18 @@
    [image {:source {:uri (keyword (str "icon_" (name n)))}
            :style  style}]))
 
-;(def react-linear-gradient (.-default (js/require "react-native-linear-gradient")))
-;(def linear-gradient (r/adapt-react-class react-linear-gradient))
-
-(def linear-gradient-class (js/require "react-native-linear-gradient"))
+(def linear-gradient-class (u/require "react-native-linear-gradient"))
 (defn linear-gradient [props]
-  (r/creacteElement linear-gradient-class
+  (r/create-element linear-gradient-class
                     (clj->js (merge {:inverted true} props))))
 
 
-(def platform (.. react -Platform -OS))
+(def platform
+  (when-let [pl (.-Platform react)] (.-OS pl)))
 
 (def android? (= platform "android"))
 
 (defn list-item [component]
   (r/as-element component))
 
-(def dismiss-keyboard! (js/require "dismissKeyboard"))
+(def dismiss-keyboard! (u/require "dismissKeyboard"))
