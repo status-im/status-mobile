@@ -60,5 +60,4 @@
   (dispatch [:init-console-chat])
   (dispatch [:init-chat])
   (init-back-button-handler!)
-  ;(.registerComponent app-registry "StatusIm" #(r/reactify-component app-root))
-  )
+  (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)))

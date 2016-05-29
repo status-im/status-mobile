@@ -54,3 +54,8 @@ figwheel_server.log
 # Lein
 #
 .lein-failures
+
+## Doo
+#
+out
+doo-index.html
