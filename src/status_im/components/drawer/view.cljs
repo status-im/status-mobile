@@ -2,13 +2,14 @@
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
-            [status-im.components.react :as re :refer [view
-                                                       text
-                                                       image
-                                                       navigator
-                                                       toolbar-android
-                                                       drawer-layout-android
-                                                       touchable-opacity]]
+            [status-im.components.react :refer [react
+                                                view
+                                                text
+                                                image
+                                                navigator
+                                                toolbar-android
+                                                drawer-layout-android
+                                                touchable-opacity]]
             [status-im.resources :as res]
             [status-im.components.drawer.styles :as st]
             [status-im.i18n :refer [label]]))
@@ -71,7 +72,7 @@
 
 (defn drawer-view [items]
   [drawer-layout-android {:drawerWidth            260
-                          :drawerPosition         re/react.DrawerLayoutAndroild.positions.Left
+                          :drawerPosition         js/React.DrawerLayoutAndroid.positions.Left
                           :render-navigation-view #(r/as-element [drawer-menu])
                           :ref                    (fn [drawer]
                                                     (reset! drawer-atom drawer))}
