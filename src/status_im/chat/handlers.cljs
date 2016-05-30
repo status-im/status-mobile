@@ -2,12 +2,14 @@
   (:require [re-frame.core :refer [register-handler enrich after debug dispatch]]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
+            [status-im.components.animation :as anim]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.api :as api]
             [status-im.models.messages :as messages]
             [status-im.constants :refer [text-content-type
-                                         content-type-command]]
+                                         content-type-command
+                                         response-input-hiding-duration]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.models.chats :as chats]
@@ -15,6 +17,7 @@
             [status-im.utils.handlers :as u]
             [status-im.persistence.realm :as r]
             [status-im.handlers.server :as server]
+            [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.datetime :as time]))
 
@@ -38,8 +41,25 @@
 (register-handler :cancel-command
   (fn [{:keys [current-chat-id] :as db} _]
     (-> db
+        (assoc-in [:animations :response-input-is-hiding?] false)
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim))))
+
+(defn animate-cancel-command [db height]
+  (anim/add-listener height (fn [val]
+                              (when (<= (.-value val) 1)
+                                (anim/remove-all-listeners height)
+                                (anim/stop-animation height)
+                                (dispatch [:cancel-command]))))
+  (anim/start (anim/timing height {:toValue 1, :duration response-input-hiding-duration}))
+  (assoc-in db [:animations :response-input-is-hiding?] true))
+
+(register-handler :start-cancel-command
+  (fn [{{height :response-suggestions-height
+         hiding? :response-input-is-hiding?} :animations :as db} _]
+    (if-not hiding?
+      (animate-cancel-command db height)
+      db)))
 
 (register-handler :set-chat-command-content
   (fn [{:keys [current-chat-id] :as db} [_ content]]

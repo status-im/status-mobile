@@ -7,6 +7,8 @@
                                                  chat-background
                                                  color-black]]))
 
+(def request-info-height 61)
+
 (def drag-touchable
   {:height     16
    :alignItems :center})
@@ -47,9 +49,13 @@
    :opacity    0.69
    :color      color-white})
 
+(defn request-view [height]
+  {:flexDirection :column
+   :height        height})
+
 (defn request-info [color]
   {:flexDirection   :column
-   :height          61
+   :height          request-info-height
    :backgroundColor color})
 
 (def inner-container

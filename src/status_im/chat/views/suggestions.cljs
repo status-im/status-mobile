@@ -1,11 +1,11 @@
 (ns status-im.chat.views.suggestions
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                              text
-                                              icon
-                                              touchable-highlight
-                                              list-view
-                                              list-item]]
+                                                text
+                                                icon
+                                                touchable-highlight
+                                                list-view
+                                                list-item]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.chat.styles.suggestions :as st]))
 
