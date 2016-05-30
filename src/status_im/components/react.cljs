@@ -3,9 +3,6 @@
             [status-im.components.styles :as st]
             [status-im.utils.utils :as u]))
 
-(when (exists? js/window)
-  (set! js/window.React (js/require "react-native")))
-
 (def react (u/require "react-native"))
 
 (defn get-react-property [name]
