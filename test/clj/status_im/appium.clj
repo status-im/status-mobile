@@ -59,7 +59,25 @@
 (defn quit [driver]
   (.quit driver))
 
-(defmacro appium-test [name & body]
+(defmacro appium-test
+  "Defines test which will create new appium session and will pass that
+  session as first argument to each command inside it's body. After execution
+  of all commands session will be closed.
+
+  For instance,
+
+  (appium-test my-test
+    (click :button)
+    (write :input \"oops\"))
+
+  will be expanded to
+
+  (deftest my-test
+    (let [session (init)]
+      (click session :button)
+      (write session :input \"oops\")
+      (quit session)))"
+  [name & body]
   (let [sym (gensym)]
     `(deftest ~name
        (let [~sym (init)]
