@@ -13,6 +13,7 @@
                                                  text2-color
                                                  text3-color]]))
 
+(def min-suggestions-height 150)
 (def header-height 50)
 (def suggestion-height 56)
 

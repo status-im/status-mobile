@@ -1,0 +1,29 @@
+(ns status-im.components.animation
+  (:require [status-im.components.react :refer [animated]]))
+
+(defn start [anim]
+  (.start anim))
+
+(defn timing [anim-value config]
+  (.timing animated anim-value (clj->js config)))
+
+(defn spring [anim-value config]
+  (.spring animated anim-value (clj->js config)))
+
+(defn add-listener [anim-value listener]
+  (.addListener anim-value listener))
+
+(defn remove-all-listeners [anim-value]
+  (.removeAllListeners anim-value))
+
+(defn stop-animation [anim-value]
+  (.stopAnimation anim-value))
+
+(defn value [anim-value]
+  (.-value anim-value))
+
+(defn set-value [anim-value value]
+  (.setValue anim-value value))
+
+(defn create-value [value]
+  (js/React.Animated.Value. value))

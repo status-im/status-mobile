@@ -32,8 +32,7 @@
 (defview response-suggestions-view []
   [suggestions [:get-content-suggestions]]
   (when (seq suggestions)
-    [view nil
-     [view (st/suggestions-container suggestions)
-      [list-view {:dataSource                (to-datasource suggestions)
-                  :keyboardShouldPersistTaps true
-                  :renderRow                 render-row}]]]))
+    [view (st/suggestions-container suggestions)
+     [list-view {:dataSource                (to-datasource suggestions)
+                 :keyboardShouldPersistTaps true
+                 :renderRow                 render-row}]]))

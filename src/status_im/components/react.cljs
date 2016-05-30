@@ -34,6 +34,10 @@
 (def picker (r/adapt-react-class (.-Picker js/React)))
 (def picker-item (r/adapt-react-class (.-Item (.-Picker js/React))))
 
+(def animated (.-Animated js/React))
+(def animated-view (r/adapt-react-class (.-View animated)))
+(def animated-text (r/adapt-react-class (.-Text animated)))
+
 
 (defn icon
   ([n] (icon n {}))
