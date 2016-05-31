@@ -13,7 +13,7 @@
                                                  text2-color
                                                  text3-color]]))
 
-(def min-suggestions-height 150)
+(def max-suggestions-height 250)
 (def header-height 50)
 (def suggestion-height 56)
 
@@ -51,13 +51,10 @@
    :fontFamily font
    :color      text2-color})
 
-(defn suggestions-container [suggestions]
+(def suggestions-container
   {:flexDirection    :row
+   :flex             1
    :marginVertical   1
    :marginHorizontal 0
-   :height           (min 150 (reduce + 0 (map #(if (:header %)
-                                                 header-height
-                                                 suggestion-height)
-                                               suggestions)))
    :backgroundColor  color-white
    :borderRadius     5})

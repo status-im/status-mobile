@@ -14,7 +14,7 @@
            {:value       "9171111111"
             :description "Number format 3"}]})
 
-(defn get-content-suggestions [db command text]
+(defn get-content-suggestions [command text]
   (or (when command
         (when-let [command-suggestions ((:command command) suggestions)]
           (filterv (fn [s]
