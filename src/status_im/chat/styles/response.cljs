@@ -13,10 +13,16 @@
   {:height     16
    :alignItems :center})
 
-(def drag-down-icon
-  {:width   16
-   :height  16
-   :opacity 0.4})
+(def drag-container
+  {:width  16
+   :height 16})
+
+(def drag-icon
+  {:position :absolute
+   :top      6.5
+   :left     1
+   :width    14
+   :height   3})
 
 (def command-icon-container
   {:marginTop       1

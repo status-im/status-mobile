@@ -16,8 +16,8 @@
                         :onPress (fn []
                                    ;; TODO drag up/down
                                    )}
-   [view nil
-    [icon :drag-white st/drag-down-icon]]])
+   [view st/drag-container
+    [icon :drag-white st/drag-icon]]])
 
 (defn command-icon []
   [view st/command-icon-container
