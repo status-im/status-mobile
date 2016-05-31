@@ -1,15 +1,12 @@
 (ns status-im.chat.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub]]
+  (:require [re-frame.core :refer [register-sub dispatch]]
             [status-im.db :as db]
     ;todo handlers in subs?...
             [status-im.chat.suggestions :refer
              [get-suggestions typing-command?]]
             [status-im.models.commands :as commands]
-            [status-im.components.animation :as anim]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
-            [status-im.chat.styles.response :as response-styles]
-            [status-im.chat.styles.response-suggestions :as response-suggestions-styles]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]))
 
 (register-sub :chat-properties
@@ -95,25 +92,8 @@
   (fn [db _]
     (reaction (typing-command? @db))))
 
-(defn update-response-suggestions-height [db]
-  (when-not (get-in db [:animations :response-input-is-hiding?])
-    (let [command (commands/get-chat-command db)
-          text (commands/get-chat-command-content db)
-          suggestions (get-content-suggestions db command text)
-          suggestions-height (min response-suggestions-styles/min-suggestions-height
-                                  (reduce + 0 (map #(if (:header %)
-                                                     response-suggestions-styles/header-height
-                                                     response-suggestions-styles/suggestion-height)
-                                                   suggestions)))
-          height (+ suggestions-height response-styles/request-info-height)
-          anim-value (get-in db [:animations :response-suggestions-height])]
-      (anim/start (anim/timing anim-value {:toValue height, :duration response-suggesstion-resize-duration}))))
-  db)
-
 (register-sub :get-content-suggestions
   (fn [db _]
     (let [command (reaction (commands/get-chat-command @db))
-          text (reaction (commands/get-chat-command-content @db))
-          suggestions (reaction (get-content-suggestions @db @command @text))]
-      (reaction (do (update-response-suggestions-height @db)
-                    @suggestions)))))
+          text (reaction (commands/get-chat-command-content @db))]
+      (reaction (get-content-suggestions @command @text)))))
