@@ -49,27 +49,28 @@
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
-(defn animate-cancel-command [db height-anim-value]
-  (let [to-value 1]
+(defn animate-cancel-command! [db]
+  (let [height-anim-value (get-in db [:animations :response-suggestions-height])
+        to-value 1]
     (anim/add-listener height-anim-value
                        (fn [val]
                          (when (<= (- to-value delta) (anim/value val) (+ to-value delta))
                            (anim/remove-all-listeners height-anim-value)
                            (dispatch [:cancel-command]))))
-    (anim/stop-animation height-anim-value)
     (anim/start (anim/spring height-anim-value {:toValue    to-value
                                                 :speed      10
-                                                :bounciness 1}))
-    (assoc-in db [:animations :response-input-is-hiding?] true)))
+                                                :bounciness 1}))))
 
 (register-handler :start-cancel-command
-  (fn [{{height-anim-value :response-suggestions-height
-         hiding?           :response-input-is-hiding?} :animations :as db} _]
-    (if-not hiding?
-      (animate-cancel-command db height-anim-value)
-      db)))
+  (after animate-cancel-command!)
+  (fn [db _]
+    (let [current-chat-id (:current-chat-id db)
+          hiding? (get-in db [:animations :response-input-is-hiding?])]
+      (if-not hiding?
+        (assoc-in db [:animations :response-input-is-hiding?] true)
+        db))))
 
-(defn update-response-suggestions-height [db]
+(defn update-response-suggestions-height! [db]
   (when (and (not (get-in db [:animations :response-input-is-hiding?]))
              (commands/get-chat-command-to-msg-id db))
     (let [command (commands/get-chat-command db)
@@ -82,19 +83,17 @@
                                                    suggestions)))
           height (+ suggestions-height response-styles/request-info-height)
           anim-value (get-in db [:animations :response-suggestions-height])]
-      (anim/stop-animation anim-value)
       (anim/start
         (anim/spring anim-value {:toValue    height
                                  :speed      10
-                                 :bounciness 10}))))
-  db)
+                                 :bounciness 10})))))
 
 (register-handler :set-chat-command-content
+  (after update-response-suggestions-height!)
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (-> db
         (commands/set-chat-command-content content)
-        (assoc-in [:chats current-chat-id :input-text] nil)
-        (update-response-suggestions-height))))
+        (assoc-in [:chats current-chat-id :input-text] nil))))
 
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]
@@ -111,10 +110,9 @@
       (commands/stage-command db command-info))))
 
 (register-handler :set-response-chat-command
+  (after update-response-suggestions-height!)
   (fn [db [_ to-msg-id command-key]]
-    (-> db
-        (commands/set-response-chat-command to-msg-id command-key)
-        (update-response-suggestions-height))))
+    (commands/set-response-chat-command db to-msg-id command-key)))
 
 (defn update-text
   [db [_ text]]
