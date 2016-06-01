@@ -130,6 +130,7 @@ dependencies {
     compile project(':react-native-i18n')
     compile project(':react-native-linear-gradient')
     compile project(':ReactNativeAndroidSmsListener')
+    compile project(':react-native-camera')
 //    compile(name:'geth', ext:'aar')
     compile(group: 'status-im', name: 'android-geth', version: '1.4.0-201604110816-a97a114', ext: 'aar')
 

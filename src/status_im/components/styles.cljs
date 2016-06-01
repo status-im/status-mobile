@@ -28,5 +28,29 @@
 (def toolbar-background2 color-light-gray)
 (def default-chat-color color-purple)
 
+(def toolbar-height 56)
+
 (def flex
   {:style {:flex 1}})
+
+(def hamburger-icon
+  {:width  16
+   :height 12})
+
+(def search-icon
+  {:width  17
+   :height 17})
+
+(def create-icon
+  {:fontSize 20
+   :height   22
+   :color    :white})
+
+(def import-qr-icon
+  {:margin 4})
+
+(def form-text-input
+  {:marginLeft -4
+   :fontSize   14
+   :fontFamily font
+   :color      text1-color})

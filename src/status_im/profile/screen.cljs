@@ -11,6 +11,8 @@
             [status-im.components.chat-icon.screen :refer [profile-icon
                                                          my-profile-icon]]
             [status-im.profile.styles :as st]
+            [status-im.components.qr-code :refer [qr-code]]
+            [status-im.utils.types :refer [clj->json]]
             [status-im.i18n :refer [label]]))
 
 (defn profile-property-view [{:keys [name value]}]
@@ -64,8 +66,9 @@
    photo-path   [:get :photo-path]
    phone-number [:get :phone-number]
    email        [:get :email]
-   status       [:get :status]]
-  [scroll-view {:style st/profile}
+   status       [:get :status]
+   identity     [:get :identity]]
+  [view {:style st/profile}
    [touchable-highlight {:style    st/back-btn-touchable
                          :on-press #(dispatch [:navigate-back])}
     [view st/back-btn-container
@@ -81,10 +84,16 @@
      [my-profile-icon]]
     [text {:style st/user-name} username]
     [text {:style st/status} status]]
-   [view st/profile-properties-container
+   [scroll-view st/profile-properties-container
     [profile-property-view {:name  (label :t/username)
                             :value username}]
     [profile-property-view {:name  (label :t/phone-number)
                             :value phone-number}]
     [profile-property-view {:name  (label :t/email)
-                            :value email}]]])
+                            :value email}]
+    [view st/qr-code-container
+     [qr-code {:value (clj->json {:name username
+                                  :phone-number phone-number
+                                  :address email
+                                  :whisper-identity identity})
+              :size 150}]]]])
