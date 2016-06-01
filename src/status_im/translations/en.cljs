@@ -18,7 +18,8 @@
    :and-you                               "and you"
    :search-chat                           "Search chat"
    :members                               {:one   "1 member, 1 active"
-                                           :other "{{count}} members, {{count}} active"}
+                                           :other "{{count}} members, {{count}} active"
+                                           :zero  "no members"}
    :last-active                           "Active a minute ago"
 
    ;profile
