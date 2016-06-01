@@ -8,6 +8,8 @@
                                                 text
                                                 text-input
                                                 touchable-highlight]]
+            [status-im.components.animation :as anim]
+            [status-im.components.drag-drop :as drag]
             [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]))
 
@@ -44,7 +46,11 @@
       [icon :close-white st/cancel-icon]]]]])
 
 (defview request-view []
-  [height [:get-in [:animations :response-suggestions-height]]]
-  [animated-view {:style (st/request-view height)}
+  [height [:get-in [:animations :response-suggestions-height]]
+   pan-responder [:get-in [:animations :response-pan-responder]]
+   pan [:get-in [:animations :response-pan]]]
+  [animated-view (merge (drag/pan-handlers pan-responder)
+                        {:style (merge (anim/get-layout pan)
+                                       (st/request-view height))})
    [request-info]
    [response-suggestions-view]])
