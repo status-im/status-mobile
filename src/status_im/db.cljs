@@ -33,8 +33,11 @@
              :current-tag            nil
              :disable-group-creation false
              :animations             {;; mutable data
-                                      :response-suggestions-height (anim/create-value 0)
-                                      :response-input-is-hiding? false}})
+                                      :message-input-offset         (anim/create-value 0)
+                                      :message-input-buttons-scale  (anim/create-value 1)
+                                      :commands-input-is-switching? false
+                                      :response-suggestions-height  (anim/create-value 0)
+                                      :response-input-is-hiding?    false}})
 
 (def protocol-initialized-path [:protocol-initialized])
 (defn chat-input-text-path [chat-id]

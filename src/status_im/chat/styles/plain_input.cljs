@@ -12,11 +12,19 @@
    :height          56
    :backgroundColor color-white})
 
-(def switch-commands-touchable
+(def message-input-button-touchable
   {:width          56
    :height         56
    :alignItems     :center
    :justifyContent :center})
+
+(defn message-input-button [scale]
+  {:transform [{:scale scale}]})
+
+(defn message-input-container [offset]
+  {:flex 1
+   :transform [{:translateX offset}]
+   :marginRight offset})
 
 (def list-icon
   {:width  13
@@ -35,9 +43,7 @@
    :color      text2-color})
 
 (def smile-icon
-  {:marginTop   18
-   :marginRight 18
-   :width       20
+  {:width       20
    :height      20})
 
 (def send-icon

@@ -81,10 +81,11 @@
    :height     12})
 
 (def command-input
-  {:flex       1
-   :marginLeft 16
-   :marginTop  -2
-   :padding    0
-   :fontSize   14
-   :fontFamily font
-   :color      text1-color})
+  {:flex        1
+   :marginLeft  56
+   :marginRight 16
+   :marginTop   -2
+   :padding     0
+   :fontSize    14
+   :fontFamily  font
+   :color       text1-color})
