@@ -70,6 +70,7 @@
    ;contacts
    :contacts                              "Contacts"
    :no-name                               "Noname"
+   :new-contact                           "New Contact"
 
    ;group-settings
    :remove                                "Remove"
@@ -111,5 +112,10 @@
    :invited                               "invited"
    :removed                               "removed"
    :You                                   "You"
+
+   ;new-contact
+   :import-qr                             "Import from QR"
+   :contact-name                          "Contact Name"
+   :contact-address                       "Contact Address"
 
    })
