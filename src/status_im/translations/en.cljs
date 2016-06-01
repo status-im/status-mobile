@@ -18,7 +18,8 @@
    :and-you                               "and you"
    :search-chat                           "Search chat"
    :members                               {:one   "1 member, 1 active"
-                                           :other "{{count}} members, {{count}} active"}
+                                           :other "{{count}} members, {{count}} active"
+                                           :zero  "no members"}
    :last-active                           "Active a minute ago"
 
    ;profile
@@ -70,6 +71,7 @@
    ;contacts
    :contacts                              "Contacts"
    :no-name                               "Noname"
+   :new-contact                           "New Contact"
 
    ;group-settings
    :remove                                "Remove"
@@ -111,5 +113,10 @@
    :invited                               "invited"
    :removed                               "removed"
    :You                                   "You"
+
+   ;new-contact
+   :import-qr                             "Import from QR"
+   :contact-name                          "Contact Name"
+   :contact-address                       "Contact Address"
 
    })
