@@ -13,6 +13,7 @@
             [status-im.components.styles :refer [color-blue]]
             [status-im.i18n :refer [label]]
             [status-im.qr-scanner.styles :as st]
+            [status-im.utils.types :refer [json->clj]]
             [status-im.utils.logging :as log]))
 
 (defn qr-scanner-toolbar []
@@ -23,12 +24,13 @@
   []
   [view st/barcode-scanner-container
    [qr-scanner-toolbar]
-   [camera {:onBarCodeRead (fn [{:keys [name address whisper-identity phone-number] :as contact}]
-                             (when name (dispatch [:set-in [:new-contact :name] name]))
-                             (when address (dispatch [:set-in [:new-contact :address] address]))
-                             (when whisper-identity (dispatch [:set-in [:new-contact :whisper-identity] whisper-identity]))
-                             (when phone-number (dispatch [:set-in [:new-contact :phone-number] phone-number]))
-                             (dispatch [:navigate-back]))
+   [camera {:onBarCodeRead (fn [data]
+                             (let [{:keys [name address whisper-identity phone-number] :as contact} (json->clj (.-data data))]
+                               (when name (dispatch [:set-in [:new-contact :name] name]))
+                               (when address (dispatch [:set-in [:new-contact :address] address]))
+                               (when whisper-identity (dispatch [:set-in [:new-contact :whisper-identity] whisper-identity]))
+                               (when phone-number (dispatch [:set-in [:new-contact :phone-number] phone-number]))
+                               (dispatch [:navigate-back])))
             :style st/barcode-scanner}]
    [view st/rectangle-container
     [view st/rectangle

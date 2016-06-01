@@ -67,7 +67,7 @@
    phone-number [:get :phone-number]
    email        [:get :email]
    status       [:get :status]
-   identity     [:get :identity]]
+   identity     [:get-in [:user-identity :public]]]
   [view {:style st/profile}
    [touchable-highlight {:style    st/back-btn-touchable
                          :on-press #(dispatch [:navigate-back])}
@@ -93,7 +93,5 @@
                             :value email}]
     [view st/qr-code-container
      [qr-code {:value (clj->json {:name username
-                                  :phone-number phone-number
-                                  :address email
                                   :whisper-identity identity})
-              :size 150}]]]])
+              :size 200}]]]])
