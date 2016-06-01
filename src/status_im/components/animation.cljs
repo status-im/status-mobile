@@ -10,6 +10,9 @@
 (defn spring [anim-value config]
   (.spring animated anim-value (clj->js config)))
 
+(defn event [config]
+  (.event animated (clj->js [nil, config])))
+
 (defn add-listener [anim-value listener]
   (.addListener anim-value listener))
 
@@ -27,3 +30,15 @@
 
 (defn create-value [value]
   (js/React.Animated.Value. value))
+
+(defn x [value-xy]
+  (.-x value-xy))
+
+(defn y [value-xy]
+  (.-y value-xy))
+
+(defn get-layout [value-xy]
+  (js->clj (.getLayout value-xy)))
+
+(defn create-value-xy [x y]
+  (js/React.Animated.ValueXY. (clj->js {:x x, :y y})))

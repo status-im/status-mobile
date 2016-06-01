@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [register-handler enrich after debug dispatch]]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
+            [status-im.components.drag-drop :as drag]
             [status-im.components.animation :as anim]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.styles.response :as response-styles]
@@ -132,13 +133,13 @@
     (anim/start (anim/timing offset-anim-value {:toValue  -40
                                                 :duration response-input-hiding-duration}))))
 
-(defn set-reponse-chat-command [db [_ to-msg-id command-key]]
+(defn set-response-chat-command [db [_ to-msg-id command-key]]
   (-> db
       (commands/set-response-chat-command to-msg-id command-key)
       (assoc-in [:animations :commands-input-is-switching?] true)))
 
 (register-handler :set-response-chat-command
-  (-> set-reponse-chat-command
+  (-> set-response-chat-command
       ((after animate-show-response!))
       ((after update-response-suggestions-height!))))
 
@@ -328,10 +329,25 @@
         messages/get-messages
         (assoc db :messages))))
 
+(defn create-response-pan-responder [pan]
+  (drag/create-pan-responder
+    {:on-move    (anim/event {:dy (anim/y pan)})
+     :on-release (fn [e gesture]
+                   (anim/start (anim/spring pan
+                                            {:toValue {:x 0, :y 0}})))}))
+
+(defn init-response-dragging [db]
+  (let [pan (anim/create-value-xy 0 0)]
+    (-> db
+        (assoc-in [:animations :response-pan] pan)
+        (assoc-in [:animations :response-pan-responder] (create-response-pan-responder pan)))))
+
 (defn init-chat
   ([db] (init-chat db nil))
   ([{:keys [messages current-chat-id] :as db} _]
-   (assoc-in db [:chats current-chat-id :messages] messages)))
+   (-> db
+       (assoc-in [:chats current-chat-id :messages] messages)
+       (init-response-dragging))))
 
 (register-handler :init-chat
   (-> load-messages!

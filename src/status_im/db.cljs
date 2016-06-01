@@ -33,6 +33,8 @@
              :current-tag            nil
              :disable-group-creation false
              :animations             {;; mutable data
+                                      :response-pan                 nil
+                                      :response-pan-responder       nil
                                       :message-input-offset         (anim/create-value 0)
                                       :message-input-buttons-scale  (anim/create-value 1)
                                       :commands-input-is-switching? false
