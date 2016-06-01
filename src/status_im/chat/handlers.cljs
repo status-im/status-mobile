@@ -49,23 +49,28 @@
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
-(defn animate-cancel-command! [db]
-  (let [height-anim-value (get-in db [:animations :response-suggestions-height])
-        to-value 1]
-    (anim/add-listener height-anim-value
+(defn animate-cancel-command! [{{:keys [response-suggestions-height
+                                        message-input-buttons-scale
+                                        message-input-offset]} :animations}]
+  (let [height-to-value 1]
+    (anim/add-listener response-suggestions-height
                        (fn [val]
-                         (when (<= (- to-value delta) (anim/value val) (+ to-value delta))
-                           (anim/remove-all-listeners height-anim-value)
+                         (when (<= (- height-to-value delta) (anim/value val) (+ height-to-value delta))
+                           (anim/remove-all-listeners response-suggestions-height)
                            (dispatch [:cancel-command]))))
-    (anim/start (anim/spring height-anim-value {:toValue    to-value
-                                                :speed      10
-                                                :bounciness 1}))))
+    (anim/start (anim/spring response-suggestions-height {:toValue  height-to-value
+                                                          :velocity 1
+                                                          :tension  1
+                                                          :friction 5}))
+    (anim/start (anim/timing message-input-buttons-scale {:toValue  1
+                                                          :duration response-input-hiding-duration}))
+    (anim/start (anim/timing message-input-offset {:toValue  0
+                                                   :duration response-input-hiding-duration}))))
 
 (register-handler :start-cancel-command
   (after animate-cancel-command!)
   (fn [db _]
-    (let [current-chat-id (:current-chat-id db)
-          hiding? (get-in db [:animations :response-input-is-hiding?])]
+    (let [hiding? (get-in db [:animations :response-input-is-hiding?])]
       (if-not hiding?
         (assoc-in db [:animations :response-input-is-hiding?] true)
         db))))
@@ -85,8 +90,8 @@
           anim-value (get-in db [:animations :response-suggestions-height])]
       (anim/start
         (anim/spring anim-value {:toValue    height
-                                 :speed      10
-                                 :bounciness 10})))))
+                                 :speed      1
+                                 :bounciness 0.2})))))
 
 (register-handler :set-chat-command-content
   (after update-response-suggestions-height!)
@@ -109,10 +114,33 @@
                         :handler (:handler command)}]
       (commands/stage-command db command-info))))
 
+(register-handler :finish-show-response!
+  (fn [db _]
+    (assoc-in db [:animations :commands-input-is-switching?] false)))
+
+(defn animate-show-response! [{{scale-anim-value  :message-input-buttons-scale
+                                offset-anim-value :message-input-offset} :animations}]
+  (let [to-value 0.1
+        delta 0.02]
+    (anim/add-listener scale-anim-value
+                       (fn [val]
+                         (when (<= (- to-value delta) (anim/value val) (+ to-value delta))
+                           (anim/remove-all-listeners scale-anim-value)
+                           (dispatch [:finish-show-response!]))))
+    (anim/start (anim/timing scale-anim-value {:toValue  to-value
+                                               :duration response-input-hiding-duration}))
+    (anim/start (anim/timing offset-anim-value {:toValue  -40
+                                                :duration response-input-hiding-duration}))))
+
+(defn set-reponse-chat-command [db [_ to-msg-id command-key]]
+  (-> db
+      (commands/set-response-chat-command to-msg-id command-key)
+      (assoc-in [:animations :commands-input-is-switching?] true)))
+
 (register-handler :set-response-chat-command
-  (after update-response-suggestions-height!)
-  (fn [db [_ to-msg-id command-key]]
-    (commands/set-response-chat-command db to-msg-id command-key)))
+  (-> set-reponse-chat-command
+      ((after animate-show-response!))
+      ((after update-response-suggestions-height!))))
 
 (defn update-text
   [db [_ text]]

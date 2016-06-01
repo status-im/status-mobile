@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
+                                                animated-view
                                                 icon
                                                 touchable-highlight
                                                 text-input
@@ -31,67 +32,92 @@
   (when (message-valid? staged-commands message)
     (send dismiss-keyboard)))
 
-(defn plain-message-input-view [{:keys [input-options validator]}]
-  (let [input-message (subscribe [:get-chat-input-text])
-        command (subscribe [:get-chat-command])
-        to-msg-id (subscribe [:get-chat-command-to-msg-id])
-        input-command (subscribe [:get-chat-command-content])
-        staged-commands (subscribe [:get-chat-staged-commands])
-        typing-command? (subscribe [:typing-command?])]
-    (fn [{:keys [input-options validator]}]
-      (let [dismiss-keyboard (not (or command @typing-command?))
-            command @command
-            response? (and command @to-msg-id)]
-        [view st/input-container
-         (cond
-           response? [response/request-view]
-           command [content-suggestions-view]
-           :else [suggestions-view])
-         [view st/input-view
-          (if command
-            (when-not response?
-              [command/command-icon command response?])
-            [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions])
-                                  :style    st/switch-commands-touchable}
-             [view nil
-              (if @typing-command?
-                [icon :close-gray st/close-icon]
-                [icon :list st/list-icon])]])
-          [text-input (merge {:style           (cond
-                                                 response? st-response/command-input
-                                                 command st-command/command-input
-                                                 :else st/message-input)
-                              :autoFocus       false
-                              :blurOnSubmit    dismiss-keyboard
-                              :onChangeText    (fn [text]
-                                                 ((if command
-                                                    command/set-input-message
-                                                    set-input-message)
-                                                   text))
-                              :onSubmitEditing (fn []
-                                                 (if command
-                                                   (command/try-send @input-command validator)
-                                                   (try-send @staged-commands
-                                                             @input-message
-                                                             dismiss-keyboard)))}
-                             input-options)
-           (if command
-             @input-command
-             @input-message)]
-          ;; TODO emoticons: not implemented
-          (when (not command)
-            [icon :smile st/smile-icon])
-          (if command
-            (if (command/valid? @input-command validator)
-              [touchable-highlight {:on-press command/send-command}
-               [view st/send-container [icon :send st/send-icon]]]
-              (when-not response?
-                [touchable-highlight {:on-press command/cancel-command-input}
-                 [view st-command/cancel-container
-                  [icon :close-gray st-command/cancel-icon]]]))
-            (when (message-valid? @staged-commands @input-message)
-              [touchable-highlight {:on-press #(try-send @staged-commands
-                                                         @input-message
-                                                         dismiss-keyboard)}
-               [view st/send-container
-                [icon :send st/send-icon]]]))]]))))
+(defview commands-button [animation?]
+  [typing-command? [:typing-command?]
+   buttons-scale [:get-in [:animations :message-input-buttons-scale]]]
+  [touchable-highlight {:disabled animation?
+                        :on-press #(dispatch [:switch-command-suggestions])
+                        :style    st/message-input-button-touchable}
+   [animated-view {:style (st/message-input-button buttons-scale)}
+    (if typing-command?
+      [icon :close-gray st/close-icon]
+      [icon :list st/list-icon])]])
+
+(defview smile-button [animation?]
+  [buttons-scale [:get-in [:animations :message-input-buttons-scale]]]
+  [touchable-highlight {:disabled animation?
+                        :on-press #(dispatch [:switch-command-suggestions])
+                        :style    st/message-input-button-touchable}
+   [animated-view {:style (st/message-input-button buttons-scale)}
+    [icon :smile st/smile-icon]]])
+
+(defview message-input-container [input]
+  [message-input-offset [:get-in [:animations :message-input-offset]]]
+  [animated-view {:style (st/message-input-container message-input-offset)}
+   input])
+
+(defview plain-message-input-view [{:keys [input-options validator]}]
+  [input-message [:get-chat-input-text]
+   command [:get-chat-command]
+   to-msg-id [:get-chat-command-to-msg-id]
+   input-command [:get-chat-command-content]
+   staged-commands [:get-chat-staged-commands]
+   typing-command? [:typing-command?]
+   response-input-is-hiding? [:get-in [:animations :response-input-is-hiding?]]
+   commands-button-is-switching? [:get-in [:animations :commands-input-is-switching?]]]
+  (let [dismiss-keyboard (not (or command typing-command?))
+        response? (and command to-msg-id)
+        message-input? (or (not command) response-input-is-hiding? commands-button-is-switching?)
+        animation? (or response-input-is-hiding? commands-button-is-switching?)]
+    [view st/input-container
+     (cond
+       response? [response/request-view]
+       command [content-suggestions-view]
+       :else [suggestions-view])
+     [view st/input-view
+      (if message-input?
+        [commands-button animation?]
+        (when (and command (not response?))
+          [command/command-icon command response?]))
+      [message-input-container
+       [text-input (merge {:style           (cond
+                                              message-input? st/message-input
+                                              response? st-response/command-input
+                                              command st-command/command-input)
+                           :autoFocus       false
+                           :blurOnSubmit    dismiss-keyboard
+                           :onChangeText    (fn [text]
+                                              ((if message-input?
+                                                 set-input-message
+                                                 command/set-input-message)
+                                                text))
+                           :editable        (not animation?)
+                           :onSubmitEditing #(if message-input?
+                                              (try-send staged-commands
+                                                        input-message
+                                                        dismiss-keyboard)
+                                              (command/try-send input-command validator))}
+                          input-options)
+        (if message-input?
+          input-message
+          input-command)]]
+      ;; TODO emoticons: not implemented
+      (when message-input?
+        [smile-button animation?])
+      (if message-input?
+        (when (message-valid? staged-commands input-message)
+          [touchable-highlight {:disabled animation?
+                                :on-press #(try-send staged-commands
+                                                     input-message
+                                                     dismiss-keyboard)}
+           [view st/send-container
+            [icon :send st/send-icon]]])
+        (if (command/valid? input-command validator)
+          [touchable-highlight {:disabled animation?
+                                :on-press command/send-command}
+           [view st/send-container [icon :send st/send-icon]]]
+          (when-not response?
+            [touchable-highlight {:disabled animation?
+                                  :on-press command/cancel-command-input}
+             [view st-command/cancel-container
+              [icon :close-gray st-command/cancel-icon]]])))]]))
