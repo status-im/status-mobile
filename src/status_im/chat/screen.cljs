@@ -3,12 +3,12 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as s]
             [status-im.components.react :refer [view
-                                              text
-                                              image
-                                              icon
-                                              touchable-highlight
-                                              list-view
-                                              list-item]]
+                                                text
+                                                image
+                                                icon
+                                                touchable-highlight
+                                                list-view
+                                                list-item]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action
                                                            chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
@@ -18,7 +18,7 @@
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label label-pluralize]]))
 
 
 (defn contacts-by-identity [contacts]
@@ -186,7 +186,7 @@
           [icon :group st/group-icon]
           [text {:style st/members}
            (let [cnt (inc (count @contacts))]
-             (label :t/members {:count cnt}))]]
+             (label-pluralize cnt :t/members))]]
          ;; TODO stub data: last activity
          [text {:style st/last-activity} (label :t/last-active)])])))
 
