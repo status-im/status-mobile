@@ -31,7 +31,7 @@
 (def suggestion-container
   {:flexDirection   :column
    :paddingLeft     16
-   :height          56
+   :height          suggestion-height
    :backgroundColor color-white})
 
 (def suggestion-sub-container

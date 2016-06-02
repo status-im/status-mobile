@@ -17,6 +17,9 @@
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
+            [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
+            [status-im.chat.views.suggestions :refer [suggestions-view]]
+            [status-im.chat.views.response :refer [request-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]))
 
 
@@ -229,10 +232,16 @@
 
 (defview chat []
   [group-chat [:chat :group-chat]
-   show-actions-atom [:show-actions]]
+   show-actions-atom [:show-actions]
+   command [:get-chat-command]
+   to-msg-id [:get-chat-command-to-msg-id]]
   [view st/chat-view
    [chat-toolbar]
    [messages-view group-chat]
    (when group-chat [typing-all])
+   (cond
+     (and command to-msg-id) [request-view]
+     command [content-suggestions-view]
+     :else [suggestions-view])
    [chat-message-new]
    (when show-actions-atom [actions-view])])

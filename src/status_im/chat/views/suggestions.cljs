@@ -33,7 +33,7 @@
     (fn []
       (let [suggestions @suggestions-atom]
         (when (seq suggestions)
-          [view
+          [view st/container
            [touchable-highlight {:style   st/drag-down-touchable
                                  :onPress (fn []
                                             ;; TODO hide suggestions?

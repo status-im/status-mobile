@@ -46,23 +46,23 @@
 (register-handler :cancel-command
   (fn [{:keys [current-chat-id] :as db} _]
     (-> db
-        (assoc-in [:animations :response-input-is-hiding?] false)
+        (assoc-in [:animations :commands-input-is-switching?] false)
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
-(defn animate-cancel-command! [{{:keys [response-suggestions-height
+(defn animate-cancel-command! [{{:keys [response-height-anim-value
                                         message-input-buttons-scale
                                         message-input-offset]} :animations}]
   (let [height-to-value 1]
-    (anim/add-listener response-suggestions-height
+    (anim/add-listener response-height-anim-value
                        (fn [val]
                          (when (<= (- height-to-value delta) (anim/value val) (+ height-to-value delta))
-                           (anim/remove-all-listeners response-suggestions-height)
+                           (anim/remove-all-listeners response-height-anim-value)
                            (dispatch [:cancel-command]))))
-    (anim/start (anim/spring response-suggestions-height {:toValue  height-to-value
-                                                          :velocity 1
-                                                          :tension  1
-                                                          :friction 5}))
+    (anim/start (anim/spring response-height-anim-value {:toValue  height-to-value
+                                                         :velocity 1
+                                                         :tension  1
+                                                         :friction 5}))
     (anim/start (anim/timing message-input-buttons-scale {:toValue  1
                                                           :duration response-input-hiding-duration}))
     (anim/start (anim/timing message-input-offset {:toValue  0
@@ -71,14 +71,13 @@
 (register-handler :start-cancel-command
   (after animate-cancel-command!)
   (fn [db _]
-    (let [hiding? (get-in db [:animations :response-input-is-hiding?])]
+    (let [hiding? (get-in db [:animations :commands-input-is-switching?])]
       (if-not hiding?
-        (assoc-in db [:animations :response-input-is-hiding?] true)
+        (assoc-in db [:animations :commands-input-is-switching?] true)
         db))))
 
 (defn update-response-suggestions-height! [db]
-  (when (and (not (get-in db [:animations :response-input-is-hiding?]))
-             (commands/get-chat-command-to-msg-id db))
+  (when (commands/get-chat-command-to-msg-id db)
     (let [command (commands/get-chat-command db)
           text (commands/get-chat-command-content db)
           suggestions (get-content-suggestions command text)
@@ -88,7 +87,7 @@
                                                      response-suggestions-styles/suggestion-height)
                                                    suggestions)))
           height (+ suggestions-height response-styles/request-info-height)
-          anim-value (get-in db [:animations :response-suggestions-height])]
+          anim-value (get-in db [:animations :response-height-anim-value])]
       (anim/start
         (anim/spring anim-value {:toValue    height
                                  :speed      1
@@ -329,18 +328,62 @@
         messages/get-messages
         (assoc db :messages))))
 
-(defn create-response-pan-responder [pan]
+(register-handler :set-response-max-height
+  (fn [db [_ height]]
+    (assoc-in db [:animations :response-height-max] height)))
+
+(register-handler :on-drag-response
+  (fn [db [_ dy]]
+    (let [fixed (get-in db [:animations :response-height-fixed])]
+      (assoc-in db [:animations :response-height] (- fixed dy)))))
+
+(register-handler :finish-animate-fix-response-height!
+  (fn [db _]
+    (let [fixed (get-in db [:animations :response-height-fixed])]
+      (-> db
+          (assoc-in [:animations :response-height] fixed)
+          (assoc-in [:animations :response-resize?] false)))))
+
+(defn animate-fix-response-height! [{{height-anim-value :response-height-anim-value
+                                      from              :response-height
+                                      to                :response-height-fixed} :animations}]
+  (let [delta 5]
+    (anim/set-value height-anim-value from)
+    (anim/add-listener height-anim-value
+                       (fn [val]
+                         (when (<= (- to delta) (anim/value val) (+ to delta))
+                           (anim/remove-all-listeners height-anim-value)
+                           (dispatch [:finish-animate-fix-response-height!]))))
+    (anim/start (anim/spring height-anim-value {:toValue to}))))
+
+(register-handler :fix-response-height
+  (after animate-fix-response-height!)
+  (fn [db _]
+    (let [current (get-in db [:animations :response-height])
+          normal-height response-styles/response-height-normal
+          max-height (get-in db [:animations :response-height-max])
+          delta (/ normal-height 2)
+          new-fixed (cond
+                      (<= current delta) response-styles/request-info-height
+                      (<= current (+ normal-height delta)) normal-height
+                      :else max-height)]
+      (-> db
+          (assoc-in [:animations :response-height-fixed] new-fixed)
+          (assoc-in [:animations :response-resize?] true)))))
+
+(defn create-response-pan-responder []
   (drag/create-pan-responder
-    {:on-move    (anim/event {:dy (anim/y pan)})
+    {:on-move    (fn [e gesture]
+                   (dispatch [:on-drag-response (.-dy gesture)]))
      :on-release (fn [e gesture]
-                   (anim/start (anim/spring pan
-                                            {:toValue {:x 0, :y 0}})))}))
+                   (dispatch [:fix-response-height]))}))
 
 (defn init-response-dragging [db]
-  (let [pan (anim/create-value-xy 0 0)]
+  (let [height response-suggestions-styles/max-suggestions-height]
     (-> db
-        (assoc-in [:animations :response-pan] pan)
-        (assoc-in [:animations :response-pan-responder] (create-response-pan-responder pan)))))
+        (assoc-in [:animations :response-height-fixed] height)
+        (assoc-in [:animations :response-height] height)
+        (assoc-in [:animations :response-pan-responder] (create-response-pan-responder)))))
 
 (defn init-chat
   ([db] (init-chat db nil))
