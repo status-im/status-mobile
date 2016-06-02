@@ -21,14 +21,13 @@
             :background-color toolbar-background2}])
 
 (defview qr-scanner []
-  [identifier [:get-in [:qr-codes :identifier]]]
+  [identifier [:get :current-qr-context]]
   [view st/barcode-scanner-container
    [qr-scanner-toolbar]
-   [camera {:onBarCodeRead (fn [data]
-                             (let [data (json->clj (.-data data))]
-                               (dispatch [:set-in [:qr-codes (or identifier :current)] data])
-                               (dispatch [:navigate-back])))
-            :style st/barcode-scanner}]
+   [camera {;:on-bar-code-read #(js/alert "ok")
+            :onBarCodeRead #(let [data (json->clj (.-data %))]
+                             (dispatch [:set-qr-code identifier data]))
+            :style         st/barcode-scanner}]
    [view st/rectangle-container
     [view st/rectangle
      [image {:source {:uri :corner_left_top}
@@ -38,5 +37,4 @@
      [image {:source {:uri :corner_right_bottom}
              :style  st/corner-right-bottom}]
      [image {:source {:uri :corner_left_bottom}
-             :style  st/corner-left-bottom}]]]
-   ])
+             :style  st/corner-left-bottom}]]]])

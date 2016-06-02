@@ -112,12 +112,9 @@
   (after save-contact)
   add-new-contact)
 
-(defn set-new-contact-from-qr [db [_ identifier]]
-  (let [new-contact (:new-contact db)
-        qr-contact (get-in db [:qr-codes identifier])]
-    (-> db
-        (assoc :new-contact (merge new-contact qr-contact))
-        (update-in db [:qr-codes] dissoc identifier))))
+(defn set-new-contact-from-qr
+  [{:keys [new-contact] :as db} [_ _ qr-contact]]
+  (println "WWUUUUUUTTT" qr-contact)
+  (assoc db :new-contact (merge new-contact qr-contact)))
 
-(register-handler :set-new-contact-from-qr
-  (-> set-new-contact-from-qr))
+(register-handler :set-new-contact-from-qr set-new-contact-from-qr)
