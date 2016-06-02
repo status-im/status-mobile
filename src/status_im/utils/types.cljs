@@ -12,4 +12,4 @@
   (.stringify js/JSON (clj->js data)))
 
 (defn json->clj [data]
-  (js->clj (.parse js/JSON data)))
+  (js->clj (.parse js/JSON data) :keywordize-keys true))
