@@ -35,15 +35,19 @@
 
 ;; -- Common --------------------------------------------------------------
 
+(defn set-el [db [_ k v]]
+  (assoc db k v))
+
 (register-handler :set
-  (debug
-    (fn [db [_ k v]]
-      (assoc db k v))))
+  debug
+  set-el)
+
+(defn set-in [db [_ path v]]
+  (assoc-in db path v))
 
 (register-handler :set-in
-  (debug
-    (fn [db [_ path v]]
-      (assoc-in db path v))))
+  debug
+  set-in)
 
 (register-handler :initialize-db
   (fn [_ _]
