@@ -17,11 +17,13 @@ function tab () {
     fi
 
     osascript &>/dev/null <<EOF
-        tell application "iTerm"
-            tell current terminal
-                launch session "Default Session"
-                tell the last session
-                    write text "cd \"$cdto\"$cmd"
+        tell application "iTerm2"
+            tell current window
+                set newTab to (create tab with default profile)
+                tell newTab
+                    tell current session
+                        write text "cd \"$cdto\"$cmd"
+                    end tell
                 end tell
             end tell
         end tell
@@ -64,4 +66,5 @@ if [ ! -z $2 ]
 then
  tab "appium"
  lein test
+ lein doo node test once
 fi
