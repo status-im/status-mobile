@@ -18,7 +18,7 @@
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
-            хыефегы-шьюш18т Жкуаук хдфиудъъ))
+            [status-im.i18n :refer [label]]))
 
 
 (defn contacts-by-identity [contacts]
