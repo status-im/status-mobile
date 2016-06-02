@@ -40,6 +40,7 @@
                                       :message-input-buttons-scale  (anim/create-value 1)
                                       :commands-input-is-switching? false
                                       :response-height-anim-value   (anim/create-value 0)
+                                      :messages-offset-anim-value   (anim/create-value 0)
                                       :response-resize?             false}})
 
 (def protocol-initialized-path [:protocol-initialized])
