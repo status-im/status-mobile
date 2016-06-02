@@ -3,12 +3,13 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as s]
             [status-im.components.react :refer [view
-                                              text
-                                              image
-                                              icon
-                                              touchable-highlight
-                                              list-view
-                                              list-item]]
+                                                animated-view
+                                                text
+                                                image
+                                                icon
+                                                touchable-highlight
+                                                list-view
+                                                list-item]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action
                                                            chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
@@ -221,14 +222,16 @@
 
 (defview messages-view [group-chat]
   [messages [:chat :messages]
-   contacts [:chat :contacts]]
+   contacts [:chat :contacts]
+   messages-offset [:get-in [:animations :messages-offset-anim-value]]]
   (let [contacts' (contacts-by-identity contacts)]
-    [list-view {:renderRow                 (message-row contacts' group-chat)
-                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
-                :onEndReached              #(dispatch [:load-more-messages])
-                :enableEmptySections       true
-                :keyboardShouldPersistTaps true
-                :dataSource                (to-datasource messages)}]))
+    [animated-view {:style (st/messages-container messages-offset)}
+     [list-view {:renderRow                 (message-row contacts' group-chat)
+                 :renderScrollComponent     #(invertible-scroll-view (js->clj %))
+                 :onEndReached              #(dispatch [:load-more-messages])
+                 :enableEmptySections       true
+                 :keyboardShouldPersistTaps true
+                 :dataSource                (to-datasource messages)}]]))
 
 (defview chat []
   [group-chat [:chat :group-chat]

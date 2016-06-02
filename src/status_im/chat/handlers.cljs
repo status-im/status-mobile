@@ -5,7 +5,7 @@
             [status-im.components.drag-drop :as drag]
             [status-im.components.animation :as anim]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.chat.styles.response :as response-styles]
+            [status-im.chat.styles.response :refer [request-info-height response-height-normal]]
             [status-im.chat.styles.response-suggestions :as response-suggestions-styles]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.api :as api]
@@ -52,7 +52,8 @@
 
 (defn animate-cancel-command! [{{:keys [response-height-anim-value
                                         message-input-buttons-scale
-                                        message-input-offset]} :animations}]
+                                        message-input-offset
+                                        messages-offset-anim-value]} :animations}]
   (let [height-to-value 1]
     (anim/add-listener response-height-anim-value
                        (fn [val]
@@ -66,7 +67,8 @@
     (anim/start (anim/timing message-input-buttons-scale {:toValue  1
                                                           :duration response-input-hiding-duration}))
     (anim/start (anim/timing message-input-offset {:toValue  0
-                                                   :duration response-input-hiding-duration}))))
+                                                   :duration response-input-hiding-duration}))
+    (anim/start (anim/spring messages-offset-anim-value {:toValue 0}))))
 
 (register-handler :start-cancel-command
   (after animate-cancel-command!)
@@ -86,7 +88,7 @@
                                                      response-suggestions-styles/header-height
                                                      response-suggestions-styles/suggestion-height)
                                                    suggestions)))
-          height (+ suggestions-height response-styles/request-info-height)
+          height (+ suggestions-height request-info-height)
           anim-value (get-in db [:animations :response-height-anim-value])]
       (anim/start
         (anim/spring anim-value {:toValue    height
@@ -118,8 +120,9 @@
   (fn [db _]
     (assoc-in db [:animations :commands-input-is-switching?] false)))
 
-(defn animate-show-response! [{{scale-anim-value  :message-input-buttons-scale
-                                offset-anim-value :message-input-offset} :animations}]
+(defn animate-show-response! [{{scale-anim-value           :message-input-buttons-scale
+                                input-offset-anim-value    :message-input-offset
+                                messages-offset-anim-value :messages-offset-anim-value} :animations}]
   (let [to-value 0.1
         delta 0.02]
     (anim/add-listener scale-anim-value
@@ -129,8 +132,9 @@
                            (dispatch [:finish-show-response!]))))
     (anim/start (anim/timing scale-anim-value {:toValue  to-value
                                                :duration response-input-hiding-duration}))
-    (anim/start (anim/timing offset-anim-value {:toValue  -40
-                                                :duration response-input-hiding-duration}))))
+    (anim/start (anim/timing input-offset-anim-value {:toValue  -40
+                                                      :duration response-input-hiding-duration}))
+    (anim/start (anim/spring messages-offset-anim-value {:toValue request-info-height}))))
 
 (defn set-response-chat-command [db [_ to-msg-id command-key]]
   (-> db
@@ -360,11 +364,11 @@
   (after animate-fix-response-height!)
   (fn [db _]
     (let [current (get-in db [:animations :response-height])
-          normal-height response-styles/response-height-normal
+          normal-height response-height-normal
           max-height (get-in db [:animations :response-height-max])
           delta (/ normal-height 2)
           new-fixed (cond
-                      (<= current delta) response-styles/request-info-height
+                      (<= current delta) request-info-height
                       (<= current (+ normal-height delta)) normal-height
                       :else max-height)]
       (-> db
