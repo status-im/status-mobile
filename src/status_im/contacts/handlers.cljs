@@ -114,7 +114,6 @@
 
 (defn set-new-contact-from-qr
   [{:keys [new-contact] :as db} [_ _ qr-contact]]
-  (println "WWUUUUUUTTT" qr-contact)
   (assoc db :new-contact (merge new-contact qr-contact)))
 
 (register-handler :set-new-contact-from-qr set-new-contact-from-qr)

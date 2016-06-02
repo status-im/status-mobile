@@ -5,7 +5,6 @@
   "Creates subscrition that cheks if collection (map or set) contains element"
   [collection]
   (fn [db [_ element]]
-    (println "WWWWWWWWWW" (type db))
     (-> (collection @db)
         (contains? element)
         (reaction))))
