@@ -26,7 +26,7 @@
 (defview content-suggestions-view []
   [suggestions [:get-content-suggestions]]
   (when-let [values (not-empty (filter :value suggestions))]
-    [view
+    [view st/container
      [touchable-highlight {:style   st/drag-down-touchable
                            ;; TODO hide suggestions?
                            :onPress (fn [])}

@@ -7,21 +7,16 @@
                                                  chat-background
                                                  color-black]]))
 
+(def response-height-normal 211)
 (def request-info-height 61)
 
-(def drag-touchable
-  {:height     16
-   :alignItems :center})
-
 (def drag-container
-  {:width  16
-   :height 16})
+  {:height         16
+   :alignItems     :center
+   :justifyContent :center})
 
 (def drag-icon
-  {:position :absolute
-   :top      6.5
-   :left     1
-   :width    14
+  {:width    14
    :height   3})
 
 (def command-icon-container
@@ -55,9 +50,21 @@
    :opacity    0.69
    :color      color-white})
 
+(def container
+  {:flexDirection   :column
+   :justifyContent  :flex-end
+   :position        :absolute
+   :left            0
+   :right           0
+   :top             0
+   :bottom          56
+   :backgroundColor :transparent
+   :elevation       2})
+
 (defn request-view [height]
-  {:flexDirection :column
-   :height        height})
+  {:flexDirection   :column
+   :height          height
+   :backgroundColor color-white})
 
 (defn request-info [color]
   {:flexDirection   :column

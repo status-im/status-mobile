@@ -8,18 +8,13 @@
                                                 text
                                                 text-input
                                                 touchable-highlight]]
-            [status-im.components.animation :as anim]
             [status-im.components.drag-drop :as drag]
             [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]))
 
-(defn drag-touchable []
-  [touchable-highlight {:style   st/drag-touchable
-                        :onPress (fn []
-                                   ;; TODO drag up/down
-                                   )}
-   [view st/drag-container
-    [icon :drag-white st/drag-icon]]])
+(defn drag-icon []
+  [view st/drag-container
+   [icon :drag-white st/drag-icon]])
 
 (defn command-icon []
   [view st/command-icon-container
@@ -37,7 +32,7 @@
 (defview request-info []
   [command [:get-chat-command]]
   [view (st/request-info (:color command))
-   [drag-touchable]
+   [drag-icon]
    [view st/inner-container
     [command-icon nil]
     [info-container command]
@@ -46,11 +41,18 @@
       [icon :close-white st/cancel-icon]]]]])
 
 (defview request-view []
-  [height [:get-in [:animations :response-suggestions-height]]
+  [height [:get-in [:animations :response-height-anim-value]]
    pan-responder [:get-in [:animations :response-pan-responder]]
-   pan [:get-in [:animations :response-pan]]]
-  [animated-view (merge (drag/pan-handlers pan-responder)
-                        {:style (merge (anim/get-layout pan)
-                                       (st/request-view height))})
-   [request-info]
-   [response-suggestions-view]])
+   response-height [:get-in [:animations :response-height]]
+   commands-input-is-switching? [:get-in [:animations :commands-input-is-switching?]]
+   response-resize? [:get-in [:animations :response-resize?]]]
+  [view {:style st/container
+         :onLayout (fn [event]
+                     (let [height (.. event -nativeEvent -layout -height)]
+                       (dispatch [:set-response-max-height height])))}
+   [animated-view (merge (drag/pan-handlers pan-responder)
+                         {:style (st/request-view (if (or commands-input-is-switching? response-resize?)
+                                                    height
+                                                    response-height))})
+    [request-info]
+    [response-suggestions-view]]])

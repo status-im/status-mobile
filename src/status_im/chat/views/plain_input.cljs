@@ -7,8 +7,6 @@
                                                 touchable-highlight
                                                 text-input
                                                 dismiss-keyboard!]]
-            [status-im.chat.views.suggestions :refer [suggestions-view]]
-            [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
             [status-im.chat.views.command :as command]
             [status-im.chat.views.response :as response]
             [status-im.chat.styles.plain-input :as st]
@@ -63,17 +61,12 @@
    input-command [:get-chat-command-content]
    staged-commands [:get-chat-staged-commands]
    typing-command? [:typing-command?]
-   response-input-is-hiding? [:get-in [:animations :response-input-is-hiding?]]
    commands-button-is-switching? [:get-in [:animations :commands-input-is-switching?]]]
   (let [dismiss-keyboard (not (or command typing-command?))
         response? (and command to-msg-id)
-        message-input? (or (not command) response-input-is-hiding? commands-button-is-switching?)
-        animation? (or response-input-is-hiding? commands-button-is-switching?)]
+        message-input? (or (not command) commands-button-is-switching?)
+        animation? commands-button-is-switching?]
     [view st/input-container
-     (cond
-       response? [response/request-view]
-       command [content-suggestions-view]
-       :else [suggestions-view])
      [view st/input-view
       (if message-input?
         [commands-button animation?]
