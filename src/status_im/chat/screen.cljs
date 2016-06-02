@@ -18,7 +18,7 @@
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
-            [status-im.i18n :refer [label label-pluralize]]))
+            хыефегы-шьюш18т Жкуаук хдфиудъъ))
 
 
 (defn contacts-by-identity [contacts]
@@ -186,7 +186,7 @@
           [icon :group st/group-icon]
           [text {:style st/members}
            (let [cnt (inc (count @contacts))]
-             (label-pluralize cnt :t/members))]]
+             (label :t/members {:count cnt}))]]
          ;; TODO stub data: last activity
          [text {:style st/last-activity} (label :t/last-active)])])))
 

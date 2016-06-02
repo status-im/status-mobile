@@ -8,11 +8,10 @@
 
 (set! (.-translations js.I18n) (clj->js {:en en/translations}))
 
-(defn label [path & options]
-  (.t js/I18n (name path) (clj->js options)))
-
-(defn label-pluralize [count path & options]
-  (.p js/I18n count (name path) (clj->js options)))
+(defn label
+  ([path] (label path {}))
+  ([path options]
+   (.t js/I18n (name path) (clj->js options))))
 
 (comment
   (defn deep-merge [& maps]
