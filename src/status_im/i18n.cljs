@@ -11,8 +11,8 @@
 (defn label [path & options]
   (.t js/I18n (name path) (clj->js options)))
 
-(defn label-pluralize [count path]
-  (.p js/I18n count (name path)))
+(defn label-pluralize [count path & options]
+  (.p js/I18n count (name path) (clj->js options)))
 
 (comment
   (defn deep-merge [& maps]

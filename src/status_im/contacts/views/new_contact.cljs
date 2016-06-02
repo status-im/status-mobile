@@ -23,11 +23,11 @@
                                                  toolbar-background2
                                                  form-text-input]]
             [status-im.i18n :refer [label]]
-            [status-im.contacts.styles :as st]))
+            [status-im.contacts.styles :as st]
+            [status-im.utils.logging :as log]))
 
 (defn import-qr-button []
-  [touchable-highlight {:on-press #(dispatch [:navigate-to
-                                              :qr-scanner])}
+  [touchable-highlight {:on-press #(dispatch [:scan-qr-code :new-contact])}
    [view st/import-qr-button
     [view st/import-qr-button-content
      [icon {:name :qr-scanner
@@ -55,7 +55,10 @@
     address])
 
 (defview new-contact []
-  [{:keys [name address whisper-identity phone-number] :as new-contact} [:get :new-contact]]
+  [{:keys [name address whisper-identity phone-number] :as new-contact} [:get :new-contact]
+   qr-contact [:get-in [:qr-codes :new-contact]]]
+  (let [_ (log/debug qr-contact)
+        _ (when qr-contact (dispatch [:set-new-contact-from-qr :new-contact]))]
   [drawer-view
    [view st/contact-form-container
     [toolbar {:title            (label :t/new-contact)
@@ -67,4 +70,4 @@
     [contact-name-input name]
     [contact-address-input address]
     [text (str "Whisper identity: " whisper-identity)]
-    ]])
+    ]]))
