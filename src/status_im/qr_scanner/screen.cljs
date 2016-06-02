@@ -21,15 +21,12 @@
             :background-color toolbar-background2}])
 
 (defview qr-scanner []
-  []
+  [identifier [:get-in [:qr-codes :identifier]]]
   [view st/barcode-scanner-container
    [qr-scanner-toolbar]
    [camera {:onBarCodeRead (fn [data]
-                             (let [{:keys [name address whisper-identity phone-number] :as contact} (json->clj (.-data data))]
-                               (when name (dispatch [:set-in [:new-contact :name] name]))
-                               (when address (dispatch [:set-in [:new-contact :address] address]))
-                               (when whisper-identity (dispatch [:set-in [:new-contact :whisper-identity] whisper-identity]))
-                               (when phone-number (dispatch [:set-in [:new-contact :phone-number] phone-number]))
+                             (let [data (json->clj (.-data data))]
+                               (dispatch [:set-in [:qr-codes (or identifier :current)] data])
                                (dispatch [:navigate-back])))
             :style st/barcode-scanner}]
    [view st/rectangle-container

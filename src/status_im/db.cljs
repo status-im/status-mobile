@@ -29,6 +29,7 @@
              :email                  "myemail@gmail.com"
              :status                 "Hi, this is my status"
              :current-tag            nil
+             :qr-codes               {:identifier nil}
              :new-contact            {:name             ""
                                       :address          ""
                                       :whisper-identity ""
