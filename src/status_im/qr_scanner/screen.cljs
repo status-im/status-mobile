@@ -2,28 +2,25 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
-                                                icon
-                                                text
-                                                image
-                                                touchable-highlight]]
+                                                image]]
             [status-im.components.camera :refer [camera]]
-            [status-im.components.styles :refer [toolbar-background2]]
+            [status-im.components.styles :refer [toolbar-background1
+                                                 search-icon]]
             [status-im.components.toolbar :refer [toolbar]]
-            [status-im.components.icons.ionicons :refer [icon]]
-            [status-im.components.styles :refer [color-blue]]
-            [status-im.i18n :refer [label]]
             [status-im.qr-scanner.styles :as st]
-            [status-im.utils.types :refer [json->clj]]
-            [status-im.utils.logging :as log]))
+            [status-im.utils.types :refer [json->clj]]))
 
-(defn qr-scanner-toolbar []
-  [toolbar {:title            (label :t/new-contact)
-            :background-color toolbar-background2}])
+(defn qr-scanner-toolbar [title]
+  [toolbar {:title            title
+            :background-color toolbar-background1
+            :action           {:image   {:source {:uri :icon_lock_white}
+                                         :style  search-icon}
+                               :handler #()}}])
 
 (defview qr-scanner []
   [identifier [:get :current-qr-context]]
   [view st/barcode-scanner-container
-   [qr-scanner-toolbar]
+   [qr-scanner-toolbar (:toolbar-title identifier)]
    [camera {;:on-bar-code-read #(js/alert "ok")
             :onBarCodeRead #(let [data (json->clj (.-data %))]
                              (dispatch [:set-qr-code identifier data]))
