@@ -4,12 +4,14 @@
                                                color-white
                                                color-blue]]))
 
+(def input-height 56)
+
 (def input-container
   {:flexDirection :column})
 
 (def input-view
   {:flexDirection   :row
-   :height          56
+   :height          input-height
    :backgroundColor color-white})
 
 (def message-input-button-touchable

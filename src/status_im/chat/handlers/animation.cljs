@@ -4,9 +4,12 @@
             [status-im.components.drag-drop :as drag]
             [status-im.models.commands :as commands]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
+            [status-im.chat.styles.plain-input :refer [input-height]]
             [status-im.chat.styles.response :refer [request-info-height response-height-normal]]
             [status-im.chat.styles.response-suggestions :as response-suggestions-styles]
             [status-im.constants :refer [response-input-hiding-duration]]))
+
+(def zero-height input-height)
 
 (register-handler :finish-animate-cancel-command
   (fn [db _]
@@ -17,18 +20,11 @@
                                         message-input-offset
                                         messages-offset-anim-value]} :animations}
                                [_ on-animation-stop]]
-  (let [height-to-value 1
-        delta 1]
-    (anim/add-listener response-height-anim-value
-                       (fn [val]
-                         (when (<= (- height-to-value delta) (anim/value val) (+ height-to-value delta))
-                           (anim/remove-all-listeners response-height-anim-value)
-                           (dispatch [:finish-animate-cancel-command])
-                           (on-animation-stop))))
-    (anim/start (anim/spring response-height-anim-value {:toValue  height-to-value
-                                                         :velocity 1
-                                                         :tension  1
-                                                         :friction 5}))
+  (let [height-to-value zero-height]
+    (anim/start (anim/spring response-height-anim-value {:toValue  height-to-value})
+                (fn []
+                  (dispatch [:finish-animate-cancel-command])
+                  (on-animation-stop)))
     (anim/start (anim/timing message-input-buttons-scale {:toValue  1
                                                           :duration response-input-hiding-duration}))
     (anim/start (anim/timing message-input-offset {:toValue  0
@@ -57,16 +53,15 @@
 (defn animate-response-resize! [{{height-anim-value :response-height-anim-value
                                   from              :response-height
                                   to                :response-height-fixed} :animations}]
-  (let [delta 5]
-    (anim/remove-all-listeners height-anim-value)
-    (anim/set-value height-anim-value from)
-    (anim/add-listener height-anim-value
-                       (fn [val]
-                         (dispatch [:set-response-height (anim/value val)])
-                         (when (<= (- to delta) (anim/value val) (+ to delta))
-                           (anim/remove-all-listeners height-anim-value)
-                           (dispatch [:finish-animate-response-resize]))))
-    (anim/start (anim/spring height-anim-value {:toValue to}))))
+  (anim/remove-all-listeners height-anim-value)
+  (anim/set-value height-anim-value from)
+  (anim/add-listener height-anim-value
+                     (fn [val]
+                       (dispatch [:set-response-height (anim/value val)])))
+  (anim/start (anim/spring height-anim-value {:toValue to})
+              (fn []
+                (anim/remove-all-listeners height-anim-value)
+                (dispatch [:finish-animate-response-resize]))))
 
 (register-handler :animate-response-resize
   (after animate-response-resize!)
@@ -81,7 +76,8 @@
                                               response-suggestions-styles/header-height
                                               response-suggestions-styles/suggestion-height)
                                             suggestions))]
-    (min response-height-normal (+ suggestions-height request-info-height))))
+    (+ zero-height
+       (min response-height-normal (+ suggestions-height request-info-height)))))
 
 (defn update-response-height [db]
   (assoc-in db [:animations :response-height-fixed] (get-response-height db)))
@@ -93,15 +89,10 @@
 (defn animate-show-response! [{{scale-anim-value           :message-input-buttons-scale
                                 input-offset-anim-value    :message-input-offset
                                 messages-offset-anim-value :messages-offset-anim-value} :animations}]
-  (let [to-value 0.1
-        delta 0.02]
-    (anim/add-listener scale-anim-value
-                       (fn [val]
-                         (when (<= (- to-value delta) (anim/value val) (+ to-value delta))
-                           (anim/remove-all-listeners scale-anim-value)
-                           (dispatch [:finish-show-response!]))))
+  (let [to-value 0.1]
     (anim/start (anim/timing scale-anim-value {:toValue  to-value
-                                               :duration response-input-hiding-duration}))
+                                               :duration response-input-hiding-duration})
+                #(dispatch [:finish-show-response!]))
     (anim/start (anim/timing input-offset-anim-value {:toValue  -40
                                                       :duration response-input-hiding-duration}))
     (anim/start (anim/spring messages-offset-anim-value {:toValue request-info-height}))))
@@ -112,7 +103,7 @@
     (dispatch [:animate-response-resize])
     (-> db
         (assoc-in [:animations :commands-input-is-switching?] true)
-        (assoc-in [:animations :response-height] 0)
+        (assoc-in [:animations :response-height] zero-height)
         (update-response-height))))
 
 (register-handler :set-response-max-height
@@ -131,8 +122,8 @@
           max-height (get-in db [:animations :response-height-max])
           delta (/ normal-height 2)
           new-fixed (cond
-                      (<= current delta) request-info-height
-                      (<= current (+ normal-height delta)) (get-response-height db)
+                      (<= current (+ zero-height delta)) (+ zero-height request-info-height)
+                      (<= current (+ zero-height normal-height delta)) (get-response-height db)
                       :else max-height)]
       (dispatch [:animate-response-resize])
       (assoc-in db [:animations :response-height-fixed] new-fixed))))

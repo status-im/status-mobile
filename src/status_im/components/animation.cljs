@@ -1,8 +1,9 @@
 (ns status-im.components.animation
   (:require [status-im.components.react :refer [animated]]))
 
-(defn start [anim]
-  (.start anim))
+(defn start
+  ([anim] (.start anim))
+  ([anim callback] (.start anim callback)))
 
 (defn timing [anim-value config]
   (.timing animated anim-value (clj->js config)))
