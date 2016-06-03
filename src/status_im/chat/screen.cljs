@@ -20,7 +20,7 @@
             [status-im.chat.views.message :refer [chat-message]]
             [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
             [status-im.chat.views.suggestions :refer [suggestions-view]]
-            [status-im.chat.views.response :refer [request-view]]
+            [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]))
 
 
@@ -243,7 +243,7 @@
    [messages-view group-chat]
    (when group-chat [typing-all])
    (cond
-     (and command to-msg-id) [request-view]
+     (and command to-msg-id) [response-view]
      command [content-suggestions-view]
      :else [suggestions-view])
    [chat-message-new]
