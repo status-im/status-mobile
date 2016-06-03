@@ -2,17 +2,13 @@
   (:require [re-frame.core :refer [register-handler enrich after debug dispatch]]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
-            [status-im.components.drag-drop :as drag]
-            [status-im.components.animation :as anim]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.styles.response :refer [request-info-height response-height-normal]]
-            [status-im.chat.styles.response-suggestions :as response-suggestions-styles]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.api :as api]
             [status-im.models.messages :as messages]
             [status-im.constants :refer [text-content-type
-                                         content-type-command
-                                         response-input-hiding-duration]]
+                                         content-type-command]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.models.chats :as chats]
@@ -22,7 +18,10 @@
             [status-im.handlers.server :as server]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.utils.phone-number :refer [format-phone-number]]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im.chat.handlers.animation :refer [update-response-height
+                                                       get-response-height
+                                                       init-response-dragging]]))
 
 (def delta 1)
 
@@ -46,84 +45,25 @@
 (register-handler :cancel-command
   (fn [{:keys [current-chat-id] :as db} _]
     (-> db
-        (assoc-in [:animations :commands-input-is-switching?] false)
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
-(defn animate-cancel-command! [{{:keys [response-height-anim-value
-                                        message-input-buttons-scale
-                                        message-input-offset
-                                        messages-offset-anim-value]} :animations}]
-  (let [height-to-value 1]
-    (anim/add-listener response-height-anim-value
-                       (fn [val]
-                         (when (<= (- height-to-value delta) (anim/value val) (+ height-to-value delta))
-                           (anim/remove-all-listeners response-height-anim-value)
-                           (dispatch [:cancel-command]))))
-    (anim/start (anim/spring response-height-anim-value {:toValue  height-to-value
-                                                         :velocity 1
-                                                         :tension  1
-                                                         :friction 5}))
-    (anim/start (anim/timing message-input-buttons-scale {:toValue  1
-                                                          :duration response-input-hiding-duration}))
-    (anim/start (anim/timing message-input-offset {:toValue  0
-                                                   :duration response-input-hiding-duration}))
-    (anim/start (anim/spring messages-offset-anim-value {:toValue 0}))))
-
 (register-handler :start-cancel-command
-  (after animate-cancel-command!)
   (fn [db _]
-    (let [hiding? (get-in db [:animations :commands-input-is-switching?])]
-      (if-not hiding?
-        (assoc-in db [:animations :commands-input-is-switching?] true)
-        db))))
-
-(register-handler :finish-animate-response-resize
-  (fn [db _]
-    (let [fixed (get-in db [:animations :response-height-fixed])]
-      (-> db
-          (assoc-in [:animations :response-height] fixed)
-          (assoc-in [:animations :response-resize?] false)))))
-
-(defn animate-response-resize! [{{height-anim-value :response-height-anim-value
-                                      from              :response-height
-                                      to                :response-height-fixed} :animations}]
-  (let [delta 5]
-    (anim/set-value height-anim-value from)
-    (anim/add-listener height-anim-value
-                       (fn [val]
-                         (when (<= (- to delta) (anim/value val) (+ to delta))
-                           (anim/remove-all-listeners height-anim-value)
-                           (dispatch [:finish-animate-response-resize]))))
-    (anim/start (anim/spring height-anim-value {:toValue to}))))
-
-(register-handler :animate-response-resize
-  (after animate-response-resize!)
-  (fn [db _]
-    (assoc-in db [:animations :response-resize?] true)))
-
-(defn get-response-height [db]
-  (when (commands/get-chat-command-to-msg-id db)
-    (let [command (commands/get-chat-command db)
-          text (commands/get-chat-command-content db)
-          suggestions (get-content-suggestions command text)
-          suggestions-height (reduce + 0 (map #(if (:header %)
-                                                response-suggestions-styles/header-height
-                                                response-suggestions-styles/suggestion-height)
-                                              suggestions))]
-      (min response-height-normal (+ suggestions-height request-info-height)))))
-
-(defn update-response-height [db]
-  (when (commands/get-chat-command-to-msg-id db)
-    (assoc-in db [:animations :response-height-fixed] (get-response-height db))))
+    (if (commands/get-chat-command-to-msg-id db)
+      (dispatch [:animate-cancel-command #(dispatch [:cancel-command])])
+      (dispatch [:cancel-command #(dispatch [:cancel-command])]))
+    db))
 
 (register-handler :set-chat-command-content
   (fn [{:keys [current-chat-id] :as db} [_ content]]
-    (dispatch [:animate-response-resize])
-    (-> db
-        (commands/set-chat-command-content content)
-        (assoc-in [:chats current-chat-id :input-text] nil)
-        (update-response-height))))
+    (as-> db db
+          (commands/set-chat-command-content db content)
+          (assoc-in db [:chats current-chat-id :input-text] nil)
+          (if (commands/get-chat-command-to-msg-id db)
+            (do (dispatch [:animate-response-resize])
+                (update-response-height db))
+            db))))
 
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]
@@ -131,7 +71,7 @@
 
 (register-handler :stage-command
   (fn [{:keys [current-chat-id] :as db} _]
-    (let [db           (update-input-text db nil)
+    (let [db (update-input-text db nil)
           {:keys [command content]}
           (get-in db [:chats current-chat-id :command-input])
           command-info {:command command
@@ -139,37 +79,10 @@
                         :handler (:handler command)}]
       (commands/stage-command db command-info))))
 
-(register-handler :finish-show-response!
-  (fn [db _]
-    (assoc-in db [:animations :commands-input-is-switching?] false)))
-
-(defn animate-show-response! [{{scale-anim-value           :message-input-buttons-scale
-                                input-offset-anim-value    :message-input-offset
-                                messages-offset-anim-value :messages-offset-anim-value} :animations}]
-  (let [to-value 0.1
-        delta 0.02]
-    (anim/add-listener scale-anim-value
-                       (fn [val]
-                         (when (<= (- to-value delta) (anim/value val) (+ to-value delta))
-                           (anim/remove-all-listeners scale-anim-value)
-                           (dispatch [:finish-show-response!]))))
-    (anim/start (anim/timing scale-anim-value {:toValue  to-value
-                                               :duration response-input-hiding-duration}))
-    (anim/start (anim/timing input-offset-anim-value {:toValue  -40
-                                                      :duration response-input-hiding-duration}))
-    (anim/start (anim/spring messages-offset-anim-value {:toValue request-info-height}))))
-
-(defn set-response-chat-command [db [_ to-msg-id command-key]]
-  (dispatch [:animate-response-resize])
-  (-> db
-      (commands/set-response-chat-command to-msg-id command-key)
-      (assoc-in [:animations :commands-input-is-switching?] true)
-      (assoc-in [:animations :response-height] 0)
-      (update-response-height)))
-
 (register-handler :set-response-chat-command
-  (after animate-show-response!)
-  set-response-chat-command)
+  (fn [db [_ to-msg-id command-key]]
+    (dispatch [:animate-show-response])
+    (commands/set-response-chat-command db to-msg-id command-key)))
 
 (defn update-text
   [db [_ text]]
@@ -356,38 +269,6 @@
    (->> (:current-chat-id db)
         messages/get-messages
         (assoc db :messages))))
-
-(register-handler :set-response-max-height
-  (fn [db [_ height]]
-    (assoc-in db [:animations :response-height-max] height)))
-
-(register-handler :on-drag-response
-  (fn [db [_ dy]]
-    (let [fixed (get-in db [:animations :response-height-fixed])]
-      (assoc-in db [:animations :response-height] (- fixed dy)))))
-
-(register-handler :fix-response-height
-  (fn [db _]
-    (let [current (get-in db [:animations :response-height])
-          normal-height response-height-normal
-          max-height (get-in db [:animations :response-height-max])
-          delta (/ normal-height 2)
-          new-fixed (cond
-                      (<= current delta) request-info-height
-                      (<= current (+ normal-height delta)) (get-response-height db)
-                      :else max-height)]
-      (dispatch [:animate-response-resize])
-      (assoc-in db [:animations :response-height-fixed] new-fixed))))
-
-(defn create-response-pan-responder []
-  (drag/create-pan-responder
-    {:on-move    (fn [e gesture]
-                   (dispatch [:on-drag-response (.-dy gesture)]))
-     :on-release (fn [e gesture]
-                   (dispatch [:fix-response-height]))}))
-
-(defn init-response-dragging [db]
-  (assoc-in db [:animations :response-pan-responder] (create-response-pan-responder)))
 
 (defn init-chat
   ([db] (init-chat db nil))

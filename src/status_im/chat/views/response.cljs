@@ -41,9 +41,9 @@
       [icon :close-white st/cancel-icon]]]]])
 
 (defview request-view []
-  [height [:get-in [:animations :response-height-anim-value]]
-   pan-responder [:get-in [:animations :response-pan-responder]]
+  [pan-responder [:get-in [:animations :response-pan-responder]]
    response-height [:get-in [:animations :response-height]]
+   anim-height [:get-in [:animations :response-height-anim-value]]
    commands-input-is-switching? [:get-in [:animations :commands-input-is-switching?]]
    response-resize? [:get-in [:animations :response-resize?]]]
   [view {:style st/container
@@ -52,7 +52,7 @@
                        (dispatch [:set-response-max-height height])))}
    [animated-view (merge (drag/pan-handlers pan-responder)
                          {:style (st/request-view (if (or commands-input-is-switching? response-resize?)
-                                                    height
+                                                    anim-height
                                                     response-height))})
     [request-info]
     [response-suggestions-view]]])

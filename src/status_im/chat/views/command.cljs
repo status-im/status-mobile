@@ -8,7 +8,7 @@
             [status-im.chat.styles.input :as st]))
 
 (defn cancel-command-input []
-  (dispatch [:cancel-command]))
+  (dispatch [:start-cancel-command]))
 
 (defn set-input-message [message]
   (dispatch [:set-chat-command-content message]))
