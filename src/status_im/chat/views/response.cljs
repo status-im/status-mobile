@@ -40,19 +40,19 @@
      [view st/cancel-container
       [icon :close-white st/cancel-icon]]]]])
 
-(defview request-view []
+(defview response-view []
   [pan-responder [:get-in [:animations :response-pan-responder]]
    response-height [:get-in [:animations :response-height]]
    anim-height [:get-in [:animations :response-height-anim-value]]
    commands-input-is-switching? [:get-in [:animations :commands-input-is-switching?]]
    response-resize? [:get-in [:animations :response-resize?]]]
-  [view {:style st/container
+  [view {:style    st/container
          :onLayout (fn [event]
                      (let [height (.. event -nativeEvent -layout -height)]
                        (dispatch [:set-response-max-height height])))}
    [animated-view (merge (drag/pan-handlers pan-responder)
-                         {:style (st/request-view (if (or commands-input-is-switching? response-resize?)
-                                                    anim-height
-                                                    response-height))})
+                         {:style (st/response-view (if (or commands-input-is-switching? response-resize?)
+                                                     anim-height
+                                                     response-height))})
     [request-info]
     [response-suggestions-view]]])

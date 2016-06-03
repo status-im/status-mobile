@@ -61,7 +61,7 @@
    :backgroundColor :transparent
    :elevation       2})
 
-(defn request-view [height]
+(defn response-view [height]
   {:flexDirection   :column
    :height          height
    :backgroundColor color-white})
