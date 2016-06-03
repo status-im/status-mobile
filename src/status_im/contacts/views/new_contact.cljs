@@ -4,31 +4,21 @@
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
-                                                image
-                                                touchable-highlight
-                                                list-view
-                                                list-item]]
-            [status-im.components.action-button :refer [action-button
-                                                        action-button-item]]
-            [status-im.components.styles :refer [toolbar-background2]]
+                                                touchable-highlight]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
             [status-im.components.icons.ionicons :refer [icon]]
-            [status-im.components.styles :refer [color-blue
-                                                 color-purple
-                                                 hamburger-icon
+            [status-im.components.styles :refer [color-purple
                                                  search-icon
-                                                 create-icon
                                                  import-qr-icon
-                                                 toolbar-background2
+                                                 toolbar-background1
                                                  form-text-input]]
             [status-im.i18n :refer [label]]
-            [status-im.contacts.styles :as st]
-            [status-im.utils.logging :as log]))
+            [status-im.contacts.styles :as st]))
 
 (defn import-qr-button []
   [touchable-highlight
-   {:on-press #(dispatch [:scan-qr-code :new-contact :set-new-contact-from-qr])}
+   {:on-press #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])}
    [view st/import-qr-button
     [view st/import-qr-button-content
      [icon {:name  :qr-scanner
@@ -59,7 +49,7 @@
   [drawer-view
    [view st/contact-form-container
     [toolbar {:title            (label :t/new-contact)
-              :background-color toolbar-background2
+              :background-color toolbar-background1
               :action           {:image   {:source {:uri :icon_add_gray}
                                            :style  search-icon}
                                  :handler #(dispatch [:add-new-contact new-contact])}}]
