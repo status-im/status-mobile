@@ -5,6 +5,11 @@
    [natal-shell.toast-android :as toast])
   (:require [status-im.constants :as const]))
 
+(defn require [module]
+  (if (exists? js/window)
+    (js/require module)
+    #js {}))
+
 (defn log [obj]
   (.log js/console obj))
 

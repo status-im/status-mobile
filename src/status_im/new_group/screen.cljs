@@ -14,7 +14,8 @@
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.new-group.views.contact :refer [new-group-contact]]
-            [status-im.new-group.styles :as st]))
+            [status-im.new-group.styles :as st]
+            [status-im.i18n :refer [label]]))
 
 
 (defview new-group-toolbar []
@@ -23,7 +24,7 @@
    valid? [:new-chat-name-valid?]]
   (let [create-btn-enabled? (and valid? (not creation-disabled?))]
     [toolbar
-     {:title  "New group chat"
+     {:title  (label :t/new-group-chat)
       :action {:image   {:source res/v                        ;; {:uri "icon_search"}
                          :style  (st/toolbar-icon create-btn-enabled?)}
                :handler (when create-btn-enabled?
@@ -37,7 +38,7 @@
     {:underlineColorAndroid color-purple
      :style                 st/group-name-input
      :autoFocus             true
-     :placeholder           "Group Name"
+     :placeholder           (label :t/group-name)
      :onChangeText          #(dispatch [:set :new-chat-name %])}
     group-name]
    (when (pos? (count validation-messages))
@@ -48,13 +49,13 @@
   [view st/new-group-container
    [new-group-toolbar]
    [view st/chat-name-container
-    [text {:style st/chat-name-text} "Chat name"]
+    [text {:style st/chat-name-text} (label :t/chat-name)]
     [group-name-input]
-    [text {:style st/members-text} "Members"]
+    [text {:style st/members-text} (label :t/members-title)]
     [touchable-highlight {:on-press (fn [])}
      [view st/add-container
       [icon :add_gray st/add-icon]
-      [text {:style st/add-text} "Add members"]]]
+      [text {:style st/add-text} (label :t/add-members)]]]
     [list-view
      {:dataSource (to-datasource contacts)
       :renderRow  (fn [row _ _]

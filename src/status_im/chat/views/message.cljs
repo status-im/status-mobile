@@ -72,13 +72,18 @@
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (:command command)]))
 
+(defn label [{:keys [command]}]
+  (->> (name command)
+       (str "request-")))
+
 (defn message-content-command-request
   [{:keys [msg-id content from incoming-group]}]
   (let [commands-atom (subscribe [:get-commands])]
     (fn [{:keys [msg-id content from incoming-group]}]
       (let [commands @commands-atom
             {:keys [command content]} (parse-command-request commands content)]
-        [touchable-highlight {:onPress #(set-chat-command msg-id command)}
+        [touchable-highlight {:onPress             #(set-chat-command msg-id command)
+                              :accessibility-label (label command)}
          [view st/comand-request-view
           [view st/command-request-message-view
            (when incoming-group
