@@ -33,14 +33,13 @@
              :current-tag            nil
              :disable-group-creation false
              :animations             {;; mutable data
-                                      :response-height              nil
-                                      :response-height-fixed        nil
+                                      :to-response-height           nil
+                                      :response-height-current      nil
                                       :response-pan-responder       nil
-                                      :message-input-offset         (anim/create-value 0)
-                                      :message-input-buttons-scale  (anim/create-value 1)
+                                      :message-input-offset         0
+                                      :message-input-buttons-scale  1
                                       :commands-input-is-switching? false
-                                      :response-height-anim-value   (anim/create-value 0)
-                                      :messages-offset-anim-value   (anim/create-value 0)
+                                      :messages-offset              0
                                       :response-resize?             false}})
 
 (def protocol-initialized-path [:protocol-initialized])
