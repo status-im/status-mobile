@@ -51,7 +51,7 @@
 (register-handler :start-cancel-command
   (fn [db _]
     (if (commands/get-chat-command-to-msg-id db)
-      (dispatch [:animate-cancel-command #(dispatch [:cancel-command])])
+      (dispatch [:animate-cancel-command])
       (dispatch [:cancel-command #(dispatch [:cancel-command])]))
     db))
 
