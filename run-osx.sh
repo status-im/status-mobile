@@ -17,11 +17,13 @@ function tab () {
     fi
 
     osascript &>/dev/null <<EOF
-        tell application "iTerm"
-            tell current terminal
-                launch session "Default Session"
-                tell the last session
-                    write text "cd \"$cdto\"$cmd"
+        tell application "iTerm2"
+            tell current window
+                set newTab to (create tab with default profile)
+                tell newTab
+                    tell current session
+                        write text "cd \"$cdto\"$cmd"
+                    end tell
                 end tell
             end tell
         end tell
@@ -59,3 +61,10 @@ sleep 10s
 adb reverse tcp:8081 tcp:8081 && adb reverse tcp:3449 tcp:3449
 
 react-native run-android
+
+if [ ! -z $2 ]
+then
+ tab "appium"
+ lein test
+ lein doo node test once
+fi

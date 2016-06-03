@@ -2,15 +2,16 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                              text
-                                              image
-                                              icon
-                                              scroll-view
-                                              touchable-highlight
-                                              touchable-opacity]]
+                                                text
+                                                image
+                                                icon
+                                                scroll-view
+                                                touchable-highlight
+                                                touchable-opacity]]
             [status-im.components.chat-icon.screen :refer [profile-icon
-                                                         my-profile-icon]]
-            [status-im.profile.styles :as st]))
+                                                           my-profile-icon]]
+            [status-im.profile.styles :as st]
+            [status-im.i18n :refer [label]]))
 
 (defn profile-property-view [{:keys [name value]}]
   [view st/profile-property-view-container
@@ -34,36 +35,36 @@
      [profile-icon]]
     [text {:style st/user-name} name]
     ;; TODO stub data
-    [text {:style st/status} "!not implemented"]
+    [text {:style st/status} (label :t/not-implemented)]
     [view st/btns-container
      [touchable-highlight {:onPress #(message-user whisper-identity)}
       [view st/message-btn
-       [text {:style st/message-btn-text} "Message"]]]
+       [text {:style st/message-btn-text} (label :t/message)]]]
      [touchable-highlight {:onPress (fn []
                                       ;; TODO not implemented
                                       )}
       [view st/more-btn
        [icon :more_vertical_blue st/more-btn-image]]]]]
    [view st/profile-properties-container
-    [profile-property-view {:name  "Username"
+    [profile-property-view {:name  (label :t/username)
                             :value name}]
-    [profile-property-view {:name  "Phone number"
+    [profile-property-view {:name  (label :t/phone-number)
                             :value phone-number}]
     ;; TODO stub data
-    [profile-property-view {:name  "Email"
-                            :value "!not implemented"}]
+    [profile-property-view {:name  (label :t/email)
+                            :value (label :t/not-implemented)}]
     [view st/report-user-container
      [touchable-highlight {:on-press (fn []
                                        ;; TODO not implemented
                                        )}
-      [text {:style st/report-user-text} "REPORT USER"]]]]])
+      [text {:style st/report-user-text} (label :t/report-user)]]]]])
 
 (defview my-profile []
-  [username     [:get :username]
-   photo-path   [:get :photo-path]
+  [username [:get :username]
+   photo-path [:get :photo-path]
    phone-number [:get :phone-number]
-   email        [:get :email]
-   status       [:get :status]]
+   email [:get :email]
+   status [:get :status]]
   [scroll-view {:style st/profile}
    [touchable-highlight {:style    st/back-btn-touchable
                          :on-press #(dispatch [:navigate-back])}
@@ -81,9 +82,9 @@
     [text {:style st/user-name} username]
     [text {:style st/status} status]]
    [view st/profile-properties-container
-    [profile-property-view {:name  "Username"
+    [profile-property-view {:name  (label :t/username)
                             :value username}]
-    [profile-property-view {:name  "Phone number"
+    [profile-property-view {:name  (label :t/phone-number)
                             :value phone-number}]
-    [profile-property-view {:name  "Email"
+    [profile-property-view {:name  (label :t/email)
                             :value email}]]])

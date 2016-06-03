@@ -90,6 +90,8 @@
                                                         input-message
                                                         dismiss-keyboard)
                                               (command/try-send input-command validator))}
+                          (when command
+                            {:accessibility-label :command-input})
                           input-options)
         (if message-input?
           input-message
@@ -102,12 +104,14 @@
           [touchable-highlight {:disabled animation?
                                 :on-press #(try-send staged-commands
                                                      input-message
-                                                     dismiss-keyboard)}
+                                                     dismiss-keyboard)
+                                :accessibility-label :send-message}
            [view st/send-container
             [icon :send st/send-icon]]])
         (if (command/valid? input-command validator)
           [touchable-highlight {:disabled animation?
-                                :on-press command/send-command}
+                                :on-press command/send-command
+                                :accessibility-label :stage-command}
            [view st/send-container [icon :send st/send-icon]]]
           (when-not response?
             [touchable-highlight {:disabled animation?

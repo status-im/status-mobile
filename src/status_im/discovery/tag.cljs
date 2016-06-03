@@ -1,7 +1,6 @@
 (ns status-im.discovery.tag
   (:require
     [re-frame.core :refer [subscribe dispatch]]
-    [status-im.utils.logging :as log]
     [status-im.utils.listview :refer [to-datasource]]
     [status-im.components.react :refer [view text list-view list-item]]
     [status-im.components.toolbar :refer [toolbar]]
@@ -23,7 +22,6 @@
 (defn discovery-tag []
   (let [tag         (subscribe [:get :current-tag])
         discoveries (subscribe [:get-discoveries-by-tag])]
-    (log/debug "Got discoveries: " @discoveries)
     (fn []
       (let [items      @discoveries
             datasource (to-datasource items)]
@@ -31,7 +29,6 @@
          [toolbar {:nav-action {:image   {:source {:uri :icon_back}
                                           :style  st/icon-back}
                                 :handler #(dispatch [:navigate-back])}
-                   :title      "Add Participants"
                    :custom-content    (title-content @tag)
                    :action     {:image   {:source {:uri :icon_search}
                                           :style  st/icon-search}
