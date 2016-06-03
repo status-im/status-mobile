@@ -5,7 +5,8 @@
                                                  text1-color
                                                  text2-color
                                                  chat-background
-                                                 color-black]]))
+                                                 color-black]]
+            [status-im.chat.styles.plain-input :refer [input-height]]))
 
 (def response-height-normal 211)
 (def request-info-height 61)
@@ -57,7 +58,7 @@
    :left            0
    :right           0
    :top             0
-   :bottom          56
+   :bottom          0
    :backgroundColor :transparent
    :elevation       2})
 
@@ -65,6 +66,9 @@
   {:flexDirection   :column
    :height          height
    :backgroundColor color-white})
+
+(def input-placeholder
+  {:height input-height})
 
 (defn request-info [color]
   {:flexDirection   :column

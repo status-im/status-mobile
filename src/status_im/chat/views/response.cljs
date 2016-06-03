@@ -55,4 +55,5 @@
                                                      anim-height
                                                      response-height))})
     [request-info]
-    [response-suggestions-view]]])
+    [response-suggestions-view]
+    [view st/input-placeholder]]])
