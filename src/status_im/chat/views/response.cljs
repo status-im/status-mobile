@@ -33,18 +33,28 @@
     ;; TODO stub data: request message info
     "By ???, MMM 1st at HH:mm"]])
 
-(defview request-info []
-  [command [:get-chat-command]]
-  [view (st/request-info (:color command))
-   [drag-icon]
-   [view st/inner-container
-    [command-icon nil]
-    [info-container command]
-    [touchable-highlight {:on-press #(dispatch [:start-cancel-command])}
-     [view st/cancel-container
-      [icon :close-white st/cancel-icon]]]]])
+(defn create-response-pan-responder []
+  (drag/create-pan-responder
+    {:on-move    (fn [e gesture]
+                   (dispatch [:on-drag-response (.-dy gesture)]))
+     :on-release (fn [e gesture]
+                   (dispatch [:fix-response-height]))}))
 
-(defn inner-container-animation-logic [{:keys [animation? to-value current-value val]}]
+(defn request-info []
+  (let [pan-responder (create-response-pan-responder)
+        command (subscribe [:get-chat-command])]
+    (fn []
+      [view (merge (drag/pan-handlers pan-responder)
+                   {:style (st/request-info (:color @command))})
+       [drag-icon]
+       [view st/inner-container
+        [command-icon nil]
+        [info-container @command]
+        [touchable-highlight {:on-press #(dispatch [:start-cancel-command])}
+         [view st/cancel-container
+          [icon :close-white st/cancel-icon]]]]])))
+
+(defn container-animation-logic [{:keys [animation? to-value current-value val]}]
   (fn [_]
     (if @animation?
       (let [to-value @to-value]
@@ -58,16 +68,8 @@
                           (dispatch [:cancel-command]))))))
       (anim/set-value val @current-value))))
 
-(defn create-response-pan-responder []
-  (drag/create-pan-responder
-    {:on-move    (fn [e gesture]
-                   (dispatch [:on-drag-response (.-dy gesture)]))
-     :on-release (fn [e gesture]
-                   (dispatch [:fix-response-height]))}))
-
-(defn inner-container [content]
-  (let [pan-responder (create-response-pan-responder)
-        commands-input-is-switching? (subscribe [:get-in [:animations :commands-input-is-switching?]])
+(defn container [& children]
+  (let [commands-input-is-switching? (subscribe [:get-in [:animations :commands-input-is-switching?]])
         response-resize? (subscribe [:get-in [:animations :response-resize?]])
         to-response-height (subscribe [:get-in [:animations :to-response-height]])
         cur-response-height (subscribe [:get-in [:animations :response-height-current]])
@@ -76,28 +78,22 @@
                  :to-value      to-response-height
                  :current-value cur-response-height
                  :val           response-height}
-        on-update (inner-container-animation-logic context)]
+        on-update (container-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
        :component-did-update
        on-update
        :reagent-render
-       (fn [content]
+       (fn [& children]
          @to-response-height
-         [animated-view (merge (drag/pan-handlers pan-responder)
-                               {:style (st/response-view (if (or @commands-input-is-switching? @response-resize?)
-                                                           response-height
-                                                           (or @cur-response-height 0)))})
-          content])})))
+         (into [animated-view {:style (st/response-view (if (or @commands-input-is-switching? @response-resize?)
+                                                          response-height
+                                                          (or @cur-response-height 0)))}]
+               children))})))
 
 (defn response-view []
-  [view {:style    st/container
-         :onLayout (fn [event]
-                     (let [height (.. event -nativeEvent -layout -height)]
-                       (dispatch [:set-response-max-height height])))}
-   [inner-container
-    [view
-     [request-info]
-     [response-suggestions-view]
-     [view st/input-placeholder]]]])
+  [container
+   [request-info]
+   [response-suggestions-view]
+   [view st/input-placeholder]])
