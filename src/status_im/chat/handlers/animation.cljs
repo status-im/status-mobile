@@ -3,7 +3,7 @@
             [re-frame.middleware :refer [path]]
             [status-im.models.commands :as commands]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
-            [status-im.chat.styles.plain-input :refer [input-height]]
+            [status-im.chat.styles.message-input :refer [input-height]]
             [status-im.chat.styles.response :refer [request-info-height response-height-normal]]
             [status-im.chat.styles.response-suggestions :as response-suggestions-styles]
             [status-im.constants :refer [response-input-hiding-duration]]))
