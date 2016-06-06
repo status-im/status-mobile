@@ -13,7 +13,7 @@
             [status-im.components.drag-drop :as drag]
             [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]
-            [status-im.chat.styles.plain-input :refer [input-height]]
+            [status-im.chat.styles.message-input :refer [input-height]]
             [status-im.components.animation :as anim]))
 
 (defn drag-icon []
