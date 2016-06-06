@@ -13,6 +13,9 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.centaurwarchief.smslistener.SmsListener;
 
+import android.os.Handler;
+import android.util.Log;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -22,6 +25,8 @@ import com.i18n.reactnativei18n.ReactNativeI18n;
 import io.realm.react.RealmReactPackage;
 
 public class MainActivity extends ReactActivity {
+
+    final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +48,19 @@ public class MainActivity extends ReactActivity {
                 getApplicationInfo().dataDir;
 
         // Launch!
+        final Runnable addPeer = new Runnable() {
+            public void run() {
+                Log.w("Geth", "adding peer");
+                Geth.run("--exec admin.addPeer(\"enode://e2f28126720452aa82f7d3083e49e6b3945502cb94d9750a15e27ee310eed6991618199f878e5fbc7dfa0e20f0af9554b41f491dc8f1dbae8f0f2d37a3a613aa@139.162.13.89:55555\") attach http://localhost:8545");
+            }
+        };
         new Thread(new Runnable() {
             public void run() {
-                Geth.run("--bootnodes enode://e2f28126720452aa82f7d3083e49e6b3945502cb94d9750a15e27ee310eed6991618199f878e5fbc7dfa0e20f0af9554b41f491dc8f1dbae8f0f2d37a3a613aa@139.162.13.89:30303 --shh --ipcdisable --nodiscover --rpc --rpcapi db,eth,net,web3,shh,admin --fast --datadir=" + dataFolder);
+                Geth.run("--shh --ipcdisable --nodiscover --rpc --rpcapi db,eth,net,web3,shh,admin --fast --datadir=" + dataFolder);
+
             }
         }).start();
+        handler.postDelayed(addPeer, 5000);
     }
 
     /**
