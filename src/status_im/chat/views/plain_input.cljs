@@ -146,19 +146,22 @@
                                               message-input? st/message-input
                                               response? st-response/command-input
                                               command st-command/command-input)
+                           :ref             (fn [input]
+                                              (dispatch [:set-message-input input]))
                            :autoFocus       false
                            :blurOnSubmit    dismiss-keyboard
                            :onChangeText    (fn [text]
-                                              ((if message-input?
-                                                 set-input-message
-                                                 command/set-input-message)
-                                                text))
-                           :editable        (not animation?)
-                           :onSubmitEditing #(if message-input?
-                                              (try-send staged-commands
-                                                        input-message
-                                                        dismiss-keyboard)
-                                              (command/try-send input-command validator))}
+                                              (when-not animation?
+                                                ((if message-input?
+                                                   set-input-message
+                                                   command/set-input-message)
+                                                  text)))
+                           :onSubmitEditing #(when-not animation?
+                                              (if message-input?
+                                                (try-send staged-commands
+                                                          input-message
+                                                          dismiss-keyboard)
+                                                (command/try-send input-command validator)))}
                           (when command
                             {:accessibility-label :command-input})
                           input-options)

@@ -15,16 +15,16 @@
     (assoc-in db [:animations :commands-input-is-switching?] false)))
 
 (register-handler :animate-cancel-command
-    (path :animations)
-    (fn [db _]
-      (if-not (:commands-input-is-switching? db)
-        (assoc db
-          :commands-input-is-switching? true
-          :message-input-buttons-scale 1
-          :message-input-offset 0
-          :to-response-height zero-height
-          :messages-offset 0)
-        db)))
+  (path :animations)
+  (fn [db _]
+    (if-not (:commands-input-is-switching? db)
+      (assoc db
+        :commands-input-is-switching? true
+        :message-input-buttons-scale 1
+        :message-input-offset 0
+        :to-response-height zero-height
+        :messages-offset 0)
+      db)))
 
 (register-handler :finish-animate-response-resize
   (fn [db _]
@@ -56,12 +56,13 @@
   (assoc-in db [:animations :to-response-height] (get-response-height db)))
 
 (register-handler :finish-show-response
+  (after #(dispatch [:prepare-message-input]))
   (fn [db _]
     (assoc-in db [:animations :commands-input-is-switching?] false)))
 
 (register-handler :animate-show-response
+  (after #(dispatch [:animate-response-resize]))
   (fn [db _]
-    (dispatch [:animate-response-resize])
     (-> db
         (assoc-in [:animations :commands-input-is-switching?] true)
         (assoc-in [:animations :response-height-current] zero-height)
