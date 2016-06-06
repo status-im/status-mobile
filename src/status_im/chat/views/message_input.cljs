@@ -53,7 +53,7 @@
          [animated-view {:style (st/message-input-container message-input-offset)}
           input])})))
 
-(defview message-input []
+(defview message-input [input-options validator]
    [input-message [:get-chat-input-text]
     command [:get-chat-command]
     to-msg-id [:get-chat-command-to-msg-id]
@@ -110,7 +110,7 @@
         (when (and command (not response?))
           [command/command-icon command response?]))
       [message-input-container
-       [message-input]]
+       [message-input input-options validator]]
       ;; TODO emoticons: not implemented
       (when message-input?
         [plain-message/smile-button])
