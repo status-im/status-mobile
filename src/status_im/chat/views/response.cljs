@@ -58,11 +58,17 @@
                           (dispatch [:cancel-command]))))))
       (anim/set-value val @current-value))))
 
+(defn create-response-pan-responder []
+  (drag/create-pan-responder
+    {:on-move    (fn [e gesture]
+                   (dispatch [:on-drag-response (.-dy gesture)]))
+     :on-release (fn [e gesture]
+                   (dispatch [:fix-response-height]))}))
+
 (defn inner-container [content]
-  (let [pan-responder (subscribe [:get-in [:animations :response-pan-responder]])
+  (let [pan-responder (create-response-pan-responder)
         commands-input-is-switching? (subscribe [:get-in [:animations :commands-input-is-switching?]])
         response-resize? (subscribe [:get-in [:animations :response-resize?]])
-
         to-response-height (subscribe [:get-in [:animations :to-response-height]])
         cur-response-height (subscribe [:get-in [:animations :response-height-current]])
         response-height (anim/create-value (or @cur-response-height 0))
@@ -79,7 +85,7 @@
        :reagent-render
        (fn [content]
          @to-response-height
-         [animated-view (merge (drag/pan-handlers @pan-responder)
+         [animated-view (merge (drag/pan-handlers pan-responder)
                                {:style (st/response-view (if (or @commands-input-is-switching? @response-resize?)
                                                            response-height
                                                            (or @cur-response-height 0)))})

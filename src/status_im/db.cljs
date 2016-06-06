@@ -35,11 +35,10 @@
              :animations             {;; mutable data
                                       :to-response-height           nil
                                       :response-height-current      nil
-                                      :response-pan-responder       nil
                                       :message-input-offset         0
                                       :message-input-buttons-scale  1
-                                      :commands-input-is-switching? false
                                       :messages-offset              0
+                                      :commands-input-is-switching? false
                                       :response-resize?             false}})
 
 (def protocol-initialized-path [:protocol-initialized])

@@ -20,8 +20,7 @@
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.datetime :as time]
             [status-im.chat.handlers.animation :refer [update-response-height
-                                                       get-response-height
-                                                       init-response-dragging]]))
+                                                       get-response-height]]))
 
 (def delta 1)
 
@@ -273,9 +272,7 @@
 (defn init-chat
   ([db] (init-chat db nil))
   ([{:keys [messages current-chat-id] :as db} _]
-   (-> db
-       (assoc-in [:chats current-chat-id :messages] messages)
-       (init-response-dragging))))
+   (assoc-in db [:chats current-chat-id :messages] messages)))
 
 (register-handler :init-chat
   (-> load-messages!
