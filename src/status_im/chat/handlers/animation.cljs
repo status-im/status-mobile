@@ -1,6 +1,5 @@
 (ns status-im.chat.handlers.animation
   (:require [re-frame.core :refer [register-handler after dispatch]]
-            [status-im.components.drag-drop :as drag]
             [status-im.models.commands :as commands]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.styles.plain-input :refer [input-height]]
@@ -91,13 +90,3 @@
                       :else max-height)]
       (dispatch [:animate-response-resize])
       (assoc-in db [:animations :to-response-height] new-fixed))))
-
-(defn create-response-pan-responder []
-  (drag/create-pan-responder
-    {:on-move    (fn [e gesture]
-                   (dispatch [:on-drag-response (.-dy gesture)]))
-     :on-release (fn [e gesture]
-                   (dispatch [:fix-response-height]))}))
-
-(defn init-response-dragging [db]
-  (assoc-in db [:animations :response-pan-responder] (create-response-pan-responder)))
