@@ -78,6 +78,23 @@
                         :handler (:handler command)}]
       (commands/stage-command db command-info))))
 
+(register-handler :set-message-input []
+  (fn [db [_ input]]
+    (assoc db :message-input input)))
+
+(register-handler :prepare-message-input
+  (u/side-effect!
+    (fn [db _]
+      (when-let [message-input (:message-input db)]
+        (.clear message-input)
+        (.focus message-input)))))
+
+(register-handler :blur-message-input
+  (u/side-effect!
+    (fn [db _]
+      (when-let [message-input (:message-input db)]
+        (.blur message-input)))))
+
 (register-handler :set-response-chat-command
   (after #(dispatch [:animate-show-response]))
   (fn [db [_ to-msg-id command-key]]
