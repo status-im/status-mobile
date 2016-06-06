@@ -260,7 +260,10 @@
    show-actions-atom [:show-actions]
    command [:get-chat-command]
    to-msg-id [:get-chat-command-to-msg-id]]
-  [view st/chat-view
+  [view {:style st/chat-view
+         :onLayout (fn [event]
+                     (let [height (.. event -nativeEvent -layout -height)]
+                       (dispatch [:set-response-max-height height])))}
    [chat-toolbar]
    [messages-container
     [messages-view group-chat]]

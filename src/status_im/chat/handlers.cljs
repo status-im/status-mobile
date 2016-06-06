@@ -48,11 +48,11 @@
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
 (register-handler :start-cancel-command
-  (fn [db _]
-    (if (commands/get-chat-command-to-msg-id db)
-      (dispatch [:animate-cancel-command])
-      (dispatch [:cancel-command #(dispatch [:cancel-command])]))
-    db))
+  (u/side-effect!
+    (fn [db _]
+      (if (commands/get-chat-command-to-msg-id db)
+        (dispatch [:animate-cancel-command])
+        (dispatch [:cancel-command])))))
 
 (register-handler :set-chat-command-content
   (fn [{:keys [current-chat-id] :as db} [_ content]]
@@ -79,8 +79,8 @@
       (commands/stage-command db command-info))))
 
 (register-handler :set-response-chat-command
+  (after #(dispatch [:animate-show-response]))
   (fn [db [_ to-msg-id command-key]]
-    (dispatch [:animate-show-response])
     (commands/set-response-chat-command db to-msg-id command-key)))
 
 (defn update-text

@@ -33,7 +33,7 @@
 (defview group-name-input []
   [group-name [:get :new-chat-name]
    validation-messages [:new-chat-name-validation-messages]]
-  [view nil
+  [view
    [text-input
     {:underlineColorAndroid color-purple
      :style                 st/group-name-input

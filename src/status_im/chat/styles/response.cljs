@@ -51,21 +51,15 @@
    :opacity    0.69
    :color      color-white})
 
-(def container
+(defn response-view [height]
   {:flexDirection   :column
-   :justifyContent  :flex-end
    :position        :absolute
    :left            0
    :right           0
-   :top             0
    :bottom          0
-   :backgroundColor :transparent
-   :elevation       2})
-
-(defn response-view [height]
-  {:flexDirection   :column
    :height          height
-   :backgroundColor color-white})
+   :backgroundColor color-white
+   :elevation       2})
 
 (def input-placeholder
   {:height input-height})
