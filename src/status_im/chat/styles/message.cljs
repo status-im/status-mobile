@@ -131,6 +131,7 @@
 (def command-request-message-view
   {:borderRadius    14
    :padding         12
+   :paddingRight    28
    :backgroundColor color-white})
 
 (def command-request-from-text
