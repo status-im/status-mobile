@@ -82,22 +82,23 @@
     (fn [{:keys [msg-id content from incoming-group]}]
       (let [commands @commands-atom
             {:keys [command content]} (parse-command-request commands content)]
-        [touchable-highlight {:onPress             #(set-chat-command msg-id command)
-                              :accessibility-label (label command)}
-         [view st/comand-request-view
-          [view st/command-request-message-view
-           (when incoming-group
-             [text {:style st/command-request-from-text}
-              from])
-           [text {:style st/style-message-text}
-            content]]
+        [view st/comand-request-view
+         [view st/command-request-message-view
+          (when incoming-group
+            [text {:style st/command-request-from-text}
+             from])
+          [text {:style st/style-message-text}
+           content]]
+         [touchable-highlight {:style               st/command-request-image-touchable
+                               :onPress             #(set-chat-command msg-id command)
+                               :accessibility-label (label command)}
           [view (st/command-request-image-view command)
            [image {:source (:request-icon command)
-                   :style  st/command-request-image}]]
-          (when (:request-text command)
-            [view st/command-request-text-view
-             [text {:style st/style-sub-text}
-              (:request-text command)]])]]))))
+                   :style  st/command-request-image}]]]
+         (when (:request-text command)
+           [view st/command-request-text-view
+            [text {:style st/style-sub-text}
+             (:request-text command)]])]))))
 
 (defn message-view
   [message content]
