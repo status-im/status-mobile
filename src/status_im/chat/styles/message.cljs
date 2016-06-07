@@ -137,12 +137,15 @@
 (def command-request-from-text
   (merge style-sub-text {:marginBottom 2}))
 
-(defn command-request-image-view
-  [command]
-  {:position        :absolute
-   :top             12
-   :right           0
-   :width           32
+(def command-request-image-touchable
+  {:position :absolute
+   :top      12
+   :right    0
+   :width    32
+   :height   32})
+
+(defn command-request-image-view [command]
+  {:width           32
    :height          32
    :borderRadius    50
    :backgroundColor (:color command)})
