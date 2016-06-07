@@ -2,17 +2,18 @@
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                              text
-                                              image
-                                              touchable-highlight]]
+                                                text
+                                                image
+                                                touchable-highlight]]
+            [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
             [status-im.models.commands :refer [parse-command-msg-content
-                                             parse-command-request]]
+                                               parse-command-request]]
             [status-im.resources :as res]
             [status-im.constants :refer [text-content-type
-                                       content-type-status
-                                       content-type-command
-                                       content-type-command-request]]))
+                                         content-type-status
+                                         content-type-command
+                                         content-type-command-request]]))
 
 (defn message-date [{:keys [date]}]
   [view {}
@@ -68,37 +69,6 @@
           (if (= (:command command) :keypair-password)
             "******"
             content)]]))))
-
-(defn set-chat-command [msg-id command]
-  (dispatch [:set-response-chat-command msg-id (:command command)]))
-
-(defn label [{:keys [command]}]
-  (->> (name command)
-       (str "request-")))
-
-(defn message-content-command-request
-  [{:keys [msg-id content from incoming-group]}]
-  (let [commands-atom (subscribe [:get-commands])]
-    (fn [{:keys [msg-id content from incoming-group]}]
-      (let [commands @commands-atom
-            {:keys [command content]} (parse-command-request commands content)]
-        [view st/comand-request-view
-         [view st/command-request-message-view
-          (when incoming-group
-            [text {:style st/command-request-from-text}
-             from])
-          [text {:style st/style-message-text}
-           content]]
-         [touchable-highlight {:style               st/command-request-image-touchable
-                               :onPress             #(set-chat-command msg-id command)
-                               :accessibility-label (label command)}
-          [view (st/command-request-image-view command)
-           [image {:source (:request-icon command)
-                   :style  st/command-request-image}]]]
-         (when (:request-text command)
-           [view st/command-request-text-view
-            [text {:style st/style-sub-text}
-             (:request-text command)]])]))))
 
 (defn message-view
   [message content]

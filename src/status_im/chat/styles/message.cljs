@@ -138,17 +138,20 @@
   (merge style-sub-text {:marginBottom 2}))
 
 (def command-request-image-touchable
-  {:position :absolute
-   :top      12
-   :right    0
-   :width    32
-   :height   32})
+  {:position       :absolute
+   :top            4
+   :right          -8
+   :alignItems     :center
+   :justifyContent :center
+   :width          48
+   :height         48})
 
-(defn command-request-image-view [command]
+(defn command-request-image-view [command scale]
   {:width           32
    :height          32
    :borderRadius    50
-   :backgroundColor (:color command)})
+   :backgroundColor (:color command)
+   :transform       [{:scale scale}]})
 
 (def command-request-image
   {:position :absolute
