@@ -35,10 +35,6 @@ public class MainActivity extends ReactActivity {
     final Handler handler = new Handler();
 
     protected void startStatus() {
-        // Required for android-16 (???)
-        System.loadLibrary("gethraw");
-        System.loadLibrary("geth");
-
         // Required because of crazy APN settings redirecting localhost (found in GB)
         Properties properties = System.getProperties();
         properties.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
@@ -69,6 +65,11 @@ public class MainActivity extends ReactActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Required for android-16 (???)
+        // Crash if put in startStatus() ?
+        System.loadLibrary("gethraw");
+        System.loadLibrary("geth");
 
         if(!RootUtil.isDeviceRooted()) {
             startStatus();
