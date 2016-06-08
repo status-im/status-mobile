@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">StatusIm</string>
+    <string name="app_name">Status</string>
+    <string name="root_warning">Your phone appears to be ROOTED, this is a serious security concern, continue only if you understand and accept the risks.</string>
+    <string name="root_okay">Continue</string>
+    <string name="root_cancel">Exit</string>
 </resources>
