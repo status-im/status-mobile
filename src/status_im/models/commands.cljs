@@ -64,12 +64,6 @@
   ;; (get db :commands)
   commands)
 
-(defn set-commands [db commands]
-  (assoc db :commands commands))
-
-;; todo delete
-(def suggestions (filterv :suggestion commands))
-
 (defn get-command [db command-key]
   (first (filter #(= command-key (:command %)) (get-commands db))))
 

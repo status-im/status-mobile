@@ -250,9 +250,14 @@
   ([{:keys [messages current-chat-id] :as db} _]
    (assoc-in db [:chats current-chat-id :messages] messages)))
 
+(defn load-commands!
+  [{:keys [current-chat-id]}]
+  (dispatch [:load-commands! current-chat-id]))
+
 (register-handler :init-chat
   (-> load-messages!
       ((enrich init-chat))
+      ((after load-commands!))
       debug))
 
 (defn initialize-chats

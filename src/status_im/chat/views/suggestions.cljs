@@ -1,11 +1,12 @@
 (ns status-im.chat.views.suggestions
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                              text
-                                              icon
-                                              touchable-highlight
-                                              list-view
-                                              list-item]]
+                                                text
+                                                icon
+                                                touchable-highlight
+                                                list-view
+                                                list-item]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.chat.styles.suggestions :as st]))
 
@@ -13,11 +14,11 @@
   (dispatch [:set-chat-command command]))
 
 (defn suggestion-list-item
-  [{:keys [description command]
-    label :text
+  [{:keys [description]
+    label :name
     :as   suggestion}]
   [touchable-highlight
-   {:onPress #(set-command-input (keyword command))}
+   {:onPress #(set-command-input (keyword label))}
    [view st/suggestion-container
     [view st/suggestion-sub-container
      [view (st/suggestion-background suggestion)
@@ -28,19 +29,17 @@
 (defn render-row [row _ _]
   (list-item [suggestion-list-item row]))
 
-(defn suggestions-view []
-  (let [suggestions-atom (subscribe [:get-suggestions])]
-    (fn []
-      (let [suggestions @suggestions-atom]
-        (when (seq suggestions)
-          [view
-           [touchable-highlight {:style   st/drag-down-touchable
-                                 :onPress (fn []
-                                            ;; TODO hide suggestions?
-                                            )}
-            [view
-             [icon :drag_down st/drag-down-icon]]]
-           [view (st/suggestions-container (count suggestions))
-            [list-view {:dataSource (to-datasource suggestions)
-                        :enableEmptySections true
-                        :renderRow  render-row}]]])))))
+(defview suggestions-view []
+  [suggestions [:get-suggestions]]
+  (when (seq suggestions)
+    [view
+     [touchable-highlight {:style   st/drag-down-touchable
+                           :onPress (fn []
+                                      ;; TODO hide suggestions?
+                                      )}
+      [view
+       [icon :drag_down st/drag-down-icon]]]
+     [view (st/suggestions-container (count suggestions))
+      [list-view {:dataSource          (to-datasource suggestions)
+                  :enableEmptySections true
+                  :renderRow           render-row}]]]))

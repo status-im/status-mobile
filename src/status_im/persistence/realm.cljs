@@ -51,6 +51,10 @@
                                   :timestamp   "int"
                                   :contacts    {:type       "list"
                                                 :objectType "chat-contact"}
+                                  :dapp-url    {:type     :string
+                                                :optional true}
+                                  :dapp-hash   {:type     :int
+                                                :optional true}
                                   :last-msg-id "string"}}
                     {:name       :tag
                      :primaryKey :name
