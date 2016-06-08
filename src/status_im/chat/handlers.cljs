@@ -22,8 +22,6 @@
             [status-im.chat.handlers.animation :refer [update-response-height
                                                        get-response-height]]))
 
-(def delta 1)
-
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
     (assoc db :show-actions show-actions)))

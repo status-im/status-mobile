@@ -316,6 +316,9 @@
 (def message-date-text
   (assoc style-sub-text :textAlign :center))
 
+(defn message-container [height]
+  {:height height})
+
 (def new-message-container
   {:backgroundColor color-white
    :elevation       4})

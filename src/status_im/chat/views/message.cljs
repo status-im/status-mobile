@@ -1,24 +1,28 @@
 (ns status-im.chat.views.message
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
+            [reagent.core :as r]
             [status-im.components.react :refer [view
+                                                animated-view
                                                 text
                                                 image
                                                 touchable-highlight]]
+            [status-im.components.animation :as anim]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
             [status-im.models.commands :refer [parse-command-msg-content
                                                parse-command-request]]
             [status-im.resources :as res]
+            [status-im.utils.datetime :as time]
             [status-im.constants :refer [text-content-type
                                          content-type-status
                                          content-type-command
                                          content-type-command-request]]))
 
-(defn message-date [{:keys [date]}]
+(defn message-date [timestamp]
   [view {}
    [view st/message-date-container
-    [text {:style st/message-date-text} date]]])
+    [text {:style st/message-date-text} (time/to-short-str timestamp)]]])
 
 (defn contact-photo [{:keys [photo-path]}]
   [view st/contact-photo-container
@@ -156,12 +160,47 @@
      (when (and outgoing delivery-status)
        [message-delivery-status {:delivery-status delivery-status}])]))
 
+(defn message-container-animation-logic [{:keys [to-value val]}]
+  (fn [_]
+    (let [to-value @to-value]
+      (when (< 0 to-value)
+        (anim/start
+          (anim/spring val {:toValue  to-value
+                            :friction 4
+                            :tension  10})
+          (fn [arg]
+            (when (.-finished arg)
+              ;; todo ???
+              nil)))))))
+
+(defn message-container [& children]
+  (let [layout-height (r/atom 0)
+        anim-value (anim/create-value 1)
+        context {:to-value layout-height
+                 :val      anim-value}
+        on-update (message-container-animation-logic context)]
+    (r/create-class
+      {:component-did-mount
+       on-update
+       :component-did-update
+       on-update
+       :reagent-render
+       (fn [& children]
+         @layout-height
+         [animated-view {:style (st/message-container anim-value)}
+          (into [view {:onLayout (fn [event]
+                                   (let [height (.. event -nativeEvent -layout -height)]
+                                     (reset! layout-height height)))}]
+                children)])})))
+
 (defn chat-message
-  [{:keys [outgoing delivery-status date new-day group-chat]
+  [{:keys [outgoing delivery-status timestamp new-day group-chat]
     :as   message}]
-  [view {}
-   (when new-day [message-date {:date date}])
-   [view {}
+  [message-container
+   ;; TODO there is no new-day info in message
+   (when new-day
+     [message-date timestamp])
+   [view
     (let [incoming-group (and group-chat (not outgoing))]
       [message-content
        (if incoming-group
