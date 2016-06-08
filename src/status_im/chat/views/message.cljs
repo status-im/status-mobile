@@ -160,7 +160,7 @@
      (when (and outgoing delivery-status)
        [message-delivery-status {:delivery-status delivery-status}])]))
 
-(defn message-container-animation-logic [{:keys [to-value val]}]
+(defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
     (let [to-value @to-value]
       (when (< 0 to-value)
@@ -170,33 +170,36 @@
                             :tension  10})
           (fn [arg]
             (when (.-finished arg)
-              ;; todo ???
-              nil)))))))
+              (callback))))))))
 
-(defn message-container [& children]
-  (let [layout-height (r/atom 0)
-        anim-value (anim/create-value 1)
-        context {:to-value layout-height
-                 :val      anim-value}
-        on-update (message-container-animation-logic context)]
-    (r/create-class
-      {:component-did-mount
-       on-update
-       :component-did-update
-       on-update
-       :reagent-render
-       (fn [& children]
-         @layout-height
-         [animated-view {:style (st/message-container anim-value)}
-          (into [view {:onLayout (fn [event]
-                                   (let [height (.. event -nativeEvent -layout -height)]
-                                     (reset! layout-height height)))}]
-                children)])})))
+(defn message-container [message & children]
+  (if (:new? message)
+    (let [layout-height (r/atom 0)
+          anim-value (anim/create-value 1)
+          anim-callback #(dispatch [:set-message-shown message])
+          context {:to-value layout-height
+                   :val      anim-value
+                   :callback anim-callback}
+          on-update (message-container-animation-logic context)]
+      (r/create-class
+        {:component-did-mount
+         on-update
+         :component-did-update
+         on-update
+         :reagent-render
+         (fn [message & children]
+           @layout-height
+           [animated-view {:style (st/message-container anim-value)}
+            (into [view {:onLayout (fn [event]
+                                     (let [height (.. event -nativeEvent -layout -height)]
+                                       (reset! layout-height height)))}]
+                  children)])}))
+    (into [view] children)))
 
 (defn chat-message
   [{:keys [outgoing delivery-status timestamp new-day group-chat]
     :as   message}]
-  [message-container
+  [message-container message
    ;; TODO there is no new-day info in message
    (when new-day
      [message-date timestamp])

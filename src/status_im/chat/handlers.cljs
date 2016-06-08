@@ -133,7 +133,21 @@
 (defn add-message-to-db
   [db chat-id message]
   (let [messages [:chats chat-id :messages]]
-    (update-in db messages conj message)))
+    (update-in db messages conj (assoc message :chat-id chat-id
+                                               :new? true))))
+
+(defn set-message-shown
+  [db chat-id msg-id]
+  (update-in db [:chats chat-id :messages] (fn [messages]
+                                             (map (fn [msg]
+                                                    (if (= msg-id (:msg-id msg))
+                                                      (assoc msg :new? false)
+                                                      msg))
+                                                  messages))))
+
+(register-handler :set-message-shown
+  (fn [db [_ {:keys [chat-id msg-id]}]]
+    (set-message-shown db chat-id msg-id)))
 
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
