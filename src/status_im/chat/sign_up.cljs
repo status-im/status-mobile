@@ -184,6 +184,9 @@
 (def console-chat
   {:chat-id    "console"
    :name       "console"
+   ; todo remove/change dapp config fot console
+   :dapp-url   "http://localhost:8185"
+   :dapp-hash  123
    :color      default-chat-color
    :group-chat false
    :is-active  true

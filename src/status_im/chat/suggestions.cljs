@@ -2,22 +2,29 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.db :as db]
             [status-im.models.commands :refer [commands
-                                             suggestions
-                                             get-commands
-                                             get-chat-command-request
-                                             get-chat-command-to-msg-id
-                                             clear-staged-commands]]
+                                               get-commands
+                                               get-chat-command-request
+                                               get-chat-command-to-msg-id
+                                               clear-staged-commands]]
             [status-im.utils.utils :refer [log on-error http-get]]
             [clojure.string :as s]))
 
 (defn suggestion? [text]
   (= (get text 0) "!"))
 
-(defn get-suggestions [db text]
-  (if (suggestion? text)
-    ;; TODO change 'commands' to 'suggestions'
-    (filterv #(.startsWith (:text %) text) (get-commands db))
-    []))
+(defn can-be-suggested? [text]
+  (fn [{:keys [name]}]
+    (.startsWith (str "!" name) text)))
+
+(defn get-suggestions
+  [{:keys [current-chat-id] :as db} text]
+  (let [commands (get-in db [:chats current-chat-id :commands])]
+    (if (suggestion? text)
+      ;; TODO change 'commands' to 'suggestions'
+      (->> commands
+           vals
+           (filter (can-be-suggested? text)))
+      [])))
 
 (defn get-command [db text]
   (when (suggestion? text)
@@ -44,15 +51,6 @@
                     (handler)))
                 staged-commands))
     (clear-staged-commands db)))
-
-(defn execute-commands-js [body]
-  (.eval js/window body)
-  (let [commands (.-commands js/window)]
-    (dispatch [:set-commands (map #(update % :command keyword)
-                                  (js->clj commands :keywordize-keys true))])))
-
-(defn load-commands []
-  (http-get "chat-commands.js" execute-commands-js nil))
 
 (defn check-suggestion [db message]
   (when-let [suggestion-text (when (string? message)
