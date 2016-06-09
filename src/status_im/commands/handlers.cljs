@@ -87,8 +87,8 @@
 
 (defn get-hash-by-file
   [file]
-  ;; todo implement
-  123)
+  ;; todo tbd hashing algorithm
+  (hash file))
 
 (defn get-jail []
   (.-Jail (.-NativeModules r/react)))
@@ -110,6 +110,7 @@
   [db [identity file]]
   (let [valid? (= (get-hash-by-dentity db identity)
                   (get-hash-by-file file))]
+    (println "hsh " (hash file))
     (assoc db ::valid-hash valid?)))
 
 (defn save-commands!

@@ -19,6 +19,7 @@
     "react-native-loading-spinner-overlay": "0.0.8",
     "react-native-randombytes": "^2.0.0",
     "react-native-vector-icons": "^1.3.4",
-    "realm": "^0.11.1"
+    "realm": "^0.11.1",
+    "react-native-status": "git+ssh://git@github.com/status-im/react-native-status"
   }
 }

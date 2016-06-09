@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.io.File;
+import com.statusim.Jail.JailPackage;
 
 import com.i18n.reactnativei18n.ReactNativeI18n;
 import io.realm.react.RealmReactPackage;
