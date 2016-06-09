@@ -4,7 +4,8 @@
             [status-im.utils.handlers :as u]
             [status-im.components.react :as r]
             [status-im.utils.utils :refer [http-get toast]]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [status-im.persistence.realm :as realm]))
 
 ;; commands loading flow
 ;           ┌────────────────────────────┐
@@ -44,8 +45,8 @@
 ;  │            │        │                                    │
 ;  │            │        │                                    ▼
 ;  │            │        │                     ┌────────────────────────────┐
-;  │            │        ▼                     │       save commands        │
-;  │            │  ┌────────────────────────┐  │         save js ?          │
+;  │            │        ▼                     │                            │
+;  │            │  ┌────────────────────────┐  │      save commands-js      │
 ;  │            │  │the dapp emit a message │  │  add some API object form  │
 ;  │            └─▶│  saying js is broken   │  │       otto to app-db       │
 ;  │               └────────────────────────┘  └────────────────────────────┘
@@ -67,6 +68,12 @@
    (register-handler name [debug trim-v middleware] handler)))
 
 (def commands-js "commands.js")
+
+(defn load-commands!
+  [_ [identity]]
+  (if-let [{:keys [file]} (realm/get-one-by-field :commands :chat-id identity)]
+    (dispatch [::parse-commands! identity file])
+    (dispatch [::fetch-commands! identity])))
 
 (defn fetch-commands!
   [db [identity]]
@@ -103,26 +110,25 @@
   (parse file
          (fn [result]
            (let [commands (json->clj result)]
-             (dispatch [::add-commands identity commands])))
+             (dispatch [::add-commands identity file commands])))
          #(dispatch [::loading-failed! identity ::error-in-jail %])))
 
 (defn validate-hash
   [db [identity file]]
   (let [valid? (= (get-hash-by-dentity db identity)
                   (get-hash-by-file file))]
-    (println "hsh " (hash file))
     (assoc db ::valid-hash valid?)))
 
-(defn save-commands!
-  [db]
-  #_(realm/save (::new-commands db)))
-
 (defn add-commands
-  [db [id commands-obj]]
+  [db [id _ commands-obj]]
   (let [commands (:commands commands-obj)]
     (-> db
         (update-in [:chats id :commands] merge commands)
         (assoc db ::new-commands commands))))
+
+(defn save-commands-js!
+  [_ [id file]]
+  (realm/create-object :commands {:chat-id id :file file}))
 
 (defn loading-failed
   [db [id reason details]]
@@ -133,7 +139,8 @@
                          (name reason)
                          details]))))
 
-(reg-handler :load-commands! (u/side-effect! fetch-commands!))
+(reg-handler :load-commands! (u/side-effect! load-commands!))
+(reg-handler ::fetch-commands! (u/side-effect! fetch-commands!))
 
 (reg-handler ::validate-hash
              (after dispatch-loaded!)
@@ -142,7 +149,7 @@
 (reg-handler ::parse-commands! (u/side-effect! parse-commands!))
 
 (reg-handler ::add-commands
-             (after save-commands!)
+             (after save-commands-js!)
              add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed))
