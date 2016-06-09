@@ -68,7 +68,7 @@
   (update-input-text db text))
 
 (defn update-command [db [_ text]]
-  (let [{:keys [command]} (suggestions/check-suggestion db text)]
+  (let [[command] (suggestions/check-suggestion db text)]
     (commands/set-chat-command db command)))
 
 (register-handler :set-chat-input-text
@@ -99,7 +99,7 @@
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
   (let [text    (get-in db [:chats current-chat-id :input-text])
-        {:keys [command]} (suggestions/check-suggestion db (str text " "))
+        [command] (suggestions/check-suggestion db (str text " "))
         message (check-author-direction
                   db current-chat-id
                   {:msg-id          (random/id)

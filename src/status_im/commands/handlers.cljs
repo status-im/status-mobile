@@ -51,11 +51,28 @@
 (defn json->clj [json]
   (js->clj (.parse js/JSON json) :keywordize-keys true))
 
+;; todo remove this
+(def res {:commands  {:location {:description "Send location"
+                                 :color       "#9a5dcf"
+                                 :name        "location"}
+                      :phone    {:description "Send phone number"
+                                 :color       "#5fc48d"
+                                 :name        "phone"}
+                      :help     {:description "Help" :color "#9a5dcf" :name "help"}}
+          :responses {:money             {:description "Send money" :color "#5fc48d" :name "money"}
+                      :confirmation-code {:description "Confirmation code"
+                                          :color       "#7099e6"
+                                          :name        "confirmationCode"}
+                      :keypair-password  {:description ""
+                                          :color       "#7099e6"
+                                          :name        "keypair-password"}}})
+
 (defn parse-commands! [_ [identity file]]
   (parse file
          (fn [result]
            (let [commands (json->clj result)]
-             (dispatch [::add-commands identity file commands])))
+             ;; todo use commands from jail
+             (dispatch [::add-commands identity file res])))
          #(dispatch [::loading-failed! identity ::error-in-jail %])))
 
 (defn validate-hash

@@ -14,17 +14,18 @@
   (dispatch [:set-chat-command command]))
 
 (defn suggestion-list-item
-  [{:keys [description]
-    label :name
-    :as   suggestion}]
-  [touchable-highlight
-   {:onPress #(set-command-input (keyword label))}
-   [view st/suggestion-container
-    [view st/suggestion-sub-container
-     [view (st/suggestion-background suggestion)
-      [text {:style st/suggestion-text} label]]
-     [text {:style st/value-text} label]
-     [text {:style st/description-text} description]]]])
+  [[command {:keys [description]
+              name  :name
+              :as   suggestion}]]
+  (let [label (str "!" name)]
+    [touchable-highlight
+     {:onPress #(set-command-input command)}
+     [view st/suggestion-container
+      [view st/suggestion-sub-container
+       [view (st/suggestion-background suggestion)
+        [text {:style st/suggestion-text} label]]
+       [text {:style st/value-text} label]
+       [text {:style st/description-text} description]]]]))
 
 (defn render-row [row _ _]
   (list-item [suggestion-list-item row]))

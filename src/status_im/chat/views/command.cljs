@@ -32,7 +32,7 @@
          [content-suggestions-view]
          [view st/command-input-container
           [view (st/command-text-container command)
-           [text {:style st/command-text} (:text command)]]
+           [text {:style st/command-text} (str "!" (:name command))]]
           [text-input (merge {:style           st/command-input
                               :autoFocus       true
                               :onChangeText    set-input-message

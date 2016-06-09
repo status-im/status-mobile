@@ -16,7 +16,7 @@
      [view st/staged-command-background
       [view st/staged-command-info-container
        [view (st/staged-command-text-container command)
-        [text {:style st/staged-command-text} (:text command)]]
+        [text {:style st/staged-command-text} (str "!" (:name command))]]
        [touchable-highlight {:style   st/staged-command-cancel
                              :onPress #(cancel-command-input staged-command)}
         [image {:source res/icon-close-gray
