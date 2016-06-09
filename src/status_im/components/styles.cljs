@@ -29,4 +29,4 @@
 (def default-chat-color color-purple)
 
 (def flex
-  {:style {:flex 1}})
+  {:flex 1})
