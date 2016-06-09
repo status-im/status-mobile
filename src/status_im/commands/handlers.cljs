@@ -7,61 +7,6 @@
             [clojure.string :as s]
             [status-im.persistence.realm :as realm]))
 
-;; commands loading flow
-;           ┌────────────────────────────┐
-;           │ user starts chat with dapp │
-;           └────────────────────────────┘
-;                          │
-;                          ▼
-;              ┌───────────────────────┐
-;              │     fetch current     │
-;              │  `commands.js` hash   │
-;              └───────────────────────┘
-;                          │
-;                          ▼
-;            ┌───────────────────────────┐
-;            │try to fetch `commands.js` │
-;            └───────────────────────────┘
-;                          │
-;                          ▼
-;┌───┐        ┌─────────────────────────┐    ┌───┐
-;│no ├────────│ there is `commands.js`  │────┤yes│
-;└─┬─┘        └─────────────────────────┘    └─┬─┘
-;  │                                           │
-;  │                                           ▼
-;  │                                 ┌───────────────────┐
-;  │          ┌────┐                 │  Is file's hash   │
-;  │          │nope├─────────────────│ equal to current? │
-;  │          └─┬──┘                 └───────────────────┘
-;  │            │                              │
-;  │            │                            ┌─┴─┐
-;  │            │                            │yes│
-;  │            │                            └─┬─┘
-;  │            │                              │
-;  │            │                              ▼
-;  │            │     ┌────┐  ┌──────────────────────────┐  ┌────┐
-;  │            │     │fail├──│ ask `otto` to handle js  │──┤succ│
-;  │            │     └──┬─┘  └──────────────────────────┘  └─┬──┘
-;  │            │        │                                    │
-;  │            │        │                                    ▼
-;  │            │        │                     ┌────────────────────────────┐
-;  │            │        ▼                     │                            │
-;  │            │  ┌────────────────────────┐  │      save commands-js      │
-;  │            │  │the dapp emit a message │  │  add some API object form  │
-;  │            └─▶│  saying js is broken   │  │       otto to app-db       │
-;  │               └────────────────────────┘  └────────────────────────────┘
-;  │                            │                             │
-;  │                            │                             │
-;  │        ┌───────────────────┘                             ▼
-;  │        │                                    ┌─────────────────────────┐
-;  │        │                                    │ if it is necessary show │
-;  │        ▼                                    │      as fullscreen      │
-;  │  ┌───────────┐                              └─────────────────────────┘
-;  │  │           │                                           │
-;  └─▶│   Fin'    │◀──────────────────────────────────────────┘
-;     │           │
-;     └───────────┘
-
 (defn reg-handler
   ([name handler] (reg-handler name nil handler))
   ([name middleware handler]
@@ -88,7 +33,7 @@
     (dispatch [::parse-commands! identity file])
     (dispatch [::loading-failed! identity ::wrong-hash])))
 
-(defn get-hash-by-dentity
+(defn get-hash-by-identity
   [db identity]
   (get-in db [:chats identity :dapp-hash]))
 
@@ -115,22 +60,21 @@
 
 (defn validate-hash
   [db [identity file]]
-  (let [valid? (= (get-hash-by-dentity db identity)
+  (let [valid? (= (get-hash-by-identity db identity)
                   (get-hash-by-file file))]
     (assoc db ::valid-hash valid?)))
 
 (defn add-commands
-  [db [id _ commands-obj]]
-  (let [commands (:commands commands-obj)]
-    (-> db
-        (update-in [:chats id :commands] merge commands)
-        (assoc db ::new-commands commands))))
+  [db [id _ {:keys [commands responses]}]]
+  (-> db
+      (update-in [:chats id :commands] merge commands)
+      (update-in [:chats id :responses] merge responses)))
 
 (defn save-commands-js!
   [_ [id file]]
   (realm/create-object :commands {:chat-id id :file file}))
 
-(defn loading-failed
+(defn loading-failed!
   [db [id reason details]]
   (let [url (get-in db [:chats id :dapp-url])]
     (toast (s/join "\n" ["commands.js loading failed"
@@ -152,5 +96,5 @@
              (after save-commands-js!)
              add-commands)
 
-(reg-handler ::loading-failed! (u/side-effect! loading-failed))
+(reg-handler ::loading-failed! (u/side-effect! loading-failed!))
 
