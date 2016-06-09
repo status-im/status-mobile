@@ -20,10 +20,7 @@
   [{:keys [current-chat-id] :as db} text]
   (let [commands (get-in db [:chats current-chat-id :commands])]
     (if (suggestion? text)
-      ;; TODO change 'commands' to 'suggestions'
-      (->> commands
-           vals
-           (filter (can-be-suggested? text)))
+      (filter (fn [[_ v]] ((can-be-suggested? text) v)) commands)
       [])))
 
 (defn get-command [db text]
@@ -55,10 +52,10 @@
 (defn check-suggestion [db message]
   (when-let [suggestion-text (when (string? message)
                                (re-matches #"^![^\s]+\s" message))]
-    (let [suggestion-text' (s/trim suggestion-text)
-          [suggestion] (filter #(= suggestion-text' (:text %))
-                               (get-commands db))]
-      suggestion)))
+    (let [suggestion-text' (s/trim suggestion-text)]
+      (->> (get-commands db)
+           (filter #(= suggestion-text' (->> % second :name (str "!"))))
+           first))))
 
 (defn typing-command? [db]
   (-> db

@@ -73,7 +73,7 @@
   (dispatch [:set-response-chat-command msg-id (:command command)]))
 
 (defn label [{:keys [command]}]
-  (->> (name command)
+  (->> (when command (name command))
        (str "request-")))
 
 (defn message-content-command-request

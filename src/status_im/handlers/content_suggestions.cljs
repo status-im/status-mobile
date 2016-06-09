@@ -14,7 +14,7 @@
 
 (defn get-content-suggestions [db command text]
   (or (when command
-        (when-let [command-suggestions ((:command command) suggestions)]
+        (when-let [command-suggestions ((keyword (:name command)) suggestions)]
           (filterv (fn [s]
                      (and (.startsWith (:value s) (or text ""))
                           (not= (:value s) text)))
