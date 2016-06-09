@@ -52,14 +52,18 @@
         (dispatch [:animate-cancel-command])
         (dispatch [:cancel-command])))))
 
+(defn animate-set-chat-command-content [db _]
+  (when (commands/get-chat-command-to-msg-id db)
+    (dispatch [:animate-response-resize])))
+
 (register-handler :set-chat-command-content
+  (after animate-set-chat-command-content)
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (as-> db db
           (commands/set-chat-command-content db content)
           (assoc-in db [:chats current-chat-id :input-text] nil)
           (if (commands/get-chat-command-to-msg-id db)
-            (do (dispatch [:animate-response-resize])
-                (update-response-height db))
+            (update-response-height db)
             db))))
 
 (defn update-input-text
@@ -79,13 +83,6 @@
 (register-handler :set-message-input []
   (fn [db [_ input]]
     (assoc db :message-input input)))
-
-(register-handler :prepare-message-input
-  (u/side-effect!
-    (fn [db _]
-      (when-let [message-input (:message-input db)]
-        (.clear message-input)
-        (.focus message-input)))))
 
 (register-handler :blur-message-input
   (u/side-effect!

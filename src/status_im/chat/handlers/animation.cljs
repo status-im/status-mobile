@@ -56,7 +56,6 @@
   (assoc-in db [:animations :to-response-height] (get-response-height db)))
 
 (register-handler :finish-show-response
-  (after #(dispatch [:prepare-message-input]))
   (fn [db _]
     (assoc-in db [:animations :commands-input-is-switching?] false)))
 
