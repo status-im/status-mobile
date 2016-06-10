@@ -66,7 +66,7 @@
                       :keypair-password  {:description "Keypair password"
                                           :color       "#7099e6"
                                           :name        "keypair-password"
-                                          :icon        "http://localhost:8185/images/deliveryfailed.png"}}})
+                                          :icon        "icon_lock_white"}}})
 
 (defn parse-commands! [_ [identity file]]
   (parse file

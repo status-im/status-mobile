@@ -62,11 +62,13 @@
           [view (st/command-view command)
            [text {:style st/command-name}
             (str "!" (:name command))]]]
-         [image {:source {:uri (:icon command)}
-                 :style  st/command-image}]
+         ;; todo doesn't reflect design
+         [view (st/command-image-view command)
+          [image {:source {:uri (:icon command)}
+                  :style  st/command-image}]]
          [text {:style st/command-text}
           ;; TODO isn't smart
-          (if (= (:command command) :keypair-password)
+          (if (= (:name command) "keypair-password")
             "******"
             content)]]))))
 
