@@ -63,9 +63,10 @@
                       :confirmation-code {:description "Confirmation code"
                                           :color       "#7099e6"
                                           :name        "confirmationCode"}
-                      :keypair-password  {:description ""
+                      :keypair-password  {:description "Keypair password"
                                           :color       "#7099e6"
-                                          :name        "keypair-password"}}})
+                                          :name        "keypair-password"
+                                          :icon        "http://localhost:8185/images/deliveryfailed.png"}}})
 
 (defn parse-commands! [_ [identity file]]
   (parse file

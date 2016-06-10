@@ -50,6 +50,18 @@
   (fn [db _]
     (reaction (commands/get-commands @db))))
 
+(register-sub :get-responses
+  (fn [db _]
+    (let [current-chat (@db :current-chat-id)]
+      (reaction (or (get-in @db [:chats current-chat :responses]) {})))))
+
+(register-sub :get-commands-and-responses
+  (fn [db _]
+    (let [current-chat (@db :current-chat-id)]
+      (reaction _ (or (->> (get-in @db [:chats current-chat])
+                           ((juxt :commands :responses))
+                           (apply merge)) {})))))
+
 (register-sub :get-chat-input-text
   (fn [db _]
     (->> [:chats (:current-chat-id @db) :input-text]
