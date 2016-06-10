@@ -10,12 +10,16 @@
 
 (def zero-height input-height)
 
-(register-handler :finish-animate-cancel-command
-  (fn [db _]
-    (assoc-in db [:animations :commands-input-is-switching?] false)))
+(defn animation-handler
+  ([name handler] (animation-handler name nil handler))
+  ([name middleware handler]
+   (register-handler name [(path :animations) middleware] handler)))
 
-(register-handler :animate-cancel-command
-  (path :animations)
+(animation-handler :finish-animate-cancel-command
+  (fn [db _]
+    (assoc db :commands-input-is-switching? false)))
+
+(animation-handler :animate-cancel-command
   (fn [db _]
     (if-not (:commands-input-is-switching? db)
       (assoc db
@@ -26,20 +30,19 @@
         :messages-offset 0)
       db)))
 
-(register-handler :finish-animate-response-resize
+(animation-handler :finish-animate-response-resize
   (fn [db _]
-    (let [fixed (get-in db [:animations :to-response-height])]
-      (-> db
-          (assoc-in [:animations :response-height-current] fixed)
-          (assoc-in [:animations :response-resize?] false)))))
+    (let [fixed (:to-response-height db)]
+      (assoc db :response-height-current fixed
+                :response-resize? false))))
 
-(register-handler :set-response-height
+(animation-handler :set-response-height
   (fn [db [_ value]]
-    (assoc-in db [:animations :response-height-current] value)))
+    (assoc db :response-height-current value)))
 
-(register-handler :animate-response-resize
+(animation-handler :animate-response-resize
   (fn [db _]
-    (assoc-in db [:animations :response-resize?] true)))
+    (assoc db :response-resize? true)))
 
 (defn get-response-height [db]
   (let [command (commands/get-chat-command db)
@@ -55,9 +58,9 @@
 (defn update-response-height [db]
   (assoc-in db [:animations :to-response-height] (get-response-height db)))
 
-(register-handler :finish-show-response
+(animation-handler :finish-show-response
   (fn [db _]
-    (assoc-in db [:animations :commands-input-is-switching?] false)))
+    (assoc db :commands-input-is-switching? false)))
 
 (register-handler :animate-show-response
   (after #(dispatch [:animate-response-resize]))
@@ -70,24 +73,22 @@
         (assoc-in [:animations :messages-offset] request-info-height)
         (update-response-height))))
 
-(register-handler :set-response-max-height
+(animation-handler :set-response-max-height
   (fn [db [_ height]]
-    (let [prev-height (get-in db [:animations :response-height-max])]
+    (let [prev-height (:response-height-max db)]
       (if (not= height prev-height)
-        (let [db (assoc-in db [:animations :response-height-max] height)]
-          (if (= prev-height (get-in db [:animations :to-response-height]))
-            (-> db
-                (assoc-in [:animations :to-response-height] height)
-                (assoc-in [:animations :response-height-current] height))
+        (let [db (assoc db :response-height-max height)]
+          (if (= prev-height (:to-response-height db))
+            (assoc db :to-response-height height
+                      :response-height-current height)
             db))
         db))))
 
-(register-handler :on-drag-response
+(animation-handler :on-drag-response
   (fn [db [_ dy]]
-    (let [fixed (get-in db [:animations :to-response-height])]
-      (-> db
-          (assoc-in [:animations :response-height-current] (- fixed dy))
-          (assoc-in [:animations :response-resize?] false)))))
+    (let [fixed (:to-response-height db)]
+      (assoc db :response-height-current (- fixed dy)
+                :response-resize? false))))
 
 (register-handler :fix-response-height
   (fn [db _]
