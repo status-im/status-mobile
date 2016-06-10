@@ -5,7 +5,8 @@
             [status-im.components.react :as r]
             [status-im.utils.utils :refer [http-get toast]]
             [clojure.string :as s]
-            [status-im.persistence.realm :as realm]))
+            [status-im.persistence.realm :as realm]
+            [status-im.components.jail :as j]))
 
 (defn reg-handler
   ([name handler] (reg-handler name nil handler))
@@ -42,12 +43,6 @@
   ;; todo tbd hashing algorithm
   (hash file))
 
-(defn get-jail []
-  (.-Jail (.-NativeModules r/react)))
-
-(defn parse [file success-callback fail-callback]
-  (.parse (get-jail) file success-callback fail-callback))
-
 (defn json->clj [json]
   (js->clj (.parse js/JSON json) :keywordize-keys true))
 
@@ -69,12 +64,12 @@
                                           :icon        "icon_lock_white"}}})
 
 (defn parse-commands! [_ [identity file]]
-  (parse file
-         (fn [result]
-           (let [commands (json->clj result)]
-             ;; todo use commands from jail
-             (dispatch [::add-commands identity file res])))
-         #(dispatch [::loading-failed! identity ::error-in-jail %])))
+  (j/parse identity file
+           (fn [result]
+             (let [commands (json->clj result)]
+               ;; todo use commands from jail
+               (dispatch [::add-commands identity file res])))
+           #(dispatch [::loading-failed! identity ::error-in-jail %])))
 
 (defn validate-hash
   [db [identity file]]
