@@ -35,7 +35,7 @@
                     (when (.-finished arg)
                       (dispatch [:set-animation ::message-input-offset-current to-value])))))))
 
-(defn message-input-container [input]
+(defn text-container [input]
   (let [to-message-input-offset (subscribe [:animations :message-input-offset])
         cur-message-input-offset (subscribe [:animations ::message-input-offset-current])
         message-input-offset (anim/create-value (or @cur-message-input-offset 0))
@@ -50,10 +50,10 @@
        :reagent-render
        (fn [input]
          @to-message-input-offset
-         [animated-view {:style (st/message-input-container message-input-offset)}
+         [animated-view {:style (st/text-container message-input-offset)}
           input])})))
 
-(defview message-input [input-options validator]
+(defview message-text [input-options validator]
    [input-message [:get-chat-input-text]
     command [:get-chat-command]
     to-msg-id [:get-chat-command-to-msg-id]
@@ -63,10 +63,10 @@
     commands-input-is-switching? [:animations :commands-input-is-switching?]]
    (let [dismiss-keyboard (not (or command typing-command?))
          response? (and command to-msg-id)
-         message-input? (or (not command) commands-input-is-switching?)
+         plain? (or (not command) commands-input-is-switching?)
          animation? commands-input-is-switching?]
      [text-input (merge {:style           (cond
-                                            message-input? st-message/message-input
+                                            plain? st-message/plain-input
                                             response? st-response/command-input
                                             command st-command/command-input)
                          :ref             (fn [input]
@@ -75,12 +75,12 @@
                          :blurOnSubmit    dismiss-keyboard
                          :onChangeText    (fn [text]
                                             (when-not animation?
-                                              ((if message-input?
+                                              ((if plain?
                                                  plain-message/set-input-message
                                                  command/set-input-message)
                                                 text)))
                          :onSubmitEditing #(when-not animation?
-                                            (if message-input?
+                                            (if plain?
                                               (plain-message/try-send staged-commands
                                                                       input-message
                                                                       dismiss-keyboard)
@@ -88,11 +88,11 @@
                         (when command
                           {:accessibility-label :command-input})
                         input-options)
-      (if message-input?
+      (if plain?
         input-message
         input-command)]))
 
-(defview plain-message-input-view [{:keys [input-options validator]}]
+(defview message-input [{:keys [input-options validator]}]
   [input-message [:get-chat-input-text]
    command [:get-chat-command]
    to-msg-id [:get-chat-command-to-msg-id]
@@ -102,19 +102,19 @@
    commands-input-is-switching? [:animations :commands-input-is-switching?]]
   (let [dismiss-keyboard (not (or command typing-command?))
         response? (and command to-msg-id)
-        message-input? (or (not command) commands-input-is-switching?)]
+        plain? (or (not command) commands-input-is-switching?)]
     [view st/input-container
      [view st/input-view
-      (if message-input?
+      (if plain?
         [plain-message/commands-button]
         (when (and command (not response?))
           [command/command-icon command response?]))
-      [message-input-container
-       [message-input input-options validator]]
+      [text-container
+       [message-text input-options validator]]
       ;; TODO emoticons: not implemented
-      (when message-input?
+      (when plain?
         [plain-message/smile-button])
-      (if message-input?
+      (if plain?
         (when (plain-message/message-valid? staged-commands input-message)
           [send-button {:on-press            #(plain-message/try-send staged-commands
                                                                       input-message

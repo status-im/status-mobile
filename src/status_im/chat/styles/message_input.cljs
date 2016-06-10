@@ -4,7 +4,7 @@
 
 (def input-height 56)
 
-(defn message-input-container [offset]
+(defn text-container [offset]
   {:flex 1
    :transform [{:translateX offset}]
    :marginRight offset})
