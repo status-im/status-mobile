@@ -235,11 +235,11 @@
       (anim/start (anim/spring val {:toValue to-value})
                   (fn [arg]
                     (when (.-finished arg)
-                      (dispatch [:set-in [:animations ::messages-offset-current] to-value])))))))
+                      (dispatch [:set-animation ::messages-offset-current to-value])))))))
 
 (defn messages-container [messages]
-  (let [to-messages-offset (subscribe [:get-in [:animations :messages-offset]])
-        cur-messages-offset (subscribe [:get-in [:animations ::messages-offset-current]])
+  (let [to-messages-offset (subscribe [:animations :messages-offset])
+        cur-messages-offset (subscribe [:animations ::messages-offset-current])
         messages-offset (anim/create-value (or @cur-messages-offset 0))
         context {:to-value to-messages-offset
                  :val      messages-offset}

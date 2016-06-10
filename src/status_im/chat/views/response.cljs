@@ -61,7 +61,7 @@
         (anim/start (anim/spring val {:toValue to-value})
                     (fn [arg]
                       (when (.-finished arg)
-                        (dispatch [:set-in [:animations :response-height-current] to-value])
+                        (dispatch [:set-animation :response-height-current to-value])
                         (dispatch [:finish-animate-response-resize])
                         (when (= to-value input-height)
                           (dispatch [:finish-animate-cancel-command])
@@ -69,10 +69,10 @@
       (anim/set-value val @current-value))))
 
 (defn container [& children]
-  (let [commands-input-is-switching? (subscribe [:get-in [:animations :commands-input-is-switching?]])
-        response-resize? (subscribe [:get-in [:animations :response-resize?]])
-        to-response-height (subscribe [:get-in [:animations :to-response-height]])
-        cur-response-height (subscribe [:get-in [:animations :response-height-current]])
+  (let [commands-input-is-switching? (subscribe [:animations :commands-input-is-switching?])
+        response-resize? (subscribe [:animations :response-resize?])
+        to-response-height (subscribe [:animations :to-response-height])
+        cur-response-height (subscribe [:animations :response-height-current])
         response-height (anim/create-value (or @cur-response-height 0))
         context {:animation?    (reaction (or @commands-input-is-switching? @response-resize?))
                  :to-value      to-response-height

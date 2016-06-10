@@ -33,15 +33,15 @@
            (anim/spring val {:toValue to-scale})])
         (fn [arg]
           (when (.-finished arg)
-            (dispatch [:set-in [:animations ::request-button-scale-current] to-scale])
+            (dispatch [:set-animation ::request-button-scale-current to-scale])
             (when loop?
-              (dispatch [:set-in [:animations ::request-button-scale] (if (= to-scale minimum)
-                                                                        maximum
-                                                                        minimum)]))))))))
+              (dispatch [:set-animation ::request-button-scale (if (= to-scale minimum)
+                                                                 maximum
+                                                                 minimum)]))))))))
 
 (defn request-button [msg-id command]
-  (let [to-scale (subscribe [:get-in [:animations ::request-button-scale]])
-        cur-scale (subscribe [:get-in [:animations ::request-button-scale-current]])
+  (let [to-scale (subscribe [:animations ::request-button-scale])
+        cur-scale (subscribe [:animations ::request-button-scale-current])
         scale-anim-val (anim/create-value (or @cur-scale 1))
         loop? (r/atom true)
         context {:to-value to-scale
