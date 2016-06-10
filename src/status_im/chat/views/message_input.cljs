@@ -53,7 +53,7 @@
          [animated-view {:style (st/text-container message-input-offset)}
           input])})))
 
-(defview message-text [input-options validator]
+(defview message-text [input-options]
    [input-message [:get-chat-input-text]
     command [:get-chat-command]
     to-msg-id [:get-chat-command-to-msg-id]
@@ -84,7 +84,7 @@
                                               (plain-message/try-send staged-commands
                                                                       input-message
                                                                       dismiss-keyboard)
-                                              (command/try-send input-command validator)))}
+                                              (command/try-send command input-command)))}
                         (when command
                           {:accessibility-label :command-input})
                         input-options)
@@ -92,7 +92,7 @@
         input-message
         input-command)]))
 
-(defview message-input [{:keys [input-options validator]}]
+(defview message-input [{:keys [input-options]}]
   [input-message [:get-chat-input-text]
    command [:get-chat-command]
    to-msg-id [:get-chat-command-to-msg-id]
@@ -110,7 +110,7 @@
         (when (and command (not response?))
           [command/command-icon command response?]))
       [text-container
-       [message-text input-options validator]]
+       [message-text input-options]]
       ;; TODO emoticons: not implemented
       (when plain?
         [plain-message/smile-button])
@@ -120,7 +120,7 @@
                                                                       input-message
                                                                       dismiss-keyboard)
                         :accessibility-label :send-message}])
-        (if (command/valid? input-command validator)
+        (if (command/valid? command input-command)
           [send-button {:on-press            command/send-command
                         :accessibility-label :stage-command}]
           (when-not response?

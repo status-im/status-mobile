@@ -13,7 +13,6 @@
             [status-im.components.drag-drop :as drag]
             [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]
-            [status-im.chat.styles.message-input :refer [input-height]]
             [status-im.components.animation :as anim]))
 
 (defn drag-icon []
@@ -62,10 +61,7 @@
                     (fn [arg]
                       (when (.-finished arg)
                         (dispatch [:set-animation :response-height-current to-value])
-                        (dispatch [:finish-animate-response-resize])
-                        (when (= to-value input-height)
-                          (dispatch [:finish-animate-cancel-command])
-                          (dispatch [:cancel-command]))))))
+                        (dispatch [:finish-animate-response-resize])))))
       (anim/set-value val @current-value))))
 
 (defn container [& children]
@@ -93,7 +89,12 @@
                children))})))
 
 (defn response-view []
-  [container
-   [request-info]
-   [response-suggestions-view]
-   [view st/input-placeholder]])
+  [view {:style         st/placeholder
+         :pointerEvents :box-none
+         :onLayout      (fn [event]
+                          (let [height (.. event -nativeEvent -layout -height)]
+                            (dispatch [:set-response-max-height height])))}
+   [container
+    [request-info]
+    [response-suggestions-view]
+    [view st/animation-margin]]])

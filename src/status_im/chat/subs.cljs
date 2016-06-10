@@ -97,3 +97,10 @@
     (let [command (reaction (commands/get-chat-command @db))
           text (reaction (commands/get-chat-command-content @db))]
       (reaction (get-content-suggestions @command @text)))))
+
+(register-sub :command-validation-messages
+  (fn [db _]
+    (let [command (reaction (commands/get-chat-command @db))
+          text (reaction (commands/get-chat-command-content @db))]
+      (reaction (when-let [validator (:validator @command)]
+                  (validator @text))))))

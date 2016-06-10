@@ -5,7 +5,6 @@
     [status-im.components.react :refer [view]]
     [status-im.chat.views.message-input :refer [message-input]]
     [status-im.chat.views.staged-command :refer [simple-command-staged-view]]
-    [status-im.utils.phone-number :refer [valid-mobile-number?]]
     [status-im.chat.styles.message :as st]))
 
 (defn staged-command-view [stage-command]
@@ -20,8 +19,7 @@
   [message-input
    (when command
      (case (:command command)
-       :phone {:input-options {:keyboardType :phone-pad}
-               :validator     valid-mobile-number?}
+       :phone {:input-options {:keyboardType :phone-pad}}
        :keypair-password {:input-options {:secureTextEntry true}}
        :confirmation-code {:input-options {:keyboardType :numeric}}
        :money {:input-options {:keyboardType :numeric}}

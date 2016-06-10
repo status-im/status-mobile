@@ -18,13 +18,13 @@
   (dispatch [:stage-command])
   (cancel-command-input))
 
-(defn valid? [message validator]
-  (if validator
+(defn valid? [command message]
+  (if-let [validator (:validator command)]
     (validator message)
     (pos? (count message))))
 
-(defn try-send [message validator]
-  (when (valid? message validator)
+(defn try-send [command message]
+  (when (valid? command message)
     (send-command)))
 
 (defn command-icon [command]

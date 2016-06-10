@@ -3,12 +3,11 @@
             [re-frame.middleware :refer [path]]
             [status-im.models.commands :as commands]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
-            [status-im.chat.styles.message-input :refer [input-height]]
-            [status-im.chat.styles.response :refer [request-info-height response-height-normal]]
+            [status-im.chat.styles.response :refer [request-info-height response-height-normal animation-offset]]
             [status-im.chat.styles.response-suggestions :as response-suggestions-styles]
             [status-im.constants :refer [response-input-hiding-duration]]))
 
-(def zero-height input-height)
+(def zero-height animation-offset)
 
 (defn animation-handler
   ([name handler] (animation-handler name nil handler))
@@ -16,21 +15,29 @@
    (register-handler name [(path :animations) middleware] handler)))
 
 (animation-handler :finish-animate-cancel-command
-  (fn [db _]
-    (assoc db :commands-input-is-switching? false)))
+  (fn [animations _]
+    (assoc animations :commands-input-is-switching? false
+                      ::cancel-command? false)))
 
 (animation-handler :animate-cancel-command
   (fn [db _]
     (if-not (:commands-input-is-switching? db)
       (assoc db
         :commands-input-is-switching? true
+        ::cancel-command? true
         :message-input-buttons-scale 1
         :message-input-offset 0
         :to-response-height zero-height
         :messages-offset 0)
       db)))
 
+(defn check-finish-cancel-command [db _]
+  (when (::cancel-command? db)
+    (dispatch [:finish-animate-cancel-command])
+    (dispatch [:cancel-command])))
+
 (animation-handler :finish-animate-response-resize
+  (after check-finish-cancel-command)
   (fn [db _]
     (let [fixed (:to-response-height db)]
       (assoc db :response-height-current fixed
@@ -105,7 +112,7 @@
                         (or (<= current (+ zero-height delta))
                             (empty? suggestions)) (+ zero-height request-info-height)
                         (<= current (+ zero-height normal-height delta)) (get-response-height db)
-                        :else max-height)]
+                        :else (+ zero-height max-height))]
         (dispatch [:animate-response-resize])
         (assoc-in db [:animations :to-response-height] new-fixed))
       db)))
