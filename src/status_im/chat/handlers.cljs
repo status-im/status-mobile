@@ -230,9 +230,9 @@
     (sign-up-service/stop-listening-confirmation-code-sms db)))
 
 (register-handler :sign-up-confirm
-  (fn [db [_ confirmation-code]]
-    (server/sign-up-confirm confirmation-code sign-up-service/on-send-code-response)
-    db))
+  (u/side-effect!
+    (fn [_ [_ confirmation-code]]
+      (server/sign-up-confirm confirmation-code sign-up-service/on-send-code-response))))
 
 (register-handler :set-signed-up
   (fn [db [_ signed-up]]
