@@ -5,7 +5,7 @@
                                                 image]]
             [status-im.components.camera :refer [camera]]
             [status-im.components.styles :refer [toolbar-background1
-                                                 search-icon]]
+                                                 icon-search]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.qr-scanner.styles :as st]
             [status-im.utils.types :refer [json->clj]]))
@@ -14,7 +14,7 @@
   [toolbar {:title            title
             :background-color toolbar-background1
             :action           {:image   {:source {:uri :icon_lock_white}
-                                         :style  search-icon}
+                                         :style  icon-search}
                                :handler #()}}])
 
 (defview qr-scanner []

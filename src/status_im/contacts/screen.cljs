@@ -15,7 +15,7 @@
             [status-im.components.icons.ionicons :refer [icon]]
             [status-im.components.styles :refer [color-blue
                                                  hamburger-icon
-                                                 search-icon
+                                                 icon-search
                                                  create-icon
                                                  toolbar-background2]]
             [status-im.contacts.styles :as st]
@@ -32,7 +32,7 @@
             :title            (label :t/contacts)
             :background-color toolbar-background2
             :action           {:image   {:source {:uri :icon_search}
-                                         :style  search-icon}
+                                         :style  icon-search}
                                :handler (fn [])}}])
 
 (defview contact-list []

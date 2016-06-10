@@ -4,56 +4,75 @@
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
+                                                image
+                                                linear-gradient
                                                 touchable-highlight]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
-            [status-im.components.icons.ionicons :refer [icon]]
             [status-im.components.styles :refer [color-purple
-                                                 search-icon
-                                                 import-qr-icon
+                                                 color-white
+                                                 icon-search
+                                                 icon-back
+                                                 icon-qr
                                                  toolbar-background1
-                                                 form-text-input]]
+                                                 toolbar-title-container
+                                                 toolbar-title-text
+                                                 button-input-container
+                                                 button-input
+                                                 white-form-text-input]]
+            [status-im.qr-scanner.views.import-button :refer [import-button]]
             [status-im.i18n :refer [label]]
             [status-im.contacts.styles :as st]))
 
-(defn import-qr-button []
-  [touchable-highlight
-   {:on-press #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])}
-   [view st/import-qr-button
-    [view st/import-qr-button-content
-     [icon {:name  :qr-scanner
-            :style import-qr-icon}]
-     [text {:style st/import-qr-text} (label :t/import-qr)]]]])
+
+
+(def toolbar-title
+  [view toolbar-title-container
+   [text {:style (merge toolbar-title-text {:color color-white})}
+    (label :t/new-contact)]])
 
 (defview contact-name-input [name]
   []
   [text-input
-   {:underlineColorAndroid color-purple
-    :style                 form-text-input
+   {:underlineColorAndroid color-white
+    :placeholderTextColor  color-white
+    :style                 white-form-text-input
     :autoFocus             true
     :placeholder           (label :t/contact-name)
     :onChangeText          #(dispatch [:set-in [:new-contact :name] %])}
    name])
 
-(defview contact-address-input [address]
-  [text-input
-   {:underlineColorAndroid color-purple
-    :style                 form-text-input
-    :autoFocus             true
-    :placeholder           (label :t/contact-address)
-    :onChangeText          #(dispatch [:set-in [:new-contact :address] %])}
-   address])
+(defview contact-whisper-id-input [whisper-identity]
+  [view button-input-container
+   [text-input
+    {:underlineColorAndroid color-white
+     :placeholderTextColor  color-white
+     :style                 (merge white-form-text-input button-input)
+     :autoFocus             true
+     :placeholder           (label :t/whisper-identity)
+     :onChangeText          #(dispatch [:set-in [:new-contact :whisper-identity] %])}
+    whisper-identity]
+   [import-button #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])]])
 
 (defview new-contact []
-  [{:keys [name address whisper-identity phone-number] :as new-contact} [:get :new-contact]]
+  [{:keys [name whisper-identity phone-number] :as new-contact} [:get :new-contact]]
   [drawer-view
    [view st/contact-form-container
-    [toolbar {:title            (label :t/new-contact)
-              :background-color toolbar-background1
-              :action           {:image   {:source {:uri :icon_add_gray}
-                                           :style  search-icon}
+    [linear-gradient {:colors ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
+                      :start [0, 0]
+                      :end [0.5, 1]
+                      :locations [0, 0.8 ,1]
+                      :style  st/gradient-background}]
+
+    [toolbar {:background-color :transparent
+              :nav-action     {:image   {:source {:uri :icon_back_white}
+                                         :style  icon-back}
+                               :handler  #(dispatch [:navigate-back])}
+              :custom-content   toolbar-title
+              :action           {:image   {:source {:uri :icon_add}
+                                           :style  icon-search}
                                  :handler #(dispatch [:add-new-contact new-contact])}}]
-    [import-qr-button]
-    [contact-name-input name]
-    [contact-address-input address]
-    [text (str "Whisper identity: " whisper-identity)]]])
+    [view st/form-container
+     [contact-whisper-id-input whisper-identity]
+     [contact-name-input name]
+     ]]])
