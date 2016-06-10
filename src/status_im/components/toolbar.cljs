@@ -16,9 +16,7 @@
                                                  toolbar-title-container
                                                  toolbar-title-text
                                                  icon-back
-                                                 toolbar-height]]
-            [status-im.components.realm :refer [list-view]]
-            [reagent.core :as r]))
+                                                 toolbar-height]]))
 
 (defn toolbar [{:keys [title nav-action hide-nav? action custom-action
                        background-color custom-content style]}]

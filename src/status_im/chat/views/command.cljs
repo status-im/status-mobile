@@ -38,11 +38,13 @@
                               :onChangeText    set-input-message
                               :onSubmitEditing (fn []
                                                  (when (valid? message validator)
-                                                   (send-command)))}
+                                                   (send-command)))
+                              :accessibility-label :command-input}
                              input-options)
            message]
           (if (valid? message validator)
-            [touchable-highlight {:on-press send-command}
+            [touchable-highlight {:on-press send-command
+                                  :accessibility-label :stage-command}
              [view st/send-container [icon :send st/send-icon]]]
             [touchable-highlight {:on-press cancel-command-input}
              [view st/cancel-container

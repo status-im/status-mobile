@@ -2,14 +2,14 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                              text
-                                              image
-                                              icon
-                                              scroll-view
-                                              touchable-highlight
-                                              touchable-opacity]]
+                                                text
+                                                image
+                                                icon
+                                                scroll-view
+                                                touchable-highlight
+                                                touchable-opacity]]
             [status-im.components.chat-icon.screen :refer [profile-icon
-                                                         my-profile-icon]]
+                                                           my-profile-icon]]
             [status-im.profile.styles :as st]
             [status-im.components.qr-code :refer [qr-code]]
             [status-im.utils.types :refer [clj->json]]
@@ -62,13 +62,13 @@
       [text {:style st/report-user-text} (label :t/report-user)]]]]])
 
 (defview my-profile []
-  [username     [:get :username]
-   photo-path   [:get :photo-path]
+  [username [:get :username]
+   photo-path [:get :photo-path]
    phone-number [:get :phone-number]
-   email        [:get :email]
-   status       [:get :status]
+   email [:get :email]
+   status [:get :status]
    identity     [:get-in [:user-identity :public]]]
-  [view {:style st/profile}
+  [scroll-view {:style st/profile}
    [touchable-highlight {:style    st/back-btn-touchable
                          :on-press #(dispatch [:navigate-back])}
     [view st/back-btn-container

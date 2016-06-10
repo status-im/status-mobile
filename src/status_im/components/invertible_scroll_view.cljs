@@ -1,8 +1,8 @@
-(ns status-im.components.invertible-scroll-view)
+(ns status-im.components.invertible-scroll-view
+  (:require [reagent.core :as r]))
 
-(set! js/window.InvertibleScrollView (js/require "react-native-invertible-scroll-view"))
+(def class (js/require "react-native-invertible-scroll-view"))
 
 (defn invertible-scroll-view [props]
-  (js/React.createElement js/InvertibleScrollView
-                          (clj->js (merge {:inverted true} props))))
+  (r/create-element class (clj->js (merge {:inverted true} props))))
 

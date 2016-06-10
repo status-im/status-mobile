@@ -5,7 +5,8 @@
             [clojure.string :as s]
             [status-im.utils.utils :refer [http-post]]
             [status-im.utils.phone-number :refer [format-phone-number]]
-            [status-im.utils.handlers :as u]))
+            [status-im.utils.handlers :as u]
+            [status-im.utils.utils :refer [require]]))
 
 (defn save-contact
   [_ [_ contact]]
@@ -26,7 +27,7 @@
 (register-handler :load-contacts load-contacts!)
 
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
-(def react-native-contacts (js/require "react-native-contacts"))
+(def react-native-contacts (require "react-native-contacts"))
 
 (defn contact-name [contact]
   (->> contact
@@ -91,10 +92,14 @@
 (defn add-new-contacts
   [{:keys [contacts] :as db} [_ new-contacts]]
   (let [identities    (set (map :whisper-identity contacts))
-        new-contacts' (remove #(identities (:whisper-identity %)) new-contacts)]
+        new-contacts' (->> new-contacts
+                           (remove #(identities (:whisper-identity %)))
+                           (map #(vector (:whisper-identity %) %))
+                           (into {}))]
+    (println new-contacts')
     (-> db
-        (update :contacts concat new-contacts')
-        (assoc :new-contacts new-contacts'))))
+        (update :contacts merge new-contacts')
+        (assoc :new-contacts (vals new-contacts')))))
 
 (register-handler :add-contacts
   (after save-contacts!)
