@@ -52,8 +52,11 @@
 (defn get-commands [{:keys [current-chat-id] :as db}]
   (or (get-in db [:chats current-chat-id :commands]) {}))
 
-(defn get-command [db command-key]
-  ((get-commands db) command-key))
+(defn get-command [{:keys [current-chat-id] :as db} command-key]
+  ((or (->> (get-in db [:chats current-chat-id])
+            ((juxt :commands :responses))
+            (apply merge))
+       {}) command-key))
 
 (defn find-command [commands command-key]
   (first (filter #(= command-key (:command %)) commands)))
@@ -74,7 +77,7 @@
   [{:keys [current-chat-id] :as db} msg-id command-key]
   (update-in db [:chats current-chat-id :command-input] merge
              {:content   nil
-              :command   (get-command db command-key)
+              :command   (merge (get-command db command-key))
               :to-msg-id msg-id}))
 
 (defn set-chat-command [db command-key]
@@ -111,7 +114,7 @@
              #(assoc % msg-id handler)))
 
 (defn parse-command-msg-content [commands content]
-  (update content :command #(find-command commands (keyword %))))
+  (update content :command #((keyword %) commands)))
 
 (defn parse-command-request [commands content]
   (update content :command #((keyword %) commands)))
