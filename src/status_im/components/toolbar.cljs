@@ -13,6 +13,9 @@
                                                  text1-color
                                                  text2-color
                                                  toolbar-background1
+                                                 toolbar-title-container
+                                                 toolbar-title-text
+                                                 icon-back
                                                  toolbar-height]]
             [status-im.components.realm :refer [list-view]]
             [reagent.core :as r]))
@@ -34,20 +37,14 @@
            [image (:image nav-action)]]]
          [touchable-highlight {:on-press #(dispatch [:navigate-back])}
           [view {:width  56
-                 :height 56}
+                 :height 56
+                 :alignItems     :center
+                 :justifyContent :center}
            [image {:source {:uri :icon_back}
-                   :style  {:marginTop  21
-                            :marginLeft 23
-                            :width      8
-                            :height     14}}]]]))
+                   :style  icon-back}]]]))
      (or custom-content
-         [view {:style {:flex           1
-                        :alignItems     :center
-                        :justifyContent :center}}
-          [text {:style {:marginTop  -2.5
-                         :color      text1-color
-                         :fontSize   16
-                         :fontFamily font}}
+         [view {:style toolbar-title-container}
+          [text {:style toolbar-title-text}
            title]])
      custom-action
      (when action
