@@ -91,9 +91,15 @@
    :fontFamily font
    :color      text1-color})
 
-(def chat-name-btn-edit-container
+(def chat-name-validation-message
+  {:marginTop  8
+   :marginLeft 16
+   :color      :red})
+
+(defn chat-name-btn-edit-container [enabled?]
   {:padding        16
-   :justifyContent :center})
+   :justifyContent :center
+   :opacity        (if enabled? 1 0.3)})
 
 (def chat-name-btn-edit-text
   {:marginTop  -1
