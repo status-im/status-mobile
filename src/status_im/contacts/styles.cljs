@@ -1,13 +1,12 @@
 (ns status-im.contacts.styles
   (:require [status-im.components.styles :refer [font
-                                               title-font
-                                               text1-color
-                                               color-white
-                                               online-color]]))
+                                                 title-font
+                                                 text1-color
+                                                 color-white
+                                                 toolbar-background2
+                                                 online-color]]))
 
-(def search-icon
-  {:width  17
-   :height 17})
+
 
 (def contacts-list-container
   {:flex            1
@@ -67,3 +66,20 @@
    :fontSize   16
    :fontFamily font
    :color      text1-color})
+
+; new contact
+
+(def contact-form-container
+  {:flex  1
+   :color :white})
+
+(def gradient-background
+  {:position :absolute
+   :top      0
+   :right    0
+   :bottom   0
+   :left     0})
+
+(def form-container
+  {:marginLeft 16
+   :margin-top 50})

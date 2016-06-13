@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Properties;
 import java.io.File;
 
-
+import com.lwansbrough.RCTCamera.*;
 import com.i18n.reactnativei18n.ReactNativeI18n;
 import io.realm.react.RealmReactPackage;
 
@@ -131,6 +131,7 @@ public class MainActivity extends ReactActivity {
                 new ReactNativeI18n(),
                 new RandomBytesPackage(),
                 new LinearGradientPackage(),
+                new RCTCameraPackage(),
                 new SmsListener(this)
         );
     }

@@ -115,8 +115,18 @@
    :You                                   "You"
 
    ;new-contact
-   :import-qr                             "Import from QR"
+   :import-qr                             "Import"
    :contact-name                          "Contact Name"
-   :contact-address                       "Contact Address"
+   :whisper-identity                      "Whisper Identity"
+
+   ;login
+   :recover-from-passphrase               "Recover from passphrase"
+   :connect                               "Connect"
+   :address                               "Address"
+   :password                              "Password"
+   :login                                 "Login"
+
+   ;users
+   :add-account                                 "Add account"
 
    })

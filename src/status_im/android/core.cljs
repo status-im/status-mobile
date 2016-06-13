@@ -8,6 +8,8 @@
             [status-im.components.react :refer [navigator app-registry]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.screen :refer [contact-list]]
+            [status-im.contacts.views.new-contact :refer [new-contact]]
+            [status-im.qr-scanner.screen :refer [qr-scanner]]
             [status-im.discovery.screen :refer [discovery]]
             [status-im.discovery.tag :refer [discovery-tag]]
             [status-im.chat.screen :refer [chat]]
@@ -44,6 +46,8 @@
         :new-group [new-group]
         :group-settings [group-settings]
         :contact-list [main-tabs]
+        :new-contact [new-contact]
+        :qr-scanner [qr-scanner]
         :chat [chat]
         :profile [profile]
         :my-profile [my-profile]))))
