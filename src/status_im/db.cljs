@@ -29,6 +29,11 @@
              :email                  "myemail@gmail.com"
              :status                 "Hi, this is my status"
              :current-tag            nil
+             :qr-codes               {}
+             :new-contact            {:name             ""
+                                      :address          ""
+                                      :whisper-identity ""
+                                      :phone-number     ""}
              :disable-group-creation false})
 
 (def protocol-initialized-path [:protocol-initialized])
