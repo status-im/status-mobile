@@ -260,7 +260,8 @@
   [group-chat [:chat :group-chat]
    show-actions-atom [:show-actions]
    command [:get-chat-command]
-   to-msg-id [:get-chat-command-to-msg-id]]
+   to-msg-id [:get-chat-command-to-msg-id]
+   validation-messages-enabled? [:chat :validation-messages-enabled?]]
   [view {:style st/chat-view}
    [chat-toolbar]
    [messages-container
@@ -272,7 +273,7 @@
       (and command to-msg-id) [response-view]
       command [content-suggestions-view]
       :else [suggestions-view])
-    (when command
+    (when validation-messages-enabled?
       [validation-messages])]
    [chat-message-new]
    (when show-actions-atom [actions-view])])

@@ -4,7 +4,7 @@
             [re-frame.core :refer [subscribe dispatch]]
             [status-im.db :as db]
             [status-im.components.styles :refer [color-blue color-dark-mint]]
-            [status-im.utils.phone-number :refer [valid-mobile-number?]]
+            [status-im.utils.phone-number :refer [get-validation-messages]]
             [status-im.i18n :refer [label]]))
 
 ;; todo delete
@@ -27,7 +27,7 @@
                 :request-text (label :t/phone-request-text)
                 :suggestion   true
                 :handler      #(dispatch [:sign-up %])
-                :validator    valid-mobile-number?}
+                :validator    get-validation-messages}
                {:command      :confirmation-code
                 :text         "!confirmationCode"
                 :description  (label :t/confirmation-code-command-description)

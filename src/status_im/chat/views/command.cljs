@@ -14,18 +14,11 @@
 (defn set-input-message [message]
   (dispatch [:set-chat-command-content message]))
 
-(defn send-command []
-  (dispatch [:stage-command])
-  (cancel-command-input))
+(defn ready? [message]
+  (not (empty? message)))
 
-(defn valid? [command message]
-  (if-let [validator (:validator command)]
-    (validator message)
-    (pos? (count message))))
-
-(defn try-send [command message]
-  (when (valid? command message)
-    (send-command)))
+(defn try-send []
+  (dispatch [:try-stage-command]))
 
 (defn command-icon [command]
   [view (st/command-text-container command)

@@ -84,7 +84,7 @@
                                               (plain-message/try-send staged-commands
                                                                       input-message
                                                                       dismiss-keyboard)
-                                              (command/try-send command input-command)))}
+                                              (command/try-send)))}
                         (when command
                           {:accessibility-label :command-input})
                         input-options)
@@ -115,13 +115,13 @@
       (when plain?
         [plain-message/smile-button])
       (if plain?
-        (when (plain-message/message-valid? staged-commands input-message)
+        (when (plain-message/ready? staged-commands input-message)
           [send-button {:on-press            #(plain-message/try-send staged-commands
                                                                       input-message
                                                                       dismiss-keyboard)
                         :accessibility-label :send-message}])
-        (if (command/valid? command input-command)
-          [send-button {:on-press            command/send-command
+        (if (command/ready? input-command)
+          [send-button {:on-press            command/try-send
                         :accessibility-label :stage-command}]
           (when-not response?
             [command/cancel-button])))]]))

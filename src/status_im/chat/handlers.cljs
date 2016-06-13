@@ -48,6 +48,17 @@
             db)
           (assoc-in db [:chats current-chat-id :show-validation-messages?] show?))))
 
+(register-handler :update-validation-messages
+  (fn [db _]
+    (update-validation-messages db)))
+
+(register-handler :enable-validation-messages
+  (fn [db _]
+    (let [current-chat-id (:current-chat-id db)]
+      (-> db
+          (assoc-in [:chats current-chat-id :validation-messages-enabled?] true)
+          (update-validation-messages)))))
+
 (defn safe-trim [s]
   (when (string? s)
     (str/trim s)))
@@ -57,6 +68,7 @@
     (-> db
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim)
+        (assoc-in [:chats current-chat-id :validation-messages-enabled?] false)
         (update-validation-messages))))
 
 (register-handler :start-cancel-command
@@ -79,21 +91,36 @@
           (if (commands/get-chat-command-to-msg-id db)
             (update-response-height db)
             db)
-          (update-validation-messages db))))
+          (if (get-in db [:chats current-chat-id :validation-messages-enabled?])
+            (update-validation-messages db)
+            db))))
 
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]
   (assoc-in db [:chats current-chat-id :input-text] text))
 
 (register-handler :stage-command
+  (after #(dispatch [:start-cancel-command]))
   (fn [{:keys [current-chat-id] :as db} _]
     (let [db (update-input-text db nil)
-          {:keys [command content]}
-          (get-in db [:chats current-chat-id :command-input])
+          {:keys [command content]} (get-in db [:chats current-chat-id :command-input])
           command-info {:command command
                         :content content
                         :handler (:handler command)}]
       (commands/stage-command db command-info))))
+
+(defn try-stage-command [{:keys [current-chat-id] :as db}]
+  (let [{:keys [command content]} (get-in db [:chats current-chat-id :command-input])]
+    (if-let [validator (:validator command)]
+      (if-not (empty? (validator content))
+        (dispatch [:enable-validation-messages])
+        (dispatch [:stage-command]))
+      (dispatch [:stage-command]))))
+
+(register-handler :try-stage-command
+  (u/side-effect!
+    (fn [db _]
+      (try-stage-command db))))
 
 (register-handler :set-message-input []
   (fn [db [_ input]]

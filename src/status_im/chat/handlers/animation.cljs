@@ -63,7 +63,12 @@
        (min response-height-normal (+ suggestions-height request-info-height)))))
 
 (defn update-response-height [db]
-  (assoc-in db [:animations :to-response-height] (get-response-height db)))
+  (let [max-height (get-in db [:animations :response-height-max])]
+    (update-in db [:animations :to-response-height]
+               (fn [height]
+                 (if (= height (+ zero-height max-height))
+                   height
+                   (get-response-height db))))))
 
 (animation-handler :finish-show-response
   (fn [db _]
@@ -85,9 +90,9 @@
     (let [prev-height (:response-height-max db)]
       (if (not= height prev-height)
         (let [db (assoc db :response-height-max height)]
-          (if (= prev-height (:to-response-height db))
-            (assoc db :to-response-height height
-                      :response-height-current height)
+          (if (= (+ zero-height prev-height) (:to-response-height db))
+            (assoc db :to-response-height (+ zero-height height)
+                      :response-height-current (+ zero-height height))
             db))
         db))))
 

@@ -10,7 +10,7 @@
 (defn format-phone-number [number]
   (str (.getNumber (awesome-phonenumber. number country-code "international"))))
 
-(defn valid-mobile-number? [number]
+(defn get-validation-messages [number]
   (if (string? number)
     (let [number-obj (awesome-phonenumber. number country-code "international")]
       (cond
