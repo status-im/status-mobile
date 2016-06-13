@@ -3,6 +3,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as s]
             [status-im.components.react :refer [view
+                                                animated-view
                                                 text
                                                 image
                                                 icon
@@ -17,8 +18,13 @@
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
+            [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
+            [status-im.chat.views.suggestions :refer [suggestions-view]]
+            [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
-            [status-im.i18n :refer [label label-pluralize]]))
+            [status-im.i18n :refer [label label-pluralize]]
+            [status-im.components.animation :as anim]
+            [reagent.core :as r]))
 
 
 (defn contacts-by-identity [contacts]
@@ -213,21 +219,58 @@
                 :custom-action  [toolbar-action]}])))
 
 (defview messages-view [group-chat]
-  [messages [:chat :messages]
-   contacts [:chat :contacts]]
-  (let [contacts' (contacts-by-identity contacts)]
-    [list-view {:renderRow             (message-row contacts' group-chat)
-                :renderScrollComponent #(invertible-scroll-view (js->clj %))
-                :onEndReached          #(dispatch [:load-more-messages])
-                :enableEmptySections   true
-                :dataSource            (to-datasource messages)}]))
+         [messages [:chat :messages]
+          contacts [:chat :contacts]]
+         (let [contacts' (contacts-by-identity contacts)]
+           [list-view {:renderRow                 (message-row contacts' group-chat)
+                       :renderScrollComponent     #(invertible-scroll-view (js->clj %))
+                       :onEndReached              #(dispatch [:load-more-messages])
+                       :enableEmptySections       true
+                       :keyboardShouldPersistTaps true
+                       :dataSource                (to-datasource messages)}]))
+
+(defn messages-container-animation-logic [{:keys [to-value val]}]
+  (fn [_]
+    (let [to-value @to-value]
+      (anim/start (anim/spring val {:toValue to-value})
+                  (fn [arg]
+                    (when (.-finished arg)
+                      (dispatch [:set-in [:animations ::messages-offset-current] to-value])))))))
+
+(defn messages-container [messages]
+  (let [to-messages-offset (subscribe [:get-in [:animations :messages-offset]])
+        cur-messages-offset (subscribe [:get-in [:animations ::messages-offset-current]])
+        messages-offset (anim/create-value (or @cur-messages-offset 0))
+        context {:to-value to-messages-offset
+                 :val      messages-offset}
+        on-update (messages-container-animation-logic context)]
+    (r/create-class
+      {:component-did-mount
+       on-update
+       :component-did-update
+       on-update
+       :reagent-render
+       (fn [messages]
+         @to-messages-offset
+         [animated-view {:style (st/messages-container messages-offset)}
+          messages])})))
 
 (defview chat []
   [group-chat [:chat :group-chat]
-   show-actions-atom [:show-actions]]
-  [view st/chat-view
+   show-actions-atom [:show-actions]
+   command [:get-chat-command]
+   to-msg-id [:get-chat-command-to-msg-id]]
+  [view {:style st/chat-view
+         :onLayout (fn [event]
+                     (let [height (.. event -nativeEvent -layout -height)]
+                       (dispatch [:set-response-max-height height])))}
    [chat-toolbar]
-   [messages-view group-chat]
+   [messages-container
+    [messages-view group-chat]]
    (when group-chat [typing-all])
+   (cond
+     (and command to-msg-id) [response-view]
+     command [content-suggestions-view]
+     :else [suggestions-view])
    [chat-message-new]
    (when show-actions-atom [actions-view])])

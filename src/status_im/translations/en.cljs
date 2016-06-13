@@ -92,7 +92,7 @@
    :location-command-description          "Send location"
    :phone-command-description             "Send phone number"
    :phone-request-text                    "Phone number request"
-   :confirmation-code-coomand-description "Send confirmation code"
+   :confirmation-code-command-description "Send confirmation code"
    :confirmation-code-request-text        "Confirmation code request"
    :send-command-description              "Send location"
    :request-command-description           "Send request"

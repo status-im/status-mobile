@@ -1,4 +1,4 @@
-(ns status-im.chat.views.content-suggestions
+(ns status-im.chat.views.response-suggestions
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
@@ -7,11 +7,15 @@
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
-            [status-im.chat.styles.content-suggestions :as st]
+            [status-im.chat.styles.response-suggestions :as st]
             [status-im.utils.listview :refer [to-datasource]]))
 
 (defn set-command-content [content]
   (dispatch [:set-chat-command-content content]))
+
+(defn header-list-item [{:keys [header]}]
+  [view st/header-container
+   [text {:style st/header-text} header]])
 
 (defn suggestion-list-item [{:keys [value description]}]
   [touchable-highlight {:onPress #(set-command-content value)}
@@ -21,17 +25,14 @@
      [text {:style st/description-text} description]]]])
 
 (defn render-row [row _ _]
-  (list-item [suggestion-list-item row]))
+  (list-item (if (:header row)
+               [header-list-item row]
+               [suggestion-list-item row])))
 
-(defview content-suggestions-view []
+(defview response-suggestions-view []
   [suggestions [:get-content-suggestions]]
-  (when-let [values (not-empty (filter :value suggestions))]
-    [view st/container
-     [touchable-highlight {:style   st/drag-down-touchable
-                           ;; TODO hide suggestions?
-                           :onPress (fn [])}
-      [view [icon :drag_down st/drag-down-icon]]]
-     [view (st/suggestions-container (count values))
-      [list-view {:dataSource                (to-datasource values)
-                  :keyboardShouldPersistTaps true
-                  :renderRow                 render-row}]]]))
+  (when (seq suggestions)
+    [view st/suggestions-container
+     [list-view {:dataSource                (to-datasource suggestions)
+                 :keyboardShouldPersistTaps true
+                 :renderRow                 render-row}]]))
