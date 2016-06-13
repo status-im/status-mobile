@@ -8,6 +8,8 @@
                                                  color-black
                                                  validation-message-background]]))
 
+(def container-height 61)
+
 (def drag-container
   {:height         16
    :alignItems     :center
@@ -55,7 +57,8 @@
 (def inner-container
   {:flexDirection :column})
 
-(def container
+(defn animated-container [height]
   {:flexDirection   :column
+   :height          height
    :backgroundColor color-white
    :elevation       2})

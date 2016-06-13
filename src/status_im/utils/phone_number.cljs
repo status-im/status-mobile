@@ -11,10 +11,12 @@
   (str (.getNumber (awesome-phonenumber. number country-code "international"))))
 
 (defn valid-mobile-number? [number]
-  (when (string? number)
+  (if (string? number)
     (let [number-obj (awesome-phonenumber. number country-code "international")]
       (cond
         (not (.isValid number-obj)) [{:parameter "Phone number"
                                       :message   "Invalid phone number"}]
         (not (.isMobile number-obj)) [{:parameter "Phone number"
-                                       :message   "Only mobile phone number is allowed"}]))))
+                                       :message   "Only mobile phone number is allowed"}]))
+    [{:parameter "Phone number"
+      :message   "Invalid phone number"}]))

@@ -35,6 +35,19 @@
             new-messages (gen-messages 10)]
         (update-in db messages concat new-messages))))
 
+(defn update-validation-messages [db]
+  (let [current-chat-id (:current-chat-id db)
+        command (commands/get-chat-command db)
+        text (commands/get-chat-command-content db)
+        new-validation-messages (when-let [validator (:validator command)]
+                                  (validator text))
+        show? (some? new-validation-messages)]
+    (as-> db db
+          (if show?
+            (assoc-in db [:chats current-chat-id :validation-messages] new-validation-messages)
+            db)
+          (assoc-in db [:chats current-chat-id :show-validation-messages?] show?))))
+
 (defn safe-trim [s]
   (when (string? s)
     (str/trim s)))
@@ -43,7 +56,8 @@
   (fn [{:keys [current-chat-id] :as db} _]
     (-> db
         (assoc-in [:chats current-chat-id :command-input] {})
-        (update-in [:chats current-chat-id :input-text] safe-trim))))
+        (update-in [:chats current-chat-id :input-text] safe-trim)
+        (update-validation-messages))))
 
 (register-handler :start-cancel-command
   (u/side-effect!
@@ -64,7 +78,8 @@
           (assoc-in db [:chats current-chat-id :input-text] nil)
           (if (commands/get-chat-command-to-msg-id db)
             (update-response-height db)
-            db))))
+            db)
+          (update-validation-messages db))))
 
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]

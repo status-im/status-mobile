@@ -13,6 +13,9 @@
             [status-im.chat.styles.validation-messages :as st]
             [status-im.components.animation :as anim]))
 
+(def min-height 1)
+(def max-height st/container-height)
+
 (defn info-container [message]
   [view st/info-container
    [text {:style st/command-name}
@@ -31,43 +34,39 @@
     (for [message validation-messages]
       ^{:key message} [info-container message])]])
 
-(defn container-animation-logic [{:keys [animation? to-value current-value val]}]
+(defn container-animation-logic [{:keys [to-value val]}]
   (fn [_]
-    (if @animation?
-      (let [to-value @to-value]
-        (anim/start (anim/spring val {:toValue to-value})
-                    (fn [arg]
-                      (when (.-finished arg)
-                        (dispatch [:set-animation :response-height-current to-value])
-                        (dispatch [:finish-animate-response-resize])))))
-      (anim/set-value val @current-value))))
+    (let [to-value @to-value]
+      (when (< min-height to-value)
+        (dispatch [:set-animation ::validation-messages-visible? true]))
+      (anim/start (anim/timing val {:toValue  to-value
+                                    :duration 200})
+                  (fn [arg]
+                    (when (<= to-value min-height)
+                      (dispatch [:set-animation ::validation-messages-visible? false])))))))
 
 (defn container [& children]
-  (let [commands-input-is-switching? (subscribe [:animations :commands-input-is-switching?])
-        response-resize? (subscribe [:animations :response-resize?])
-        to-response-height (subscribe [:animations :to-response-height])
-        cur-response-height (subscribe [:animations :response-height-current])
-        response-height (anim/create-value (or @cur-response-height 0))
-        context {:animation?    (reaction (or @commands-input-is-switching? @response-resize?))
-                 :to-value      to-response-height
-                 :current-value cur-response-height
-                 :val           response-height}
+  (let [show? (subscribe [:show-command-validation-messages?])
+        commands-input-is-switching? (subscribe [:animations :commands-input-is-switching?])
+        to-height (reaction (if (and @show? (not @commands-input-is-switching?))
+                              max-height
+                              min-height))
+        visible? (subscribe [:animations ::validation-messages-visible?])
+        anim-height (anim/create-value min-height)
+        context {:to-value to-height
+                 :val      anim-height}
         on-update (container-animation-logic context)]
     (r/create-class
-      {
-       ;:component-did-mount
-       ;on-update
-       ;:component-did-update
-       ;on-update
+      {:component-did-mount
+       on-update
+       :component-did-update
+       on-update
        :reagent-render
        (fn [& children]
-         @to-response-height
-         (into [animated-view {:style st/container
-                               ;(if (or @commands-input-is-switching? @response-resize?)
-                               ;  response-height
-                               ;  (or @cur-response-height 0))
-                               }]
-               children))})))
+         @to-height
+         (when @visible?
+           (into [animated-view {:style (st/animated-container anim-height)}]
+                 children)))})))
 
 (defview validation-messages []
   [validation-messages [:command-validation-messages]]
