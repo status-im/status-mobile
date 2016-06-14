@@ -29,6 +29,7 @@ Command.prototype.create = function (com) {
     this.color = com.color;
     this.icon = com.icon;
     this.params = com.params || [];
+    this.preview = com.preview;
     this.addToCatalog();
 
     return this;

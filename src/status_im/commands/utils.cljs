@@ -1,6 +1,8 @@
 (ns status-im.commands.utils
   (:require [clojure.set :as set]
             [clojure.walk :as w]
+            [status-im.components.react :refer [text scroll-view view
+                                                image touchable-highlight]]
             [re-frame.core :refer [register-handler dispatch trim-v debug]]))
 
 (defn json->cljs [json]
