@@ -63,9 +63,10 @@
            [text {:style st/command-name}
             (str "!" (:name command))]]]
          ;; todo doesn't reflect design
-         [view (st/command-image-view command)
-          [image {:source {:uri (:icon command)}
-                  :style  st/command-image}]]
+         (when-let [icon (:icon command)]
+           [view (st/command-image-view command)
+            [image {:source {:uri icon}
+                    :style  st/command-image}]])
          (if preview
            preview
            [text {:style st/command-text}
