@@ -56,8 +56,9 @@
               (if (command-type? content-type)
                 (-> message
                     (update :content str-to-map)
-                    (assoc :rendered-preview (generate-hiccup
-                                               (read-string preview)))
+                    (assoc :rendered-preview (when preview
+                                               (generate-hiccup
+                                                 (read-string preview))))
                     (dissoc :preview))
                 message)))))
 
