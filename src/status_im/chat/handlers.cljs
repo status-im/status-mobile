@@ -22,8 +22,6 @@
             [status-im.chat.handlers.animation :refer [update-response-height
                                                        get-response-height]]))
 
-(def delta 1)
-
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
     (assoc db :show-actions show-actions)))
@@ -54,14 +52,18 @@
         (dispatch [:animate-cancel-command])
         (dispatch [:cancel-command])))))
 
+(defn animate-set-chat-command-content [db _]
+  (when (commands/get-chat-command-to-msg-id db)
+    (dispatch [:animate-response-resize])))
+
 (register-handler :set-chat-command-content
+  (after animate-set-chat-command-content)
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (as-> db db
           (commands/set-chat-command-content db content)
           (assoc-in db [:chats current-chat-id :input-text] nil)
           (if (commands/get-chat-command-to-msg-id db)
-            (do (dispatch [:animate-response-resize])
-                (update-response-height db))
+            (update-response-height db)
             db))))
 
 (defn update-input-text
@@ -81,13 +83,6 @@
 (register-handler :set-message-input []
   (fn [db [_ input]]
     (assoc db :message-input input)))
-
-(register-handler :prepare-message-input
-  (u/side-effect!
-    (fn [db _]
-      (when-let [message-input (:message-input db)]
-        (.clear message-input)
-        (.focus message-input)))))
 
 (register-handler :blur-message-input
   (u/side-effect!
@@ -135,7 +130,21 @@
 (defn add-message-to-db
   [db chat-id message]
   (let [messages [:chats chat-id :messages]]
-    (update-in db messages conj message)))
+    (update-in db messages conj (assoc message :chat-id chat-id
+                                               :new? true))))
+
+(defn set-message-shown
+  [db chat-id msg-id]
+  (update-in db [:chats chat-id :messages] (fn [messages]
+                                             (map (fn [msg]
+                                                    (if (= msg-id (:msg-id msg))
+                                                      (assoc msg :new? false)
+                                                      msg))
+                                                  messages))))
+
+(register-handler :set-message-shown
+  (fn [db [_ {:keys [chat-id msg-id]}]]
+    (set-message-shown db chat-id msg-id)))
 
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]

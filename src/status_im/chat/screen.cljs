@@ -13,7 +13,7 @@
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action
                                                            chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
-            [status-im.utils.listview :refer [to-datasource]]
+            [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
@@ -61,12 +61,12 @@
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
 
-(defn message-row [contact-by-identity group-chat]
+(defn message-row [contact-by-identity group-chat messages-count]
   (fn [row _ idx]
     (let [msg (-> row
                   (add-msg-color contact-by-identity)
                   (assoc :group-chat group-chat)
-                  (assoc :last-msg (zero? (js/parseInt idx))))]
+                  (assoc :last-msg (= (js/parseInt idx) (dec messages-count))))]
       (list-item [chat-message msg]))))
 
 (defn on-action-selected [position]
@@ -222,12 +222,12 @@
          [messages [:chat :messages]
           contacts [:chat :contacts]]
          (let [contacts' (contacts-by-identity contacts)]
-           [list-view {:renderRow                 (message-row contacts' group-chat)
+           [list-view {:renderRow                 (message-row contacts' group-chat (count messages))
                        :renderScrollComponent     #(invertible-scroll-view (js->clj %))
                        :onEndReached              #(dispatch [:load-more-messages])
                        :enableEmptySections       true
                        :keyboardShouldPersistTaps true
-                       :dataSource                (to-datasource messages)}]))
+                       :dataSource                (to-datasource-inverted messages)}]))
 
 (defn messages-container-animation-logic [{:keys [to-value val]}]
   (fn [_]
@@ -235,11 +235,11 @@
       (anim/start (anim/spring val {:toValue to-value})
                   (fn [arg]
                     (when (.-finished arg)
-                      (dispatch [:set-in [:animations ::messages-offset-current] to-value])))))))
+                      (dispatch [:set-animation ::messages-offset-current to-value])))))))
 
 (defn messages-container [messages]
-  (let [to-messages-offset (subscribe [:get-in [:animations :messages-offset]])
-        cur-messages-offset (subscribe [:get-in [:animations ::messages-offset-current]])
+  (let [to-messages-offset (subscribe [:animations :messages-offset])
+        cur-messages-offset (subscribe [:animations ::messages-offset-current])
         messages-offset (anim/create-value (or @cur-messages-offset 0))
         context {:to-value to-messages-offset
                  :val      messages-offset}
