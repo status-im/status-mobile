@@ -79,7 +79,8 @@
         (dispatch [:cancel-command])))))
 
 (defn animate-set-chat-command-content [db _]
-  (when (commands/get-chat-command-to-msg-id db)
+  (when (and (commands/get-chat-command-to-msg-id db)
+             (not= (get-in db [:animations :response-height-mode]) :fit))
     (dispatch [:animate-response-resize])))
 
 (register-handler :set-chat-command-content

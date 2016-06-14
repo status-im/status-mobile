@@ -51,12 +51,14 @@
    :opacity    0.69
    :color      color-white})
 
-(defn response-view [height]
-  {:flexDirection   :column
-   :marginBottom    (- animation-offset)
-   :height          height
-   :backgroundColor color-white
-   :elevation       2})
+(defn response-view [mode animation? height]
+  (merge {:flexDirection   :column
+          :marginBottom    (- animation-offset)
+          :backgroundColor color-white
+          :elevation       2}
+         (if (and (not animation?) (= mode :fit))
+           {:flex 1}
+           {:height height})))
 
 (def animation-margin
   {:height animation-offset})

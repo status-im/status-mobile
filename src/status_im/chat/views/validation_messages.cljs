@@ -48,8 +48,9 @@
 (defn container [& children]
   (let [show? (subscribe [:show-command-validation-messages?])
         commands-input-is-switching? (subscribe [:animations :commands-input-is-switching?])
+        validation-messages (subscribe [:command-validation-messages])
         to-height (reaction (if (and @show? (not @commands-input-is-switching?))
-                              max-height
+                              (* max-height (count @validation-messages))
                               min-height))
         visible? (subscribe [:animations ::validation-messages-visible?])
         anim-height (anim/create-value min-height)

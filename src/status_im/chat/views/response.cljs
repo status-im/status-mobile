@@ -67,10 +67,12 @@
 (defn container [& children]
   (let [commands-input-is-switching? (subscribe [:animations :commands-input-is-switching?])
         response-resize? (subscribe [:animations :response-resize?])
+        height-mode (subscribe [:animations :response-height-mode])
         to-response-height (subscribe [:animations :to-response-height])
         cur-response-height (subscribe [:animations :response-height-current])
         response-height (anim/create-value (or @cur-response-height 0))
-        context {:animation?    (reaction (or @commands-input-is-switching? @response-resize?))
+        animation? (reaction (or @commands-input-is-switching? @response-resize?))
+        context {:animation?    animation?
                  :to-value      to-response-height
                  :current-value cur-response-height
                  :val           response-height}
@@ -83,7 +85,9 @@
        :reagent-render
        (fn [& children]
          @to-response-height
-         (into [animated-view {:style (st/response-view (if (or @commands-input-is-switching? @response-resize?)
+         (into [animated-view {:style (st/response-view @height-mode
+                                                        (not= @to-response-height @cur-response-height)
+                                                        (if animation?
                                                           response-height
                                                           (or @cur-response-height 0)))}]
                children))})))
