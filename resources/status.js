@@ -1,8 +1,4 @@
-(ns status-im.components.jail
-  (:require [status-im.components.react :as r]))
-
-(def status-js
-  "var _status_catalog = {
+var _status_catalog = {
     commands: {},
     responses: {}
 };
@@ -78,17 +74,4 @@ var status = {
     events: {
         SET_VALUE: 'set-value'
     }
-};")
-
-(def jail (.-Jail (.-NativeModules r/react)))
-(.init jail status-js)
-
-(defn parse [chat-id file callback]
-  (.parse jail chat-id file callback))
-
-(defn cljs->json [data]
-  (.stringify js/JSON (clj->js data)))
-
-(defn call [chat-id path params callback]
-  (println :call chat-id (cljs->json path) (cljs->json params))
-  (.call jail chat-id (cljs->json path) (cljs->json params) callback))
+};
