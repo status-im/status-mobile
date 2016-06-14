@@ -160,6 +160,18 @@ status.response({
             event: "save-password",
             params: [params.value]
         };
+    },
+    preview: function (params) {
+        return status.components.text(
+            {
+                style: {
+                    marginTop: 5,
+                    marginHorizontal: 0,
+                    fontSize: 14,
+                    fontFamily: "font",
+                    color: "black"
+                }
+            }, "*****");
     }
 });
 

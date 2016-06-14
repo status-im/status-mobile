@@ -5,8 +5,6 @@
             [status-im.utils.utils :refer [http-get toast]]
             [status-im.components.jail :as j]
 
-            [status-im.components.react :refer [text scroll-view view
-                                                image touchable-highlight]]
             [status-im.commands.utils :refer [json->cljs generate-hiccup
                                               reg-handler]]))
 
@@ -40,13 +38,25 @@
 (defn suggestions-handler
   [db [_ response-json]]
   (let [response (json->cljs response-json)]
-    (println response)
     (assoc db :current-suggestion (generate-hiccup response))))
 
 (defn suggestions-events-handler!
   [db [[n data]]]
   (case (keyword n)
     :set-value (dispatch [:set-chat-command-content data])
+    ;; todo show error?
+    nil))
+
+(defn command-preview
+  [db [chat-id response-json]]
+  (if-let [response (json->cljs response-json)]
+    (let [path [:chats chat-id :staged-commands]
+          commands-cnt (count (get-in db path))]
+      ;; todo (dec commands-cnt) looks like hack have to find better way to
+      ;; do this
+      (update-in db (conj path (dec commands-cnt)) assoc
+                 :preview (generate-hiccup response)
+                 :preview-string (str response)))
     db))
 
 (reg-handler :init-render-command! init-render-command!)
@@ -55,3 +65,4 @@
 (reg-handler :command-handler! (u/side-effect! command-nadler!))
 (reg-handler :suggestions-handler suggestions-handler)
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
+(reg-handler :command-preview command-preview)

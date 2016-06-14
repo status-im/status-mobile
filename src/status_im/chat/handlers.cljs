@@ -45,18 +45,18 @@
 (defn invoke-suggestions-handler!
   [{:keys [current-chat-id] :as db} _]
   (let [commands (get-in db [:chats current-chat-id :commands])
-        {:keys [command content]} (get-in db [:chats current-chat-id :command-input])]
-    (let [path   [(if (commands command) :commands :responses)
+        {:keys [command content]} (get-in db [:chats current-chat-id :command-input])
+        path     [(if (commands command) :commands :responses)
                   (:name command)
                   :params
                   0
                   :suggestions]
-          params {:value content}]
-      (j/call current-chat-id
-              path
-              params
-              #(dispatch [:suggestions-handler {:command command
-                                                :content content} %])))))
+        params   {:value content}]
+    (j/call current-chat-id
+            path
+            params
+            #(dispatch [:suggestions-handler {:command command
+                                              :content content} %]))))
 
 (register-handler :set-chat-command-content
   (after invoke-suggestions-handler!)
@@ -67,7 +67,22 @@
   [{:keys [current-chat-id] :as db} text]
   (assoc-in db [:chats current-chat-id :input-text] text))
 
+
+(defn invoke-command-preview!
+  [{:keys [current-chat-id staged-command] :as db} _]
+  (let [commands (get-in db [:chats current-chat-id :commands])
+        {:keys [command content]} staged-command
+        path     [(if (commands command) :commands :responses)
+                  (:name command)
+                  :preview]
+        params   {:value content}]
+    (j/call current-chat-id
+            path
+            params
+            #(dispatch [:command-preview current-chat-id %]))))
+
 (register-handler :stage-command
+  (after invoke-command-preview!)
   (fn [{:keys [current-chat-id] :as db} _]
     (let [db           (update-input-text db nil)
           {:keys [command content]}
