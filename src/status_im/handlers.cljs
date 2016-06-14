@@ -16,7 +16,8 @@
     status-im.new-group.handlers
     status-im.participants.handlers
     status-im.protocol.handlers
-    status-im.commands.handlers))
+    status-im.commands.handlers.loading
+    status-im.commands.handlers.jail))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;

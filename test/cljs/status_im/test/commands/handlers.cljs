@@ -1,6 +1,6 @@
 (ns status-im.test.commands.handlers
   (:require [cljs.test :refer-macros [deftest is]]
-            [status-im.commands.handlers :as h]))
+            [status-im.commands.handlers.loading :as h]))
 
 (deftest test-validate-hash
   (let [file "some-js"

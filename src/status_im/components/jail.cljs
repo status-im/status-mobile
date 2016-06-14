@@ -61,6 +61,26 @@ function call(pathStr, paramsStr) {
     return JSON.stringify(res);
 }
 
+function text(options, s) {
+    return ['text', options, s];
+}
+
+function view(options, elements) {
+    return ['view', options].concat(elements);
+}
+
+function image(options) {
+    return ['image', options];
+}
+
+function touchable(options, element) {
+    return ['touchable', options, element];
+}
+
+function scrollView(options, elements) {
+    return ['scroll-view', options].concat(elements);
+}
+
 var status = {
     command: function (n, d, h) {
         var command = new Command();
@@ -77,11 +97,22 @@ var status = {
     },
     events: {
         SET_VALUE: 'set-value'
+    },
+    components: {
+        view: view,
+        text: text,
+        image: image,
+        touchable: touchable,
+        scrollView: scrollView
     }
 };")
 
-(def jail (.-Jail (.-NativeModules r/react)))
-(.init jail status-js)
+(def jail
+  (when (exists? (.-NativeModules r/react))
+    (.-Jail (.-NativeModules r/react))))
+
+(when jail
+  (.init jail status-js))
 
 (defn parse [chat-id file callback]
   (.parse jail chat-id file callback))
