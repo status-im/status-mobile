@@ -24,13 +24,11 @@
   (list-item [suggestion-list-item row]))
 
 (defview content-suggestions-view []
-  [suggestions [:get-content-suggestions]]
+  [suggestions [:get :current-suggestion]]
   (when (seq suggestions)
     [view
      [touchable-highlight {:style   st/drag-down-touchable
                            ;; TODO hide suggestions?
                            :onPress (fn [])}
       [view [icon :drag_down st/drag-down-icon]]]
-     [view (st/suggestions-container (count suggestions))
-      [list-view {:dataSource (to-datasource suggestions)
-                  :renderRow  render-row}]]]))
+     suggestions]))

@@ -6,49 +6,6 @@
             [status-im.components.styles :refer [color-blue color-dark-mint]]
             [status-im.i18n :refer [label]]))
 
-;; todo delete
-(def commands [{:command      :money
-                :text         "!money"
-                :description  (label :t/money-command-description)
-                :color        color-dark-mint
-                :request-icon {:uri "icon_lock_white"}
-                :icon         {:uri "icon_lock_gray"}
-                :suggestion   true}
-               {:command     :location
-                :text        "!location"
-                :description (label :t/location-command-description)
-                :color       "#9a5dcf"
-                :suggestion  true}
-               {:command      :phone
-                :text         "!phone"
-                :description  (label :t/phone-command-description)
-                :color        color-dark-mint
-                :request-text (label :t/phone-request-text)
-                :suggestion   true
-                :handler      #(dispatch [:sign-up %])}
-               {:command      :confirmation-code
-                :text         "!confirmationCode"
-                :description  (label :t/confirmation-code-command-description)
-                :request-text (label :t/confirmation-code-request-text)
-                :color        color-blue
-                :request-icon {:uri "icon_lock_white"}
-                :icon         {:uri "icon_lock_gray"}
-                :suggestion   true
-                :handler      #(dispatch [:sign-up-confirm %])}
-               {:command      :keypair-password
-                :text         "!keypair-password"
-                :description  (label :t/keypair-password-command-description)
-                :color        color-blue
-                :request-icon {:uri "icon_lock_white"}
-                :icon         {:uri "icon_lock_gray"}
-                :suggestion   false
-                :handler      #(dispatch [:save-password %])}
-               {:command     :help
-                :text        "!help"
-                :description (label :t/help-command-description)
-                :color       "#9a5dcf"
-                :suggestion  true}])
-
 (defn get-commands [{:keys [current-chat-id] :as db}]
   (or (get-in db [:chats current-chat-id :commands]) {}))
 

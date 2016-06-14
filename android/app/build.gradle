@@ -131,8 +131,9 @@ dependencies {
     compile project(':react-native-linear-gradient')
     compile project(':ReactNativeAndroidSmsListener')
     compile project(':react-native-status')
-//    compile(name:'geth', ext:'aar')
-    compile(group: 'status-im', name: 'android-geth', version: '1.4.0-201604110816-a97a114', ext: 'aar')
+    // todo replace this when jail will be integrated into geth
+    compile (name: "geth-android-16", ext:"aar")
+    //compile(group: 'status-im', name: 'android-geth', version: '1.4.0-201604110816-a97a114', ext: 'aar')
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
@@ -142,3 +143,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
   from configurations.compile
   into 'libs'
 }
+

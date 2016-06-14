@@ -1,22 +1,21 @@
 (ns status-im.chat.styles.content-suggestions
   (:require [status-im.components.styles :refer [font
-                                               color-light-blue-transparent
-                                               color-white
-                                               color-black
-                                               color-blue
-                                               color-blue-transparent
-                                               selected-message-color
-                                               online-color
-                                               separator-color
-                                               text1-color
-                                               text2-color
-                                               text3-color]]))
+                                                 color-light-blue-transparent
+                                                 color-white
+                                                 color-black
+                                                 color-blue
+                                                 color-blue-transparent
+                                                 selected-message-color
+                                                 online-color
+                                                 separator-color
+                                                 text1-color
+                                                 text2-color
+                                                 text3-color]]))
 
 (def suggestion-height 56)
 
 (def suggestion-container
-  {:flexDirection   :column
-   :paddingLeft     16
+  {:paddingLeft     16
    :backgroundColor color-white})
 
 (def suggestion-sub-container
@@ -37,7 +36,7 @@
    :color      text2-color})
 
 (defn suggestions-container [suggestions-count]
-  {:flexDirection    :row
+  {:flex 1
    :marginVertical   1
    :marginHorizontal 0
    :height           (min 150 (* suggestion-height suggestions-count))
