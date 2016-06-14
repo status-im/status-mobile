@@ -17,7 +17,8 @@
             [status-im.handlers.server :as server]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.datetime :as time]
-            [status-im.components.jail :as j]))
+            [status-im.components.jail :as j]
+            [status-im.commands.utils :refer [generate-hiccup]]))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -149,17 +150,18 @@
       (commands/set-chat-command db command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
 
-(defn prepare-command [identity chat-id staged-command]
-  (let [command-name (get-in staged-command [:command :name])
-        content      {:command command-name
-                      :content (:content staged-command)}]
-    {:msg-id       (random/id)
-     :from         identity
-     :to           chat-id
-     :content      content
-     :content-type content-type-command
-     :outgoing     true
-     :handler      (:handler staged-command)}))
+(defn prepare-command
+  [identity chat-id {:keys [preview preview-string content command]}]
+  (let [content {:command (command :name)
+                 :content content}]
+    {:msg-id           (random/id)
+     :from             identity
+     :to               chat-id
+     :content          content
+     :content-type     content-type-command
+     :outgoing         true
+     :preview          preview-string
+     :rendered-preview preview}))
 
 (defn prepare-staged-commans
   [{:keys [current-chat-id identity] :as db} _]
@@ -212,7 +214,8 @@
 (defn save-commands-to-realm!
   [{:keys [new-commands current-chat-id]} _]
   (doseq [new-command new-commands]
-    (messages/save-message current-chat-id (dissoc new-command :handler))))
+    (messages/save-message current-chat-id
+                           (dissoc new-command :rendered-preview))))
 
 (defn invoke-commands-handlers!
   [{:keys [new-commands current-chat-id] :as db}]

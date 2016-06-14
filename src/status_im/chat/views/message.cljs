@@ -51,9 +51,9 @@
     [view st/track-mark]
     [text {:style st/track-duration-text} "03:39"]]])
 
-(defn message-content-command [content]
+(defn message-content-command [content preview]
   (let [commands-atom (subscribe [:get-commands-and-responses])]
-    (fn [content]
+    (fn [content preview]
       (let [commands @commands-atom
             {:keys [command content]}
             (parse-command-msg-content commands content)]
@@ -66,11 +66,10 @@
          [view (st/command-image-view command)
           [image {:source {:uri (:icon command)}
                   :style  st/command-image}]]
-         [text {:style st/command-text}
-          ;; TODO isn't smart
-          (if (= (:name command) "keypair-password")
-            "******"
-            content)]]))))
+         (if preview
+           preview
+           [text {:style st/command-text}
+            content])]))))
 
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
@@ -126,9 +125,9 @@
   [message-content-status message])
 
 (defmethod message-content content-type-command
-  [wrapper {:keys [content] :as message}]
+  [wrapper {:keys [content rendered-preview] :as message}]
   [wrapper message
-   [message-view message [message-content-command content]]])
+   [message-view message [message-content-command content rendered-preview]]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]

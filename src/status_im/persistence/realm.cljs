@@ -33,7 +33,9 @@
                                   :delivery-status {:type     "string"
                                                     :optional true}
                                   :same-author     "bool"
-                                  :same-direction  "bool"}}
+                                  :same-direction  "bool"
+                                  :preview         {:type     :string
+                                                    :optional true}}}
                     {:name       :chat-contact
                      :properties {:identity   "string"
                                   :is-in-chat {:type    "bool"
