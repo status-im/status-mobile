@@ -50,6 +50,10 @@
   debug
   set-in)
 
+(register-handler :set-animation
+  (fn [db [_ k v]]
+    (assoc-in db [:animations k] v)))
+
 (register-handler :initialize-db
   (fn [_ _]
     (assoc app-db

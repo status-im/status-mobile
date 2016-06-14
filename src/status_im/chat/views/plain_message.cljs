@@ -28,7 +28,20 @@
   (when (message-valid? staged-commands message)
     (send dismiss-keyboard)))
 
-(defn commands-button-animation-logic [{:keys [to-value val]}]
+(defn prepare-message-input [message-input]
+  (when message-input
+    (.clear message-input)
+    (.focus message-input)))
+
+(defn commands-button-animation-callback [message-input]
+  (fn [arg to-value]
+    (when (.-finished arg)
+      (dispatch [:set-animation ::message-input-buttons-scale-current to-value])
+      (when (<= to-value 0.1)
+        (dispatch [:finish-show-response])
+        (prepare-message-input @message-input)))))
+
+(defn button-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
     (let [to-scale @to-value
           minimum 0.1
@@ -37,21 +50,22 @@
                       :else to-scale)]
       (anim/start (anim/timing val {:toValue  scale
                                     :duration response-input-hiding-duration})
-                  (fn [arg]
-                    (when (.-finished arg)
-                      (dispatch [:set-in [:animations ::message-input-buttons-scale-current] scale])
-                      (when (= to-scale minimum)
-                        (dispatch [:finish-show-response]))))))))
+                  (when callback
+                    (fn [arg]
+                      (callback arg to-scale)))))))
 
 (defn commands-button []
   (let [typing-command? (subscribe [:typing-command?])
-        animation? (subscribe [:get-in [:animations :commands-input-is-switching?]])
-        to-scale (subscribe [:get-in [:animations :message-input-buttons-scale]])
-        cur-scale (subscribe [:get-in [:animations ::message-input-buttons-scale-current]])
+        message-input (subscribe [:get :message-input])
+        animation? (subscribe [:animations :commands-input-is-switching?])
+        to-scale (subscribe [:animations :message-input-buttons-scale])
+        cur-scale (subscribe [:animations ::message-input-buttons-scale-current])
         buttons-scale (anim/create-value (or @cur-scale 1))
+        anim-callback (commands-button-animation-callback message-input)
         context {:to-value to-scale
-                 :val      buttons-scale}
-        on-update (commands-button-animation-logic context)]
+                 :val      buttons-scale
+                 :callback anim-callback}
+        on-update (button-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
@@ -70,13 +84,13 @@
                [icon :list st/list-icon])]]))})))
 
 (defn smile-button []
-  (let [animation? (subscribe [:get-in [:animations :commands-input-is-switching?]])
-        to-scale (subscribe [:get-in [:animations :message-input-buttons-scale]])
-        cur-scale (subscribe [:get-in [:animations ::message-input-buttons-scale-current]])
+  (let [animation? (subscribe [:animations :commands-input-is-switching?])
+        to-scale (subscribe [:animations :message-input-buttons-scale])
+        cur-scale (subscribe [:animations ::message-input-buttons-scale-current])
         buttons-scale (anim/create-value (or @cur-scale 1))
         context {:to-value to-scale
                  :val      buttons-scale}
-        on-update (commands-button-animation-logic context)]
+        on-update (button-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update

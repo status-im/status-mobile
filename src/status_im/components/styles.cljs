@@ -32,7 +32,7 @@
 (def toolbar-height 56)
 
 (def flex
-  {:style {:flex 1}})
+  {:flex 1})
 
 (def hamburger-icon
   {:width  16

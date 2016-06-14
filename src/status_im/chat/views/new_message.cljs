@@ -28,12 +28,10 @@
        :request {:input-options {:keyboardType :numeric}}
        (throw (js/Error. "Uknown command type"))))])
 
-(defn chat-message-new []
-  (let [command-atom (subscribe [:get-chat-command])
-        staged-commands-atom (subscribe [:get-chat-staged-commands])]
-    (fn []
-      (let [staged-commands @staged-commands-atom]
-        [view st/new-message-container
-         (when (and staged-commands (pos? (count staged-commands)))
-           [staged-commands-view staged-commands])
-         [show-input @command-atom]]))))
+(defview chat-message-new []
+  [command [:get-chat-command]
+   staged-commands [:get-chat-staged-commands]]
+  [view st/new-message-container
+   (when (and staged-commands (pos? (count staged-commands)))
+     [staged-commands-view staged-commands])
+   [show-input command]])
