@@ -7,26 +7,6 @@ status.command({
     type: status.types.STRING
 });
 
-function text(options, s) {
-    return ["text", options, s];
-}
-
-function view(options, elements) {
-    return ["view", options].concat(elements);
-}
-
-function image(options) {
-    return ["image", options];
-}
-
-function touchable(options, element) {
-    return ["touchable", options, element];
-}
-
-function scrollView(options, elements) {
-    return ["scroll-view", options].concat(elements);
-}
-
 var phones = [
     {
         number: "89171111111",
@@ -100,18 +80,27 @@ function phoneSuggestions(params) {
     }
 
     suggestions = ph.map(function (phone) {
-        return touchable(
+        return status.components.touchable(
             {onPress: [status.events.SET_VALUE, phone.number]},
-            view(suggestionContainerStyle,
-                [view(suggestionSubContainerStyle,
+            status.components.view(suggestionContainerStyle,
+                [status.components.view(suggestionSubContainerStyle,
                     [
-                        text({style: valueStyle}, phone.number),
-                        text({style: descriptionStyle}, phone.description)
+                        status.components.text(
+                            {style: valueStyle},
+                            phone.number
+                        ),
+                        status.components.text(
+                            {style: descriptionStyle},
+                            phone.description
+                        )
                     ])])
         );
     });
 
-    return scrollView(suggestionsContainerStyle(ph.length), suggestions);
+    return status.components.scrollView(
+        suggestionsContainerStyle(ph.length),
+        suggestions
+    );
 }
 
 status.response({

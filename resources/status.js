@@ -57,6 +57,26 @@ function call(pathStr, paramsStr) {
     return JSON.stringify(res);
 }
 
+function text(options, s) {
+    return ['text', options, s];
+}
+
+function view(options, elements) {
+    return ['view', options].concat(elements);
+}
+
+function image(options) {
+    return ['image', options];
+}
+
+function touchable(options, element) {
+    return ['touchable', options, element];
+}
+
+function scrollView(options, elements) {
+    return ['scroll-view', options].concat(elements);
+}
+
 var status = {
     command: function (n, d, h) {
         var command = new Command();
@@ -73,5 +93,12 @@ var status = {
     },
     events: {
         SET_VALUE: 'set-value'
+    },
+    components: {
+        view: view,
+        text: text,
+        image: image,
+        touchable: touchable,
+        scrollView: scrollView
     }
 };
