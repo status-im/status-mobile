@@ -36,9 +36,9 @@
       (apply handler params))))
 
 (defn suggestions-handler
-  [db [_ response-json]]
+  [db [{:keys [chat-id]} response-json]]
   (let [response (json->cljs response-json)]
-    (assoc db :current-suggestion (generate-hiccup response))))
+    (assoc-in db [:suggestions chat-id] (generate-hiccup response))))
 
 (defn suggestions-events-handler!
   [db [[n data]]]
