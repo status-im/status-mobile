@@ -15,9 +15,10 @@
     status-im.discovery.handlers
     status-im.new-group.handlers
     status-im.participants.handlers
-    status-im.protocol.handlers
     status-im.commands.handlers.loading
-    status-im.commands.handlers.jail))
+    status-im.commands.handlers.jail
+    status-im.qr-scanner.handlers
+    status-im.protocol.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -48,6 +49,10 @@
 (register-handler :set-in
   debug
   set-in)
+
+(register-handler :set-animation
+  (fn [db [_ k v]]
+    (assoc-in db [:animations k] v)))
 
 (register-handler :initialize-db
   (fn [_ _]

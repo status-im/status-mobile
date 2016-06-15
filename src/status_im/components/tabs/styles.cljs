@@ -54,17 +54,11 @@
    :justifyContent :center
    :alignItems     :center})
 
-(def show-tab
-  {:flex          1
-   :pointerEvents :auto
-   :position      :absolute
-   :top           0
-   :left          0
-   :right         0
-   :bottom        tab-height})
-
-(def hide-tab
-  {:opacity       0
-   :pointerEvents :none
-   :overflow      :hidden})
-
+(defn tab-view-container [offset-x]
+  {:flex      1
+   :position  :absolute
+   :top       0
+   :left      0
+   :right     0
+   :bottom    tab-height
+   :transform [{:translateX offset-x}]})

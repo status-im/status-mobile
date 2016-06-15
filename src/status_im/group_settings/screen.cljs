@@ -146,7 +146,9 @@
 (defview chat-name []
   [name [:chat :name]
    new-name [:get :new-chat-name]
-   focused? [:get ::name-input-focused]]
+   validation-messages [:new-chat-name-validation-messages]
+   focused? [:get ::name-input-focused]
+   valid? [:new-chat-name-valid?]]
   [view
    [text {:style st/chat-name-text} (label :t/chat-name)]
    [view (st/chat-name-value-container focused?)
@@ -157,12 +159,14 @@
                  :on-blur        blur}
      name]
     (if (or focused? (not= name new-name))
-      [touchable-highlight {:style    st/chat-name-btn-edit-container
+      [touchable-highlight {:style    (st/chat-name-btn-edit-container valid?)
                             :on-press save}
        [view [icon :ok-purple st/add-members-icon]]]
-      [touchable-highlight {:style    st/chat-name-btn-edit-container
+      [touchable-highlight {:style    (st/chat-name-btn-edit-container true)
                             :on-press focus}
-       [text {:style st/chat-name-btn-edit-text} (label :t/edit)]])]])
+       [text {:style st/chat-name-btn-edit-text} (label :t/edit)]])]
+   (when (pos? (count validation-messages))
+     [text {:style st/chat-name-validation-message} (first validation-messages)])])
 
 (defview group-settings []
   [show-color-picker [:group-settings :show-color-picker]]

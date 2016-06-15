@@ -130,6 +130,7 @@ dependencies {
     compile project(':react-native-i18n')
     compile project(':react-native-linear-gradient')
     compile project(':ReactNativeAndroidSmsListener')
+    compile project(':react-native-camera')
     compile project(':react-native-status')
     // todo replace this when jail will be integrated into geth
     compile (name: "geth-android-16", ext:"aar")

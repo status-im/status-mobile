@@ -62,6 +62,7 @@ var descriptionStyle = {
 };
 
 function startsWith(str1, str2) {
+    // String.startsWith(...) doesn't work in otto
     return str1.lastIndexOf(str2, 0) == 0 && str1 != str2;
 }
 
@@ -134,7 +135,7 @@ status.response({
     name: "confirmation-code",
     color: "#7099e6",
     description: "Confirmation code",
-    parameters: [{
+    params: [{
         name: "code",
         type: status.types.NUMBER
     }],
@@ -151,7 +152,7 @@ status.response({
     color: "#7099e6",
     description: "Keypair password",
     icon: "icon_lock_white",
-    parameters: [{
+    params: [{
         name: "password",
         type: status.types.PASSWORD
     }],

@@ -14,6 +14,10 @@
   {:flex            1
    :backgroundColor chat-background})
 
+(defn messages-container [bottom]
+  {:flex   1
+   :bottom bottom})
+
 (def toolbar-view
   {:flexDirection   :row
    :height          56

@@ -49,9 +49,11 @@
 
 (defn get-messages [chat-id]
   (->> (-> (r/get-by-field :msgs :chat-id chat-id)
-           (r/sorted :timestamp :asc)
+           (r/sorted :timestamp :desc)
            (r/collection->map))
        (into '())
+       ;; todo why reverse?
+       reverse
        (map (fn [{:keys [content-type preview] :as message}]
               (if (command-type? content-type)
                 (-> message

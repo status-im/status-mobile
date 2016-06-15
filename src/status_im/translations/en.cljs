@@ -92,7 +92,7 @@
    :location-command-description          "Send location"
    :phone-command-description             "Send phone number"
    :phone-request-text                    "Phone number request"
-   :confirmation-code-coomand-description "Send confirmation code"
+   :confirmation-code-command-description "Send confirmation code"
    :confirmation-code-request-text        "Confirmation code request"
    :send-command-description              "Send location"
    :request-command-description           "Send request"
@@ -115,8 +115,18 @@
    :You                                   "You"
 
    ;new-contact
-   :import-qr                             "Import from QR"
+   :import-qr                             "Import"
    :contact-name                          "Contact Name"
-   :contact-address                       "Contact Address"
+   :whisper-identity                      "Whisper Identity"
+
+   ;login
+   :recover-from-passphrase               "Recover from passphrase"
+   :connect                               "Connect"
+   :address                               "Address"
+   :password                              "Password"
+   :login                                 "Login"
+
+   ;users
+   :add-account                                 "Add account"
 
    })

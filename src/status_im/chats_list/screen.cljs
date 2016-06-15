@@ -36,7 +36,7 @@
       [drawer-view
        [view st/chats-container
         [chats-list-toolbar]
-        [list-view {:dataSource (to-datasource (vals @chats))
+        [list-view {:dataSource (to-datasource @chats)
                     :renderRow  (fn [row _ _]
                                   (list-item [chat-list-item row]))
                     :style      st/list-container}]

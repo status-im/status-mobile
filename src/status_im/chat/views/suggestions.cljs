@@ -15,8 +15,8 @@
 
 (defn suggestion-list-item
   [[command {:keys [description]
-              name  :name
-              :as   suggestion}]]
+             name  :name
+             :as   suggestion}]]
   (let [label (str "!" name)]
     [touchable-highlight
      {:onPress #(set-command-input command)}
@@ -30,10 +30,11 @@
 (defn render-row [row _ _]
   (list-item [suggestion-list-item row]))
 
+
 (defview suggestions-view []
   [suggestions [:get-suggestions]]
   (when (seq suggestions)
-    [view
+    [view st/container
      [touchable-highlight {:style   st/drag-down-touchable
                            :onPress (fn []
                                       ;; TODO hide suggestions?
@@ -41,6 +42,7 @@
       [view
        [icon :drag_down st/drag-down-icon]]]
      [view (st/suggestions-container (count suggestions))
-      [list-view {:dataSource          (to-datasource suggestions)
-                  :enableEmptySections true
-                  :renderRow           render-row}]]]))
+      [list-view {:dataSource                (to-datasource suggestions)
+                  :enableEmptySections       true
+                  :keyboardShouldPersistTaps true
+                  :renderRow                 render-row}]]]))
