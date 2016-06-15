@@ -59,9 +59,9 @@
          [touchable-highlight {:on-press (fn []
                                            (reset! loop? false)
                                            (set-chat-command msg-id command))
-                               :style    st/command-request-image-touchable
+                               :style    st/command-request-image-touchable}
                                ;:accessibility-label (label command)
-                               }
+
           [animated-view {:style (st/command-request-image-view command scale-anim-val)}
            [image {:source {:uri (:icon command)}
                    :style  st/command-request-image}]]])})))

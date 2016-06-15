@@ -24,7 +24,7 @@
   (list-item [suggestion-list-item row]))
 
 (defview content-suggestions-view []
-  [suggestions [:get :current-suggestion]]
+  [suggestions [:get-content-suggestions]]
   (when (seq suggestions)
     [view st/container
      [touchable-highlight {:style   st/drag-down-touchable

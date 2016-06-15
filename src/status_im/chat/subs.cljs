@@ -106,6 +106,4 @@
 
 (register-sub :get-content-suggestions
   (fn [db _]
-    (let [command (reaction (commands/get-chat-command @db))
-          text (reaction (commands/get-chat-command-content @db))]
-      (reaction (get-content-suggestions @command @text)))))
+    (reaction (get-in @db [:suggestions (:current-chat-id @db)]))))

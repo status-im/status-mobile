@@ -61,7 +61,8 @@
             path
             params
             #(dispatch [:suggestions-handler {:command command
-                                              :content content} %]))))
+                                              :content content
+                                              :chat-id current-chat-id} %]))))
 
 (register-handler :start-cancel-command
   (u/side-effect!
