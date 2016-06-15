@@ -10,9 +10,9 @@
             [status-im.components.tabs.styles :as st]))
 
 (defview tab [{:keys [view-id title icon selected-view-id]}]
-  [touchable-highlight {:style   st/tab
-                        :onPress #(dispatch [:navigate-to
-                                             view-id])}
+  [touchable-highlight {:style    st/tab
+                        :disabled (= view-id selected-view-id)
+                        :onPress  #(dispatch [:navigate-to-tab view-id])}
    [view {:style st/tab-container}
     [image {:source {:uri icon}
             :style  st/tab-icon}]

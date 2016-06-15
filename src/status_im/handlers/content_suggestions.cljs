@@ -4,19 +4,22 @@
             [status-im.utils.logging :as log]
             [clojure.string :as s]))
 
+;; TODO stub data?
 (def suggestions
-  {:phone [{:value "89171111111"
+  {:phone [{:header "Phone number formats"}
+           {:value       "89171111111"
             :description "Number format 1"}
-           {:value "+79171111111"
+           {:value       "+79171111111"
             :description "Number format 2"}
-           {:value "9171111111"
+           {:value       "9171111111"
             :description "Number format 3"}]})
 
-(defn get-content-suggestions [db command text]
+(defn get-content-suggestions [command text]
   (or (when command
         (when-let [command-suggestions ((keyword (:name command)) suggestions)]
           (filterv (fn [s]
-                     (and (.startsWith (:value s) (or text ""))
-                          (not= (:value s) text)))
+                     (or (:header s)
+                         (and (.startsWith (:value s) (or text ""))
+                              (not= (:value s) text))))
                    command-suggestions)))
       []))

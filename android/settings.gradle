@@ -21,3 +21,6 @@ project(':ReactNativeAndroidSmsListener').projectDir = new File(rootProject.proj
 
 include ':react-native-status'
 project(':react-native-status').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-status/android')
+include ':react-native-camera'
+project(':react-native-camera').projectDir = new File(rootProject.projectDir,   '../node_modules/react-native-camera/android')
+

@@ -1,16 +1,15 @@
 (ns status-im.chat.views.command
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                              icon
-                                              text
-                                              text-input
-                                              touchable-highlight]]
-            [status-im.chat.views.content-suggestions :refer
-             [content-suggestions-view]]
+                                                icon
+                                                text
+                                                text-input
+                                                touchable-highlight]]
             [status-im.chat.styles.input :as st]))
 
 (defn cancel-command-input []
-  (dispatch [:cancel-command]))
+  (dispatch [:start-cancel-command]))
 
 (defn set-input-message [message]
   (dispatch [:set-chat-command-content message]))
@@ -24,7 +23,8 @@
     (validator message)
     (pos? (count message))))
 
-(defn simple-command-input-view [command input-options & {:keys [validator]}]
+
+#_(defn simple-command-input-view [command input-options & {:keys [validator]}]
   (let [message-atom (subscribe [:get-chat-command-content])]
     (fn [command input-options & {:keys [validator]}]
       (let [message @message-atom]
@@ -49,3 +49,19 @@
             [touchable-highlight {:on-press cancel-command-input}
              [view st/cancel-container
               [icon :close-gray st/cancel-icon]]])]]))))
+
+(defn try-send [message validator]
+  (when (valid? message validator)
+    (send-command)))
+
+(defn command-icon [command]
+  [view (st/command-text-container command)
+   [text {:style st/command-text} (:text command)]])
+
+(defview cancel-button []
+  [commands-input-is-switching? [:animations :commands-input-is-switching?]]
+  [touchable-highlight {:disabled commands-input-is-switching?
+                        :on-press cancel-command-input}
+   [view st/cancel-container
+    [icon :close-gray st/cancel-icon]]])
+

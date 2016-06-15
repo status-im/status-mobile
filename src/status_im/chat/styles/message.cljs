@@ -131,20 +131,27 @@
 (def command-request-message-view
   {:borderRadius    14
    :padding         12
+   :paddingRight    28
    :backgroundColor color-white})
 
 (def command-request-from-text
   (merge style-sub-text {:marginBottom 2}))
 
-(defn command-request-image-view
-  [command]
-  {:position        :absolute
-   :top             12
-   :right           0
-   :width           32
+(def command-request-image-touchable
+  {:position       :absolute
+   :top            4
+   :right          -8
+   :alignItems     :center
+   :justifyContent :center
+   :width          48
+   :height         48})
+
+(defn command-request-image-view [command scale]
+  {:width           32
    :height          32
    :borderRadius    50
-   :backgroundColor (:color command)})
+   :backgroundColor (:color command)
+   :transform       [{:scale scale}]})
 
 (defn command-image-view
   [command]
@@ -316,6 +323,9 @@
 
 (def message-date-text
   (assoc style-sub-text :textAlign :center))
+
+(defn message-container [height]
+  {:height height})
 
 (def new-message-container
   {:backgroundColor color-white
