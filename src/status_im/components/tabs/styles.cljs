@@ -10,21 +10,19 @@
                                                  text2-color
                                                  toolbar-background1]]))
 
+(def tabs-height 59)
 (def tab-height 56)
 
-(def tabs
-  {:flex     1
-   :position :absolute
-   :bottom   0
-   :right    0
-   :left     0
-   })
+(defn tabs-container [offset-y]
+  {:height          tabs-height
+   :backgroundColor color-white
+   :marginBottom    offset-y})
 
 (def top-gradient
   {:flexDirection :row
    :height        3})
 
-(def tabs-container
+(def tabs-inner-container
   {:flexDirection   :row
    :height          tab-height
    :opacity         1
@@ -55,10 +53,9 @@
    :alignItems     :center})
 
 (defn tab-view-container [offset-x]
-  {:flex      1
-   :position  :absolute
+  {:position  :absolute
    :top       0
    :left      0
    :right     0
-   :bottom    tab-height
+   :bottom    0
    :transform [{:translateX offset-x}]})
