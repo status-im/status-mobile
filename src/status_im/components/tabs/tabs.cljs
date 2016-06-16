@@ -20,21 +20,27 @@
     [tab data]))
 
 (defn animation-logic [{:keys [hidden? val]}]
-  (fn [_]
-    (let [to-value (if @hidden? (- st/tab-height) 0)]
-      (anim/start
-        (anim/timing val {:toValue  to-value
-                          :duration 300})
-        (fn [e]
-          (when-not (.-finished e)
-            nil))))))
+  (let [was-hidden? (atom (not @hidden?))]
+    (fn [_]
+      (when (not= @was-hidden? @hidden?)
+        (let [to-value (if @hidden? 0 (- st/tabs-height))]
+          (swap! was-hidden? not)
+          (anim/start
+            (anim/timing val {:toValue  to-value
+                              :duration 300})
+            (fn [e]
+              ;; if to-value was changed, then new animation has started
+              (when (= to-value (if @hidden? 0 (- st/tabs-height)))
+                (dispatch [:set-animation :tabs-bar-animation? false])))))))))
 
 (defn tabs-container [& children]
   (let [chats-scrolled? (subscribe [:get :chats-scrolled?])
-        anim-value (anim/create-value 0)
-        context {:hidden? chats-scrolled?
-                 :val     anim-value}
+        animation? (subscribe [:animations :tabs-bar-animation?])
+        tabs-bar-value (subscribe [:animations :tabs-bar-value])
+        context {:hidden?    chats-scrolled?
+                 :val        @tabs-bar-value}
         on-update (animation-logic context)]
+    (anim/set-value @tabs-bar-value 0)
     (r/create-class
       {:component-did-mount
        on-update
@@ -43,7 +49,7 @@
        :reagent-render
        (fn [& children]
          @chats-scrolled?
-         (into [animated-view {:style         (st/tabs-container anim-value)
+         (into [animated-view {:style         (st/tabs-container @chats-scrolled? @animation? @tabs-bar-value)
                                :pointerEvents (if @chats-scrolled? :none :auto)}]
                children))})))
 
