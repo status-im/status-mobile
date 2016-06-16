@@ -11,7 +11,7 @@
             [status-im.chats-list.views.chat-list-item :refer [chat-list-item]]
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
-            [status-im.components.drawer.view :refer [drawer-view open-drawer]]
+            [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.styles :refer [color-blue
                                                  toolbar-background2]]
             [status-im.components.toolbar :refer [toolbar]]
@@ -33,25 +33,24 @@
 (defn chats-list []
   (let [chats (subscribe [:get :chats])]
     (fn []
-      [drawer-view
-       [view st/chats-container
-        [chats-list-toolbar]
-        [list-view {:dataSource (to-datasource @chats)
-                    :renderRow  (fn [row _ _]
-                                  (list-item [chat-list-item row]))
-                    :style      st/list-container}]
-        [action-button {:buttonColor color-blue
-                        :offsetY     16
-                        :offsetX     16}
-         [action-button-item
-          {:title       (label :t/new-chat)
-           :buttonColor :#9b59b6
-           :onPress     #(dispatch [:navigate-to :contact-list])}
-          [icon {:name  :android-create
-                 :style st/create-icon}]]
-         [action-button-item
-          {:title       (label :t/new-group-chat)
-           :buttonColor :#1abc9c
-           :onPress     #(dispatch [:show-group-new])}
-          [icon {:name  :person-stalker
-                 :style st/person-stalker-icon}]]]]])))
+      [view st/chats-container
+       [chats-list-toolbar]
+       [list-view {:dataSource (to-datasource @chats)
+                   :renderRow  (fn [row _ _]
+                                 (list-item [chat-list-item row]))
+                   :style      st/list-container}]
+       [action-button {:buttonColor color-blue
+                       :offsetY     16
+                       :offsetX     16}
+        [action-button-item
+         {:title       (label :t/new-chat)
+          :buttonColor :#9b59b6
+          :onPress     #(dispatch [:navigate-to :contact-list])}
+         [icon {:name  :android-create
+                :style st/create-icon}]]
+        [action-button-item
+         {:title       (label :t/new-group-chat)
+          :buttonColor :#1abc9c
+          :onPress     #(dispatch [:show-group-new])}
+         [icon {:name  :person-stalker
+                :style st/person-stalker-icon}]]]])))

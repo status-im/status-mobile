@@ -8,7 +8,6 @@
                                                 linear-gradient
                                                 touchable-highlight]]
             [status-im.components.toolbar :refer [toolbar]]
-            [status-im.components.drawer.view :refer [drawer-view open-drawer]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
                                                  icon-search
@@ -56,23 +55,20 @@
 
 (defview new-contact []
   [{:keys [name whisper-identity phone-number] :as new-contact} [:get :new-contact]]
-  [drawer-view
-   [view st/contact-form-container
-    [linear-gradient {:colors ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
-                      :start [0, 0]
-                      :end [0.5, 1]
-                      :locations [0, 0.8 ,1]
-                      :style  st/gradient-background}]
-
-    [toolbar {:background-color :transparent
-              :nav-action     {:image   {:source {:uri :icon_back_white}
-                                         :style  icon-back}
-                               :handler  #(dispatch [:navigate-back])}
-              :custom-content   toolbar-title
-              :action           {:image   {:source {:uri :icon_add}
-                                           :style  icon-search}
-                                 :handler #(dispatch [:add-new-contact new-contact])}}]
-    [view st/form-container
-     [contact-whisper-id-input whisper-identity]
-     [contact-name-input name]
-     ]]])
+  [view st/contact-form-container
+   [linear-gradient {:colors    ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
+                     :start     [0, 0]
+                     :end       [0.5, 1]
+                     :locations [0, 0.8, 1]
+                     :style     st/gradient-background}]
+   [toolbar {:background-color :transparent
+             :nav-action       {:image   {:source {:uri :icon_back_white}
+                                          :style  icon-back}
+                                :handler #(dispatch [:navigate-back])}
+             :custom-content   toolbar-title
+             :action           {:image   {:source {:uri :icon_add}
+                                          :style  icon-search}
+                                :handler #(dispatch [:add-new-contact new-contact])}}]
+   [view st/form-container
+    [contact-whisper-id-input whisper-identity]
+    [contact-name-input name]]])
