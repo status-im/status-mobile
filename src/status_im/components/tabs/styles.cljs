@@ -13,10 +13,12 @@
 (def tabs-height 59)
 (def tab-height 56)
 
-(defn tabs-container [offset-y]
+(defn tabs-container [hidden? animation? offset-y]
   {:height          tabs-height
    :backgroundColor color-white
-   :marginBottom    offset-y})
+   :marginBottom    (if (or hidden? animation?)
+                      (- tabs-height) 0)
+   :transform       [{:translateY (if animation? offset-y 1)}]})
 
 (def top-gradient
   {:flexDirection :row
