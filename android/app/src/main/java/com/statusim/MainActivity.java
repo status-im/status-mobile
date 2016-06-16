@@ -39,6 +39,8 @@ import io.realm.react.RealmReactPackage;
 
 public class MainActivity extends ReactActivity {
 
+    private static final String TAG = "MainActivity";
+
     /**
      * Incoming message handler. Calls to its binder are sequential!
      */
@@ -57,9 +59,8 @@ public class MainActivity extends ReactActivity {
 
         @Override
         public void handleMessage(Message message) {
-
             boolean isClaimed = false;
-            System.out.println("!!!!!!!!!!!!!! Received Service Message !!!!!!!!!!!!!!");
+            Log.d(TAG, "!!!!!!!!!!!!!! Received Service Message !!!!!!!!!!!!!!");
             super.handleMessage(message);
         }
     }
@@ -67,7 +68,6 @@ public class MainActivity extends ReactActivity {
     protected ServiceConnection serviceConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName className, IBinder service) {
-
             // This is called when the connection with the service has been
             // established, giving us the object we can use to
             // interact with the service. We are communicating with the
@@ -79,17 +79,16 @@ public class MainActivity extends ReactActivity {
         }
 
         public void onServiceDisconnected(ComponentName className) {
-
             // This is called when the connection with the service has been
             // unexpectedly disconnected -- that is, its process crashed.
             serviceMessenger = null;
             isBound = false;
-            System.out.println("!!!!!!!!!!!!!! Geth Service Disconnected !!!!!!!!!!!!!!");
+            Log.d(TAG, "!!!!!!!!!!!!!! Geth Service Disconnected !!!!!!!!!!!!!!");
         }
     };
 
     protected void onConnected() {
-        System.out.println("!!!!!!!!!!!!!! Geth Service Connected !!!!!!!!!!!!!!");
+        Log.d(TAG, "!!!!!!!!!!!!!! Geth Service Connected !!!!!!!!!!!!!!");
     }
 
     protected void startStatus() {
@@ -145,7 +144,7 @@ public class MainActivity extends ReactActivity {
             unbindService(serviceConnection);
         }
         catch (Throwable t) {
-            Log.e("MainActivity", "Failed to unbind from the geth service", t);
+            Log.e(TAG, "Failed to unbind from the geth service", t);
         }
     }
 
