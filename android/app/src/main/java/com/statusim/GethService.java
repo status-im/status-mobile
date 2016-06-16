@@ -14,7 +14,6 @@ import android.os.Environment;
 
 import java.lang.ref.WeakReference;
 
-import com.facebook.react.common.ApplicationHolder;
 import com.github.ethereum.go_ethereum.cmd.Geth;
 
 import java.io.File;
@@ -68,8 +67,6 @@ public class GethService extends Service {
     protected void onGethStarted() {
         Log.d(TAG, "Geth Service started");
         isGethStarted = true;
-        //Log.w("Geth", "adding peer");
-        //Geth.run("--exec admin.addPeer(\"enode://e2f28126720452aa82f7d3083e49e6b3945502cb94d9750a15e27ee310eed6991618199f878e5fbc7dfa0e20f0af9554b41f491dc8f1dbae8f0f2d37a3a613aa@139.162.13.89:55555\") attach http://localhost:8545");
     }
 
     protected void startGeth() {
@@ -106,15 +103,6 @@ public class GethService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        //SoLoader.init(this, /* native exopackage */ false);
-        /*
-        try {
-            ApplicationHolder.getApplication();
-        }
-        catch (AssertionError err) {
-            ApplicationHolder.setApplication(getApplication());
-        }
-*/
         System.loadLibrary("gethraw");
         System.loadLibrary("geth");
 
@@ -127,7 +115,7 @@ public class GethService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //stop geth
+        //TODO: stop geth
         isGethStarted = false;
         isGethInitialized = false;
         Log.d(TAG, "Geth Service stopped !");
@@ -142,8 +130,7 @@ public class GethService extends Service {
         return false;
     }
 
-    public static boolean isRunning()
-    {
+    public static boolean isRunning() {
         return isGethInitialized;
     }
 }
