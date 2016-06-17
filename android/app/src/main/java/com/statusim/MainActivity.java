@@ -7,17 +7,24 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnCancelListener;
-import com.github.ethereum.go_ethereum.cmd.Geth;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.content.Intent;
+import android.content.Context;
+
 import com.bitgo.randombytes.RandomBytesPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.centaurwarchief.smslistener.SmsListener;
 
-import android.os.Handler;
+
 import android.util.Log;
 
 import java.util.Arrays;
@@ -32,44 +39,68 @@ import io.realm.react.RealmReactPackage;
 
 public class MainActivity extends ReactActivity {
 
-    final Handler handler = new Handler();
+    private static final String TAG = "MainActivity";
+
+    /**
+     * Incoming message handler. Calls to its binder are sequential!
+     */
+    protected final IncomingHandler handler = new IncomingHandler();
+
+    /** Flag indicating if the service is bound. */
+    protected boolean isBound;
+
+    /** Sends messages to the service. */
+    protected Messenger serviceMessenger = null;
+
+    /** Receives messages from the service. */
+    protected Messenger clientMessenger = new Messenger(handler);
+
+    class IncomingHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message message) {
+            boolean isClaimed = false;
+            Log.d(TAG, "!!!!!!!!!!!!!! Received Service Message !!!!!!!!!!!!!!");
+            super.handleMessage(message);
+        }
+    }
+
+    protected ServiceConnection serviceConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the object we can use to
+            // interact with the service. We are communicating with the
+            // service using a Messenger, so here we get a client-side
+            // representation of that from the raw IBinder object.
+            serviceMessenger = new Messenger(service);
+            isBound = true;
+            onConnected();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            serviceMessenger = null;
+            isBound = false;
+            Log.d(TAG, "!!!!!!!!!!!!!! Geth Service Disconnected !!!!!!!!!!!!!!");
+        }
+    };
+
+    protected void onConnected() {
+        Log.d(TAG, "!!!!!!!!!!!!!! Geth Service Connected !!!!!!!!!!!!!!");
+    }
 
     protected void startStatus() {
         // Required because of crazy APN settings redirecting localhost (found in GB)
         Properties properties = System.getProperties();
         properties.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
         properties.setProperty("https.nonProxyHosts", "localhost|127.0.0.1");
-
-        File extStore = Environment.getExternalStorageDirectory();
-
-        final String dataFolder = extStore.exists() ?
-                extStore.getAbsolutePath() :
-                getApplicationInfo().dataDir;
-
-        // Launch!
-        final Runnable addPeer = new Runnable() {
-            public void run() {
-                Log.w("Geth", "adding peer");
-                Geth.run("--exec admin.addPeer(\"enode://e2f28126720452aa82f7d3083e49e6b3945502cb94d9750a15e27ee310eed6991618199f878e5fbc7dfa0e20f0af9554b41f491dc8f1dbae8f0f2d37a3a613aa@139.162.13.89:55555\") attach http://localhost:8545");
-            }
-        };
-        new Thread(new Runnable() {
-            public void run() {
-                Geth.run("--shh --ipcdisable --nodiscover --rpc --rpcapi db,eth,net,web3,shh,admin --fast --datadir=" + dataFolder);
-
-            }
-        }).start();
-        handler.postDelayed(addPeer, 5000);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Required for android-16 (???)
-        // Crash if put in startStatus() ?
-        System.loadLibrary("gethraw");
-        System.loadLibrary("geth");
 
         if(!RootUtil.isDeviceRooted()) {
             startStatus();
@@ -96,7 +127,25 @@ public class MainActivity extends ReactActivity {
                     }).create();
             dialog.show();
         }
+        Intent intent = new Intent(this, GethService.class);
+        if (!GethService.isRunning()) {
+            startService(intent);
+        }
+        if (serviceConnection != null && GethService.isRunning()) {
+            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            unbindService(serviceConnection);
+        }
+        catch (Throwable t) {
+            Log.e(TAG, "Failed to unbind from the geth service", t);
+        }
     }
 
     /**
