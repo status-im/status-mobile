@@ -36,7 +36,7 @@
                                :handler (fn [])}}])
 
 (defview contact-list []
-  [contacts [:get-contacts]]
+  [contacts [:contacts-with-letters]]
    [drawer-view
     [view st/contacts-list-container
      [contact-list-toolbar]

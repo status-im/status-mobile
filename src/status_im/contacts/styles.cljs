@@ -2,11 +2,10 @@
   (:require [status-im.components.styles :refer [font
                                                  title-font
                                                  text1-color
+                                                 text3-color
                                                  color-white
                                                  toolbar-background2
                                                  online-color]]))
-
-
 
 (def contacts-list-container
   {:flex            1
@@ -15,38 +14,26 @@
 (def contacts-list
   {:backgroundColor :white})
 
+(def letter-container
+  {:paddingTop  11
+   :paddingLeft 20
+   :width       56})
+
+(def letter-text
+  {:fontSize   24
+   :fontFamily font
+   :color      text3-color})
+
 (def contact-photo-container
   {:marginTop  4
    :marginLeft 12})
-
-(def photo-image
-  {:borderRadius 50
-   :width        40
-   :height       40})
-
-(def online-container
-  {:position        :absolute
-   :top             24
-   :left            24
-   :width           20
-   :height          20
-   :borderRadius    50
-   :backgroundColor online-color
-   :borderWidth     2
-   :borderColor     color-white})
 
 (def contact-container
   {:flexDirection :row
    :height        56})
 
-(def photo-container
-  {:marginTop  8
-   :marginLeft 16
-   :width      44
-   :height     44})
-
 (def name-container
-  {:marginLeft 12
+  {:marginLeft     12
    :justifyContent :center})
 
 (def name-text

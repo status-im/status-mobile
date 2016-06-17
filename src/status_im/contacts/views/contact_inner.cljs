@@ -5,12 +5,19 @@
             [status-im.contacts.styles :as st]
             [status-im.i18n :refer [label]]))
 
+(defn letter-view [letter]
+  [view st/letter-container
+   (when letter
+     [text {:style st/letter-text}
+      letter])])
+
 (defn contact-photo [{:keys [whisper-identity]}]
   [view st/contact-photo-container
    [contact-icon-contacts-tab whisper-identity]])
 
-(defn contact-inner-view [{:keys [name] :as contact}]
+(defn contact-inner-view [{:keys [name letter] :as contact}]
   [view st/contact-container
+   [letter-view letter]
    [contact-photo contact]
    [view st/name-container
     [text {:style st/name-text}

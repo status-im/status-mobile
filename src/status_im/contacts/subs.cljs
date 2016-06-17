@@ -12,6 +12,23 @@
     (let [contacts (reaction (:contacts @db))]
       (reaction (sort-by :name (vals @contacts))))))
 
+(defn get-contact-letter [contact]
+  (when-let [letter (first (:name contact))]
+    (clojure.string/upper-case letter)))
+
+(register-sub :contacts-with-letters
+  (fn [db _]
+    (let [contacts (reaction (:contacts @db))]
+      (reaction
+        (let [ordered (sort-by :name (vals @contacts))]
+          (map (fn [prev cur]
+                 (let [prev-letter (get-contact-letter prev)
+                       cur-letter (get-contact-letter cur)]
+                   (if (not= prev-letter cur-letter)
+                     (assoc cur :letter cur-letter)
+                     cur)))
+               (cons nil ordered) ordered))))))
+
 (defn contacts-by-chat [fn db chat-id]
   (let [chat     (reaction (get-in @db [:chats chat-id]))
         contacts (reaction (:contacts @db))]
