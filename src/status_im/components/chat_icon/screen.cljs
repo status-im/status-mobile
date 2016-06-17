@@ -6,7 +6,7 @@
                                                 image
                                                 icon]]
             [status-im.components.chat-icon.styles :as st]
-            [status-im.components.styles :refer [color-purple]]
+            [status-im.components.styles :refer [default-chat-color]]
             [clojure.string :as s]))
 
 (defn default-chat-icon [name styles]
@@ -63,6 +63,27 @@
     :default-chat-icon      (st/default-chat-icon-menu-item color)
     :default-chat-icon-text st/default-chat-icon-text}])
 
+(defview contact-icon-view [identity styles]
+  [contact [:contact-by-identity identity]]
+  (let [photo-path (:photo-path contact)
+        ;; TODO stub data
+        online true]
+    [view (:container styles)
+     (if-not (s/blank? photo-path)
+       [chat-icon photo-path styles]
+       [default-chat-icon (:name contact) styles])
+     [contact-online online styles]]))
+
+(defn contact-icon-contacts-tab [identity]
+  [contact-icon-view identity
+   {:container              st/container-chat-list
+    :online-view            st/online-view
+    :online-dot-left        st/online-dot-left
+    :online-dot-right       st/online-dot-right
+    :chat-icon              st/chat-icon-chat-list
+    :default-chat-icon      (st/default-chat-icon-chat-list default-chat-color)
+    :default-chat-icon-text st/default-chat-icon-text}])
+
 (defn profile-icon-view [photo-path name color online]
   (let [styles {:container              st/container-profile
                 :online-view            st/online-view-profile
@@ -81,7 +102,7 @@
   [contact [:contact]]
   (let [;; TODO stub data
         online true
-        color  color-purple]
+        color  default-chat-color]
     [profile-icon-view (:photo-path contact) (:name contact) color online]))
 
 (defview my-profile-icon []
@@ -89,5 +110,5 @@
    photo-path [:get :photo-path]]
   (let [;; TODO stub data
         online true
-        color  color-purple]
+        color  default-chat-color]
     [profile-icon-view photo-path name color online]))

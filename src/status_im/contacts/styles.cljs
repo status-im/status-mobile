@@ -16,7 +16,8 @@
   {:backgroundColor :white})
 
 (def contact-photo-container
-  {:borderRadius 50})
+  {:marginTop  4
+   :marginLeft 12})
 
 (def photo-image
   {:borderRadius 50
@@ -34,20 +35,6 @@
    :borderWidth     2
    :borderColor     color-white})
 
-(def online-dot
-  {:position        :absolute
-   :top             6
-   :width           4
-   :height          4
-   :borderRadius    50
-   :backgroundColor color-white})
-
-(def online-dot-left
-  (assoc online-dot :left 3))
-
-(def online-dot-right
-  (assoc online-dot :left 9))
-
 (def contact-container
   {:flexDirection :row
    :height        56})
@@ -59,11 +46,11 @@
    :height     44})
 
 (def name-container
-  {:justifyContent :center})
+  {:marginLeft 12
+   :justifyContent :center})
 
 (def name-text
-  {:marginLeft 16
-   :fontSize   16
+  {:fontSize   16
    :fontFamily font
    :color      text1-color})
 
