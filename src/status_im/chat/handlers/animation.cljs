@@ -15,20 +15,12 @@
   ([name middleware handler]
    (register-handler name [(path :animations) middleware] handler)))
 
-(animation-handler :finish-animate-cancel-command
-  (fn [db _]
-    (assoc db :commands-input-is-switching? false)))
-
 (animation-handler :animate-cancel-command
   (fn [db _]
-    (if-not (:commands-input-is-switching? db)
-      (assoc db
-        :commands-input-is-switching? true
-        :message-input-buttons-scale 1
-        :message-input-offset 0
-        :to-response-height zero-height
-        :messages-offset 0)
-      db)))
+    (assoc db
+      :command? false
+      :to-response-height zero-height
+      :messages-offset 0)))
 
 (animation-handler :finish-animate-response-resize
   (fn [db _]
@@ -58,18 +50,12 @@
 (defn update-response-height [db]
   (assoc-in db [:animations :to-response-height] (get-response-height db)))
 
-(animation-handler :finish-show-response
-  (fn [db _]
-    (assoc db :commands-input-is-switching? false)))
-
 (register-handler :animate-show-response
   (after #(dispatch [:animate-response-resize]))
   (fn [db _]
     (-> db
-        (assoc-in [:animations :commands-input-is-switching?] true)
         (assoc-in [:animations :response-height-current] zero-height)
-        (assoc-in [:animations :message-input-buttons-scale] 0.1)
-        (assoc-in [:animations :message-input-offset] -40)
+        (assoc-in [:animations :command?] true)
         (assoc-in [:animations :messages-offset] request-info-height)
         (update-response-height))))
 
@@ -91,21 +77,26 @@
                 :response-resize? false))))
 
 (register-handler :fix-response-height
-  (fn [db _]
-    (if (and (commands/get-chat-command-to-msg-id db)
-             (not (get-in db [:animations :commands-input-is-switching?])))
-      (let [current (get-in db [:animations :response-height-current])
-            normal-height response-height-normal
-            command (commands/get-chat-command db)
-            text (commands/get-chat-command-content db)
-            suggestions (get-content-suggestions command text)
-            max-height (get-in db [:animations :response-height-max])
-            delta (/ normal-height 2)
-            new-fixed (cond
-                        (or (<= current (+ zero-height delta))
-                            (empty? suggestions)) (+ zero-height request-info-height)
-                        (<= current (+ zero-height normal-height delta)) (get-response-height db)
-                        :else max-height)]
-        (dispatch [:animate-response-resize])
-        (assoc-in db [:animations :to-response-height] new-fixed))
-      db)))
+  (fn [db [_ dy vy current]]
+    (let [max-height             (get-in db [:animations :response-height-max])
+          ;; todo magic value
+          middle                 270
+          moving-down?           (pos? vy)
+          moving-up?             (not moving-down?)
+          under-middle-position? (<= current middle)
+          over-middle-position?  (not under-middle-position?)
+          min-height             (+ zero-height request-info-height)
+          new-fixed              (cond (and under-middle-position? moving-down?)
+                                       min-height
+
+                                       (and under-middle-position? moving-up?)
+                                       middle
+
+                                       (and over-middle-position? moving-down?)
+                                       middle
+
+                                       (and over-middle-position? moving-up?)
+                                       max-height)]
+      (-> db
+          (assoc-in [:animations :to-response-height] new-fixed)
+          (update-in [:animations :response-height-changed] inc)))))

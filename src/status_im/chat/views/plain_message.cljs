@@ -33,39 +33,29 @@
     (.clear message-input)
     (.focus message-input)))
 
-(defn commands-button-animation-callback [message-input]
-  (fn [arg to-value]
-    (when (.-finished arg)
-      (dispatch [:set-animation ::message-input-buttons-scale-current to-value])
-      (when (<= to-value 0.1)
-        (dispatch [:finish-show-response])
-        (prepare-message-input @message-input)))))
-
-(defn button-animation-logic [{:keys [to-value val callback]}]
+(defn button-animation-logic [{:keys [command? val]}]
   (fn [_]
-    (let [to-scale @to-value
-          minimum 0.1
-          scale (cond (< 1 to-scale) 1
-                      (< to-scale minimum) minimum
-                      :else to-scale)]
-      (anim/start (anim/timing val {:toValue  scale
-                                    :duration response-input-hiding-duration})
-                  (when callback
-                    (fn [arg]
-                      (callback arg to-scale)))))))
+    (let [to-scale (if @command? 0 1)]
+      (anim/start (anim/spring val {:toValue  to-scale})))))
+
+(defn list-container [min]
+  (fn [{:keys [command? width]}]
+    (let [n-width (if @command? min 56)
+          delay (if @command? 100 0)]
+      (anim/start (anim/timing width {:toValue  n-width
+                                      :duration response-input-hiding-duration
+                                      :delay delay})))))
 
 (defn commands-button []
-  (let [typing-command? (subscribe [:typing-command?])
-        message-input (subscribe [:get :message-input])
-        animation? (subscribe [:animations :commands-input-is-switching?])
-        to-scale (subscribe [:animations :message-input-buttons-scale])
-        cur-scale (subscribe [:animations ::message-input-buttons-scale-current])
-        buttons-scale (anim/create-value (or @cur-scale 1))
-        anim-callback (commands-button-animation-callback message-input)
-        context {:to-value to-scale
-                 :val      buttons-scale
-                 :callback anim-callback}
-        on-update (button-animation-logic context)]
+  (let [command?        (subscribe [:animations :command?])
+        buttons-scale   (anim/create-value (if @command? 1 0))
+        container-width (anim/create-value (if @command? 20 56))
+        context         {:command? command?
+                         :val      buttons-scale
+                         :width    container-width}
+        on-update       (fn [_]
+                          ((button-animation-logic context))
+                          ((list-container 20) context))]
     (r/create-class
       {:component-did-mount
        on-update
@@ -73,24 +63,30 @@
        on-update
        :reagent-render
        (fn []
-         (let [typing-command? @typing-command?]
-           @to-scale
-           [touchable-highlight {:disabled @animation?
-                                 :on-press #(dispatch [:switch-command-suggestions])
-                                 :style    st/message-input-button-touchable}
-            [animated-view {:style (st/message-input-button buttons-scale)}
-             (if typing-command?
-               [icon :close-gray st/close-icon]
-               [icon :list st/list-icon])]]))})))
+         [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions])
+                               :disabled @command?}
+          [animated-view {:style (st/message-input-button-touchable
+                                   container-width)}
+           [animated-view {:style (st/message-input-button buttons-scale)}
+            [icon :list st/list-icon]]]])})))
+
+(defn smile-animation-logic [{:keys [command? val width]}]
+  (fn [_]
+    (let [to-scale (if @command? 0 1)]
+      (when-not @command? (anim/set-value width 56))
+      (anim/start (anim/spring val {:toValue  to-scale})
+                  (fn []
+                    (when @command?
+                      (anim/set-value width 0.1)))))))
 
 (defn smile-button []
-  (let [animation? (subscribe [:animations :commands-input-is-switching?])
-        to-scale (subscribe [:animations :message-input-buttons-scale])
-        cur-scale (subscribe [:animations ::message-input-buttons-scale-current])
-        buttons-scale (anim/create-value (or @cur-scale 1))
-        context {:to-value to-scale
-                 :val      buttons-scale}
-        on-update (button-animation-logic context)]
+  (let [command?      (subscribe [:animations :command?])
+        buttons-scale (anim/create-value (if @command? 1 0))
+        container-width (anim/create-value (if @command? 0.1 56))
+        context       {:command? command?
+                       :val      buttons-scale
+                       :width    container-width}
+        on-update (smile-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
@@ -98,11 +94,11 @@
        on-update
        :reagent-render
        (fn []
-         @to-scale
-         [touchable-highlight {:disabled @animation?
-                               :on-press (fn []
+         [touchable-highlight {:on-press (fn []
                                            ;; TODO emoticons: not implemented
                                            )
-                               :style    st/message-input-button-touchable}
-          [animated-view {:style (st/message-input-button buttons-scale)}
-           [icon :smile st/smile-icon]]])})))
+                               :disabled @command?}
+          [animated-view {:style (st/message-input-button-touchable
+                                   container-width)}
+           [animated-view {:style (st/message-input-button buttons-scale)}
+            [icon :smile st/smile-icon]]]])})))
