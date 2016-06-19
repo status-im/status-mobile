@@ -31,9 +31,7 @@
   [view (st/command-text-container command)
    [text {:style st/command-text} (:text command)]])
 
-(defview cancel-button []
-  [commands-input-is-switching? [:animations :commands-input-is-switching?]]
-  [touchable-highlight {:disabled commands-input-is-switching?
-                        :on-press cancel-command-input}
+(defn cancel-button []
+  [touchable-highlight {:on-press cancel-command-input}
    [view st/cancel-container
     [icon :close-gray st/cancel-icon]]])
