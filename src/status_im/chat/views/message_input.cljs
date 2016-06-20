@@ -11,10 +11,8 @@
             [status-im.components.animation :as anim]
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]
-            [status-im.chat.views.response :as response]
             [status-im.chat.styles.message-input :as st]
             [status-im.chat.styles.plain-message :as st-message]
-            [status-im.chat.styles.input :as st-command]
             [status-im.chat.styles.response :as st-response]
             [status-im.constants :refer [response-input-hiding-duration]]))
 
@@ -36,58 +34,42 @@
 (defn message-input-container [input]
   [view st/message-input-container input])
 
-(defview message-input [input-options validator]
-  [input-message [:get-chat-input-text]
-   command [:get-chat-command]
-   command? [:animations :command?]
-   to-msg-id [:get-chat-command-to-msg-id]
-   input-command [:get-chat-command-content]
-   staged-commands [:get-chat-staged-commands]
-   typing-command? [:typing-command?]]
-  (let [dismiss-keyboard (not (or command typing-command?))]
-    [text-input (merge {:style           (if command?
-                                           st-response/command-input
-                                           st-message/message-input)
-                        :ref             #(dispatch [:set-message-input %])
-                        :autoFocus       false
-                        :blurOnSubmit    dismiss-keyboard
-                        :onChangeText    (if command?
-                                           command/set-input-message
-                                           plain-message/set-input-message)
-                        :onSubmitEditing #(if command?
-                                           (command/try-send input-command validator)
-                                           (plain-message/try-send staged-commands
-                                                                   input-message
-                                                                   dismiss-keyboard))}
-                       (when command?
-                         {:accessibility-label :command-input})
-                       input-options)
-     (if command?
-       input-command
-       input-message)]))
+(defview message-input [input-options]
+  [command? [:animations :command?]
+   input-message [:get-chat-input-text]
+   input-command [:get-chat-command-content]]
+  [text-input (merge {:style           (if command?
+                                         st-response/command-input
+                                         st-message/message-input)
+                      :ref             #(dispatch [:set-message-input %])
+                      :autoFocus       false
+                      :blurOnSubmit    false
+                      :onChangeText    (if command?
+                                         command/set-input-message
+                                         plain-message/set-input-message)
+                      :onSubmitEditing (if command?
+                                         command/send-command
+                                         plain-message/send)}
+                     (when command?
+                       {:accessibility-label :command-input})
+                     input-options)
+   (if command? input-command input-message)])
 
 (defview plain-message-input-view [{:keys [input-options validator]}]
-  [input-message [:get-chat-input-text]
-   command [:get-chat-command]
-   command? [:animations :command?]
-   to-msg-id [:get-chat-command-to-msg-id]
+  [command? [:animations :command?]
    input-command [:get-chat-command-content]
-   staged-commands [:get-chat-staged-commands]
-   typing-command? [:typing-command?]]
-  (let [dismiss-keyboard (not (or command typing-command?))]
-    [view st/input-container
-     [view st/input-view
-      [plain-message/commands-button]
-      [message-input-container
-       [message-input input-options validator]]
-      ;; TODO emoticons: not implemented
-      [plain-message/smile-button]
-      (if-not command?
-        (when (plain-message/message-valid? staged-commands input-message)
-          [send-button {:on-press            #(plain-message/try-send staged-commands
-                                                                      input-message
-                                                                      dismiss-keyboard)
-                        :accessibility-label :send-message}])
-        (when (command/valid? input-command validator)
-          [send-button {:on-press            command/send-command
-                        :accessibility-label :stage-command}]))]]))
+   valid-plain-message? [:valid-plain-message?]
+   valid-command? [:valid-command? validator]]
+  [view st/input-container
+   [view st/input-view
+    [plain-message/commands-button]
+    [message-input-container
+     [message-input input-options validator]]
+    ;; TODO emoticons: not implemented
+    [plain-message/smile-button]
+    (when (if command? valid-command? valid-plain-message?)
+      (let [on-press (if command?
+                       command/send-command
+                       plain-message/send)]
+        [send-button {:on-press            on-press
+                      :accessibility-label :send-message}]))]])

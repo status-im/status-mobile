@@ -1,13 +1,15 @@
 (ns status-im.chat.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub dispatch]]
+  (:require [re-frame.core :refer [register-sub dispatch subscribe]]
             [status-im.db :as db]
     ;todo handlers in subs?...
             [status-im.chat.suggestions :refer
              [get-suggestions typing-command?]]
             [status-im.models.commands :as commands]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
-            [status-im.handlers.content-suggestions :refer [get-content-suggestions]]))
+            [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
+            [status-im.chat.views.plain-message :as plain-message]
+            [status-im.chat.views.command :as command]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]
@@ -62,6 +64,18 @@
     (->> [:chats (:current-chat-id @db) :staged-commands]
          (get-in @db)
          (reaction))))
+
+(register-sub :valid-plain-message?
+  (fn [_ _]
+    (let [input-message   (subscribe [:get-chat-input-text])
+          staged-commands (subscribe [:get-chat-staged-commands])]
+      (reaction
+        (plain-message/message-valid? @staged-commands @input-message)))))
+
+(register-sub :valid-command?
+  (fn [_ [_ validator]]
+    (let [input (subscribe [:get-chat-command-content])]
+      (reaction (command/valid? @input validator)))))
 
 (register-sub :get-chat-command
   (fn [db _]
