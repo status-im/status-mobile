@@ -34,25 +34,28 @@
 (defn message-input-container [input]
   [view st/message-input-container input])
 
+(def plain-input-options
+  {:style           st-message/message-input
+   :onChangeText    plain-message/set-input-message
+   :onSubmitEditing plain-message/send})
+
+(def command-input-options
+  {:style           st-response/command-input
+   :onChangeText    command/set-input-message
+   :onSubmitEditing command/send-command})
+
 (defview message-input [input-options]
   [command? [:animations :command?]
    input-message [:get-chat-input-text]
    input-command [:get-chat-command-content]]
-  [text-input (merge {:style           (if command?
-                                         st-response/command-input
-                                         st-message/message-input)
-                      :ref             #(dispatch [:set-message-input %])
-                      :autoFocus       false
-                      :blurOnSubmit    false
-                      :onChangeText    (if command?
-                                         command/set-input-message
-                                         plain-message/set-input-message)
-                      :onSubmitEditing (if command?
-                                         command/send-command
-                                         plain-message/send)}
-                     (when command?
-                       {:accessibility-label :command-input})
-                     input-options)
+  [text-input (merge
+                (if command?
+                  command-input-options
+                  plain-input-options)
+                {:autoFocus           false
+                 :blurOnSubmit        false
+                 :accessibility-label :input}
+                input-options)
    (if command? input-command input-message)])
 
 (defview plain-message-input-view [{:keys [input-options validator]}]
