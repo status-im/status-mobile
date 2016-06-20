@@ -14,13 +14,28 @@
   {:flex            1
    :backgroundColor :white})
 
+(def toolbar-shadow
+  {:height          2
+   :backgroundColor toolbar-background2})
+
+(def contact-groups
+  {:flex            1
+   :backgroundColor toolbar-background2})
+
 (def contacts-list
   {:backgroundColor :white})
 
 (def contact-group
+  {:flexDirection :column})
+
+(def contact-group-header
+  {:flexDirection   :column
+   :backgroundColor toolbar-background2})
+
+(def contact-group-header-inner
   {:flexDirection   :row
    :alignItems      :center
-   :height          52
+   :height          48
    :backgroundColor toolbar-background2})
 
 (def contact-group-text
@@ -36,10 +51,33 @@
    :fontFamily  font
    :color       text2-color})
 
+(def contact-group-header-gradient-top
+  {:flexDirection   :row
+   :height          3
+   :backgroundColor toolbar-background2})
+
+(def contact-group-header-gradient-top-colors
+  ["rgba(24, 52, 76, 0.165)"
+   "rgba(24, 52, 76, 0.03)"
+   "rgba(24, 52, 76, 0.01)"])
+
+(def contact-group-header-gradient-bottom
+  {:flexDirection   :row
+   :height          2
+   :backgroundColor toolbar-background2})
+
+(def contact-group-header-gradient-bottom-colors
+  ["rgba(24, 52, 76, 0.01)"
+   "rgba(24, 52, 76, 0.05)"])
+
+(def contact-group-header-height (+ (:height contact-group-header-inner)
+                                    (:height contact-group-header-gradient-bottom)))
+
 (def show-all
-  {:flexDirection :row
-   :alignItems    :center
-   :height        56})
+  {:flexDirection   :row
+   :alignItems      :center
+   :height          56
+   :backgroundColor color-white})
 
 (def show-all-text
   {:marginLeft    72
@@ -64,8 +102,9 @@
    :marginLeft 12})
 
 (def contact-container
-  {:flexDirection :row
-   :height        56})
+  {:flexDirection   :row
+   :height          56
+   :backgroundColor color-white})
 
 (def name-container
   {:flex           1
