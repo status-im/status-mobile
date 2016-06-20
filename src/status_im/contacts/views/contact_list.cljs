@@ -7,7 +7,6 @@
                                                 list-view
                                                 list-item]]
             [status-im.contacts.views.contact :refer [contact-view]]
-            [status-im.components.styles :refer [toolbar-background2]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
             [status-im.components.icons.ionicons :refer [icon]]
@@ -15,7 +14,7 @@
                                                  hamburger-icon
                                                  icon-search
                                                  create-icon
-                                                 toolbar-background2]]
+                                                 toolbar-background1]]
             [status-im.contacts.styles :as st]
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]))
@@ -25,11 +24,10 @@
 
 (defview contact-list-toolbar []
   [group [:get :contacts-group]]
-  [toolbar {;; TODO contacts group name
-            :title            (label (if (= group :dapps)
+  [toolbar {:title            (label (if (= group :dapps)
                                        :t/contacs-group-dapps
                                        :t/contacs-group-people))
-            :background-color toolbar-background2
+            :background-color toolbar-background1
             :action           {:image   {:source {:uri :icon_search}
                                          :style  icon-search}
                                :handler (fn [])}}])
