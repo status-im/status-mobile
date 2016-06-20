@@ -7,10 +7,14 @@
     (let [contacts (reaction (:contacts @db))]
       (reaction (vals @contacts)))))
 
+(defn sort-contacts [contacts]
+  (sort-by :name #(compare (clojure.string/lower-case %1)
+                           (clojure.string/lower-case %2)) (vals contacts)))
+
 (register-sub :all-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
-      (reaction (sort-by :name (vals @contacts))))))
+      (reaction (sort-contacts @contacts)))))
 
 (defn get-contact-letter [contact]
   (when-let [letter (first (:name contact))]
@@ -20,7 +24,7 @@
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
       (reaction
-        (let [ordered (sort-by :name (vals @contacts))]
+        (let [ordered (sort-contacts @contacts)]
           (map (fn [prev cur]
                  (let [prev-letter (get-contact-letter prev)
                        cur-letter (get-contact-letter cur)]

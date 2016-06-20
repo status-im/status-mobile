@@ -63,8 +63,7 @@
     :default-chat-icon      (st/default-chat-icon-menu-item color)
     :default-chat-icon-text st/default-chat-icon-text}])
 
-(defview contact-icon-view [identity styles]
-  [contact [:contact-by-identity identity]]
+(defn contact-icon-view [contact styles]
   (let [photo-path (:photo-path contact)
         ;; TODO stub data
         online true]
@@ -74,8 +73,8 @@
        [default-chat-icon (:name contact) styles])
      [contact-online online styles]]))
 
-(defn contact-icon-contacts-tab [identity]
-  [contact-icon-view identity
+(defn contact-icon-contacts-tab [contact]
+  [contact-icon-view contact
    {:container              st/container-chat-list
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left

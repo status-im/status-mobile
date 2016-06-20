@@ -60,7 +60,7 @@
      [text {:style st/show-all-text} (label :show-all)]]]])
 
 (defn contact-list []
-  (let [contacts (subscribe [:get-contacts])
+  (let [contacts (subscribe [:all-contacts])
         show-toolbar-shadow? (r/atom false)]
     (fn []
       [drawer-view

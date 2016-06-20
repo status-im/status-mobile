@@ -11,9 +11,9 @@
      [text {:style st/letter-text}
       letter])])
 
-(defn contact-photo [{:keys [whisper-identity]}]
+(defn contact-photo [contact]
   [view st/contact-photo-container
-   [contact-icon-contacts-tab whisper-identity]])
+   [contact-icon-contacts-tab contact]])
 
 (defn contact-inner-view [{:keys [name letter] :as contact}]
   [view st/contact-container
