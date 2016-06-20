@@ -6,7 +6,7 @@
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
-            [status-im.contacts.views.contact :refer [contact-view]]
+            [status-im.contacts.views.contact :refer [contact-with-letter-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
             [status-im.components.icons.ionicons :refer [icon]]
@@ -20,7 +20,7 @@
             [status-im.i18n :refer [label]]))
 
 (defn render-row [row _ _]
-  (list-item [contact-view row]))
+  (list-item [contact-with-letter-view row]))
 
 (defview contact-list-toolbar []
   [group [:get :contacts-group]]
