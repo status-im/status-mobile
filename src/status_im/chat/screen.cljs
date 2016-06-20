@@ -259,6 +259,7 @@
   [group-chat [:chat :group-chat]
    show-actions-atom [:show-actions]
    command [:get-chat-command]
+   command? [:animations :command?]
    to-msg-id [:get-chat-command-to-msg-id]]
   [view {:style st/chat-view
          :onLayout (fn [event]
@@ -269,8 +270,7 @@
     [messages-view group-chat]]
    (when group-chat [typing-all])
    (cond
-     (and command to-msg-id) [response-view]
-     command [content-suggestions-view]
+     command? [response-view]
      :else [suggestions-view])
    [chat-message-new]
    (when show-actions-atom [actions-view])])
