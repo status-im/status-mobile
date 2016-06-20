@@ -1,9 +1,11 @@
 (ns status-im.contacts.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [reagent.core :as r]
             [status-im.components.react :refer [view text
                                                 image
                                                 touchable-highlight
+                                                linear-gradient
                                                 scroll-view
                                                 list-view
                                                 list-item]]
@@ -14,7 +16,6 @@
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
             [status-im.components.icons.ionicons :refer [icon]]
             [status-im.components.styles :refer [color-blue
-                                                 flex
                                                  hamburger-icon
                                                  icon-search
                                                  create-icon
@@ -27,50 +28,61 @@
   (list-item [contact-view-2 row]))
 
 (defn contact-list-toolbar []
-  [toolbar {:nav-action {:image   {:source {:uri :icon_hamburger}
-                                   :style  hamburger-icon}
-                         :handler open-drawer}
+  [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
+                                         :style  hamburger-icon}
+                               :handler open-drawer}
             :title            (label :t/contacts)
             :background-color toolbar-background2
+            :style            {:elevation 0}
             :action           {:image   {:source {:uri :icon_search}
                                          :style  icon-search}
                                :handler (fn [])}}])
 
-(defview contact-list []
-  [contacts [:get-contacts]]
-   [drawer-view
-    [view st/contacts-list-container
-     [contact-list-toolbar]
-     [scroll-view {:style flex}
-      ;; TODO not implemented: dapps and persons separation
-      [view st/contact-group
-       [text {:style st/contact-group-text} (label :contacs-group-dapps)]
-       [text {:style st/contact-group-size-text} (str (count contacts))]]
-      ;; todo what if there is no contacts, should we show some information
-      ;; about this?
-      (when contacts
-        [view {:flexDirection :column}
-         (for [contact (take 4 contacts)]
-           ^{:key contact} [contact-view-2 contact])])
-      [view st/show-all
-       [touchable-highlight {:on-press #(dispatch [:show-group-contacts :dapps])}
-        [text {:style st/show-all-text} (label :show-all)]]]
-      [view st/contact-group
-       [text {:style st/contact-group-text} (label :contacs-group-people)]
-       [text {:style st/contact-group-size-text} (str (count contacts))]]
-      (when contacts
-        [view {:flexDirection :column}
-         (for [contact (take 4 contacts)]
-           ^{:key contact} [contact-view-2 contact])])
-      [view st/show-all
-       [touchable-highlight {:on-press #(dispatch [:show-group-contacts :people])}
-        [text {:style st/show-all-text} (label :show-all)]]]]
-     [action-button {:buttonColor color-blue
-                     :offsetY     16
-                     :offsetX     16}
-      [action-button-item
-       {:title       (label :t/new-contact)
-        :buttonColor :#9b59b6
-        :onPress     #(dispatch [:navigate-to :new-contact])}
-       [icon {:name  :android-create
-              :style create-icon}]]]]])
+(defn contact-group [contacts title group top?]
+  [view st/contact-group
+   [view st/contact-group-header
+    (when-not top?
+      [linear-gradient {:style  st/contact-group-header-gradient-top
+                        :colors st/contact-group-header-gradient-top-colors}])
+    [view st/contact-group-header-inner
+     [text {:style st/contact-group-text} title]
+     [text {:style st/contact-group-size-text} (str (count contacts))]]
+    [linear-gradient {:style  st/contact-group-header-gradient-bottom
+                      :colors st/contact-group-header-gradient-bottom-colors}]]
+   ;; todo what if there is no contacts, should we show some information
+   ;; about this?
+   (when contacts
+     [view {:flexDirection :column}
+      (for [contact (take 4 contacts)]
+        ^{:key contact} [contact-view-2 contact])])
+   [view st/show-all
+    [touchable-highlight {:on-press #(dispatch [:show-group-contacts group])}
+     [text {:style st/show-all-text} (label :show-all)]]]])
+
+(defn contact-list []
+  (let [contacts (subscribe [:get-contacts])
+        show-toolbar-shadow? (r/atom false)]
+    (fn []
+      [drawer-view
+       [view st/contacts-list-container
+        [contact-list-toolbar]
+        [view {:style st/toolbar-shadow}
+         (when @show-toolbar-shadow?
+           [linear-gradient {:style  st/contact-group-header-gradient-bottom
+                             :colors st/contact-group-header-gradient-bottom-colors}])]
+        [scroll-view {:style    st/contact-groups
+                      :onScroll (fn [e]
+                                  (let [offset (.. e -nativeEvent -contentOffset -y)]
+                                    (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
+         ;; TODO not implemented: dapps and persons separation
+         [contact-group @contacts (label :contacs-group-dapps) :dapps true]
+         [contact-group @contacts (label :contacs-group-people) :people false]]
+        [action-button {:buttonColor color-blue
+                        :offsetY     16
+                        :offsetX     16}
+         [action-button-item
+          {:title       (label :t/new-contact)
+           :buttonColor :#9b59b6
+           :onPress     #(dispatch [:navigate-to :new-contact])}
+          [icon {:name  :android-create
+                 :style create-icon}]]]]])))
