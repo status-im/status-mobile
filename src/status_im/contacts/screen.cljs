@@ -11,7 +11,7 @@
                                                 list-item]]
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
-            [status-im.contacts.views.contact :refer [contact-view-2]]
+            [status-im.contacts.views.contact :refer [contact-extended-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
             [status-im.components.icons.ionicons :refer [icon]]
@@ -23,9 +23,6 @@
             [status-im.contacts.styles :as st]
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]))
-
-(defn render-row [row _ _]
-  (list-item [contact-view-2 row]))
 
 (defn contact-list-toolbar []
   [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
@@ -54,7 +51,8 @@
    (when contacts
      [view {:flexDirection :column}
       (for [contact (take 4 contacts)]
-        ^{:key contact} [contact-view-2 contact])])
+        ;; TODO not imlemented: contact more button handler
+        ^{:key contact} [contact-extended-view contact nil nil])])
    [view st/show-all
     [touchable-highlight {:on-press #(dispatch [:show-group-contacts group])}
      [text {:style st/show-all-text} (label :show-all)]]]])

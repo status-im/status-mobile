@@ -87,6 +87,10 @@
    ;; ios only:
    :letterSpacing 0.5})
 
+(def contact-container
+  {:flexDirection   :row
+   :backgroundColor color-white})
+
 (def letter-container
   {:paddingTop  11
    :paddingLeft 20
@@ -101,13 +105,15 @@
   {:marginTop  4
    :marginLeft 12})
 
-(def contact-container
-  {:flexDirection   :row
+(def contact-inner-container
+  {:flex            1
+   :flexDirection   :row
    :height          56
    :backgroundColor color-white})
 
-(def name-container
+(def info-container
   {:flex           1
+   :flexDirection  :column
    :marginLeft     12
    :justifyContent :center})
 
@@ -115,6 +121,12 @@
   {:fontSize   16
    :fontFamily font
    :color      text1-color})
+
+(def info-text
+  {:marginTop  1
+   :fontSize   12
+   :fontFamily font
+   :color      text2-color})
 
 (def more-btn
   {:width          56
