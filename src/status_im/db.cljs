@@ -38,10 +38,8 @@
                                       :phone-number     ""}
              :disable-group-creation false
              :animations             {:to-response-height           0.1
-                                      :response-height-current      nil
                                       :command?                     false
-                                      :messages-offset              0
-                                      :response-resize?             false}})
+                                      :messages-offset              0}})
 
 (def protocol-initialized-path [:protocol-initialized])
 (defn chat-input-text-path [chat-id]
