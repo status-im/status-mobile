@@ -269,8 +269,7 @@
    [messages-container
     [messages-view group-chat]]
    (when group-chat [typing-all])
-   (cond
-     command? [response-view]
-     :else [suggestions-view])
+   [response-view]
+   (when-not command? [suggestions-view])
    [chat-message-new]
    (when show-actions-atom [actions-view])])

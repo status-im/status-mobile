@@ -65,6 +65,7 @@
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (fn [_]
+    (println :to @to-value)
     (let [to-value @to-value]
       (anim/start (anim/spring val {:toValue to-value})))))
 
