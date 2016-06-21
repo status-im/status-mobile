@@ -38,7 +38,6 @@
                                       :phone-number     ""}
              :disable-group-creation false
              :animations             {:to-response-height           0.1
-                                      :command?                     false
                                       :messages-offset              0}})
 
 (def protocol-initialized-path [:protocol-initialized])

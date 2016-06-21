@@ -36,7 +36,7 @@
                                       :delay delay})))))
 
 (defn commands-button []
-  (let [command?        (subscribe [:animations :command?])
+  (let [command?        (subscribe [:command?])
         buttons-scale   (anim/create-value (if @command? 1 0))
         container-width (anim/create-value (if @command? 20 56))
         context         {:command? command?
@@ -69,7 +69,7 @@
                       (anim/set-value width 0.1)))))))
 
 (defn smile-button []
-  (let [command?      (subscribe [:animations :command?])
+  (let [command?      (subscribe [:command?])
         buttons-scale (anim/create-value (if @command? 1 0))
         container-width (anim/create-value (if @command? 0.1 56))
         context       {:command? command?

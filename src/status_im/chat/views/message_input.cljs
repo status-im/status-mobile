@@ -32,7 +32,7 @@
    :onSubmitEditing command/send-command})
 
 (defview message-input [input-options]
-  [command? [:animations :command?]
+  [command? [:command?]
    input-message [:get-chat-input-text]
    input-command [:get-chat-command-content]]
   [text-input (merge
@@ -46,7 +46,7 @@
    (if command? input-command input-message)])
 
 (defview plain-message-input-view [{:keys [input-options validator]}]
-  [command? [:animations :command?]
+  [command? [:command?]
    input-command [:get-chat-command-content]
    valid-plain-message? [:valid-plain-message?]
    valid-command? [:valid-command? validator]]

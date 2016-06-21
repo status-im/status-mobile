@@ -16,9 +16,9 @@
    (register-handler name [(path :animations) middleware] handler)))
 
 (animation-handler :animate-cancel-command
+  (after #(dispatch [:text-edit-mode]))
   (fn [db _]
     (assoc db
-      :command? false
       :to-response-height zero-height
       :messages-offset 0)))
 
@@ -37,9 +37,9 @@
   (assoc-in db [:animations :to-response-height] (get-response-height db)))
 
 (register-handler :animate-show-response
+  (after #(dispatch [:command-edit-mode]))
   (fn [db _]
     (-> db
-        (assoc-in [:animations :command?] true)
         (assoc-in [:animations :messages-offset] request-info-height)
         (update-response-height))))
 
