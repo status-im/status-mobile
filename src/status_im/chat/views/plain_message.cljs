@@ -64,8 +64,8 @@
     (let [to-scale (if @command? 0 1)]
       (when-not @command? (anim/set-value width 56))
       (anim/start (anim/spring val {:toValue  to-scale})
-                  (fn []
-                    (when @command?
+                  (fn [e]
+                    (when (and @command? (.-finished e))
                       (anim/set-value width 0.1)))))))
 
 (defn smile-button []

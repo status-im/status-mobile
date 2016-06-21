@@ -1,35 +1,22 @@
 (ns status-im.chat.views.message-input
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
-            [reagent.core :as r]
+  (:require [re-frame.core :refer [subscribe]]
             [status-im.components.react :refer [view
                                                 animated-view
                                                 icon
                                                 touchable-highlight
-                                                text-input
-                                                dismiss-keyboard!]]
-            [status-im.components.animation :as anim]
+                                                text-input]]
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]
             [status-im.chat.styles.message-input :as st]
             [status-im.chat.styles.plain-message :as st-message]
-            [status-im.chat.styles.response :as st-response]
-            [status-im.constants :refer [response-input-hiding-duration]]))
+            [status-im.chat.styles.response :as st-response]))
 
 (defn send-button [{:keys [on-press accessibility-label]}]
   [touchable-highlight {:on-press            on-press
                         :accessibility-label accessibility-label}
    [view st/send-container
     [icon :send st/send-icon]]])
-
-(defn animation-logic [{:keys [to-value val]}]
-  (fn [_]
-    (let [to-value @to-value]
-      (anim/start (anim/timing val {:toValue  to-value
-                                    :duration response-input-hiding-duration})
-                  (fn [arg]
-                    (when (.-finished arg)
-                      (dispatch [:set-animation ::message-input-offset-current to-value])))))))
 
 (defn message-input-container [input]
   [view st/message-input-container input])

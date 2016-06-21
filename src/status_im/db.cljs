@@ -37,7 +37,7 @@
                                       :whisper-identity ""
                                       :phone-number     ""}
              :disable-group-creation false
-             :animations             {:to-response-height           nil
+             :animations             {:to-response-height           0.1
                                       :response-height-current      nil
                                       :command?                     false
                                       :messages-offset              0
