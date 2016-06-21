@@ -72,7 +72,7 @@
               :custom-content   toolbar-title
               :action           {:image   {:source {:uri :icon_add}
                                            :style  icon-search}
-                                 :handler #(dispatch [:add-new-contact (merge new-contact {:photo-path (identicon whisper-identity 40)})])}}]
+                                 :handler #(dispatch [:add-new-contact (merge {:photo-path (identicon whisper-identity)} new-contact)])}}]
     [view st/form-container
      [contact-whisper-id-input whisper-identity]
      [contact-name-input name]

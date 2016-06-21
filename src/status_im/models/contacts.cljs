@@ -11,7 +11,7 @@
 
 (defn create-contact [{:keys [name photo-path whisper-identity] :as contact}]
   (->> {:name       (or name "")
-        :photo-path (or photo-path (identicon whisper-identity 40))}
+        :photo-path (or photo-path (identicon whisper-identity))}
        (merge contact)
        (r/create :contacts)))
 
