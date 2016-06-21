@@ -44,7 +44,8 @@
                                       :message-input-buttons-scale  1
                                       :messages-offset              0
                                       :commands-input-is-switching? false
-                                      :response-resize?             false}})
+                                      :response-resize?             false
+                                      :tabs-bar-value               (anim/create-value 0)}})
 
 (def protocol-initialized-path [:protocol-initialized])
 (defn chat-input-text-path [chat-id]
