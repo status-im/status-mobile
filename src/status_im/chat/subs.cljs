@@ -111,3 +111,9 @@
     (let [command (reaction (commands/get-chat-command @db))
           text (reaction (commands/get-chat-command-content @db))]
       (reaction (get-content-suggestions @command @text)))))
+
+(register-sub :command?
+  (fn [db ]
+    (->> (get-in @db [:edit-mode (:current-chat-id @db)])
+         (= :command)
+         (reaction))))

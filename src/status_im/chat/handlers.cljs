@@ -86,7 +86,8 @@
         (.blur message-input)))))
 
 (register-handler :set-response-chat-command
-  (after #(dispatch [:animate-show-response]))
+  [(after #(dispatch [:command-edit-mode]))
+   (after #(dispatch [:animate-show-response]))]
   (fn [db [_ to-msg-id command-key]]
     (commands/set-response-chat-command db to-msg-id command-key)))
 
@@ -248,11 +249,10 @@
     (commands/unstage-command db staged-command)))
 
 (register-handler :set-chat-command
-  (after #(dispatch [:animate-show-response]))
+  [(after #(dispatch [:command-edit-mode]))
+   (after #(dispatch [:animate-show-response]))]
   (fn [db [_ command-key]]
-    (-> db
-        (commands/set-chat-command command-key)
-        (assoc-in [:animations :command?] true))))
+    (commands/set-chat-command db command-key)))
 
 (register-handler :init-console-chat
   (fn [db [_]]
@@ -428,3 +428,13 @@
       ;((after leaving-message!))
       ((after delete-messages!))
       ((after delete-chat!))))
+
+(defn edit-mode-handler [mode]
+  (fn [{:keys [current-chat-id] :as db} _]
+    (assoc-in db [:edit-mode current-chat-id] mode)))
+
+(register-handler :command-edit-mode
+  (edit-mode-handler :command))
+
+(register-handler :text-edit-mode
+  (edit-mode-handler :text))

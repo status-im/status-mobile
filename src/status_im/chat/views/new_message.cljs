@@ -18,7 +18,7 @@
 
 (defview show-input []
   [command  [:get-chat-command]
-   command? [:animations :command?]]
+   command? [:command?]]
   [plain-message-input-view
    (when command?
      (case (:command command)

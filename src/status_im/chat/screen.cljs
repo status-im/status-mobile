@@ -259,7 +259,7 @@
   [group-chat [:chat :group-chat]
    show-actions-atom [:show-actions]
    command [:get-chat-command]
-   command? [:animations :command?]
+   command? [:command?]
    to-msg-id [:get-chat-command-to-msg-id]]
   [view {:style st/chat-view
          :onLayout (fn [event]
