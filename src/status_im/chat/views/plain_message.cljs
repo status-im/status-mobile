@@ -5,8 +5,7 @@
             [status-im.components.react :refer [view
                                                 animated-view
                                                 icon
-                                                touchable-highlight
-                                                dismiss-keyboard!]]
+                                                touchable-highlight]]
             [status-im.components.animation :as anim]
             [status-im.chat.styles.plain-message :as st]
             [status-im.constants :refer [response-input-hiding-duration]]))

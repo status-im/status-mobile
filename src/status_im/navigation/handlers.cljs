@@ -67,6 +67,12 @@
   (fn [db _]
     (push-view db :contact-list)))
 
+(register-handler :show-group-contacts
+  (fn [db [_ group]]
+    (-> db
+        (assoc :contacts-group group)
+        (push-view :group-contacts))))
+
 (defn show-profile
   [db [_ identity]]
   (-> db
