@@ -63,6 +63,10 @@
   {:width  23
    :height 22})
 
+(def icon-scan
+  {:width  18
+   :height 18})
+
 (def icon-plus
   {:width 18
    :height 18})
@@ -92,10 +96,8 @@
 
 (def button-input-container
   {:flex          1
-   :flexDirection :row
-   :height        50})
+   :flexDirection :row})
 
 (def button-input
   {:flex          1
-   :flexDirection :column
-   :height        50})
+   :flexDirection :column})
