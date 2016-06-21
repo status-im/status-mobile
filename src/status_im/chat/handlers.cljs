@@ -253,9 +253,11 @@
     (commands/unstage-command db staged-command)))
 
 (register-handler :set-chat-command
+  (after #(dispatch [:animate-show-response]))
   (fn [db [_ command-key]]
-    ;; todo what is going on there?!
-    (commands/set-chat-command db command-key)))
+    (-> db
+        (commands/set-chat-command command-key)
+        (assoc-in [:animations :command?] true))))
 
 (register-handler :init-console-chat
   (fn [db [_]]
