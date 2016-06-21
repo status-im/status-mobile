@@ -10,6 +10,7 @@
 (def color-black "#000000de")
 (def color-purple "#a187d5")
 (def color-gray "#838c93de")
+(def color-gray2 "#8f838c93")
 (def color-white :white)
 (def color-light-blue "#bbc4cb")
 (def color-light-blue-transparent "#bbc4cb32")

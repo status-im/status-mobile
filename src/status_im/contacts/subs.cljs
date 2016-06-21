@@ -1,6 +1,6 @@
 (ns status-im.contacts.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub]]))
+  (:require [re-frame.core :refer [register-sub subscribe]]))
 
 (register-sub :get-contacts
   (fn [db _]
@@ -16,6 +16,16 @@
     (let [contacts (reaction (:contacts @db))]
       (reaction (sort-contacts @contacts)))))
 
+(register-sub :get-contacts-with-limit
+  (fn [_ [_ limit]]
+    (let [contacts (subscribe [:all-contacts])]
+      (reaction (take limit @contacts)))))
+
+(register-sub :contacts-count
+  (fn [_ _]
+    (let [contacts (subscribe [:all-contacts])]
+      (reaction (count @contacts)))))
+
 (defn get-contact-letter [contact]
   (when-let [letter (first (:name contact))]
     (clojure.string/upper-case letter)))
@@ -25,25 +35,26 @@
     (let [contacts (reaction (:contacts @db))]
       (reaction
         (let [ordered (sort-contacts @contacts)]
-          (map (fn [prev cur]
-                 (let [prev-letter (get-contact-letter prev)
-                       cur-letter (get-contact-letter cur)]
-                   (if (not= prev-letter cur-letter)
-                     (assoc cur :letter cur-letter)
-                     cur)))
-               (cons nil ordered) ordered))))))
+          (reduce (fn [prev cur]
+                    (let [prev-letter (get-contact-letter (last prev))
+                          cur-letter  (get-contact-letter cur)]
+                      (conj prev
+                            (if (not= prev-letter cur-letter)
+                              (assoc cur :letter cur-letter)
+                              cur))))
+                  [] ordered))))))
 
 (defn contacts-by-chat [fn db chat-id]
   (let [chat     (reaction (get-in @db [:chats chat-id]))
         contacts (reaction (:contacts @db))]
     (reaction
-     (when @chat
-       (let [current-participants (->> @chat
-                                       :contacts
-                                       (map :identity)
-                                       set)]
-         (fn #(current-participants (:whisper-identity %))
-           (vals @contacts)))))))
+      (when @chat
+        (let [current-participants (->> @chat
+                                        :contacts
+                                        (map :identity)
+                                        set)]
+          (fn #(current-participants (:whisper-identity %))
+              (vals @contacts)))))))
 
 (defn contacts-by-current-chat [fn db]
   (let [current-chat-id (:current-chat-id @db)]
@@ -72,8 +83,8 @@
           chat     (reaction (get-in @db [:chats chat-id]))
           contacts (contacts-by-chat filter db chat-id)]
       (reaction
-       (when @chat
-         (if (:group-chat @chat)
-           ;; TODO return group chat icon
-           nil
-           (:photo-path (first @contacts))))))))
+        (when @chat
+          (if (:group-chat @chat)
+            ;; TODO return group chat icon
+            nil
+            (:photo-path (first @contacts))))))))

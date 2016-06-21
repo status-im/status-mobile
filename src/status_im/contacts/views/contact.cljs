@@ -8,8 +8,7 @@
 (defn letter-view [letter]
   [view st/letter-container
    (when letter
-     [text {:style st/letter-text}
-      letter])])
+     [text {:style st/letter-text} letter])])
 
 (defn on-press [chat whisper-identity]
   (if chat
@@ -23,12 +22,6 @@
    [view st/contact-container
     [letter-view letter]
     [contact-inner-view contact]]])
-
-(defview contact-simple-view [{:keys [whisper-identity] :as contact}]
-  [chat [:get-chat whisper-identity]]
-  [touchable-highlight
-   {:onPress (on-press chat whisper-identity)}
-   [view {} [contact-inner-view contact]]])
 
 (defview contact-extended-view [{:keys [whisper-identity] :as contact} info more-click-handler]
   [chat [:get-chat whisper-identity]]
