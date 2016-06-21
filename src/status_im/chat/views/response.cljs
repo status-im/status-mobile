@@ -34,11 +34,12 @@
     ;; TODO stub data: request message info
     "By ???, MMM 1st at HH:mm"]])
 
-(defn create-response-pan-responder [response-height]
+(defn create-response-pan-responder [response-height kb-height]
   (drag/create-pan-responder
     {:on-move    (fn [_ gesture]
                    (when (> (Math/abs (.-dy gesture)) 10)
                      (let [to-value (- (:height (react/get-dimensions "window"))
+                                       @kb-height
                                        (.-moveY gesture))]
                        (anim/start
                          (anim/spring response-height {:toValue to-value})))))
@@ -50,7 +51,8 @@
                                 (.-_value response-height)])))}))
 
 (defn request-info [response-height]
-  (let [pan-responder (create-response-pan-responder response-height)
+  (let [kb-height (subscribe [:get :keyboard-height])
+        pan-responder (create-response-pan-responder response-height kb-height)
         command       (subscribe [:get-chat-command])]
     (fn [response-height]
       [view (merge (drag/pan-handlers pan-responder)
@@ -65,7 +67,6 @@
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (fn [_]
-    (println :to @to-value)
     (let [to-value @to-value]
       (anim/start (anim/spring val {:toValue to-value})))))
 

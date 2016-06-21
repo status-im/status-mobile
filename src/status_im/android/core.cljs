@@ -5,7 +5,7 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
-            [status-im.components.react :refer [navigator app-registry]]
+            [status-im.components.react :refer [navigator app-registry device-event-emitter]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.screen :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -36,21 +36,33 @@
 (defn app-root []
   (let [signed-up (subscribe [:get :signed-up])
         view-id   (subscribe [:get :view-id])]
-    (fn []
-      (case (if @signed-up @view-id :chat)
-        :discovery [main-tabs]
-        :discovery-tag [discovery-tag]
-        :add-participants [new-participants]
-        :remove-participants [remove-participants]
-        :chat-list [main-tabs]
-        :new-group [new-group]
-        :group-settings [group-settings]
-        :contact-list [main-tabs]
-        :new-contact [new-contact]
-        :qr-scanner [qr-scanner]
-        :chat [chat]
-        :profile [profile]
-        :my-profile [my-profile]))))
+    (r/create-class
+      {:component-will-mount
+       (fn []
+         (.addListener device-event-emitter
+                       "keyboardDidShow"
+                       (fn [e]
+                         (let [h (.. e -endCoordinates -height)]
+                           (dispatch [:set :keyboard-height h]))))
+         (.addListener device-event-emitter
+                       "keyboardDidHide"
+                       #(dispatch [:set :keyboard-height 0])))
+       :render
+       (fn []
+         (case (if @signed-up @view-id :chat)
+           :discovery [main-tabs]
+           :discovery-tag [discovery-tag]
+           :add-participants [new-participants]
+           :remove-participants [remove-participants]
+           :chat-list [main-tabs]
+           :new-group [new-group]
+           :group-settings [group-settings]
+           :contact-list [main-tabs]
+           :new-contact [new-contact]
+           :qr-scanner [qr-scanner]
+           :chat [chat]
+           :profile [profile]
+           :my-profile [my-profile]))})))
 
 (defn init []
   (dispatch-sync [:initialize-db])
