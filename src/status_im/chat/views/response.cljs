@@ -34,24 +34,27 @@
     ;; TODO stub data: request message info
     "By ???, MMM 1st at HH:mm"]])
 
+;; todo bad name. Ideas?
+(defn enough-dy [gesture]
+  (> (Math/abs (.-dy gesture)) 10))
+
 (defn pan-responder [response-height kb-height orientation]
   (drag/create-pan-responder
     {:on-move    (fn [_ gesture]
-                   (when (> (Math/abs (.-dy gesture)) 10)
+                   (when (enough-dy gesture)
                      (let [w        (react/get-dimensions "window")
-                           p        (if (= :portrait @orientation)
+                           prop     (if (= :portrait @orientation)
                                       :height
                                       :width)
-                           to-value (- (p w)
-                                       @kb-height
-                                       (.-moveY gesture))]
+                           to-value (- (prop w) @kb-height (.-moveY gesture))]
                        (anim/start
                          (anim/spring response-height {:toValue to-value})))))
      :on-release (fn [_ gesture]
-                   (when (> (Math/abs (.-dy gesture)) 10)
+                   (when (enough-dy gesture)
                      (dispatch [:fix-response-height
-                                (.-dy gesture)
                                 (.-vy gesture)
+                                ;; todo access to "private" property
+                                ;; better to find another way...
                                 (.-_value response-height)])))}))
 
 (defn request-info [response-height]

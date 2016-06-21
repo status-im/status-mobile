@@ -22,20 +22,6 @@
       :to-response-height zero-height
       :messages-offset 0)))
 
-(animation-handler :finish-animate-response-resize
-  (fn [db _]
-    (let [fixed (:to-response-height db)]
-      (assoc db :response-height-current fixed
-                :response-resize? false))))
-
-(animation-handler :set-response-height
-  (fn [db [_ value]]
-    (assoc db :response-height-current value)))
-
-(animation-handler :animate-response-resize
-  (fn [db _]
-    (assoc db :response-resize? true)))
-
 (defn get-response-height [db]
   (let [command (commands/get-chat-command db)
         text (commands/get-chat-command-content db)
@@ -51,10 +37,8 @@
   (assoc-in db [:animations :to-response-height] (get-response-height db)))
 
 (register-handler :animate-show-response
-  (after #(dispatch [:animate-response-resize]))
   (fn [db _]
     (-> db
-        (assoc-in [:animations :response-height-current] zero-height)
         (assoc-in [:animations :command?] true)
         (assoc-in [:animations :messages-offset] request-info-height)
         (update-response-height))))
@@ -65,19 +49,12 @@
       (if (not= height prev-height)
         (let [db (assoc db :response-height-max height)]
           (if (= prev-height (:to-response-height db))
-            (assoc db :to-response-height height
-                      :response-height-current height)
+            (assoc db :to-response-height height)
             db))
         db))))
 
-(animation-handler :on-drag-response
-  (fn [db [_ dy]]
-    (let [fixed (:to-response-height db)]
-      (assoc db :response-height-current (- fixed dy)
-                :response-resize? false))))
-
 (register-handler :fix-response-height
-  (fn [db [_ dy vy current]]
+  (fn [db [_ vy current]]
     (let [max-height             (get-in db [:animations :response-height-max])
           ;; todo magic value
           middle                 270

@@ -50,12 +50,7 @@
     (fn [db _]
       (dispatch [:animate-cancel-command]))))
 
-(defn animate-set-chat-command-content [db _]
-  (when (commands/get-chat-command-to-msg-id db)
-    (dispatch [:animate-response-resize])))
-
 (register-handler :set-chat-command-content
-  (after animate-set-chat-command-content)
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (as-> db db
           (commands/set-chat-command-content db content)
