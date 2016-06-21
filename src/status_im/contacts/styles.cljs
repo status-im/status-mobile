@@ -8,7 +8,8 @@
                                                  text5-color
                                                  color-white
                                                  toolbar-background2
-                                                 online-color]]))
+                                                 online-color
+                                                 color-gray2]]))
 
 (def contacts-list-container
   {:flex            1
@@ -21,6 +22,20 @@
 (def contact-groups
   {:flex            1
    :backgroundColor toolbar-background2})
+
+(def empty-contact-groups
+  (merge contact-groups
+         {:align-items :center
+          :padding-top 150}))
+
+(def empty-contacts-icon
+  {:height 62
+   :width  62})
+
+(def empty-contacts-text
+  {:margin-top 12
+   :font-size  16
+   :color      color-gray2})
 
 (def contacts-list
   {:backgroundColor :white})
