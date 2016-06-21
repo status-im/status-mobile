@@ -77,3 +77,4 @@
 
 (def dismiss-keyboard! (u/require "dismissKeyboard"))
 (def device-event-emitter (.-DeviceEventEmitter react))
+(def orientation (u/require "react-native-orientation"))

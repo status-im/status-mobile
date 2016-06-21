@@ -5,7 +5,8 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
-            [status-im.components.react :refer [navigator app-registry device-event-emitter]]
+            [status-im.components.react :refer [navigator app-registry device-event-emitter
+                                                orientation]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.screen :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -33,12 +34,20 @@
                            true)))]
     (add-event-listener "hardwareBackPress" new-listener)))
 
+(defn orientation->keyword [o]
+  (keyword (.toLowerCase o)))
+
 (defn app-root []
   (let [signed-up (subscribe [:get :signed-up])
         view-id   (subscribe [:get :view-id])]
     (r/create-class
       {:component-will-mount
        (fn []
+         (let [o (orientation->keyword (.getInitialOrientation orientation))]
+           (dispatch [:set :orientation o]))
+         (.addOrientationListener
+           orientation
+           #(dispatch [:set :orientation (orientation->keyword %)]))
          (.addListener device-event-emitter
                        "keyboardDidShow"
                        (fn [e]

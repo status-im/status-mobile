@@ -34,11 +34,15 @@
     ;; TODO stub data: request message info
     "By ???, MMM 1st at HH:mm"]])
 
-(defn create-response-pan-responder [response-height kb-height]
+(defn pan-responder [response-height kb-height orientation]
   (drag/create-pan-responder
     {:on-move    (fn [_ gesture]
                    (when (> (Math/abs (.-dy gesture)) 10)
-                     (let [to-value (- (:height (react/get-dimensions "window"))
+                     (let [w        (react/get-dimensions "window")
+                           p        (if (= :portrait @orientation)
+                                      :height
+                                      :width)
+                           to-value (- (p w)
                                        @kb-height
                                        (.-moveY gesture))]
                        (anim/start
@@ -51,8 +55,9 @@
                                 (.-_value response-height)])))}))
 
 (defn request-info [response-height]
-  (let [kb-height (subscribe [:get :keyboard-height])
-        pan-responder (create-response-pan-responder response-height kb-height)
+  (let [orientation   (subscribe [:get :orientation])
+        kb-height     (subscribe [:get :keyboard-height])
+        pan-responder (pan-responder response-height kb-height orientation)
         command       (subscribe [:get-chat-command])]
     (fn [response-height]
       [view (merge (drag/pan-handlers pan-responder)
@@ -73,11 +78,11 @@
 (defn container [response-height & children]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
-        to-response-height  (subscribe [:animations :to-response-height])
-        changed (subscribe [:animations :response-height-changed])
-        context             {:to-value to-response-height
-                             :val      response-height}
-        on-update           (container-animation-logic context)]
+        to-response-height (subscribe [:animations :to-response-height])
+        changed            (subscribe [:animations :response-height-changed])
+        context            {:to-value to-response-height
+                            :val      response-height}
+        on-update          (container-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update

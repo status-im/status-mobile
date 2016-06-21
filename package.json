@@ -21,6 +21,7 @@
     "react-native-qrcode": "^0.2.2",
     "react-native-randombytes": "^2.1.0",
     "react-native-vector-icons": "^1.3.4",
+    "react-native-orientation": "^1.17.0",
     "realm": "^0.11.1"
   }
 }
