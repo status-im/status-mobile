@@ -38,12 +38,12 @@
   (fn [_]
     (let [to-value @to-value]
       (when (< min-height to-value)
-        (dispatch [:set-animation ::validation-messages-visible? true]))
+        (dispatch [:set-animation ::visible? true]))
       (anim/start (anim/timing val {:toValue  to-value
                                     :duration 200})
                   (fn [arg]
                     (when (<= to-value min-height)
-                      (dispatch [:set-animation ::validation-messages-visible? false])))))))
+                      (dispatch [:set-animation ::visible? false])))))))
 
 (defn container [& children]
   (let [show? (subscribe [:show-command-validation-messages?])
@@ -52,7 +52,7 @@
         to-height (reaction (if (and @show? (not @commands-input-is-switching?))
                               (* max-height (count @validation-messages))
                               min-height))
-        visible? (subscribe [:animations ::validation-messages-visible?])
+        visible? (subscribe [:animations ::visible?])
         anim-height (anim/create-value min-height)
         context {:to-value to-height
                  :val      anim-height}
