@@ -1,6 +1,7 @@
 (ns status-im.contacts.views.new-contact
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [clojure.string :as str]
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
@@ -30,6 +31,9 @@
   [view toolbar-title-container
    [text {:style toolbar-title-text}
     (label :t/add-new-contact)]])
+
+(defn valid-form? [name address]
+  (and (not (str/blank? name)) (not (str/blank? address))))
 
 (defview contact-name-input [name]
   []
@@ -63,7 +67,9 @@
                                          :style  icon-back}
                                :handler  #(dispatch [:navigate-back])}
               :custom-content   toolbar-title
-              :action           {:image   {:source {:uri :icon_ok_blue}
+              :action           {:image   {:source {:uri (if (valid-form? name whisper-identity)
+                                                           :icon_ok_blue
+                                                           :icon_ok_disabled)}
                                            :style  icon-search}
                                  :handler #(dispatch [:add-new-contact new-contact])}}]
     [view st/form-container
