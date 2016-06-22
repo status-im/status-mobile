@@ -1,9 +1,14 @@
 (ns status-im.contacts.validations
-  (:require [cljs.spec :as s]))
+  (:require [cljs.spec :as s]
+            [status-im.persistence.realm :as realm]))
 
 (s/def ::not-empty-string (s/and string? not-empty))
+(defn unique-identity? [identity]
+  (println identity)
+  (not (realm/exists? :contacts :whisper-identity identity)))
 
-(s/def ::name ::not-empty-string)
+(s/def ::unique-identity unique-identity?)
+(s/def ::name (s/and ::not-empty-string ::unique-identity))
 (s/def ::whisper-identity ::not-empty-string)
 
 (s/def ::contact (s/keys :req-un [::name ::whisper-identity]
