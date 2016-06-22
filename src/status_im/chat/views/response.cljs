@@ -14,7 +14,8 @@
             [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]
             [status-im.chat.styles.message-input :refer [input-height]]
-            [status-im.components.animation :as anim]))
+            [status-im.components.animation :as anim]
+            [status-im.components.react :as react]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -33,17 +34,47 @@
     ;; TODO stub data: request message info
     "By ???, MMM 1st at HH:mm"]])
 
-(defn create-response-pan-responder []
-  (drag/create-pan-responder
-    {:on-move    (fn [e gesture]
-                   (dispatch [:on-drag-response (.-dy gesture)]))
-     :on-release (fn [e gesture]
-                   (dispatch [:fix-response-height]))}))
+;; todo bad name. Ideas?
+(defn enough-dy [gesture]
+  (> (Math/abs (.-dy gesture)) 10))
 
-(defn request-info []
-  (let [pan-responder (create-response-pan-responder)
-        command (subscribe [:get-chat-command])]
-    (fn []
+(defn on-move [response-height kb-height orientation]
+  (fn [_ gesture]
+    (when (enough-dy gesture)
+      (let [w        (react/get-dimensions "window")
+            ;; depending on orientation use height or width of screen
+            prop     (if (= :portrait @orientation)
+                       :height
+                       :width)
+            ;; subtract keyboard height to get "real height" of screen
+            ;; then subtract gesture position to get suggestions height
+            ;; todo maybe it is better to use margin-top instead height
+            ;; it is not obvious
+            to-value (- (prop w) @kb-height (.-moveY gesture))]
+        (println to-value )
+        (anim/start
+          (anim/spring response-height {:toValue to-value}))))))
+
+(defn on-release [response-height]
+  (fn [_ gesture]
+    (when (enough-dy gesture)
+      (dispatch [:fix-response-height
+                 (.-vy gesture)
+                 ;; todo access to "private" property
+                 ;; better to find another way...
+                 (.-_value response-height)]))))
+
+(defn pan-responder [response-height kb-height orientation]
+  (drag/create-pan-responder
+    {:on-move    (on-move response-height kb-height orientation)
+     :on-release (on-release response-height)}))
+
+(defn request-info [response-height]
+  (let [orientation   (subscribe [:get :orientation])
+        kb-height     (subscribe [:get :keyboard-height])
+        pan-responder (pan-responder response-height kb-height orientation)
+        command       (subscribe [:get-chat-command])]
+    (fn [response-height]
       [view (merge (drag/pan-handlers pan-responder)
                    {:style (st/request-info (:color @command))})
        [drag-icon]
@@ -54,46 +85,33 @@
          [view st/cancel-container
           [icon :close-white st/cancel-icon]]]]])))
 
-(defn container-animation-logic [{:keys [animation? to-value current-value val]}]
+(defn container-animation-logic [{:keys [to-value val]}]
   (fn [_]
-    (if @animation?
-      (let [to-value @to-value]
-        (anim/start (anim/spring val {:toValue to-value})
-                    (fn [arg]
-                      (when (.-finished arg)
-                        (dispatch [:set-animation :response-height-current to-value])
-                        (dispatch [:finish-animate-response-resize])
-                        (when (= to-value input-height)
-                          (dispatch [:finish-animate-cancel-command])
-                          (dispatch [:cancel-command]))))))
-      (anim/set-value val @current-value))))
+    (let [to-value @to-value]
+      (anim/start (anim/spring val {:toValue to-value})))))
 
-(defn container [& children]
-  (let [commands-input-is-switching? (subscribe [:animations :commands-input-is-switching?])
-        response-resize? (subscribe [:animations :response-resize?])
+(defn container [response-height & children]
+  (let [;; todo to-response-height, cur-response-height must be specific
+        ;; for each chat
         to-response-height (subscribe [:animations :to-response-height])
-        cur-response-height (subscribe [:animations :response-height-current])
-        response-height (anim/create-value (or @cur-response-height 0))
-        context {:animation?    (reaction (or @commands-input-is-switching? @response-resize?))
-                 :to-value      to-response-height
-                 :current-value cur-response-height
-                 :val           response-height}
-        on-update (container-animation-logic context)]
+        changed            (subscribe [:animations :response-height-changed])
+        context            {:to-value to-response-height
+                            :val      response-height}
+        on-update          (container-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
        :component-did-update
        on-update
        :reagent-render
-       (fn [& children]
-         @to-response-height
-         (into [animated-view {:style (st/response-view (if (or @commands-input-is-switching? @response-resize?)
-                                                          response-height
-                                                          (or @cur-response-height 0)))}]
+       (fn [response-height & children]
+         @to-response-height @changed
+         (into [animated-view {:style (st/response-view response-height)}]
                children))})))
 
 (defn response-view []
-  [container
-   [request-info]
-   [response-suggestions-view]
-   [view st/input-placeholder]])
+  (let [response-height (anim/create-value 0)]
+    [container response-height
+     [request-info response-height]
+     [response-suggestions-view]
+     [view st/input-placeholder]]))

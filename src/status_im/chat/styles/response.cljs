@@ -87,7 +87,6 @@
 
 (def command-input
   {:flex        1
-   :marginLeft  56
    :marginRight 16
    :marginTop   -2
    :padding     0
