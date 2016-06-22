@@ -11,6 +11,9 @@
 (defn spring [anim-value config]
   (.spring animated anim-value (clj->js config)))
 
+(defn decay [anim-value config]
+  (.decay animated anim-value (clj->js config)))
+
 (defn anim-sequence [animations]
   (.sequence animated (clj->js animations)))
 

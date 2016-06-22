@@ -16,9 +16,11 @@
    (for [command staged-commands]
      ^{:key command} [staged-command-view command])])
 
-(defn show-input [command]
+(defview show-input []
+  [command  [:get-chat-command]
+   command? [:command?]]
   [plain-message-input-view
-   (when command
+   (when command?
      (case (:command command)
        :phone {:input-options {:keyboardType :phone-pad}
                :validator     valid-mobile-number?}
@@ -29,9 +31,8 @@
        (throw (js/Error. "Uknown command type"))))])
 
 (defview chat-message-new []
-  [command [:get-chat-command]
-   staged-commands [:get-chat-staged-commands]]
+  [staged-commands [:get-chat-staged-commands]]
   [view st/new-message-container
    (when (and staged-commands (pos? (count staged-commands)))
      [staged-commands-view staged-commands])
-   [show-input command]])
+   [show-input]])

@@ -13,5 +13,5 @@
 
 (def max-chat-name-length 20)
 
-(def response-input-hiding-duration 300)
+(def response-input-hiding-duration 100)
 (def response-suggesstion-resize-duration 100)
