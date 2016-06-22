@@ -13,7 +13,7 @@
                                                         action-button-item]]
             [status-im.contacts.views.contact :refer [contact-extended-view]]
             [status-im.components.toolbar :refer [toolbar]]
-            [status-im.components.drawer.view :refer [drawer-view open-drawer]]
+            [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.ionicons :refer [icon]]
             [status-im.components.styles :refer [color-blue
                                                  hamburger-icon
@@ -63,38 +63,37 @@
         contcats-count       (subscribe [:contacts-count])
         show-toolbar-shadow? (r/atom false)]
     (fn []
-      [drawer-view
-       [view st/contacts-list-container
-        [contact-list-toolbar]
-        [view {:style st/toolbar-shadow}
-         (when @show-toolbar-shadow?
-           [linear-gradient {:style  st/contact-group-header-gradient-bottom
-                             :colors st/contact-group-header-gradient-bottom-colors}])]
-        (if (pos? @contcats-count)
-          [scroll-view {:style    st/contact-groups
-                        :onScroll (fn [e]
-                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
-                                      (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
-           ;; TODO not implemented: dapps and persons separation
-           [contact-group
-            @contacts
-            @contcats-count
-            (label :t/contacs-group-dapps)
-            :dapps true]
-           [contact-group
-            @contacts
-            @contcats-count
-            (label :t/contacs-group-people)
-            :people false]]
-          [view st/empty-contact-groups
-           [react/icon :group_big st/empty-contacts-icon]
-           [text {:style st/empty-contacts-text} (label :t/no-contacts)]])
-        [action-button {:buttonColor color-blue
-                        :offsetY     16
-                        :offsetX     16}
-         [action-button-item
-          {:title       (label :t/new-contact)
-           :buttonColor :#9b59b6
-           :onPress     #(dispatch [:navigate-to :new-contact])}
-          [icon {:name  :android-create
-                 :style create-icon}]]]]])))
+      [view st/contacts-list-container
+       [contact-list-toolbar]
+       [view {:style st/toolbar-shadow}
+        (when @show-toolbar-shadow?
+          [linear-gradient {:style  st/contact-group-header-gradient-bottom
+                            :colors st/contact-group-header-gradient-bottom-colors}])]
+       (if (pos? @contcats-count)
+         [scroll-view {:style    st/contact-groups
+                       :onScroll (fn [e]
+                                   (let [offset (.. e -nativeEvent -contentOffset -y)]
+                                     (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
+          ;; TODO not implemented: dapps and persons separation
+          [contact-group
+           @contacts
+           @contcats-count
+           (label :t/contacs-group-dapps)
+           :dapps true]
+          [contact-group
+           @contacts
+           @contcats-count
+           (label :t/contacs-group-people)
+           :people false]]
+         [view st/empty-contact-groups
+          [react/icon :group_big st/empty-contacts-icon]
+          [text {:style st/empty-contacts-text} (label :t/no-contacts)]])
+       [action-button {:buttonColor color-blue
+                       :offsetY     16
+                       :offsetX     16}
+        [action-button-item
+         {:title       (label :t/new-contact)
+          :buttonColor :#9b59b6
+          :onPress     #(dispatch [:navigate-to :new-contact])}
+         [icon {:name  :android-create
+                :style create-icon}]]]])))
