@@ -23,6 +23,8 @@
                                                  form-text-input]]
             [status-im.qr-scanner.views.scan-button :refer [scan-button]]
             [status-im.i18n :refer [label]]
+            [cljs.spec :as s]
+            [status-im.contacts.validations :as v]
             [status-im.contacts.styles :as st]))
 
 
@@ -31,9 +33,6 @@
   [view toolbar-title-container
    [text {:style toolbar-title-text}
     (label :t/add-new-contact)]])
-
-(defn valid-form? [name address]
-  (and (not (str/blank? name)) (not (str/blank? address))))
 
 (defview contact-name-input [name]
   []
@@ -67,7 +66,7 @@
                                          :style  icon-back}
                                :handler  #(dispatch [:navigate-back])}
               :custom-content   toolbar-title
-              :action           {:image   {:source {:uri (if (valid-form? name whisper-identity)
+              :action           {:image   {:source {:uri (if (s/valid? ::v/contact new-contact)
                                                            :icon_ok_blue
                                                            :icon_ok_disabled)}
                                            :style  icon-search}
