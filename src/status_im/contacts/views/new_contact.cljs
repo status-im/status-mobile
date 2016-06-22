@@ -7,6 +7,7 @@
                                                 image
                                                 linear-gradient
                                                 touchable-highlight]]
+            [status-im.utils.identicon :refer [identicon]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
@@ -61,6 +62,7 @@
                      :end       [0.5, 1]
                      :locations [0, 0.8, 1]
                      :style     st/gradient-background}]
+
    [toolbar {:background-color :transparent
              :nav-action       {:image   {:source {:uri :icon_back_white}
                                           :style  icon-back}
@@ -68,7 +70,7 @@
              :custom-content   toolbar-title
              :action           {:image   {:source {:uri :icon_add}
                                           :style  icon-search}
-                                :handler #(dispatch [:add-new-contact new-contact])}}]
+                                :handler #(dispatch [:add-new-contact (merge {:photo-path (identicon whisper-identity)} new-contact)])}}]
    [view st/form-container
     [contact-whisper-id-input whisper-identity]
     [contact-name-input name]]])

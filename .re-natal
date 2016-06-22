@@ -18,7 +18,8 @@
     "react-native-linear-gradient",
     "react-native-android-sms-listener",
     "react-native-camera",
-    "react-native-qrcode"
+    "react-native-qrcode",
+    "identicon.js"
   ],
   "imageDirs": [
     "images"
