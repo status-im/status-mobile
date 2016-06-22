@@ -19,7 +19,7 @@
   {:width  12
    :height 12})
 
-(def message-input
+(def plain-input
   {:flex       1
    :marginTop  -2
    :padding    0

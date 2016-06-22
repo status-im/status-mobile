@@ -30,6 +30,7 @@
 (def toolbar-background1 color-white)
 (def toolbar-background2 color-light-gray)
 (def default-chat-color color-purple)
+(def validation-message-background :red)
 
 (def toolbar-height 56)
 

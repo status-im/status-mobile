@@ -3,8 +3,8 @@
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [re-frame.core :refer [subscribe dispatch]]
             [status-im.db :as db]
-            [status-im.components.animation :as anim]
             [status-im.components.styles :refer [color-blue color-dark-mint]]
+            [status-im.utils.phone-number :refer [get-validation-messages]]
             [status-im.i18n :refer [label]]))
 
 ;; todo delete
@@ -26,7 +26,8 @@
                 :color        color-dark-mint
                 :request-text (label :t/phone-request-text)
                 :suggestion   true
-                :handler      #(dispatch [:sign-up %])}
+                :handler      #(dispatch [:sign-up %])
+                :validator    get-validation-messages}
                {:command      :confirmation-code
                 :text         "!confirmationCode"
                 :description  (label :t/confirmation-code-command-description)

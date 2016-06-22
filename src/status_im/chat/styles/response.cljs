@@ -5,11 +5,11 @@
                                                  text1-color
                                                  text2-color
                                                  chat-background
-                                                 color-black]]
-            [status-im.chat.styles.message-input :refer [input-height]]))
+                                                 color-black]]))
 
 (def response-height-normal 211)
 (def request-info-height 61)
+(def animation-offset 56)
 
 (def drag-container
   {:height         16
@@ -51,18 +51,17 @@
    :opacity    0.69
    :color      color-white})
 
-(defn response-view [height]
-  {:flexDirection   :column
-   :position        :absolute
-   :left            0
-   :right           0
-   :bottom          0
-   :height          height
-   :backgroundColor color-white
-   :elevation       2})
+(defn response-view [mode animation? height]
+  (merge {:flexDirection   :column
+          :marginBottom    (- animation-offset)
+          :backgroundColor color-white
+          :elevation       2}
+         (if (and (not animation?) (= mode :fit))
+           {:flex 1}
+           {:height height})))
 
-(def input-placeholder
-  {:height input-height})
+(def animation-margin
+  {:height animation-offset})
 
 (defn request-info [color]
   {:flexDirection   :column
@@ -94,3 +93,7 @@
    :fontSize    14
    :fontFamily  font
    :color       text1-color})
+
+(def placeholder
+  {:flex           1
+   :justifyContent :flex-end})

@@ -13,13 +13,13 @@
 (defn set-input-message [message]
   (dispatch [:set-chat-input-text message]))
 
-(defn message-valid? [staged-commands message]
-  (or (and (pos? (count message))
+(defn ready? [staged-commands message]
+  (or (and (not (empty? message))
            (not= "!" message))
       (pos? (count staged-commands))))
 
 (defn try-send [staged-commands message]
-  (when (message-valid? staged-commands message)
+  (when (ready? staged-commands message)
     (dispatch [:send-chat-msg])))
 
 (defn prepare-message-input [message-input]

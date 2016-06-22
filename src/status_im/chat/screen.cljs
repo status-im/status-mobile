@@ -21,6 +21,7 @@
             [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
             [status-im.chat.views.suggestions :refer [suggestions-view]]
             [status-im.chat.views.response :refer [response-view]]
+            [status-im.chat.views.validation-messages :refer [validation-messages]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
@@ -259,18 +260,20 @@
   [group-chat [:chat :group-chat]
    show-actions-atom [:show-actions]
    command [:get-chat-command]
-   to-msg-id [:get-chat-command-to-msg-id]]
-  [view {:style st/chat-view
-         :onLayout (fn [event]
-                     (let [height (.. event -nativeEvent -layout -height)]
-                       (dispatch [:set-response-max-height height])))}
+   to-msg-id [:get-chat-command-to-msg-id]
+   validation-messages-enabled? [:chat :validation-messages-enabled?]]
+  [view {:style st/chat-view}
    [chat-toolbar]
    [messages-container
     [messages-view group-chat]]
    (when group-chat [typing-all])
-   (cond
-     (and command to-msg-id) [response-view]
-     command [content-suggestions-view]
-     :else [suggestions-view])
+   [view {:style         st/suggestions-area
+          :pointerEvents :box-none}
+    (cond
+      (and command to-msg-id) [response-view]
+      command [content-suggestions-view]
+      :else [suggestions-view])
+    (when validation-messages-enabled?
+      [validation-messages])]
    [chat-message-new]
    (when show-actions-atom [actions-view])])

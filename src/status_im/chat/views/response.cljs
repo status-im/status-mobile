@@ -13,7 +13,6 @@
             [status-im.components.drag-drop :as drag]
             [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]
-            [status-im.chat.styles.message-input :refer [input-height]]
             [status-im.components.animation :as anim]))
 
 (defn drag-icon []
@@ -62,19 +61,18 @@
                     (fn [arg]
                       (when (.-finished arg)
                         (dispatch [:set-animation :response-height-current to-value])
-                        (dispatch [:finish-animate-response-resize])
-                        (when (= to-value input-height)
-                          (dispatch [:finish-animate-cancel-command])
-                          (dispatch [:cancel-command]))))))
+                        (dispatch [:finish-animate-response-resize])))))
       (anim/set-value val @current-value))))
 
 (defn container [& children]
   (let [commands-input-is-switching? (subscribe [:animations :commands-input-is-switching?])
         response-resize? (subscribe [:animations :response-resize?])
+        height-mode (subscribe [:animations :response-height-mode])
         to-response-height (subscribe [:animations :to-response-height])
         cur-response-height (subscribe [:animations :response-height-current])
         response-height (anim/create-value (or @cur-response-height 0))
-        context {:animation?    (reaction (or @commands-input-is-switching? @response-resize?))
+        animation? (reaction (or @commands-input-is-switching? @response-resize?))
+        context {:animation?    animation?
                  :to-value      to-response-height
                  :current-value cur-response-height
                  :val           response-height}
@@ -87,13 +85,20 @@
        :reagent-render
        (fn [& children]
          @to-response-height
-         (into [animated-view {:style (st/response-view (if (or @commands-input-is-switching? @response-resize?)
+         (into [animated-view {:style (st/response-view @height-mode
+                                                        (not= @to-response-height @cur-response-height)
+                                                        (if animation?
                                                           response-height
                                                           (or @cur-response-height 0)))}]
                children))})))
 
 (defn response-view []
-  [container
-   [request-info]
-   [response-suggestions-view]
-   [view st/input-placeholder]])
+  [view {:style         st/placeholder
+         :pointerEvents :box-none
+         :onLayout      (fn [event]
+                          (let [height (.. event -nativeEvent -layout -height)]
+                            (dispatch [:set-response-max-height height])))}
+   [container
+    [request-info]
+    [response-suggestions-view]
+    [view st/animation-margin]]])

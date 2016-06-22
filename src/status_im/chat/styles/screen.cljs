@@ -148,3 +148,12 @@
 
 (def overlay-highlight
   {:flex 1})
+
+(def suggestions-area
+  {:position       :absolute
+   :top            0
+   :left           0
+   :right          0
+   :bottom         56
+   :justifyContent :flex-end
+   :elevation      2})
