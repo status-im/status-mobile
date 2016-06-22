@@ -8,8 +8,8 @@
                                                 image
                                                 linear-gradient
                                                 touchable-highlight]]
+            [status-im.utils.identicon :refer [identicon]]
             [status-im.components.toolbar :refer [toolbar]]
-            [status-im.components.drawer.view :refer [drawer-view open-drawer]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
                                                  icon-search
@@ -59,20 +59,19 @@
 
 (defview new-contact []
   [{:keys [name whisper-identity phone-number] :as new-contact} [:get :new-contact]]
-  [drawer-view
-   [view st/contact-form-container
-    [toolbar {:background-color :white
-              :nav-action     {:image   {:source {:uri :icon_back}
-                                         :style  icon-back}
-                               :handler  #(dispatch [:navigate-back])}
-              :custom-content   toolbar-title
-              :action           {:image   {:source {:uri (if (s/valid? ::v/contact new-contact)
-                                                           :icon_ok_blue
-                                                           :icon_ok_disabled)}
-                                           :style  icon-search}
-                                 :handler #(dispatch [:add-new-contact new-contact])}}]
-    [view st/form-container
-     [contact-name-input name]
-     [contact-whisper-id-input whisper-identity]]
-    [view st/address-explication-container
-     [text {:style st/address-explication} (label :t/address-explication)]]]])
+  [view st/contact-form-container
+   [toolbar {:background-color :white
+             :nav-action       {:image   {:source {:uri :icon_back}
+                                          :style  icon-back}
+                                :handler #(dispatch [:navigate-back])}
+             :custom-content   toolbar-title
+             :action           {:image   {:source {:uri (if (s/valid? ::v/contact new-contact)
+                                                          :icon_ok_blue
+                                                          :icon_ok_disabled)}
+                                          :style  icon-search}
+                                :handler #(dispatch [:add-new-contact (merge {:photo-path (identicon whisper-identity)} new-contact)])}}]
+   [view st/form-container
+    [contact-whisper-id-input whisper-identity]
+    [contact-name-input name]]
+   [view st/address-explication-container
+    [text {:style st/address-explication} (label :t/address-explication)]]])
