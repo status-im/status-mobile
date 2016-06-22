@@ -72,6 +72,10 @@
    :contacts                              "Contacts"
    :no-name                               "Noname"
    :new-contact                           "New Contact"
+   :show-all                              "SHOW ALL"
+   :contacs-group-dapps                   "Dapps"
+   :contacs-group-people                  "People"
+   :no-contacts                           "No contacts yet"
 
    ;group-settings
    :remove                                "Remove"
@@ -127,6 +131,6 @@
    :login                                 "Login"
 
    ;users
-   :add-account                                 "Add account"
+   :add-account                           "Add account"
 
    })
