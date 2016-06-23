@@ -67,17 +67,10 @@
 (register-handler :start-cancel-command
   (u/side-effect!
     (fn [db _]
-      (if (commands/get-chat-command-to-msg-id db)
-        (dispatch [:animate-cancel-command])
-        (dispatch [:cancel-command])))))
-
-(defn animate-set-chat-command-content [db _]
-  (when (commands/get-chat-command-to-msg-id db)
-    (dispatch [:animate-response-resize])))
+      (dispatch [:animate-cancel-command]))))
 
 (register-handler :set-chat-command-content
-  [(after invoke-suggestions-handler!)
-   (after animate-set-chat-command-content)]
+  [(after invoke-suggestions-handler!)]
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (as-> db db
           (commands/set-chat-command-content db content)
@@ -113,6 +106,7 @@
           command-info {:command command
                         :content content}]
       (-> db
+          ;(assoc-in [:chats current-chat-id :command-input :command] nil)
           (commands/stage-command command-info)
           (assoc :staged-command command-info)))))
 
@@ -128,6 +122,7 @@
 
 (register-handler :set-response-chat-command
   [(after invoke-suggestions-handler!)
+   (after #(dispatch [:command-edit-mode]))
    (after #(dispatch [:animate-show-response]))]
   (fn [db [_ to-msg-id command-key]]
     (commands/set-response-chat-command db to-msg-id command-key)))
@@ -308,8 +303,9 @@
     (commands/unstage-command db staged-command)))
 
 (register-handler :set-chat-command
+  [(after #(dispatch [:command-edit-mode]))
+   (after #(dispatch [:animate-show-response]))]
   (fn [db [_ command-key]]
-    ;; todo what is going on there?!
     (commands/set-chat-command db command-key)))
 
 (register-handler :init-console-chat
@@ -491,3 +487,13 @@
       ;((after leaving-message!))
       ((after delete-messages!))
       ((after delete-chat!))))
+
+(defn edit-mode-handler [mode]
+  (fn [{:keys [current-chat-id] :as db} _]
+    (assoc-in db [:edit-mode current-chat-id] mode)))
+
+(register-handler :command-edit-mode
+  (edit-mode-handler :command))
+
+(register-handler :text-edit-mode
+  (edit-mode-handler :text))
