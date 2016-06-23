@@ -85,7 +85,9 @@
 (defn container-animation-logic [{:keys [to-value val]}]
   (fn [_]
     (let [to-value @to-value]
-      (anim/start (anim/spring val {:toValue to-value})))))
+      (anim/start (anim/spring val {:toValue to-value
+                                    :tension 50
+                                    :friction 10})))))
 
 (defn container [response-height & children]
   (let [;; todo to-response-height, cur-response-height must be specific
