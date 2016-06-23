@@ -1,11 +1,9 @@
 (ns status-im.chat.handlers.animation
   (:require [re-frame.core :refer [register-handler after dispatch debug]]
             [re-frame.middleware :refer [path]]
-            [status-im.models.commands :as commands]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.constants :refer [input-height request-info-height
                                               response-height-normal minimum-suggestion-height]]
-            [status-im.chat.styles.response-suggestions :as response-suggestions-styles]
             [status-im.constants :refer [response-input-hiding-duration]]))
 
 ;; todo magic value
