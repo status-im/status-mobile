@@ -26,19 +26,30 @@
 
 (def regular-events {})
 
-(defn command-nadler!
-  [_ [{:keys [to]} response]]
-  (let [{:keys [event params]} (json->cljs response)
-        events (if (= "console" to)
-                 (merge regular-events console-events)
-                 regular-events)]
-    (when-let [handler (events (keyword event))]
-      (apply handler params))))
+(defn print-error! [error]
+  (toast error)
+  (println error))
 
-(defn suggestions-handler
+(defn command-hadler!
+  [_ [{:keys [to] :as command} response]]
+  (let [{:keys [error result]} (json->cljs response)]
+    (if error
+      (let [m (str "Error on command handling!\n" command error)]
+        (print-error! m))
+      (let [{:keys [event params]} result
+            events (if (= "console" to)
+                     (merge regular-events console-events)
+                     regular-events)]
+        (when-let [handler (events (keyword event))]
+          (apply handler params))))))
+
+(defn suggestions-handler!
   [db [{:keys [chat-id]} response-json]]
-  (let [response (json->cljs response-json)]
-    (assoc-in db [:suggestions chat-id] (generate-hiccup response))))
+  (let [{:keys [error result]} (json->cljs response-json)]
+    (when error
+      (let [m (str "Error on param suggestions!\n" error)]
+        (print-error! m)))
+    (assoc-in db [:suggestions chat-id] (generate-hiccup result))))
 
 (defn suggestions-events-handler!
   [db [[n data]]]
@@ -62,9 +73,9 @@
 (reg-handler :init-render-command! init-render-command!)
 (reg-handler ::render-command render-command)
 
-(reg-handler :command-handler! (u/side-effect! command-nadler!))
+(reg-handler :command-handler! (u/side-effect! command-hadler!))
 (reg-handler :suggestions-handler
              (after #(dispatch [:animate-show-response]))
-             suggestions-handler)
+             suggestions-handler!)
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
 (reg-handler :command-preview command-preview)

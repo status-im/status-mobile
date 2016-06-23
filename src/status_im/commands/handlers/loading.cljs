@@ -44,10 +44,10 @@
 (defn parse-commands! [_ [identity file]]
   (j/parse identity file
            (fn [result]
-             (let [commands (json->cljs result)]
-               ;; todo use commands from jail
-               (dispatch [::add-commands identity file commands])))
-           #_(dispatch [::loading-failed! identity ::error-in-jail %])))
+             (let [{:keys [error result]} (json->cljs result)]
+               (if error
+                 (dispatch [::loading-failed! identity ::error-in-jail error])
+                 (dispatch [::add-commands identity file result]))))))
 
 (defn validate-hash
   [db [identity file]]
@@ -70,11 +70,13 @@
 (defn loading-failed!
   [db [id reason details]]
   (let [url (get-in db [:chats id :dapp-url])]
-    (toast (s/join "\n" ["commands.js loading failed"
-                         url
-                         id
-                         (name reason)
-                         details]))))
+    (let [m (s/join "\n" ["commands.js loading failed"
+                          url
+                          id
+                          (name reason)
+                          details])]
+      (toast m)
+      (println m))))
 
 (reg-handler :load-commands! (u/side-effect! load-commands!))
 (reg-handler ::fetch-commands! (u/side-effect! fetch-commands!))
