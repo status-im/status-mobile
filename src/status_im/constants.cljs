@@ -2,7 +2,7 @@
 
 (def ethereum-rpc-url "http://localhost:8545")
 
-(def server-address "http://rpc0.status.im:20000/")
+(def server-address "http://api.status.im/")
 ;; (def server-address "http://10.0.3.2:3000/")
 ;; (def server-address "http://localhost:3000/")
 
