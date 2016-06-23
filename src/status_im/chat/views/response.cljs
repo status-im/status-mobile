@@ -11,7 +11,6 @@
                                                 text-input
                                                 touchable-highlight]]
             [status-im.components.drag-drop :as drag]
-            [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]
             [status-im.components.animation :as anim]
             [status-im.components.react :as react]))
@@ -107,8 +106,18 @@
          (into [animated-view {:style (st/response-view response-height)}]
                children))})))
 
+(defview placeholder []
+  [suggestions [:get-content-suggestions]]
+  (when (seq suggestions)
+    [view st/input-placeholder]))
+
+(defview response-suggestions-view []
+  [suggestions [:get-content-suggestions]]
+  (when (seq suggestions) suggestions))
+
 (defn response-view []
   (let [response-height (anim/create-value 0)]
     [container response-height
      [request-info response-height]
-     [response-suggestions-view]]))
+     [response-suggestions-view]
+     [placeholder]]))
