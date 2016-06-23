@@ -1,7 +1,7 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "localhost",
+  "androidHost": "10.0.3.2",
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
@@ -20,6 +20,7 @@
     "react-native-status",
     "react-native-camera",
     "react-native-qrcode",
+    "react-native-orientation",
     "identicon.js"
   ],
   "imageDirs": [
