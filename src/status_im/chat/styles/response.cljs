@@ -6,10 +6,8 @@
                                                  text2-color
                                                  chat-background
                                                  color-black]]
-            [status-im.chat.styles.message-input :refer [input-height]]))
-
-(def response-height-normal 211)
-(def request-info-height 61)
+            [status-im.chat.constants :refer [input-height request-info-height
+                                              response-height-normal]]))
 
 (def drag-container
   {:height         16

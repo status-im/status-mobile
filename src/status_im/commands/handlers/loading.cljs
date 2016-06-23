@@ -55,9 +55,6 @@
         ;; todo check
         #_(= (get-hash-by-identity db identity)
              (get-hash-by-file file))]
-    (println :hash
-             (get-hash-by-identity db identity)
-             (get-hash-by-file file))
     (assoc db ::valid-hash valid?)))
 
 (defn add-commands

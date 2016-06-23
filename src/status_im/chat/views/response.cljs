@@ -13,7 +13,6 @@
             [status-im.components.drag-drop :as drag]
             [status-im.chat.views.response-suggestions :refer [response-suggestions-view]]
             [status-im.chat.styles.response :as st]
-            [status-im.chat.styles.message-input :refer [input-height]]
             [status-im.components.animation :as anim]
             [status-im.components.react :as react]))
 
@@ -112,5 +111,4 @@
   (let [response-height (anim/create-value 0)]
     [container response-height
      [request-info response-height]
-     [response-suggestions-view]
-     [view st/input-placeholder]]))
+     [response-suggestions-view]]))

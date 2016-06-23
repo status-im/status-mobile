@@ -9,6 +9,7 @@
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.utils.handlers :as u]
     status-im.chat.handlers
+    status-im.chat.handlers.animation
     status-im.group-settings.handlers
     status-im.navigation.handlers
     status-im.contacts.handlers
