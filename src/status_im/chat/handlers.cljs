@@ -3,7 +3,6 @@
             [status-im.models.commands :as commands]
             [clojure.string :as str]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.chat.styles.response :refer [request-info-height response-height-normal]]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.api :as api]
             [status-im.models.messages :as messages]
@@ -20,9 +19,7 @@
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.datetime :as time]
             [status-im.components.jail :as j]
-            [status-im.commands.utils :refer [generate-hiccup]]
-            [status-im.chat.handlers.animation :refer [update-response-height
-                                                       get-response-height]]))
+            [status-im.commands.utils :refer [generate-hiccup]]))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -74,15 +71,11 @@
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (as-> db db
           (commands/set-chat-command-content db content)
-          (assoc-in db [:chats current-chat-id :input-text] nil)
-          (if (commands/get-chat-command-to-msg-id db)
-            (update-response-height db)
-            db))))
+          (assoc-in db [:chats current-chat-id :input-text] nil))))
 
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]
   (assoc-in db [:chats current-chat-id :input-text] text))
-
 
 (defn invoke-command-preview!
   [{:keys [current-chat-id staged-command] :as db} _]
@@ -123,7 +116,8 @@
 (register-handler :set-response-chat-command
   [(after invoke-suggestions-handler!)
    (after #(dispatch [:command-edit-mode]))
-   (after #(dispatch [:animate-show-response]))]
+   ;(after #(dispatch [:animate-show-response]))
+   ]
   (fn [db [_ to-msg-id command-key]]
     (commands/set-response-chat-command db to-msg-id command-key)))
 
@@ -304,7 +298,8 @@
 
 (register-handler :set-chat-command
   [(after #(dispatch [:command-edit-mode]))
-   (after #(dispatch [:animate-show-response]))]
+   ;(after #(dispatch [:animate-show-response]))
+   ]
   (fn [db [_ command-key]]
     (commands/set-chat-command db command-key)))
 

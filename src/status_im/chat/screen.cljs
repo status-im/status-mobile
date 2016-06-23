@@ -18,7 +18,6 @@
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
-            [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
             [status-im.chat.views.suggestions :refer [suggestions-view]]
             [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]

@@ -50,7 +50,7 @@
 (defn command-preview
   [db [chat-id response-json]]
   (if-let [response (json->cljs response-json)]
-    (let [path [:chats chat-id :staged-commands]
+    (let [path         [:chats chat-id :staged-commands]
           commands-cnt (count (get-in db path))]
       ;; todo (dec commands-cnt) looks like hack have to find better way to
       ;; do this
@@ -63,6 +63,8 @@
 (reg-handler ::render-command render-command)
 
 (reg-handler :command-handler! (u/side-effect! command-nadler!))
-(reg-handler :suggestions-handler suggestions-handler)
+(reg-handler :suggestions-handler
+             (after #(dispatch [:animate-show-response]))
+             suggestions-handler)
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
 (reg-handler :command-preview command-preview)

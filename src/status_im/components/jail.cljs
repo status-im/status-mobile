@@ -122,5 +122,5 @@ var status = {
   (.stringify js/JSON (clj->js data)))
 
 (defn call [chat-id path params callback]
-  (println :call chat-id (cljs->json path) (cljs->json params))
+  ;(println :call chat-id (cljs->json path) (cljs->json params))
   (.call jail chat-id (cljs->json path) (cljs->json params) callback))

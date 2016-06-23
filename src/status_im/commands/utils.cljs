@@ -45,4 +45,4 @@
 (defn reg-handler
   ([name handler] (reg-handler name nil handler))
   ([name middleware handler]
-   (register-handler name [debug trim-v middleware] handler)))
+   (register-handler name [#_debug trim-v middleware] handler)))
