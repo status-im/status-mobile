@@ -94,6 +94,10 @@ public class GethService extends Service {
         handler.postDelayed(addPeer, 5000);
     }
 
+    public void signalEvent(String jsonEvent) {
+        
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
