@@ -19,6 +19,7 @@
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.datetime :as time]
             [status-im.components.jail :as j]
+            [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup]]))
 
 (register-handler :set-show-actions
@@ -93,7 +94,7 @@
 (register-handler :stage-command
   (after invoke-command-preview!)
   (fn [{:keys [current-chat-id] :as db} _]
-    (let [db (update-input-text db nil)
+    (let [db           (update-input-text db nil)
           {:keys [command content]}
           (get-in db [:chats current-chat-id :command-input])
           command-info {:command command
@@ -115,9 +116,7 @@
 
 (register-handler :set-response-chat-command
   [(after invoke-suggestions-handler!)
-   (after #(dispatch [:command-edit-mode]))
-   ;(after #(dispatch [:animate-show-response]))
-   ]
+   (after #(dispatch [:command-edit-mode]))]
   (fn [db [_ to-msg-id command-key]]
     (commands/set-response-chat-command db to-msg-id command-key)))
 
@@ -133,8 +132,17 @@
         db))
     db))
 
+(defn check-suggestions
+  [{:keys [current-chat-id] :as db} [_ text]]
+  (assoc-in db
+            [:command-suggestions current-chat-id]
+            (suggestions/get-suggestions db text)))
+
 (register-handler :set-chat-input-text
-  ((enrich update-command) update-text))
+  [(enrich update-command)
+   (enrich check-suggestions)
+   (after #(dispatch [:animate-command-suggestions]))]
+  update-text)
 
 (defn console? [s]
   (= "console" s))
@@ -437,9 +445,11 @@
       ((after save-chat!))
       ((after open-chat!))))
 
-(register-handler :switch-command-suggestions
-  (fn [db [_]]
-    (suggestions/switch-command-suggestions db)))
+(register-handler :switch-command-suggestions!
+  (u/side-effect!
+    (fn [db]
+      (let [text (if (suggestions/typing-command? db) "" "!")]
+        (dispatch [:set-chat-input-text text])))))
 
 (defn remove-chat
   [{:keys [current-chat-id] :as db} _]

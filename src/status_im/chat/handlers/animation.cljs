@@ -3,6 +3,7 @@
             [re-frame.middleware :refer [path]]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.constants :refer [input-height request-info-height
+                                              minimum-command-suggestions-height
                                               response-height-normal minimum-suggestion-height]]
             [status-im.constants :refer [response-input-hiding-duration]]))
 
@@ -19,45 +20,45 @@
   (fn [db _]
     (assoc db
       :to-response-height input-height
-      :messages-offset 0)))
+      :messages-offset? false)))
 
-(defn get-response-height
-  [{:keys [current-chat-id] :as db}]
-  (let [suggestions        (get-in db [:suggestions current-chat-id])
-        suggestions-height (if suggestions middle-height 0)]
-    (+ input-height
-       (min response-height-normal (+ suggestions-height request-info-height)))))
+(def response-height (+ input-height response-height-normal))
 
 (defn update-response-height [db]
-  (assoc-in db [:animations :to-response-height] (get-response-height db)))
+  (assoc-in db [:animations :to-response-height] response-height))
 
-(register-handler :animate-show-response
+(register-handler :animate-command-suggestions
+  (fn [{:keys [current-chat-id] :as db} _]
+    (let [suggestions? (seq (get-in db [:command-suggestions current-chat-id]))
+          current      (get-in db [:animations :command-suggestions-height])
+          height       (if suggestions? middle-height 0.1)]
+      (-> db
+          (update :animations assoc
+                  :messages-offset? suggestions?
+                  :messages-offset-max 22
+                  :command-suggestions-height height)
+          (update-in [:animations :commands-height-changed]
+                     (if (and suggestions? (not= 0.1 current))
+                       identity inc))))))
+
+(animation-handler :animate-show-response
   [(after #(dispatch [:command-edit-mode]))]
-  (fn [db _]
-    (-> db
-        (assoc-in [:animations :messages-offset] request-info-height)
-        (update-response-height))))
+  (fn [db]
+    (assoc db :messages-offset? true
+              :messages-offset-max request-info-height
+              :to-response-height response-height)))
 
-(animation-handler :set-response-max-height
-  (fn [db [_ height]]
-    (let [prev-height (:response-height-max db)]
-      (if (not= height prev-height)
-        (let [db (assoc db :response-height-max height)]
-          (if (= prev-height (:to-response-height db))
-            (assoc db :to-response-height height)
-            db))
-        db))))
-
-(register-handler :fix-response-height
+(defn fix-height
+  [height-key height-signal-key suggestions-key minimum]
   (fn [{:keys [current-chat-id] :as db} [_ vy current]]
-    (let [max-height             (get-in db [:animations :response-height-max])
+    (let [max-height             (get-in db [:layout-height])
           moving-down?           (pos? vy)
           moving-up?             (not moving-down?)
           under-middle-position? (<= current middle-height)
           over-middle-position?  (not under-middle-position?)
-          suggestions            (get-in db [:suggestions current-chat-id])
+          suggestions            (get-in db [suggestions-key current-chat-id])
           new-fixed              (cond (not suggestions)
-                                       minimum-suggestion-height
+                                       minimum
 
                                        (and under-middle-position? moving-up?)
                                        middle-height
@@ -70,7 +71,20 @@
 
                                        (and under-middle-position?
                                             moving-down?)
-                                       minimum-suggestion-height)]
+                                       minimum)]
+      (println height-key new-fixed)
       (-> db
-          (assoc-in [:animations :to-response-height] new-fixed)
-          (update-in [:animations :response-height-changed] inc)))))
+          (assoc-in [:animations height-key] new-fixed)
+          (update-in [:animations height-signal-key] inc)))))
+
+(register-handler :fix-commands-suggestions-height
+  (fix-height :command-suggestions-height
+              :commands-height-changed
+              :command-suggestions
+              minimum-command-suggestions-height))
+
+(register-handler :fix-response-height
+  (fix-height :to-response-height
+              :response-height-changed
+              :suggestions
+              minimum-suggestion-height))
