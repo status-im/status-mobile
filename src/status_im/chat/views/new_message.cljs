@@ -21,19 +21,19 @@
    command? [:command?]]
   [plain-message-input-view
    (when command?
-     (case (:command command)
+     (case (keyword (:name command))
        :phone {:input-options {:keyboardType :phone-pad}
                :validator     valid-mobile-number?}
        :keypair {:input-options {:secureTextEntry true}}
        :confirmation-code {:input-options {:keyboardType :numeric}}
        :money {:input-options {:keyboardType :numeric}}
        :request {:input-options {:keyboardType :numeric}}
-       ;; todo maybe nil is finr for now :)
+       ;; todo maybe nil is fine for now :)
        nil #_(throw (js/Error. "Uknown command type"))))])
 
 (defview chat-message-new []
   [staged-commands [:get-chat-staged-commands]]
   [view st/new-message-container
-   (when (and staged-commands (pos? (count staged-commands)))
+   (when (seq staged-commands)
      [staged-commands-view staged-commands])
    [show-input]])

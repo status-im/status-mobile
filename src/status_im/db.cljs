@@ -38,7 +38,6 @@
                                       :phone-number     ""}
              :disable-group-creation false
              :animations             {:to-response-height           0.1
-                                      :messages-offset              0
                                       ;; todo clear this
                                       :tabs-bar-value               (anim/create-value 0)}})
 

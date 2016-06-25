@@ -52,7 +52,7 @@
        on-update
        :reagent-render
        (fn []
-         [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions])
+         [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions!])
                                :disabled @command?}
           [animated-view {:style (st/message-input-button-touchable
                                    container-width)}
