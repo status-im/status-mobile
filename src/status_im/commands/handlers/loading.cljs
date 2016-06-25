@@ -6,7 +6,8 @@
             [clojure.string :as s]
             [status-im.persistence.realm :as realm]
             [status-im.components.jail :as j]
-            [status-im.commands.utils :refer [json->cljs reg-handler]]))
+            [status-im.utils.types :refer [json->clj]]
+            [status-im.commands.utils :refer [reg-handler]]))
 
 (def commands-js "commands.js")
 
@@ -44,7 +45,7 @@
 (defn parse-commands! [_ [identity file]]
   (j/parse identity file
            (fn [result]
-             (let [{:keys [error result]} (json->cljs result)]
+             (let [{:keys [error result]} (json->clj result)]
                (if error
                  (dispatch [::loading-failed! identity ::error-in-jail error])
                  (dispatch [::add-commands identity file result]))))))

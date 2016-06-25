@@ -5,11 +5,10 @@
                                                 image touchable-highlight]]
             [re-frame.core :refer [register-handler dispatch trim-v debug]]))
 
-(defn json->cljs [json]
+(defn json->clj [json]
   (if (= json "undefined")
     nil
     (js->clj (.parse js/JSON json) :keywordize-keys true)))
-
 
 (def elements
   {:text        text
