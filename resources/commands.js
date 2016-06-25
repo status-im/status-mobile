@@ -124,7 +124,7 @@ status.response({
 status.command({
     name: "help",
     description: "Help",
-    color: "#9a5dcf",
+    color: "#7099e6",
     params: [{
         name: "query",
         type: status.types.STRING

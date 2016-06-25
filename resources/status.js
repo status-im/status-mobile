@@ -53,6 +53,10 @@ function call(pathStr, paramsStr) {
         _status_catalog
     );
 
+    if(!fn) {
+        return null;
+    }
+
     res = fn(params);
 
     return JSON.stringify(res);
