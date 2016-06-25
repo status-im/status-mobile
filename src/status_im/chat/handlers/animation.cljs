@@ -16,11 +16,11 @@
    (register-handler name [(path :animations) middleware] handler)))
 
 (animation-handler :animate-cancel-command
-  (after #(dispatch [:text-edit-mode]))
-  (fn [db _]
-    (assoc db
-      :to-response-height input-height
-      :messages-offset? false)))
+                   (after #(dispatch [:text-edit-mode]))
+                   (fn [db _]
+                     (assoc db
+                       :to-response-height input-height
+                       :messages-offset? false)))
 
 (def response-height (+ input-height response-height-normal))
 
@@ -41,12 +41,14 @@
                      (if (and suggestions? (not= 0.1 current))
                        identity inc))))))
 
-(animation-handler :animate-show-response
+(register-handler :animate-show-response
   [(after #(dispatch [:command-edit-mode]))]
-  (fn [db]
-    (assoc db :messages-offset? true
+  (fn [{:keys [current-chat-id] :as db}]
+    (let [suggestions? (seq (get-in db [:suggestions current-chat-id]))
+          height (if suggestions? middle-height minimum-suggestion-height)]
+      (update db :animations assoc :messages-offset? true
               :messages-offset-max request-info-height
-              :to-response-height response-height)))
+              :to-response-height height))))
 
 (defn fix-height
   [height-key height-signal-key suggestions-key minimum]
@@ -72,7 +74,6 @@
                                        (and under-middle-position?
                                             moving-down?)
                                        minimum)]
-      (println height-key new-fixed)
       (-> db
           (assoc-in [:animations height-key] new-fixed)
           (update-in [:animations height-signal-key] inc)))))
