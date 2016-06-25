@@ -305,9 +305,8 @@
     (commands/unstage-command db staged-command)))
 
 (register-handler :set-chat-command
-  [(after #(dispatch [:command-edit-mode]))
-   ;(after #(dispatch [:animate-show-response]))
-   ]
+  [(after invoke-suggestions-handler!)
+   (after #(dispatch [:command-edit-mode]))]
   (fn [db [_ command-key]]
     (commands/set-chat-command db command-key)))
 
