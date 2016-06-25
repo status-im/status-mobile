@@ -48,7 +48,6 @@
 
 (defn command-preview
   [db [chat-id {:keys [result]}]]
-  (println :wuuut)
   (if result
     (let [path         [:chats chat-id :staged-commands]
           commands-cnt (count (get-in db path))]
