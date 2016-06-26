@@ -16,11 +16,11 @@
    (register-handler name [(path :animations) middleware] handler)))
 
 (animation-handler :animate-cancel-command
-                   (after #(dispatch [:text-edit-mode]))
-                   (fn [db _]
-                     (assoc db
-                       :to-response-height input-height
-                       :messages-offset? false)))
+  (after #(dispatch [:text-edit-mode]))
+  (fn [db _]
+    (assoc db
+      :to-response-height input-height
+      :messages-offset? false)))
 
 (def response-height (+ input-height response-height-normal))
 
@@ -30,8 +30,8 @@
 (register-handler :animate-command-suggestions
   (fn [{:keys [current-chat-id] :as db} _]
     (let [suggestions? (seq (get-in db [:command-suggestions current-chat-id]))
-          current      (get-in db [:animations :command-suggestions-height])
-          height       (if suggestions? middle-height 0.1)]
+          current (get-in db [:animations :command-suggestions-height])
+          height (if suggestions? middle-height 0.1)]
       (-> db
           (update :animations assoc
                   :messages-offset? suggestions?
@@ -53,27 +53,26 @@
 (defn fix-height
   [height-key height-signal-key suggestions-key minimum]
   (fn [{:keys [current-chat-id] :as db} [_ vy current]]
-    (let [max-height             (get-in db [:layout-height])
-          moving-down?           (pos? vy)
-          moving-up?             (not moving-down?)
+    (let [max-height (get-in db [:layout-height])
+          moving-down? (pos? vy)
+          moving-up? (not moving-down?)
           under-middle-position? (<= current middle-height)
-          over-middle-position?  (not under-middle-position?)
-          suggestions            (get-in db [suggestions-key current-chat-id])
-          new-fixed              (cond (not suggestions)
-                                       minimum
+          over-middle-position? (not under-middle-position?)
+          suggestions (get-in db [suggestions-key current-chat-id])
+          new-fixed (cond (not suggestions)
+                          minimum
 
-                                       (and under-middle-position? moving-up?)
-                                       middle-height
+                          (and under-middle-position? moving-up?)
+                          middle-height
 
-                                       (and over-middle-position? moving-down?)
-                                       middle-height
+                          (and over-middle-position? moving-down?)
+                          middle-height
 
-                                       (and over-middle-position? moving-up?)
-                                       max-height
+                          (and over-middle-position? moving-up?)
+                          max-height
 
-                                       (and under-middle-position?
-                                            moving-down?)
-                                       minimum)]
+                          (and under-middle-position? moving-down?)
+                          minimum)]
       (-> db
           (assoc-in [:animations height-key] new-fixed)
           (update-in [:animations height-signal-key] inc)))))

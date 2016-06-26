@@ -134,12 +134,18 @@
 
 (defn check-suggestions
   [{:keys [current-chat-id] :as db} [_ text]]
-  (assoc-in db
-            [:command-suggestions current-chat-id]
-            (suggestions/get-suggestions db text)))
+  (let [suggestions (suggestions/get-suggestions db text)]
+    (assoc-in db [:command-suggestions current-chat-id] suggestions)))
+
+(defn select-suggestion!
+  [{:keys [current-chat-id] :as db} [_ text]]
+  (let [suggestions (get-in db [:command-suggestions current-chat-id])]
+    (when (= 1 (count suggestions))
+      (dispatch [:set-chat-command (ffirst suggestions)]))))
 
 (register-handler :set-chat-input-text
   [(enrich update-command)
+   (after select-suggestion!)
    (enrich check-suggestions)
    (after #(dispatch [:animate-command-suggestions]))]
   update-text)
@@ -497,6 +503,7 @@
     (assoc-in db [:edit-mode current-chat-id] mode)))
 
 (register-handler :command-edit-mode
+  [(after #(dispatch [:set-chat-input-text ""]))]
   (edit-mode-handler :command))
 
 (register-handler :text-edit-mode
