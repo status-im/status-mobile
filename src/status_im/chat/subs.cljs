@@ -1,15 +1,11 @@
 (ns status-im.chat.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub dispatch subscribe path]]
-            [status-im.db :as db]
-            [status-im.chat.suggestions :refer
-             [get-suggestions typing-command?]]
             [status-im.models.commands :as commands]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.views.plain-message :as plain-message]
-            [status-im.chat.views.command :as command]
-            [status-im.chat.constants :as c]))
+            [status-im.chat.views.command :as command]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]
@@ -110,10 +106,6 @@
 (register-sub :get-chat
   (fn [db [_ chat-id]]
     (reaction (get-in @db [:chats chat-id]))))
-
-(register-sub :typing-command?
-  (fn [db _]
-    (reaction (typing-command? @db))))
 
 (register-sub :get-content-suggestions
   (fn [db _]
