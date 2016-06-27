@@ -3,6 +3,7 @@
   (:require [re-frame.core :refer [register-sub dispatch subscribe path]]
             [status-im.models.commands :as commands]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
+            [status-im.chat.constants :as c]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]))
@@ -72,7 +73,7 @@
 
 (register-sub :valid-plain-message?
   (fn [_ _]
-    (let [input-message   (subscribe [:get-chat-input-text])
+    (let [input-message (subscribe [:get-chat-input-text])
           staged-commands (subscribe [:get-chat-staged-commands])]
       (reaction
         (plain-message/message-valid? @staged-commands @input-message)))))
@@ -116,3 +117,12 @@
     (->> (get-in @db [:edit-mode (:current-chat-id @db)])
          (= :command)
          (reaction))))
+
+(register-sub :messages-offset
+  (fn []
+    (let [command? (subscribe [:command?])
+          suggestions (subscribe [:get-suggestions])]
+      ;; todo fix magic values
+      (reaction (cond @command? c/request-info-height
+                      (seq @suggestions) c/suggestions-header-height
+                      :else 0)))))

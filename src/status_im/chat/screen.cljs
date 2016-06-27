@@ -41,10 +41,10 @@
                  :background-color background-color))))
 
 (defview chat-icon []
-  [chat-id    [:chat :chat-id]
+  [chat-id [:chat :chat-id]
    group-chat [:chat :group-chat]
-   name       [:chat :name]
-   color      [:chat :color]]
+   name [:chat :name]
+   color [:chat :color]]
   ;; TODO stub data ('online' property)
   [chat-icon-view-action chat-id group-chat name color true])
 
@@ -98,10 +98,10 @@
         subtitle])]]])
 
 (defview menu-item-icon-profile []
-  [chat-id    [:chat :chat-id]
+  [chat-id [:chat :chat-id]
    group-chat [:chat :group-chat]
-   name       [:chat :name]
-   color      [:chat :color]]
+   name [:chat :name]
+   color [:chat :color]]
   ;; TODO stub data ('online' property)
   [chat-icon-view-menu-item chat-id group-chat name color true])
 
@@ -140,12 +140,12 @@
                            :icon-style {:width  20
                                         :height 13}
                            :handler    #(dispatch [:show-group-settings])}]
-                         [{:title      (label :t/profile)
+                         [{:title       (label :t/profile)
                            :custom-icon [menu-item-icon-profile]
-                           :icon       :menu_group
-                           :icon-style {:width  25
-                                        :height 19}
-                           :handler    #(dispatch [:show-profile @chat-id])}
+                           :icon        :menu_group
+                           :icon-style  {:width  25
+                                         :height 19}
+                           :handler     #(dispatch [:show-profile @chat-id])}
                           {:title      (label :t/search-chat)
                            :subtitle   (label :t/not-implemented)
                            :icon       :search_gray_copy
@@ -218,29 +218,26 @@
                 :custom-action  [toolbar-action]}])))
 
 (defview messages-view [group-chat]
-         [messages [:chat :messages]
-          contacts [:chat :contacts]]
-         (let [contacts' (contacts-by-identity contacts)]
-           [list-view {:renderRow                 (message-row contacts' group-chat (count messages))
-                       :renderScrollComponent     #(invertible-scroll-view (js->clj %))
-                       :onEndReached              #(dispatch [:load-more-messages])
-                       :enableEmptySections       true
-                       :keyboardShouldPersistTaps true
-                       :dataSource                (to-datasource-inverted messages)}]))
+  [messages [:chat :messages]
+   contacts [:chat :contacts]]
+  (let [contacts' (contacts-by-identity contacts)]
+    [list-view {:renderRow                 (message-row contacts' group-chat (count messages))
+                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
+                :onEndReached              #(dispatch [:load-more-messages])
+                :enableEmptySections       true
+                :keyboardShouldPersistTaps true
+                :dataSource                (to-datasource-inverted messages)}]))
 
 (defn messages-container-animation-logic
-  [{:keys [offset? val max]}]
+  [{:keys [offset val]}]
   (fn [_]
-    (let [to-value (if @offset? @max 0)]
-      (anim/start (anim/spring val {:toValue to-value})))))
+    (anim/start (anim/spring val {:toValue @offset}))))
 
 (defn messages-container [messages]
-  (let [messages-offset? (subscribe [:animations :messages-offset?])
-        maximum-offset (subscribe [:animations :messages-offset-max])
+  (let [offset (subscribe [:messages-offset])
         messages-offset (anim/create-value 0)
-        context          {:offset? messages-offset?
-                          :val     messages-offset
-                          :max     maximum-offset}
+        context {:offset offset
+                 :val    messages-offset}
         on-update (messages-container-animation-logic context)]
     (r/create-class
       {:component-did-mount
@@ -249,7 +246,7 @@
        on-update
        :reagent-render
        (fn [messages]
-         @messages-offset?
+         @offset
          [animated-view {:style (st/messages-container messages-offset)}
           messages])})))
 
