@@ -46,10 +46,10 @@
 
 (defn invoke-suggestions-handler!
   [{:keys [current-chat-id] :as db} _]
-  (let [commands (get-in db [:chats current-chat-id :commands])
-        {:keys [command content]} (get-in db [:chats current-chat-id :command-input])
-        path     [(if (commands command) :commands :responses)
-                  (:name command)
+  (let [{:keys [command content]} (get-in db [:chats current-chat-id :command-input])
+        {:keys [name type]} command
+        path     [(if (= :command type) :commands :responses)
+                  name
                   :params
                   0
                   :suggestions]
@@ -78,11 +78,11 @@
   (assoc-in db [:chats current-chat-id :input-text] text))
 
 (defn invoke-command-preview!
-  [{:keys [current-chat-id staged-command] :as db} _]
-  (let [commands (get-in db [:chats current-chat-id :commands])
-        {:keys [command content]} staged-command
-        path     [(if (commands command) :commands :responses)
-                  (:name command)
+  [{:keys [current-chat-id staged-command]} _]
+  (let [{:keys [command content]} staged-command
+        {:keys [name type]} command
+        path     [(if (= :command type) :commands :responses)
+                  name
                   :preview]
         params   {:value content}]
     (j/call current-chat-id
@@ -258,18 +258,18 @@
                            (dissoc new-command :rendered-preview))))
 
 (defn invoke-commands-handlers!
-  [{:keys [new-commands current-chat-id] :as db}]
-  (let [commands (get-in db [:chats current-chat-id :commands])]
-    (doseq [{:keys [content] :as com} new-commands]
-      (let [{:keys [command content]} content
-            path   [(if (commands command) :commands :responses)
-                    command
-                    :handler]
-            params {:value content}]
-        (j/call current-chat-id
-                path
-                params
-                #(dispatch [:command-handler! com %]))))))
+  [{:keys [new-commands current-chat-id]}]
+  (doseq [{:keys [content] :as com} new-commands]
+    (let [{:keys [command content]} content
+          type (:type command)
+          path [(if (= :command type) :commands :responses)
+                command
+                :handler]
+          params {:value content}]
+      (j/call current-chat-id
+              path
+              params
+              #(dispatch [:command-handler! com %])))))
 
 (defn handle-commands
   [{:keys [new-commands]}]
