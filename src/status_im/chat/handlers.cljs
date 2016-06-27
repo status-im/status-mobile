@@ -27,13 +27,12 @@
     (assoc db :show-actions show-actions)))
 
 (register-handler :load-more-messages
-  (fn [db _]
-    db
-    ;; TODO implement
-    #_(let [chat-id      (get-in db [:chat :current-chat-id])
-            messages     [:chats chat-id :messages]
-            new-messages (gen-messages 10)]
-        (update-in db messages concat new-messages))))
+  debug
+  (fn [{:keys [current-chat-id] :as db} _]
+    (let [messages-path [:chats current-chat-id :messages]
+          messages (get-in db messages-path)
+          new-messages (messages/get-messages current-chat-id (count messages))]
+      (update-in db messages-path concat new-messages))))
 
 (defn safe-trim [s]
   (when (string? s)
@@ -144,26 +143,26 @@
 
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
-  (let [text    (get-in db [:chats current-chat-id :input-text])
+  (let [text (get-in db [:chats current-chat-id :input-text])
         {:keys [command]} (suggestions/check-suggestion db (str text " "))
         message (check-author-direction
                   db current-chat-id
-                  {:msg-id          (random/id)
-                   :chat-id         current-chat-id
-                   :content         text
-                   :to              current-chat-id
-                   :from            identity
-                   :content-type    text-content-type
-                   :outgoing        true
-                   :timestamp       (time/now-ms)})]
+                  {:msg-id       (random/id)
+                   :chat-id      current-chat-id
+                   :content      text
+                   :to           current-chat-id
+                   :from         identity
+                   :content-type text-content-type
+                   :outgoing     true
+                   :timestamp    (time/now-ms)})]
     (if command
       (commands/set-chat-command db command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
 
 (defn prepare-command [identity chat-id staged-command]
   (let [command-key (get-in staged-command [:command :command])
-        content     {:command (name command-key)
-                     :content (:content staged-command)}]
+        content {:command (name command-key)
+                 :content (:content staged-command)}]
     {:msg-id       (random/id)
      :from         identity
      :to           chat-id
@@ -287,10 +286,8 @@
 
 (defn load-messages!
   ([db] (load-messages! db nil))
-  ([db _]
-   (->> (:current-chat-id db)
-        messages/get-messages
-        (assoc db :messages))))
+  ([{:keys [current-chat-id] :as db} _]
+   (assoc db :messages (messages/get-messages current-chat-id))))
 
 (defn init-chat
   ([db] (init-chat db nil))
@@ -308,7 +305,7 @@
                    (map (fn [{:keys [chat-id] :as chat}]
                           [chat-id chat]))
                    (into {}))
-        ids   (set (keys chats))]
+        ids (set (keys chats))]
     (-> db
         (assoc :chats chats)
         (assoc :chats-ids ids)

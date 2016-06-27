@@ -3,7 +3,6 @@
             [re-frame.core :refer [dispatch]]
             [cljs.reader :refer [read-string]]
             [status-im.utils.random :refer [timestamp]]
-            [status-im.db :as db]
             [status-im.utils.logging :as log]
             [clojure.string :refer [join split]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
@@ -46,16 +45,19 @@
     #{c/content-type-command c/content-type-command-request}
     type))
 
-(defn get-messages [chat-id]
-  (->> (-> (r/get-by-field :msgs :chat-id chat-id)
-           (r/sorted :timestamp :desc)
-           (r/collection->map))
-       (into '())
-       reverse
-       (map (fn [{:keys [content-type] :as message}]
-              (if (command-type? content-type)
-                (update message :content str-to-map)
-                message)))))
+(defn get-messages
+  ([chat-id] (get-messages chat-id 0))
+  ([chat-id from]
+    (->> (-> (r/get-by-field :msgs :chat-id chat-id)
+             (r/sorted :timestamp :desc)
+             (r/page from (+ from c/default-number-of-messages))
+             (r/collection->map))
+         (into '())
+         reverse
+         (map (fn [{:keys [content-type] :as message}]
+                (if (command-type? content-type)
+                  (update message :content str-to-map)
+                  message))))))
 
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)
