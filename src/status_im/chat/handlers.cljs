@@ -26,13 +26,12 @@
     (assoc db :show-actions show-actions)))
 
 (register-handler :load-more-messages
-  (fn [db _]
-    db
-    ;; TODO implement
-    #_(let [chat-id      (get-in db [:chat :current-chat-id])
-            messages     [:chats chat-id :messages]
-            new-messages (gen-messages 10)]
-        (update-in db messages concat new-messages))))
+  debug
+  (fn [{:keys [current-chat-id] :as db} _]
+    (let [messages-path [:chats current-chat-id :messages]
+          messages (get-in db messages-path)
+          new-messages (messages/get-messages current-chat-id (count messages))]
+      (update-in db messages-path concat new-messages))))
 
 (defn safe-trim [s]
   (when (string? s)
@@ -336,10 +335,8 @@
 
 (defn load-messages!
   ([db] (load-messages! db nil))
-  ([db _]
-   (->> (:current-chat-id db)
-        messages/get-messages
-        (assoc db :messages))))
+  ([{:keys [current-chat-id] :as db} _]
+   (assoc db :messages (messages/get-messages current-chat-id))))
 
 (defn init-chat
   ([db] (init-chat db nil))
@@ -362,7 +359,7 @@
                    (map (fn [{:keys [chat-id] :as chat}]
                           [chat-id chat]))
                    (into {}))
-        ids   (set (keys chats))]
+        ids (set (keys chats))]
     (-> db
         (assoc :chats chats)
         (assoc :chats-ids ids)

@@ -47,6 +47,7 @@
     #{c/content-type-command c/content-type-command-request}
     type))
 
+<<<<<<< HEAD
 (defn get-messages [chat-id]
   (->> (-> (r/get-by-field :msgs :chat-id chat-id)
            (r/sorted :timestamp :desc)
@@ -63,6 +64,21 @@
                                                  (read-string preview))))
                     (dissoc :preview))
                 message)))))
+=======
+(defn get-messages
+  ([chat-id] (get-messages chat-id 0))
+  ([chat-id from]
+    (->> (-> (r/get-by-field :msgs :chat-id chat-id)
+             (r/sorted :timestamp :desc)
+             (r/page from (+ from c/default-number-of-messages))
+             (r/collection->map))
+         (into '())
+         reverse
+         (map (fn [{:keys [content-type] :as message}]
+                (if (command-type? content-type)
+                  (update message :content str-to-map)
+                  message))))))
+>>>>>>> develop
 
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)
