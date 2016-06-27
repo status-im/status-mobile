@@ -69,7 +69,7 @@
             (str "!" (:name command))]]]
          ;; todo doesn't reflect design
          (when-let [icon (:icon command)]
-           [view (st/command-image-view command)
+           [view st/command-image-view
             [image {:source {:uri icon}
                     :style  st/command-image}]])
          (if preview
