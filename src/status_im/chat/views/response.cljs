@@ -13,7 +13,7 @@
             [status-im.components.drag-drop :as drag]
             [status-im.chat.styles.response :as st]
             [status-im.components.animation :as anim]
-            [status-im.components.react :as react]))
+            [status-im.chat.suggestions-responder :as resp]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -32,45 +32,14 @@
     ;; TODO stub data: request message info
     "By ???, MMM 1st at HH:mm"]])
 
-;; todo bad name. Ideas?
-(defn enough-dy [gesture]
-  (> (Math/abs (.-dy gesture)) 10))
-
-(defn on-move [response-height kb-height orientation]
-  (fn [_ gesture]
-    (when (enough-dy gesture)
-      (let [w        (react/get-dimensions "window")
-            ;; depending on orientation use height or width of screen
-            prop     (if (= :portrait @orientation)
-                       :height
-                       :width)
-            ;; subtract keyboard height to get "real height" of screen
-            ;; then subtract gesture position to get suggestions height
-            ;; todo maybe it is better to use margin-top instead height
-            ;; it is not obvious
-            to-value (- (prop w) @kb-height (.-moveY gesture))]
-        (anim/start
-          (anim/spring response-height {:toValue to-value}))))))
-
-(defn on-release [response-height]
-  (fn [_ gesture]
-    (when (enough-dy gesture)
-      (dispatch [:fix-response-height
-                 (.-vy gesture)
-                 ;; todo access to "private" property
-                 ;; better to find another way...
-                 (.-_value response-height)]))))
-
-(defn pan-responder [response-height kb-height orientation]
-  (drag/create-pan-responder
-    {:on-move    (on-move response-height kb-height orientation)
-     :on-release (on-release response-height)}))
-
 (defn request-info [response-height]
-  (let [orientation   (subscribe [:get :orientation])
-        kb-height     (subscribe [:get :keyboard-height])
-        pan-responder (pan-responder response-height kb-height orientation)
-        command       (subscribe [:get-chat-command])]
+  (let [orientation (subscribe [:get :orientation])
+        kb-height (subscribe [:get :keyboard-height])
+        pan-responder (resp/pan-responder response-height
+                                          kb-height
+                                          orientation
+                                          :fix-response-height)
+        command (subscribe [:get-chat-command])]
     (fn [response-height]
       [view (merge (drag/pan-handlers pan-responder)
                    {:style (st/request-info (:color @command))})
@@ -84,18 +53,16 @@
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (let [to-value @to-value]
-    (anim/start (anim/spring val {:toValue  to-value
-                                  :tension  50
-                                  :friction 10}))))
+    (anim/start (anim/spring val {:toValue to-value}))))
 
 (defn container [response-height & children]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:animations :to-response-height])
-        changed            (subscribe [:animations :response-height-changed])
-        context            {:to-value to-response-height
-                            :val      response-height}
-        on-update          #(container-animation-logic context)]
+        changed (subscribe [:animations :response-height-changed])
+        context {:to-value to-response-height
+                 :val      response-height}
+        on-update #(container-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
