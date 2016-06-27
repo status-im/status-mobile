@@ -84,6 +84,10 @@ public class GethService extends Service {
         }).start();
     }
 
+    public void signalEvent(String jsonEvent) {
+        
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
