@@ -48,6 +48,7 @@
          (.addOrientationListener
            orientation
            #(dispatch [:set :orientation (orientation->keyword %)]))
+         (.lockToPortrait orientation)
          (.addListener device-event-emitter
                        "keyboardDidShow"
                        (fn [e]

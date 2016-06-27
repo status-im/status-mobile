@@ -27,13 +27,12 @@
     (assoc db :show-actions show-actions)))
 
 (register-handler :load-more-messages
-  (fn [db _]
-    db
-    ;; TODO implement
-    #_(let [chat-id      (get-in db [:chat :current-chat-id])
-            messages     [:chats chat-id :messages]
-            new-messages (gen-messages 10)]
-        (update-in db messages concat new-messages))))
+  debug
+  (fn [{:keys [current-chat-id] :as db} _]
+    (let [messages-path [:chats current-chat-id :messages]
+          messages (get-in db messages-path)
+          new-messages (messages/get-messages current-chat-id (count messages))]
+      (update-in db messages-path concat new-messages))))
 
 (defn safe-trim [s]
   (when (string? s)
@@ -47,10 +46,10 @@
 
 (defn invoke-suggestions-handler!
   [{:keys [current-chat-id] :as db} _]
-  (let [commands (get-in db [:chats current-chat-id :commands])
-        {:keys [command content]} (get-in db [:chats current-chat-id :command-input])
-        path     [(if (commands command) :commands :responses)
-                  (:name command)
+  (let [{:keys [command content]} (get-in db [:chats current-chat-id :command-input])
+        {:keys [name type]} command
+        path     [(if (= :command type) :commands :responses)
+                  name
                   :params
                   0
                   :suggestions]
@@ -79,11 +78,11 @@
   (assoc-in db [:chats current-chat-id :input-text] text))
 
 (defn invoke-command-preview!
-  [{:keys [current-chat-id staged-command] :as db} _]
-  (let [commands (get-in db [:chats current-chat-id :commands])
-        {:keys [command content]} staged-command
-        path     [(if (commands command) :commands :responses)
-                  (:name command)
+  [{:keys [current-chat-id staged-command]} _]
+  (let [{:keys [command content]} staged-command
+        {:keys [name type]} command
+        path     [(if (= :command type) :commands :responses)
+                  name
                   :preview]
         params   {:value content}]
     (j/call current-chat-id
@@ -272,18 +271,18 @@
                            (dissoc new-command :rendered-preview))))
 
 (defn invoke-commands-handlers!
-  [{:keys [new-commands current-chat-id] :as db}]
-  (let [commands (get-in db [:chats current-chat-id :commands])]
-    (doseq [{:keys [content] :as com} new-commands]
-      (let [{:keys [command content]} content
-            path   [(if (commands command) :commands :responses)
-                    command
-                    :handler]
-            params {:value content}]
-        (j/call current-chat-id
-                path
-                params
-                #(dispatch [:command-handler! com %]))))))
+  [{:keys [new-commands current-chat-id]}]
+  (doseq [{:keys [content] :as com} new-commands]
+    (let [{:keys [command content]} content
+          type (:type command)
+          path [(if (= :command type) :commands :responses)
+                command
+                :handler]
+          params {:value content}]
+      (j/call current-chat-id
+              path
+              params
+              #(dispatch [:command-handler! com %])))))
 
 (defn handle-commands
   [{:keys [new-commands]}]
@@ -349,10 +348,8 @@
 
 (defn load-messages!
   ([db] (load-messages! db nil))
-  ([db _]
-   (->> (:current-chat-id db)
-        messages/get-messages
-        (assoc db :messages))))
+  ([{:keys [current-chat-id] :as db} _]
+   (assoc db :messages (messages/get-messages current-chat-id))))
 
 (defn init-chat
   ([db] (init-chat db nil))
@@ -374,7 +371,7 @@
                    (map (fn [{:keys [chat-id] :as chat}]
                           [chat-id chat]))
                    (into {}))
-        ids   (set (keys chats))]
+        ids (set (keys chats))]
     (-> db
         (assoc :chats chats)
         (assoc :chats-ids ids)
