@@ -1,13 +1,13 @@
 (ns status-im.handlers
   (:require
-    [re-frame.core :refer [register-handler after dispatch debug]]
+    [re-frame.core :refer [after dispatch debug]]
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
     [status-im.persistence.simple-kv-store :as kv]
     [status-im.protocol.state.storage :as storage]
     [status-im.utils.logging :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
-    [status-im.utils.handlers :as u]
+    [status-im.utils.handlers :refer [register-handler] :as u]
     status-im.chat.handlers
     status-im.chat.handlers.animation
     status-im.group-settings.handlers

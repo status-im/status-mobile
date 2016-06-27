@@ -153,15 +153,13 @@
    :backgroundColor (:color command)
    :transform       [{:scale scale}]})
 
-(defn command-image-view
-  [command]
+(def command-image-view
   {:position        :absolute
    :top             0
    :right           0
    :width           24
    :height          24
    :borderRadius    50
-   :backgroundColor (:color command)
    :alignItems    :center})
 
 (def command-request-image
@@ -198,7 +196,9 @@
 (def command-image
   {:margin-top 5
    :width    12
-   :height   13})
+   :height   13
+   :tintColor :#a9a9a9cc})
+
 (def command-text
   (merge style-message-text
          {:marginTop        8

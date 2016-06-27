@@ -1,6 +1,5 @@
 (ns status-im.commands.handlers.jail
-  (:require [re-frame.core :refer [register-handler after dispatch subscribe
-                                   trim-v debug]]
+  (:require [re-frame.core :refer [after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [http-get toast]]
             [status-im.components.jail :as j]
