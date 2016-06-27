@@ -1,4 +1,5 @@
 (ns status-im.commands.handlers.loading
+  (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [re-frame.core :refer [register-handler after dispatch subscribe
                                    trim-v debug]]
             [status-im.utils.handlers :as u]
@@ -23,9 +24,11 @@
 (defn fetch-commands!
   [db [identity]]
   (when-let [url (:dapp-url (get-in db [:chats identity]))]
-    (http-get (s/join "/" [url commands-js])
-              #(dispatch [::validate-hash identity %])
-              #(dispatch [::loading-failed! identity ::file-was-not-found]))))
+    (if (= "console" identity)
+      (dispatch [::validate-hash identity (slurp "resources/commands.js")])
+      (http-get (s/join "/" [url commands-js])
+                #(dispatch [::validate-hash identity %])
+                #(dispatch [::loading-failed! identity ::file-was-not-found])))))
 
 (defn dispatch-loaded!
   [db [identity file]]
