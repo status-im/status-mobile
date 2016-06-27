@@ -56,26 +56,22 @@
     [view st/track-mark]
     [text {:style st/track-duration-text} "03:39"]]])
 
-(defn message-content-command [content preview]
-  (let [commands-atom (subscribe [:get-commands-and-responses])]
-    (fn [content preview]
-      (let [commands @commands-atom
-            {:keys [command content]}
-            (parse-command-msg-content commands content)]
-        [view st/content-command-view
-         [view st/command-container
-          [view (st/command-view command)
-           [text {:style st/command-name}
-            (str "!" (:name command))]]]
-         ;; todo doesn't reflect design
-         (when-let [icon (:icon command)]
-           [view st/command-image-view
-            [image {:source {:uri icon}
-                    :style  st/command-image}]])
-         (if preview
-           preview
-           [text {:style st/command-text}
-            content])]))))
+(defview message-content-command [content preview]
+  [commands [:get-commands-and-responses]]
+  (let [{:keys [command content]} (parse-command-msg-content commands content)
+        {:keys [name icon type]} command]
+    [view st/content-command-view
+     [view st/command-container
+      [view (st/command-view command)
+       [text {:style st/command-name}
+        (str (if (= :command type) "!" "") name)]]]
+     (when icon
+       [view st/command-image-view
+        [image {:source {:uri icon}
+                :style  st/command-image}]])
+     (if preview
+       preview
+       [text {:style st/command-text} content])]))
 
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))

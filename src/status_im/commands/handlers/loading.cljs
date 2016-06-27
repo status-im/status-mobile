@@ -61,11 +61,16 @@
              (get-hash-by-file file))]
     (assoc db ::valid-hash valid?)))
 
+(defn mark-as [as coll]
+  (->> coll
+       (map (fn [[k v]] [k (assoc v :type as)]))
+       (into {})))
+
 (defn add-commands
   [db [id _ {:keys [commands responses]}]]
   (-> db
-      (update-in [:chats id :commands] merge commands)
-      (update-in [:chats id :responses] merge responses)))
+      (update-in [:chats id :commands] merge (mark-as :command commands))
+      (update-in [:chats id :responses] merge (mark-as :response responses))))
 
 (defn save-commands-js!
   [_ [id file]]
