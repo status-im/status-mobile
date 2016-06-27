@@ -4,7 +4,8 @@ status.command({
     color: "#9a5dcf"
 }).param({
     name: "address",
-    type: status.types.STRING
+    type: status.types.TEXT,
+    placeholder: "Address"
 });
 
 var phones = [
@@ -110,8 +111,9 @@ status.response({
     color: "#5fc48d",
     params: [{
         name: "phone",
-        type: status.types.PHONE_NUMBER,
-        suggestions: phoneSuggestions
+        type: status.types.PHONE,
+        suggestions: phoneSuggestions,
+        placeholder: "Phone number"
     }],
     handler: function (params) {
         return {
@@ -127,7 +129,7 @@ status.command({
     color: "#7099e6",
     params: [{
         name: "query",
-        type: status.types.STRING
+        type: status.types.TEXT
     }]
 });
 
