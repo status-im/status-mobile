@@ -1,5 +1,5 @@
 (ns status-im.chat.handlers
-  (:require [re-frame.core :refer [register-handler enrich after debug dispatch]]
+  (:require [re-frame.core :refer [enrich after debug dispatch]]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
             [status-im.components.styles :refer [default-chat-color]]
@@ -12,7 +12,7 @@
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.models.chats :as chats]
             [status-im.navigation.handlers :as nav]
-            [status-im.utils.handlers :as u]
+            [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.persistence.realm :as r]
             [status-im.handlers.server :as server]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]

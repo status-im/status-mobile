@@ -93,11 +93,10 @@
        [icon :drag_down st/drag-down-icon]])))
 
 (defn container-animation-logic [{:keys [to-value val]}]
-  (fn [_]
-    (let [to-value @to-value]
-      (anim/start (anim/spring val {:toValue to-value
-                                    :tension 50
-                                    :friction 10})))))
+  (let [to-value @to-value]
+    (anim/start (anim/spring val {:toValue  to-value
+                                  :tension  50
+                                  :friction 10}))))
 
 (defn container [h & elements]
   (let [;; todo to-response-height, cur-response-height must be specific
@@ -106,7 +105,7 @@
         changed            (subscribe [:animations :commands-height-changed])
         context            {:to-value to-response-height
                             :val      h}
-        on-update          (container-animation-logic context)]
+        on-update          #(container-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
