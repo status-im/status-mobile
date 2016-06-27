@@ -366,8 +366,7 @@
 (register-handler :init-chat
   (-> load-messages!
       ((enrich init-chat))
-      ((after load-commands!))
-      debug))
+      ((after load-commands!))))
 
 (defn initialize-chats
   [{:keys [loaded-chats] :as db} _]
