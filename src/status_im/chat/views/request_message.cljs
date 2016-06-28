@@ -13,7 +13,7 @@
 (def request-message-icon-scale-delay 600)
 
 (defn set-chat-command [msg-id command]
-  (dispatch [:set-response-chat-command msg-id (:command command)]))
+  (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
 
 (defn label [{:keys [command]}]
   (->> (name command)
@@ -56,18 +56,19 @@
        :reagent-render
        (fn [msg-id command]
          @to-scale
-         [touchable-highlight {:on-press            (fn []
-                                                      (reset! loop? false)
-                                                      (set-chat-command msg-id command))
-                               :style               st/command-request-image-touchable
-                               :accessibility-label (label command)}
+         [touchable-highlight {:on-press (fn []
+                                           (reset! loop? false)
+                                           (set-chat-command msg-id command))
+                               :style    st/command-request-image-touchable}
+                               ;:accessibility-label (label command)
+
           [animated-view {:style (st/command-request-image-view command scale-anim-val)}
-           [image {:source (:request-icon command)
+           [image {:source {:uri (:icon command)}
                    :style  st/command-request-image}]]])})))
 
 (defn message-content-command-request
   [{:keys [msg-id content from incoming-group]}]
-  (let [commands-atom (subscribe [:get-commands])]
+  (let [commands-atom (subscribe [:get-responses])]
     (fn [{:keys [msg-id content from incoming-group]}]
       (let [commands @commands-atom
             {:keys [command content]} (parse-command-request commands content)]

@@ -83,7 +83,6 @@
   (dispatch [:load-user-phone-number])
   (dispatch [:load-contacts])
   ;; load commands from remote server (todo: uncomment)
-  ;; (dispatch [:load-commands])
   (dispatch [:init-console-chat])
   (dispatch [:init-chat])
   (init-back-button-handler!)

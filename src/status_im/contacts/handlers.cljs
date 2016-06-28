@@ -96,7 +96,6 @@
                            (remove #(identities (:whisper-identity %)))
                            (map #(vector (:whisper-identity %) %))
                            (into {}))]
-    (println new-contacts')
     (-> db
         (update :contacts merge new-contacts')
         (assoc :new-contacts (vals new-contacts')))))

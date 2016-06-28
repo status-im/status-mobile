@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.annotation.Nullable;
@@ -14,7 +13,7 @@ import android.os.Environment;
 
 import java.lang.ref.WeakReference;
 
-import com.github.ethereum.go_ethereum.cmd.Geth;
+import com.github.status_im.status_go.Statusgo;
 
 import java.io.File;
 
@@ -78,20 +77,11 @@ public class GethService extends Service {
                 extStore.getAbsolutePath() :
                 getApplicationInfo().dataDir;
 
-        final Runnable addPeer = new Runnable() {
-            public void run() {
-                Log.w("Geth", "adding peer");
-                Geth.run("--exec admin.addPeer(\"enode://e2f28126720452aa82f7d3083e49e6b3945502cb94d9750a15e27ee310eed6991618199f878e5fbc7dfa0e20f0af9554b41f491dc8f1dbae8f0f2d37a3a613aa@139.162.13.89:55555\") attach http://localhost:8545");
-            }
-        };
-
         new Thread(new Runnable() {
             public void run() {
-                Geth.run("--shh --ipcdisable --nodiscover --rpc --rpcapi db,eth,net,web3,shh,admin --fast --datadir=" + dataFolder);
+                Statusgo.doStartNode(dataFolder);
             }
         }).start();
-
-        handler.postDelayed(addPeer, 5000);
     }
 
     public void signalEvent(String jsonEvent) {
@@ -107,8 +97,7 @@ public class GethService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        System.loadLibrary("gethraw");
-        System.loadLibrary("geth");
+        System.loadLibrary("statusgo");
 
         if (!isGethInitialized) {
             isGethInitialized = true;

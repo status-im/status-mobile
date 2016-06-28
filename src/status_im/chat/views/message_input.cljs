@@ -6,7 +6,6 @@
                                                 icon
                                                 touchable-highlight
                                                 text-input]]
-            [status-im.components.animation :as anim]
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]
             [status-im.chat.styles.message-input :as st]

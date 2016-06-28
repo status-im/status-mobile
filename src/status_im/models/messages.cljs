@@ -6,7 +6,8 @@
             [status-im.utils.logging :as log]
             [clojure.string :refer [join split]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
-            [status-im.constants :as c]))
+            [status-im.constants :as c]
+            [status-im.commands.utils :refer [generate-hiccup]]))
 
 (defn- map-to-str
   [m]
@@ -20,7 +21,8 @@
   {:outgoing       false
    :to             nil
    :same-author    false
-   :same-direction false})
+   :same-direction false
+   :preview        nil})
 
 (defn save-message
   ;; todo remove chat-id parameter
@@ -45,6 +47,24 @@
     #{c/content-type-command c/content-type-command-request}
     type))
 
+<<<<<<< HEAD
+(defn get-messages [chat-id]
+  (->> (-> (r/get-by-field :msgs :chat-id chat-id)
+           (r/sorted :timestamp :desc)
+           (r/collection->map))
+       (into '())
+       ;; todo why reverse?
+       reverse
+       (map (fn [{:keys [content-type preview] :as message}]
+              (if (command-type? content-type)
+                (-> message
+                    (update :content str-to-map)
+                    (assoc :rendered-preview (when preview
+                                               (generate-hiccup
+                                                 (read-string preview))))
+                    (dissoc :preview))
+                message)))))
+=======
 (defn get-messages
   ([chat-id] (get-messages chat-id 0))
   ([chat-id from]
@@ -58,6 +78,7 @@
                 (if (command-type? content-type)
                   (update message :content str-to-map)
                   message))))))
+>>>>>>> develop
 
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)
