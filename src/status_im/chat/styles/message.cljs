@@ -1,15 +1,15 @@
 (ns status-im.chat.styles.message
   (:require [status-im.components.styles :refer [font
-                                               color-light-blue-transparent
-                                               color-white
-                                               color-black
-                                               color-blue
-                                               selected-message-color
-                                               online-color
-                                               text1-color
-                                               text2-color]]
+                                                 color-light-blue-transparent
+                                                 color-white
+                                                 color-black
+                                                 color-blue
+                                                 selected-message-color
+                                                 online-color
+                                                 text1-color
+                                                 text2-color]]
             [status-im.constants :refer [text-content-type
-                                       content-type-command]]))
+                                         content-type-command]]))
 
 (def style-message-text
   {:fontSize   14
@@ -153,6 +153,14 @@
    :backgroundColor (:color command)
    :transform       [{:scale scale}]})
 
+(def command-image-view
+  {:position   :absolute
+   :top        0
+   :right      0
+   :width      24
+   :height     24
+   :alignItems :center})
+
 (def command-request-image
   {:position :absolute
    :top      9
@@ -185,11 +193,10 @@
    :color      color-white})
 
 (def command-image
-  {:position :absolute
-   :top      4
-   :right    0
-   :width    12
-   :height   13})
+  {:margin-top 5
+   :width      12
+   :height     13
+   :tint-color :#a9a9a9cc})
 
 (def command-text
   (merge style-message-text

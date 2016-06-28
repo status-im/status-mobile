@@ -5,18 +5,19 @@
     [status-im.db :refer [app-db schema]]
     [status-im.persistence.simple-kv-store :as kv]
     [status-im.protocol.state.storage :as storage]
-    [status-im.models.commands :refer [set-commands]]
-    [status-im.chat.suggestions :refer [load-commands]]
     [status-im.utils.logging :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.utils.handlers :as u]
     status-im.chat.handlers
+    status-im.chat.handlers.animation
     status-im.group-settings.handlers
     status-im.navigation.handlers
     status-im.contacts.handlers
     status-im.discovery.handlers
     status-im.new-group.handlers
     status-im.participants.handlers
+    status-im.commands.handlers.loading
+    status-im.commands.handlers.jail
     status-im.qr-scanner.handlers
     status-im.protocol.handlers))
 
@@ -79,17 +80,6 @@
   (u/side-effect!
     (fn [_ _]
       (log/debug "crypt initialized"))))
-
-(register-handler :load-commands
-  (u/side-effect!
-    (fn [_ [action]]
-      (log/debug action)
-      (load-commands))))
-
-(register-handler :set-commands
-  (fn [db [action commands]]
-    (log/debug action commands)
-    (set-commands db commands)))
 
 ;; -- User data --------------------------------------------------------------
 (register-handler :load-user-phone-number
