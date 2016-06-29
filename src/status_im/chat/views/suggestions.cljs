@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
+                                                scroll-view
                                                 text
                                                 icon
                                                 touchable-highlight
@@ -15,7 +16,8 @@
             [status-im.components.animation :as anim]
             [status-im.components.drag-drop :as drag]
             [status-im.components.react :as react]
-            [status-im.chat.suggestions-responder :as resp]))
+            [status-im.chat.suggestions-responder :as resp]
+            [status-im.chat.constants :as c]))
 
 (defn set-command-input [command]
   (dispatch [:set-chat-command command]))
@@ -26,29 +28,39 @@
              :as   suggestion}]]
   (let [label (str "!" name)]
     [touchable-highlight
-     {:onPress #(set-command-input command)}
+     {:onPress #(set-command-input command)
+      :style st/suggestion-highlight}
      [view st/suggestion-container
       [view st/suggestion-sub-container
-       [view (st/suggestion-background suggestion)
-        [text {:style st/suggestion-text} label]]
-       [text {:style st/value-text} label]
-       [text {:style st/description-text} description]]]]))
+       [view {:flex 0.6}
+        [text {:style st/value-text} label]
+        [text {:style st/description-text} description]]
+       [view {:flex 0.4
+              :flex-direction :column
+              :align-items :flex-end
+              :margin-right 16}
+        [view (st/suggestion-background suggestion)
+         [text {:style st/suggestion-text} label]]]]]]))
 
 (defn render-row [row _ _]
   (list-item [suggestion-list-item row]))
 
+(defn title [s]
+  [view {:margin-left 57
+         :margin-bottom 16}
+   [text {:style {:font-size 13
+                  :color :#8f838c93}} s]])
 
-(defn suggestions-view []
-  (let
-    [suggestions (subscribe [:get-suggestions])]
-    (r/create-class
-      {:reagent-render
-       (fn []
-         [view (st/suggestions-container (count @suggestions))
-          [list-view {:dataSource                (to-datasource @suggestions)
-                      :enableEmptySections       true
-                      :keyboardShouldPersistTaps true
-                      :renderRow                 render-row}]])})))
+(defview suggestions-view []
+  [suggestions [:get-suggestions]
+   requests [:get :chat-requests]]
+  [scroll-view
+   (when requests [title "Requests"])
+   [title "Commands"]
+   [view (st/suggestions-container (count suggestions))
+    [list-view {:dataSource                (to-datasource suggestions)
+                :keyboardShouldPersistTaps true
+                :renderRow                 render-row}]]])
 
 (defn header [h]
   (let [orientation (subscribe [:get :orientation])
@@ -64,7 +76,7 @@
        [icon :drag_down ddst/drag-down-icon]])))
 
 (defn container-animation-logic [{:keys [to-value val]}]
-  (let [to-value @to-value]
+  (when-let [to-value @to-value]
     (anim/start (anim/spring val {:toValue to-value}))))
 
 (defn container [h & elements]
@@ -86,7 +98,8 @@
          (into [animated-view {:style (st/container h)}] elements))})))
 
 (defn suggestion-container []
-  (let [h (anim/create-value 0)]
+  (let [h (anim/create-value 10)]
     [container h
      [header h]
-     [suggestions-view]]))
+     [suggestions-view]
+     [view {:height c/input-height}]]))
