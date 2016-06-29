@@ -52,6 +52,7 @@
           height (if suggestions?
                    middle-height
                    (get-minimum-height db))]
+      (println "hei" suggestions? )
       (assoc-in db [:animations :to-response-height] height))))
 
 (defn fix-height
