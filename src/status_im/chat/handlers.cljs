@@ -78,11 +78,13 @@
   [(after invoke-suggestions-handler!)
    (after cancel-command!)]
   (fn [{:keys [current-chat-id] :as db} [_ content]]
-    (let [starts-as-command? (str/starts-with? content command-prefix)]
+    (let [starts-as-command? (str/starts-with? content command-prefix)
+          path [:chats current-chat-id :command-input :command :type]
+          command? (= :command (get-in db path))]
       (as-> db db
             (commands/set-chat-command-content db content)
             (assoc-in db [:chats current-chat-id :input-text] nil)
-            (assoc db :canceled-command (not starts-as-command?))))))
+            (assoc db :canceled-command (and command? (not starts-as-command?)))))))
 
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]
@@ -128,7 +130,9 @@
   [(after invoke-suggestions-handler!)
    (after #(dispatch [:command-edit-mode]))]
   (fn [db [_ to-msg-id command-key]]
-    (commands/set-response-chat-command db to-msg-id command-key)))
+    (-> db
+        (commands/set-response-chat-command to-msg-id command-key)
+        (assoc :canceled-command false))))
 
 (defn update-text
   [{:keys [current-chat-id] :as db} [_ text]]
