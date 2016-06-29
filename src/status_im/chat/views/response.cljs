@@ -12,6 +12,7 @@
                                                 touchable-highlight]]
             [status-im.components.drag-drop :as drag]
             [status-im.chat.styles.response :as st]
+            [status-im.chat.styles.dragdown :as ddst]
             [status-im.components.animation :as anim]
             [status-im.chat.suggestions-responder :as resp]))
 
@@ -41,15 +42,19 @@
                                           :fix-response-height)
         command (subscribe [:get-chat-command])]
     (fn [response-height]
-      [view (merge (drag/pan-handlers pan-responder)
-                   {:style (st/request-info (:color @command))})
-       [drag-icon]
-       [view st/inner-container
-        [command-icon nil]
-        [info-container @command]
-        [touchable-highlight {:on-press #(dispatch [:start-cancel-command])}
-         [view st/cancel-container
-          [icon :close-white st/cancel-icon]]]]])))
+      (if (= :response (:type @command))
+        [view (merge (drag/pan-handlers pan-responder)
+                     {:style (st/request-info (:color @command))})
+         [drag-icon]
+         [view st/inner-container
+          [command-icon nil]
+          [info-container @command]
+          [touchable-highlight {:on-press #(dispatch [:start-cancel-command])}
+           [view st/cancel-container
+            [icon :close-white st/cancel-icon]]]]]
+        [view (merge (drag/pan-handlers pan-responder)
+                     {:style ddst/drag-down-touchable})
+         [icon :drag_down ddst/drag-down-icon]]))))
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (let [to-value @to-value]

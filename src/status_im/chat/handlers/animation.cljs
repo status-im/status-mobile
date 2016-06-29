@@ -37,11 +37,21 @@
           (update :animations assoc :command-suggestions-height height)
           (update-in [:animations :commands-height-changed] changed?)))))
 
+(defn get-minimum-height
+  [{:keys [current-chat-id] :as db}]
+  (let [path [:chats current-chat-id :command-input :command :type]
+        type (get-in db path)]
+    (if (= :response type)
+      minimum-suggestion-height
+      minimum-command-suggestions-height)))
+
 (register-handler :animate-show-response
   [(after #(dispatch [:command-edit-mode]))]
   (fn [{:keys [current-chat-id] :as db}]
     (let [suggestions? (seq (get-in db [:suggestions current-chat-id]))
-          height (if suggestions? middle-height minimum-suggestion-height)]
+          height (if suggestions?
+                   middle-height
+                   (get-minimum-height db))]
       (assoc-in db [:animations :to-response-height] height))))
 
 (defn fix-height
@@ -54,7 +64,7 @@
           over-middle-position? (not under-middle-position?)
           suggestions (get-in db [suggestions-key current-chat-id])
           new-fixed (cond (not suggestions)
-                          minimum
+                          (minimum db)
 
                           (and under-middle-position? moving-up?)
                           middle-height
@@ -66,7 +76,7 @@
                           max-height
 
                           (and under-middle-position? moving-down?)
-                          minimum)]
+                          (minimum db))]
       (-> db
           (assoc-in [:animations height-key] new-fixed)
           (update-in [:animations height-signal-key] inc)))))
@@ -75,10 +85,10 @@
   (fix-height :command-suggestions-height
               :commands-height-changed
               :command-suggestions
-              minimum-command-suggestions-height))
+              (constantly minimum-command-suggestions-height)))
 
 (register-handler :fix-response-height
   (fix-height :to-response-height
               :response-height-changed
               :suggestions
-              minimum-suggestion-height))
+              get-minimum-height))

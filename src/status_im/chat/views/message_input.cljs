@@ -47,12 +47,15 @@
 
 (defview plain-message-input-view [{:keys [input-options validator]}]
   [command? [:command?]
+   {:keys [type] :as command} [:get-chat-command]
    input-command [:get-chat-command-content]
    valid-plain-message? [:valid-plain-message?]
    valid-command? [:valid-command? validator]]
   [view st/input-container
    [view st/input-view
     [plain-message/commands-button]
+    (when (and command? (= :command type))
+      [command/command-icon command])
     [message-input-container
      [message-input input-options validator]]
     ;; TODO emoticons: not implemented

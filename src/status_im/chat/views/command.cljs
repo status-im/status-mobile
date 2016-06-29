@@ -29,7 +29,7 @@
 
 (defn command-icon [command]
   [view (st/command-text-container command)
-   [text {:style st/command-text} (:text command)]])
+   [text {:style st/command-text} (str "!" (:name command))]])
 
 (defn cancel-button []
   [touchable-highlight {:on-press cancel-command-input}
