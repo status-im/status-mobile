@@ -43,7 +43,7 @@
         type (get-in db path)]
     (if (= :response type)
       minimum-suggestion-height
-      minimum-command-suggestions-height)))
+      0.1)))
 
 (register-handler :animate-show-response
   [(after #(dispatch [:command-edit-mode]))]

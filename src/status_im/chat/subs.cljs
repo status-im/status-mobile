@@ -131,11 +131,12 @@
   (fn []
     (let [command? (subscribe [:command?])
           command (subscribe [:get-chat-command])
+          command-suggestions (subscribe [:get-content-suggestions])
           suggestions (subscribe [:get-suggestions])]
-      ;; todo fix magic values
       (reaction
         (let [type (:type @command)]
           (cond (and @command? (= type :response)) c/request-info-height
-                (and @command? (= type :command)) c/suggestions-header-height
+                (and @command? (= type :command) (seq @command-suggestions))
+                c/suggestions-header-height
                 (seq @suggestions) c/suggestions-header-height
                 :else 0))))))
