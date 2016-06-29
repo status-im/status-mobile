@@ -12,22 +12,23 @@
                                                  text2-color
                                                  text3-color]]))
 
-(def suggestion-height 88)
+(def suggestion-height 60)
+
+(def suggestion-highlight
+  {:margin-left 57})
 
 (def suggestion-container
-  {:flexDirection   :column
-   :paddingLeft     16
-   :backgroundColor color-white})
+  {:backgroundColor color-white})
 
 (def suggestion-sub-container
   {:height            suggestion-height
    :borderBottomWidth 1
-   :borderBottomColor separator-color})
+   :borderBottomColor separator-color
+   :flex-direction :row})
 
 (defn suggestion-background
   [{:keys [color]}]
-  {:alignSelf       :flex-start
-   :marginTop       10
+  {:marginTop       10
    :height          24
    :backgroundColor color
    :borderRadius    50})
@@ -55,6 +56,7 @@
   {:flexDirection    :row
    :marginVertical   1
    :marginHorizontal 0
+   :flex 1
    :height           (min 168 (* suggestion-height suggestions-count))
    :backgroundColor  color-white
    :borderRadius     5})

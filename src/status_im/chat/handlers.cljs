@@ -113,7 +113,6 @@
                        content)
           command-info {:command command :content content'}]
       (-> db
-          ;(assoc-in [:chats current-chat-id :command-input :command] nil)
           (commands/stage-command command-info)
           (assoc :staged-command command-info)))))
 
@@ -138,7 +137,6 @@
 (defn update-text
   [{:keys [current-chat-id] :as db} [_ text]]
   (let [suggestions (get-in db [:command-suggestions current-chat-id])]
-    (println :hui (count suggestions) text :bla)
     (if-not (= 1 (count suggestions))
       (update-input-text db text)
       db)))
