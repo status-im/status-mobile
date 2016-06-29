@@ -2,7 +2,8 @@
   (:require [cljs.reader :refer [read-string]]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.utils.types :refer [to-string]]
-            [status-im.utils.utils :as u])
+            [status-im.utils.utils :as u]
+            [clojure.string :as str])
   (:refer-clojure :exclude [exists?]))
 
 (def opts {:schema [{:name       :contacts
@@ -14,6 +15,13 @@
                                                      :optional true}
                                   :photo-path       {:type    "string"
                                                      :optinal true}}}
+                    {:name       :requests
+                     :properties {:message-id :string
+                                  :chat-id    :string
+                                  :type       :string
+                                  :status     {:type    :string
+                                               :default "open"}
+                                  :added      :date}}
                     {:name       :kv-store
                      :primaryKey :key
                      :properties {:key   "string"
@@ -107,12 +115,16 @@
   [schema-name obj]
   (write (fn [] (create schema-name obj true))))
 
+(defn and-q [queries]
+  (str/join " and " queries))
+
 (defmulti to-query (fn [schema-name operator field value]
                      operator))
 
 (defmethod to-query :eq [schema-name operator field value]
   (let [value (to-string value)
-        query (str (name field) "=" (if (= "string" (field-type schema-name field))
+        query (str (name field) "=" (if (= "string" (name (field-type
+                                                           schema-name field)))
                                       (str "\"" value "\"")
                                       value))]
     query))
@@ -124,6 +136,12 @@
 (defn get-by-field [schema-name field value]
   (let [q (to-query schema-name :eq field value)]
     (.filtered (.objects realm (name schema-name)) q)))
+
+(defn get-by-fieds [schema-name fields]
+  (let [queries (map (fn [[k v]]
+                       (to-query schema-name :eq k v))
+                     fields)]
+    (.filtered (.objects realm (name schema-name)) (and-q queries))))
 
 (defn get-all [schema-name]
   (.objects realm (to-string schema-name)))

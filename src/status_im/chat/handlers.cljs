@@ -7,7 +7,8 @@
             [status-im.protocol.api :as api]
             [status-im.models.messages :as messages]
             [status-im.constants :refer [text-content-type
-                                         content-type-command]]
+                                         content-type-command
+                                         content-type-command-request]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.models.chats :as chats]
@@ -381,6 +382,7 @@
   (dispatch [:load-commands! current-chat-id]))
 
 (register-handler :init-chat
+  (after #(dispatch [:load-requests!]))
   (-> load-messages!
       ((enrich init-chat))
       ((after load-commands!))))
@@ -408,6 +410,11 @@
   [{:keys [new-message]} [_ {chat-id :from}]]
   (messages/save-message chat-id new-message))
 
+(defn dispatch-request!
+  [{:keys [new-message]} [_ {chat-id :from}]]
+  (when (= (:content-type new-message) content-type-command-request)
+    (dispatch [:add-request chat-id new-message])))
+
 (defn receive-message
   [db [_ {chat-id :from :as message}]]
   (let [message' (check-author-direction db chat-id message)]
@@ -416,8 +423,9 @@
         (assoc :new-message message'))))
 
 (register-handler :received-msg
-  (-> receive-message
-      ((after store-message!))))
+  [(after store-message!)
+   (after dispatch-request!)]
+  receive-message)
 
 (register-handler :group-received-msg
   (u/side-effect!
@@ -429,6 +437,7 @@
   (let [chat-id (or id current-chat-id)
         messages (get-in db [:chats chat-id :messages])
         db' (assoc db :current-chat-id chat-id)]
+    (dispatch [:load-requests! chat-id])
     (if (seq messages)
       db'
       (-> db'
