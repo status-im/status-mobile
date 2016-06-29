@@ -78,7 +78,7 @@
 
 (def scan-button
   {:position   :absolute
-   :top        5
+   :bottom     0
    :right      16
    :flex       1
    :height     50

@@ -8,6 +8,7 @@
                                                 image
                                                 linear-gradient
                                                 touchable-highlight]]
+            [status-im.components.text-field.view :refer [text-field]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.styles :refer [color-purple
@@ -28,7 +29,6 @@
             [status-im.contacts.styles :as st]))
 
 
-
 (def toolbar-title
   [view toolbar-title-container
    [text {:style toolbar-title-text}
@@ -36,42 +36,43 @@
 
 (defview contact-name-input [name]
   []
-  [text-input
-   {:underlineColorAndroid "#0000001f"
-    :placeholderTextColor  "#838c93de"
-    :style                 form-text-input
-    :autoFocus             true
-    :placeholder           (label :t/name)
-    :onChangeText          #(dispatch [:set-in [:new-contact :name] %])}
-   name])
+  [text-field
+   {:error (if (str/blank? name) "" nil)
+    :value name
+    :label           (label :t/name)
+    :onChangeText          #(dispatch [:set-in [:new-contact :name] %])}])
 
 (defview contact-whisper-id-input [whisper-identity]
-  [view button-input-container
-   [text-input
-    {:underlineColorAndroid "#0000001f"
-     :placeholderTextColor  "#838c93de"
-     :style                 (merge form-text-input button-input)
-     :autoFocus             true
-     :placeholder           (label :t/address)
-     :onChangeText          #(dispatch [:set-in [:new-contact :whisper-identity] %])}
-    whisper-identity]
-   [scan-button #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])]])
+  []
+  (let [error (if (str/blank? whisper-identity) "" nil)
+        error (if (s/valid? ::v/whisper-identity whisper-identity)
+                error
+                "Please enter a valid address or scan a QR code")]
+    [view button-input-container
+   [text-field
+    {:error error
+     :value whisper-identity
+     :wrapperStyle                 (merge button-input)
+     :label           (label :t/address)
+     :onChangeText          #(dispatch [:set-in [:new-contact :whisper-identity] %])}]
+   [scan-button #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])]]))
 
 (defview new-contact []
   [{:keys [name whisper-identity phone-number] :as new-contact} [:get :new-contact]]
-  [view st/contact-form-container
-   [toolbar {:background-color :white
-             :nav-action       {:image   {:source {:uri :icon_back}
-                                          :style  icon-back}
-                                :handler #(dispatch [:navigate-back])}
-             :custom-content   toolbar-title
-             :action           {:image   {:source {:uri (if (s/valid? ::v/contact new-contact)
-                                                          :icon_ok_blue
-                                                          :icon_ok_disabled)}
-                                          :style  icon-search}
-                                :handler #(dispatch [:add-new-contact (merge {:photo-path (identicon whisper-identity)} new-contact)])}}]
-   [view st/form-container
-    [contact-whisper-id-input whisper-identity]
-    [contact-name-input name]]
-   [view st/address-explication-container
-    [text {:style st/address-explication} (label :t/address-explication)]]])
+  (let [valid-contact? (s/valid? ::v/contact new-contact)]
+    [view st/contact-form-container
+     [toolbar {:background-color :white
+               :nav-action       {:image   {:source {:uri :icon_back}
+                                            :style  icon-back}
+                                  :handler #(dispatch [:navigate-back])}
+               :custom-content   toolbar-title
+               :action           {:image   {:source {:uri (if valid-contact?
+                                                            :icon_ok_blue
+                                                            :icon_ok_disabled)}
+                                            :style  icon-search}
+                                  :handler #(when valid-contact? dispatch [:add-new-contact (merge {:photo-path (identicon whisper-identity)} new-contact)])}}]
+     [view st/form-container
+      [contact-name-input name]
+      [contact-whisper-id-input whisper-identity]]
+     [view st/address-explication-container
+      [text {:style st/address-explication} (label :t/address-explication)]]]))
