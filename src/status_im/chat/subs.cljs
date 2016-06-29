@@ -157,3 +157,13 @@
       (reaction (if (= :command @type)
                   @width
                   0)))))
+
+(register-sub :get-requests
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:chats @chat-id :requests])))))
+
+(register-sub :get-response
+  (fn [db [_ n]]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:chats @chat-id :responses n])))))

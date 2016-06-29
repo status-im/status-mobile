@@ -19,7 +19,8 @@
     status-im.commands.handlers.loading
     status-im.commands.handlers.jail
     status-im.qr-scanner.handlers
-    status-im.protocol.handlers))
+    status-im.protocol.handlers
+    status-im.chat.handlers.requests))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;

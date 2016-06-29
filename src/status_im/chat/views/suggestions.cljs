@@ -5,6 +5,7 @@
                                                 scroll-view
                                                 text
                                                 icon
+                                                image
                                                 touchable-highlight
                                                 list-view
                                                 list-item
@@ -15,12 +16,29 @@
             [reagent.core :as r]
             [status-im.components.animation :as anim]
             [status-im.components.drag-drop :as drag]
-            [status-im.components.react :as react]
             [status-im.chat.suggestions-responder :as resp]
             [status-im.chat.constants :as c]))
 
 (defn set-command-input [command]
   (dispatch [:set-chat-command command]))
+
+(defview request-item [{:keys [type message-id]}]
+  [{:keys [color icon description] :as response} [:get-response type]]
+  [touchable-highlight
+   {:on-press #(dispatch [:set-response-chat-command message-id type])}
+   [view st/request-container
+    [view st/request-icon-container
+     [view (st/request-icon-background color)
+      [image {:source {:uri icon}
+              :style  st/request-icon}]]]
+    [view st/request-info-container
+     [text {:style st/request-info-description} description]
+     ;; todo stub
+     [text {:style st/request-message-info}
+      "By console, today at 14:50"]]]])
+
+(defn render-request-row [row _ _]
+  (list-item [request-item row]))
 
 (defn suggestion-list-item
   [[command {:keys [description]
@@ -29,16 +47,13 @@
   (let [label (str "!" name)]
     [touchable-highlight
      {:onPress #(set-command-input command)
-      :style st/suggestion-highlight}
+      :style   st/suggestion-highlight}
      [view st/suggestion-container
       [view st/suggestion-sub-container
-       [view {:flex 0.6}
+       [view st/command-description-container
         [text {:style st/value-text} label]
         [text {:style st/description-text} description]]
-       [view {:flex 0.4
-              :flex-direction :column
-              :align-items :flex-end
-              :margin-right 16}
+       [view st/command-label-container
         [view (st/suggestion-background suggestion)
          [text {:style st/suggestion-text} label]]]]]]))
 
@@ -46,18 +61,21 @@
   (list-item [suggestion-list-item row]))
 
 (defn title [s]
-  [view {:margin-left 57
-         :margin-bottom 16}
-   [text {:style {:font-size 13
-                  :color :#8f838c93}} s]])
+  [view st/title-container
+   [text {:style st/title-text} s]])
 
 (defview suggestions-view []
   [suggestions [:get-suggestions]
-   requests [:get :chat-requests]]
+   requests [:get-requests]]
   [scroll-view
    (when requests [title "Requests"])
+   (when requests
+     [view
+      [list-view {:dataSource                (to-datasource requests)
+                  :keyboardShouldPersistTaps true
+                  :renderRow                 render-request-row}]])
    [title "Commands"]
-   [view (st/suggestions-container (count suggestions))
+   [view
     [list-view {:dataSource                (to-datasource suggestions)
                 :keyboardShouldPersistTaps true
                 :renderRow                 render-row}]]])
