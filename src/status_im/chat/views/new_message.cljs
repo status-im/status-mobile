@@ -24,10 +24,7 @@
                   :number {:input-options {:keyboardType :numeric}}
                   ;; todo maybe nil is fine for now :)
                   nil #_(throw (js/Error. "Uknown command type")))]
-    (println :plc placeholder)
-    (if placeholder
-      (assoc-in options [:input-options :placeholder] placeholder)
-      options)))
+    (assoc-in options [:input-options :placeholder] "")))
 
 (defview show-input []
   [parameter [:get-command-parameter]

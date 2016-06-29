@@ -21,24 +21,27 @@
 (defn message-input-container [input]
   [view st/message-input-container input])
 
-(def plain-input-options
+(defn plain-input-options [disbale?]
   {:style           st-message/message-input
-   :onChangeText    plain-message/set-input-message
+   :onChangeText    (when-not disbale? plain-message/set-input-message)
+   :editable        (not disbale?)
    :onSubmitEditing plain-message/send})
 
-(def command-input-options
-  {:style           st-response/command-input
+(defn command-input-options [icon-width disbale?]
+  {:style           (st-response/command-input icon-width disbale?)
    :onChangeText    command/set-input-message
    :onSubmitEditing command/send-command})
 
 (defview message-input [input-options]
   [command? [:command?]
    input-message [:get-chat-input-text]
-   input-command [:get-chat-command-content]]
+   input-command [:get-chat-command-content]
+   icon-width [:command-icon-width]
+   disbale? [:get :disable-input]]
   [text-input (merge
                 (if command?
-                  command-input-options
-                  plain-input-options)
+                  (command-input-options icon-width disbale?)
+                  (plain-input-options disbale?))
                 {:autoFocus           false
                  :blurOnSubmit        false
                  :accessibility-label :input}
@@ -54,8 +57,6 @@
   [view st/input-container
    [view st/input-view
     [plain-message/commands-button]
-    (when (and command? (= :command type))
-      [command/command-icon command])
     [message-input-container
      [message-input input-options validator]]
     ;; TODO emoticons: not implemented
@@ -65,4 +66,6 @@
                        command/send-command
                        plain-message/send)]
         [send-button {:on-press            on-press
-                      :accessibility-label :send-message}]))]])
+                      :accessibility-label :send-message}]))
+    (when (and command? (= :command type))
+      [command/command-icon command])]])
