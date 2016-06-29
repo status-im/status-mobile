@@ -29,7 +29,7 @@
 
 (defn command-input-options [icon-width disbale?]
   {:style           (st-response/command-input icon-width disbale?)
-   :onChangeText    command/set-input-message
+   :onChangeText    (when-not disbale? command/set-input-message)
    :onSubmitEditing command/send-command})
 
 (defview message-input [input-options]
