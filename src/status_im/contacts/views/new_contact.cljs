@@ -70,7 +70,7 @@
                                                             :icon_ok_blue
                                                             :icon_ok_disabled)}
                                             :style  icon-search}
-                                  :handler #(when valid-contact? dispatch [:add-new-contact (merge {:photo-path (identicon whisper-identity)} new-contact)])}}]
+                                  :handler #(when valid-contact? (dispatch [:add-new-contact (merge {:photo-path (identicon whisper-identity)} new-contact)]))}}]
      [view st/form-container
       [contact-name-input name]
       [contact-whisper-id-input whisper-identity]]
