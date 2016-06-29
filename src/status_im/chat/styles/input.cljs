@@ -21,8 +21,8 @@
   {:flexDirection   :column
    :marginTop       16
    :marginBottom    16
-   :marginLeft      16
-   :marginRight     0
+   :marginLeft      0
+   :marginRight     8
    :backgroundColor color
    :height          24
    :borderRadius    50})

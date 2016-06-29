@@ -10,6 +10,7 @@
                                                 animated-view]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.chat.styles.suggestions :as st]
+            [status-im.chat.styles.dragdown :as ddst]
             [reagent.core :as r]
             [status-im.components.animation :as anim]
             [status-im.components.drag-drop :as drag]
@@ -59,8 +60,8 @@
     (fn [_]
       [view
        (merge (drag/pan-handlers pan-responder)
-              {:style st/drag-down-touchable})
-       [icon :drag_down st/drag-down-icon]])))
+              {:style ddst/drag-down-touchable})
+       [icon :drag_down ddst/drag-down-icon]])))
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (let [to-value @to-value]
