@@ -16,7 +16,7 @@
    (for [command staged-commands]
      ^{:key command} [staged-command-view command])])
 
-(defn get-options [{:keys [type placeholder]}]
+(defn get-options [{:keys [type placeholder]} command-type]
   (let [options (case (keyword type)
                   :phone {:input-options {:keyboardType :phone-pad}
                           :validator     valid-mobile-number?}
@@ -24,13 +24,18 @@
                   :number {:input-options {:keyboardType :numeric}}
                   ;; todo maybe nil is fine for now :)
                   nil #_(throw (js/Error. "Uknown command type")))]
-    (assoc-in options [:input-options :placeholder] "")))
+    (if (= :response command-type)
+      (if placeholder
+        (assoc-in options [:input-options :placeholder] placeholder)
+        options)
+      (assoc-in options [:input-options :placeholder] ""))))
 
 (defview show-input []
   [parameter [:get-command-parameter]
-   command? [:command?]]
+   command? [:command?]
+   type [:command-type]]
   [plain-message-input-view
-   (when command? (get-options parameter))])
+   (when command? (get-options parameter type))])
 
 (defview chat-message-new []
   [staged-commands [:get-chat-staged-commands]]
