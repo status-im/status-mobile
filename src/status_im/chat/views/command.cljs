@@ -27,9 +27,15 @@
   (when (valid? message validator)
     (send-command)))
 
-(defn command-icon [command]
-  [view (st/command-text-container command)
-   [text {:style st/command-text} (str "!" (:name command))]])
+(defview command-icon [command]
+  [icon-width [:get :command-icon-width]]
+  [view st/command-container
+   [view {:style    (st/command-text-container command)
+          :onLayout (fn [event]
+                      (let [width (.. event -nativeEvent -layout -width)]
+                        (when (not= icon-width width)
+                          (dispatch [:set :command-icon-width width]))))}
+    [text {:style st/command-text} (str "!" (:name command))]]])
 
 (defn cancel-button []
   [touchable-highlight {:on-press cancel-command-input}

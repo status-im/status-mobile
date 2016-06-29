@@ -45,33 +45,44 @@
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
 (defn invoke-suggestions-handler!
-  [{:keys [current-chat-id] :as db} _]
-  (let [{:keys [command content]} (get-in db [:chats current-chat-id :command-input])
-        {:keys [name type]} command
-        path     [(if (= :command type) :commands :responses)
-                  name
-                  :params
-                  0
-                  :suggestions]
-        params   {:value content}]
-    (j/call current-chat-id
-            path
-            params
-            #(dispatch [:suggestions-handler {:command command
-                                              :content content
-                                              :chat-id current-chat-id} %]))))
+  [{:keys [current-chat-id canceled-command] :as db} _]
+  (when-not canceled-command
+    (let [{:keys [command content]} (get-in db [:chats current-chat-id :command-input])
+          {:keys [name type]} command
+          path [(if (= :command type) :commands :responses)
+                name
+                :params
+                0
+                :suggestions]
+          params {:value content}]
+      (j/call current-chat-id
+              path
+              params
+              #(dispatch [:suggestions-handler {:command command
+                                                :content content
+                                                :chat-id current-chat-id} %])))))
 
 (register-handler :start-cancel-command
   (u/side-effect!
     (fn [db _]
       (dispatch [:animate-cancel-command]))))
 
+(def command-prefix "c ")
+
+(defn cancel-command!
+  [{:keys [canceled-command]}]
+  (when canceled-command
+    (dispatch [:start-cancel-command])))
+
 (register-handler :set-chat-command-content
-  [(after invoke-suggestions-handler!)]
+  [(after invoke-suggestions-handler!)
+   (after cancel-command!)]
   (fn [{:keys [current-chat-id] :as db} [_ content]]
-    (as-> db db
-          (commands/set-chat-command-content db content)
-          (assoc-in db [:chats current-chat-id :input-text] nil))))
+    (let [starts-as-command? (str/starts-with? content command-prefix)]
+      (as-> db db
+            (commands/set-chat-command-content db content)
+            (assoc-in db [:chats current-chat-id :input-text] nil)
+            (assoc db :canceled-command (not starts-as-command?))))))
 
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]
@@ -81,10 +92,10 @@
   [{:keys [current-chat-id staged-command]} _]
   (let [{:keys [command content]} staged-command
         {:keys [name type]} command
-        path     [(if (= :command type) :commands :responses)
-                  name
-                  :preview]
-        params   {:value content}]
+        path [(if (= :command type) :commands :responses)
+              name
+              :preview]
+        params {:value content}]
     (j/call current-chat-id
             path
             params
@@ -93,7 +104,7 @@
 (register-handler :stage-command
   (after invoke-command-preview!)
   (fn [{:keys [current-chat-id] :as db} _]
-    (let [db           (update-input-text db nil)
+    (let [db (update-input-text db nil)
           {:keys [command content]}
           (get-in db [:chats current-chat-id :command-input])
           command-info {:command command
@@ -120,8 +131,12 @@
     (commands/set-response-chat-command db to-msg-id command-key)))
 
 (defn update-text
-  [db [_ text]]
-  (update-input-text db text))
+  [{:keys [current-chat-id] :as db} [_ text]]
+  (let [suggestions (get-in db [:command-suggestions current-chat-id])]
+    (println :hui (count suggestions) text :bla)
+    (if-not (= 1 (count suggestions))
+      (update-input-text db text)
+      db)))
 
 (defn update-command [db [_ text]]
   (if-not (commands/get-chat-command db)
@@ -145,9 +160,8 @@
 (register-handler :set-chat-input-text
   [(enrich update-command)
    (after select-suggestion!)
-   (enrich check-suggestions)
    (after #(dispatch [:animate-command-suggestions]))]
-  update-text)
+  ((enrich update-text) check-suggestions))
 
 (defn console? [s]
   (= "console" s))
@@ -187,7 +201,7 @@
 
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
-  (let [text    (get-in db [:chats current-chat-id :input-text])
+  (let [text (get-in db [:chats current-chat-id :input-text])
         [command] (suggestions/check-suggestion db (str text " "))
         message (check-author-direction
                   db current-chat-id
@@ -312,8 +326,11 @@
 (register-handler :set-chat-command
   [(after invoke-suggestions-handler!)
    (after #(dispatch [:command-edit-mode]))]
-  (fn [db [_ command-key]]
-    (commands/set-chat-command db command-key)))
+  (fn [{:keys [current-chat-id] :as db} [_ command-key]]
+    (-> db
+        (commands/set-chat-command command-key)
+        (assoc-in [:chats current-chat-id :command-input :content] "c ")
+        (assoc :disable-input true))))
 
 (register-handler :init-console-chat
   (fn [db [_]]
@@ -406,9 +423,9 @@
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
-  (let [chat-id  (or id current-chat-id)
+  (let [chat-id (or id current-chat-id)
         messages (get-in db [:chats chat-id :messages])
-        db'      (assoc db :current-chat-id chat-id)]
+        db' (assoc db :current-chat-id chat-id)]
     (if (seq messages)
       db'
       (-> db'
@@ -499,8 +516,8 @@
     (assoc-in db [:edit-mode current-chat-id] mode)))
 
 (register-handler :command-edit-mode
-  [(after #(dispatch [:set-chat-input-text ""]))]
   (edit-mode-handler :command))
 
 (register-handler :text-edit-mode
+  (after #(dispatch [:set-chat-input-text ""]))
   (edit-mode-handler :text))

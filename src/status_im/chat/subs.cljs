@@ -127,16 +127,33 @@
          (= :command)
          (reaction))))
 
+(register-sub :command-type
+  (fn []
+    (let [command (subscribe [:get-chat-command])]
+      (reaction (:type @command)))))
+
 (register-sub :messages-offset
   (fn []
     (let [command? (subscribe [:command?])
-          command (subscribe [:get-chat-command])
+          type (subscribe [:command-type])
           command-suggestions (subscribe [:get-content-suggestions])
           suggestions (subscribe [:get-suggestions])]
       (reaction
-        (let [type (:type @command)]
-          (cond (and @command? (= type :response)) c/request-info-height
-                (and @command? (= type :command) (seq @command-suggestions))
-                c/suggestions-header-height
-                (seq @suggestions) c/suggestions-header-height
-                :else 0))))))
+        (cond (and @command? (= @type :response))
+              c/request-info-height
+
+              (and @command? (= @type :command) (seq @command-suggestions))
+              c/suggestions-header-height
+
+              (and (not @command?) (seq @suggestions))
+              c/suggestions-header-height
+
+              :else 0)))))
+
+(register-sub :command-icon-width
+  (fn []
+    (let [width (subscribe [:get :command-icon-width])
+          type (subscribe [:command-type])]
+      (reaction (if (= :command @type)
+                  @width
+                  0)))))

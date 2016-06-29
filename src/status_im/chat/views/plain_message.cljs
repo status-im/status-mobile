@@ -33,7 +33,8 @@
           delay   (if @command? 100 0)]
       (anim/start (anim/timing width {:toValue  n-width
                                       :duration response-input-hiding-duration
-                                      :delay    delay})))))
+                                      :delay    delay})
+                  #(dispatch [:set :disable-input false])))))
 
 (defn commands-button []
   (let [command?        (subscribe [:command?])
