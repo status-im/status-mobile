@@ -107,10 +107,11 @@
   (after invoke-command-preview!)
   (fn [{:keys [current-chat-id] :as db} _]
     (let [db (update-input-text db nil)
-          {:keys [command content]}
-          (get-in db [:chats current-chat-id :command-input])
-          command-info {:command command
-                        :content content}]
+          {:keys [command content]} (get-in db [:chats current-chat-id :command-input])
+          content' (if (= :command (:type command))
+                       (subs content 2)
+                       content)
+          command-info {:command command :content content'}]
       (-> db
           ;(assoc-in [:chats current-chat-id :command-input :command] nil)
           (commands/stage-command command-info)
