@@ -14,6 +14,9 @@
 (defn anim-sequence [animations]
   (.sequence animated (clj->js animations)))
 
+(defn parallel [animations]
+  (.parallel animated (clj->js animations)))
+
 (defn anim-delay [duration]
   (.delay animated duration))
 

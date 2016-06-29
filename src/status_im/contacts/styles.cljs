@@ -173,6 +173,7 @@
 
 (def address-explication-container
   {:flex 1
+   :margin-top 30
    :paddingLeft 16
    :paddingRight 16})
 
