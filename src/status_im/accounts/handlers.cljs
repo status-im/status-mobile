@@ -18,13 +18,14 @@
 (defn account-created [result]
   (let [data (json->clj result)
         public-key (:pubkey data)
-        address (:address data)]
+        address (:address data)
+        account {:public-key public-key
+                 :address address}]
     (log/debug "Created account: " result)
     (when (not (str/blank? public-key))
       (do
-        (dispatch [:initialize-protocol public-key])
-        (dispatch [:add-account {:address address
-                                 :public-key public-key}])))))
+        (dispatch [:initialize-protocol account])
+        (dispatch [:add-account account])))))
 
 (register-handler :create-account
   (-> (fn [db [_ password]]
