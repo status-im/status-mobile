@@ -79,7 +79,7 @@ public class GethService extends Service {
 
         new Thread(new Runnable() {
             public void run() {
-                Statusgo.doStartNode(dataFolder);
+                Statusgo.StartNode(dataFolder);
             }
         }).start();
     }
