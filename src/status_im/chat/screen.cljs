@@ -262,7 +262,7 @@
          :onLayout (fn [event]
                      (let [height (.. event -nativeEvent -layout -height)]
                        (when (not= height layout-height)
-                         (dispatch [:set :layout-height height]))))}
+                         (dispatch [:set-layout-height height]))))}
    [chat-toolbar]
    [messages-container
     [messages-view group-chat]]
