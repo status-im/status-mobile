@@ -15,6 +15,10 @@
                                                      :optional true}
                                   :photo-path       {:type    "string"
                                                      :optinal true}}}
+                    {:name       :accounts
+                     :primaryKey :address
+                     :properties {:address "string"
+                                  :public-key "string"}}
                     {:name       :kv-store
                      :primaryKey :key
                      :properties {:key   "string"

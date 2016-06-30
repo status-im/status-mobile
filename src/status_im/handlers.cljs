@@ -19,6 +19,7 @@
     status-im.new-group.handlers
     status-im.participants.handlers
     status-im.qr-scanner.handlers
+    status-im.accounts.handlers
     status-im.protocol.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
@@ -77,9 +78,9 @@
                                    (dispatch [:crypt-initialized]))))))))
 (register-handler :initialize-geth
                   (u/side-effect!
-                  (fn [_ _]
-                      (log/debug "Starting node")
-                      (.startNode geth (fn [result] (log/debug "Started Node: " result))))))
+                   (fn [_ _]
+                       (log/debug "Starting node")
+                       (.startNode geth (fn [result] (log/debug "Started Node: " result))))))
 
 (register-handler :crypt-initialized
   (u/side-effect!

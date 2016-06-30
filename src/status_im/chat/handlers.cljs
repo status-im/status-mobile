@@ -262,11 +262,7 @@
 
 (register-handler :save-password
   (fn [db [_ password]]
-    (.createAccount geth password (fn [result]
-                                      (let [data (json->clj result)
-                                            public-key (:pubkey data)]
-                                        (log/debug "Created account: " result)
-                                        (when (not (str/blank? public-key)) (dispatch [:initialize-protocol public-key])))))
+    (dispatch [:create-account password])
     (sign-up-service/save-password password)
     (assoc db :password-saved true)))
 
