@@ -16,4 +16,4 @@
 (def response-input-hiding-duration 100)
 (def response-suggesstion-resize-duration 100)
 
-(def default-number-of-messages 10)
+(def default-number-of-messages 5)

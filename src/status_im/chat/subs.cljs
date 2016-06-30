@@ -1,12 +1,9 @@
 (ns status-im.chat.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub dispatch subscribe]]
-            [status-im.db :as db]
-    ;todo handlers in subs?...
-            [status-im.chat.suggestions :refer
-             [get-suggestions typing-command?]]
+  (:require [re-frame.core :refer [register-sub dispatch subscribe path]]
             [status-im.models.commands :as commands]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
+            [status-im.chat.constants :as c]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]))
@@ -43,15 +40,24 @@
 
 (register-sub :get-suggestions
   (fn [db _]
-    (let [input-text (->> (:current-chat-id @db)
-                          db/chat-input-text-path
-                          (get-in @db)
-                          (reaction))]
-      (reaction (get-suggestions @db @input-text)))))
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:command-suggestions @chat-id])))))
 
 (register-sub :get-commands
   (fn [db _]
     (reaction (commands/get-commands @db))))
+
+(register-sub :get-responses
+  (fn [db _]
+    (let [current-chat (@db :current-chat-id)]
+      (reaction (or (get-in @db [:chats current-chat :responses]) {})))))
+
+(register-sub :get-commands-and-responses
+  (fn [db _]
+    (let [current-chat (@db :current-chat-id)]
+      (reaction _ (or (->> (get-in @db [:chats current-chat])
+                           ((juxt :commands :responses))
+                           (apply merge)) {})))))
 
 (register-sub :get-chat-input-text
   (fn [db _]
@@ -67,7 +73,7 @@
 
 (register-sub :valid-plain-message?
   (fn [_ _]
-    (let [input-message   (subscribe [:get-chat-input-text])
+    (let [input-message (subscribe [:get-chat-input-text])
           staged-commands (subscribe [:get-chat-staged-commands])]
       (reaction
         (plain-message/message-valid? @staged-commands @input-message)))))
@@ -80,6 +86,15 @@
 (register-sub :get-chat-command
   (fn [db _]
     (reaction (commands/get-chat-command @db))))
+
+(register-sub :get-command-parameter
+  (fn [db]
+    (let [command (subscribe [:get-chat-command])
+          chat-id (subscribe [:get-current-chat-id])]
+      (reaction
+        (let [path [:chats @chat-id :command-input :parameter-idx]
+              n (get-in @db path)]
+          (when n (nth (:params @command) n)))))))
 
 (register-sub :get-chat-command-content
   (fn [db _]
@@ -102,18 +117,58 @@
   (fn [db [_ chat-id]]
     (reaction (get-in @db [:chats chat-id]))))
 
-(register-sub :typing-command?
-  (fn [db _]
-    (reaction (typing-command? @db))))
-
 (register-sub :get-content-suggestions
   (fn [db _]
-    (let [command (reaction (commands/get-chat-command @db))
-          text (reaction (commands/get-chat-command-content @db))]
-      (reaction (get-content-suggestions @command @text)))))
+    (reaction (get-in @db [:suggestions (:current-chat-id @db)]))))
 
 (register-sub :command?
-  (fn [db ]
+  (fn [db]
     (->> (get-in @db [:edit-mode (:current-chat-id @db)])
          (= :command)
          (reaction))))
+
+(register-sub :command-type
+  (fn []
+    (let [command (subscribe [:get-chat-command])]
+      (reaction (:type @command)))))
+
+(register-sub :messages-offset
+  (fn []
+    (let [command? (subscribe [:command?])
+          type (subscribe [:command-type])
+          command-suggestions (subscribe [:get-content-suggestions])
+          suggestions (subscribe [:get-suggestions])]
+      (reaction
+        (cond (and @command? (= @type :response))
+              c/request-info-height
+
+              (and @command? (= @type :command) (seq @command-suggestions))
+              c/suggestions-header-height
+
+              (and (not @command?) (seq @suggestions))
+              c/suggestions-header-height
+
+              :else 0)))))
+
+(register-sub :command-icon-width
+  (fn []
+    (let [width (subscribe [:get :command-icon-width])
+          type (subscribe [:command-type])]
+      (reaction (if (= :command @type)
+                  @width
+                  0)))))
+
+(register-sub :get-requests
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:chats @chat-id :requests])))))
+
+(register-sub :get-response
+  (fn [db [_ n]]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:chats @chat-id :responses n])))))
+
+(register-sub :is-request-answered?
+  (fn [_ [_ message-id]]
+    (let [requests (subscribe [:get-requests])]
+      (reaction (not (some #(= message-id (:message-id %)) @requests))))))

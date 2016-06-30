@@ -11,5 +11,6 @@
 (defn clj->json [data]
   (.stringify js/JSON (clj->js data)))
 
-(defn json->clj [data]
-  (js->clj (.parse js/JSON data) :keywordize-keys true))
+(defn json->clj [json]
+  (when-not (= json "undefined")
+    (js->clj (.parse js/JSON json) :keywordize-keys true)))

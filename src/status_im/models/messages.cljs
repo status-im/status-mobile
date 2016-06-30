@@ -6,7 +6,8 @@
             [status-im.utils.logging :as log]
             [clojure.string :refer [join split]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
-            [status-im.constants :as c]))
+            [status-im.constants :as c]
+            [status-im.commands.utils :refer [generate-hiccup]]))
 
 (defn- map-to-str
   [m]
@@ -20,7 +21,8 @@
   {:outgoing       false
    :to             nil
    :same-author    false
-   :same-direction false})
+   :same-direction false
+   :preview        nil})
 
 (defn save-message
   ;; todo remove chat-id parameter
@@ -54,7 +56,7 @@
              (r/collection->map))
          (into '())
          reverse
-         (map (fn [{:keys [content-type] :as message}]
+         (keep (fn [{:keys [content-type] :as message}]
                 (if (command-type? content-type)
                   (update message :content str-to-map)
                   message))))))

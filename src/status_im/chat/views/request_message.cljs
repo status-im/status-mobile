@@ -13,61 +13,60 @@
 (def request-message-icon-scale-delay 600)
 
 (defn set-chat-command [msg-id command]
-  (dispatch [:set-response-chat-command msg-id (:command command)]))
+  (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
 
 (defn label [{:keys [command]}]
   (->> (name command)
        (str "request-")))
 
-(defn request-button-animation-logic [{:keys [to-value val loop?]}]
-  (fn [_]
-    (let [loop? @loop?
-          minimum 1
-          maximum 1.3
-          to-scale (if loop?
-                     (or @to-value maximum)
-                     minimum)]
+(def min-scale 1)
+(def max-scale 1.3)
+
+(defn button-animation [val to-value loop? answered?]
+  (anim/anim-sequence
+    [(anim/anim-delay
+       (if (and @loop? (not @answered?))
+         request-message-icon-scale-delay
+         0))
+     (anim/spring val {:toValue to-value})]))
+
+(defn request-button-animation-logic
+  [{:keys [to-value val loop? answered?] :as context}]
+  (anim/start
+    (button-animation val to-value loop? answered?)
+    #(if (and @loop? (not @answered?))
+      (let [new-value (if (= to-value min-scale) max-scale min-scale)
+            context' (assoc context :to-value new-value)]
+        (request-button-animation-logic context'))
       (anim/start
-        (anim/anim-sequence
-          [(anim/anim-delay (if loop? request-message-icon-scale-delay 0))
-           (anim/spring val {:toValue to-scale})])
-        (fn [arg]
-          (when (.-finished arg)
-            (dispatch [:set-animation ::request-button-scale-current to-scale])
-            (when loop?
-              (dispatch [:set-animation ::request-button-scale (if (= to-scale minimum)
-                                                                 maximum
-                                                                 minimum)]))))))))
+        (button-animation val min-scale loop? answered?)))))
 
 (defn request-button [msg-id command]
-  (let [to-scale (subscribe [:animations ::request-button-scale])
-        cur-scale (subscribe [:animations ::request-button-scale-current])
-        scale-anim-val (anim/create-value (or @cur-scale 1))
+  (let [scale-anim-val (anim/create-value min-scale)
+        answered? (subscribe [:is-request-answered? msg-id])
         loop? (r/atom true)
-        context {:to-value to-scale
-                 :val      scale-anim-val
-                 :loop?    loop?}
-        on-update (request-button-animation-logic context)]
+        context {:to-value  max-scale
+                 :val       scale-anim-val
+                 :answered? answered?
+                 :loop?     loop?}]
     (r/create-class
       {:component-did-mount
-       on-update
-       :component-did-update
-       on-update
+       (when-not @answered? #(request-button-animation-logic context))
+       :component-will-unmount
+       #(reset! loop? false)
        :reagent-render
        (fn [msg-id command]
-         @to-scale
-         [touchable-highlight {:on-press            (fn []
-                                                      (reset! loop? false)
-                                                      (set-chat-command msg-id command))
-                               :style               st/command-request-image-touchable
-                               :accessibility-label (label command)}
+         [touchable-highlight
+          {:on-press (when-not @answered?
+                       #(set-chat-command msg-id command))
+           :style    st/command-request-image-touchable}
           [animated-view {:style (st/command-request-image-view command scale-anim-val)}
-           [image {:source (:request-icon command)
+           [image {:source {:uri (:icon command)}
                    :style  st/command-request-image}]]])})))
 
 (defn message-content-command-request
   [{:keys [msg-id content from incoming-group]}]
-  (let [commands-atom (subscribe [:get-commands])]
+  (let [commands-atom (subscribe [:get-responses])]
     (fn [{:keys [msg-id content from incoming-group]}]
       (let [commands @commands-atom
             {:keys [command content]} (parse-command-request commands content)]
