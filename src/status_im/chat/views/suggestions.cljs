@@ -70,7 +70,7 @@
 (defview suggestions-view []
   [suggestions [:get-suggestions]
    requests [:get-requests]]
-  [scroll-view
+  [scroll-view {:keyboardShouldPersistTaps true}
    (when (seq requests) [title "Requests"])
    (when (seq requests)
      [view
