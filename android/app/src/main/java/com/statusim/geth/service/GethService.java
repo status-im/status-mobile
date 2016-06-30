@@ -20,6 +20,8 @@ public class GethService extends Service {
     private static boolean isGethInitialized = false;
     private final Handler handler = new Handler();
 
+    private static String dataFolder;
+
     static class IncomingHandler extends Handler {
 
         private final WeakReference<GethService> service;
@@ -80,6 +82,7 @@ public class GethService extends Service {
         switch (message.what) {
 
             case GethMessages.MSG_START_NODE:
+                Log.d(TAG, "Received start node message." + message.toString());
                 startNode(message);
                 break;
 
@@ -95,8 +98,8 @@ public class GethService extends Service {
                 addAccount(message);
                 break;
 
-            case GethMessages.MSG_UNLOCK_ACCOUNT:
-                unlockAccount(message);
+            case GethMessages.MSG_LOGIN:
+                login(message);
                 break;
 
             default:
@@ -109,16 +112,22 @@ public class GethService extends Service {
     protected void startNode(Message message) {
         if (!isGethInitialized) {
             isGethInitialized = true;
-            new StartTask(message).execute();
+            Log.d(TAG, "Client messenger1: " + message.replyTo.toString());
+            Bundle data = message.getData();
+            String callbackIdentifier = data.getString(GethConnector.CALLBACK_IDENTIFIER);
+            Log.d(TAG, "Callback identifier: " + callbackIdentifier);
+            new StartTask(message.replyTo, callbackIdentifier).execute();
         }
     }
 
     protected class StartTask extends AsyncTask<Void, Void, Void> {
 
-        protected Message message;
+        protected String callbackIdentifier;
+        protected Messenger messenger;
 
-        public StartTask(Message message) {
-            this.message = message;
+        public StartTask(Messenger messenger, String callbackIdentifier) {
+            this.messenger = messenger;
+            this.callbackIdentifier = callbackIdentifier;
         }
 
         protected Void doInBackground(Void... args) {
@@ -127,30 +136,41 @@ public class GethService extends Service {
         }
 
         protected void onPostExecute(Void results) {
-            onGethStarted(message);
+            onGethStarted(messenger, callbackIdentifier);
         }
     }
 
-    protected void onGethStarted(Message message) {
+    protected void onGethStarted(Messenger messenger, String callbackIdentifier) {
         Log.d(TAG, "Geth Service started");
         isGethStarted = true;
-
-        sendReply(message, GethMessages.MSG_NODE_STARTED, null);
+        Message replyMessage = Message.obtain(null, GethMessages.MSG_NODE_STARTED, 0, 0, null);
+        Bundle replyData = new Bundle();
+        Log.d(TAG, "Callback identifier: " + callbackIdentifier);
+        replyData.putString(GethConnector.CALLBACK_IDENTIFIER, callbackIdentifier);
+        replyMessage.setData(replyData);
+        sendReply(messenger, replyMessage);
     }
 
     protected void startGeth() {
-        Log.d(TAG, "Starting background Geth Service");
+
 
         File extStore = Environment.getExternalStorageDirectory();
 
-        final String dataFolder = extStore.exists() ?
-                extStore.getAbsolutePath() :
-                getApplicationInfo().dataDir;
+        dataFolder = extStore.exists() ?
+                extStore.getAbsolutePath() + "/ethereum" :
+                getApplicationInfo().dataDir + "/ethereum";
+        Log.d(TAG, "Starting background Geth Service in folder: " + dataFolder);
+        try {
+            final File newFile = new File(dataFolder);
+            newFile.mkdir();
+        } catch (Exception e) {
+            Log.e(TAG, "error making folder: " + dataFolder, e);
+        }
 
         new Thread(new Runnable() {
             public void run() {
 
-                Statusgo.doStartNode(dataFolder);
+                Statusgo.StartNode(dataFolder);
             }
         }).start();
     }
@@ -158,19 +178,20 @@ public class GethService extends Service {
     protected void stopNode(Message message) {
         // TODO: stop node
 
-        sendReply(message, GethMessages.MSG_NODE_STOPPED, null);
+        createAndSendReply(message, GethMessages.MSG_NODE_STOPPED, null);
     }
 
     protected void createAccount(Message message) {
         Bundle data = message.getData();
         String password = data.getString("password");
         // TODO: remove second argument
-        String address = Statusgo.doCreateAccount(password, "");
-        Log.d(TAG, "Created account: " + address);
+        Log.d(TAG, "Creating account: " + password + " - " + dataFolder);
+        String jsonData = Statusgo.CreateAccount(password, dataFolder);
+        Log.d(TAG, "Created account: " + jsonData);
 
         Bundle replyData = new Bundle();
-        replyData.putString("address", address);
-        sendReply(message, GethMessages.MSG_ACCOUNT_CREATED, replyData);
+        replyData.putString("data", jsonData);
+        createAndSendReply(message, GethMessages.MSG_ACCOUNT_CREATED, replyData);
     }
 
     protected void addAccount(Message message) {
@@ -184,27 +205,27 @@ public class GethService extends Service {
 
         Bundle replyData = new Bundle();
         replyData.putString("address", address);
-        sendReply(message, GethMessages.MSG_ACCOUNT_ADDED, replyData);
+        createAndSendReply(message, GethMessages.MSG_ACCOUNT_ADDED, replyData);
     }
 
-    protected void unlockAccount(Message message) {
+    protected void login(Message message) {
         Bundle data = message.getData();
         String address = data.getString("address");
         String password = data.getString("password");
         // TODO: remove third argument
-        String result = Statusgo.doUnlockAccount(address, password, 0);
+        String result = Statusgo.Login(address, password);
         Log.d(TAG, "Unlocked account: " + result);
 
         Bundle replyData = new Bundle();
         replyData.putString("result", result);
-        sendReply(message, GethMessages.MSG_ACCOUNT_UNLOCKED, replyData);
+        createAndSendReply(message, GethMessages.MSG_LOGGED_IN, replyData);
     }
 
     public static boolean isRunning() {
         return isGethInitialized;
     }
 
-    protected void sendReply(Message message, int replyIdMessage, Bundle replyData) {
+    protected void createAndSendReply(Message message, int replyIdMessage, Bundle replyData) {
 
         if (message == null) {
             return;
@@ -214,14 +235,21 @@ public class GethService extends Service {
             replyData = new Bundle();
         }
         Bundle data = message.getData();
-        String callbackIdentifier = data.getString("callbackIdentifier");
-        replyData.putString("callbackIdentifier", callbackIdentifier);
+        String callbackIdentifier = data.getString(GethConnector.CALLBACK_IDENTIFIER);
+        Log.d(TAG, "Callback identifier: " + callbackIdentifier);
+        replyData.putString(GethConnector.CALLBACK_IDENTIFIER, callbackIdentifier);
         replyMessage.setData(replyData);
 
+        sendReply(message.replyTo, replyMessage);
+    }
+
+    protected void sendReply(Messenger messenger, Message message) {
         try {
-            message.replyTo.send(replyMessage);
-        } catch (RemoteException e) {
-            Log.e(TAG, "Exception sending message id: " + replyIdMessage, e);
+            messenger.send(message);
+
+        } catch (Exception e) {
+
+            Log.e(TAG, "Exception sending message id: " + message.what, e);
         }
     }
 }

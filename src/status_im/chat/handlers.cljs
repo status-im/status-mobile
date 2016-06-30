@@ -19,6 +19,9 @@
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.datetime :as time]
+            [status-im.components.react :refer [geth]]
+            [status-im.utils.logging :as log]
+            [status-im.utils.types :refer [json->clj]]
             [status-im.chat.handlers.animation :refer [update-response-height
                                                        get-response-height]]))
 
@@ -259,6 +262,11 @@
 
 (register-handler :save-password
   (fn [db [_ password]]
+    (.createAccount geth password (fn [result]
+                                      (let [data (json->clj result)
+                                            public-key (:pubkey data)]
+                                        (log/debug "Created account: " result)
+                                        (when (not (str/blank? public-key)) (dispatch [:initialize-protocol public-key])))))
     (sign-up-service/save-password password)
     (assoc db :password-saved true)))
 

@@ -42,13 +42,13 @@ public class GethConnector extends ServiceConnector {
         }
     }
 
-    public void unlockAccount(String callbackIdentifier, String address, String password) {
+    public void login(String callbackIdentifier, String address, String password) {
 
         if (checkBound()) {
             Bundle data = new Bundle();
             data.putString("address", address);
             data.putString("password", password);
-            Message msg = createMessage(callbackIdentifier, GethMessages.MSG_UNLOCK_ACCOUNT, data);
+            Message msg = createMessage(callbackIdentifier, GethMessages.MSG_LOGIN, data);
             try {
                 serviceMessenger.send(msg);
             } catch (RemoteException e) {
@@ -57,10 +57,12 @@ public class GethConnector extends ServiceConnector {
         }
     }
 
-    public void createAccount(String callbackIdentifier) {
+    public void createAccount(String callbackIdentifier, String password) {
 
         if (checkBound()) {
-            Message msg = createMessage(callbackIdentifier, GethMessages.MSG_CREATE_ACCOUNT, null);
+            Bundle data = new Bundle();
+            data.putString("password", password);
+            Message msg = createMessage(callbackIdentifier, GethMessages.MSG_CREATE_ACCOUNT, data);
             try {
                 serviceMessenger.send(msg);
             } catch (RemoteException e) {
@@ -95,6 +97,7 @@ public class GethConnector extends ServiceConnector {
 
     protected Message createMessage(String callbackIdentifier, int idMessage, Bundle data) {
 
+        Log.d(TAG, "Client messenger: " + clientMessenger.toString());
         Message msg = Message.obtain(null, idMessage, 0, 0);
         msg.replyTo = clientMessenger;
         if (data == null) {
