@@ -475,7 +475,9 @@
               :group-chat false
               :is-active  true
               :timestamp  (.getTime (js/Date.))
-              :contacts   [{:identity contcat-id}]}]
+              :contacts   [{:identity contcat-id}]
+              :dapp-url   nil
+              :dapp-hash  nil}]
     (assoc db :new-chat chat)))
 
 (defn add-chat [{:keys [new-chat] :as db} [_ chat-id]]
