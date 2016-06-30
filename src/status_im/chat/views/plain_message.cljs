@@ -5,6 +5,7 @@
             [status-im.components.react :refer [view
                                                 animated-view
                                                 icon
+                                                text
                                                 touchable-highlight]]
             [status-im.components.animation :as anim]
             [status-im.chat.styles.plain-message :as st]
@@ -30,22 +31,24 @@
 (defn list-container [min]
   (fn [{:keys [command? width]}]
     (let [n-width (if @command? min 56)
-          delay   (if @command? 100 0)]
+          delay (if @command? 100 0)]
       (anim/start (anim/timing width {:toValue  n-width
                                       :duration response-input-hiding-duration
                                       :delay    delay})
                   #(dispatch [:set :disable-input false])))))
 
 (defn commands-button []
-  (let [command?        (subscribe [:command?])
-        buttons-scale   (anim/create-value (if @command? 1 0))
+  (let [command? (subscribe [:command?])
+        requests (subscribe [:get-requests])
+        suggestions (subscribe [:get-suggestions])
+        buttons-scale (anim/create-value (if @command? 1 0))
         container-width (anim/create-value (if @command? 20 56))
-        context         {:command? command?
-                         :val      buttons-scale
-                         :width    container-width}
-        on-update       (fn [_]
-                          ((button-animation-logic context))
-                          ((list-container 20) context))]
+        context {:command? command?
+                 :val      buttons-scale
+                 :width    container-width}
+        on-update (fn [_]
+                    ((button-animation-logic context))
+                    ((list-container 20) context))]
     (r/create-class
       {:component-did-mount
        on-update
@@ -58,7 +61,12 @@
           [animated-view {:style (st/message-input-button-touchable
                                    container-width)}
            [animated-view {:style (st/message-input-button buttons-scale)}
-            [icon :list st/list-icon]]]])})))
+            (if (seq @suggestions)
+              [icon :close_gray st/close-icon]
+              [icon :input_list st/list-icon])
+            (when (and (seq @requests)
+                       (not (seq @suggestions)))
+              [view st/requests-icon])]]])})))
 
 (defn smile-animation-logic [{:keys [command? val width]}]
   (fn [_]
@@ -71,13 +79,13 @@
                       (anim/set-value width 0.1)))))))
 
 (defn smile-button []
-  (let [command?        (subscribe [:command?])
-        buttons-scale   (anim/create-value (if @command? 1 0))
+  (let [command? (subscribe [:command?])
+        buttons-scale (anim/create-value (if @command? 1 0))
         container-width (anim/create-value (if @command? 0.1 56))
-        context         {:command? command?
-                         :val      buttons-scale
-                         :width    container-width}
-        on-update       (smile-animation-logic context)]
+        context {:command? command?
+                 :val      buttons-scale
+                 :width    container-width}
+        on-update (smile-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
