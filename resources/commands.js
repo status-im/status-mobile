@@ -1,10 +1,40 @@
 status.command({
     name: "location",
     description: "Send location",
-    color: "#9a5dcf"
+    color: "#9a5dcf",
+    preview: function (params) {
+        var text =  status.components.text(
+            {
+                style: {
+                    marginTop: 5,
+                    marginHorizontal: 0,
+                    fontSize: 14,
+                    fontFamily: "font",
+                    color: "black"
+                }
+            }, params.value);
+        var uri = "https://maps.googleapis.com/maps/api/staticmap?center="
+            + params.value
+            + "&size=100x100&maptype=roadmap&key=AIzaSyBNsj1qoQEYPb3IllmWMAscuXW0eeuYqAA&language=en"
+            + "&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C"
+            + params.value;
+
+        var image = status.components.image(
+            {
+                source: {uri: uri},
+                style: {
+                    width: 100,
+                    height: 100
+                }
+            }
+        );
+
+        return status.components.view({}, [text, image]);
+    }
 }).param({
     name: "address",
-    type: status.types.STRING
+    type: status.types.TEXT,
+    placeholder: "Address"
 });
 
 var phones = [
@@ -110,8 +140,9 @@ status.response({
     color: "#5fc48d",
     params: [{
         name: "phone",
-        type: status.types.PHONE_NUMBER,
-        suggestions: phoneSuggestions
+        type: status.types.PHONE,
+        suggestions: phoneSuggestions,
+        placeholder: "Phone number"
     }],
     handler: function (params) {
         return {
@@ -127,7 +158,7 @@ status.command({
     color: "#7099e6",
     params: [{
         name: "query",
-        type: status.types.STRING
+        type: status.types.TEXT
     }]
 });
 

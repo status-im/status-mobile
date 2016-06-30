@@ -4,7 +4,7 @@
             [status-im.chat.constants :refer [input-height]]))
 
 (def message-input-container
-  {:flex 1
+  {:flex        1
    :marginRight 0})
 
 (def input-container

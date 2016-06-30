@@ -34,9 +34,10 @@
 (defn set-response-chat-command
   [{:keys [current-chat-id] :as db} msg-id command-key]
   (update-in db [:chats current-chat-id :command-input] merge
-             {:content   nil
-              :command   (get-command db command-key)
-              :to-msg-id msg-id}))
+             {:content       nil
+              :command       (get-command db command-key)
+              :parameter-idx 0
+              :to-msg-id     msg-id}))
 
 (defn set-chat-command [db command-key]
   (set-response-chat-command db nil command-key))

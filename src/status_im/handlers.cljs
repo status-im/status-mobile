@@ -1,13 +1,13 @@
 (ns status-im.handlers
   (:require
-    [re-frame.core :refer [register-handler after dispatch debug]]
+    [re-frame.core :refer [after dispatch debug]]
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
     [status-im.persistence.simple-kv-store :as kv]
     [status-im.protocol.state.storage :as storage]
     [status-im.utils.logging :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
-    [status-im.utils.handlers :as u]
+    [status-im.utils.handlers :refer [register-handler] :as u]
     status-im.chat.handlers
     status-im.chat.handlers.animation
     status-im.group-settings.handlers
@@ -19,7 +19,8 @@
     status-im.commands.handlers.loading
     status-im.commands.handlers.jail
     status-im.qr-scanner.handlers
-    status-im.protocol.handlers))
+    status-im.protocol.handlers
+    status-im.chat.handlers.requests))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -40,16 +41,12 @@
 (defn set-el [db [_ k v]]
   (assoc db k v))
 
-(register-handler :set
-  debug
-  set-el)
+(register-handler :set set-el)
 
 (defn set-in [db [_ path v]]
   (assoc-in db path v))
 
-(register-handler :set-in
-  debug
-  set-in)
+(register-handler :set-in set-in)
 
 (register-handler :set-animation
   (fn [db [_ k v]]
