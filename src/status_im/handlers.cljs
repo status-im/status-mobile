@@ -7,12 +7,8 @@
     [status-im.protocol.state.storage :as storage]
     [status-im.utils.logging :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
-<<<<<<< HEAD
-    [status-im.utils.handlers :as u]
     [status-im.components.react :refer [geth]]
-=======
     [status-im.utils.handlers :refer [register-handler] :as u]
->>>>>>> origin/develop
     status-im.chat.handlers
     status-im.chat.handlers.animation
     status-im.group-settings.handlers
