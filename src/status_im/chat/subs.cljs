@@ -167,3 +167,8 @@
   (fn [db [_ n]]
     (let [chat-id (subscribe [:get-current-chat-id])]
       (reaction (get-in @db [:chats @chat-id :responses n])))))
+
+(register-sub :is-request-answered?
+  (fn [_ [_ message-id]]
+    (let [requests (subscribe [:get-requests])]
+      (reaction (not (some #(= message-id (:message-id %)) @requests))))))

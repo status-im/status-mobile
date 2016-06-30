@@ -108,11 +108,14 @@
   (after invoke-command-preview!)
   (fn [{:keys [current-chat-id] :as db} _]
     (let [db (update-input-text db nil)
-          {:keys [command content]} (get-in db [:chats current-chat-id :command-input])
+          {:keys [command content to-msg-id]}
+          (get-in db [:chats current-chat-id :command-input])
           content' (if (= :command (:type command))
-                       (subs content 2)
-                       content)
-          command-info {:command command :content content'}]
+                     (subs content 2)
+                     content)
+          command-info {:command    command
+                        :content    content'
+                        :to-message to-msg-id}]
       (-> db
           (commands/stage-command command-info)
           (assoc :staged-command command-info)))))
@@ -222,7 +225,7 @@
       (assoc db :new-message (when-not (str/blank? text) message)))))
 
 (defn prepare-command
-  [identity chat-id {:keys [preview preview-string content command]}]
+  [identity chat-id {:keys [preview preview-string content command to-message]}]
   (let [content {:command (command :name)
                  :content content}]
     {:msg-id           (random/id)
@@ -232,7 +235,8 @@
      :content-type     content-type-command
      :outgoing         true
      :preview          preview-string
-     :rendered-preview preview}))
+     :rendered-preview preview
+     :to-message       to-message}))
 
 (defn prepare-staged-commans
   [{:keys [current-chat-id identity] :as db} _]
@@ -285,8 +289,15 @@
 (defn save-commands-to-realm!
   [{:keys [new-commands current-chat-id]} _]
   (doseq [new-command new-commands]
-    (messages/save-message current-chat-id
-                           (dissoc new-command :rendered-preview))))
+    (messages/save-message
+      current-chat-id
+      (dissoc new-command :rendered-preview :to-message))))
+
+(defn dispatch-responded-requests!
+  [{:keys [new-commands current-chat-id]} _]
+  (doseq [{:keys [to-message]} new-commands]
+    (when to-message
+      (dispatch [:request-answered! current-chat-id to-message]))))
 
 (defn invoke-commands-handlers!
   [{:keys [new-commands current-chat-id]}]
@@ -319,6 +330,7 @@
       ((after send-message!))
       ((after save-message-to-realm!))
       ((after save-commands-to-realm!))
+      ((after dispatch-responded-requests!))
       ;; todo maybe it is better to track if it was handled or not
       ((after invoke-commands-handlers!))
       ((after handle-commands))))
