@@ -1,6 +1,7 @@
 (ns status-im.participants.handlers
   (:require [status-im.navigation.handlers :as nav]
-            [re-frame.core :refer [register-handler debug]]))
+            [re-frame.core :refer [debug]]
+            [status-im.utils.handlers :refer [register-handler]]))
 
 (defmethod nav/preload-data! :add-participants
   [db _]

@@ -8,7 +8,8 @@
             [status-im.models.messages :as messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
-                                         content-type-command-request]]
+                                         content-type-command-request
+                                         default-number-of-messages]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.models.chats :as chats]
@@ -28,12 +29,17 @@
     (assoc db :show-actions show-actions)))
 
 (register-handler :load-more-messages
-  debug
   (fn [{:keys [current-chat-id] :as db} _]
-    (let [messages-path [:chats current-chat-id :messages]
-          messages (get-in db messages-path)
-          new-messages (messages/get-messages current-chat-id (count messages))]
-      (update-in db messages-path concat new-messages))))
+    (let [all-loaded? (get-in db [:chats current-chat-id :all-loaded?])]
+      (if all-loaded?
+        db
+        (let [messages-path [:chats current-chat-id :messages]
+              messages (get-in db messages-path)
+              new-messages (messages/get-messages current-chat-id (count messages))
+              all-loaded? (> default-number-of-messages (count new-messages))]
+          (-> db
+              (update-in messages-path concat new-messages)
+              (assoc-in [:chats current-chat-id :all-loaded?] all-loaded?)))))))
 
 (defn safe-trim [s]
   (when (string? s)

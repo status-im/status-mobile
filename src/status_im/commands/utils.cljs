@@ -3,7 +3,7 @@
             [clojure.walk :as w]
             [status-im.components.react :refer [text scroll-view view
                                                 image touchable-highlight]]
-            [re-frame.core :refer [register-handler dispatch trim-v debug]]
+            [re-frame.core :refer [dispatch trim-v debug]]
             [status-im.utils.handlers :refer [register-handler]]))
 
 (defn json->clj [json]

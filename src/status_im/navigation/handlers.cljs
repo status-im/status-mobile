@@ -1,5 +1,6 @@
 (ns status-im.navigation.handlers
-  (:require [re-frame.core :refer [register-handler dispatch debug enrich after]]))
+  (:require [re-frame.core :refer [dispatch debug enrich after]]
+            [status-im.utils.handlers :refer [register-handler]]))
 
 (defn push-view [db view-id]
   (-> db
