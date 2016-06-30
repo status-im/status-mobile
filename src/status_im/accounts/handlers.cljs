@@ -4,6 +4,8 @@
             [status-im.utils.logging :as log]
             [status-im.components.react :refer [geth]]
             [status-im.utils.types :refer [json->clj]]
+            [status-im.persistence.simple-kv-store :as kv]
+            [status-im.protocol.state.storage :as storage]
             [clojure.string :as str]))
 
 
@@ -15,6 +17,9 @@
           (update db :accounts assoc address account))
       ((after save-account))))
 
+(defn save-password [password]
+  (storage/put kv/kv-store :password password))
+
 (defn account-created [result password]
   (let [data (json->clj result)
         public-key (:pubkey data)
@@ -24,6 +29,7 @@
     (log/debug "Created account: " result)
     (when (not (str/blank? public-key))
       (do
+        (save-password password)
         (dispatch [:login-account address password])
         (dispatch [:initialize-protocol account])
         (dispatch [:add-account account])))))
@@ -34,6 +40,6 @@
         db)))
 
 (register-handler :login-account
-                  (-> (fn [db [_ address password]]
-                        (.login geth address password (fn [result] (log/debug "Logged in account: " address result)))
-                        db)))
+  (-> (fn [db [_ address password]]
+        (.login geth address password (fn [result] (log/debug "Logged in account: " address result)))
+        db)))
