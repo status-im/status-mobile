@@ -29,10 +29,10 @@
   (fn [{:keys [current-chat-id] :as db} _]
     (let [suggestions? (seq (get-in db [:command-suggestions current-chat-id]))
           current (get-in db [:animations :command-suggestions-height])
-          height (if suggestions? middle-height 30)
+          height (if suggestions? middle-height input-height)
           changed? (if (and suggestions?
                             (not (nil? current))
-                            (not= 30 current))
+                            (not= input-height current))
                      identity inc)]
       (-> db
           (update :animations assoc :command-suggestions-height height)
@@ -44,7 +44,7 @@
         type (get-in db path)]
     (if (= :response type)
       minimum-suggestion-height
-      30)))
+      input-height)))
 
 (register-handler :animate-show-response
   [(after #(dispatch [:command-edit-mode]))]
@@ -97,7 +97,7 @@
   (let [suggestions (get-in db [:command-suggestions current-chat-id])]
     (if (seq suggestions)
       minimum-command-suggestions-height
-      0.1)))
+      input-height)))
 
 (register-handler :fix-commands-suggestions-height
   (fix-height :command-suggestions-height
