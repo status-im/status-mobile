@@ -114,3 +114,9 @@
   {:font-size  12
    :margin-top 2
    :color      color-gray})
+
+(def header-icon
+  {:background-color :#838c93
+   :width 14
+   :border-radius 1
+   :height 3})
