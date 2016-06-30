@@ -41,11 +41,10 @@
              :keyboard-height        0
              :disable-group-creation false
              :animations             {;; todo clear this
-                                      :tabs-bar-value (anim/create-value 0)}})
+                                      :tabs-bar-value (anim/create-value 0)}
+             :loading-allowed        true})
 
 (def protocol-initialized-path [:protocol-initialized])
-(defn chat-input-text-path [chat-id]
-  [:chats chat-id :input-text])
 (defn chat-staged-commands-path [chat-id]
   [:chats chat-id :staged-commands])
 (defn chat-command-path [chat-id]

@@ -9,12 +9,15 @@
                  [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo   "git@github.com:status-im/status-lib.git"
-                         :branch "discover-rework"}}
-                 [status-im/protocol "0.1.3-20160818_085900-gda79e8e"]
+                          :branch "master"}}
+                 [status-im/protocol "0.1.3-20160818_172519-g2f734a6"]
                  [natal-shell "0.3.0"]
-                 [com.andrewmcveigh/cljs-time "0.4.0"]]
+                 [com.andrewmcveigh/cljs-time "0.4.0"]
+                 [tailrecursion/cljs-priority-map "1.2.0"]
+                 [cljsjs/web3 "0.16.0-0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.0-2"]]
+            [lein-figwheel "0.5.0-2"]
+            [lein-voom "0.1.0-20160311_203101-g259fbfc"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
                          ["do" "clean"

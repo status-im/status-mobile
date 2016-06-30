@@ -71,22 +71,21 @@ public class GethConnector extends ServiceConnector {
         }
     }
 
-    public void addAccount(String callbackIdentifier, String privateKey) {
-
+    public void completeTransaction(String callbackIdentifier, String hash){
         if (checkBound()) {
             Bundle data = new Bundle();
-            data.putString("privateKey", privateKey);
-            Message msg = createMessage(callbackIdentifier, GethMessages.MSG_ADD_ACCOUNT, data);
+            data.putString("hash", hash);
+            Message msg = createMessage(callbackIdentifier, GethMessages.MSG_COMPLETE_TRANSACTION, data);
             try {
                 serviceMessenger.send(msg);
             } catch (RemoteException e) {
-                Log.e(TAG, "Exception sending message(addAccount) to service: ", e);
+                Log.e(TAG, "Exception sending message(completeTransaction) to service: ", e);
             }
         }
     }
 
 
-    protected boolean checkBound() {
+    private boolean checkBound() {
 
         if (!isBound) {
             Log.d(TAG, "GethConnector not bound!");
@@ -95,7 +94,7 @@ public class GethConnector extends ServiceConnector {
         return true;
     }
 
-    protected Message createMessage(String callbackIdentifier, int idMessage, Bundle data) {
+    private Message createMessage(String callbackIdentifier, int idMessage, Bundle data) {
 
         Log.d(TAG, "Client messenger: " + clientMessenger.toString());
         Message msg = Message.obtain(null, idMessage, 0, 0);

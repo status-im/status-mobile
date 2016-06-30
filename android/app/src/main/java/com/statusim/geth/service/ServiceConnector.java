@@ -11,39 +11,27 @@ import java.util.ArrayList;
 
 public class ServiceConnector {
 
-    private static final String TAG = "ServiceConnector";
-
-    /**
-     * Incoming message handler. Calls to its binder are sequential!
-     */
-    protected final IncomingHandler handler;
-
-    /**
-     * Handler thread to avoid running on the main UI thread
-     */
-    protected final HandlerThread handlerThread;
-
     /** Context of the activity from which this connector was launched */
-    protected Context context;
+    private Context context;
 
     /** The class of the service we want to connect to */
-    protected Class serviceClass;
+    private Class serviceClass;
 
     /** Flag indicating if the service is bound. */
-    protected boolean isBound;
+    boolean isBound;
 
     /** Sends messages to the service. */
-    protected Messenger serviceMessenger = null;
+    Messenger serviceMessenger = null;
 
     /** Receives messages from the service. */
-    protected Messenger clientMessenger = null;
+    Messenger clientMessenger = null;
 
-    protected ArrayList<ConnectorHandler> handlers = new ArrayList<>();
+    private ArrayList<ConnectorHandler> handlers = new ArrayList<>();
 
     /** Handles incoming messages from service. */
-    class IncomingHandler extends Handler {
+    private class IncomingHandler extends Handler {
 
-        public IncomingHandler(HandlerThread thread) {
+        IncomingHandler(HandlerThread thread) {
 
             super(thread.getLooper());
         }
@@ -72,7 +60,7 @@ public class ServiceConnector {
     /**
      * Class for interacting with the main interface of the service.
      */
-    protected ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection serviceConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName className, IBinder service) {
 
@@ -100,13 +88,14 @@ public class ServiceConnector {
         }
     };
 
-    public ServiceConnector(Context context, Class serviceClass) {
-
+    ServiceConnector(Context context, Class serviceClass) {
         this.context = context;
         this.serviceClass = serviceClass;
-        handlerThread = new HandlerThread("HandlerThread");
+        // Handler thread to avoid running on the main UI thread
+        HandlerThread handlerThread = new HandlerThread("HandlerThread");
         handlerThread.start();
-        handler = new IncomingHandler(handlerThread);
+        // Incoming message handler. Calls to its binder are sequential!
+        IncomingHandler handler = new IncomingHandler(handlerThread);
         clientMessenger = new Messenger(handler);
     }
 

@@ -4,15 +4,17 @@
             [cljs-time.format :refer [formatters
                                       formatter
                                       unparse]]
-            [status-im.i18n :refer [label label-pluralize]]))
+            [status-im.i18n :refer [label label-pluralize]]
+            [goog.string :as gstring]
+            goog.string.format))
 
 (def hour (* 1000 60 60))
 (def day (* hour 24))
 (def week (* 7 day))
-(def units [{:name (label :t/datetime-second) :limit 60 :in-second 1}
-            {:name (label :t/datetime-minute) :limit 3600 :in-second 60}
-            {:name (label :t/datetime-hour) :limit 86400 :in-second 3600}
-            {:name (label :t/datetime-day) :limit nil :in-second 86400}])
+(def units [{:name :t/datetime-second :limit 60 :in-second 1}
+            {:name :t/datetime-minute :limit 3600 :in-second 60}
+            {:name :t/datetime-hour :limit 86400 :in-second 3600}
+            {:name :t/datetime-day :limit nil :in-second 86400}])
 
 (def time-zone-offset (hours (- (/ (.getTimezoneOffset (js/Date.)) 60))))
 
@@ -29,6 +31,10 @@
       (before? local today)     (label :t/datetime-yesterday)
       :else                     (unparse (formatters :hour-minute) local))))
 
+(defn format-time-ago [diff unit]
+  (let [name (label-pluralize diff (:name unit))]
+    (gstring/format "%s %s %s" diff name (label :t/datetime-ago))))
+
 (defn time-ago [time]
   (let [diff (t/in-seconds (t/interval time (t/now)))]
     (if (< diff 60)
@@ -39,7 +45,7 @@
         (-> (/ diff (:in-second unit))
             Math/floor
             int
-            (#(str % " " (label-pluralize % (:name unit)) " " (label :t/datetime-ago))))))))
+            (format-time-ago unit))))))
 
 (defn to-date [ms]
   (from-long ms))

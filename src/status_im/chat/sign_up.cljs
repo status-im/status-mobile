@@ -37,7 +37,7 @@
 ;; -- Send phone number ----------------------------------------
 (defn on-sign-up-response [& [message]]
   (let [msg-id (random/id)]
-    (dispatch [:received-msg
+    (dispatch [:received-message
                {:msg-id       msg-id
                 :content      (command-content
                                 :confirmation-code
@@ -62,7 +62,7 @@
 
 ;; -- Send confirmation code and synchronize contacts---------------------------
 (defn on-sync-contacts []
-  (dispatch [:received-msg
+  (dispatch [:received-message
              {:msg-id       (random/id)
               :content      (label :t/contacts-syncronized)
               :content-type text-content-type
@@ -76,7 +76,7 @@
   (dispatch [:sync-contacts on-sync-contacts]))
 
 (defn on-send-code-response [body]
-  (dispatch [:received-msg
+  (dispatch [:received-message
              {:msg-id       (random/id)
               :content      (:message body)
               :content-type text-content-type
@@ -96,47 +96,52 @@
 ;; -- Saving password ----------------------------------------
 (defn save-password [password]
   ;; TODO validate and save password
-  (dispatch [:received-msg
+  (dispatch [:received-message
              {:msg-id       (random/id)
               :content      (label :t/password-saved)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
-              :to           "me"}])
-  (dispatch [:received-msg
+              :to           "me"
+              :new?         false}])
+  (dispatch [:received-message
              {:msg-id       (random/id)
               :content      (label :t/generate-passphrase)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
-              :to           "me"}])
-  (dispatch [:received-msg
+              :to           "me"
+              :new?         false}])
+  (dispatch [:received-message
              {:msg-id       (random/id)
               :content      (label :t/passphrase)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
-              :to           "me"}])
+              :to           "me"
+              :new?         false}])
   ;; TODO generate passphrase
   (let [passphrase (str "The brash businessman's braggadocio and public squabbing with "
                         "candidates in the US presidential election")]
-    (dispatch [:received-msg
+    (dispatch [:received-message
                {:msg-id       (random/id)
                 :content      passphrase
                 :content-type text-content-type
                 :outgoing     false
                 :from         "console"
-                :to           "me"}]))
-  (dispatch [:received-msg
+                :to           "me"
+                :new?         false}]))
+  (dispatch [:received-message
              {:msg-id       "8"
               :content      (label :t/written-down)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
-              :to           "me"}])
+              :to           "me"
+              :new?         false}])
   ;; TODO highlight '!phone'
   (let [msg-id (random/id)]
-    (dispatch [:received-msg
+    (dispatch [:received-message
                {:msg-id       msg-id
                 :content      (command-content
                                 :phone
@@ -157,15 +162,15 @@
    :to              "me"})
 
 (defn intro [db]
-  (dispatch [:received-msg intro-status])
-  (dispatch [:received-msg
+  (dispatch [:received-message intro-status])
+  (dispatch [:received-message
              {:msg-id       "intro-message1"
               :content      (label :t/intro-message1)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
               :to           "me"}])
-  (dispatch [:received-msg
+  (dispatch [:received-message
              {:msg-id       "intro-message2"
               :content      (label :t/intro-message2)
               :content-type text-content-type
@@ -173,7 +178,7 @@
               :from         "console"
               :to           "me"}])
   (let [msg-id "into-message3"]
-    (dispatch [:received-msg
+    (dispatch [:received-message
                {:msg-id       msg-id
                 :content      (command-content
                                 :keypair

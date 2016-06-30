@@ -57,9 +57,13 @@
              (r/collection->map))
          (into '())
          reverse
-         (keep (fn [{:keys [content-type] :as message}]
+         (keep (fn [{:keys [content-type preview] :as message}]
                 (if (command-type? content-type)
-                  (update message :content str-to-map)
+                  (-> message
+                      (update :content str-to-map)
+                      (assoc :rendered-preview
+                             (when preview
+                               (generate-hiccup (read-string preview)))))
                   message))))))
 
 (defn update-message! [{:keys [msg-id] :as msg}]
@@ -68,3 +72,7 @@
     (fn []
       (when (r/exists? :account :message :msg-id msg-id)
         (r/create :account :message msg true)))))
+
+(defn get-message [id]
+  (r/get-one-by-field :account :message :msg-id id))
+

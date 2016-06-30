@@ -29,6 +29,7 @@
                     :lineColor      "#0000001f"
                     :focusLineColor "#0000001f"
                     :errorColor     "#d50000"
+                    :secureTextEntry false
                     :onFocus        #()
                     :onBlur         #()
                     :onChangeText   #()
@@ -144,19 +145,19 @@
                 label-font-size
                 line-width
                 max-line-width] :as state} (r/state component)
-        {:keys [wrapperStyle inputStyle lineColor focusLineColor
+        {:keys [wrapperStyle inputStyle lineColor focusLineColor secureTextEntry
                 labelColor errorColor error label value onFocus onBlur
                 onChangeText onChange editable] :as props} (merge default-props (r/props component))
         lineColor (if error errorColor lineColor)
         focusLineColor (if error errorColor focusLineColor)
         labelColor (if (and error (not float-label?)) errorColor labelColor)
         label (if error (str label " *") label)]
-    ;(log/debug "reagent-render: " data)
     [view (merge st/text-field-container wrapperStyle)
      [animated-text {:style (st/label label-top label-font-size labelColor)} label]
      [text-input {:style        (merge st/text-input inputStyle)
                   :placeholder  ""
                   :editable     editable
+                  :secureTextEntry secureTextEntry
                   :onFocus      #(on-focus {:component component
                                             :animation {:top           label-top
                                                         :to-top        (:label-top config)

@@ -19,24 +19,37 @@
     (assoc-in db [:rendered-commands chat-id message-id] hiccup)))
 
 (def console-events
-  {:save-password   #(dispatch [:save-password %])
-   :sign-up         #(dispatch [:sign-up %])
-   :confirm-sign-up #(dispatch [:sign-up-confirm %])})
+  {:save-password   (fn [[parameter]]
+                      (dispatch [:save-password parameter]))
+   :sign-up         (fn [[parameter]]
+                      (dispatch [:sign-up parameter]))
+   :confirm-sign-up (fn [[parameter]]
+                      (dispatch [:sign-up-confirm parameter]))})
 
 (def regular-events {})
 
 (defn command-hadler!
-  [_ [{:keys [to]} {:keys [result]} ]]
-  (when result
-    (let [{:keys [event params]} result
-          events (if (= "console" to)
-                   (merge regular-events console-events)
-                   regular-events)]
-      (when-let [handler (events (keyword event))]
-        (apply handler params)))))
+  [_ [chat-id {:keys [command] :as parameters} {:keys [result error]}]]
+  (cond
+    result
+    (let [{:keys [event params transaction-hash]} result
+          command' (assoc command :handler-data result)
+          parameters' (assoc parameters :command command')]
+      (if transaction-hash
+        (dispatch [:wait-for-transaction transaction-hash parameters'])
+        (let [events (if (= "console" chat-id)
+                       (merge regular-events console-events)
+                       regular-events)
+              parameters'' (if-let [handler (events (keyword event))]
+                             (assoc parameters' :handler #(handler params command'))
+                             parameters')]
+          (dispatch [:prepare-command! parameters'']))))
+    (not error)
+    (dispatch [:prepare-command! parameters])
+    :else nil))
 
 (defn suggestions-handler!
-  [db [{:keys [chat-id]} {:keys [result]} ]]
+  [db [{:keys [chat-id]} {:keys [result]}]]
   (let [{:keys [markup webViewUrl]} result
         hiccup (generate-hiccup markup)]
     (-> db
@@ -52,13 +65,10 @@
     nil))
 
 (defn command-preview
-  [db [chat-id {:keys [result]}]]
+  [db [chat-id command-id {:keys [result]}]]
   (if result
-    (let [path         [:chats chat-id :staged-commands]
-          commands-cnt (count (get-in db path))]
-      ;; todo (dec commands-cnt) looks like hack have to find better way to
-      ;; do this
-      (update-in db (conj path (dec commands-cnt)) assoc
+    (let [path [:chats chat-id :staged-commands command-id]]
+      (update-in db path assoc
                  :preview (generate-hiccup result)
                  :preview-string (str result)))
     db))
@@ -73,18 +83,20 @@
 (reg-handler ::render-command render-command)
 
 (reg-handler :command-handler!
-             (after (print-error-message! "Error on command handling"))
-             (u/side-effect! command-hadler!))
+  (after (print-error-message! "Error on command handling"))
+  (u/side-effect! command-hadler!))
+
 (reg-handler :suggestions-handler
-             [(after #(dispatch [:animate-show-response]))
-              (after (print-error-message! "Error on param suggestions"))
-              (after (fn [_ [{:keys [command]} {:keys [result]}]]
-                       (when (= :on-send (keyword (:suggestions-trigger command)))
-                         (when (:webViewUrl result)
-                           (dispatch [:set-soft-input-mode :pan]))
-                         (r/dismiss-keyboard!))))]
-             suggestions-handler!)
+  [(after #(dispatch [:animate-show-response]))
+   (after (print-error-message! "Error on param suggestions"))
+   (after (fn [_ [{:keys [command]} {:keys [result]}]]
+            (when (= :on-send (keyword (:suggestions-trigger command)))
+              (when (:webViewUrl result)
+                (dispatch [:set-soft-input-mode :pan]))
+              (r/dismiss-keyboard!))))]
+  suggestions-handler!)
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
+
 (reg-handler :command-preview
-             (after (print-error-message! "Error on command preview"))
-             command-preview)
+  (after (print-error-message! "Error on command preview"))
+  command-preview)

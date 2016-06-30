@@ -12,7 +12,8 @@
   [{:keys [chat-id name color new-messages-count
            online group-chat contacts] :as chat}]
   [unviewed-messages [:unviewed-messages-count chat-id]]
-  (let [last-message (first (:messages chat))]
+  (let [last-message (first (:messages chat))
+        name (or name chat-id)]
     [view st/chat-container
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
