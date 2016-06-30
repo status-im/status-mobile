@@ -51,7 +51,7 @@
                  :loop?     loop?}]
     (r/create-class
       {:component-did-mount
-       #(request-button-animation-logic context)
+       (when-not @answered? #(request-button-animation-logic context))
        :component-will-unmount
        #(reset! loop? false)
        :reagent-render

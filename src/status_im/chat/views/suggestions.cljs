@@ -94,7 +94,7 @@
       [view
        (merge (drag/pan-handlers pan-responder)
               {:style ddst/drag-down-touchable})
-       [icon :drag_down ddst/drag-down-icon]])))
+       [view st/header-icon]])))
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (when-let [to-value @to-value]
