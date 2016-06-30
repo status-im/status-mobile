@@ -38,6 +38,7 @@
   []
   [text-field
    {:error (if (str/blank? name) "" nil)
+    :errorColor "#7099e6"
     :value name
     :label           (label :t/name)
     :onChangeText          #(dispatch [:set-in [:new-contact :name] %])}])
@@ -51,6 +52,7 @@
     [view button-input-container
    [text-field
     {:error error
+     :errorColor "#7099e6"
      :value whisper-identity
      :wrapperStyle                 (merge button-input)
      :label           (label :t/address)
