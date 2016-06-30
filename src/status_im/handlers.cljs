@@ -9,6 +9,7 @@
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.components.react :refer [geth]]
     [status-im.utils.handlers :refer [register-handler] :as u]
+    [status-im.models.protocol :as protocol]
     status-im.chat.handlers
     status-im.chat.handlers.animation
     status-im.group-settings.handlers
@@ -57,7 +58,9 @@
 (register-handler :initialize-db
   (fn [_ _]
     (assoc app-db
-      :signed-up (storage/get kv/kv-store :signed-up))))
+      :signed-up (storage/get kv/kv-store :signed-up)
+      :user-identity (protocol/stored-identity nil)
+      :password (storage/get kv/kv-store :password))))
 
 (register-handler :initialize-crypt
   (u/side-effect!
@@ -74,11 +77,20 @@
                                         (.toBits (.. js/ecc -sjcl -codec -hex))
                                         (.addEntropy (.. js/ecc -sjcl -random)))
                                    (dispatch [:crypt-initialized]))))))))
+
+(defn node-started [db result]
+  (let [identity (:user-identity db)
+        password (:password db)]
+  (log/debug "Started Node: " result)
+  (when identity (do
+                   (dispatch [:login-account (:address identity) password])
+                   (dispatch [:initialize-protocol identity])))))
+
 (register-handler :initialize-geth
-                  (u/side-effect!
-                   (fn [_ _]
-                       (log/debug "Starting node")
-                       (.startNode geth (fn [result] (log/debug "Started Node: " result))))))
+  (u/side-effect!
+   (fn [db _]
+     (log/debug "Starting node")
+     (.startNode geth (fn [result] (node-started db result))))))
 
 (register-handler :crypt-initialized
   (u/side-effect!
