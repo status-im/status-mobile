@@ -115,14 +115,12 @@
        on-update
        :reagent-render
        (fn [h & elements]
-         @changed
+         @to-response-height @changed
          (into [animated-view {:style (st/container h)}] elements))})))
 
 (defn suggestion-container []
-  (let [h (anim/create-value 0.1)
-        command? (subscribe [:command?])]
-    (when-not @command?
-      [container h
-       [header h]
-       [suggestions-view]
-       [view {:height c/input-height}]])))
+  (let [h (anim/create-value c/input-height)]
+    [container h
+     [header h]
+     [suggestions-view]
+     [view {:height c/input-height}]]))
