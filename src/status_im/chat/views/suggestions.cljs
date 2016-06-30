@@ -119,7 +119,7 @@
          (into [animated-view {:style (st/container h)}] elements))})))
 
 (defn suggestion-container []
-  (let [h (anim/create-value 10)]
+  (let [h (anim/create-value 0.1)]
     [container h
      [header h]
      [suggestions-view]

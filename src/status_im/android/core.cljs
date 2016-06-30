@@ -39,7 +39,8 @@
 
 (defn app-root []
   (let [signed-up (subscribe [:get :signed-up])
-        view-id   (subscribe [:get :view-id])]
+        view-id   (subscribe [:get :view-id])
+        keyboard-height (subscribe [:get :keyboard-height])]
     (r/create-class
       {:component-will-mount
        (fn []
@@ -53,10 +54,12 @@
                        "keyboardDidShow"
                        (fn [e]
                          (let [h (.. e -endCoordinates -height)]
-                           (dispatch [:set :keyboard-height h]))))
+                           (when-not (= h keyboard-height)
+                             (dispatch [:set :keyboard-height h])))))
          (.addListener device-event-emitter
                        "keyboardDidHide"
-                       #(dispatch [:set :keyboard-height 0])))
+                       (when-not (= 0 keyboard-height)
+                         #(dispatch [:set :keyboard-height 0]))))
        :render
        (fn []
          (case (if @signed-up @view-id :chat)

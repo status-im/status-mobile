@@ -132,7 +132,8 @@
 
 (register-handler :set-response-chat-command
   [(after invoke-suggestions-handler!)
-   (after #(dispatch [:command-edit-mode]))]
+   (after #(dispatch [:command-edit-mode]))
+   (after #(dispatch [:set-chat-input-text ""]))]
   (fn [db [_ to-msg-id command-key]]
     (-> db
         (commands/set-response-chat-command to-msg-id command-key)
@@ -143,7 +144,7 @@
   (let [suggestions (get-in db [:command-suggestions current-chat-id])]
     (if-not (= 1 (count suggestions))
       (update-input-text db text)
-      db)))
+      (assoc db :disable-input true))))
 
 (defn update-command [db [_ text]]
   (if-not (commands/get-chat-command db)
@@ -545,3 +546,19 @@
 (register-handler :text-edit-mode
   (after #(dispatch [:set-chat-input-text ""]))
   (edit-mode-handler :text))
+
+(register-handler :set-layout-height
+  [(after
+     (fn [{:keys [current-chat-id] :as db}]
+       (let [suggestions (get-in db [:suggestions current-chat-id])
+             mode (get-in db [:edit-mode current-chat-id])]
+         (when (and (= :command mode) (seq suggestions))
+           (dispatch [:fix-response-height])))))
+   (after
+     (fn [{:keys [current-chat-id] :as db}]
+       (let [suggestions (get-in db [:command-suggestions current-chat-id])
+             mode (get-in db [:edit-mode current-chat-id])]
+         (when (and (= :text mode)) (seq suggestions)
+           (dispatch [:fix-commands-suggestions-height])))))]
+  (fn [db [_ h]]
+    (assoc db :layout-height h)))

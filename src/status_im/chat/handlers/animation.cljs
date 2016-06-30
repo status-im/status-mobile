@@ -29,10 +29,10 @@
   (fn [{:keys [current-chat-id] :as db} _]
     (let [suggestions? (seq (get-in db [:command-suggestions current-chat-id]))
           current (get-in db [:animations :command-suggestions-height])
-          height (if suggestions? middle-height 10)
+          height (if suggestions? middle-height 30)
           changed? (if (and suggestions?
                             (not (nil? current))
-                            (not= 10 current))
+                            (not= 30 current))
                      identity inc)]
       (-> db
           (update :animations assoc :command-suggestions-height height)
@@ -44,7 +44,7 @@
         type (get-in db path)]
     (if (= :response type)
       minimum-suggestion-height
-      10)))
+      30)))
 
 (register-handler :animate-show-response
   [(after #(dispatch [:command-edit-mode]))]
@@ -64,7 +64,17 @@
           under-middle-position? (<= current middle-height)
           over-middle-position? (not under-middle-position?)
           suggestions (get-in db [suggestions-key current-chat-id])
+          old-fixed (get-in db [:animations height-key])
+
           new-fixed (cond (not suggestions)
+                          (minimum db)
+
+                          (and (nil? vy) (nil? current)
+                               (> old-fixed middle-height))
+                          max-height
+
+                          (and (nil? vy) (nil? current)
+                               (< old-fixed middle-height))
                           (minimum db)
 
                           (and under-middle-position? moving-up?)
@@ -82,11 +92,18 @@
           (assoc-in [:animations height-key] new-fixed)
           (update-in [:animations height-signal-key] inc)))))
 
+(defn commands-min-height
+  [{:keys [current-chat-id] :as db}]
+  (let [suggestions (get-in db [:command-suggestions current-chat-id])]
+    (if (seq suggestions)
+      minimum-command-suggestions-height
+      0.1)))
+
 (register-handler :fix-commands-suggestions-height
   (fix-height :command-suggestions-height
               :commands-height-changed
               :command-suggestions
-              (constantly minimum-command-suggestions-height)))
+              commands-min-height))
 
 (register-handler :fix-response-height
   (fix-height :to-response-height
