@@ -80,25 +80,6 @@
   (->> (when command (name command))
        (str "request-")))
 
-;; todo remove (merging leftover)
-#_(defview message-content-command-request
-  [{:keys [msg-id content from incoming-group]}]
-  [commands [:get-responses]]
-  (let [{:keys [command content]} (parse-command-request commands content)]
-    [touchable-highlight {:onPress             #(set-chat-command msg-id command)
-                          :accessibility-label (label command)}
-     [view st/comand-request-view
-      [view st/command-request-message-view
-       (when incoming-group
-         [text {:style st/command-request-from-text} from])
-       [text {:style st/style-message-text} content]]
-      [view (st/command-request-image-view command)
-       [image {:source {:uri (:icon command)}
-               :style  st/command-request-image}]]
-      (when-let [request-text (:request-text command)]
-        [view st/command-request-text-view
-         [text {:style st/style-sub-text} request-text]])]]))
-
 (defn message-view
   [message content]
   [view (st/message-view message)

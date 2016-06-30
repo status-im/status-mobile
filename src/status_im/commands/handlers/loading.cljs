@@ -1,7 +1,6 @@
 (ns status-im.commands.handlers.loading
   (:require-macros [status-im.utils.slurp :refer [slurp]])
-  (:require [re-frame.core :refer [register-handler after dispatch subscribe
-                                   trim-v debug]]
+  (:require [re-frame.core :refer [after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [http-get toast]]
             [clojure.string :as s]
@@ -91,13 +90,13 @@
 (reg-handler ::fetch-commands! (u/side-effect! fetch-commands!))
 
 (reg-handler ::validate-hash
-             (after dispatch-loaded!)
-             validate-hash)
+  (after dispatch-loaded!)
+  validate-hash)
 
 (reg-handler ::parse-commands! (u/side-effect! parse-commands!))
 
 (reg-handler ::add-commands
-             (after save-commands-js!)
-             add-commands)
+  (after save-commands-js!)
+  add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))
