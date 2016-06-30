@@ -29,9 +29,7 @@
                                           :status  "open"})
                      (realm/sorted :added :desc)
                      (realm/collection->map))
-        requests' (->> requests
-                       (map #(update % :type keyword))
-                       (into '()))]
+        requests' (map #(update % :type keyword) requests)]
     (assoc-in db [:chats chat-id' :requests] requests')))
 
 (register-handler :add-request

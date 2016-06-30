@@ -37,8 +37,11 @@
      [text {:style st/request-message-info}
       "By console, today at 14:50"]]]])
 
-(defn render-request-row [row _ _]
-  (list-item [request-item row]))
+(defn render-request-row
+  [{:keys [chat-id message-id] :as row} _ _]
+  (list-item
+    ^{:key [chat-id message-id]}
+    [request-item row]))
 
 (defn suggestion-list-item
   [[command {:keys [description]

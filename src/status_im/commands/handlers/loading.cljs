@@ -91,13 +91,13 @@
 (reg-handler ::fetch-commands! (u/side-effect! fetch-commands!))
 
 (reg-handler ::validate-hash
-             (after dispatch-loaded!)
-             validate-hash)
+  (after dispatch-loaded!)
+  validate-hash)
 
 (reg-handler ::parse-commands! (u/side-effect! parse-commands!))
 
 (reg-handler ::add-commands
-             (after save-commands-js!)
-             add-commands)
+  (after save-commands-js!)
+  add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))
