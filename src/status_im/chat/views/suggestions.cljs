@@ -71,8 +71,8 @@
   [suggestions [:get-suggestions]
    requests [:get-requests]]
   [scroll-view
-   (when requests [title "Requests"])
-   (when requests
+   (when (seq requests) [title "Requests"])
+   (when (seq requests)
      [view
       [list-view {:dataSource                (to-datasource requests)
                   :keyboardShouldPersistTaps true

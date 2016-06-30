@@ -137,7 +137,7 @@
   (let [q (to-query schema-name :eq field value)]
     (.filtered (.objects realm (name schema-name)) q)))
 
-(defn get-by-fieds [schema-name fields]
+(defn get-by-fields [schema-name fields]
   (let [queries (map (fn [[k v]]
                        (to-query schema-name :eq k v))
                      fields)]
