@@ -15,7 +15,7 @@
           (update db :accounts assoc address account))
       ((after save-account))))
 
-(defn account-created [result]
+(defn account-created [result password]
   (let [data (json->clj result)
         public-key (:pubkey data)
         address (:address data)
@@ -24,10 +24,16 @@
     (log/debug "Created account: " result)
     (when (not (str/blank? public-key))
       (do
+        (dispatch [:login-account address password])
         (dispatch [:initialize-protocol account])
         (dispatch [:add-account account])))))
 
 (register-handler :create-account
   (-> (fn [db [_ password]]
-          (.createAccount geth password (fn [result] (account-created result)))
+          (.createAccount geth password (fn [result] (account-created result password)))
         db)))
+
+(register-handler :login-account
+                  (-> (fn [db [_ address password]]
+                        (.login geth address password (fn [result] (log/debug "Logged in account: " address result)))
+                        db)))

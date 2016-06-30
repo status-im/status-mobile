@@ -8,7 +8,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
-import com.github.ethereum.go_ethereum.Statusgo;
+import com.github.status_im.status_go.Statusgo;
 
 import java.io.File;
 
