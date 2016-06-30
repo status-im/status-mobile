@@ -3,8 +3,7 @@
             [status-im.db :as db]
             [status-im.models.commands :refer [get-commands
                                                get-chat-command-request
-                                               get-chat-command-to-msg-id
-                                               clear-staged-commands]]
+                                               get-chat-command-to-msg-id]]
             [status-im.utils.utils :refer [log on-error http-get]]
             [clojure.string :as s]))
 
@@ -39,15 +38,6 @@
       (fn []
         (command-handler to-msg-id command-key content)))))
 
-(defn apply-staged-commands [db]
-  (let [staged-commands (get-in db (db/chat-staged-commands-path
-                                     (:current-chat-id db)))]
-    (dorun (map (fn [staged-command]
-                  (when-let [handler (:handler staged-command)]
-                    (handler)))
-                staged-commands))
-    (clear-staged-commands db)))
-
 (defn check-suggestion [db message]
   (when-let [suggestion-text (when (string? message)
                                (re-matches #"^![^\s]+\s" message))]
@@ -60,7 +50,3 @@
   (-> db
       (get-in [:chats (:current-chat-id db) :input-text])
       suggestion?))
-
-(defn switch-command-suggestions [db]
-  (let [text (if (typing-command? db) nil "!")]
-    (assoc-in db [:chats (:current-chat-id db) :input-text] text)))

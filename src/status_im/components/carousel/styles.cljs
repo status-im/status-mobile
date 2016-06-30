@@ -14,7 +14,7 @@
   {:flex 1})
 
 (defn content-container [sneak gap]
-  {:paddingLeft (+ sneak (quot gap 2))
+  {:paddingLeft (+ 0 (quot gap 2))
    :paddingRight (+ sneak (quot gap 2))})
 
 (defn page [page-width margin]

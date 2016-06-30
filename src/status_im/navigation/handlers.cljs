@@ -25,8 +25,10 @@
 
 (register-handler :navigate-to
   (enrich preload-data!)
-  (fn [db [_ view-id]]
-    (push-view db view-id)))
+  (fn [{:keys [view-id] :as db} [_ new-view-id]]
+    (if (= view-id new-view-id)
+      db
+      (push-view db new-view-id))))
 
 (register-handler :navigation-replace
   (enrich preload-data!)

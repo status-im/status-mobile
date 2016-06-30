@@ -78,9 +78,10 @@
        (into {})))
 
 (defn add-identity [contacts-by-hash contacts]
-  (map (fn [{:keys [phone-number-hash whisper-identity]}]
+  (map (fn [{:keys [phone-number-hash whisper-identity address]}]
          (let [contact (contacts-by-hash phone-number-hash)]
-           (assoc contact :whisper-identity whisper-identity)))
+           (assoc contact :whisper-identity whisper-identity
+                          :address address)))
        (js->clj contacts)))
 
 (defn request-stored-contacts [contacts]

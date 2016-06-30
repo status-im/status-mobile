@@ -39,7 +39,7 @@
                     :address    address
                     :name       address
                     :photo-path (identicon public-key)}]
-    (log/debug "account-created: " account)
+    (log/debug "account-created")
     (when (not (str/blank? public-key))
       (do
         (dispatch-sync [:add-account account])
@@ -90,7 +90,7 @@
 (defn logged-in [db address]
   (let [is-login-screen? (= (:view-id db) :login)
         new-account? (not is-login-screen?)]
-    (log/debug "Logged in: " address)
+    (log/debug "Logged in: ")
     (realm/change-account-realm address new-account?
                                 #(if (nil? %)
                                    (initialize-account db address)
@@ -98,16 +98,17 @@
 
 (register-handler
   :login-account
-  (-> (fn [db [_ address password]]
-        (geth/login address password (fn [result]
-                                       (let [data (json->clj result)
-                                             error (:error data)
-                                             success (zero? (count error))]
-                                         (log/debug "Logged in account: " address result)
-                                         (if success
-                                           (logged-in db address)
-                                           (dispatch [:set-in [:login :error] error])))))
-        db)))
+  (u/side-effect!
+    (fn [db [_ address password]]
+      (geth/login address password
+                  (fn [result]
+                    (let [data (json->clj result)
+                          error (:error data)
+                          success (zero? (count error))]
+                      (log/debug "Logged in account: ")
+                      (if success
+                        (logged-in db address)
+                        (dispatch [:set-in [:login :error] error]))))))))
 
 (defn load-accounts! [db _]
   (let [accounts (->> (accounts/get-accounts)
@@ -120,7 +121,7 @@
 
 (defn console-create-account [db _]
   (let [msg-id (random/id)]
-    (dispatch [:received-msg
+    (dispatch [:received-message
                {:msg-id       msg-id
                 :content      {:command (name :keypair)
                                :content (label :t/keypair-generated)}

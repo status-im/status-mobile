@@ -260,3 +260,60 @@ status.command({
         type: status.types.TEXT
     }]
 });
+
+function validateBalance(params) {
+    try {
+        var val = web3.toWei(params.value, "ether");
+    } catch (err) {
+        return {
+            errors: [
+                status.components.validationMessage(
+                    "Amount",
+                    "Amount is not valid number"//err.message
+                )
+            ]
+        };
+    }
+    var balance = web3.eth.getBalance(params.command.address);
+    if (bn(val).greaterThan(bn(balance))) {
+        return {
+            errors: [
+                status.components.validationMessage(
+                    "Amount",
+                    "Not enough ETH on balance ("
+                    + web3.fromWei(balance, "ether")
+                    + " ETH)"
+                )
+            ]
+        };
+    }
+}
+
+function sendTransaction(params) {
+    var data = {
+        from: params.command.from,
+        to: params.command.to,
+        value: web3.toWei(params.value, "ether")
+    };
+    var hash = web3.eth.sendTransaction(data);
+
+    return {"transaction-hash": hash};
+}
+
+status.command({
+    name: "send",
+    color: "#5fc48d",
+    description: "Send transaction",
+    params: [{
+        name: "amount",
+        type: status.types.NUMBER
+    }],
+    preview: function (params) {
+        return status.components.text(
+            {},
+            params.value + " ETH"
+        );
+    },
+    handler: sendTransaction,
+    validator: validateBalance
+});

@@ -22,6 +22,7 @@ Command.prototype.create = function (com) {
     this.name = com.name;
     this.description = com.description;
     this.handler = com.handler;
+    this["has-handler"] = com.handler != null;
     this.validator = com.validator;
     this.color = com.color;
     this.icon = com.icon;
@@ -110,7 +111,7 @@ function validationMessage(titleText, descriptionText) {
     };
     var description = status.components.text(descriptionStyle, descriptionText);
 
-    var message = status.components.view(
+    return status.components.view(
         {
             backgroundColor: "red",
             height: 61,
@@ -119,8 +120,6 @@ function validationMessage(titleText, descriptionText) {
         },
         [title, description]
     );
-
-    return message;
 }
 
 var status = {

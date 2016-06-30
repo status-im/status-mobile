@@ -48,7 +48,7 @@
         suggestion? (get-in db [:has-suggestions? current-chat-id])
         custom-errors (get-in db [:custom-validation-errors current-chat-id])
         validation-height (if (or (seq errors) (seq custom-errors))
-                            request-info-height
+                            (+ suggestions-header-height request-info-height)
                             0)]
     (+ validation-height
        (if (= :response type)

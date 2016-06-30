@@ -23,7 +23,8 @@
     status-im.qr-scanner.handlers
     status-im.accounts.handlers
     status-im.protocol.handlers
-    [status-im.utils.datetime :as time]))
+    [status-im.utils.datetime :as time]
+    status-im.transactions.handlers))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -103,7 +104,7 @@
                                    (dispatch [:crypt-initialized]))))))))
 
 (defn node-started [db result]
-  (log/debug "Started Node: " result))
+  (log/debug "Started Node: "))
 
 (register-handler :initialize-geth
   (u/side-effect!
