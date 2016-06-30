@@ -1,9 +1,9 @@
 (ns status-im.persistence.realm
   (:require [cljs.reader :refer [read-string]]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.utils.logging :as log]
             [status-im.utils.types :refer [to-string]]
-            [status-im.utils.utils :as u])
+            [status-im.utils.utils :as u]
+            [clojure.string :as str])
   (:refer-clojure :exclude [exists?]))
 
 (def opts {:schema [{:name       :contacts
@@ -15,6 +15,13 @@
                                                      :optional true}
                                   :photo-path       {:type    "string"
                                                      :optinal true}}}
+                    {:name       :requests
+                     :properties {:message-id :string
+                                  :chat-id    :string
+                                  :type       :string
+                                  :status     {:type    :string
+                                               :default "open"}
+                                  :added      :date}}
                     {:name       :kv-store
                      :primaryKey :key
                      :properties {:key   "string"
@@ -34,7 +41,9 @@
                                   :delivery-status {:type     "string"
                                                     :optional true}
                                   :same-author     "bool"
-                                  :same-direction  "bool"}}
+                                  :same-direction  "bool"
+                                  :preview         {:type     :string
+                                                    :optional true}}}
                     {:name       :chat-contact
                      :properties {:identity   "string"
                                   :is-in-chat {:type    "bool"
@@ -51,7 +60,15 @@
                                   :timestamp   "int"
                                   :contacts    {:type       "list"
                                                 :objectType "chat-contact"}
+                                  :dapp-url    {:type     :string
+                                                :optional true}
+                                  :dapp-hash   {:type     :int
+                                                :optional true}
                                   :last-msg-id "string"}}
+                    {:name       :commands
+                     :primaryKey :chat-id
+                     :properties {:chat-id "string"
+                                  :file    "string"}}
                     {:name       :tag
                      :primaryKey :name
                      :properties {:name  "string"
@@ -94,12 +111,20 @@
   ([schema-name obj update?]
    (.create realm (to-string schema-name) (clj->js obj) update?)))
 
+(defn create-object
+  [schema-name obj]
+  (write (fn [] (create schema-name obj true))))
+
+(defn and-q [queries]
+  (str/join " and " queries))
+
 (defmulti to-query (fn [schema-name operator field value]
                      operator))
 
 (defmethod to-query :eq [schema-name operator field value]
   (let [value (to-string value)
-        query (str (name field) "=" (if (= "string" (field-type schema-name field))
+        query (str (name field) "=" (if (= "string" (name (field-type
+                                                           schema-name field)))
                                       (str "\"" value "\"")
                                       value))]
     query))
@@ -111,6 +136,12 @@
 (defn get-by-field [schema-name field value]
   (let [q (to-query schema-name :eq field value)]
     (.filtered (.objects realm (name schema-name)) q)))
+
+(defn get-by-fields [schema-name fields]
+  (let [queries (map (fn [[k v]]
+                       (to-query schema-name :eq k v))
+                     fields)]
+    (.filtered (.objects realm (name schema-name)) (and-q queries))))
 
 (defn get-all [schema-name]
   (.objects realm (to-string schema-name)))
@@ -158,3 +189,6 @@
 (defn collection->map [collection]
   (-> (.map collection (fn [object _ _] object))
       (js->clj :keywordize-keys true)))
+
+(defn get-one-by-field [schema-name field value]
+  (single-cljs (get-by-field schema-name field value)))

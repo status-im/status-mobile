@@ -1,6 +1,6 @@
 (ns status-im.group-settings.handlers
-  (:require [re-frame.core :refer [register-handler debug dispatch after
-                                   enrich]]
+  (:require [re-frame.core :refer [debug dispatch after enrich]]
+            [status-im.utils.handlers :refer [register-handler]]
             [status-im.persistence.realm :as r]
             [status-im.chat.handlers :refer [delete-messages!]]
             [status-im.protocol.api :as api]

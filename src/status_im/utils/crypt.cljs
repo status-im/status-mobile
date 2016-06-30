@@ -20,7 +20,7 @@
   (byteArrayToHex (.digest sha-256)))
 
 (defn gen-random-bytes [length cb]
-  #_(.randomBytes random-bytes length (fn [& [err buf]]
+  (.randomBytes random-bytes length (fn [& [err buf]]
                                       (if err
                                         (cb {:error err})
                                         (cb {:buffer buf})))))

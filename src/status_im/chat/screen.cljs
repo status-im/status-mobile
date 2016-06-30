@@ -3,6 +3,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as s]
             [status-im.components.react :refer [view
+                                                animated-view
                                                 text
                                                 image
                                                 icon
@@ -12,13 +13,17 @@
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action
                                                            chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
-            [status-im.utils.listview :refer [to-datasource]]
+            [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
+            [status-im.chat.views.suggestions :refer [suggestion-container]]
+            [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
-            [status-im.i18n :refer [label label-pluralize]]))
+            [status-im.i18n :refer [label label-pluralize]]
+            [status-im.components.animation :as anim]
+            [reagent.core :as r]))
 
 
 (defn contacts-by-identity [contacts]
@@ -36,10 +41,10 @@
                  :background-color background-color))))
 
 (defview chat-icon []
-  [chat-id    [:chat :chat-id]
+  [chat-id [:chat :chat-id]
    group-chat [:chat :group-chat]
-   name       [:chat :name]
-   color      [:chat :color]]
+   name [:chat :name]
+   color [:chat :color]]
   ;; TODO stub data ('online' property)
   [chat-icon-view-action chat-id group-chat name color true])
 
@@ -55,12 +60,12 @@
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
 
-(defn message-row [contact-by-identity group-chat]
+(defn message-row [contact-by-identity group-chat messages-count]
   (fn [row _ idx]
     (let [msg (-> row
                   (add-msg-color contact-by-identity)
                   (assoc :group-chat group-chat)
-                  (assoc :last-msg (zero? (js/parseInt idx))))]
+                  (assoc :last-msg (= (js/parseInt idx) (dec messages-count))))]
       (list-item [chat-message msg]))))
 
 (defn on-action-selected [position]
@@ -93,10 +98,10 @@
         subtitle])]]])
 
 (defview menu-item-icon-profile []
-  [chat-id    [:chat :chat-id]
+  [chat-id [:chat :chat-id]
    group-chat [:chat :group-chat]
-   name       [:chat :name]
-   color      [:chat :color]]
+   name [:chat :name]
+   color [:chat :color]]
   ;; TODO stub data ('online' property)
   [chat-icon-view-menu-item chat-id group-chat name color true])
 
@@ -135,12 +140,12 @@
                            :icon-style {:width  20
                                         :height 13}
                            :handler    #(dispatch [:show-group-settings])}]
-                         [{:title      (label :t/profile)
+                         [{:title       (label :t/profile)
                            :custom-icon [menu-item-icon-profile]
-                           :icon       :menu_group
-                           :icon-style {:width  25
-                                        :height 19}
-                           :handler    #(dispatch [:show-profile @chat-id])}
+                           :icon        :menu_group
+                           :icon-style  {:width  25
+                                         :height 19}
+                           :handler     #(dispatch [:show-profile @chat-id])}
                           {:title      (label :t/search-chat)
                            :subtitle   (label :t/not-implemented)
                            :icon       :search_gray_copy
@@ -216,18 +221,53 @@
   [messages [:chat :messages]
    contacts [:chat :contacts]]
   (let [contacts' (contacts-by-identity contacts)]
-    [list-view {:renderRow             (message-row contacts' group-chat)
-                :renderScrollComponent #(invertible-scroll-view (js->clj %))
-                :onEndReached          #(dispatch [:load-more-messages])
-                :enableEmptySections   true
-                :dataSource            (to-datasource messages)}]))
+    [list-view {:renderRow                 (message-row contacts' group-chat (count messages))
+                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
+                :onEndReached              #(dispatch [:load-more-messages])
+                :enableEmptySections       true
+                :keyboardShouldPersistTaps true
+                :dataSource                (to-datasource-inverted messages)}]))
+
+(defn messages-container-animation-logic
+  [{:keys [offset val]}]
+  (fn [_]
+    (anim/start (anim/spring val {:toValue @offset}))))
+
+(defn messages-container [messages]
+  (let [offset (subscribe [:messages-offset])
+        messages-offset (anim/create-value 0)
+        context {:offset offset
+                 :val    messages-offset}
+        on-update (messages-container-animation-logic context)]
+    (r/create-class
+      {:component-did-mount
+       on-update
+       :component-did-update
+       on-update
+       :reagent-render
+       (fn [messages]
+         @offset
+         [animated-view {:style (st/messages-container messages-offset)}
+          messages])})))
 
 (defview chat []
   [group-chat [:chat :group-chat]
-   show-actions-atom [:show-actions]]
-  [view st/chat-view
+   show-actions-atom [:show-actions]
+   command [:get-chat-command]
+   command? [:command?]
+   suggestions [:get-suggestions]
+   to-msg-id [:get-chat-command-to-msg-id]
+   layout-height [:get :layout-height]]
+  [view {:style    st/chat-view
+         :onLayout (fn [event]
+                     (let [height (.. event -nativeEvent -layout -height)]
+                       (when (not= height layout-height)
+                         (dispatch [:set-layout-height height]))))}
    [chat-toolbar]
-   [messages-view group-chat]
+   [messages-container
+    [messages-view group-chat]]
    (when group-chat [typing-all])
+   [response-view]
+   (when-not command? [suggestion-container])
    [chat-message-new]
    (when show-actions-atom [actions-view])])

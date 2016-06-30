@@ -72,6 +72,10 @@
    :contacts                              "Contacts"
    :no-name                               "Noname"
    :new-contact                           "New Contact"
+   :show-all                              "SHOW ALL"
+   :contacs-group-dapps                   "Dapps"
+   :contacs-group-people                  "People"
+   :no-contacts                           "No contacts yet"
 
    ;group-settings
    :remove                                "Remove"
@@ -92,7 +96,7 @@
    :location-command-description          "Send location"
    :phone-command-description             "Send phone number"
    :phone-request-text                    "Phone number request"
-   :confirmation-code-coomand-description "Send confirmation code"
+   :confirmation-code-command-description "Send confirmation code"
    :confirmation-code-request-text        "Confirmation code request"
    :send-command-description              "Send location"
    :request-command-description           "Send request"
@@ -127,6 +131,6 @@
    :login                                 "Login"
 
    ;users
-   :add-account                                 "Add account"
+   :add-account                           "Add account"
 
    })

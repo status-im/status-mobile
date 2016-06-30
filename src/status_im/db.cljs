@@ -1,5 +1,7 @@
 (ns status-im.db
-  (:require [schema.core :as s :include-macros true]))
+  (:require [schema.core :as s :include-macros true]
+            [status-im.components.react :refer [animated]]
+            [status-im.components.animation :as anim]))
 
 ;; schema of app-db
 (def schema {:greeting s/Str})
@@ -34,7 +36,10 @@
                                       :address          ""
                                       :whisper-identity ""
                                       :phone-number     ""}
-             :disable-group-creation false})
+             :disable-group-creation false
+             :animations             {:to-response-height           0.1
+                                      ;; todo clear this
+                                      :tabs-bar-value               (anim/create-value 0)}})
 
 (def protocol-initialized-path [:protocol-initialized])
 (defn chat-input-text-path [chat-id]

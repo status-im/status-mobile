@@ -1,31 +1,26 @@
 (ns status-im.contacts.views.contact-inner
   (:require [clojure.string :as s]
             [status-im.components.react :refer [view image text]]
-            [status-im.resources :as res]
+            [status-im.components.chat-icon.screen :refer [contact-icon-contacts-tab]]
             [status-im.contacts.styles :as st]
             [status-im.i18n :refer [label]]))
 
-(defn contact-photo [{:keys [photo-path]}]
+(defn contact-photo [contact]
   [view st/contact-photo-container
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
-           :style  st/photo-image}]])
+   [contact-icon-contacts-tab contact]])
 
-(defn contact-online [{:keys [online]}]
-  (when online
-    [view st/online-container
-     [view st/online-dot-left]
-     [view st/online-dot-right]]))
-
-(defn contact-inner-view [{:keys [name photo-path online]}]
-  [view st/contact-container
-   [view st/photo-container
-    [contact-photo {:photo-path photo-path}]
-    [contact-online {:online online}]]
-   [view st/name-container
-    [text {:style st/name-text}
-     (if (pos? (count name))
-       name
-       ;; todo is this correct behaviour?
-       (label :t/no-name))]]])
+(defn contact-inner-view
+  ([contact]
+   (contact-inner-view contact nil))
+  ([{:keys [name] :as contact} info]
+   [view st/contact-inner-container
+    [contact-photo contact]
+    [view st/info-container
+     [text {:style st/name-text}
+      (if (pos? (count (:name contact)))
+        name
+        ;; todo is this correct behaviour?
+        (label :t/no-name))]
+     (when info
+       [text {:style st/info-text}
+        info])]]))

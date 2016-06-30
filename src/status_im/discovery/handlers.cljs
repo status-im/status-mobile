@@ -1,5 +1,6 @@
 (ns status-im.discovery.handlers
-  (:require [re-frame.core :refer [register-handler after dispatch enrich]]
+  (:require [re-frame.core :refer [after dispatch enrich]]
+            [status-im.utils.handlers :refer [register-handler]]
             [status-im.protocol.api :as api]
             [status-im.navigation.handlers :as nav]
             [status-im.discovery.model :as discoveries]
