@@ -1,5 +1,6 @@
 (ns status-im.qr-scanner.handlers
-  (:require [re-frame.core :refer [register-handler after dispatch debug enrich]]
+  (:require [re-frame.core :refer [after dispatch debug enrich]]
+            [status-im.utils.handlers :refer [register-handler]]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.handlers :as u]))
 

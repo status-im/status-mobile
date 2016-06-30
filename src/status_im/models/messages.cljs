@@ -56,7 +56,7 @@
              (r/collection->map))
          (into '())
          reverse
-         (map (fn [{:keys [content-type] :as message}]
+         (keep (fn [{:keys [content-type] :as message}]
                 (if (command-type? content-type)
                   (update message :content str-to-map)
                   message))))))
