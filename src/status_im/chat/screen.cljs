@@ -18,8 +18,7 @@
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
-            [status-im.chat.views.content-suggestions :refer [content-suggestions-view]]
-            [status-im.chat.views.suggestions :refer [suggestions-view]]
+            [status-im.chat.views.suggestions :refer [suggestion-container]]
             [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
             [status-im.i18n :refer [label label-pluralize]]
@@ -42,10 +41,10 @@
                  :background-color background-color))))
 
 (defview chat-icon []
-  [chat-id    [:chat :chat-id]
+  [chat-id [:chat :chat-id]
    group-chat [:chat :group-chat]
-   name       [:chat :name]
-   color      [:chat :color]]
+   name [:chat :name]
+   color [:chat :color]]
   ;; TODO stub data ('online' property)
   [chat-icon-view-action chat-id group-chat name color true])
 
@@ -99,10 +98,10 @@
         subtitle])]]])
 
 (defview menu-item-icon-profile []
-  [chat-id    [:chat :chat-id]
+  [chat-id [:chat :chat-id]
    group-chat [:chat :group-chat]
-   name       [:chat :name]
-   color      [:chat :color]]
+   name [:chat :name]
+   color [:chat :color]]
   ;; TODO stub data ('online' property)
   [chat-icon-view-menu-item chat-id group-chat name color true])
 
@@ -141,12 +140,12 @@
                            :icon-style {:width  20
                                         :height 13}
                            :handler    #(dispatch [:show-group-settings])}]
-                         [{:title      (label :t/profile)
+                         [{:title       (label :t/profile)
                            :custom-icon [menu-item-icon-profile]
-                           :icon       :menu_group
-                           :icon-style {:width  25
-                                        :height 19}
-                           :handler    #(dispatch [:show-profile @chat-id])}
+                           :icon        :menu_group
+                           :icon-style  {:width  25
+                                         :height 19}
+                           :handler     #(dispatch [:show-profile @chat-id])}
                           {:title      (label :t/search-chat)
                            :subtitle   (label :t/not-implemented)
                            :icon       :search_gray_copy
@@ -219,30 +218,26 @@
                 :custom-action  [toolbar-action]}])))
 
 (defview messages-view [group-chat]
-         [messages [:chat :messages]
-          contacts [:chat :contacts]]
-         (let [contacts' (contacts-by-identity contacts)]
-           [list-view {:renderRow                 (message-row contacts' group-chat (count messages))
-                       :renderScrollComponent     #(invertible-scroll-view (js->clj %))
-                       :onEndReached              #(dispatch [:load-more-messages])
-                       :enableEmptySections       true
-                       :keyboardShouldPersistTaps true
-                       :dataSource                (to-datasource-inverted messages)}]))
+  [messages [:chat :messages]
+   contacts [:chat :contacts]]
+  (let [contacts' (contacts-by-identity contacts)]
+    [list-view {:renderRow                 (message-row contacts' group-chat (count messages))
+                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
+                :onEndReached              #(dispatch [:load-more-messages])
+                :enableEmptySections       true
+                :keyboardShouldPersistTaps true
+                :dataSource                (to-datasource-inverted messages)}]))
 
-(defn messages-container-animation-logic [{:keys [to-value val]}]
+(defn messages-container-animation-logic
+  [{:keys [offset val]}]
   (fn [_]
-    (let [to-value @to-value]
-      (anim/start (anim/spring val {:toValue to-value})
-                  (fn [arg]
-                    (when (.-finished arg)
-                      (dispatch [:set-animation ::messages-offset-current to-value])))))))
+    (anim/start (anim/spring val {:toValue @offset}))))
 
 (defn messages-container [messages]
-  (let [to-messages-offset (subscribe [:animations :messages-offset])
-        cur-messages-offset (subscribe [:animations ::messages-offset-current])
-        messages-offset (anim/create-value (or @cur-messages-offset 0))
-        context {:to-value to-messages-offset
-                 :val      messages-offset}
+  (let [offset (subscribe [:messages-offset])
+        messages-offset (anim/create-value 0)
+        context {:offset offset
+                 :val    messages-offset}
         on-update (messages-container-animation-logic context)]
     (r/create-class
       {:component-did-mount
@@ -251,7 +246,7 @@
        on-update
        :reagent-render
        (fn [messages]
-         @to-messages-offset
+         @offset
          [animated-view {:style (st/messages-container messages-offset)}
           messages])})))
 
@@ -260,16 +255,19 @@
    show-actions-atom [:show-actions]
    command [:get-chat-command]
    command? [:command?]
-   to-msg-id [:get-chat-command-to-msg-id]]
-  [view {:style st/chat-view
+   suggestions [:get-suggestions]
+   to-msg-id [:get-chat-command-to-msg-id]
+   layout-height [:get :layout-height]]
+  [view {:style    st/chat-view
          :onLayout (fn [event]
                      (let [height (.. event -nativeEvent -layout -height)]
-                       (dispatch [:set-response-max-height height])))}
+                       (when (not= height layout-height)
+                         (dispatch [:set-layout-height height]))))}
    [chat-toolbar]
    [messages-container
     [messages-view group-chat]]
    (when group-chat [typing-all])
    [response-view]
-   (when-not command? [suggestions-view])
+   (when-not command? [suggestion-container])
    [chat-message-new]
    (when show-actions-atom [actions-view])])

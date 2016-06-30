@@ -9,11 +9,24 @@
    :justifyContent :center})
 
 (defn message-input-button [scale]
-  {:transform [{:scale scale}]})
+  {:transform [{:scale scale}]
+   :width 24
+   :height 24
+   :alignItems     :center
+   :justifyContent :center})
 
 (def list-icon
-  {:width  13
-   :height 12})
+  {:width  16
+   :height 16})
+
+(def requests-icon
+  {:background-color :#7099e6
+   :width            8
+   :height           8
+   :border-radius    8
+   :left 0
+   :top 0
+   :position :absolute})
 
 (def close-icon
   {:width  12

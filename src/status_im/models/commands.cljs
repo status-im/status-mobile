@@ -7,72 +7,14 @@
             [status-im.components.styles :refer [color-blue color-dark-mint]]
             [status-im.i18n :refer [label]]))
 
-;; todo delete
-(def commands [{:command      :money
-                :text         "!money"
-                :description  (label :t/money-command-description)
-                :color        color-dark-mint
-                :request-icon {:uri "icon_lock_white"}
-                :icon         {:uri "icon_lock_gray"}
-                :suggestion   true}
-               {:command     :location
-                :text        "!location"
-                :description (label :t/location-command-description)
-                :color       "#9a5dcf"
-                :suggestion  true}
-               {:command      :phone
-                :text         "!phone"
-                :description  (label :t/phone-command-description)
-                :color        color-dark-mint
-                :request-text (label :t/phone-request-text)
-                :suggestion   true
-                :handler      #(dispatch [:sign-up %])}
-               {:command      :confirmation-code
-                :text         "!confirmationCode"
-                :description  (label :t/confirmation-code-command-description)
-                :request-text (label :t/confirmation-code-request-text)
-                :color        color-blue
-                :request-icon {:uri "icon_lock_white"}
-                :icon         {:uri "icon_lock_gray"}
-                :suggestion   true
-                :handler      #(dispatch [:sign-up-confirm %])}
-               {:command     :send
-                :text        "!send"
-                :description (label :t/send-command-description)
-                :color       "#9a5dcf"
-                :suggestion  true}
-               {:command     :request
-                :text        "!request"
-                :description (label :t/request-command-description)
-                :color       "#48ba30"
-                :suggestion  true}
-               {:command      :keypair-password
-                :text         "!keypair-password"
-                :description  (label :t/keypair-password-command-description)
-                :color        color-blue
-                :request-icon {:uri "icon_lock_white"}
-                :icon         {:uri "icon_lock_gray"}
-                :suggestion   false
-                :handler      #(dispatch [:save-password %])}
-               {:command     :help
-                :text        "!help"
-                :description (label :t/help-command-description)
-                :color       "#9a5dcf"
-                :suggestion  true}])
+(defn get-commands [{:keys [current-chat-id] :as db}]
+  (or (get-in db [:chats current-chat-id :commands]) {}))
 
-(defn get-commands [db]
-  ;; todo: temp. must be '(get db :commands)'
-  ;; (get db :commands)
-  commands)
-
-(defn set-commands [db commands]
-  (assoc db :commands commands))
-
-;; todo delete
-(def suggestions (filterv :suggestion commands))
-
-(defn get-command [db command-key]
-  (first (filter #(= command-key (:command %)) (get-commands db))))
+(defn get-command [{:keys [current-chat-id] :as db} command-key]
+  ((or (->> (get-in db [:chats current-chat-id])
+            ((juxt :commands :responses))
+            (apply merge))
+       {}) command-key))
 
 (defn find-command [commands command-key]
   (first (filter #(= command-key (:command %)) commands)))
@@ -92,9 +34,10 @@
 (defn set-response-chat-command
   [{:keys [current-chat-id] :as db} msg-id command-key]
   (update-in db [:chats current-chat-id :command-input] merge
-             {:content   nil
-              :command   (get-command db command-key)
-              :to-msg-id msg-id}))
+             {:content       nil
+              :command       (get-command db command-key)
+              :parameter-idx 0
+              :to-msg-id     msg-id}))
 
 (defn set-chat-command [db command-key]
   (set-response-chat-command db nil command-key))
@@ -130,7 +73,7 @@
              #(assoc % msg-id handler)))
 
 (defn parse-command-msg-content [commands content]
-  (update content :command #(find-command commands (keyword %))))
+  (update content :command #((keyword %) commands)))
 
 (defn parse-command-request [commands content]
-  (update content :command #(find-command commands (keyword %))))
+  (update content :command #((keyword %) commands)))

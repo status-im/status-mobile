@@ -16,7 +16,7 @@
 
 (defn get-content-suggestions [command text]
   (or (when command
-        (when-let [command-suggestions ((:command command) suggestions)]
+        (when-let [command-suggestions ((keyword (:name command)) suggestions)]
           (filterv (fn [s]
                      (or (:header s)
                          (and (.startsWith (:value s) (or text ""))

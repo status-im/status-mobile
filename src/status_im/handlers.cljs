@@ -1,26 +1,32 @@
 (ns status-im.handlers
   (:require
-    [re-frame.core :refer [register-handler after dispatch debug]]
+    [re-frame.core :refer [after dispatch debug]]
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
     [status-im.persistence.simple-kv-store :as kv]
     [status-im.protocol.state.storage :as storage]
-    [status-im.models.commands :refer [set-commands]]
-    [status-im.chat.suggestions :refer [load-commands]]
     [status-im.utils.logging :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
+<<<<<<< HEAD
     [status-im.utils.handlers :as u]
     [status-im.components.react :refer [geth]]
+=======
+    [status-im.utils.handlers :refer [register-handler] :as u]
+>>>>>>> origin/develop
     status-im.chat.handlers
+    status-im.chat.handlers.animation
     status-im.group-settings.handlers
     status-im.navigation.handlers
     status-im.contacts.handlers
     status-im.discovery.handlers
     status-im.new-group.handlers
     status-im.participants.handlers
+    status-im.commands.handlers.loading
+    status-im.commands.handlers.jail
     status-im.qr-scanner.handlers
     status-im.accounts.handlers
-    status-im.protocol.handlers))
+    status-im.protocol.handlers
+    status-im.chat.handlers.requests))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -41,16 +47,12 @@
 (defn set-el [db [_ k v]]
   (assoc db k v))
 
-(register-handler :set
-  debug
-  set-el)
+(register-handler :set set-el)
 
 (defn set-in [db [_ path v]]
   (assoc-in db path v))
 
-(register-handler :set-in
-  debug
-  set-in)
+(register-handler :set-in set-in)
 
 (register-handler :set-animation
   (fn [db [_ k v]]
@@ -86,17 +88,6 @@
   (u/side-effect!
     (fn [_ _]
       (log/debug "crypt initialized"))))
-
-(register-handler :load-commands
-  (u/side-effect!
-    (fn [_ [action]]
-      (log/debug action)
-      (load-commands))))
-
-(register-handler :set-commands
-  (fn [db [action commands]]
-    (log/debug action commands)
-    (set-commands db commands)))
 
 ;; -- User data --------------------------------------------------------------
 (register-handler :load-user-phone-number

@@ -1,11 +1,12 @@
 (ns status-im.chat.views.message
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.components.react :refer [view
-                                                animated-view
                                                 text
                                                 image
+                                                animated-view
                                                 touchable-highlight]]
             [status-im.components.animation :as anim]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
@@ -55,24 +56,29 @@
     [view st/track-mark]
     [text {:style st/track-duration-text} "03:39"]]])
 
-(defn message-content-command [content]
-  (let [commands-atom (subscribe [:get-commands])]
-    (fn [content]
-      (let [commands @commands-atom
-            {:keys [command content]}
-            (parse-command-msg-content commands content)]
-        [view st/content-command-view
-         [view st/command-container
-          [view (st/command-view command)
-           [text {:style st/command-name}
-            (:text command)]]]
-         [image {:source (:icon command)
-                 :style  st/command-image}]
-         [text {:style st/command-text}
-          ;; TODO isn't smart
-          (if (= (:command command) :keypair-password)
-            "******"
-            content)]]))))
+(defview message-content-command [content preview]
+  [commands [:get-commands-and-responses]]
+  (let [{:keys [command content]} (parse-command-msg-content commands content)
+        {:keys [name icon type]} command]
+    [view st/content-command-view
+     [view st/command-container
+      [view (st/command-view command)
+       [text {:style st/command-name}
+        (str (if (= :command type) "!" "") name)]]]
+     (when icon
+       [view st/command-image-view
+        [image {:source {:uri icon}
+                :style  st/command-image}]])
+     (if preview
+       preview
+       [text {:style st/command-text} content])]))
+
+(defn set-chat-command [msg-id command]
+  (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
+
+(defn label [{:keys [command]}]
+  (->> (when command (name command))
+       (str "request-")))
 
 (defn message-view
   [message content]
@@ -103,9 +109,9 @@
   [message-content-status message])
 
 (defmethod message-content content-type-command
-  [wrapper {:keys [content] :as message}]
+  [wrapper {:keys [content rendered-preview] :as message}]
   [wrapper message
-   [message-view message [message-content-command content]]])
+   [message-view message [message-content-command content rendered-preview]]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]
