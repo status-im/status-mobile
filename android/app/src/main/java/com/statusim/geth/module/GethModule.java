@@ -8,11 +8,14 @@ import com.statusim.geth.service.ConnectorHandler;
 import com.statusim.geth.service.GethConnector;
 import com.statusim.geth.service.GethMessages;
 import com.statusim.geth.service.GethService;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class GethModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
+
+    private static final String TAG = "GethModule";
 
     protected GethConnector geth = null;
     protected String handlerIdentifier = createIdentifier();
@@ -81,15 +84,20 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
     @Override
     public boolean handleMessage(Message message) {
 
+        Log.d(TAG, "Received message: " + message.toString());
         boolean isClaimed = true;
         Bundle data = message.getData();
         String callbackIdentifier = data.getString(GethConnector.CALLBACK_IDENTIFIER);
+        Log.d(TAG, "callback identifier: " + callbackIdentifier);
         Callback callback = null;
         switch (message.what) {
             case GethMessages.MSG_NODE_STARTED:
+                Log.d(TAG, "handle startNodeCallbacks size: " + startNodeCallbacks.size());
                 callback = startNodeCallbacks.remove(callbackIdentifier);
                 if (callback != null) {
-                    callback.invoke(null);
+                    callback.invoke(true);
+                } else {
+                    Log.d(TAG, "Could not find callback: " + callbackIdentifier);
                 }
                 break;
             case GethMessages.MSG_NODE_STOPPED:
@@ -97,7 +105,7 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
             case GethMessages.MSG_ACCOUNT_CREATED:
                 callback = createAccountCallbacks.remove(callbackIdentifier);
                 if (callback != null) {
-                    callback.invoke(null, "{ \"address\": \"" + data.getString("address") + "\"}");
+                    callback.invoke(data.getString("data"));
                 }
                 break;
             case GethMessages.MSG_ACCOUNT_ADDED:
@@ -106,7 +114,7 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
                     callback.invoke(null, "{ \"address\": \"" + data.getString("address") + "\"}");
                 }
                 break;
-            case GethMessages.MSG_ACCOUNT_UNLOCKED:
+            case GethMessages.MSG_LOGGED_IN:
                 callback = unlockAccountCallbacks.remove(callbackIdentifier);
                 if (callback != null) {
                     callback.invoke(null, "{ \"result\": \"" + data.getString("result") + "\"}");
@@ -135,13 +143,15 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
         }
 
         String callbackIdentifier = createIdentifier();
+        Log.d(TAG, "Created callback identifier: " + callbackIdentifier);
         startNodeCallbacks.put(callbackIdentifier, callback);
+        Log.d(TAG, "startNodeCallbacks size: " + startNodeCallbacks.size());
 
         geth.startNode(callbackIdentifier);
     }
 
     @ReactMethod
-    public void unlockAccount(String address, String password, Callback callback) {
+    public void login(String address, String password, Callback callback) {
 
         Activity currentActivity = getCurrentActivity();
 
@@ -158,11 +168,11 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
         String callbackIdentifier = createIdentifier();
         unlockAccountCallbacks.put(callbackIdentifier, callback);
 
-        geth.unlockAccount(callbackIdentifier, address, password);
+        geth.login(callbackIdentifier, address, password);
     }
 
     @ReactMethod
-    public void createAccount(Callback callback) {
+    public void createAccount(String password, Callback callback) {
 
         Activity currentActivity = getCurrentActivity();
 
@@ -179,7 +189,7 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
         String callbackIdentifier = createIdentifier();
         createAccountCallbacks.put(callbackIdentifier, callback);
 
-        geth.createAccount(callbackIdentifier);
+        geth.createAccount(callbackIdentifier, password);
     }
 
     @ReactMethod

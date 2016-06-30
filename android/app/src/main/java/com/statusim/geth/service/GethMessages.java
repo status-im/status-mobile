@@ -26,12 +26,12 @@ public class GethMessages {
     /**
      * Unlock an account
      */
-    public static final int MSG_UNLOCK_ACCOUNT = 5;
+    public static final int MSG_LOGIN = 5;
 
     /**
      * Account unlocked event
      */
-    public static final int MSG_ACCOUNT_UNLOCKED = 6;
+    public static final int MSG_LOGGED_IN = 6;
 
     /**
      * Create an account

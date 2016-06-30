@@ -17,8 +17,8 @@
 
 (register-handler :initialize-protocol
   (u/side-effect!
-    (fn [db [_]]
-      (init-protocol (make-handler db)))))
+    (fn [db [_ public-key]]
+      (init-protocol public-key (make-handler db)))))
 
 (register-handler :protocol-initialized
   (fn [db [_ identity]]

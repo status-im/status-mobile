@@ -52,17 +52,17 @@ public class ServiceConnector {
         public void handleMessage(Message message) {
 
             boolean isClaimed = false;
-            if (message.obj != null) {
-                String identifier = ((Bundle) message.obj).getString("identifier");
-                if (identifier != null) {
+            //if (message.obj != null) {
+              //  String identifier = ((Bundle) message.obj).getString("identifier");
+                //if (identifier != null) {
 
                     for (ConnectorHandler handler : handlers) {
-                        if (identifier.equals(handler.getID())) {
+                //        if (identifier.equals(handler.getID())) {
                             isClaimed = handler.handleMessage(message);
-                        }
+                  //      }
                     }
-                }
-            }
+              //  }
+            //}
             if (!isClaimed) {
                 super.handleMessage(message);
             }
