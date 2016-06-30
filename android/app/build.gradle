@@ -131,8 +131,9 @@ dependencies {
     compile project(':react-native-linear-gradient')
     compile project(':ReactNativeAndroidSmsListener')
     compile project(':react-native-camera')
-//    compile(name:'geth', ext:'aar')
-    compile(group: 'status-im', name: 'android-geth', version: '1.4.0-201604110816-a97a114', ext: 'aar')
+    compile project(':react-native-status')
+    compile project(':react-native-orientation')
+    compile(group: 'status-im', name: 'status-go', version: '0.1.0-201606301634-5d7b29', ext: 'aar')
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
@@ -142,3 +143,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
   from configurations.compile
   into 'libs'
 }
+

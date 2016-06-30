@@ -3,13 +3,13 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.resources :as res]
             [status-im.components.react :refer [view
-                                              text-input
-                                              text
-                                              image
-                                              icon
-                                              touchable-highlight
-                                              list-view
-                                              list-item]]
+                                                text-input
+                                                text
+                                                image
+                                                icon
+                                                touchable-highlight
+                                                list-view
+                                                list-item]]
             [status-im.components.styles :refer [color-purple]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
@@ -19,24 +19,30 @@
 
 
 (defview new-group-toolbar []
-  [group-name [:get ::group-name]
-   creation-disabled? [:get :disable-group-creation]]
-  [toolbar
-   {:title  (label :t/new-group-chat)
-    :action {:image   {:source res/v                        ;; {:uri "icon_search"}
-                       :style  st/toolbar-icon}
-             :handler (when-not creation-disabled?
-                        #(dispatch [:init-group-creation group-name]))}}])
+  [group-name [:get :new-chat-name]
+   creation-disabled? [:get :disable-group-creation]
+   valid? [:new-chat-name-valid?]]
+  (let [create-btn-enabled? (and valid? (not creation-disabled?))]
+    [toolbar
+     {:title  (label :t/new-group-chat)
+      :action {:image   {:source res/v                        ;; {:uri "icon_search"}
+                         :style  (st/toolbar-icon create-btn-enabled?)}
+               :handler (when create-btn-enabled?
+                          #(dispatch [:init-group-creation group-name]))}}]))
 
 (defview group-name-input []
-  [group-name [:get ::group-name]]
-  [text-input
-   {:underlineColorAndroid color-purple
-    :style                 st/group-name-input
-    :autoFocus             true
-    :placeholder           (label :t/group-name)
-    :onChangeText          #(dispatch [:set ::group-name %])}
-   group-name])
+  [group-name [:get :new-chat-name]
+   validation-messages [:new-chat-name-validation-messages]]
+  [view
+   [text-input
+    {:underlineColorAndroid color-purple
+     :style                 st/group-name-input
+     :autoFocus             true
+     :placeholder           (label :t/group-name)
+     :onChangeText          #(dispatch [:set :new-chat-name %])}
+    group-name]
+   (when (pos? (count validation-messages))
+     [text {:style st/group-name-validation-message} (first validation-messages)])])
 
 (defview new-group []
   [contacts [:all-contacts]]

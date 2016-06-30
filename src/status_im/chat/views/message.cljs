@@ -1,23 +1,29 @@
 (ns status-im.chat.views.message
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
+            [reagent.core :as r]
             [status-im.components.react :refer [view
-                                              text
-                                              image
-                                              touchable-highlight]]
+                                                text
+                                                image
+                                                animated-view
+                                                touchable-highlight]]
+            [status-im.components.animation :as anim]
+            [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
             [status-im.models.commands :refer [parse-command-msg-content
-                                             parse-command-request]]
+                                               parse-command-request]]
             [status-im.resources :as res]
+            [status-im.utils.datetime :as time]
             [status-im.constants :refer [text-content-type
-                                       content-type-status
-                                       content-type-command
-                                       content-type-command-request]]))
+                                         content-type-status
+                                         content-type-command
+                                         content-type-command-request]]))
 
-(defn message-date [{:keys [date]}]
+(defn message-date [timestamp]
   [view {}
    [view st/message-date-container
-    [text {:style st/message-date-text} date]]])
+    [text {:style st/message-date-text} (time/to-short-str timestamp)]]])
 
 (defn contact-photo [{:keys [photo-path]}]
   [view st/contact-photo-container
@@ -50,54 +56,29 @@
     [view st/track-mark]
     [text {:style st/track-duration-text} "03:39"]]])
 
-(defn message-content-command [content]
-  (let [commands-atom (subscribe [:get-commands])]
-    (fn [content]
-      (let [commands @commands-atom
-            {:keys [command content]}
-            (parse-command-msg-content commands content)]
-        [view st/content-command-view
-         [view st/command-container
-          [view (st/command-view command)
-           [text {:style st/command-name}
-            (:text command)]]]
-         [image {:source (:icon command)
-                 :style  st/command-image}]
-         [text {:style st/command-text}
-          ;; TODO isn't smart
-          (if (= (:command command) :keypair-password)
-            "******"
-            content)]]))))
+(defview message-content-command [content preview]
+  [commands [:get-commands-and-responses]]
+  (let [{:keys [command content]} (parse-command-msg-content commands content)
+        {:keys [name icon type]} command]
+    [view st/content-command-view
+     [view st/command-container
+      [view (st/command-view command)
+       [text {:style st/command-name}
+        (str (if (= :command type) "!" "") name)]]]
+     (when icon
+       [view st/command-image-view
+        [image {:source {:uri icon}
+                :style  st/command-image}]])
+     (if preview
+       preview
+       [text {:style st/command-text} content])]))
 
 (defn set-chat-command [msg-id command]
-  (dispatch [:set-response-chat-command msg-id (:command command)]))
+  (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
 
 (defn label [{:keys [command]}]
-  (->> (name command)
+  (->> (when command (name command))
        (str "request-")))
-
-(defn message-content-command-request
-  [{:keys [msg-id content from incoming-group]}]
-  (let [commands-atom (subscribe [:get-commands])]
-    (fn [{:keys [msg-id content from incoming-group]}]
-      (let [commands @commands-atom
-            {:keys [command content]} (parse-command-request commands content)]
-        [touchable-highlight {:onPress             #(set-chat-command msg-id command)
-                              :accessibility-label (label command)}
-         [view st/comand-request-view
-          [view st/command-request-message-view
-           (when incoming-group
-             [text {:style st/command-request-from-text}
-              from])
-           [text {:style st/style-message-text}
-            content]]
-          [view (st/command-request-image-view command)
-           [image {:source (:request-icon command)
-                   :style  st/command-request-image}]]
-          (when (:request-text command)
-            [view st/command-request-text-view
-             [text {:style st/style-sub-text}
-              (:request-text command)]])]]))))
 
 (defn message-view
   [message content]
@@ -128,9 +109,9 @@
   [message-content-status message])
 
 (defmethod message-content content-type-command
-  [wrapper {:keys [content] :as message}]
+  [wrapper {:keys [content rendered-preview] :as message}]
   [wrapper message
-   [message-view message [message-content-command content]]])
+   [message-view message [message-content-command content rendered-preview]]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]
@@ -185,12 +166,50 @@
      (when (and outgoing delivery-status)
        [message-delivery-status {:delivery-status delivery-status}])]))
 
+(defn message-container-animation-logic [{:keys [to-value val callback]}]
+  (fn [_]
+    (let [to-value @to-value]
+      (when (< 0 to-value)
+        (anim/start
+          (anim/spring val {:toValue  to-value
+                            :friction 4
+                            :tension  10})
+          (fn [arg]
+            (when (.-finished arg)
+              (callback))))))))
+
+(defn message-container [message & children]
+  (if (:new? message)
+    (let [layout-height (r/atom 0)
+          anim-value (anim/create-value 1)
+          anim-callback #(dispatch [:set-message-shown message])
+          context {:to-value layout-height
+                   :val      anim-value
+                   :callback anim-callback}
+          on-update (message-container-animation-logic context)]
+      (r/create-class
+        {:component-did-mount
+         on-update
+         :component-did-update
+         on-update
+         :reagent-render
+         (fn [message & children]
+           @layout-height
+           [animated-view {:style (st/message-container anim-value)}
+            (into [view {:onLayout (fn [event]
+                                     (let [height (.. event -nativeEvent -layout -height)]
+                                       (reset! layout-height height)))}]
+                  children)])}))
+    (into [view] children)))
+
 (defn chat-message
-  [{:keys [outgoing delivery-status date new-day group-chat]
+  [{:keys [outgoing delivery-status timestamp new-day group-chat]
     :as   message}]
-  [view {}
-   (when new-day [message-date {:date date}])
-   [view {}
+  [message-container message
+   ;; TODO there is no new-day info in message
+   (when new-day
+     [message-date timestamp])
+   [view
     (let [incoming-group (and group-chat (not outgoing))]
       [message-content
        (if incoming-group

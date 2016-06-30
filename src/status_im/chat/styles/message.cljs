@@ -1,15 +1,15 @@
 (ns status-im.chat.styles.message
   (:require [status-im.components.styles :refer [font
-                                               color-light-blue-transparent
-                                               color-white
-                                               color-black
-                                               color-blue
-                                               selected-message-color
-                                               online-color
-                                               text1-color
-                                               text2-color]]
+                                                 color-light-blue-transparent
+                                                 color-white
+                                                 color-black
+                                                 color-blue
+                                                 selected-message-color
+                                                 online-color
+                                                 text1-color
+                                                 text2-color]]
             [status-im.constants :refer [text-content-type
-                                       content-type-command]]))
+                                         content-type-command]]))
 
 (def style-message-text
   {:fontSize   14
@@ -131,20 +131,35 @@
 (def command-request-message-view
   {:borderRadius    14
    :padding         12
+   :paddingRight    28
    :backgroundColor color-white})
 
 (def command-request-from-text
   (merge style-sub-text {:marginBottom 2}))
 
-(defn command-request-image-view
-  [command]
-  {:position        :absolute
-   :top             12
-   :right           0
-   :width           32
+(def command-request-image-touchable
+  {:position       :absolute
+   :top            4
+   :right          -8
+   :alignItems     :center
+   :justifyContent :center
+   :width          48
+   :height         48})
+
+(defn command-request-image-view [command scale]
+  {:width           32
    :height          32
    :borderRadius    50
-   :backgroundColor (:color command)})
+   :backgroundColor (:color command)
+   :transform       [{:scale scale}]})
+
+(def command-image-view
+  {:position   :absolute
+   :top        0
+   :right      0
+   :width      24
+   :height     24
+   :alignItems :center})
 
 (def command-request-image
   {:position :absolute
@@ -178,11 +193,10 @@
    :color      color-white})
 
 (def command-image
-  {:position :absolute
-   :top      4
-   :right    0
-   :width    12
-   :height   13})
+  {:margin-top 5
+   :width      12
+   :height     13
+   :tint-color :#a9a9a9cc})
 
 (def command-text
   (merge style-message-text
@@ -308,6 +322,9 @@
 
 (def message-date-text
   (assoc style-sub-text :textAlign :center))
+
+(defn message-container [height]
+  {:height height})
 
 (def new-message-container
   {:backgroundColor color-white

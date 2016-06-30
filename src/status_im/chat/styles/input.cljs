@@ -16,13 +16,18 @@
    :backgroundColor color-white
    :elevation       4})
 
+(def command-container
+  {:left 0
+   :backgroundColor :white
+   :position :absolute})
+
 (defn command-text-container
   [{:keys [color]}]
   {:flexDirection   :column
    :marginTop       16
    :marginBottom    16
    :marginLeft      16
-   :marginRight     0
+   :marginRight     8
    :backgroundColor color
    :height          24
    :borderRadius    50})
@@ -37,7 +42,8 @@
 (def command-input
   {:flex       1
    :marginLeft 8
-   :marginTop  7
+   :marginTop  -2
+   :padding    0
    :fontSize   14
    :fontFamily font
    :color      text1-color})

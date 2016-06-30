@@ -1,5 +1,6 @@
 (ns status-im.contacts.handlers
-  (:require [re-frame.core :refer [register-handler after dispatch]]
+  (:require [re-frame.core :refer [after dispatch]]
+            [status-im.utils.handlers :refer [register-handler]]
             [status-im.models.contacts :as contacts]
             [status-im.utils.crypt :refer [encrypt]]
             [clojure.string :as s]
@@ -96,7 +97,6 @@
                            (remove #(identities (:whisper-identity %)))
                            (map #(vector (:whisper-identity %) %))
                            (into {}))]
-    (println new-contacts')
     (-> db
         (update :contacts merge new-contacts')
         (assoc :new-contacts (vals new-contacts')))))

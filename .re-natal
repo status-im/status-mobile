@@ -17,8 +17,11 @@
     "dismissKeyboard",
     "react-native-linear-gradient",
     "react-native-android-sms-listener",
+    "react-native-status",
     "react-native-camera",
-    "react-native-qrcode"
+    "react-native-qrcode",
+    "react-native-orientation",
+    "identicon.js"
   ],
   "imageDirs": [
     "images"

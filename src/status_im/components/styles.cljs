@@ -10,6 +10,7 @@
 (def color-black "#000000de")
 (def color-purple "#a187d5")
 (def color-gray "#838c93de")
+(def color-gray2 "#8f838c93")
 (def color-white :white)
 (def color-light-blue "#bbc4cb")
 (def color-light-blue-transparent "#bbc4cb32")
@@ -20,6 +21,7 @@
 (def text2-color color-gray)
 (def text3-color color-blue)
 (def text4-color color-white)
+(def text5-color "#838c938f")
 (def online-color color-blue)
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
@@ -32,7 +34,7 @@
 (def toolbar-height 56)
 
 (def flex
-  {:style {:flex 1}})
+  {:flex 1})
 
 (def hamburger-icon
   {:width  16
