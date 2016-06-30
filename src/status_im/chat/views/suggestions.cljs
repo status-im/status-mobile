@@ -119,8 +119,10 @@
          (into [animated-view {:style (st/container h)}] elements))})))
 
 (defn suggestion-container []
-  (let [h (anim/create-value 0.1)]
-    [container h
-     [header h]
-     [suggestions-view]
-     [view {:height c/input-height}]]))
+  (let [h (anim/create-value 0.1)
+        command? (subscribe [:command?])]
+    (when-not @command?
+      [container h
+       [header h]
+       [suggestions-view]
+       [view {:height c/input-height}]])))
