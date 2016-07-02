@@ -186,7 +186,7 @@ public class GethService extends Service {
         String password = data.getString("password");
         // TODO: remove second argument
         Log.d(TAG, "Creating account: " + password + " - " + dataFolder);
-        String jsonData = Statusgo.CreateAccount(password, dataFolder + "/keystore");
+        String jsonData = Statusgo.CreateAccount(password);
         Log.d(TAG, "Created account: " + jsonData);
 
         Bundle replyData = new Bundle();
