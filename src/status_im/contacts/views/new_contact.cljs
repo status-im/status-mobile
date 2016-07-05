@@ -57,7 +57,8 @@
      :wrapperStyle                 (merge button-input)
      :label           (label :t/address)
      :onChangeText          #(dispatch [:set-in [:new-contact :whisper-identity] %])}]
-   [scan-button #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])]]))
+   [scan-button {:showLabel (zero? (count whisper-identity))
+                 :handler #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])}]]))
 
 (defview new-contact []
   [{:keys [name whisper-identity phone-number] :as new-contact} [:get :new-contact]]

@@ -12,12 +12,13 @@
             [status-im.qr-scanner.styles :as st]))
 
 
-(defview scan-button [handler]
-  []
-  [view st/scan-button
-   [touchable-highlight
-    {:on-press handler}
-    [view st/scan-button-content
-     [image {:source {:uri :scan_blue}
-             :style  icon-scan}]
-     [text {:style st/scan-text} (label :t/scan-qr)]]]])
+(defview scan-button [{:keys [showLabel icon labelStyle handler]}]
+  (let [showLabel (if (nil? showLabel) true showLabel)]
+    [view st/scan-button
+     [touchable-highlight
+      {:on-press handler}
+      [view st/scan-button-content
+       [image {:source {:uri (or icon :scan_blue)}
+               :style  icon-scan}]
+       (when showLabel [text {:style (merge st/scan-text labelStyle)}
+                                  (label :t/scan-qr)])]]]))

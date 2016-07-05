@@ -52,3 +52,13 @@
 (def connect-button-text
   {:color    "#7099e6"
    :fontSize 16})
+
+(def input-style
+  {:color :white
+   :font-size 12})
+
+(def scan-label
+  {:color :white})
+
+(def address-input-wrapper
+  {})
