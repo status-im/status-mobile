@@ -52,7 +52,7 @@
    ""])
 
 (defview login []
-  [{:keys [address]} [:get :login]]
+  [{:keys [address password]} [:get :login]]
    [view st/screen-container
     [linear-gradient {:colors ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
                       :start [0, 0]
@@ -78,6 +78,6 @@
        [text {:style st/recover-text} (label :t/recover-from-passphrase)]]]
      [view st/connect-button-container
       [touchable-highlight
-       {:on-press #(dispatch [:login-account])}
+       {:on-press #(dispatch [:login-account address password])}
        [view st/connect-button
         [text {:style st/connect-button-text} (label :t/connect)]]]]]])
