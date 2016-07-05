@@ -18,7 +18,7 @@
 (def config {:label-top                16
              :label-bottom             37
              :label-font-large         16
-             :label-font-small         12
+             :label-font-small         13
              :label-animation-duration 200})
 
 (def default-props {:wrapperStyle   {}

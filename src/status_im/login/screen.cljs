@@ -8,6 +8,7 @@
                                                 linear-gradient
                                                 touchable-highlight]]
             [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
                                                  icon-search
@@ -19,7 +20,7 @@
                                                  button-input-container
                                                  button-input
                                                  white-form-text-input]]
-            [status-im.qr-scanner.views.import-button :refer [import-button]]
+            [status-im.qr-scanner.views.scan-button :refer [scan-button]]
             [status-im.i18n :refer [label]]
             [status-im.login.styles :as st]))
 
@@ -30,26 +31,27 @@
 
 (defview address-input [address]
   [view button-input-container
-   [text-input
-    {:underlineColorAndroid color-white
-     :placeholderTextColor  color-white
-     :style                 (merge white-form-text-input button-input)
-     :autoFocus             true
-     :placeholder           (label :t/address)
-     :onChangeText          #(dispatch [:set-in [:login :address] %])}
-    address]
-   [import-button #(dispatch [:scan-qr-code {:toolbar-title (label :t/login)} :set-address-from-qr])]])
+   [text-field
+    {:value        address
+     :label        (label :t/address)
+     :labelColor   "#ffffff80"
+     :lineColor    :white
+     :inputStyle   st/input-style
+     :wrapperStyle (merge button-input st/address-input-wrapper)
+     :onChangeText #(dispatch [:set-in [:login :address] %])}]
+   [scan-button {:labelStyle st/scan-label
+                 :icon :icon_scan_white
+                 :showLabel (zero? (count address))
+                 :handler #(dispatch [:scan-qr-code {:toolbar-title (label :t/login)} :set-address-from-qr])}]])
 
 (defview password-input []
-  []
-  [text-input
-   {:underlineColorAndroid color-white
-    :placeholderTextColor  color-white
-    :style                 white-form-text-input
-    :autoFocus             true
-    :placeholder           (label :t/password)
-    :onChangeText          #(dispatch [:set-in [:login :password] %])}
-   ""])
+  [text-field
+   {:value        ""
+    :label        (label :t/password)
+    :labelColor   "#ffffff80"
+    :lineColor    :white
+    :inputStyle st/input-style
+    :onChangeText          #(dispatch [:set-in [:login :password] %])}])
 
 (defview login []
   [{:keys [address password]} [:get :login]]
