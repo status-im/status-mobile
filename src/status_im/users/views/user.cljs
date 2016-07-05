@@ -15,7 +15,7 @@
   (dispatch [:navigate-to :login address])
   (dispatch [:set-in [:login :address] address]))
 
-(defview user-view [{:keys [address photo-path name ] :as account}]
+(defview user-view [{:keys [address photo-path name] :as account}]
   [current-account [:get :current-account]]
   [touchable-highlight
    {:onPress #(on-press address)}
@@ -29,7 +29,7 @@
                  :style  icon-plus}])]]
      [view st/name-container
       [text {:style st/name-text
-             :numberOfLines 1} name]
+             :numberOfLines 1} (or name address)]
       (when (not= address "0x0")
         [text {:style st/address-text
                :numberOfLines 1} address])]

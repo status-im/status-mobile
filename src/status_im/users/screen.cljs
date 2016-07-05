@@ -39,9 +39,9 @@
 
 (defview users []
   [accounts [:get :accounts]]
-  (let [accounts (conj accounts {:name (label :t/add-account)
-                                 :address "0x0"
-                                 :photo-path :icon_plus})]
+  (let [accounts (conj (vals accounts) {:name (label :t/add-account)
+                                        :address "0x0"
+                                        :photo-path :icon_plus})]
   [view st/screen-container
    [linear-gradient {:colors ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
                      :start [0, 0]
