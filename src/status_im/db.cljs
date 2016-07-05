@@ -12,6 +12,7 @@
 (def app-db {:identity-password      "replace-me-with-user-entered-password"
              :identity               "me"
              :accounts               {}
+             :current-account        false
              :contacts               []
              :contacts-ids           #{}
              :selected-contacts      #{}

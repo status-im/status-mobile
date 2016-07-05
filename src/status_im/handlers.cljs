@@ -79,12 +79,7 @@
                                    (dispatch [:crypt-initialized]))))))))
 
 (defn node-started [db result]
-  (let [identity (:user-identity db)
-        password (:password db)]
-  (log/debug "Started Node: " result)
-  (when identity (do
-                   (dispatch [:login-account (:address identity) password])
-                   (dispatch [:initialize-protocol identity])))))
+  (log/debug "Started Node: " result))
 
 (register-handler :initialize-geth
   (u/side-effect!
