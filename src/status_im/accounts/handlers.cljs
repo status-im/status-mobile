@@ -8,6 +8,9 @@
             [status-im.protocol.state.storage :as storage]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.db :refer [default-view]]
+            [status-im.utils.random :as random]
+            [status-im.i18n :refer [label]]
+            [status-im.constants :refer [content-type-command-request]]
             [clojure.string :as str]))
 
 
@@ -61,3 +64,17 @@
     (assoc db :accounts accounts)))
 
 (register-handler :load-accounts load-accounts!)
+
+(defn console-create-account [db _]
+  (let [msg-id (random/id)]
+    (dispatch [:received-msg
+               {:msg-id       msg-id
+                :content      {:command (name :keypair)
+                               :content (label :t/keypair-generated)}
+                :content-type content-type-command-request
+                :outgoing     false
+                :from         "console"
+                :to           "me"}])
+    db))
+
+(register-handler :console-create-account console-create-account)
