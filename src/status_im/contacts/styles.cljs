@@ -157,7 +157,8 @@
 
 (def contact-form-container
   {:flex  1
-   :color :white})
+   :color :white
+   :backgroundColor :white})
 
 (def gradient-background
   {:position :absolute
@@ -168,4 +169,14 @@
 
 (def form-container
   {:marginLeft 16
-   :margin-top 50})
+   :margin-top 16})
+
+(def address-explication-container
+  {:flex 1
+   :margin-top 30
+   :paddingLeft 16
+   :paddingRight 16})
+
+(def address-explication
+  {:textAlign :center
+   :color "#838c93de"})
