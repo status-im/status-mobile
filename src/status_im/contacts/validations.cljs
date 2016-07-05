@@ -7,7 +7,7 @@
   (not (realm/exists? :contacts :whisper-identity identity)))
 
 (defn valid-length? [identity]
-  (= 64 (count identity)))
+  (= 132 (count identity)))
 
 (s/def ::identity-length valid-length?)
 (s/def ::unique-identity unique-identity?)
