@@ -33,9 +33,9 @@
     (when (not (str/blank? public-key))
       (do
         (save-password password)
+        (dispatch [:add-account account])
         (dispatch [:login-account address password])
-        (dispatch [:initialize-protocol account])
-        (dispatch [:add-account account])))))
+        (dispatch [:initialize-protocol account])))))
 
 (register-handler :create-account
   (-> (fn [db [_ password]]
@@ -44,5 +44,8 @@
 
 (register-handler :login-account
   (-> (fn [db [_ address password]]
-        (.login geth address password (fn [result] (log/debug "Logged in account: " address result)))
+        (.login geth address password (fn [result]
+                                        (log/debug "Logged in account: " address result)
+                                        (dispatch [:set :current-account (get-in db [:accounts address])])))
         db)))
+

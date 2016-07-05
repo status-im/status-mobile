@@ -1,4 +1,4 @@
-(ns status-im.users.styles
+(ns status-im.accounts.styles
   (:require [status-im.components.styles :refer [font
                                                  title-font
                                                  text1-color
@@ -18,7 +18,7 @@
    :bottom   0
    :left     0})
 
-(def user-list-container1
+(def account-list-container1
   {:position :absolute
    :top 56
    :right 0
@@ -26,19 +26,19 @@
    :left 0
    :justifyContent :center})
 
-(def user-list-container
+(def account-list-container
   {:flex 1
    :flexDirection :column
    :justifyContent :center})
 
-(def user-list
+(def account-list
   {})
 
 (def row-separator
   {:borderBottomWidth 1
    :borderBottomColor "#bababa"})
 
-(def user-container
+(def account-container
   {:flex 1
    :flexDirection :row
    :height 69
@@ -52,7 +52,7 @@
    :alignItems     :center
    :justifyContent :center})
 
-(def user-photo-container
+(def account-photo-container
   {:flex 1
    :backgroundColor "rgba(255, 255, 255, 0.2)"
    :borderRadius 50
