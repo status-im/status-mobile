@@ -24,7 +24,8 @@
             [status-im.utils.listview :as lw]
             [status-im.accounts.views.account :refer [account-view]]
             [status-im.i18n :refer [label]]
-            [status-im.accounts.styles :as st]))
+            [status-im.accounts.styles :as st]
+            [status-im.utils.logging :as log]))
 
 (def toolbar-title
   [view toolbar-title-container
@@ -37,6 +38,10 @@
 (defn render-separator [_ row-id _]
   (list-item [view {:style st/row-separator
                     :key   row-id}]))
+
+(defn create-account [event]
+  (dispatch [:console-create-account])
+  (dispatch [:navigate-to :chat "console"]))
 
 (defview accounts []
   [accounts [:get :accounts]]
@@ -63,10 +68,11 @@
                 :renderSeparator     render-separator
                 :style               st/account-list}]]
    [view st/add-account-button-container
-    [view st/add-account-button
-     [image {:source {:uri :icon_add}
-             :style  st/icon-plus}]
-     [text {:style st/add-account-text} (label :t/add-account)]]]]))
+    [touchable-highlight {:on-press create-account}
+     [view st/add-account-button
+      [image {:source {:uri :icon_add}
+              :style  st/icon-plus}]
+      [text {:style st/add-account-text} (label :t/add-account)]]]]]))
 
 
 ;(re-frame.core/dispatch [:set :view-id :users])
