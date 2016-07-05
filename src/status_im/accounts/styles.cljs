@@ -81,3 +81,27 @@
    :flexDirection :column
    :alignItems     :center
    :justifyContent :center})
+
+(def add-account-button-container
+  {:position :absolute
+   :bottom 16
+   :height 50
+   :left 100
+   :right 100
+    :justifyContent :center
+   :alignItems :center})
+
+(def add-account-button
+  {:flexDirection :row})
+
+(def icon-plus
+  {:flexDirection :column
+   :paddingTop 2
+   :width 20
+   :height 20})
+
+(def add-account-text
+  {:flexDirection :column
+   :color :white
+   :fontSize 16
+   :marginLeft 8})

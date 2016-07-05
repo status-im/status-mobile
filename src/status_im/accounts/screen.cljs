@@ -14,6 +14,7 @@
                                                  icon-search
                                                  icon-back
                                                  icon-qr
+                                                 icon-plus
                                                  toolbar-background1
                                                  toolbar-title-container
                                                  toolbar-title-text
@@ -60,7 +61,12 @@
                 :enableEmptySections true
                 :renderRow           render-row
                 :renderSeparator     render-separator
-                :style               st/account-list}]]]))
+                :style               st/account-list}]]
+   [view st/add-account-button-container
+    [view st/add-account-button
+     [image {:source {:uri :icon_add}
+             :style  st/icon-plus}]
+     [text {:style st/add-account-text} (label :t/add-account)]]]]))
 
 
 ;(re-frame.core/dispatch [:set :view-id :users])
