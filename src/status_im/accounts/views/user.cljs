@@ -1,4 +1,4 @@
-(ns status-im.users.views.user
+(ns status-im.accounts.views.account
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [clojure.string :as s]
             [status-im.resources :as res]
@@ -9,19 +9,19 @@
             [re-frame.core :refer [dispatch subscribe]]
             [status-im.components.styles :refer [icon-ok
                                                  icon-plus]]
-            [status-im.users.styles :as st]))
+            [status-im.accounts.styles :as st]))
 
 (defn on-press [address]
   (dispatch [:navigate-to :login address])
   (dispatch [:set-in [:login :address] address]))
 
-(defview user-view [{:keys [address photo-path name] :as account}]
+(defview account-view [{:keys [address photo-path name] :as account}]
   [current-account [:get :current-account]]
   [touchable-highlight
    {:onPress #(on-press address)}
-    [view st/user-container
+    [view st/account-container
      [view st/photo-container
-      [view st/user-photo-container
+      [view st/account-photo-container
        (if (not= address "0x0")
          [image {:source {:uri (if (s/blank? photo-path) :avatar photo-path)}
                  :style  st/photo-image}]

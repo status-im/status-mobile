@@ -1,4 +1,4 @@
-(ns status-im.users.screen
+(ns status-im.accounts.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
@@ -21,9 +21,9 @@
                                                  button-input
                                                  white-form-text-input]]
             [status-im.utils.listview :as lw]
-            [status-im.users.views.user :refer [user-view]]
+            [status-im.accounts.views.account :refer [account-view]]
             [status-im.i18n :refer [label]]
-            [status-im.users.styles :as st]))
+            [status-im.accounts.styles :as st]))
 
 (def toolbar-title
   [view toolbar-title-container
@@ -31,13 +31,13 @@
     (label :t/switch-users)]])
 
 (defn render-row [row _ _]
-  (list-item [user-view row]))
+  (list-item [account-view row]))
 
 (defn render-separator [_ row-id _]
   (list-item [view {:style st/row-separator
                     :key   row-id}]))
 
-(defview users []
+(defview accounts []
   [accounts [:get :accounts]]
   (let [accounts (conj (vals accounts) {:name (label :t/add-account)
                                         :address "0x0"
@@ -57,12 +57,12 @@
              :action           {:image   {:style  icon-search}
                                :handler #()}}]
 
-   [view st/user-list-container
+   [view st/account-list-container
     [list-view {:dataSource          (lw/to-datasource accounts)
                 :enableEmptySections true
                 :renderRow           render-row
                 :renderSeparator     render-separator
-                :style               st/user-list}]]]))
+                :style               st/account-list}]]]))
 
 
 ;(re-frame.core/dispatch [:set :view-id :users])
