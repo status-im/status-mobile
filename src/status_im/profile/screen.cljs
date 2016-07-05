@@ -67,7 +67,7 @@
    phone-number [:get :phone-number]
    email [:get :email]
    status [:get :status]
-   identity     [:get-in [:user-identity :public]]]
+   identity     [:get-in [:user-identity :public-key]]]
   [scroll-view {:style st/profile}
    [touchable-highlight {:style    st/back-btn-touchable
                          :on-press #(dispatch [:navigate-back])}

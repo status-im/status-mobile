@@ -14,7 +14,8 @@
             [status-im.chat.styles.response :as st]
             [status-im.chat.styles.dragdown :as ddst]
             [status-im.components.animation :as anim]
-            [status-im.chat.suggestions-responder :as resp]))
+            [status-im.chat.suggestions-responder :as resp]
+            [status-im.chat.constants :as c]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -58,7 +59,8 @@
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (let [to-value @to-value]
-    (anim/start (anim/spring val {:toValue to-value}))))
+    (when-not (= to-value (.-_value val))
+      (anim/start (anim/spring val {:toValue to-value})))))
 
 (defn container [response-height & children]
   (let [;; todo to-response-height, cur-response-height must be specific
@@ -89,7 +91,7 @@
   (when (seq suggestions) suggestions))
 
 (defn response-view []
-  (let [response-height (anim/create-value 0)]
+  (let [response-height (anim/create-value c/input-height)]
     [container response-height
      [request-info response-height]
      [response-suggestions-view]

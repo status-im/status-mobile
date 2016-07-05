@@ -98,7 +98,8 @@
 
 (defn container-animation-logic [{:keys [to-value val]}]
   (when-let [to-value @to-value]
-    (anim/start (anim/spring val {:toValue to-value}))))
+    (when-not (= to-value (.-_value val))
+      (anim/start (anim/spring val {:toValue to-value})))))
 
 (defn container [h & elements]
   (let [;; todo to-response-height, cur-response-height must be specific

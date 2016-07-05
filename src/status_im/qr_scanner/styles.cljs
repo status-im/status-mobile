@@ -74,3 +74,25 @@
    :flexDirection :column
    :color         color-white
    :margin-left   8})
+
+
+(def scan-button
+  {:position   :absolute
+   :bottom     0
+   :right      16
+   :flex       1
+   :height     50
+   :alignItems :center})
+
+(def scan-button-content
+  {:flex          1
+   :flexDirection :row
+   :height        50
+   :alignItems    :center
+   :alignSelf     :center})
+
+(def scan-text
+  {:flex          1
+   :flexDirection :column
+   :color         "#7099e6"
+   :margin-left   8})

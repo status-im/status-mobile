@@ -133,7 +133,8 @@ dependencies {
     compile project(':react-native-camera')
     compile project(':react-native-status')
     compile project(':react-native-orientation')
-    compile(group: 'status-im', name: 'status-go', version: '0.1.0-201606301634-5d7b29', ext: 'aar')
+    //compile(name:'statusgo-android-16', ext:'aar')
+    compile(group: 'status-im', name: 'status-go', version: '0.1.0-201607011545-da53ec', ext: 'aar')
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
