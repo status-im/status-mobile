@@ -77,7 +77,7 @@
      [view st/recover-text-container
       [touchable-highlight
        {:on-press #()}
-       [text {:style st/recover-text} (label :t/recover-from-passphrase)]]]
+       [text {:style st/recover-text} (label :t/recover-access)]]]
      [view st/connect-button-container
       [touchable-highlight
        {:on-press #(dispatch [:login-account address password])}

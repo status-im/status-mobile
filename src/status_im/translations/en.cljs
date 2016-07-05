@@ -127,7 +127,7 @@
    :address-explication                   "Maybe here should be some text explaining what an address is and where to look for it"
 
    ;login
-   :recover-from-passphrase               "Recover from passphrase"
+   :recover-access                        "Recover access"
    :connect                               "Connect"
    :address                               "Address"
    :password                              "Password"

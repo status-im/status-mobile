@@ -26,25 +26,25 @@
   {:position :absolute
    :left     0
    :right    0
-   :bottom   16})
+   :bottom   0})
 
 (def recover-text-container
   {:flex     1
-   :flexWrap :nowrap
+   :alignItems :center
    :padding  16})
 
 (def recover-text
   {:flex  1
-   :color color-white})
+   :color color-white
+   :fontSize 16})
 
 (def connect-button-container
-  {:position :absolute
-   :right    16
-   :top      0})
+  {:flex 1})
 
 (def connect-button
   {:backgroundColor   color-white
-   :borderRadius      55
+   :flex 1
+   :alignItems :center
    :paddingVertical   16
    :paddingHorizontal 28
    })
