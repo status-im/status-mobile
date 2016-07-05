@@ -4,13 +4,13 @@
   (:require [status-im.utils.handlers :as u]
             [status-im.utils.logging :as log]
             [status-im.protocol.api :as api]
-            [re-frame.core :refer [dispatch debug]]
+            [re-frame.core :refer [dispatch after]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.models.contacts :as contacts]
             [status-im.protocol.api :refer [init-protocol]]
             [status-im.protocol.protocol-handler :refer [make-handler]]
             [status-im.models.protocol :refer [update-identity
-                                             set-initialized]]
+                                               set-initialized]]
             [status-im.constants :refer [text-content-type]]
             [status-im.models.messages :as messages]
             [status-im.models.chats :as chats]
@@ -102,16 +102,19 @@
       (log/debug action msg-id from group-id identity)
       (participant-invited-to-group-msg group-id identity from msg-id))))
 
+(defn update-message! [status]
+  (fn [_ [_ _ msg-id]]
+    (messages/update-message! {:msg-id          msg-id
+                               :delivery-status status})))
+
+(defn update-message-status [status]
+  (fn [db [_ from msg-id]]
+    (assoc-in db [:message-status from msg-id] status)))
+
 (register-handler :acked-msg
-  (u/side-effect!
-    (fn [_ [action from msg-id]]
-      (log/debug action from msg-id)
-      (messages/update-message! {:msg-id          msg-id
-                                 :delivery-status :delivered}))))
+  (after (update-message! :delivered))
+  (update-message-status :delivered))
 
 (register-handler :msg-delivery-failed
-  (u/side-effect!
-    (fn [_ [action msg-id]]
-      (log/debug action msg-id)
-      (messages/update-message! {:msg-id          msg-id
-                                 :delivery-status :failed}))))
+  (after (update-message! :failed))
+  (update-message-status :failed))
