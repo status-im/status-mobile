@@ -45,15 +45,23 @@
           (.createAccount geth password (fn [result] (account-created db result password)))
         db)))
 
+(defn login [db address]
+  (let [account (get-in db [:accounts address])]
+    (dispatch [:set :login {}])
+    (dispatch [:set :current-account account])
+    (dispatch [:initialize-protocol account])
+    (when (:signed-up db) (dispatch [:navigate-to-clean default-view]))))
+
 (register-handler :login-account
   (-> (fn [db [_ address password]]
         (.login geth address password (fn [result]
-                                        (let [account (get-in db [:accounts address])]
+                                        (let [data (json->clj result)
+                                              error (:error data)
+                                              success (zero? (count error))]
                                           (log/debug "Logged in account: " address result)
-                                          (dispatch [:set :login {}])
-                                          (dispatch [:set :current-account account])
-                                          (dispatch [:initialize-protocol account])
-                                          (when (:signed-up db) (dispatch [:navigate-to-clean default-view])))))
+                                          (if success
+                                            (login db address)
+                                            (dispatch [:set-in [:login :error] error])))))
         db)))
 
 (defn load-accounts! [db _]

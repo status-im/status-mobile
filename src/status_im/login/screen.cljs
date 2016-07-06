@@ -33,6 +33,7 @@
   [view button-input-container
    [text-field
     {:value        address
+     :editable     false
      :label        (label :t/address)
      :labelColor   "#ffffff80"
      :lineColor    :white
@@ -45,34 +46,38 @@
    ;              :handler #(dispatch [:scan-qr-code {:toolbar-title (label :t/login)} :set-address-from-qr])}]
    ])
 
-(defview password-input []
+(defview password-input [error]
   [text-field
    {:value        ""
+    :error        (when (pos? (count error)) (label :t/wrong-password))
+    :errorColor   :white
     :label        (label :t/password)
     :labelColor   "#ffffff80"
     :lineColor    :white
-    :inputStyle st/input-style
-    :onChangeText          #(dispatch [:set-in [:login :password] %])}])
+    :inputStyle   st/input-style
+    :onChangeText #(do
+                    (dispatch [:set-in [:login :password] %])
+                    (dispatch [:set-in [:login :error] ""]))}])
 
 (defview login []
-  [{:keys [address password]} [:get :login]]
+  [{:keys [address password error]} [:get :login]]
    [view st/screen-container
-    [linear-gradient {:colors ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
-                      :start [0, 0]
-                      :end [0.5, 1]
-                      :locations [0, 0.8 ,1]
-                      :style  st/gradient-background}]
+    [linear-gradient {:colors    ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
+                      :start     [0, 0]
+                      :end       [0.5, 1]
+                      :locations [0, 0.8, 1]
+                      :style     st/gradient-background}]
 
     [toolbar {:background-color :transparent
-              :nav-action     {:image   {:source {:uri :icon_back_white}
-                                         :style  icon-back}
-                               :handler  #(dispatch [:navigate-back])}
+              :nav-action       {:image   {:source {:uri :icon_back_white}
+                                           :style  icon-back}
+                                 :handler #(dispatch [:navigate-back])}
               :custom-content   toolbar-title
-              :action           {:image   {:style  icon-search}
+              :action           {:image   {:style icon-search}
                                  :handler #()}}]
     [view st/form-container
      [address-input (or address "")]
-     [password-input]
+     [password-input error]
      ]
     [view st/bottom-actions-container
      [view st/recover-text-container
