@@ -122,8 +122,8 @@
   (after (update-message! :failed))
   (update-message-status :failed))
 
-;; todo maybe it is fine to treat as "seen" all messages that are older
-;; than current
 (register-handler :msg-seen
-  (after (update-message! :seen))
+  [(after (update-message! :seen))
+   (after (fn [_ [_ chat-id]]
+            (dispatch [:remove-unviewed-messages chat-id])))]
   (update-message-status :seen))

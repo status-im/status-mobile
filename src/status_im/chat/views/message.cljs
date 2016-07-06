@@ -211,7 +211,7 @@
     (r/create-class
       {:component-did-mount
        (fn []
-         (when (and outgoing
+         (when (and (not outgoing)
                     (not= :seen delivery-status)
                     (not= :seen @status))
            (dispatch [:send-seen! chat-id msg-id])))

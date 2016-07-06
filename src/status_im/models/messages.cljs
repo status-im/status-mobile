@@ -38,8 +38,7 @@
                               message
                               {:chat-id         chat-id
                                :content         content'
-                               :timestamp       (timestamp)
-                               :delivery-status nil})]
+                               :timestamp       (timestamp)})]
           (r/create :msgs message' true))))))
 
 (defn command-type? [type]
