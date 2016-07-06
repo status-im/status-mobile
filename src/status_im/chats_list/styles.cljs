@@ -1,12 +1,12 @@
 (ns status-im.chats-list.styles
   (:require [status-im.components.styles :refer [font
-                                               title-font
-                                               color-white
-                                               color-blue
-                                               online-color
-                                               text1-color
-                                               text2-color
-                                               new-messages-count-color]]
+                                                 title-font
+                                                 color-white
+                                                 color-blue
+                                                 online-color
+                                                 text1-color
+                                                 text2-color
+                                                 new-messages-count-color]]
             [status-im.components.tabs.styles :refer [tabs-height]]))
 
 (def chat-container
@@ -116,9 +116,10 @@
    :color    :white})
 
 (defn action-buttons-container [animation? offset-y]
-  {:position     :absolute
-   :left         0
-   :right        0
-   :top          0
-   :bottom       0
-   :transform    [{:translateY (if animation? offset-y 1)}]})
+  ;; todo fix overlaying of parent view
+  {:position  :absolute
+   :right     0
+   :height    230
+   :width     80
+   :bottom    0
+   :transform [{:translateY (if animation? offset-y 1)}]})
