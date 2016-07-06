@@ -39,10 +39,11 @@
      :inputStyle   st/input-style
      :wrapperStyle (merge button-input st/address-input-wrapper)
      :onChangeText #(dispatch [:set-in [:login :address] %])}]
-   [scan-button {:labelStyle st/scan-label
-                 :icon :icon_scan_white
-                 :showLabel (zero? (count address))
-                 :handler #(dispatch [:scan-qr-code {:toolbar-title (label :t/login)} :set-address-from-qr])}]])
+   ;[scan-button {:labelStyle st/scan-label
+   ;              :icon :icon_scan_white
+   ;              :showLabel (zero? (count address))
+   ;              :handler #(dispatch [:scan-qr-code {:toolbar-title (label :t/login)} :set-address-from-qr])}]
+   ])
 
 (defview password-input []
   [text-field
