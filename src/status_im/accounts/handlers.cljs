@@ -25,7 +25,7 @@
 (defn save-password [password]
   (storage/put kv/kv-store :password password))
 
-(defn account-created [result password]
+(defn account-created [db result password]
   (let [data (json->clj result)
         public-key (:pubkey data)
         address (:address data)
@@ -38,11 +38,11 @@
       (do
         (save-password password)
         (dispatch [:add-account account])
-        (dispatch [:login-account address password])))))
+        (when (not (:signed-up db)) (dispatch [:login-account address password]))))))
 
 (register-handler :create-account
   (-> (fn [db [_ password]]
-          (.createAccount geth password (fn [result] (account-created result password)))
+          (.createAccount geth password (fn [result] (account-created db result password)))
         db)))
 
 (register-handler :login-account
@@ -53,7 +53,7 @@
                                           (dispatch [:set :login {}])
                                           (dispatch [:set :current-account account])
                                           (dispatch [:initialize-protocol account])
-                                          (dispatch [:navigate-to-clean default-view]))))
+                                          (when (:signed-up db) (dispatch [:navigate-to-clean default-view])))))
         db)))
 
 (defn load-accounts! [db _]

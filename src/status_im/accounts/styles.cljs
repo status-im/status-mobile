@@ -76,10 +76,12 @@
    :flexDirection :column})
 
 (def name-text
-  {:color color-white})
+  {:color color-white
+   :fontSize 16})
 
 (def address-text
-  {:color color-white})
+  {:color color-white
+   :fontSize 12})
 
 (def online-container
   {:flex 0.2

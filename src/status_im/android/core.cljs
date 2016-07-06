@@ -67,7 +67,7 @@
                          #(dispatch [:set :keyboard-height 0]))))
        :render
        (fn []
-         (let [startup-view (if @account @view-id (if (= @view-id :login) :login :users))]
+         (let [startup-view (if @account @view-id (if (contains? #{:login :chat} @view-id) @view-id :accounts))]
            (log/debug startup-view)
          (case (if @signed-up startup-view :chat)
            :discovery [main-tabs]
@@ -83,7 +83,7 @@
            :qr-scanner [qr-scanner]
            :chat [chat]
            :profile [profile]
-           :users [accounts]
+           :accounts [accounts]
            :login [login]
            :my-profile [my-profile])))})))
 
