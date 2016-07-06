@@ -24,7 +24,9 @@
             [status-im.utils.logging :as log]
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.commands.utils :refer [generate-hiccup]]))
+            [status-im.commands.utils :refer [generate-hiccup]]
+            status-im.chat.handlers.requests
+            status-im.chat.handlers.unviewed-messages))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -221,14 +223,15 @@
         [command] (suggestions/check-suggestion db (str text " "))
         message (check-author-direction
                   db current-chat-id
-                  {:msg-id       (random/id)
-                   :chat-id      current-chat-id
-                   :content      text
-                   :to           current-chat-id
-                   :from         identity
-                   :content-type text-content-type
-                   :outgoing     true
-                   :timestamp    (time/now-ms)})]
+                  {:msg-id          (random/id)
+                   :chat-id         current-chat-id
+                   :content         text
+                   :to              current-chat-id
+                   :from            identity
+                   :content-type    text-content-type
+                   :delivery-status :pending
+                   :outgoing        true
+                   :timestamp       (time/now-ms)})]
     (if command
       (commands/set-chat-command db command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
@@ -424,6 +427,7 @@
   (assoc db :loaded-chats (chats/chats-list)))
 
 (register-handler :initialize-chats
+  (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))
 
 (defn store-message!
@@ -437,14 +441,22 @@
 
 (defn receive-message
   [db [_ {chat-id :from :as message}]]
-  (let [message' (check-author-direction db chat-id message)]
+  (let [message' (-> db
+                     (check-author-direction chat-id message)
+                     (assoc :delivery-status :pending))]
     (-> db
         (add-message-to-db chat-id message')
         (assoc :new-message message'))))
 
+(defn dispatch-unviewed-message!
+  [{:keys [new-message]} [_ {chat-id :from}]]
+  (let [{:keys [msg-id]} new-message]
+    (dispatch [:add-unviewed-message chat-id msg-id])))
+
 (register-handler :received-msg
   [(after store-message!)
-   (after dispatch-request!)]
+   (after dispatch-request!)
+   (after dispatch-unviewed-message!)]
   receive-message)
 
 (register-handler :group-received-msg
@@ -574,8 +586,8 @@
 
 
 (register-handler :send-seen!
-  #_(afetr (fn [_ [_ chat-id message-id]]
-             (dispatch [:msg-seen chat-id message-id])))
-  (debug (u/side-effect!
-           (fn [_ [_ chat-id message-id]]
-             (api/send-seen chat-id message-id)))))
+  (after (fn [_ [_ chat-id message-id]]
+           (dispatch [:msg-seen chat-id message-id])))
+  (u/side-effect!
+    (fn [_ [_ chat-id message-id]]
+      (api/send-seen chat-id message-id))))
