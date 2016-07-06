@@ -26,9 +26,14 @@
    :left 0
    :justifyContent :center})
 
-(def account-list-container
-  {:flex 1
-   :flexDirection :column
+(def accounts-container
+  {:flex           1
+   :flex-direction :column
+   :justifyContent :center
+   :padding-bottom 56})
+
+(def account-list-view-container
+  {:flexDirection :column
    :justifyContent :center})
 
 (def account-list
