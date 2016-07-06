@@ -180,3 +180,10 @@
 (def address-explication
   {:textAlign :center
    :color "#838c93de"})
+
+(def buttons-container
+  {:position :absolute
+   :bottom 0
+   :right 0
+   :width 200
+   :height 170})
