@@ -124,7 +124,7 @@
   [{:keys [delivery-status msg-id to] :as m}]
   [status [:get-in [:message-status to msg-id]]]
   [view st/delivery-view
-   [image {:source (case delivery-status
+   [image {:source (case (or status delivery-status)
                      :seen {:uri :icon_ok_small}
                      :seen-by-everyone {:uri :icon_ok_small}
                      :failed res/delivery-failed-icon
@@ -205,17 +205,28 @@
     (into [view] children)))
 
 (defn chat-message
-  [{:keys [outgoing delivery-status timestamp new-day group-chat]
+  [{:keys [outgoing delivery-status timestamp new-day group-chat msg-id chat-id]
     :as   message}]
-  [message-container message
-   ;; TODO there is no new-day info in message
-   (when new-day
-     [message-date timestamp])
-   [view
-    (let [incoming-group (and group-chat (not outgoing))]
-      [message-content
-       (if incoming-group
-         incoming-group-message-body
-         message-body)
-       (merge message {:delivery-status (keyword delivery-status)
-                       :incoming-group  incoming-group})])]])
+  (let [status (subscribe [:get-in [:message-status chat-id msg-id]])]
+    (r/create-class
+      {:component-did-mount
+       (fn []
+         (when (and outgoing
+                    (not= :seen delivery-status)
+                    (not= :seen @status))
+           (dispatch [:send-seen! chat-id msg-id])))
+       :reagent-render
+       (fn [{:keys [outgoing delivery-status timestamp new-day group-chat]
+             :as   message}]
+         [message-container message
+          ;; TODO there is no new-day info in message
+          (when new-day
+            [message-date timestamp])
+          [view
+           (let [incoming-group (and group-chat (not outgoing))]
+             [message-content
+              (if incoming-group
+                incoming-group-message-body
+                message-body)
+              (merge message {:delivery-status (keyword delivery-status)
+                              :incoming-group  incoming-group})])]])})))

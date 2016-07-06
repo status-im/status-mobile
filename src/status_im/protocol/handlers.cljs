@@ -109,7 +109,10 @@
 
 (defn update-message-status [status]
   (fn [db [_ from msg-id]]
-    (assoc-in db [:message-status from msg-id] status)))
+    (let [current-status (get-in db [:message-status from msg-id])]
+      (if-not (= :seen current-status)
+        (assoc-in db [:message-status from msg-id] status)
+        db))))
 
 (register-handler :acked-msg
   (after (update-message! :delivered))
@@ -118,3 +121,9 @@
 (register-handler :msg-delivery-failed
   (after (update-message! :failed))
   (update-message-status :failed))
+
+;; todo maybe it is fine to treat as "seen" all messages that are older
+;; than current
+(register-handler :msg-seen
+  (after (update-message! :seen))
+  (update-message-status :seen))
