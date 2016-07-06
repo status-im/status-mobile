@@ -568,6 +568,14 @@
        (let [suggestions (get-in db [:command-suggestions current-chat-id])
              mode (get-in db [:edit-mode current-chat-id])]
          (when (and (= :text mode)) (seq suggestions)
-           (dispatch [:fix-commands-suggestions-height])))))]
+                                    (dispatch [:fix-commands-suggestions-height])))))]
   (fn [db [_ h]]
     (assoc db :layout-height h)))
+
+
+(register-handler :send-seen!
+  #_(afetr (fn [_ [_ chat-id message-id]]
+             (dispatch [:msg-seen chat-id message-id])))
+  (debug (u/side-effect!
+           (fn [_ [_ chat-id message-id]]
+             (api/send-seen chat-id message-id)))))

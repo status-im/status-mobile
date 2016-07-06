@@ -22,6 +22,8 @@
                                     (dispatch [:received-msg (assoc payload :from from :to to)]))
                          :msg-acked (let [{:keys [msg-id from]} event]
                                       (dispatch [:acked-msg from msg-id]))
+                         :msg-seen (let [{:keys [msg-id from]} event]
+                                      (dispatch [:msg-seen from msg-id]))
                          :delivery-failed (let [{:keys [msg-id from]} event]
                                             (dispatch [:msg-delivery-failed from msg-id]))
                          :new-group-chat (let [{:keys [from group-id identities group-name]} event]
