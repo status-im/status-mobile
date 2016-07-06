@@ -88,12 +88,13 @@
          [view st/empty-contact-groups
           [react/icon :group_big st/empty-contacts-icon]
           [text {:style st/empty-contacts-text} (label :t/no-contacts)]])
-       [action-button {:buttonColor color-blue
-                       :offsetY     16
-                       :offsetX     16}
-        [action-button-item
-         {:title       (label :t/new-contact)
-          :buttonColor :#9b59b6
-          :onPress     #(dispatch [:navigate-to :new-contact])}
-         [icon {:name  :android-create
-                :style create-icon}]]]])))
+       [view st/buttons-container
+        [action-button {:buttonColor color-blue
+                        :offsetY     16
+                        :offsetX     16}
+         [action-button-item
+          {:title       (label :t/new-contact)
+           :buttonColor :#9b59b6
+           :onPress     #(dispatch [:navigate-to :new-contact])}
+          [icon {:name  :android-create
+                 :style create-icon}]]]]])))

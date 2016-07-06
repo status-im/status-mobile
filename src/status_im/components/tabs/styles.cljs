@@ -14,7 +14,11 @@
 (def tab-height 56)
 
 (defn tabs-container [hidden? animation? offset-y]
-  {:height          tabs-height
+  {:position        :absolute
+   :bottom          0
+   :left            0
+   :right           0
+   :height          tabs-height
    :backgroundColor color-white
    :marginBottom    (if (or hidden? animation?)
                       (- tabs-height) 0)
@@ -55,9 +59,10 @@
    :alignItems     :center})
 
 (defn tab-view-container [offset-x]
-  {:position  :absolute
-   :top       0
-   :left      0
-   :right     0
-   :bottom    0
-   :transform [{:translateX offset-x}]})
+  {:position       :absolute
+   :top            0
+   :left           0
+   :right          0
+   :bottom         0
+   :padding-bottom 59
+   :transform      [{:translateX offset-x}]})
