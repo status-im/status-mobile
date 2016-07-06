@@ -60,13 +60,13 @@
              :custom-content   toolbar-title
              :action           {:image   {:style  icon-search}
                                :handler #()}}]
-
-   [view st/account-list-container
-    [list-view {:dataSource          (lw/to-datasource accounts)
-                :enableEmptySections true
-                :renderRow           render-row
-                :renderSeparator     render-separator
-                :style               st/account-list}]]
+   [view st/accounts-container
+    [view st/account-list-view-container
+     [list-view {:dataSource          (lw/to-datasource accounts)
+                 :enableEmptySections true
+                 :renderRow           render-row
+                 ;:renderSeparator     render-separator
+                 :style               st/account-list}]]]
    [view st/add-account-button-container
     [touchable-highlight {:on-press create-account}
      [view st/add-account-button
