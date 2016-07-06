@@ -132,6 +132,7 @@
    :address                               "Address"
    :password                              "Password"
    :login                                 "Login"
+   :wrong-password                        "Wrong password"
 
    ;users
    :add-account                           "Add account"
