@@ -47,7 +47,7 @@
       input-height)))
 
 (register-handler :animate-show-response
-  [(after #(dispatch [:command-edit-mode]))]
+  ;[(after #(dispatch [:command-edit-mode]))]
   (fn [{:keys [current-chat-id] :as db}]
     (let [suggestions? (seq (get-in db [:suggestions current-chat-id]))
           height (if suggestions?

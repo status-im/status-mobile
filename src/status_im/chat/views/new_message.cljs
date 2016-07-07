@@ -18,8 +18,7 @@
 
 (defn get-options [{:keys [type placeholder]} command-type]
   (let [options (case (keyword type)
-                  :phone {:input-options {:keyboardType :phone-pad}
-                          :validator     valid-mobile-number?}
+                  :phone {:input-options {:keyboardType :phone-pad}}
                   :password {:input-options {:secureTextEntry true}}
                   :number {:input-options {:keyboardType :numeric}}
                   ;; todo maybe nil is fine for now :)
