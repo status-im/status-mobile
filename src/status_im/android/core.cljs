@@ -54,11 +54,11 @@
                        "keyboardDidShow"
                        (fn [e]
                          (let [h (.. e -endCoordinates -height)]
-                           (when-not (= h keyboard-height)
+                           (when-not (= h @keyboard-height)
                              (dispatch [:set :keyboard-height h])))))
          (.addListener device-event-emitter
                        "keyboardDidHide"
-                       (when-not (= 0 keyboard-height)
+                       (when-not (= 0 @keyboard-height)
                          #(dispatch [:set :keyboard-height 0]))))
        :render
        (fn []

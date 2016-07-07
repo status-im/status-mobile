@@ -172,3 +172,13 @@
   (fn [_ [_ message-id]]
     (let [requests (subscribe [:get-requests])]
       (reaction (not (some #(= message-id (:message-id %)) @requests))))))
+
+(register-sub :validation-errors
+  (fn [db]
+    (let [current-chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:validation-errors @current-chat-id])))))
+
+(register-sub :custom-validation-errors
+  (fn [db]
+    (let [current-chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:custom-validation-errors @current-chat-id])))))

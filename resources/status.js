@@ -22,6 +22,7 @@ Command.prototype.create = function (com) {
     this.name = com.name;
     this.description = com.description;
     this.handler = com.handler;
+    this.validator = com.validator;
     this.color = com.color;
     this.icon = com.icon;
     this.params = com.params || [];
@@ -83,13 +84,13 @@ function scrollView(options, elements) {
 }
 
 var status = {
-    command: function (n, d, h) {
+    command: function (h) {
         var command = new Command();
-        return command.create(n, d, h);
+        return command.create(h);
     },
-    response: function (n, d, h) {
+    response: function (h) {
         var response = new Response();
-        return response.create(n, d, h);
+        return response.create(h);
     },
     types: {
         TEXT: 'text',
