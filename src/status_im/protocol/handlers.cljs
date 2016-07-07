@@ -18,8 +18,8 @@
 
 (register-handler :initialize-protocol
   (u/side-effect!
-    (fn [db [_ account]]
-      (init-protocol account (make-handler db)))))
+    (fn [{:keys [user-identity] :as db} [_ account]]
+      (init-protocol (or account user-identity) (make-handler db)))))
 
 (register-handler :protocol-initialized
   (fn [db [_ identity]]

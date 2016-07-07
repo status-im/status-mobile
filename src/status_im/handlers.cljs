@@ -88,7 +88,9 @@
   (u/side-effect!
    (fn [db _]
      (log/debug "Starting node")
-     (.startNode geth (fn [result] (node-started db result))))))
+     (.startNode geth
+                 (fn [result] (node-started db result))
+                 #(dispatch [:initialize-protocol])))))
 
 (register-handler :crypt-initialized
   (u/side-effect!
