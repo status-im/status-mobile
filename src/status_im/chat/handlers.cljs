@@ -588,7 +588,9 @@
 
 (register-handler :send-seen!
   (after (fn [_ [_ chat-id message-id]]
+           (when-not (= "console" chat-id))
            (dispatch [:msg-seen chat-id message-id])))
   (u/side-effect!
     (fn [_ [_ chat-id message-id]]
-      (api/send-seen chat-id message-id))))
+      (when-not (= "console" chat-id)
+        (api/send-seen chat-id message-id)))))
