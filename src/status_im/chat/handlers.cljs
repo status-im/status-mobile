@@ -218,6 +218,11 @@
   (fn [db [_ {:keys [chat-id msg-id]}]]
     (set-message-shown db chat-id msg-id)))
 
+(defn default-delivery-status [chat-id]
+  (if (console? chat-id)
+    :seen
+    :pending))
+
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
   (let [text (get-in db [:chats current-chat-id :input-text])
@@ -230,7 +235,7 @@
                    :to              current-chat-id
                    :from            identity
                    :content-type    text-content-type
-                   :delivery-status :pending
+                   :delivery-status (default-delivery-status current-chat-id)
                    :outgoing        true
                    :timestamp       (time/now-ms)})]
     (if command
@@ -246,6 +251,7 @@
      :to               chat-id
      :content          content
      :content-type     content-type-command
+     :delivery-status  (default-delivery-status chat-id)
      :outgoing         true
      :preview          preview-string
      :rendered-preview preview
@@ -588,9 +594,9 @@
 
 (register-handler :send-seen!
   (after (fn [_ [_ chat-id message-id]]
-           (when-not (= "console" chat-id))
+           (when-not (console? chat-id))
            (dispatch [:msg-seen chat-id message-id])))
   (u/side-effect!
     (fn [_ [_ chat-id message-id]]
-      (when-not (= "console" chat-id)
+      (when-not (console? chat-id)
         (api/send-seen chat-id message-id)))))
