@@ -11,8 +11,7 @@
             [status-im.chat.views.command :as command]
             [status-im.chat.styles.message-input :as st]
             [status-im.chat.styles.plain-message :as st-message]
-            [status-im.chat.styles.response :as st-response]
-            [status-im.chat.views.command-validation :as cv]))
+            [status-im.chat.styles.response :as st-response]))
 
 (defn send-button [{:keys [on-press accessibility-label]}]
   [touchable-highlight {:on-press            on-press
@@ -56,7 +55,6 @@
    input-command [:get-chat-command-content]
    valid-plain-message? [:valid-plain-message?]]
   [view st/input-container
-   [cv/validation-messages]
    [view st/input-view
     [plain-message/commands-button]
     [message-input-container

@@ -15,7 +15,8 @@
             [status-im.chat.styles.dragdown :as ddst]
             [status-im.components.animation :as anim]
             [status-im.chat.suggestions-responder :as resp]
-            [status-im.chat.constants :as c]))
+            [status-im.chat.constants :as c]
+            [status-im.chat.views.command-validation :as cv]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -83,8 +84,7 @@
 
 (defview placeholder []
   [suggestions [:get-content-suggestions]]
-  (when (seq suggestions)
-    [view st/input-placeholder]))
+  [view st/input-placeholder])
 
 (defview response-suggestions-view []
   [suggestions [:get-content-suggestions]]
@@ -95,4 +95,5 @@
     [container response-height
      [request-info response-height]
      [response-suggestions-view]
+     [cv/validation-messages]
      [placeholder]]))
