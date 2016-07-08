@@ -5,7 +5,8 @@
             [status-im.models.commands :as commands]
             [clojure.string :as str]
             [status-im.commands.utils :as cu]
-            [status-im.utils.phone-number :as pn]))
+            [status-im.utils.phone-number :as pn]
+            [status-im.i18n :as i18n]))
 
 (def command-prefix "c ")
 
@@ -168,8 +169,8 @@
               (dispatch [::finish-command-staging chat-id])
               (dispatch [::set-validation-error
                          chat-id
-                         {:title       "Phobe number"
-                          :description "Wrong phone number"}])))})
+                         {:title       (i18n/label :t/phone-number)
+                          :description (i18n/label :t/invalid-phone)}])))})
 
 (defn validator [name]
   (validation-handlers (keyword name)))
