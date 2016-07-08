@@ -6,9 +6,10 @@
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.utils.datetime :as time]))
 
-(defn chat-list-item-inner-view
+(defview chat-list-item-inner-view
   [{:keys [chat-id name color new-messages-count
            online group-chat contacts] :as chat}]
+  [unviewed-messages [:unviewed-messages-count chat-id]]
   (let [last-message (first (:messages chat))]
     [view st/chat-container
      [view st/chat-icon-container
@@ -43,6 +44,6 @@
          (when (:timestamp last-message)
            [text {:style st/datetime-text}
             (time/to-short-str (:timestamp last-message))])])
-      (when (pos? new-messages-count)
+      (when (pos? unviewed-messages)
         [view st/new-messages-container
-         [text {:style st/new-messages-text} new-messages-count]])]]))
+         [text {:style st/new-messages-text} unviewed-messages]])]]))
