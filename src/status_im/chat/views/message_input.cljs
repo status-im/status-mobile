@@ -56,7 +56,7 @@
    input-command [:get-chat-command-content]
    valid-plain-message? [:valid-plain-message?]]
   [view st/input-container
-   [cv/errors]
+   [cv/validation-messages]
    [view st/input-view
     [plain-message/commands-button]
     [message-input-container

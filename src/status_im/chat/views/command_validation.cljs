@@ -4,27 +4,28 @@
             [status-im.chat.styles.command-validation :as st]
             [status-im.utils.listview :as lw]))
 
-(defn error [{:keys [title description]}]
+(defn message [{:keys [title description]}]
   (c/list-item
     [c/view
-     [c/text title]
-     [c/text description]]))
+     [c/text st/title title]
+     [c/text st/description description]]))
 
-(defn errors-list [errors]
-  [c/list-view {:renderRow                 error
+(defn messages-list [errors]
+  [c/list-view {:renderRow                 message
                 :keyboardShouldPersistTaps true
-                :dataSource                (lw/to-datasource errors)}])
+                :dataSource                (lw/to-datasource errors)
+                :style                     st/messages-container}])
 
-(defview errors []
-  [errors [:validation-errors]
+(defview validation-messages []
+  [validation-messages [:validation-errors]
    custom-errors [:custom-validation-errors]
    command? [:command?]]
   (when (and command?
-             (or (seq errors)
+             (or (seq validation-messages)
                  (seq custom-errors)))
-    [c/scroll-view {:background-color :red}
+    [c/scroll-view
      (cond (seq custom-errors)
            (vec (concat [c/view] custom-errors))
 
-           (seq errors)
-           [errors-list errors])]))
+           (seq validation-messages)
+           [messages-list validation-messages])]))
