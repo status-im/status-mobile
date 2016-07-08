@@ -3,7 +3,6 @@
             [status-im.persistence.realm :as realm]))
 
 (defn unique-identity? [identity]
-  (println identity)
   (not (realm/exists? :contacts :whisper-identity identity)))
 
 (defn valid-length? [identity]

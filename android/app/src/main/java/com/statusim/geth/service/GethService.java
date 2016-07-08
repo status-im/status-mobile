@@ -213,7 +213,7 @@ public class GethService extends Service {
         String address = data.getString("address");
         String password = data.getString("password");
         // TODO: remove third argument
-        String result = Statusgo.Login(address, password);
+        String result = Statusgo.UnlockAccount(address, password, 0);
         Log.d(TAG, "Unlocked account: " + result);
 
         Bundle replyData = new Bundle();

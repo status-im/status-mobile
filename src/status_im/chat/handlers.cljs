@@ -24,7 +24,10 @@
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup]]
-            status-im.chat.handlers.commands))
+            status-im.chat.handlers.commands
+            status-im.chat.handlers.animation
+            status-im.chat.handlers.requests
+            status-im.chat.handlers.unviewed-messages))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -140,20 +143,26 @@
   (fn [db [_ {:keys [chat-id msg-id]}]]
     (set-message-shown db chat-id msg-id)))
 
+(defn default-delivery-status [chat-id]
+  (if (console? chat-id)
+    :seen
+    :pending))
+
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
   (let [text (get-in db [:chats current-chat-id :input-text])
         [command] (suggestions/check-suggestion db (str text " "))
         message (check-author-direction
                   db current-chat-id
-                  {:msg-id       (random/id)
-                   :chat-id      current-chat-id
-                   :content      text
-                   :to           current-chat-id
-                   :from         identity
-                   :content-type text-content-type
-                   :outgoing     true
-                   :timestamp    (time/now-ms)})]
+                  {:msg-id          (random/id)
+                   :chat-id         current-chat-id
+                   :content         text
+                   :to              current-chat-id
+                   :from            identity
+                   :content-type    text-content-type
+                   :delivery-status (default-delivery-status current-chat-id)
+                   :outgoing        true
+                   :timestamp       (time/now-ms)})]
     (if command
       (commands/set-chat-command db command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
@@ -167,6 +176,7 @@
      :to               chat-id
      :content          content
      :content-type     content-type-command
+     :delivery-status  (default-delivery-status chat-id)
      :outgoing         true
      :preview          preview-string
      :rendered-preview preview
@@ -208,12 +218,10 @@
   [{:keys [new-message current-chat-id] :as db} _]
   (when (and new-message (not-console? current-chat-id))
     (let [{:keys [group-chat]} (get-in db [:chats current-chat-id])
-          content (:content new-message)]
+          message (select-keys new-message [:content :msg-id])]
       (if group-chat
-        (api/send-group-user-msg {:group-id current-chat-id
-                                  :content  content})
-        (api/send-user-msg {:to      current-chat-id
-                            :content content})))))
+        (api/send-group-user-msg (assoc message :group-id current-chat-id))
+        (api/send-user-msg (assoc message :to current-chat-id))))))
 
 (defn save-message-to-realm!
   [{:keys [new-message current-chat-id]} _]
@@ -330,6 +338,7 @@
   (assoc db :loaded-chats (chats/chats-list)))
 
 (register-handler :initialize-chats
+  (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))
 
 (defn store-message!
@@ -343,14 +352,22 @@
 
 (defn receive-message
   [db [_ {chat-id :from :as message}]]
-  (let [message' (check-author-direction db chat-id message)]
+  (let [message' (-> db
+                     (check-author-direction chat-id message)
+                     (assoc :delivery-status :pending))]
     (-> db
         (add-message-to-db chat-id message')
         (assoc :new-message message'))))
 
+(defn dispatch-unviewed-message!
+  [{:keys [new-message]} [_ {chat-id :from}]]
+  (let [{:keys [msg-id]} new-message]
+    (dispatch [:add-unviewed-message chat-id msg-id])))
+
 (register-handler :received-msg
   [(after store-message!)
-   (after dispatch-request!)]
+   (after dispatch-request!)
+   (after dispatch-unviewed-message!)]
   receive-message)
 
 (register-handler :group-received-msg
@@ -475,6 +492,16 @@
        (let [suggestions (get-in db [:command-suggestions current-chat-id])
              mode (get-in db [:edit-mode current-chat-id])]
          (when (and (= :text mode)) (seq suggestions)
-           (dispatch [:fix-commands-suggestions-height])))))]
+                                    (dispatch [:fix-commands-suggestions-height])))))]
   (fn [db [_ h]]
     (assoc db :layout-height h)))
+
+
+(register-handler :send-seen!
+  (after (fn [_ [_ chat-id message-id]]
+           (when-not (console? chat-id))
+           (dispatch [:msg-seen chat-id message-id])))
+  (u/side-effect!
+    (fn [_ [_ chat-id message-id]]
+      (when-not (console? chat-id)
+        (api/send-seen chat-id message-id)))))
