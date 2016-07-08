@@ -172,3 +172,7 @@
   (fn [_ [_ message-id]]
     (let [requests (subscribe [:get-requests])]
       (reaction (not (some #(= message-id (:message-id %)) @requests))))))
+
+(register-sub :unviewed-messages-count
+  (fn [db [_ chat-id]]
+    (reaction (get-in @db [:unviewed-messages chat-id :count]))))
