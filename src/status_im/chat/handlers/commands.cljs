@@ -183,5 +183,6 @@
 
 
 (register-handler ::set-validation-error
+  (after #(dispatch [:fix-response-height]))
   (fn [db [_ chat-id error]]
     (assoc-in db [:validation-errors chat-id] [error])))

@@ -1,9 +1,10 @@
 (ns status-im.chat.styles.command-validation
-  (:require [status-im.components.styles :as st]))
+  (:require [status-im.components.styles :as st]
+            [status-im.chat.constants :as constants]))
 
 (def messages-container
   {:background-color :red
-   :height           61
+   :height           constants/request-info-height
    :padding-left     16
    :padding-top      14})
 

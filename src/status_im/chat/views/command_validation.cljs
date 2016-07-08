@@ -20,12 +20,11 @@
   [validation-messages [:validation-errors]
    custom-errors [:custom-validation-errors]
    command? [:command?]]
-  (when (and command?
-             (or (seq validation-messages)
-                 (seq custom-errors)))
-    [c/scroll-view
-     (cond (seq custom-errors)
-           (vec (concat [c/view] custom-errors))
+  [c/view
+   (cond (seq custom-errors)
+         (vec (concat [c/view] custom-errors))
 
-           (seq validation-messages)
-           [messages-list validation-messages])]))
+         (seq validation-messages)
+         [messages-list validation-messages]
+
+         :else nil)])

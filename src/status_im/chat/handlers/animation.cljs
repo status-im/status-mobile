@@ -41,10 +41,16 @@
 (defn get-minimum-height
   [{:keys [current-chat-id] :as db}]
   (let [path [:chats current-chat-id :command-input :command :type]
-        type (get-in db path)]
-    (if (= :response type)
-      minimum-suggestion-height
-      input-height)))
+        type (get-in db path)
+        errors (get-in db [:validation-errors current-chat-id])
+        custom-errors (get-in db [:custom-validation-errors current-chat-id])
+        validation-height (if (or (seq errors) (seq custom-errors))
+                            request-info-height
+                            0)]
+    (+ validation-height
+       (if (= :response type)
+         minimum-suggestion-height
+         input-height))))
 
 (register-handler :animate-show-response
   ;[(after #(dispatch [:command-edit-mode]))]
