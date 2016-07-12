@@ -3,7 +3,7 @@ status.command({
     description: "Send location",
     color: "#9a5dcf",
     preview: function (params) {
-        var text =  status.components.text(
+        var text = status.components.text(
             {
                 style: {
                     marginTop: 5,
@@ -138,6 +138,12 @@ status.response({
     name: "phone",
     description: "Send phone number",
     color: "#5fc48d",
+    validator: function (params) {
+        return {
+            validationHandler: "phone",
+            parameters: [params.value]
+        };
+    },
     params: [{
         name: "phone",
         type: status.types.PHONE,
@@ -156,6 +162,16 @@ status.command({
     name: "help",
     description: "Help",
     color: "#7099e6",
+    /* Validator example
+    validator: function (params) {
+        if (params.value != "3") {
+            var error = status.components.view(
+                {backgroundColor: "red"},
+                [status.components.text({}, "ooops :(")]
+            );
+            return {errors: [error]}
+        }
+    },*/
     params: [{
         name: "query",
         type: status.types.TEXT

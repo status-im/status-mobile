@@ -15,7 +15,8 @@
             [status-im.chat.styles.dragdown :as ddst]
             [status-im.components.animation :as anim]
             [status-im.chat.suggestions-responder :as resp]
-            [status-im.chat.constants :as c]))
+            [status-im.chat.constants :as c]
+            [status-im.chat.views.command-validation :as cv]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -58,14 +59,14 @@
          [icon :drag_down ddst/drag-down-icon]]))))
 
 (defn container-animation-logic [{:keys [to-value val]}]
-  (let [to-value @to-value]
+  (when-let [to-value @to-value]
     (when-not (= to-value (.-_value val))
       (anim/start (anim/spring val {:toValue to-value})))))
 
 (defn container [response-height & children]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
-        to-response-height (subscribe [:animations :to-response-height])
+        to-response-height (subscribe [:response-height])
         changed (subscribe [:animations :response-height-changed])
         context {:to-value to-response-height
                  :val      response-height}
@@ -83,8 +84,7 @@
 
 (defview placeholder []
   [suggestions [:get-content-suggestions]]
-  (when (seq suggestions)
-    [view st/input-placeholder]))
+  [view st/input-placeholder])
 
 (defview response-suggestions-view []
   [suggestions [:get-content-suggestions]]
@@ -95,4 +95,5 @@
     [container response-height
      [request-info response-height]
      [response-suggestions-view]
+     [cv/validation-messages]
      [placeholder]]))

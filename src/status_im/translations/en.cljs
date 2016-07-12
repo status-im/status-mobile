@@ -136,4 +136,6 @@
    ;users
    :add-account                           "Add account"
 
+   ;validation
+   :invalid-phone                         "Invalid phone number"
    })
