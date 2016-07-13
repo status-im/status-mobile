@@ -69,7 +69,7 @@
                                                     (:label-font-large config)
                                                     (:label-font-small config)))
               :float-label?    (if (s/blank? value) false true)}]
-    (log/debug "component-will-mount")
+    ;(log/debug "component-will-mount")
     (r/set-state component data)))
 
 ; Invoked once, only on the client (not on the server), immediately after the
@@ -79,7 +79,8 @@
 ; parent components.
 (defn component-did-mount [component]
   (let [props (r/props component)]
-    (log/debug "component-did-mount:")))
+    ;(log/debug "component-did-mount:")
+    ))
 
 ; Invoked when a component is receiving new props. This method is not called for
 ; the initial render. Use this as an opportunity to react to a prop transition
@@ -87,7 +88,8 @@
 ; The old props can be accessed via this.props. Calling this.setState() within
 ; this function will not trigger an additional render.
 (defn component-will-receive-props [component new-props]
-  (log/debug "component-will-receive-props: new-props=" new-props))
+  ;(log/debug "component-will-receive-props: new-props=" new-props)
+  )
 
 ; Invoked before rendering when new props or state are being received. This method
 ; is not called for the initial render or when forceUpdate is used. Use this as
@@ -97,20 +99,22 @@
 ; until the next state change. In addition, componentWillUpdate and
 ; componentDidUpdate will not be called.
 (defn should-component-update [component next-props next-state]
-  (log/debug "should-component-update: " next-props next-state)
+  ;(log/debug "should-component-update: " next-props next-state)
   true)
 
 ; Invoked immediately before rendering when new props or state are being received.
 ; This method is not called for the initial render. Use this as an opportunity
 ; to perform preparation before an update occurs.
 (defn component-will-update [component next-props next-state]
-  (log/debug "component-will-update: " next-props next-state))
+  ;(log/debug "component-will-update: " next-props next-state)
+  )
 
 ; Invoked immediately after the component's updates are flushed to the DOM.
 ; This method is not called for the initial render. Use this as an opportunity
 ; to operate on the DOM when the component has been updated.
 (defn component-did-update [component prev-props prev-state]
-  (log/debug "component-did-update: " prev-props prev-state))
+  ;(log/debug "component-did-update: " prev-props prev-state)
+  )
 
 (defn on-focus [{:keys [component animation onFocus]}]
   (do
@@ -147,7 +151,7 @@
         focusLineColor (if error errorColor focusLineColor)
         labelColor (if (and error (not float-label?)) errorColor labelColor)
         label (if error (str label " *") label)]
-    (log/debug "reagent-render: " data)
+    ;(log/debug "reagent-render: " data)
     [view (merge st/text-field-container wrapperStyle)
      [animated-text {:style (st/label label-top label-font-size labelColor)} label]
      [text-input {:style        (merge st/text-input inputStyle)
@@ -187,5 +191,5 @@
                         :component-did-update         component-did-update
                         :display-name                 "text-field"
                         :reagent-render               reagent-render}]
-    (log/debug "Creating text-field component: " data)
+    ;(log/debug "Creating text-field component: " data)
     (r/create-class component-data)))

@@ -125,6 +125,9 @@
    :name                                  "Name"
    :whisper-identity                      "Whisper Identity"
    :address-explication                   "Maybe here should be some text explaining what an address is and where to look for it"
+   :enter-valid-address                   "Please enter a valid address or scan a QR code"
+   :unknown-address                       "Unknown address"
+   
 
    ;login
    :recover-access                        "Recover access"
