@@ -84,11 +84,9 @@
                 :renderRow                 render-row}]]])
 
 (defn header [h]
-  (let [orientation (subscribe [:get :orientation])
-        kb-height (subscribe [:get :keyboard-height])
+  (let [layout-height (subscribe [:get :layout-height])
         pan-responder (resp/pan-responder h
-                                          kb-height
-                                          orientation
+                                          layout-height
                                           :fix-commands-suggestions-height)]
     (fn [_]
       [view
@@ -96,18 +94,22 @@
               {:style ddst/drag-down-touchable})
        [view st/header-icon]])))
 
-(defn container-animation-logic [{:keys [to-value val]}]
+(defn container-animation-logic [{:keys [to-value val animate?]}]
   (when-let [to-value @to-value]
     (when-not (= to-value (.-_value val))
-      (anim/start (anim/spring val {:toValue to-value})))))
+      (if (or (nil? @animate?) @animate?)
+        (anim/start (anim/spring val {:toValue to-value}))
+        (anim/set-value val to-value)))))
 
 (defn container [h & elements]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:command-suggestions-height])
         changed (subscribe [:animations :commands-height-changed])
+        animate? (subscribe [:animate?])
         context {:to-value to-response-height
-                 :val      h}
+                 :val      h
+                 :animate? animate?}
         on-update #(container-animation-logic context)]
     (r/create-class
       {:component-did-mount

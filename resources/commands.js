@@ -128,10 +128,12 @@ function phoneSuggestions(params) {
         );
     });
 
-    return status.components.scrollView(
+    var view = status.components.scrollView(
         suggestionsContainerStyle(ph.length),
         suggestions
     );
+
+    return {markup: view};
 }
 
 status.response({
@@ -163,15 +165,15 @@ status.command({
     description: "Help",
     color: "#7099e6",
     /* Validator example
-    validator: function (params) {
-        if (params.value != "3") {
-            var error = status.components.view(
-                {backgroundColor: "red"},
-                [status.components.text({}, "ooops :(")]
-            );
-            return {errors: [error]}
-        }
-    },*/
+     validator: function (params) {
+     if (params.value != "3") {
+     var error = status.components.view(
+     {backgroundColor: "red"},
+     [status.components.text({}, "ooops :(")]
+     );
+     return {errors: [error]}
+     }
+     },*/
     params: [{
         name: "query",
         type: status.types.TEXT
@@ -223,3 +225,26 @@ status.response({
     }
 });
 
+function walletView(params) {
+    if (params.value != "") {
+        var url = params.value;
+        if (!/^[a-zA-Z-_]+:/.test(url)) {
+            url = 'http://' + url;
+        }
+
+        return {webViewUrl: url};
+    }
+}
+
+status.command({
+    name: "browse",
+    description: "browser",
+    color: "#ffa500",
+    fullscreen: true,
+    suggestionsTrigger: 'on-send',
+    params: [{
+        name: "webpage",
+        suggestions: walletView,
+        type: status.types.TEXT
+    }]
+});

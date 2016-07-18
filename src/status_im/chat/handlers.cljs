@@ -57,6 +57,7 @@
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
 (register-handler :start-cancel-command
+  (after #(dispatch [:set-soft-input-mode :resize]))
   (u/side-effect!
     (fn [db _]
       (dispatch [:animate-cancel-command]))))
@@ -483,16 +484,16 @@
 (register-handler :set-layout-height
   [(after
      (fn [{:keys [current-chat-id] :as db}]
-       (let [suggestions (get-in db [:suggestions current-chat-id])
+       (let [suggestions (get-in db [:has-suggestions? current-chat-id])
              mode (get-in db [:edit-mode current-chat-id])]
-         (when (and (= :command mode) (seq suggestions))
-           (dispatch [:fix-response-height])))))
+         (when (and (= :command mode) suggestions)
+           (dispatch [:fix-response-height nil nil true])))))
    (after
      (fn [{:keys [current-chat-id] :as db}]
        (let [suggestions (get-in db [:command-suggestions current-chat-id])
              mode (get-in db [:edit-mode current-chat-id])]
-         (when (and (= :text mode)) (seq suggestions)
-                                    (dispatch [:fix-commands-suggestions-height])))))]
+         (when (and (not= :command mode) (seq suggestions))
+           (dispatch [:fix-commands-suggestions-height nil nil true])))))]
   (fn [db [_ h]]
     (assoc db :layout-height h)))
 
@@ -505,3 +506,17 @@
     (fn [_ [_ chat-id message-id]]
       (when-not (console? chat-id)
         (api/send-seen chat-id message-id)))))
+
+(register-handler :set-web-view-url
+  (fn [{:keys [current-chat-id] :as db} [_ url]]
+    (assoc-in db [:web-view-url current-chat-id] url)))
+
+(register-handler :set-soft-input-mode
+  (after
+    (fn [{:keys [current-chat-id]} [_ mode chat-id]]
+      (when (or (nil? chat-id) (= current-chat-id chat-id))
+        (.setSoftInputMode j/jail (if (= :pan mode)
+                                    j/adjust-pan
+                                    j/adjust-resize)))))
+  (fn [db [_ chat-id mode]]
+    (assoc-in db [:kb-mode chat-id] mode)))

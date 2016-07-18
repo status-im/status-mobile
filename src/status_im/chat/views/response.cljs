@@ -9,7 +9,9 @@
                                                 image
                                                 text
                                                 text-input
-                                                touchable-highlight]]
+                                                touchable-highlight
+                                                web-view
+                                                scroll-view]]
             [status-im.components.drag-drop :as drag]
             [status-im.chat.styles.response :as st]
             [status-im.chat.styles.dragdown :as ddst]
@@ -36,11 +38,9 @@
     "By ???, MMM 1st at HH:mm"]])
 
 (defn request-info [response-height]
-  (let [orientation (subscribe [:get :orientation])
-        kb-height (subscribe [:get :keyboard-height])
+  (let [layout-height (subscribe [:get :layout-height])
         pan-responder (resp/pan-responder response-height
-                                          kb-height
-                                          orientation
+                                          layout-height
                                           :fix-response-height)
         command (subscribe [:get-chat-command])]
     (fn [response-height]
@@ -58,18 +58,22 @@
                      {:style ddst/drag-down-touchable})
          [icon :drag_down ddst/drag-down-icon]]))))
 
-(defn container-animation-logic [{:keys [to-value val]}]
+(defn container-animation-logic [{:keys [to-value val animate?]}]
   (when-let [to-value @to-value]
     (when-not (= to-value (.-_value val))
-      (anim/start (anim/spring val {:toValue to-value})))))
+      (if (or (nil? @animate?) @animate?)
+        (anim/start (anim/spring val {:toValue to-value}))
+        (anim/set-value val to-value)))))
 
 (defn container [response-height & children]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:response-height])
         changed (subscribe [:animations :response-height-changed])
+        animate? (subscribe [:animate?])
         context {:to-value to-response-height
-                 :val      response-height}
+                 :val      response-height
+                 :animate? animate?}
         on-update #(container-animation-logic context)]
     (r/create-class
       {:component-did-mount
@@ -81,6 +85,21 @@
          @to-response-height @changed
          (into [animated-view {:style (st/response-view response-height)}]
                children))})))
+
+(defn on-navigation-change
+  [event]
+  (let [{:strs [loading url]} (js->clj event)]
+    (when-not (= "about:blank" url)
+      (if loading
+        (dispatch [:set-web-view-url url])
+        (dispatch [:set-chat-command-content (str "c " url)])))))
+
+(defview suggestions-web-view []
+  [url [:web-view-url]]
+  [web-view {:source                     {:uri url}
+             :java-script-enabled        true
+             :style                      {:height 300}
+             :on-navigation-state-change on-navigation-change}])
 
 (defview placeholder []
   [suggestions [:get-content-suggestions]]
@@ -94,6 +113,7 @@
   (let [response-height (anim/create-value c/input-height)]
     [container response-height
      [request-info response-height]
+     [suggestions-web-view]
      [response-suggestions-view]
      [cv/validation-messages]
      [placeholder]]))

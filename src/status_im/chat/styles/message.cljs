@@ -326,6 +326,7 @@
 (defn message-container [height]
   {:height height})
 
-(def new-message-container
+(defn new-message-container [margin]
   {:backgroundColor color-white
-   :elevation       4})
+   :elevation       4
+   :margin-bottom   margin})

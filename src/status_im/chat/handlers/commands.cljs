@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [enrich after dispatch]]
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.components.jail :as j]
+            [status-im.components.react :as r]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
             [status-im.commands.utils :as cu]
@@ -9,6 +10,12 @@
             [status-im.i18n :as i18n]))
 
 (def command-prefix "c ")
+
+(defn content-by-command
+  [{:keys [type]} content]
+  (if (and (= :command type) content)
+    (subs content (count command-prefix))
+    content))
 
 (defn invoke-suggestions-handler!
   [{:keys [current-chat-id canceled-command] :as db} _]
@@ -20,7 +27,7 @@
                 :params
                 0
                 :suggestions]
-          params {:value content}]
+          params {:value (content-by-command command content)}]
       (j/call current-chat-id
               path
               params
@@ -33,14 +40,20 @@
   (when canceled-command
     (dispatch [:start-cancel-command])))
 
+(defn current-command
+  [{:keys [current-chat-id] :as db} k]
+  (get-in db [:chats current-chat-id :command-input :command k]))
+
 (register-handler :set-chat-command-content
-  [(after invoke-suggestions-handler!)
+  [(after (fn [db]
+            (let [trigger (keyword (current-command db :suggestions-trigger))]
+              (when (= :on-change trigger)
+                (invoke-suggestions-handler! db nil)))))
    (after cancel-command!)
    (after #(dispatch [:clear-validation-errors]))]
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (let [starts-as-command? (str/starts-with? content command-prefix)
-          path [:chats current-chat-id :command-input :command :type]
-          command? (= :command (get-in db path))]
+          command? (= :command (current-command db :type))]
       (as-> db db
             (commands/set-chat-command-content db content)
             (assoc-in db [:chats current-chat-id :input-text] nil)
@@ -58,12 +71,6 @@
             path
             params
             #(dispatch [:command-preview chat-id %]))))
-
-(defn content-by-command
-  [{:keys [type]} content]
-  (if (= :command type)
-    (subs content 2)
-    content))
 
 (defn command-input
   ([{:keys [current-chat-id] :as db}]
@@ -140,6 +147,7 @@
 
 (register-handler :set-chat-command
   [(after invoke-suggestions-handler!)
+   (after #(dispatch [:set-soft-input-mode :resize]))
    (after #(dispatch [:command-edit-mode]))]
   set-chat-command)
 
@@ -186,3 +194,7 @@
   (after #(dispatch [:fix-response-height]))
   (fn [db [_ chat-id error]]
     (assoc-in db [:validation-errors chat-id] [error])))
+
+(register-handler :invoke-commands-suggestions!
+  (u/side-effect!
+    invoke-suggestions-handler!))

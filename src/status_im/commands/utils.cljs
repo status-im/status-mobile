@@ -1,20 +1,20 @@
 (ns status-im.commands.utils
   (:require [clojure.set :as set]
             [clojure.walk :as w]
-            [status-im.components.react :refer [text scroll-view view
+            [status-im.components.react :refer [text scroll-view view web-view
                                                 image touchable-highlight]]
             [re-frame.core :refer [dispatch trim-v debug]]
             [status-im.utils.handlers :refer [register-handler]]))
 
 (defn json->clj [json]
-  (if (= json "undefined")
-    nil
+  (when-not (= json "undefined")
     (js->clj (.parse js/JSON json) :keywordize-keys true)))
 
 (def elements
   {:text        text
    :view        view
    :scroll-view scroll-view
+   :web-view    web-view
    :image       image
    :touchable   touchable-highlight})
 

@@ -198,3 +198,34 @@
     (let [chat-id (subscribe [:get-current-chat-id])]
       (reaction
         (get-in @db [:animations :to-response-height @chat-id])))))
+
+(register-sub :web-view-url
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:web-view-url @chat-id])))))
+
+(register-sub :animate?
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:animate? @chat-id])))))
+
+(register-sub :kb-mode
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:kb-mode @chat-id])))))
+
+(register-sub :input-margin
+  (fn []
+    (let [kb-height (subscribe [:get :keyboard-height])
+          command (subscribe [:get-chat-command])
+          focused (subscribe [:get :focused])
+          mode (subscribe [:kb-mode])]
+      (reaction (cond (and (not @focused)
+                           (= :on-send (keyword (:suggestions-trigger @command)))
+                           (pos? @kb-height))
+                      @kb-height
+
+                      (and @focused (= :pan @mode) (pos? @kb-height))
+                      20
+
+                      :else 0)))))
