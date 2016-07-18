@@ -40,8 +40,9 @@
                     :key   row-id}]))
 
 (defn create-account [event]
-  ;(dispatch [:console-create-account])
   (dispatch-sync [:reset-app])
+  ; add accounts screen to history ( maybe there is a better way ? )
+  (dispatch [:navigate-to-clean :accounts])
   (dispatch [:navigate-to :chat "console"]))
 
 (defview accounts []

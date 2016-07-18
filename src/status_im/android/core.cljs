@@ -24,6 +24,7 @@
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.utils.utils :refer [toast]]
             [status-im.utils.encryption]
+            status-im.persistence.realm.core
             [status-im.utils.logging :as log]))
 
 (defn init-back-button-handler! []

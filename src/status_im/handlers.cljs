@@ -61,8 +61,8 @@
       :user-identity nil)))
 
 (register-handler :initialize-account-db
-  (fn [_ _]
-    (assoc app-db
+  (fn [db _]
+    (assoc db
       :signed-up (storage/get kv/kv-store :signed-up)
       :password (storage/get kv/kv-store :password))))
 

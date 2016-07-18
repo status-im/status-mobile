@@ -22,7 +22,7 @@
   (when (cljs.core/exists? js/window)
     (realm-class. (clj->js base))))
 
-(def account-realm (atom nil))
+(def account-realm (atom (create-account-realm new-account-filename)))
 
 (defn is-new-account? []
   (let [path (.-path @account-realm)
@@ -50,18 +50,21 @@
   (.write @account-realm #(.deleteAll @account-realm)))
 
 (defn move-file-handler [address err handler]
+  (log/debug "Moved file with error: " err address)
   (if err
     (log/error "Error moving account realm: " (.-message err))
     (reset! account-realm (create-account-realm address)))
   (handler err))
 
-(defn change-account-realm [address handler]
+(defn change-account-realm [address new-account? handler]
   (let [path (.-path @account-realm)
-        realm-file (str new-account-filename ".realm")
-        is-new-account? (str/ends-with? path realm-file)]
+        realm-file (str new-account-filename ".realm")]
+    (log/debug "closing account realm: " path)
     (close-account-realm)
-    (if is-new-account?
+    (log/debug "is new account? " new-account?)
+    (if new-account?
       (let [new-path (str/replace path realm-file (str address ".realm"))]
+        (log/debug "Moving file to " new-path)
         (fs/move-file path new-path #(move-file-handler address % handler)))
       (do
         (reset! account-realm (create-account-realm address))

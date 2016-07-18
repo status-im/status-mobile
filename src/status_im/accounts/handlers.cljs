@@ -57,10 +57,14 @@
     (when is-login-screen? (dispatch [:navigate-to-clean default-view]))))
 
 (defn logged-in [db address]
-  (let [account (get-in db [:accounts address])]
+  (let [account (get-in db [:accounts address])
+        is-login-screen? (= (:view-id db) :login)
+        new-account? (not is-login-screen?)]
     (log/debug "Logged in: " address account)
-    (realm/change-account-realm address #(when (nil? %)
-                                           (initialize-account db account)))))
+    (realm/change-account-realm address new-account?
+                                #(if (nil? %)
+                                   (initialize-account db account)
+                                   (log/debug "Error changing acount realm: " %)))))
 
 (register-handler :login-account
   (-> (fn [db [_ address password]]
