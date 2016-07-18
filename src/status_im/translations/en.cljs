@@ -34,6 +34,7 @@
    :contacts-syncronized                  "Your contacts have been synchronized"
    :confirmation-code                     (str "Thanks! We've sent you a text message with a confirmation "
                                                "code. Please provide that code to confirm your phone number")
+   :incorrect-code                        (str "Sorry the code was incorrect, please enter again")
    :password-saved                        (str "OK great! Your password has been saved. Just to let you "
                                                "know you can always change it in the Console by the way "
                                                "it's me the Console nice to meet you!")
@@ -127,7 +128,7 @@
    :address-explication                   "Maybe here should be some text explaining what an address is and where to look for it"
    :enter-valid-address                   "Please enter a valid address or scan a QR code"
    :unknown-address                       "Unknown address"
-   
+
 
    ;login
    :recover-access                        "Recover access"

@@ -76,10 +76,6 @@
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
 
-(defn label [{:keys [command]}]
-  (->> (when command (name command))
-       (str "request-")))
-
 (defn message-view
   [message content]
   [view (st/message-view message)

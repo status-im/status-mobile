@@ -27,24 +27,30 @@
                                    [io.appium/java-client "3.4.1"]]
                     :plugins      [[lein-doo "0.1.6"]]
                     :source-paths ["src" "env/dev"]
-                    :cljsbuild    {:builds {:ios     {:source-paths ["src" "env/dev"]
-                                                      :figwheel     true
-                                                      :compiler     {:output-to     "target/ios/not-used.js"
-                                                                     :main          "env.ios.main"
-                                                                     :output-dir    "target/ios"
-                                                                     :optimizations :none}}
-                                            :android {:source-paths ["src" "env/dev"]
-                                                      :figwheel     true
-                                                      :compiler     {:output-to     "target/android/not-used.js"
-                                                                     :main          "env.android.main"
-                                                                     :output-dir    "target/android"
-                                                                     :optimizations :none}}
-                                            :test    {:source-paths ["src" "test/cljs"]
-                                                      :compiler
-                                                                    {:main          status-im.test.runner
-                                                                     :output-to     "target/test/test.js"
-                                                                     :optimizations :none
-                                                                     :target :nodejs}}}}
+                    :cljsbuild    {:builds {:ios          {:source-paths ["src" "env/dev"]
+                                                           :figwheel     true
+                                                           :compiler     {:output-to     "target/ios/not-used.js"
+                                                                          :main          "env.ios.main"
+                                                                          :output-dir    "target/ios"
+                                                                          :optimizations :none}}
+                                            :android      {:source-paths ["src" "env/dev"]
+                                                           :figwheel     true
+                                                           :compiler     {:output-to     "target/android/not-used.js"
+                                                                          :main          "env.android.main"
+                                                                          :output-dir    "target/android"
+                                                                          :optimizations :none}}
+                                            :android-test {:source-paths ["src" "env/dev"]
+                                                           :figwheel     true
+                                                           :compiler     {:output-to     "target/android/not-used.js"
+                                                                          :main          "env.android-test.main"
+                                                                          :output-dir    "target/android"
+                                                                          :optimizations :none}}
+                                            :test         {:source-paths ["src" "test/cljs"]
+                                                           :compiler
+                                                                         {:main          status-im.test.runner
+                                                                          :output-to     "target/test/test.js"
+                                                                          :optimizations :none
+                                                                          :target        :nodejs}}}}
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
              :prod {:cljsbuild {:builds {:ios     {:source-paths ["src" "env/prod"]
                                                    :compiler     {:output-to     "index.ios.js"
