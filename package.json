@@ -23,7 +23,7 @@
     "react-native-randombytes": "^2.1.0",
     "react-native-vector-icons": "^1.3.4",
     "react-native-orientation": "^1.17.0",
-    "realm": "^0.11.1",
+    "realm": "^0.14.0",
     "react-native-status": "git+ssh://git@github.com/status-im/react-native-status"
   }
 }

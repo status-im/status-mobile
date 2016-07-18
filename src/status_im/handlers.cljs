@@ -1,6 +1,6 @@
 (ns status-im.handlers
   (:require
-    [re-frame.core :refer [after dispatch debug]]
+    [re-frame.core :refer [after dispatch dispatch-sync debug]]
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
     [status-im.persistence.simple-kv-store :as kv]
@@ -58,9 +58,31 @@
 (register-handler :initialize-db
   (fn [_ _]
     (assoc app-db
+      :user-identity nil)))
+
+(register-handler :initialize-account-db
+  (fn [_ _]
+    (assoc app-db
       :signed-up (storage/get kv/kv-store :signed-up)
       :user-identity (protocol/stored-identity nil)
       :password (storage/get kv/kv-store :password))))
+
+(register-handler :initialize-account
+  (u/side-effect!
+    (fn [_ [_ account]]
+      (dispatch [:initialize-protocol account])
+      (dispatch [:initialize-chats])
+      (dispatch [:load-contacts])
+      ; TODO: initialize protocol here
+      (dispatch [:init-chat]))))
+
+(register-handler :reset-app
+  (u/side-effect!
+    (fn [_ _]
+      (dispatch [:initialize-db])
+      (dispatch [:load-accounts])
+      (dispatch [:init-console-chat])
+      (dispatch [:load-commands! "console"]))))
 
 (register-handler :initialize-crypt
   (u/side-effect!

@@ -43,7 +43,7 @@
 (defn app-root []
   (let [signed-up (subscribe [:get :signed-up])
         view-id   (subscribe [:get :view-id])
-        account   (subscribe [:get :current-account])
+        account   (subscribe [:get :user-identity])
         keyboard-height (subscribe [:get :keyboard-height])]
     (log/debug "Current account: " @account)
     (r/create-class
@@ -88,16 +88,13 @@
            :my-profile [my-profile])))})))
 
 (defn init []
-  (dispatch-sync [:initialize-db])
+  (dispatch-sync [:reset-app])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
-  (dispatch [:load-accounts])
-  (dispatch [:initialize-chats])
-  ;protocol must be initialized after user enters password and we create account
-      ;(dispatch [:initialize-protocol])
+  
   (dispatch [:load-user-phone-number])
-  (dispatch [:load-contacts])
-  (dispatch [:init-console-chat])
-  (dispatch [:init-chat])
+  
+  
+  ;(dispatch [:init-chat])
   (init-back-button-handler!)
   (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)))

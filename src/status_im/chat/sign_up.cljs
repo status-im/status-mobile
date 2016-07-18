@@ -5,7 +5,8 @@
             [status-im.protocol.state.storage :as s]
             [status-im.models.chats :as c]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.utils.utils :refer [log on-error http-post toast]]
+            [status-im.utils.utils :refer [on-error http-post toast]]
+            [status-im.utils.logging :as log]
             [status-im.utils.random :as random]
             [status-im.utils.sms-listener :refer [add-sms-listener
                                                   remove-sms-listener]]
@@ -198,14 +199,15 @@
 (defn create-chat [handler]
   (fn [db]
     (let [{:keys [new-chat] :as db'} (handler db)]
-      (when new-chat
+      (log/debug new-chat)
+      (when (and new-chat (not= (:chat-id new-chat) "console"))
         (c/create-chat new-chat))
       (dissoc db' :new-chat))))
 
 (def init
   (create-chat
-    (fn [{:keys [chats] :as db}]
-      (if (chats "console")
+    (fn [{:keys [is-logged-in chats] :as db}]
+      (if is-logged-in
         db
         (-> db
             (assoc-in [:chats "console"] console-chat)
