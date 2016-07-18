@@ -1,4 +1,4 @@
-(ns status-im.login.handlers
+(ns status-im.accounts.login.handlers
   (:require [re-frame.core :refer [register-handler after dispatch]]
             [status-im.utils.handlers :as u]))
 

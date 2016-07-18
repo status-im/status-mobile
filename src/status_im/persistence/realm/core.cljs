@@ -30,7 +30,6 @@
     (str/ends-with? path realm_file)))
 
 (defn realm [schema]
-  (log/debug "Schema: " schema)
   (case schema
     :base base-realm
     :account @account-realm))
@@ -59,12 +58,10 @@
 (defn change-account-realm [address handler]
   (let [path (.-path @account-realm)
         realm-file (str new-account-filename ".realm")
-        _ (log/debug "account realm path: " path address)
         is-new-account? (str/ends-with? path realm-file)]
     (close-account-realm)
     (if is-new-account?
       (let [new-path (str/replace path realm-file (str address ".realm"))]
-        (log/debug "account new path: " new-path)
         (fs/move-file path new-path #(move-file-handler address % handler)))
       (do
         (reset! account-realm (create-account-realm address))
@@ -115,24 +112,20 @@
     query))
 
 (defn get-by-filter [schema schema-name filter]
-  (log/debug "Get by filter: " schema schema-name)
   (-> (.objects (realm schema) (name schema-name))
       (.filtered filter)))
 
 (defn get-by-field [schema schema-name field value]
-  (log/debug "Get by field: " schema schema-name field value)
   (let [q (to-query schema schema-name :eq field value)]
     (.filtered (.objects (realm schema) (name schema-name)) q)))
 
 (defn get-by-fields [schema schema-name fields]
-  (log/debug "Get by fields: " schema schema-name fields)
   (let [queries (map (fn [[k v]]
                        (to-query schema schema-name :eq k v))
                      fields)]
     (.filtered (.objects (realm schema) (name schema-name)) (and-q queries))))
 
 (defn get-all [schema schema-name]
-  (log/debug "Get all: " schema schema-name)
   (.objects (realm schema) (to-string schema-name)))
 
 (defn sorted [results field-name order]
@@ -173,7 +166,6 @@
   (.-length objs))
 
 (defn get-list [schema schema-name]
-  (log/debug "Get list: " schema schema-name)
   (vals (js->clj (.objects (realm schema) (to-string schema-name)) :keywordize-keys true)))
 
 (defn collection->map [collection]

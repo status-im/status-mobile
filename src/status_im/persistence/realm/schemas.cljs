@@ -26,11 +26,7 @@
                     {:name       :kv-store
                      :primaryKey :key
                      :properties {:key   "string"
-                                  :value "string"}}
-                    {:name       :commands
-                        :primaryKey :chat-id
-                        :properties {:chat-id "string"
-                                     :file    "string"}}]
+                                  :value "string"}}]
            :schemaVersion 0})
 
 (def account {:schema [{:name       :contacts

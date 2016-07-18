@@ -1,4 +1,4 @@
-(ns status-im.login.screen
+(ns status-im.accounts.login.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
@@ -22,7 +22,7 @@
                                                  white-form-text-input]]
             [status-im.qr-scanner.views.scan-button :refer [scan-button]]
             [status-im.i18n :refer [label]]
-            [status-im.login.styles :as st]))
+            [status-im.accounts.login.styles :as st]))
 
 (def toolbar-title
   [view toolbar-title-container

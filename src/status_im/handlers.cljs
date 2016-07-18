@@ -66,13 +66,13 @@
   (fn [_ _]
     (assoc app-db
       :signed-up (storage/get kv/kv-store :signed-up)
-      :user-identity (protocol/stored-identity nil)
       :password (storage/get kv/kv-store :password))))
 
 (register-handler :initialize-account
   (u/side-effect!
     (fn [_ [_ account]]
       (dispatch [:initialize-protocol account])
+      (dispatch [:initialize-account-db])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
       (dispatch [:init-chat]))))

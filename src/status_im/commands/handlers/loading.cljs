@@ -13,16 +13,12 @@
 
 (defn load-commands!
   [_ [identity]]
-  (let [is-console? (= identity "console")
-        schema (if is-console?
-                 :base
-                 :account)]
   (dispatch [::fetch-commands! identity])
   ;; todo uncomment
-  #_(if-let [{:keys [file]} (realm/get-one-by-field schema :commands 
+  #_(if-let [{:keys [file]} (realm/get-one-by-field :account :commands 
                                                     :chat-id identity)]
       (dispatch [::parse-commands! identity file])
-      (dispatch [::fetch-commands! identity]))))
+      (dispatch [::fetch-commands! identity])))
 
 (defn fetch-commands!
   [db [identity]]
@@ -77,11 +73,7 @@
 
 (defn save-commands-js!
   [_ [id file]]
-  (let [is-console? (= id "console")
-        schema (if is-console?
-                 :base
-                 :account)]
-    (realm/create-object schema :commands {:chat-id id :file file})))
+    (realm/create-object :account :commands {:chat-id id :file file}))
 
 (defn loading-failed!
   [db [id reason details]]
