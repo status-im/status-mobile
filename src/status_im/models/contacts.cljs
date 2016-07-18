@@ -10,10 +10,13 @@
       r/collection->map))
 
 (defn create-contact [{:keys [name photo-path whisper-identity] :as contact}]
-  (->> {:name       (or name "")
-        :photo-path (or photo-path (identicon whisper-identity))}
-       (merge contact)
-       (r/create :account :contacts)))
+  (let [contact-from-db (r/get-one-by-field :account :contacts
+                                            :whisper-identity whisper-identity)]
+    (when-not contact-from-db
+      (->> {:name       (or name "")
+            :photo-path (or photo-path (identicon whisper-identity))}
+           (merge contact)
+           (r/create :account :contacts)))))
 
 (defn save-contacts [contacts]
   (r/write :account #(mapv create-contact contacts)))

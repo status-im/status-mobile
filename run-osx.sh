@@ -37,6 +37,13 @@ else
  device_type="genymotion"
 fi
 
+if [ ! -z $2 ]
+then
+ cljs_build="$2"
+else
+ cljs_build="android"
+fi
+
 if [ "$device_type" = "genymotion" ]
 then
 # Find Device based on Android version 6.0.0
@@ -50,7 +57,7 @@ fi
 lein voom build-deps && re-natal deps && re-natal use-android-device "${device_type}" && re-natal use-figwheel
 
 # open figwheel in new tab
-tab "lein figwheel android"
+tab "lein figwheel ${cljs_build}"
 
 # open react-native package in new tab
 tab "react-native start"
@@ -62,7 +69,7 @@ adb reverse tcp:8081 tcp:8081 && adb reverse tcp:3449 tcp:3449
 
 react-native run-android
 
-if [ ! -z $2 ]
+if [ ! -z $3 ]
 then
  tab "appium"
  lein test

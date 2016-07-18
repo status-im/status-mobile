@@ -18,13 +18,14 @@
             [status-im.persistence.realm.core :as r]
             [status-im.handlers.server :as server]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
-            [status-im.utils.phone-number :refer [format-phone-number]]
+            [status-im.utils.phone-number :refer [format-phone-number
+                                                  valid-mobile-number?]]
             [status-im.utils.datetime :as time]
             [status-im.components.react :refer [geth]]
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup]]
-            status-im.chat.handlers.commands
+            [status-im.chat.handlers.commands :refer [command-prefix]]
             status-im.chat.handlers.animation
             status-im.chat.handlers.requests
             status-im.chat.handlers.unviewed-messages))
@@ -76,43 +77,71 @@
       (when-let [message-input (:message-input db)]
         (.blur message-input)))))
 
-(defn update-text
-  [{:keys [current-chat-id] :as db} [_ text]]
-  (let [suggestions (get-in db [:command-suggestions current-chat-id])]
-    (if-not (= 1 (count suggestions))
-      (update-input-text db text)
-      (assoc db :disable-input true))))
+(defn update-text [db [_ chat-id text]]
+  (assoc-in db [:chats chat-id :input-text] text))
 
 (defn update-command [db [_ text]]
   (if-not (commands/get-chat-command db)
     (let [{:keys [command]} (suggestions/check-suggestion db text)]
       (if command
-        (commands/set-chat-command db command)
+        (commands/set-command-input db :commands command)
         db))
     db))
 
 (defn check-suggestions
-  [{:keys [current-chat-id] :as db} [_ text]]
+  [db [_ chat-id text]]
   (let [suggestions (suggestions/get-suggestions db text)]
-    (assoc-in db [:command-suggestions current-chat-id] suggestions)))
+    (assoc-in db [:command-suggestions chat-id] suggestions)))
 
 (defn select-suggestion!
-  [{:keys [current-chat-id] :as db} [_ text]]
-  (let [suggestions (get-in db [:command-suggestions current-chat-id])]
-    (when (= 1 (count suggestions))
-      (dispatch [:set-chat-command (ffirst suggestions)]))))
-
-(register-handler :set-chat-input-text
-  [(enrich update-command)
-   (after select-suggestion!)
-   (after #(dispatch [:animate-command-suggestions]))]
-  ((enrich update-text) check-suggestions))
+  [db [_ chat-id text]]
+  (let [suggestions (get-in db [:command-suggestions chat-id])]
+    (if (= 1 (count suggestions))
+      (dispatch [:set-chat-command (ffirst suggestions)])
+      (dispatch [::set-text chat-id text]))))
 
 (defn console? [s]
   (= "console" s))
 
 (def not-console?
   (complement console?))
+
+(register-handler :set-chat-input-text
+  (u/side-effect!
+    (fn [{:keys [current-chat-id]} [_ text]]
+      (if (console? current-chat-id)
+        (dispatch [::check-input-for-commands text])
+        (dispatch [::check-suggestions current-chat-id text])))))
+
+(def possible-commands
+  {[:confirmation-code :responses] #(re-matches #"^[\d]{4}$" %)
+   [:phone :commands]              valid-mobile-number?})
+
+(defn check-text-for-commands [text]
+  (ffirst (filter (fn [[_ f]] (f text)) possible-commands)))
+
+(register-handler ::check-input-for-commands
+  (u/side-effect!
+    (fn [_ [_ text]]
+      (if-let [[_ type :as command] (check-text-for-commands text)]
+        (let [text' (if (= :commands type)
+                      (str command-prefix text)
+                      text)]
+          (dispatch [::stage-command-with-content command text']))
+        (dispatch [::check-suggestions "console" text])))))
+
+(register-handler ::stage-command-with-content
+  (u/side-effect!
+    (fn [_ [_ [command type] text]]
+      (dispatch [:set-chat-command command type])
+      (dispatch [:set-chat-command-content text]))))
+
+(register-handler ::check-suggestions
+  [(after select-suggestion!)
+   (after #(dispatch [:animate-command-suggestions]))]
+  check-suggestions)
+
+(register-handler ::set-text update-text)
 
 (defn check-author-direction
   [db chat-id {:keys [from outgoing] :as message}]
@@ -165,7 +194,7 @@
                    :outgoing        true
                    :timestamp       (time/now-ms)})]
     (if command
-      (commands/set-chat-command db command)
+      (commands/set-command-input db :commands command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
 
 (defn prepare-command
@@ -344,7 +373,7 @@
 
 (defn store-message!
   [{:keys [new-message]} [_ {chat-id :from}]]
-    (messages/save-message chat-id new-message))
+  (messages/save-message chat-id new-message))
 
 (defn dispatch-request!
   [{:keys [new-message]} [_ {chat-id :from}]]
@@ -448,16 +477,16 @@
 (defn delete-messages!
   [{:keys [current-chat-id]} _]
   (r/write :account
-    (fn []
-      (r/delete :account (r/get-by-field :account :msgs :chat-id current-chat-id)))))
+           (fn []
+             (r/delete :account (r/get-by-field :account :msgs :chat-id current-chat-id)))))
 
 (defn delete-chat!
   [{:keys [current-chat-id]} _]
   (r/write :account
-    (fn [] :account
-      (->> (r/get-by-field :account :chats :chat-id current-chat-id)
-           (r/single)
-           (r/delete :account)))))
+           (fn [] :account
+             (->> (r/get-by-field :account :chats :chat-id current-chat-id)
+                  (r/single)
+                  (r/delete :account)))))
 
 (register-handler :leave-group-chat
   ;; todo oreder of operations tbd
