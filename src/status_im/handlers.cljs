@@ -3,6 +3,7 @@
     [re-frame.core :refer [after dispatch dispatch-sync debug]]
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
+    [status-im.persistence.realm.core :as realm]
     [status-im.persistence.simple-kv-store :as kv]
     [status-im.protocol.state.storage :as storage]
     [status-im.utils.logging :as log]
@@ -57,6 +58,7 @@
 
 (register-handler :initialize-db
   (fn [_ _]
+    (realm/reset-account)
     (assoc app-db
       :user-identity nil)))
 
@@ -73,7 +75,6 @@
       (dispatch [:initialize-protocol account])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
-      ; TODO: initialize protocol here
       (dispatch [:init-chat]))))
 
 (register-handler :reset-app

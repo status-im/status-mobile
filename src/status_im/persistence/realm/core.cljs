@@ -3,13 +3,20 @@
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.utils.types :refer [to-string]]
             [status-im.utils.utils :as u]
+            [status-im.utils.fs :as fs]
             [status-im.utils.logging :as log]
             [status-im.persistence.realm.schemas :refer [base account]]
             [clojure.string :as str])
   (:refer-clojure :exclude [exists?]))
 
+(def new-account-filename "new-account")
 
 (def realm-class (u/require "realm"))
+
+(defn create-account-realm [address]
+  (let [opts (merge account {:path (str address ".realm")})]
+    (when (cljs.core/exists? js/window)
+      (realm-class. (clj->js opts)))))
 
 (def base-realm 
   (when (cljs.core/exists? js/window)
@@ -17,10 +24,10 @@
 
 (def account-realm (atom nil))
 
-(defn create-account-realm [address]
-  (let [opts (merge account {:path (str address ".realm")})]
-    (when (cljs.core/exists? js/window)
-      (realm-class. (clj->js opts)))))
+(defn is-new-account? []
+  (let [path (.-path @account-realm)
+        realm_file (str new-account-filename ".realm")]
+    (str/ends-with? path realm_file)))
 
 (defn realm [schema]
   (log/debug "Schema: " schema)
@@ -36,6 +43,32 @@
 (defn close-account-realm []
   (close :account)
   (reset! account-realm nil))
+
+(defn reset-account []
+  (when @account-realm
+    (close-account-realm))
+  (reset! account-realm (create-account-realm new-account-filename))
+  (.write @account-realm #(.deleteAll @account-realm)))
+
+(defn move-file-handler [address err handler]
+  (if err
+    (log/error "Error moving account realm: " (.-message err))
+    (reset! account-realm (create-account-realm address)))
+  (handler err))
+
+(defn change-account-realm [address handler]
+  (let [path (.-path @account-realm)
+        realm-file (str new-account-filename ".realm")
+        _ (log/debug "account realm path: " path address)
+        is-new-account? (str/ends-with? path realm-file)]
+    (close-account-realm)
+    (if is-new-account?
+      (let [new-path (str/replace path realm-file (str address ".realm"))]
+        (log/debug "account new path: " new-path)
+        (fs/move-file path new-path #(move-file-handler address % handler)))
+      (do
+        (reset! account-realm (create-account-realm address))
+        (handler nil)))))
 
 (defn get-schema-by-name [opts]
   (->> (:schema opts)
@@ -82,7 +115,7 @@
     query))
 
 (defn get-by-filter [schema schema-name filter]
-  (log/debug "Get by filter: " schema schema-name field)
+  (log/debug "Get by filter: " schema schema-name)
   (-> (.objects (realm schema) (name schema-name))
       (.filtered filter)))
 

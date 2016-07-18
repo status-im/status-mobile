@@ -69,7 +69,7 @@
        (fn []
          (let [startup-view (if @account @view-id (if (contains? #{:login :chat} @view-id) @view-id :accounts))]
            (log/debug startup-view)
-         (case (if @signed-up startup-view :chat)
+         (case (if true startup-view :chat)
            :discovery [main-tabs]
            :discovery-tag [discovery-tag]
            :add-participants [new-participants]
@@ -91,10 +91,6 @@
   (dispatch-sync [:reset-app])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
-  
   (dispatch [:load-user-phone-number])
-  
-  
-  ;(dispatch [:init-chat])
   (init-back-button-handler!)
   (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)))
