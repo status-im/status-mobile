@@ -29,6 +29,8 @@ import com.lwansbrough.RCTCamera.*;
 import com.i18n.reactnativei18n.ReactNativeI18n;
 import android.content.res.Configuration;
 
+import com.rnfs.RNFSPackage;
+
 public class MainActivity extends ReactActivity {
 
     private static final String TAG = "MainActivity";
@@ -112,6 +114,7 @@ public class MainActivity extends ReactActivity {
                 new RCTCameraPackage(),
                 new SmsListener(this),
                 new OrientationPackage(this),
+                new RNFSPackage(),
                 new GethPackage()
         );
     }

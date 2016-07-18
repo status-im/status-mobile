@@ -8,7 +8,7 @@
 (defn create-request [request]
   (r/create :account :requests request true))
 
-(defn save-request [request}]
+(defn save-request [request]
   (r/write :account
            (fn []
              (create-request request))))

@@ -31,10 +31,9 @@
     (assoc db :show-actions show-actions)))
 
 (register-handler :load-more-messages
-  (fn [{:keys [is-logged-in current-chat-id] :as db} _]
-    (let [all-loaded? (get-in db [:chats current-chat-id :all-loaded?])
-          account-realm-exists? (or (not= current-chat-id "console") is-logged-in)]
-      (if (or all-loaded? (not account-realm-exists?))
+  (fn [{:keys [current-chat-id] :as db} _]
+    (let [all-loaded? (get-in db [:chats current-chat-id :all-loaded?])]
+      (if all-loaded?
         db
         (let [messages-path [:chats current-chat-id :messages]
               messages (get-in db messages-path)
@@ -292,22 +291,21 @@
                             :content content})))))
 
 (defn save-message-to-realm!
-  [{:keys [is-logged-in new-message current-chat-id]} _]
-  (when (and new-message is-logged-in)
+  [{:keys [new-message current-chat-id]} _]
+  (when new-message
     (messages/save-message current-chat-id new-message)))
 
 (defn save-commands-to-realm!
-  [{:keys [is-logged-in new-commands current-chat-id]} _]
-  (when is-logged-in
-    (doseq [new-command new-commands]
-      (messages/save-message
-        current-chat-id
-        (dissoc new-command :rendered-preview :to-message)))))
+  [{:keys [new-commands current-chat-id]} _]
+  (doseq [new-command new-commands]
+    (messages/save-message
+      current-chat-id
+      (dissoc new-command :rendered-preview :to-message))))
 
 (defn dispatch-responded-requests!
   [{:keys [new-commands current-chat-id]} _]
-  (doseq [{:keys [is-logged-in to-message]} new-commands]
-    (when (and to-message is-logged-in)
+  (doseq [{:keys [to-message]} new-commands]
+    (when to-message
       (dispatch [:request-answered! current-chat-id to-message]))))
 
 (defn invoke-commands-handlers!
@@ -411,18 +409,6 @@
       ((enrich init-chat))
       ((after load-commands!))))
 
-
-(register-handler :save-console
-  (fn [db _]
-    (when-not (chats/chat-exists? "console")
-      (let [console-chat (get-in db [:chats "console"])]
-        (when console-chat
-          (do
-            (chats/create-chat console-chat)
-            (doseq [message (reverse (:messages console-chat))]
-              (messages/save-message "console" message))))))
-    db))
-
 (defn initialize-chats
   [{:keys [loaded-chats] :as db} _]
   (let [chats (->> loaded-chats
@@ -443,9 +429,8 @@
   ((enrich initialize-chats) load-chats!))
 
 (defn store-message!
-  [{:keys [is-logged-in new-message]} [_ {chat-id :from}]]
-  (if (or (not= chat-id "console") is-logged-in)
-    (messages/save-message chat-id new-message)))
+  [{:keys [new-message]} [_ {chat-id :from}]]
+    (messages/save-message chat-id new-message))
 
 (defn dispatch-request!
   [{:keys [new-message]} [_ {chat-id :from}]]
@@ -471,20 +456,15 @@
       (messages/save-message chat-id msg))))
 
 (defmethod nav/preload-data! :chat
-  [{:keys [is-logged-in current-chat-id] :as db} [_ _ id]]
+  [{:keys [current-chat-id] :as db} [_ _ id]]
   (let [chat-id (or id current-chat-id)
         messages (get-in db [:chats chat-id :messages])
-        db' (assoc db :current-chat-id chat-id)
-        account-realm-exists? (or (not= chat-id "console") is-logged-in)]
-    (when account-realm-exists?
-      (dispatch [:load-requests! chat-id]))
+        db' (assoc db :current-chat-id chat-id)]
+    (dispatch [:load-requests! chat-id])
     (if (seq messages)
       db'
       (-> db'
-          ((fn [db] 
-            (if account-realm-exists?
-              (load-messages! db)
-              db)))
+          load-messages!
           init-chat))))
 
 (defn prepare-chat

@@ -47,18 +47,19 @@
           (.createAccount geth password (fn [result] (account-created db result password)))
         db)))
 
-(defn logged-in [db address]
-  (let [account (get-in db [:accounts address])]
-    (log/debug "Logged in: " address account)
-    (realm/close-account-realm)
-    (reset! realm/account-realm (realm/create-account-realm address))
+(defn initialize-account [db account]
+  (let [is-login-screen? (= (:view-id db) :login)]
     (dispatch [:set :login {}])
     (dispatch [:set :is-logged-in true])
     (dispatch [:set :user-identity account])
-    (dispatch [:save-console])
-    
     (dispatch [:initialize-account account])
-    (when (:signed-up db) (dispatch [:navigate-to-clean default-view]))))
+    (when is-login-screen? (dispatch [:navigate-to-clean default-view]))))
+
+(defn logged-in [db address]
+  (let [account (get-in db [:accounts address])]
+    (log/debug "Logged in: " address account)
+    (realm/change-account-realm address #(when (nil? %)
+                                           (initialize-account db account)))))
 
 (register-handler :login-account
   (-> (fn [db [_ address password]]

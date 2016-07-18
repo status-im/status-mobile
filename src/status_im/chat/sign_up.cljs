@@ -200,14 +200,14 @@
   (fn [db]
     (let [{:keys [new-chat] :as db'} (handler db)]
       (log/debug new-chat)
-      (when (and new-chat (not= (:chat-id new-chat) "console"))
+      (when new-chat
         (c/create-chat new-chat))
       (dissoc db' :new-chat))))
 
 (def init
   (create-chat
-    (fn [{:keys [is-logged-in chats] :as db}]
-      (if is-logged-in
+    (fn [{:keys [chats] :as db}]
+      (if (chats "console")
         db
         (-> db
             (assoc-in [:chats "console"] console-chat)

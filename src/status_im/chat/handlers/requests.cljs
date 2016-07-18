@@ -6,10 +6,8 @@
             [status-im.utils.handlers :as u]))
 
 (defn store-request!
-  [{:keys [is-logged-in new-request] :as db}]
-  (if (or (not= (:chat-id new-request) "console") is-logged-in)
-    (requests/save-request new-request)
-    db))
+  [{:keys [new-request] :as db}]
+  (requests/save-request new-request))
 
 (defn add-request
   [db [_ chat-id {:keys [msg-id content]}]]
