@@ -45,6 +45,7 @@
   (let [path [:chats current-chat-id :command-input :command :type]
         type (get-in db path)
         errors (get-in db [:validation-errors current-chat-id])
+        suggestion? (get-in db [:has-suggestions? current-chat-id])
         custom-errors (get-in db [:custom-validation-errors current-chat-id])
         validation-height (if (or (seq errors) (seq custom-errors))
                             request-info-height
@@ -52,22 +53,26 @@
     (+ validation-height
        (if (= :response type)
          minimum-suggestion-height
-         (if (zero? validation-height)
+         (if-not suggestion?
            input-height
            (+ input-height suggestions-header-height))))))
 
 (register-handler :animate-show-response
   ;[(after #(dispatch [:command-edit-mode]))]
   (fn [{:keys [current-chat-id] :as db}]
-    (let [suggestions? (seq (get-in db [:suggestions current-chat-id]))
+    (let [suggestions? (get-in db [:has-suggestions? current-chat-id])
+          fullscreen? (get-in db [:chats current-chat-id :command-input :command :fullscreen])
+          max-height (get-in db [:layout-height])
           height (if suggestions?
-                   middle-height
+                   (if fullscreen?
+                     max-height
+                     middle-height)
                    (get-minimum-height db))]
       (assoc-in db [:animations :to-response-height current-chat-id] height))))
 
 (defn fix-height
   [height-key height-signal-key suggestions-key minimum]
-  (fn [{:keys [current-chat-id] :as db} [_ vy current]]
+  (fn [{:keys [current-chat-id] :as db} [_ vy current no-animation]]
     (let [max-height (get-in db [:layout-height])
           moving-down? (pos? vy)
           moving-up? (not moving-down?)
@@ -100,7 +105,8 @@
                           (minimum db))]
       (-> db
           (assoc-in [:animations height-key current-chat-id] new-fixed)
-          (update-in [:animations height-signal-key] inc)))))
+          (update-in [:animations height-signal-key] inc)
+          (assoc-in [:animate? current-chat-id] (not no-animation))))))
 
 (defn commands-min-height
   [{:keys [current-chat-id] :as db}]
@@ -118,5 +124,5 @@
 (register-handler :fix-response-height
   (fix-height :to-response-height
               :response-height-changed
-              :suggestions
+              :has-suggestions?
               get-minimum-height))

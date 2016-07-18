@@ -5,7 +5,8 @@
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup reg-handler]]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [status-im.components.react :as r]))
 
 (defn init-render-command!
   [_ [chat-id command message-id data]]
@@ -36,7 +37,12 @@
 
 (defn suggestions-handler!
   [db [{:keys [chat-id]} {:keys [result]} ]]
-  (assoc-in db [:suggestions chat-id] (generate-hiccup result)))
+  (let [{:keys [markup webViewUrl]} result
+        hiccup (generate-hiccup markup)]
+    (-> db
+        (assoc-in [:suggestions chat-id] (generate-hiccup markup))
+        (assoc-in [:web-view-url chat-id] webViewUrl)
+        (assoc-in [:has-suggestions? chat-id] (or hiccup webViewUrl)))))
 
 (defn suggestions-events-handler!
   [db [[n data]]]
@@ -71,7 +77,12 @@
              (u/side-effect! command-hadler!))
 (reg-handler :suggestions-handler
              [(after #(dispatch [:animate-show-response]))
-              (after (print-error-message! "Error on param suggestions"))]
+              (after (print-error-message! "Error on param suggestions"))
+              (after (fn [_ [{:keys [command]} {:keys [result]}]]
+                       (when (= :on-send (keyword (:suggestions-trigger command)))
+                         (when (:webViewUrl result)
+                           (dispatch [:set-soft-input-mode :pan]))
+                         (r/dismiss-keyboard!))))]
              suggestions-handler!)
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
 (reg-handler :command-preview

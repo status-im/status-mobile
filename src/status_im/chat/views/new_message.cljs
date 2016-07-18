@@ -37,8 +37,9 @@
    (when command? (get-options parameter type))])
 
 (defview chat-message-new []
-  [staged-commands [:get-chat-staged-commands]]
-  [view st/new-message-container
+  [staged-commands [:get-chat-staged-commands]
+   margin [:input-margin]]
+  [view (st/new-message-container margin)
    (when (seq staged-commands)
      [staged-commands-view staged-commands])
    [show-input]])
