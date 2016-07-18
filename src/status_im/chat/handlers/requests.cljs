@@ -1,14 +1,15 @@
 (ns status-im.chat.handlers.requests
   (:require [re-frame.core :refer [after dispatch enrich]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.persistence.realm :as realm]
+            [status-im.persistence.realm.core :as realm]
+            [status-im.models.requests :as requests]
             [status-im.utils.handlers :as u]))
 
 (defn store-request!
-  [{:keys [new-request]}]
-  (realm/write
-    (fn []
-      (realm/create :requests new-request))))
+  [{:keys [is-logged-in new-request] :as db}]
+  (if (or (not= (:chat-id new-request) "console") is-logged-in)
+    (requests/save-request new-request)
+    db))
 
 (defn add-request
   [db [_ chat-id {:keys [msg-id content]}]]
@@ -24,9 +25,9 @@
 (defn load-requests!
   [{:keys [current-chat-id] :as db} [_ chat-id]]
   (let [chat-id' (or chat-id current-chat-id)
-        requests (-> :requests
-                     ;; todo maybe limit is needed
-                     (realm/get-by-fields {:chat-id chat-id'
+        requests (-> ;; todo maybe limit is needed
+                     (realm/get-by-fields :account :requests
+                                          {:chat-id chat-id'
                                            :status  "open"})
                      (realm/sorted :added :desc)
                      (realm/collection->map))
@@ -35,12 +36,11 @@
 
 (defn mark-request-as-answered!
   [_ [_ chat-id message-id]]
-  (realm/write
+  (realm/write :account
     (fn []
-      (-> :requests
-          (realm/get-by-fields
-            {:chat-id    chat-id
-             :message-id message-id})
+      (-> (realm/get-by-fields :account :requests
+                               {:chat-id    chat-id
+                                :message-id message-id})
           (realm/single)
           (.-status)
           (set! "answered")))))

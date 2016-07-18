@@ -1,6 +1,6 @@
 (ns status-im.accounts.handlers
   (:require [status-im.models.accounts :as accounts]
-            [re-frame.core :refer [register-handler after dispatch debug]]
+            [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
             [status-im.utils.logging :as log]
             [status-im.components.react :refer [geth]]
             [status-im.utils.types :refer [json->clj]]
@@ -9,6 +9,7 @@
             [status-im.utils.identicon :refer [identicon]]
             [status-im.db :refer [default-view]]
             [status-im.utils.random :as random]
+            [status-im.persistence.realm.core :as realm]
             [status-im.i18n :refer [label]]
             [status-im.constants :refer [content-type-command-request]]
             [clojure.string :as str]))
@@ -32,24 +33,31 @@
         account {:public-key public-key
                  :address address
                  :name address
-                 :photo-path (identicon address)}]
-    (log/debug "Created account: " result)
+                 :photo-path (identicon address)}
+        ]
+    (log/debug "account-created: " account)
     (when (not (str/blank? public-key))
       (do
-        (save-password password)
-        (dispatch [:add-account account])
-        (when (not (:signed-up db)) (dispatch [:login-account address password]))))))
+        ;(save-password password)
+        (dispatch-sync [:add-account account])
+        (dispatch [:login-account address password])))))
 
 (register-handler :create-account
   (-> (fn [db [_ password]]
           (.createAccount geth password (fn [result] (account-created db result password)))
         db)))
 
-(defn login [db address]
+(defn logged-in [db address]
   (let [account (get-in db [:accounts address])]
+    (log/debug "Logged in: " address account)
+    (realm/close-account-realm)
+    (reset! realm/account-realm (realm/create-account-realm address))
     (dispatch [:set :login {}])
-    (dispatch [:set :current-account account])
-    (dispatch [:initialize-protocol account])
+    (dispatch [:set :is-logged-in true])
+    (dispatch [:set :user-identity account])
+    (dispatch [:save-console])
+    
+    (dispatch [:initialize-account account])
     (when (:signed-up db) (dispatch [:navigate-to-clean default-view]))))
 
 (register-handler :login-account
@@ -60,7 +68,7 @@
                                               success (zero? (count error))]
                                           (log/debug "Logged in account: " address result)
                                           (if success
-                                            (login db address)
+                                            (logged-in db address)
                                             (dispatch [:set-in [:login :error] error])))))
         db)))
 

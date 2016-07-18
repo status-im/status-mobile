@@ -40,7 +40,8 @@
                     :key   row-id}]))
 
 (defn create-account [event]
-  (dispatch [:console-create-account])
+  ;(dispatch [:console-create-account])
+  (dispatch-sync [:reset-app])
   (dispatch [:navigate-to :chat "console"]))
 
 (defview accounts []

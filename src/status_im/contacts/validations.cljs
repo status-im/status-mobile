@@ -1,14 +1,14 @@
 (ns status-im.contacts.validations
   (:require [cljs.spec :as s]
             [cljsjs.web3]
-            [status-im.persistence.realm :as realm]))
+            [status-im.persistence.realm.core :as realm]))
 
 (defn is-address? [s]
   (.isAddress js/Web3.prototype s))
 
 (defn unique-identity? [identity]
   (println identity)
-  (not (realm/exists? :contacts :whisper-identity identity)))
+  (not (realm/exists? :account :contacts :whisper-identity identity)))
 
 (defn valid-length? [identity]
   (let [length (count identity)]
