@@ -12,6 +12,7 @@
             [status-im.persistence.realm.core :as realm]
             [status-im.i18n :refer [label]]
             [status-im.constants :refer [content-type-command-request]]
+            status-im.accounts.login.handlers
             [clojure.string :as str]))
 
 

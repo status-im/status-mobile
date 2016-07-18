@@ -1,4 +1,4 @@
-(ns status-im.login.styles
+(ns status-im.accounts.login.styles
   (:require [status-im.components.styles :refer [font
                                                  title-font
                                                  text1-color

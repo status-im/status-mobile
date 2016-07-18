@@ -6,7 +6,6 @@
             [status-im.models.chats :as c]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.utils.utils :refer [on-error http-post toast]]
-            [status-im.utils.logging :as log]
             [status-im.utils.random :as random]
             [status-im.utils.sms-listener :refer [add-sms-listener
                                                   remove-sms-listener]]
@@ -199,7 +198,6 @@
 (defn create-chat [handler]
   (fn [db]
     (let [{:keys [new-chat] :as db'} (handler db)]
-      (log/debug new-chat)
       (when new-chat
         (c/create-chat new-chat))
       (dissoc db' :new-chat))))
