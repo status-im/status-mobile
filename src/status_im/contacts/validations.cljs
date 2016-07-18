@@ -7,7 +7,6 @@
   (.isAddress js/Web3.prototype s))
 
 (defn unique-identity? [identity]
-  (println identity)
   (not (realm/exists? :account :contacts :whisper-identity identity)))
 
 (defn valid-length? [identity]

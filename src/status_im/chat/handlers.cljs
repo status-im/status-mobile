@@ -21,10 +21,13 @@
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.datetime :as time]
             [status-im.components.react :refer [geth]]
-            [status-im.utils.logging :as log]
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.commands.utils :refer [generate-hiccup]]))
+            [status-im.commands.utils :refer [generate-hiccup]]
+            status-im.chat.handlers.commands
+            status-im.chat.handlers.animation
+            status-im.chat.handlers.requests
+            status-im.chat.handlers.unviewed-messages))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -53,80 +56,14 @@
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
-(defn invoke-suggestions-handler!
-  [{:keys [current-chat-id canceled-command] :as db} _]
-  (when-not canceled-command
-    (let [{:keys [command content]} (get-in db [:chats current-chat-id :command-input])
-          {:keys [name type]} command
-          path [(if (= :command type) :commands :responses)
-                name
-                :params
-                0
-                :suggestions]
-          params {:value content}]
-      (j/call current-chat-id
-              path
-              params
-              #(dispatch [:suggestions-handler {:command command
-                                                :content content
-                                                :chat-id current-chat-id} %])))))
-
 (register-handler :start-cancel-command
   (u/side-effect!
     (fn [db _]
       (dispatch [:animate-cancel-command]))))
 
-(def command-prefix "c ")
-
-(defn cancel-command!
-  [{:keys [canceled-command]}]
-  (when canceled-command
-    (dispatch [:start-cancel-command])))
-
-(register-handler :set-chat-command-content
-  [(after invoke-suggestions-handler!)
-   (after cancel-command!)]
-  (fn [{:keys [current-chat-id] :as db} [_ content]]
-    (let [starts-as-command? (str/starts-with? content command-prefix)
-          path [:chats current-chat-id :command-input :command :type]
-          command? (= :command (get-in db path))]
-      (as-> db db
-            (commands/set-chat-command-content db content)
-            (assoc-in db [:chats current-chat-id :input-text] nil)
-            (assoc db :canceled-command (and command? (not starts-as-command?)))))))
-
 (defn update-input-text
   [{:keys [current-chat-id] :as db} text]
   (assoc-in db [:chats current-chat-id :input-text] text))
-
-(defn invoke-command-preview!
-  [{:keys [current-chat-id staged-command]} _]
-  (let [{:keys [command content]} staged-command
-        {:keys [name type]} command
-        path [(if (= :command type) :commands :responses)
-              name
-              :preview]
-        params {:value content}]
-    (j/call current-chat-id
-            path
-            params
-            #(dispatch [:command-preview current-chat-id %]))))
-
-(register-handler :stage-command
-  (after invoke-command-preview!)
-  (fn [{:keys [current-chat-id] :as db} _]
-    (let [db (update-input-text db nil)
-          {:keys [command content to-msg-id]}
-          (get-in db [:chats current-chat-id :command-input])
-          content' (if (= :command (:type command))
-                     (subs content 2)
-                     content)
-          command-info {:command    command
-                        :content    content'
-                        :to-message to-msg-id}]
-      (-> db
-          (commands/stage-command command-info)
-          (assoc :staged-command command-info)))))
 
 (register-handler :set-message-input []
   (fn [db [_ input]]
@@ -137,15 +74,6 @@
     (fn [db _]
       (when-let [message-input (:message-input db)]
         (.blur message-input)))))
-
-(register-handler :set-response-chat-command
-  [(after invoke-suggestions-handler!)
-   (after #(dispatch [:command-edit-mode]))
-   (after #(dispatch [:set-chat-input-text ""]))]
-  (fn [db [_ to-msg-id command-key]]
-    (-> db
-        (commands/set-response-chat-command to-msg-id command-key)
-        (assoc :canceled-command false))))
 
 (defn update-text
   [{:keys [current-chat-id] :as db} [_ text]]
@@ -215,20 +143,26 @@
   (fn [db [_ {:keys [chat-id msg-id]}]]
     (set-message-shown db chat-id msg-id)))
 
+(defn default-delivery-status [chat-id]
+  (if (console? chat-id)
+    :seen
+    :pending))
+
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
   (let [text (get-in db [:chats current-chat-id :input-text])
         [command] (suggestions/check-suggestion db (str text " "))
         message (check-author-direction
                   db current-chat-id
-                  {:msg-id       (random/id)
-                   :chat-id      current-chat-id
-                   :content      text
-                   :to           current-chat-id
-                   :from         identity
-                   :content-type text-content-type
-                   :outgoing     true
-                   :timestamp    (time/now-ms)})]
+                  {:msg-id          (random/id)
+                   :chat-id         current-chat-id
+                   :content         text
+                   :to              current-chat-id
+                   :from            identity
+                   :content-type    text-content-type
+                   :delivery-status (default-delivery-status current-chat-id)
+                   :outgoing        true
+                   :timestamp       (time/now-ms)})]
     (if command
       (commands/set-chat-command db command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
@@ -242,6 +176,7 @@
      :to               chat-id
      :content          content
      :content-type     content-type-command
+     :delivery-status  (default-delivery-status chat-id)
      :outgoing         true
      :preview          preview-string
      :rendered-preview preview
@@ -283,12 +218,10 @@
   [{:keys [new-message current-chat-id] :as db} _]
   (when (and new-message (not-console? current-chat-id))
     (let [{:keys [group-chat]} (get-in db [:chats current-chat-id])
-          content (:content new-message)]
+          message (select-keys new-message [:content :msg-id])]
       (if group-chat
-        (api/send-group-user-msg {:group-id current-chat-id
-                                  :content  content})
-        (api/send-user-msg {:to      current-chat-id
-                            :content content})))))
+        (api/send-group-user-msg (assoc message :group-id current-chat-id))
+        (api/send-user-msg (assoc message :to current-chat-id))))))
 
 (defn save-message-to-realm!
   [{:keys [new-message current-chat-id]} _]
@@ -322,13 +255,6 @@
               params
               #(dispatch [:command-handler! com %])))))
 
-(defn handle-commands
-  [{:keys [new-commands]}]
-  (doseq [{{content :content} :content
-           handler            :handler} new-commands]
-    (when handler
-      (handler content))))
-
 (register-handler :send-chat-msg
   (-> prepare-message
       ((enrich prepare-staged-commans))
@@ -341,21 +267,7 @@
       ((after save-commands-to-realm!))
       ((after dispatch-responded-requests!))
       ;; todo maybe it is better to track if it was handled or not
-      ((after invoke-commands-handlers!))
-      ((after handle-commands))))
-
-(register-handler :unstage-command
-  (fn [db [_ staged-command]]
-    (commands/unstage-command db staged-command)))
-
-(register-handler :set-chat-command
-  [(after invoke-suggestions-handler!)
-   (after #(dispatch [:command-edit-mode]))]
-  (fn [{:keys [current-chat-id] :as db} [_ command-key]]
-    (-> db
-        (commands/set-chat-command command-key)
-        (assoc-in [:chats current-chat-id :command-input :content] "c ")
-        (assoc :disable-input true))))
+      ((after invoke-commands-handlers!))))
 
 (register-handler :init-console-chat
   (fn [db [_]]
@@ -426,6 +338,7 @@
   (assoc db :loaded-chats (chats/chats-list)))
 
 (register-handler :initialize-chats
+  (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))
 
 (defn store-message!
@@ -434,20 +347,27 @@
 
 (defn dispatch-request!
   [{:keys [new-message]} [_ {chat-id :from}]]
-  (log/debug "Dispatching request: " new-message)
   (when (= (:content-type new-message) content-type-command-request)
     (dispatch [:add-request chat-id new-message])))
 
 (defn receive-message
   [db [_ {chat-id :from :as message}]]
-  (let [message' (check-author-direction db chat-id message)]
+  (let [message' (-> db
+                     (check-author-direction chat-id message)
+                     (assoc :delivery-status :pending))]
     (-> db
         (add-message-to-db chat-id message')
         (assoc :new-message message'))))
 
+(defn dispatch-unviewed-message!
+  [{:keys [new-message]} [_ {chat-id :from}]]
+  (let [{:keys [msg-id]} new-message]
+    (dispatch [:add-unviewed-message chat-id msg-id])))
+
 (register-handler :received-msg
   [(after store-message!)
-   (after dispatch-request!)]
+   (after dispatch-request!)
+   (after dispatch-unviewed-message!)]
   receive-message)
 
 (register-handler :group-received-msg
@@ -553,6 +473,7 @@
     (assoc-in db [:edit-mode current-chat-id] mode)))
 
 (register-handler :command-edit-mode
+  (after #(dispatch [:clear-validation-errors]))
   (edit-mode-handler :command))
 
 (register-handler :text-edit-mode
@@ -571,6 +492,16 @@
        (let [suggestions (get-in db [:command-suggestions current-chat-id])
              mode (get-in db [:edit-mode current-chat-id])]
          (when (and (= :text mode)) (seq suggestions)
-           (dispatch [:fix-commands-suggestions-height])))))]
+                                    (dispatch [:fix-commands-suggestions-height])))))]
   (fn [db [_ h]]
     (assoc db :layout-height h)))
+
+
+(register-handler :send-seen!
+  (after (fn [_ [_ chat-id message-id]]
+           (when-not (console? chat-id))
+           (dispatch [:msg-seen chat-id message-id])))
+  (u/side-effect!
+    (fn [_ [_ chat-id message-id]]
+      (when-not (console? chat-id)
+        (api/send-seen chat-id message-id)))))

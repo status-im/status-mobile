@@ -104,7 +104,7 @@
 (defn container [h & elements]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
-        to-response-height (subscribe [:animations :command-suggestions-height])
+        to-response-height (subscribe [:command-suggestions-height])
         changed (subscribe [:animations :commands-height-changed])
         context {:to-value to-response-height
                  :val      h}

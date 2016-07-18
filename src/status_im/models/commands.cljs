@@ -1,11 +1,5 @@
 (ns status-im.models.commands
-  (:require [clojure.string :refer [join split]]
-            [clojure.walk :refer [stringify-keys keywordize-keys]]
-            [re-frame.core :refer [subscribe dispatch]]
-            [status-im.db :as db]
-            [status-im.components.animation :as anim]
-            [status-im.components.styles :refer [color-blue color-dark-mint]]
-            [status-im.i18n :refer [label]]))
+  (:require [status-im.db :as db]))
 
 (defn get-commands [{:keys [current-chat-id] :as db}]
   (or (get-in db [:chats current-chat-id :commands]) {}))
