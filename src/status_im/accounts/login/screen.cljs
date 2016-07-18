@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
-                                                text
+                                                text-class
                                                 text-input
                                                 image
                                                 linear-gradient
@@ -26,7 +26,7 @@
 
 (def toolbar-title
   [view toolbar-title-container
-   [text {:style (merge toolbar-title-text {:color color-white})}
+   [text-class {:style (merge toolbar-title-text {:color color-white})}
     (label :t/login)]])
 
 (defview address-input [address]
@@ -83,9 +83,9 @@
      [view st/recover-text-container
       [touchable-highlight
        {:on-press #()}
-       [text {:style st/recover-text} (label :t/recover-access)]]]
+       [text-class {:style st/recover-text} (label :t/recover-access)]]]
      [view st/connect-button-container
       [touchable-highlight
        {:on-press #(dispatch [:login-account address password])}
        [view st/connect-button
-        [text {:style st/connect-button-text} (label :t/connect)]]]]]])
+        [text-class {:style st/connect-button-text} (label :t/connect)]]]]]])

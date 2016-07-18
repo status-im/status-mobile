@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe]]
             [status-im.components.react :refer [view
+                                                text
                                                 animated-view
                                                 icon
                                                 touchable-highlight
@@ -48,20 +49,19 @@
                 input-options)
    (if command? input-command input-message)])
 
-(defview plain-message-input-view [{:keys [input-options validator]}]
+(defview plain-message-input-view [{:keys [input-options]}]
   [command? [:command?]
    {:keys [type] :as command} [:get-chat-command]
    input-command [:get-chat-command-content]
-   valid-plain-message? [:valid-plain-message?]
-   valid-command? [:valid-command? validator]]
+   valid-plain-message? [:valid-plain-message?]]
   [view st/input-container
    [view st/input-view
     [plain-message/commands-button]
     [message-input-container
-     [message-input input-options validator]]
+     [message-input input-options]]
     ;; TODO emoticons: not implemented
     [plain-message/smile-button]
-    (when (if command? valid-command? valid-plain-message?)
+    (when (or command? valid-plain-message?)
       (let [on-press (if command?
                        command/send-command
                        plain-message/send)]

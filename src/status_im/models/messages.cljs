@@ -26,7 +26,8 @@
 
 (defn save-message
   ;; todo remove chat-id parameter
-  [chat-id {:keys [msg-id content]
+  [chat-id {:keys [delivery-status msg-id content]
+            :or   {delivery-status :pending}
             :as   message}]
   (when-not (r/exists? :account :msgs :msg-id msg-id)
     (r/write :account
@@ -38,8 +39,8 @@
                               message
                               {:chat-id         chat-id
                                :content         content'
-                               :timestamp       (timestamp)
-                               :delivery-status nil})]
+                               :delivery-status delivery-status
+                               :timestamp       (timestamp)})]
           (r/create :account :msgs message' true))))))
 
 (defn command-type? [type]
