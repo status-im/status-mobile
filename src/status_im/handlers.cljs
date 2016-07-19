@@ -1,8 +1,9 @@
 (ns status-im.handlers
   (:require
-    [re-frame.core :refer [after dispatch debug]]
+    [re-frame.core :refer [after dispatch dispatch-sync debug]]
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
+    [status-im.persistence.realm.core :as realm]
     [status-im.persistence.simple-kv-store :as kv]
     [status-im.protocol.state.storage :as storage]
     [status-im.utils.logging :as log]
@@ -55,10 +56,32 @@
 
 (register-handler :initialize-db
   (fn [_ _]
+    (realm/reset-account)
     (assoc app-db
+      :user-identity nil)))
+
+(register-handler :initialize-account-db
+  (fn [db _]
+    (assoc db
       :signed-up (storage/get kv/kv-store :signed-up)
-      :user-identity (protocol/stored-identity nil)
       :password (storage/get kv/kv-store :password))))
+
+(register-handler :initialize-account
+  (u/side-effect!
+    (fn [_ [_ account]]
+      (dispatch [:initialize-protocol account])
+      (dispatch [:initialize-account-db])
+      (dispatch [:initialize-chats])
+      (dispatch [:load-contacts])
+      (dispatch [:init-chat]))))
+
+(register-handler :reset-app
+  (u/side-effect!
+    (fn [_ _]
+      (dispatch [:initialize-db])
+      (dispatch [:load-accounts])
+      (dispatch [:init-console-chat])
+      (dispatch [:load-commands! "console"]))))
 
 (register-handler :initialize-crypt
   (u/side-effect!
@@ -77,12 +100,7 @@
                                    (dispatch [:crypt-initialized]))))))))
 
 (defn node-started [db result]
-  (let [identity (:user-identity db)
-        password (:password db)]
-  (log/debug "Started Node: " result)
-  (when identity (do
-                   (dispatch [:login-account (:address identity) password])
-                   (dispatch [:initialize-protocol identity])))))
+  (log/debug "Started Node: " result))
 
 (register-handler :initialize-geth
   (u/side-effect!
@@ -90,7 +108,7 @@
      (log/debug "Starting node")
      (.startNode geth
                  (fn [result] (node-started db result))
-                 #(dispatch [:initialize-protocol])))))
+                 #(log/debug "Geth already initialized")))))
 
 (register-handler :crypt-initialized
   (u/side-effect!

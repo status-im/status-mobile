@@ -11,7 +11,9 @@
 ;; initial state of app-db
 (def app-db {:identity-password      "replace-me-with-user-entered-password"
              :identity               "me"
+             :is-logged-in           false
              :accounts               {}
+             :user-identity          nil
              :contacts               []
              :contacts-ids           #{}
              :selected-contacts      #{}
@@ -22,7 +24,7 @@
              :chats-updated-signal   0
              :show-actions           false
              :selected-participants  #{}
-             :signed-up              true
+             :signed-up              false
              :view-id                default-view
              :navigation-stack       (list default-view)
              ;; TODO fix hardcoded values

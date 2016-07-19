@@ -80,3 +80,11 @@
       (push-view :profile)))
 
 (register-handler :show-profile show-profile)
+
+(defn navigate-to-clean
+  [db [_ view-id]]
+  (-> db
+      (assoc :navigation-stack (list))
+      (push-view view-id)))
+
+(register-handler :navigate-to-clean navigate-to-clean)

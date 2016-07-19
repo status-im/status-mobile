@@ -1,5 +1,5 @@
 (ns status-im.models.messages
-  (:require [status-im.persistence.realm :as r]
+  (:require [status-im.persistence.realm.core :as r]
             [re-frame.core :refer [dispatch]]
             [cljs.reader :refer [read-string]]
             [status-im.utils.random :refer [timestamp]]
@@ -29,8 +29,8 @@
   [chat-id {:keys [delivery-status msg-id content]
             :or   {delivery-status :pending}
             :as   message}]
-  (when-not (r/exists? :msgs :msg-id msg-id)
-    (r/write
+  (when-not (r/exists? :account :msgs :msg-id msg-id)
+    (r/write :account
       (fn []
         (let [content' (if (string? content)
                          content
@@ -41,7 +41,7 @@
                                :content         content'
                                :delivery-status delivery-status
                                :timestamp       (timestamp)})]
-          (r/create :msgs message' true))))))
+          (r/create :account :msgs message' true))))))
 
 (defn command-type? [type]
   (contains?
@@ -51,20 +51,20 @@
 (defn get-messages
   ([chat-id] (get-messages chat-id 0))
   ([chat-id from]
-   (->> (-> (r/get-by-field :msgs :chat-id chat-id)
-            (r/sorted :timestamp :desc)
-            (r/page from (+ from c/default-number-of-messages))
-            (r/collection->map))
-        (into '())
-        reverse
-        (keep (fn [{:keys [content-type] :as message}]
+    (->> (-> (r/get-by-field :account :msgs :chat-id chat-id)
+             (r/sorted :timestamp :desc)
+             (r/page from (+ from c/default-number-of-messages))
+             (r/collection->map))
+         (into '())
+         reverse
+         (keep (fn [{:keys [content-type] :as message}]
                 (if (command-type? content-type)
                   (update message :content str-to-map)
                   message))))))
 
 (defn update-message! [{:keys [msg-id] :as msg}]
   (log/debug "update-message!" msg)
-  (r/write
+  (r/write :account
     (fn []
-      (when (r/exists? :msgs :msg-id msg-id)
-        (r/create :msgs msg true)))))
+      (when (r/exists? :account :msgs :msg-id msg-id)
+        (r/create :account :msgs msg true)))))
