@@ -117,7 +117,7 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
             case GethMessages.MSG_LOGGED_IN:
                 callback = unlockAccountCallbacks.remove(callbackIdentifier);
                 if (callback != null) {
-                    callback.invoke(null, "{ \"result\": \"" + data.getString("result") + "\"}");
+                    callback.invoke(data.getString("result"));
                 }
                 break;
             default:

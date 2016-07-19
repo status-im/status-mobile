@@ -15,7 +15,7 @@
             [status-im.models.chats :as chats]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.handlers :refer [register-handler] :as u]
-            [status-im.persistence.realm :as r]
+            [status-im.persistence.realm.core :as r]
             [status-im.handlers.server :as server]
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.utils.phone-number :refer [format-phone-number]]
@@ -343,7 +343,7 @@
 
 (defn store-message!
   [{:keys [new-message]} [_ {chat-id :from}]]
-  (messages/save-message chat-id new-message))
+    (messages/save-message chat-id new-message))
 
 (defn dispatch-request!
   [{:keys [new-message]} [_ {chat-id :from}]]
@@ -446,17 +446,17 @@
 
 (defn delete-messages!
   [{:keys [current-chat-id]} _]
-  (r/write
+  (r/write :account
     (fn []
-      (r/delete (r/get-by-field :msgs :chat-id current-chat-id)))))
+      (r/delete :account (r/get-by-field :account :msgs :chat-id current-chat-id)))))
 
 (defn delete-chat!
   [{:keys [current-chat-id]} _]
-  (r/write
-    (fn []
-      (-> (r/get-by-field :chats :chat-id current-chat-id)
-          (r/single)
-          (r/delete)))))
+  (r/write :account
+    (fn [] :account
+      (->> (r/get-by-field :account :chats :chat-id current-chat-id)
+           (r/single)
+           (r/delete :account)))))
 
 (register-handler :leave-group-chat
   ;; todo oreder of operations tbd

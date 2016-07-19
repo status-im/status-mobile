@@ -4,7 +4,7 @@
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [http-get toast]]
             [clojure.string :as s]
-            [status-im.persistence.realm :as realm]
+            [status-im.persistence.realm.core :as realm]
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [reg-handler]]))
@@ -15,8 +15,8 @@
   [_ [identity]]
   (dispatch [::fetch-commands! identity])
   ;; todo uncomment
-  #_(if-let [{:keys [file]} (realm/get-one-by-field :commands :chat-id
-                                                    identity)]
+  #_(if-let [{:keys [file]} (realm/get-one-by-field :account :commands 
+                                                    :chat-id identity)]
       (dispatch [::parse-commands! identity file])
       (dispatch [::fetch-commands! identity])))
 
@@ -73,7 +73,7 @@
 
 (defn save-commands-js!
   [_ [id file]]
-  (realm/create-object :commands {:chat-id id :file file}))
+    (realm/create-object :account :commands {:chat-id id :file file}))
 
 (defn loading-failed!
   [db [id reason details]]

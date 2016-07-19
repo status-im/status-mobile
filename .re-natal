@@ -21,7 +21,8 @@
     "react-native-camera",
     "react-native-qrcode",
     "react-native-orientation",
-    "identicon.js"
+    "identicon.js",
+    "react-native-fs"
   ],
   "imageDirs": [
     "images"

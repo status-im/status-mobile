@@ -1,7 +1,7 @@
 (ns status-im.group-settings.handlers
   (:require [re-frame.core :refer [debug dispatch after enrich]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.persistence.realm :as r]
+            [status-im.persistence.realm.core :as r]
             [status-im.chat.handlers :refer [delete-messages!]]
             [status-im.protocol.api :as api]
             [status-im.utils.random :as random]
@@ -20,8 +20,9 @@
   [db-name property-name]
   (fn [{:keys [current-chat-id] :as db} _]
     (let [property (db-name db)]
-      (r/write (fn []
-                 (-> (r/get-by-field :chats :chat-id current-chat-id)
+      (r/write :account
+               (fn []
+                 (-> (r/get-by-field :account :chats :chat-id current-chat-id)
                      (r/single)
                      (aset (name property-name) property)))))))
 
@@ -76,9 +77,9 @@
 (defn remove-members-from-realm!
   [{:keys [current-chat-id selected-participants] :as db} _]
   (let [chat (get-in db [:chats current-chat-id])]
-    (r/write
+    (r/write :account
       (fn []
-        (r/create
+        (r/create :account
           :chats
           (update chat :contacts remove-identities selected-participants)
           true)))))
