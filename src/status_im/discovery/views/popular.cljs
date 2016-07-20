@@ -11,7 +11,7 @@
     [status-im.components.react :as r]))
 
 (defn page-width []
-  (.-width (.get (.. r/react -Dimensions) "window")))
+  (.-width (.get (.. r/react-native -Dimensions) "window")))
 
 (defview popular []
   [popular-tags [:get-popular-tags 3]]

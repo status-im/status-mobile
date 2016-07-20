@@ -1,31 +1,25 @@
 rootProject.name = 'StatusIm'
 
 include ':app'
-
+include ':react-native-randombytes'
+project(':react-native-randombytes').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-randombytes/android')
+include ':react-native-android-sms-listener'
+project(':react-native-android-sms-listener').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-sms-listener/android')
 include ':react-native-contacts'
 project(':react-native-contacts').projectDir = new File(settingsDir, '../node_modules/react-native-contacts/android')
-
 include ':react-native-i18n'
 project(':react-native-i18n').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-i18n/android')
-// realm dependency
 include ':react-native-vector-icons'
 project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
 include ':realm'
 project(':realm').projectDir = new File(rootProject.projectDir, '../node_modules/realm/android')
-include ':randombytes'
-project(':randombytes').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-randombytes/android')
 include ':react-native-linear-gradient'
 project(':react-native-linear-gradient').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-linear-gradient/android')
-include ':ReactNativeAndroidSmsListener'
-project(':ReactNativeAndroidSmsListener').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-sms-listener/android')
-
 include ':react-native-status'
 project(':react-native-status').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-status/android')
 include ':react-native-camera'
 project(':react-native-camera').projectDir = new File(rootProject.projectDir,   '../node_modules/react-native-camera/android')
-
 include ':react-native-orientation', ':app'
 project(':react-native-orientation').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-orientation/android')
-
 include ':react-native-fs'
 project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')

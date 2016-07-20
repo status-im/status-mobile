@@ -97,6 +97,6 @@
           {:title       (label :t/new-contact)
            :buttonColor :#9b59b6
            :onPress     #(dispatch [:navigate-to :new-contact])}
-          [icon {:name  :android-create
+          [icon {:name  :md-create
                  :style create-icon}]]]]
        [bottom-gradient]])))

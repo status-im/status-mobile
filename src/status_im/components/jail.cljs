@@ -6,8 +6,8 @@
 (def status-js (slurp "resources/status.js"))
 
 (def jail
-  (when (exists? (.-NativeModules r/react))
-    (.-Jail (.-NativeModules r/react))))
+  (when (exists? (.-NativeModules r/react-native))
+    (.-Jail (.-NativeModules r/react-native))))
 
 (when jail
   (.init jail status-js))

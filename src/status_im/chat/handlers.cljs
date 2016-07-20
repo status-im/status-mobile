@@ -193,6 +193,7 @@
                    :delivery-status (default-delivery-status current-chat-id)
                    :outgoing        true
                    :timestamp       (time/now-ms)})]
+    _ (.log js/console "WOW3")
     (if command
       (commands/set-command-input db :commands command)
       (assoc db :new-message (when-not (str/blank? text) message)))))
