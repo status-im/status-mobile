@@ -5,7 +5,9 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
-            [status-im.components.react :refer [navigator app-registry device-event-emitter
+            [status-im.components.react :refer [navigator
+                                                app-registry
+                                                keyboard
                                                 orientation]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
@@ -58,13 +60,13 @@
            orientation
            #(dispatch [:set :orientation (orientation->keyword %)]))
          (.lockToPortrait orientation)
-         (.addListener device-event-emitter
+         (.addListener keyboard
                        "keyboardDidShow"
                        (fn [e]
                          (let [h (.. e -endCoordinates -height)]
                            (when-not (= h @keyboard-height)
                              (dispatch [:set :keyboard-height h])))))
-         (.addListener device-event-emitter
+         (.addListener keyboard
                        "keyboardDidHide"
                        #(when-not (= 0 @keyboard-height)
                          (dispatch [:set :keyboard-height 0]))))

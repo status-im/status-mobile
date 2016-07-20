@@ -42,7 +42,7 @@
   (.setValue anim-value value))
 
 (defn create-value [value]
-  (js/React.Animated.Value. value))
+  (js/ReactNative.Animated.Value. value))
 
 (defn x [value-xy]
   (.-x value-xy))
@@ -54,4 +54,4 @@
   (js->clj (.getLayout value-xy)))
 
 (defn create-value-xy [x y]
-  (js/React.Animated.ValueXY. (clj->js {:x x, :y y})))
+  (js/ReactNative.Animated.ValueXY. (clj->js {:x x, :y y})))

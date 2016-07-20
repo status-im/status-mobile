@@ -3,11 +3,11 @@
             [status-im.components.styles :as st]
             [status-im.utils.utils :as u]))
 
-(def react (u/require "react-native"))
-(def native-modules (.-NativeModules react))
+(def react-native (u/require "react-native"))
+(def native-modules (.-NativeModules react-native))
 
 (defn get-react-property [name]
-  (aget react name))
+  (aget react-native name))
 
 (defn adapt-class [class]
   (when class (r/adapt-react-class class)))
@@ -52,12 +52,12 @@
   (when-let [picker (get-react-property "Picker")]
     (adapt-class (.-Item picker))))
 
-(def pan-responder (.-PanResponder js/React))
-(def animated (.-Animated js/React))
+(def pan-responder (.-PanResponder js/ReactNative))
+(def animated (.-Animated js/ReactNative))
 (def animated-view (r/adapt-react-class (.-View animated)))
 (def animated-text (r/adapt-react-class (.-Text animated)))
 
-(def dimensions (.-Dimensions js/React))
+(def dimensions (.-Dimensions js/ReactNative))
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))
 
@@ -75,15 +75,14 @@
 
 
 (def platform
-  (when-let [pl (.-Platform react)] (.-OS pl)))
+  (when-let [pl (.-Platform react-native)] (.-OS pl)))
 
 (def android? (= platform "android"))
 
 (defn list-item [component]
   (r/as-element component))
 
-(def dismiss-keyboard! (u/require "dismissKeyboard"))
-(def device-event-emitter (.-DeviceEventEmitter react))
 (def orientation (u/require "react-native-orientation"))
+(def keyboard (.-Keyboard react-native))
 
 (def geth (.-Geth native-modules))

@@ -2,7 +2,7 @@
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
-            [status-im.components.react :refer [react
+            [status-im.components.react :refer [react-native
                                                 view
                                                 text
                                                 animated-text

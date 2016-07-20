@@ -76,12 +76,12 @@
           {:title       (label :t/new-chat)
            :buttonColor :#9b59b6
            :onPress     #(dispatch [:show-group-contacts :people])}
-          [icon {:name  :android-create
+          [icon {:name  :md-create
                  :style st/create-icon}]]
          [action-button-item
           {:title       (label :t/new-group-chat)
            :buttonColor :#1abc9c
            :onPress     #(dispatch [:show-group-new])}
-          [icon {:name  :person-stalker
+          [icon {:name  :md-person
                  :style st/person-stalker-icon}]]]]
        [bottom-gradient]])))
