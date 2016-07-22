@@ -61,7 +61,7 @@
                                        )}
       [view [text {:style st/report-user-text} (label :t/report-user)]]]]]])
 
-(defview my-profile []
+(defview my-profile [_]
   [username [:get :username]
    photo-path [:get :photo-path]
    phone-number [:get :phone-number]

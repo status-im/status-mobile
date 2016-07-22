@@ -24,7 +24,8 @@
    [view st/row
     [view st/tag-name-container
      [touchable-highlight {:onPress #(dispatch [:show-discovery-tag tag])}
-      [text {:style st/tag-name} (str " #" (name tag))]]]
+      [view
+       [text {:style st/tag-name} (str " #" (name tag))]]]]
     [view st/tag-count-container
      [text {:style st/tag-count} count]]]
    [list-view {:dataSource          (to-datasource discoveries)

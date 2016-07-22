@@ -29,8 +29,9 @@
    [view st/request-container
     [view st/request-icon-container
      [view (st/request-icon-background color)
-      [image {:source {:uri icon}
-              :style  st/request-icon}]]]
+      (if icon
+        [image {:source {:uri icon}
+                :style  st/request-icon}])]]
     [view st/request-info-container
      [text {:style st/request-info-description} description]
      ;; todo stub

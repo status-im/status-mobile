@@ -1,6 +1,5 @@
 (ns status-im.chat.styles.message
-  (:require [status-im.components.styles :refer [font
-                                                 color-light-blue-transparent
+  (:require [status-im.components.styles :refer [color-light-blue-transparent
                                                  color-white
                                                  color-black
                                                  color-blue
@@ -13,13 +12,11 @@
 
 (def style-message-text
   {:fontSize   14
-   :fontFamily font
    :lineHeight 21
    :color      text1-color})
 
 (def style-sub-text
   {:top        -2
-   :fontFamily font
    :fontSize   12
    :color      text2-color
    :lineHeight 14
@@ -66,7 +63,6 @@
 (def selected-message
   {:marginTop  18
    :marginLeft 40
-   :fontFamily font
    :fontSize   12
    :color      text2-color})
 
@@ -81,9 +77,9 @@
 
 (def message-author {:width 24})
 
-(def photo-view {:borderRadius 50})
+(def photo-view {:borderRadius 12})
 (def photo
-  {:borderRadius 50
+  {:borderRadius 12
    :width        24
    :height       24})
 
@@ -97,8 +93,7 @@
    :height    7})
 
 (def delivery-text
-  {:fontFamily font
-   :fontSize   12
+  {:fontSize   12
    :color      text2-color
    :marginLeft 5})
 
@@ -149,7 +144,7 @@
 (defn command-request-image-view [command scale]
   {:width           32
    :height          32
-   :borderRadius    50
+   :borderRadius    16
    :backgroundColor (:color command)
    :transform       [{:scale scale}]})
 
@@ -189,7 +184,6 @@
 
 (def command-name
   {:fontSize   12
-   :fontFamily font
    :color      color-white})
 
 (def command-image
@@ -203,11 +197,6 @@
          {:marginTop        8
           :marginHorizontal 0}))
 
-(def message-author-text
-  {:marginTop  0
-   :fontSize   12
-   :fontFamily font})
-
 (def audio-container
   {:flexDirection :row
    :alignItems    :center})
@@ -215,7 +204,7 @@
 (def play-view
   {:width        33
    :height       33
-   :borderRadius 50
+   :borderRadius 16
    :elevation    1})
 
 (def play-image
@@ -248,17 +237,17 @@
   {:position      :absolute
    :left          1
    :top           11
-   :fontFamily    font
    :fontSize      11
    :color         :#4A5258
    :letterSpacing 1
    :lineHeight    15})
 
 (def status-container
-  {:flex       1
-   :alignSelf  :center
-   :alignItems :center
-   :width      249})
+  {:flex           1
+   :alignSelf      :center
+   :alignItems     :center
+   :width          249
+   :padding-bottom 16})
 
 (def status-image-view
   {:marginTop 20})
@@ -266,12 +255,10 @@
 (def status-from
   {:marginTop  20
    :fontSize   18
-   :fontFamily font
    :color      text1-color})
 
 (def status-text
   {:marginTop  10
-   :fontFamily font
    :fontSize   14
    :lineHeight 20
    :textAlign  :center
@@ -283,7 +270,7 @@
    :left            44
    :width           24
    :height          24
-   :borderRadius    50
+   :borderRadius    12
    :backgroundColor online-color
    :borderWidth     2
    :borderColor     color-white})
@@ -293,7 +280,7 @@
    :top             8
    :width           4
    :height          4
-   :borderRadius    50
+   :borderRadius    2
    :backgroundColor color-white})
 
 (def online-dot-left
@@ -303,17 +290,17 @@
   (assoc online-dot :left 11))
 
 (def contact-photo-container
-  {:borderRadius 50})
+  {:borderRadius 32})
 
 (def contact-photo
-  {:borderRadius 50
+  {:borderRadius 32
    :width        64
    :height       64})
 
 (def message-date-container
   {:backgroundColor   color-light-blue-transparent
    :height            24
-   :borderRadius      50
+   :borderRadius      12
    :alignSelf         :center
    :marginTop         20
    :marginBottom      20

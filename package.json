@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node_modules/react-native/packager/packager.sh",
-    "postinstall": "./node_modules/.bin/rn-nodeify --install --hack"
+    "postinstall": "./postinstall.sh"
   },
   "devDependencies": {
     "rn-nodeify": "^6.0.1"
@@ -25,10 +25,11 @@
     "process": "^0.11.5",
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
+    "re-natal": "0.2.38",
     "react": "^15.2.0",
-    "react-native": "^0.29.2",
+    "react-native": "^0.30.0",
     "react-native-action-button": "^1.1.11",
-    "react-native-android-sms-listener": "github:alwx/react-native-android-sms-listener#rn0.29-support",
+    "react-native-android-sms-listener": "github:alwx/react-native-android-sms-listener#listener-bugfix",
     "react-native-camera": "github:codyhazelwood/react-native-camera",
     "react-native-circle-checkbox": "github:paramoshkinandrew/ReactNativeCircleCheckbox",
     "react-native-contacts": "^0.2.4",
@@ -42,7 +43,7 @@
     "react-native-orientation": "github:youennPennarun/react-native-orientation",
     "react-native-qrcode": "^0.2.2",
     "react-native-randombytes": "^2.1.0",
-    "react-native-status": "github:status-im/react-native-status",
+    "react-native-status": "github:status-im/react-native-status#ios-module",
     "react-native-tcp": "^1.0.1",
     "react-native-udp": "^1.2.5",
     "react-native-vector-icons": "^2.0.3",

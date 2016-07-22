@@ -5,8 +5,8 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
-            [status-im.components.react :refer [navigator
-                                                app-registry
+            [status-im.android.styles :refer [styles]]
+            [status-im.components.react :refer [app-registry
                                                 keyboard
                                                 orientation]]
             [status-im.components.main-tabs :refer [main-tabs]]
@@ -45,10 +45,10 @@
   (keyword (.toLowerCase o)))
 
 (defn app-root []
-  (let [signed-up (subscribe [:get :signed-up])
-        _ (log/debug "signed up: " @signed-up)
-        view-id   (subscribe [:get :view-id])
-        account   (subscribe [:get :user-identity])
+  (let [signed-up       (subscribe [:get :signed-up])
+        _               (log/debug "signed up: " @signed-up)
+        view-id         (subscribe [:get :view-id])
+        account         (subscribe [:get :user-identity])
         keyboard-height (subscribe [:get :keyboard-height])]
     (log/debug "Current account: " @account)
     (r/create-class
@@ -72,37 +72,38 @@
                          (dispatch [:set :keyboard-height 0]))))
        :render
        (fn []
-         (let [startup-view (if @account 
+         (let [startup-view (if @account
                               (if @signed-up
                                 @view-id
                                 :chat)
-                              (if (contains? #{:login :chat} @view-id) 
-                                @view-id 
+                              (if (contains? #{:login :chat} @view-id)
+                                @view-id
                                 :accounts))]
            (log/debug startup-view)
-         (case (if true startup-view :chat)
-           :discovery [main-tabs]
-           :discovery-tag [discovery-tag]
-           :add-participants [new-participants]
-           :remove-participants [remove-participants]
-           :chat-list [main-tabs]
-           :new-group [new-group]
-           :group-settings [group-settings]
-           :contact-list [main-tabs]
-           :group-contacts [contact-list]
-           :new-contact [new-contact]
-           :qr-scanner [qr-scanner]
-           :chat [chat]
-           :profile [profile]
-           :accounts [accounts]
-           :login [login]
-           :my-profile [my-profile])))})))
+           (let [component (case (if true startup-view :chat)
+                             :discovery main-tabs
+                             :discovery-tag discovery-tag
+                             :add-participants new-participants
+                             :remove-participants remove-participants
+                             :chat-list main-tabs
+                             :new-group new-group
+                             :group-settings group-settings
+                             :contact-list main-tabs
+                             :group-contacts contact-list
+                             :new-contact new-contact
+                             :qr-scanner qr-scanner
+                             :chat chat
+                             :profile profile
+                             :accounts accounts
+                             :login login
+                             :my-profile my-profile)]
+             [component {:platform-specific {:styles styles}}])))})))
 
 (defn init [& [env]]
   (dispatch-sync [:reset-app])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
-  (.setSoftInputMode j/jail j/adjust-resize)
+  (j/set-soft-input-mode j/adjust-resize)
   (dispatch [:load-user-phone-number])
   (init-back-button-handler!)
   (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)))

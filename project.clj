@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha7"]
                  [org.clojure/clojurescript "1.9.76"]
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
-                 [re-frame "0.6.0"]
+                 [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo   "git@github.com:status-im/status-lib.git"
                           :branch "master"}}

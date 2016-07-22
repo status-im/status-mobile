@@ -16,7 +16,7 @@
    :justifyContent :center})
 
 (def list-icon
-  {:width  16
+  {:width  20
    :height 16})
 
 (def requests-icon
