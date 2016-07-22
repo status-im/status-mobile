@@ -57,17 +57,18 @@
        #(reset! loop? false)
        :reagent-render
        (fn [msg-id command]
-         [touchable-highlight
-          {:on-press (when-not @answered?
-                       #(set-chat-command msg-id command))
-           :style    st/command-request-image-touchable
-           :accessibility-label (label command)}
-          [animated-view {:style (st/command-request-image-view command scale-anim-val)}
-           [image {:source {:uri (:icon command)}
-                   :style  st/command-request-image}]]])})))
+         (if command
+           [touchable-highlight
+            {:on-press            (when-not @answered?
+                                    #(set-chat-command msg-id command))
+             :style               st/command-request-image-touchable
+             :accessibility-label (label command)}
+            [animated-view {:style (st/command-request-image-view command scale-anim-val)}
+             [image {:source {:uri (:icon command)}
+                     :style  st/command-request-image}]]]))})))
 
 (defn message-content-command-request
-  [{:keys [msg-id content from incoming-group]}]
+  [{:keys [msg-id content from incoming-group]} platform-specific]
   (let [commands-atom (subscribe [:get-responses])]
     (fn [{:keys [msg-id content from incoming-group]}]
       (let [commands @commands-atom
@@ -75,12 +76,18 @@
         [view st/comand-request-view
          [view st/command-request-message-view
           (when incoming-group
-            [text {:style st/command-request-from-text}
+            [text {:style             st/command-request-from-text
+                   :platform-specific platform-specific
+                   :font              :default}
              from])
-          [text {:style st/style-message-text}
+          [text {:style             st/style-message-text
+                 :platform-specific platform-specific
+                 :font              :default}
            content]]
          [request-button msg-id command]
          (when (:request-text command)
            [view st/command-request-text-view
-            [text {:style st/style-sub-text}
+            [text {:style             st/style-sub-text
+                   :platform-specific platform-specific
+                   :font              :default}
              (:request-text command)]])]))))

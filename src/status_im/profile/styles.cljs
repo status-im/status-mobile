@@ -96,7 +96,7 @@
    :backgroundColor color-blue
    :paddingLeft     25
    :paddingRight    25
-   :borderRadius    50})
+   :borderRadius    20})
 
 (def message-btn-text
   {:marginTop  -2.5
@@ -112,7 +112,7 @@
    :justifyContent  :center
    :backgroundColor color-blue-transparent
    :padding         8
-   :borderRadius    50})
+   :borderRadius    20})
 
 (def more-btn-image
   {:width  4

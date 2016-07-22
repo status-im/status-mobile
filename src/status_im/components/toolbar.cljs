@@ -6,9 +6,7 @@
                                                 text
                                                 image
                                                 touchable-highlight]]
-            [status-im.components.styles :refer [font
-                                                 title-font
-                                                 color-white
+            [status-im.components.styles :refer [color-white
                                                  color-purple
                                                  text1-color
                                                  text2-color
@@ -18,8 +16,15 @@
                                                  icon-back
                                                  toolbar-height]]))
 
-(defn toolbar [{:keys [title nav-action hide-nav? action custom-action
-                       background-color custom-content style]}]
+(defn toolbar [{title             :title
+                nav-action        :nav-action
+                hide-nav?         :hide-nav?
+                action            :action
+                custom-action     :custom-action
+                background-color  :background-color
+                custom-content    :custom-content
+                style             :style
+                platform-specific :platform-specific}]
   (let [style (merge {:flexDirection   :row
                       :backgroundColor (or background-color toolbar-background1)
                       :height          toolbar-height
@@ -35,22 +40,23 @@
            [image (:image nav-action)]]]
          [touchable-highlight {:on-press #(dispatch [:navigate-back])
                                :accessibility-label :navigate-back}
-          [view {:width  56
-                 :height 56
+          [view {:width          56
+                 :height         56
                  :alignItems     :center
                  :justifyContent :center}
            [image {:source {:uri :icon_back}
                    :style  icon-back}]]]))
      (or custom-content
          [view {:style toolbar-title-container}
-          [text {:style toolbar-title-text}
+          [text {:style             toolbar-title-text
+                 :platform-specific platform-specific
+                 :font              :medium}
            title]])
      custom-action
      (when action
        [touchable-highlight {:on-press (:handler action)}
         [view {:width          56
                :height         56
-
                :alignItems     :center
                :justifyContent :center}
          [image (:image action)]]])]))

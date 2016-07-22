@@ -17,28 +17,32 @@
             [status-im.components.styles :refer [color-blue
                                                  toolbar-background1
                                                  toolbar-background2]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.icons.ionicons :refer [icon]]
             [status-im.i18n :refer [label]]
             [status-im.chats-list.styles :as st]
+            [status-im.components.styles :as cst]
             [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
             [status-im.components.tabs.styles :refer [tabs-height]]))
 
-(defview chats-list-toolbar []
+(defview chats-list-toolbar [platform-specific]
   [chats-scrolled? [:get :chats-scrolled?]]
-  [toolbar {:nav-action {:image   {:source {:uri :icon_hamburger}
-                                   :style  st/hamburger-icon}
-                         :handler open-drawer}
-            :title      (label :t/chats)
-            :background-color (if chats-scrolled?
-                                toolbar-background1
-                                toolbar-background2)
-            ;; TODO implement search
-            :action     {:image   {:source {:uri :icon_search}
-                                   :style  st/search-icon}
-                         :handler (fn [])}}])
+  [view
+   [status-bar {:platform-specific platform-specific}]
+   [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
+                                          :style  st/hamburger-icon}
+                                :handler open-drawer}
+             :title            (label :t/chats)
+             :background-color (if chats-scrolled?
+                                 toolbar-background1
+                                 toolbar-background2)
+             ;; TODO implement search
+             :action           {:image   {:source {:uri :icon_search}
+                                          :style  st/search-icon}
+                                :handler (fn [])}}]])
 
-(defn chats-list []
+(defn chats-list [{platform-specific :platform-specific}]
   (let [chats (subscribe [:get :chats])
         chats-scrolled? (subscribe [:get :chats-scrolled?])
         animation? (subscribe [:animations :tabs-bar-animation?])
@@ -48,7 +52,7 @@
     (dispatch [:set :chats-scrolled? false])
     (fn []
       [view st/chats-container
-       [chats-list-toolbar]
+       [chats-list-toolbar platform-specific]
        [list-view {:dataSource          (to-datasource @chats)
                    :renderRow           (fn [row _ _]
                                           (list-item [chat-list-item row]))

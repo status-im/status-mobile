@@ -16,7 +16,7 @@
    :height          36
    :alignItems      :center
    :justifyContent  :center
-   :borderRadius    50
+   :borderRadius    18
    :backgroundColor color})
 
 (defn default-chat-icon-chat-list [color]
@@ -43,7 +43,7 @@
 
 (def chat-icon
   {:margin       4
-   :borderRadius 50
+   :borderRadius 18
    :width        36
    :height       36})
 
@@ -68,7 +68,7 @@
    :right           0
    :width           20
    :height          20
-   :borderRadius    50
+   :borderRadius    10
    :backgroundColor online-color
    :borderWidth     2
    :borderColor     color-white})
@@ -88,7 +88,7 @@
    :top             6
    :width           4
    :height          4
-   :borderRadius    50
+   :borderRadius    2
    :backgroundColor color-white})
 (def online-dot-left (merge online-dot {:left 3}))
 (def online-dot-right (merge online-dot {:left 9}))

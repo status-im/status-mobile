@@ -9,6 +9,7 @@
                                                 image
                                                 linear-gradient
                                                 touchable-highlight]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
@@ -28,10 +29,13 @@
             [status-im.accounts.styles :as st]
             [status-im.utils.logging :as log]))
 
-(def toolbar-title
-  [view toolbar-title-container
-   [text {:style (merge toolbar-title-text {:color color-white})}
-    (label :t/switch-users)]])
+(defn toolbar-title [platform-specific]
+  (let [style (merge toolbar-title-text {:color color-white})]
+    [view toolbar-title-container
+     [text {:style             style
+            :platform-specific platform-specific
+            :font              :medium}
+      (label :t/switch-users)]]))
 
 (defn render-row [row _ _]
   (list-item [account-view row]))
@@ -46,25 +50,29 @@
   (dispatch [:navigate-to-clean :accounts])
   (dispatch [:navigate-to :chat "console"]))
 
-(defview accounts []
+(defview accounts [{platform-specific :platform-specific}]
   [accounts [:get :accounts]
    stack [:get :navigation-stack]]
-  (let [accounts (vals accounts)
-        show-back? (> (count stack) 1)]
+  (let [accounts          (vals accounts)
+        show-back?        (> (count stack) 1)]
     [view st/screen-container
-     [linear-gradient {:colors    ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
+     [linear-gradient {:colors    ["rgba(182, 116, 241, 1)"
+                                   "rgba(107, 147, 231, 1)"
+                                   "rgba(43, 171, 238, 1)"]
                        :start     [0, 0]
                        :end       [0.5, 1]
                        :locations [0, 0.8, 1]
                        :style     st/gradient-background}
-      [toolbar {:background-color :transparent
-                :nav-action       {:image   {:source (if show-back? {:uri :icon_back_white} nil)
-                                             :style  icon-back}
-                                   :handler (if show-back? #(dispatch [:navigate-back]) nil)}
-                :custom-content   toolbar-title
-                :action           {:image   {:style icon-search}
-                                   :handler #()}
-                :style            st/toolbar}]
+      [status-bar {:platform-specific platform-specific
+                   :type              :transparent}]
+      [toolbar {:background-color  :transparent
+                :nav-action        {:image   {:source (if show-back? {:uri :icon_back_white} nil)
+                                              :style  icon-back}
+                                    :handler (if show-back? #(dispatch [:navigate-back]) nil)}
+                :custom-content    [toolbar-title platform-specific]
+                :action            {:image   {:style icon-search}
+                                    :handler #()}
+                :platform-specific platform-specific}]
       [list-view {:dataSource            (lw/to-datasource accounts)
                   :enableEmptySections   true
                   :renderRow             render-row
@@ -76,4 +84,7 @@
         [view st/add-account-button
          [image {:source {:uri :icon_add}
                  :style  st/icon-plus}]
-         [text {:style st/add-account-text} (label :t/add-account)]]]]]]))
+         [text {:style             st/add-account-text
+                :platform-specific platform-specific
+                :font              :default}
+          (label :t/add-account)]]]]]]))

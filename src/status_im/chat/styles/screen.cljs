@@ -1,14 +1,14 @@
 (ns status-im.chat.styles.screen
   (:require [status-im.components.styles :refer [font
-                                               title-font
-                                               color-white
-                                               chat-background
-                                               online-color
-                                               selected-message-color
-                                               separator-color
-                                               text1-color
-                                               text2-color
-                                               toolbar-background1]]))
+                                                 title-font
+                                                 color-white
+                                                 chat-background
+                                                 online-color
+                                                 selected-message-color
+                                                 separator-color
+                                                 text1-color
+                                                 text2-color
+                                                 toolbar-background1]]))
 
 (def chat-view
   {:flex            1
@@ -74,11 +74,11 @@
    :fontSize   12
    :fontFamily font})
 
-(def actions-wrapper
+(defn actions-wrapper [status-bar-height]
   {:backgroundColor toolbar-background1
    :elevation       2
    :position        :absolute
-   :top             56
+   :top             (+ 55 status-bar-height)
    :left            0
    :right           0})
 
@@ -105,16 +105,14 @@
    :justifyContent :center})
 
 (def action-title
-  {:marginTop  -2.5
+  {:margin-top -2.5
    :color      text1-color
-   :fontSize   14
-   :fontFamily font})
+   :font-size  14})
 
 (def action-subtitle
-  {:marginTop  1
+  {:margin-top 1
    :color      text2-color
-   :fontSize   12
-   :fontFamily font})
+   :font-size  12})
 
 (def typing-all
   {:marginBottom 20})

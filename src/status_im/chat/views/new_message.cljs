@@ -36,10 +36,12 @@
   [plain-message-input-view
    (when command? (get-options parameter type))])
 
-(defview chat-message-new []
+(defview chat-message-new [platform-specific]
   [staged-commands [:get-chat-staged-commands]
    margin [:input-margin]]
-  [view (st/new-message-container margin)
-   (when (seq staged-commands)
-     [staged-commands-view staged-commands])
-   [show-input]])
+  (let [style (get-in platform-specific [:styles :components :chat :new-message])]
+    [view (merge (st/new-message-container margin)
+                 style)
+     (when (seq staged-commands)
+       [staged-commands-view staged-commands])
+     [show-input]]))

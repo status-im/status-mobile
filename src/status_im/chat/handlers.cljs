@@ -21,7 +21,6 @@
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
             [status-im.utils.datetime :as time]
-            [status-im.components.react :refer [geth]]
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup]]
@@ -545,8 +544,8 @@
   (after
     (fn [{:keys [current-chat-id]} [_ mode chat-id]]
       (when (or (nil? chat-id) (= current-chat-id chat-id))
-        (.setSoftInputMode j/jail (if (= :pan mode)
-                                    j/adjust-pan
-                                    j/adjust-resize)))))
+        (j/set-soft-input-mode (if (= :pan mode)
+                                 j/adjust-pan
+                                 j/adjust-resize)))))
   (fn [db [_ chat-id mode]]
     (assoc-in db [:kb-mode chat-id] mode)))

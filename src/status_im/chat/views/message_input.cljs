@@ -22,10 +22,10 @@
 (defn message-input-container [input]
   [view st/message-input-container input])
 
-(defn plain-input-options [disbale?]
+(defn plain-input-options [disable?]
   {:style           st-message/message-input
-   :onChangeText    (when-not disbale? plain-message/set-input-message)
-   :editable        (not disbale?)
+   :onChangeText    (when-not disable? plain-message/set-input-message)
+   :editable        (not disable?)
    :onSubmitEditing plain-message/send})
 
 (defn on-press-commands-handler
@@ -34,9 +34,9 @@
     #(dispatch [:invoke-commands-suggestions!])
     command/send-command))
 
-(defn command-input-options [command icon-width disbale?]
-  {:style           (st-response/command-input icon-width disbale?)
-   :onChangeText    (when-not disbale? command/set-input-message)
+(defn command-input-options [command icon-width disable?]
+  {:style           (st-response/command-input icon-width disable?)
+   :onChangeText    (when-not disable? command/set-input-message)
    :onSubmitEditing (on-press-commands-handler command)})
 
 (defview message-input [input-options {:keys [suggestions-trigger] :as command}]
@@ -44,18 +44,18 @@
    input-message [:get-chat-input-text]
    input-command [:get-chat-command-content]
    icon-width [:command-icon-width]
-   disbale? [:get :disable-input]]
+   disable? [:get :disable-input]]
   [text-input (merge
                 (if command?
-                  (command-input-options command icon-width disbale?)
-                  (plain-input-options disbale?))
+                  (command-input-options command icon-width disable?)
+                  (plain-input-options disable?))
                 {:autoFocus           false
                  :blurOnSubmit        false
                  :accessibility-label :input
-                 :on-focus #(dispatch [:set :focused true])
-                 :on-blur #(dispatch [:set :focused false])}
-                input-options)
-   (if command? input-command input-message)])
+                 :on-focus            #(dispatch [:set :focused true])
+                 :on-blur             #(dispatch [:set :focused false])
+                 :default-value       (if command? input-command input-message)}
+                input-options)])
 
 (defview plain-message-input-view [{:keys [input-options]}]
   [command? [:command?]
@@ -66,7 +66,7 @@
    [view st/input-view
     [plain-message/commands-button]
     [message-input-container
-     [message-input input-options command]]
+     [message-input input-options]]
     ;; TODO emoticons: not implemented
     [plain-message/smile-button]
     (when (or command? valid-plain-message?)

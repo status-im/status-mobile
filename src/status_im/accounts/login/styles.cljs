@@ -1,6 +1,5 @@
 (ns status-im.accounts.login.styles
-  (:require [status-im.components.styles :refer [font
-                                                 title-font
+  (:require [status-im.components.styles :refer [title-font
                                                  text1-color
                                                  color-white
                                                  toolbar-background2
@@ -19,8 +18,15 @@
    :left     0})
 
 (def form-container
-  {:marginLeft 16
-   :margin-top 70})
+  {:flex            1
+   :flex-direction  "row"
+   :align-items     "center"
+   :justifyContent  "center"})
+
+(def form-container-inner
+  {:flex           1
+   :padding-bottom 100
+   :margin-left    16})
 
 (def bottom-actions-container
   {:position :absolute
@@ -28,12 +34,16 @@
    :right    0
    :bottom   0})
 
-(def recover-text-container
-  {:flex     1
-   :alignItems :center
-   :padding  16})
+(def recover-button-container
+  {:flex     1})
 
-(def recover-text
+(def recover-button
+  {:flex 1
+   :alignItems :center
+   :paddingVertical   16
+   :paddingHorizontal 28})
+
+(def recover-button-text
   {:flex  1
    :color color-white
    :fontSize 16})
@@ -46,8 +56,7 @@
    :flex 1
    :alignItems :center
    :paddingVertical   16
-   :paddingHorizontal 28
-   })
+   :paddingHorizontal 28})
 
 (def connect-button-text
   {:color    "#7099e6"

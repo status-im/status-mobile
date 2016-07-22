@@ -1,9 +1,10 @@
  (ns ^:figwheel-no-load env.ios.main
   (:require [reagent.core :as r]
             [status-im.ios.core :as core]
-            [figwheel.client :as figwheel :include-macros true]))
+            [figwheel.client :as figwheel :include-macros true]
+            [cljs.pprint]))
 
- (enable-console-print!)
+(enable-console-print!)
 
 (def cnt (r/atom 0))
 (defn reloader [] @cnt [core/app-root])

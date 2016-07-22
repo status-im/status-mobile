@@ -7,7 +7,6 @@
                                                 text
                                                 image
                                                 navigator
-                                                toolbar-android
                                                 drawer-layout-android
                                                 touchable-opacity]]
             [status-im.resources :as res]

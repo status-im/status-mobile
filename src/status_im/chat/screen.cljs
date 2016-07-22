@@ -5,11 +5,11 @@
             [status-im.components.react :refer [view
                                                 animated-view
                                                 text
-                                                image
                                                 icon
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action
                                                            chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
@@ -48,25 +48,27 @@
   ;; TODO stub data ('online' property)
   [chat-icon-view-action chat-id group-chat name color true])
 
-(defn typing [member]
+(defn typing [member platform-specific]
   [view st/typing-view
    [view st/typing-background
-    [text {:style st/typing-text}
+    [text {:style             st/typing-text
+           :platform-specific platform-specific
+           :font              :default}
      (str member " " (label :t/is-typing))]]])
 
-(defn typing-all []
+(defn typing-all [platform-specific]
   [view st/typing-all
    ;; TODO stub data
    (for [member ["Geoff" "Justas"]]
-     ^{:key member} [typing member])])
+     ^{:key member} [typing member platform-specific])])
 
-(defn message-row [contact-by-identity group-chat messages-count]
+(defn message-row [{:keys [contact-by-identity platform-specific group-chat messages-count]}]
   (fn [row _ idx]
     (let [msg (-> row
                   (add-msg-color contact-by-identity)
                   (assoc :group-chat group-chat)
                   (assoc :last-msg (= (js/parseInt idx) (dec messages-count))))]
-      (list-item [chat-message msg]))))
+      (list-item [chat-message msg platform-specific]))))
 
 (defn on-action-selected [position]
   (case position
@@ -81,8 +83,13 @@
     [view nil]]
    items])
 
-(defn action-view [{:keys     [icon-style custom-icon handler title subtitle]
-                    icon-name :icon}]
+(defn action-view [{{:keys     [icon-style
+                                custom-icon
+                                handler
+                                title
+                                subtitle]
+                     icon-name :icon} :action
+                    platform-specific :platform-specific}]
   [touchable-highlight {:on-press (fn []
                                     (dispatch [:set-show-actions false])
                                     (when handler
@@ -92,9 +99,13 @@
      (or custom-icon
          [icon icon-name icon-style])]
     [view st/action-view
-     [text {:style st/action-title} title]
+     [text {:style             st/action-title
+            :platform-specific platform-specific
+            :font              :medium} title]
      (when-let [subtitle subtitle]
-       [text {:style st/action-subtitle}
+       [text {:style             st/action-subtitle
+              :platform-specific platform-specific
+              :font              :default}
         subtitle])]]])
 
 (defview menu-item-icon-profile []
@@ -108,10 +119,10 @@
 (defn members-text [members]
   (truncate-str (str (s/join ", " (map #(:name %) members)) " " (label :t/and-you)) 35))
 
-(defn actions-list-view []
-  (let [{:keys [group-chat chat-id]}
-        (subscribe [:chat-properties [:group-chat :chat-id]])
-        members (subscribe [:current-chat-contacts])]
+(defn actions-list-view [{styles :styles :as platform-specific}]
+  (let [{:keys [group-chat chat-id]} (subscribe [:chat-properties [:group-chat :chat-id]])
+        members           (subscribe [:current-chat-contacts])
+        status-bar-height (get-in styles [:components :status-bar :default :height])]
     (when-let [actions (if @group-chat
                          [{:title      (label :t/members-title)
                            :subtitle   (members-text @members)
@@ -168,32 +179,41 @@
                                         :height 13}
                            ;; TODO not implemented: action Settings
                            :handler    nil}])]
-      [view st/actions-wrapper
+      [view (-> (st/actions-wrapper status-bar-height)
+                (merge (get-in styles [:components :actions-list-view])))
        [view st/actions-separator]
        [view st/actions-view
         (for [action actions]
-          ^{:key action} [action-view action])]])))
+          ^{:key action} [action-view {:platform-specific platform-specific
+                                       :action            action}])]])))
 
-(defn actions-view []
+(defn actions-view [platform-specific]
   [overlay {:on-click-outside #(dispatch [:set-show-actions false])}
-   [actions-list-view]])
+   [actions-list-view platform-specific]])
 
-(defn toolbar-content []
+(defn toolbar-content [platform-specific]
   (let [{:keys [group-chat name contacts]}
         (subscribe [:chat-properties [:group-chat :name :contacts]])
         show-actions (subscribe [:show-actions])]
     (fn []
       [view (st/chat-name-view @show-actions)
-       [text {:style st/chat-name-text}
+       [text {:style             st/chat-name-text
+              :platform-specific platform-specific
+              :font              :medium}
         (truncate-str (or @name (label :t/chat-name)) 30)]
        (if @group-chat
          [view {:flexDirection :row}
           [icon :group st/group-icon]
-          [text {:style st/members}
+          [text {:style             st/members
+                 :platform-specific platform-specific
+                 :font              :medium}
            (let [cnt (inc (count @contacts))]
              (label-pluralize cnt :t/members))]]
          ;; TODO stub data: last activity
-         [text {:style st/last-activity} (label :t/last-active)])])))
+         [text {:style             st/last-activity
+                :platform-specific platform-specific
+                :font              :default}
+          (label :t/last-active)])])))
 
 (defn toolbar-action []
   (let [show-actions (subscribe [:show-actions])]
@@ -208,20 +228,24 @@
          [view st/action
           [chat-icon]]]))))
 
-(defn chat-toolbar []
-  (let [{:keys [group-chat name contacts]}
-        (subscribe [:chat-properties [:group-chat :name :contacts]])
-        show-actions (subscribe [:show-actions])]
-    (fn []
-      [toolbar {:hide-nav?      @show-actions
-                :custom-content [toolbar-content]
-                :custom-action  [toolbar-action]}])))
+(defn chat-toolbar [platform-specific]
+  (let [{:keys [group-chat name contacts]} (subscribe [:chat-properties [:group-chat :name :contacts]])
+        show-actions      (subscribe [:show-actions])]
+    [view
+     [status-bar {:platform-specific platform-specific}]
+     [toolbar {:hide-nav?      @show-actions
+               :custom-content [toolbar-content platform-specific]
+               :custom-action  [toolbar-action]
+               :style          (get-in platform-specific [:styles :components :toolbar])}]]))
 
-(defview messages-view [group-chat]
+(defview messages-view [platform-specific group-chat]
   [messages [:chat :messages]
    contacts [:chat :contacts]]
   (let [contacts' (contacts-by-identity contacts)]
-    [list-view {:renderRow                 (message-row contacts' group-chat (count messages))
+    [list-view {:renderRow                 (message-row {:contact-by-identity contacts'
+                                                         :platform-specific   platform-specific
+                                                         :group-chat          group-chat
+                                                         :messages-count      (count messages)})
                 :renderScrollComponent     #(invertible-scroll-view (js->clj %))
                 :onEndReached              #(dispatch [:load-more-messages])
                 :enableEmptySections       true
@@ -250,7 +274,7 @@
          [animated-view {:style (st/messages-container messages-offset)}
           messages])})))
 
-(defview chat []
+(defview chat [{platform-specific :platform-specific}]
   [group-chat [:chat :group-chat]
    show-actions-atom [:show-actions]
    command [:get-chat-command]
@@ -263,11 +287,11 @@
                      (let [height (.. event -nativeEvent -layout -height)]
                        (when (not= height layout-height)
                          (dispatch [:set-layout-height height]))))}
-   [chat-toolbar]
+   [chat-toolbar platform-specific]
    [messages-container
-    [messages-view group-chat]]
-   (when group-chat [typing-all])
+    [messages-view platform-specific group-chat]]
+   (when group-chat [typing-all platform-specific])
    [response-view]
    (when-not command? [suggestion-container])
-   [chat-message-new]
-   (when show-actions-atom [actions-view])])
+   [chat-message-new platform-specific]
+   (when show-actions-atom [actions-view platform-specific])])

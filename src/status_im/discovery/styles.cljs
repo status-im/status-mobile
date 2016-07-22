@@ -146,7 +146,7 @@
 
 (def popular-list-item-avatar
   {:resizeMode   "contain"
-   :borderRadius 150
+   :borderRadius 20
    :width        40
    :height       40})
 

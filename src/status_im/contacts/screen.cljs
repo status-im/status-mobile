@@ -12,6 +12,7 @@
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
             [status-im.contacts.views.contact :refer [contact-extended-view]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.ionicons :refer [icon]]
@@ -22,18 +23,21 @@
                                                  toolbar-background2]]
             [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
             [status-im.contacts.styles :as st]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [status-im.components.styles :as cst]))
 
-(defn contact-list-toolbar []
-  [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
-                                         :style  hamburger-icon}
-                               :handler open-drawer}
-            :title            (label :t/contacts)
-            :background-color toolbar-background2
-            :style            {:elevation 0}
-            :action           {:image   {:source {:uri :icon_search}
-                                         :style  icon-search}
-                               :handler (fn [])}}])
+(defn contact-list-toolbar [platform-specific]
+  [view
+   [status-bar {:platform-specific platform-specific}]
+   [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
+                                          :style  hamburger-icon}
+                                :handler open-drawer}
+             :title            (label :t/contacts)
+             :background-color toolbar-background2
+             :style            {:elevation 0}
+             :action           {:image   {:source {:uri :icon_search}
+                                          :style  icon-search}
+                                :handler (fn [])}}]])
 
 (def contacts-limit 10)
 
@@ -59,13 +63,13 @@
       [touchable-highlight {:on-press #(dispatch [:show-group-contacts group])}
        [text {:style st/show-all-text} (label :show-all)]]])])
 
-(defn contact-list []
+(defn contact-list [{platform-specific :platform-specific}]
   (let [contacts             (subscribe [:get-contacts-with-limit contacts-limit])
         contcats-count       (subscribe [:contacts-count])
         show-toolbar-shadow? (r/atom false)]
     (fn []
       [view st/contacts-list-container
-       [contact-list-toolbar]
+       [contact-list-toolbar platform-specific]
        [view {:style st/toolbar-shadow}
         (when @show-toolbar-shadow?
           [linear-gradient {:style  st/contact-group-header-gradient-bottom
