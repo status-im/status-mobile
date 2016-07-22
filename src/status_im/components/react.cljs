@@ -34,6 +34,7 @@
 (defn list-view [props]
   [list-view-class (merge {:enableEmptySections true} props)])
 (def scroll-view (get-class "ScrollView"))
+(def web-view (get-class "WebView"))
 (def touchable-without-feedback (get-class "TouchableWithoutFeedback"))
 (def text-input-class (get-class "TextInput"))
 (defn text-input [props text]
