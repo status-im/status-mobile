@@ -52,6 +52,6 @@
                      (toast (str error))))))))
 
 (defn truncate-str [s max]
-  (if (< max (count s))
+  (if (and (< max (count s)) s)
     (str (subs s 0 (- max 3)) "...")
     s))

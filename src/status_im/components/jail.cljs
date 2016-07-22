@@ -25,3 +25,6 @@
                (println r')
                (callback r')))]
     (.call jail chat-id (cljs->json path) (cljs->json params) cb)))
+
+(def adjust-resize 16)
+(def adjust-pan 32)

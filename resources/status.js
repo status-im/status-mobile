@@ -27,6 +27,8 @@ Command.prototype.create = function (com) {
     this.icon = com.icon;
     this.params = com.params || [];
     this.preview = com.preview;
+    this["suggestions-trigger"] = com.suggestionsTrigger || "on-change";
+    this.fullscreen = com.fullscreen;
     this.addToCatalog();
 
     return this;
@@ -83,6 +85,15 @@ function scrollView(options, elements) {
     return ['scroll-view', options].concat(elements);
 }
 
+function webView(url) {
+    return ['web-view', {
+        source: {
+            uri: url
+        },
+        javaScriptEnabled: true
+    }];
+}
+
 var status = {
     command: function (h) {
         var command = new Command();
@@ -106,6 +117,7 @@ var status = {
         text: text,
         image: image,
         touchable: touchable,
-        scrollView: scrollView
+        scrollView: scrollView,
+        webView: webView
     }
 };
