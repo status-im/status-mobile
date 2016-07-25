@@ -59,7 +59,7 @@
      [touchable-highlight {:on-press (fn []
                                        ;; TODO not implemented
                                        )}
-      [text {:style st/report-user-text} (label :t/report-user)]]]]])
+      [view [text {:style st/report-user-text} (label :t/report-user)]]]]]])
 
 (defview my-profile []
   [username [:get :username]
