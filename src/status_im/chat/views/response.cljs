@@ -96,10 +96,11 @@
 
 (defview suggestions-web-view []
   [url [:web-view-url]]
-  [web-view {:source                     {:uri url}
-             :java-script-enabled        true
-             :style                      {:height 300}
-             :on-navigation-state-change on-navigation-change}])
+  (when url
+    [web-view {:source                     {:uri url}
+               :java-script-enabled        true
+               :style                      {:height 300}
+               :on-navigation-state-change on-navigation-change}]))
 
 (defview placeholder []
   [suggestions [:get-content-suggestions]]

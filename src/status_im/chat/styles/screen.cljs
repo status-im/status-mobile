@@ -16,7 +16,7 @@
 
 (defn messages-container [bottom]
   {:flex   1
-   :bottom bottom})
+   :padding-bottom bottom})
 
 (def toolbar-view
   {:flexDirection   :row
