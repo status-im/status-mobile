@@ -67,10 +67,11 @@
    [image {:source {:uri (keyword (str "icon_" (name n)))}
            :style  style}]))
 
-(def linear-gradient-class (u/require "react-native-linear-gradient"))
-(defn linear-gradient [props]
-  (r/create-element linear-gradient-class
-                    (clj->js (merge {:inverted true} props))))
+(def linear-gradient-class
+  (r/adapt-react-class (u/require "react-native-linear-gradient")))
+(defn linear-gradient
+  [props & children]
+  (vec (concat [linear-gradient-class (merge {:inverted true} props)] children)))
 
 
 (def platform

@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
+                                                scroll-view
                                                 text
                                                 list-view
                                                 list-item
@@ -55,26 +56,24 @@
                        :start     [0, 0]
                        :end       [0.5, 1]
                        :locations [0, 0.8, 1]
-                       :style     st/gradient-background}]
+                       :style     st/gradient-background}
       [toolbar {:background-color :transparent
                 :nav-action       {:image   {:source (if show-back? {:uri :icon_back_white} nil)
                                              :style  icon-back}
                                    :handler (if show-back? #(dispatch [:navigate-back]) nil)}
                 :custom-content   toolbar-title
                 :action           {:image   {:style icon-search}
-                                  :handler #()}}]
-     [view st/accounts-container
-      [view st/account-list-view-container
-       [list-view {:dataSource          (lw/to-datasource accounts)
-                   :enableEmptySections true
-                   :renderRow           render-row
-                   ;:renderSeparator     render-separator
-                   :style               st/account-list}]]]
-     [view st/add-account-button-container
-      [touchable-highlight {:on-press create-account}
-       [view st/add-account-button
-        [image {:source {:uri :icon_add}
-                :style  st/icon-plus}]
-        [text {:style st/add-account-text} (label :t/add-account)]]]]]))
-
-;(re-frame.core/dispatch [:set :view-id :users])
+                                   :handler #()}
+                :style            st/toolbar}]
+      [list-view {:dataSource            (lw/to-datasource accounts)
+                  :enableEmptySections   true
+                  :renderRow             render-row
+                  :style                 st/account-list
+                  :contentContainerStyle (st/account-list-content (count accounts))}]
+      [view st/add-account-button-container
+       [touchable-highlight {:on-press            create-account
+                             :accessibility-label :create-account}
+        [view st/add-account-button
+         [image {:source {:uri :icon_add}
+                 :style  st/icon-plus}]
+         [text {:style st/add-account-text} (label :t/add-account)]]]]]]))
