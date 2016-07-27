@@ -1,40 +1,30 @@
-# status-im
+# Status
 
-A Clojure library designed to ... well, that part is up to you.
+A mobile Ethereum client targeting iOS & Android
 
 ## Usage
 
-### Requirements
-- [Node & NPM](https://nodejs.org/en/)
-- [Lein](http://leiningen.org)
-- [react-native](https://facebook.github.io/react-native/docs/getting-started.html) - npm install -g react-native
-- [re-natal](https://github.com/drapanjanas/re-natal) - npm install -g re-natal
-- [Latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-- Android SDK [Mac](brew install android-sdk) or [Windows/Linux](https://developer.android.com/sdk/installing/index.html)
-- [Genymotion](https://www.genymotion.com) (optinal, you may use an AVD - Android Virtual Device)
-- Status lib - git clone git@github.com:status-im/status-lib.git && cd status-lib/protocol && lein install
-- [Setup Android Development Environment / Simulator](https://facebook.github.io/react-native/docs/android-setup.html)
+Please see the [Developers' Guide](https://github.com/status-im/status-react/wiki/Developers'-Guide) for more details on configuring your environment, managing project dependencies and testing procedures.
 
 
-### Run the app
+## Contribution
 
-    re-natal deps
-    re-natal use-android-device genymotion (or avd)
-    re-natal use-figwheel
-    lein figwheel android
+Thank you for considering to help out with the source code! We welcome contributions from
+anyone on the internet, and are grateful for even the smallest of fixes!
 
-    # new tab
-    react-native start
+If you'd like to contribute to Status, please fork, fix, commit and send a pull request for the maintainers to review and merge into the main code base. 
 
-    # new tab
-    adb reverse tcp:8081 tcp:8081
-    adb reverse tcp:3449 tcp:3449
-    react-native run-android
-(re-frame.core/dispatch [:set-signed-up true]) 
+Please make sure your contributions adhere to our coding guidelines:
+
+ * Code must be idiomatic Clojure, please refer to the [style guidelines](https://github.com/bbatsov/clojure-style-guide) (i.e. use [lein eastwood
+](https://github.com/jonase/eastwood) & [lein kibit](https://github.com/jonase/kibit)).
+ * Code must be documented.
+ * Pull requests need to be based on and opened against the `develop` branch.
+ * Commit messages should be prefixed with the root namespace(s) under `status-im` that they modify.
+   * E.g. "contacts, ios: add contact stylistic changes"
+
+Please see the [Developers' Guide](https://github.com/status-im/status-react/wiki/Developers'-Guide) for more details on configuring your environment, managing project dependencies and testing procedures.
 
 ## License
 
 Copyright © 2016 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
