@@ -51,10 +51,18 @@
 (defn xpath-by-text [text]
   (str ".//*[@text='" text "']"))
 
+(defn click-by-text [driver text]
+  (let [elements (->> (xpath-by-text text)
+                      (elements-by-xpath driver))]
+    (when (pos? (.size elements))
+      (let [element (.get elements 0)]
+        (.click element)))))
+
 (defn contains-text [driver text]
-  (is (= 1 (->> (xpath-by-text text)
-                (elements-by-xpath driver)
-                (.size)))))
+  (is (pos? (->> (xpath-by-text text)
+                 (elements-by-xpath driver)
+                 (.size)))
+      (format "Text \"%s\" was not found on screen." text)))
 
 (defn quit [driver]
   (.quit driver))
@@ -81,6 +89,14 @@
   (let [sym (gensym)]
     `(deftest ~name
        (let [~sym (init)]
+         (click-by-text ~sym "Continue")
          ~@(for [[f & rest] body]
              `(~f ~sym ~@rest))
          (quit ~sym)))))
+
+(defmacro defaction
+  [name parameters & body]
+  (let [session (gensym)]
+    `(defn ~name [~@(concat [session] parameters)]
+       ~@(for [[f & rest] body]
+           `(~f ~session ~@rest)))))

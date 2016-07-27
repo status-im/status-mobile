@@ -139,9 +139,9 @@
     (commands/unstage-command db staged-command)))
 
 (defn set-chat-command
-  [{:keys [current-chat-id] :as db} [_ command-key]]
+  [{:keys [current-chat-id] :as db} [_ command-key type]]
   (-> db
-      (commands/set-chat-command command-key)
+      (commands/set-command-input (or type :commands) command-key)
       (assoc-in [:chats current-chat-id :command-input :content] command-prefix)
       (assoc :disable-input true)))
 
@@ -153,7 +153,7 @@
 
 (defn set-response-command [db [_ to-msg-id command-key]]
   (-> db
-      (commands/set-response-chat-command to-msg-id command-key)
+      (commands/set-command-input :responses to-msg-id command-key)
       (assoc :canceled-command false)))
 
 (register-handler :set-response-chat-command
@@ -163,6 +163,7 @@
   set-response-command)
 
 (register-handler ::add-validation-errors
+  (after #(dispatch [:fix-response-height]))
   (fn [db [_ chat-id errors]]
     (assoc-in db [:custom-validation-errors chat-id]
               (map cu/generate-hiccup errors))))

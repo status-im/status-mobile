@@ -15,9 +15,10 @@
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
 
-(defn label [{:keys [command]}]
-  (->> (name command)
-       (str "request-")))
+(defn label [command]
+  (when command
+    (->> (name (:name command))
+         (str "request-"))))
 
 (def min-scale 1)
 (def max-scale 1.3)
@@ -59,7 +60,8 @@
          [touchable-highlight
           {:on-press (when-not @answered?
                        #(set-chat-command msg-id command))
-           :style    st/command-request-image-touchable}
+           :style    st/command-request-image-touchable
+           :accessibility-label (label command)}
           [animated-view {:style (st/command-request-image-view command scale-anim-val)}
            [image {:source {:uri (:icon command)}
                    :style  st/command-request-image}]]])})))
