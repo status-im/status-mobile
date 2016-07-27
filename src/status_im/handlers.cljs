@@ -10,7 +10,6 @@
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.components.react :refer [geth]]
     [status-im.utils.handlers :refer [register-handler] :as u]
-    [status-im.models.protocol :as protocol]
     status-im.chat.handlers
     status-im.group-settings.handlers
     status-im.navigation.handlers
@@ -57,8 +56,7 @@
 (register-handler :initialize-db
   (fn [_ _]
     (realm/reset-account)
-    (assoc app-db
-      :user-identity nil)))
+    (assoc app-db :user-identity nil)))
 
 (register-handler :initialize-account-db
   (fn [db _]

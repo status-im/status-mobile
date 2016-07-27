@@ -56,7 +56,7 @@ function call(pathStr, paramsStr) {
         _status_catalog
     );
 
-    if(!fn) {
+    if (!fn) {
         return null;
     }
 
@@ -94,6 +94,35 @@ function webView(url) {
     }];
 }
 
+function validationMessage(titleText, descriptionText) {
+    var titleStyle = {
+        color: "white",
+        fontSize: 12,
+        fontFamily: "sans-serif"
+    };
+    var title = status.components.text(titleStyle, titleText);
+
+    var descriptionStyle = {
+        color: "white",
+        fontSize: 12,
+        fontFamily: "sans-serif",
+        opacity: 0.9
+    };
+    var description = status.components.text(descriptionStyle, descriptionText);
+
+    var message = status.components.view(
+        {
+            backgroundColor: "red",
+            height: 61,
+            paddingLeft: 16,
+            paddingTop: 14,
+        },
+        [title, description]
+    );
+
+    return message;
+}
+
 var status = {
     command: function (h) {
         var command = new Command();
@@ -118,6 +147,7 @@ var status = {
         image: image,
         touchable: touchable,
         scrollView: scrollView,
-        webView: webView
+        webView: webView,
+        validationMessage: validationMessage
     }
 };

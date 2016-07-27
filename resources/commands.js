@@ -136,7 +136,7 @@ function phoneSuggestions(params) {
     return {markup: view};
 }
 
-status.response({
+var phoneConfig = {
     name: "phone",
     description: "Send phone number",
     color: "#5fc48d",
@@ -158,7 +158,9 @@ status.response({
             params: [params.value]
         };
     }
-});
+};
+status.response(phoneConfig);
+status.command(phoneConfig);
 
 status.command({
     name: "help",
@@ -193,6 +195,16 @@ status.response({
             event: "confirm-sign-up",
             params: [params.value]
         };
+    },
+    validator: function(params){
+        if(!/^[\d]{4}$/.test(params.value)){
+            var error = status.components.validationMessage(
+                "Confirmation code",
+                "Wrong format"
+            );
+
+            return {errors: [error]}
+        }
     }
 });
 

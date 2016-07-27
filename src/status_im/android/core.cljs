@@ -96,7 +96,7 @@
            :login [login]
            :my-profile [my-profile])))})))
 
-(defn init []
+(defn init [& [env]]
   (dispatch-sync [:reset-app])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
