@@ -21,6 +21,7 @@
             [status-im.components.icons.ionicons :refer [icon]]
             [status-im.i18n :refer [label]]
             [status-im.chats-list.styles :as st]
+            [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
             [status-im.components.tabs.styles :refer [tabs-height]]))
 
 (defview chats-list-toolbar []
@@ -82,4 +83,5 @@
            :buttonColor :#1abc9c
            :onPress     #(dispatch [:show-group-new])}
           [icon {:name  :person-stalker
-                 :style st/person-stalker-icon}]]]]])))
+                 :style st/person-stalker-icon}]]]]
+       [bottom-gradient]])))
