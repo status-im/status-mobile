@@ -55,7 +55,5 @@
 
 (defn tabs [{:keys [tab-list selected-view-id]}]
   [tabs-container
-   [linear-gradient {:colors ["rgba(24, 52, 76, 0.01)" "rgba(24, 52, 76, 0.085)" "rgba(24, 52, 76, 0.165)"]
-                     :style  st/top-gradient}]
    [view st/tabs-inner-container
     (doall (map-indexed #(create-tab %1 %2 selected-view-id) tab-list))]])
