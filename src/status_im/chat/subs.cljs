@@ -1,6 +1,7 @@
 (ns status-im.chat.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub dispatch subscribe path]]
+            [status-im.components.react :refer [ios?]]
             [status-im.models.commands :as commands]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
             [status-im.chat.constants :as c]
@@ -220,12 +221,14 @@
           command (subscribe [:get-chat-command])
           focused (subscribe [:get :focused])
           mode (subscribe [:kb-mode])]
-      (reaction (cond (and (not @focused)
-                           (= :on-send (keyword (:suggestions-trigger @command)))
-                           (pos? @kb-height))
-                      @kb-height
+      (reaction
+        (cond (or ios?
+                  (and (not @focused)
+                       (= :on-send (keyword (:suggestions-trigger @command)))
+                       (pos? @kb-height)))
+              @kb-height
 
-                      (and @focused (= :pan @mode) (pos? @kb-height))
-                      20
+              (and @focused (= :pan @mode) (pos? @kb-height))
+              20
 
-                      :else 0)))))
+              :else 0)))))

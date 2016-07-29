@@ -60,13 +60,14 @@
                                :disabled @command?}
           [animated-view {:style (st/message-input-button-touchable
                                    container-width)}
-           [animated-view {:style (st/message-input-button buttons-scale)}
-            (if (seq @suggestions)
-              [icon :close_gray st/close-icon]
-              [icon :input_list st/list-icon])
-            (when (and (seq @requests)
-                       (not (seq @suggestions)))
-              [view st/requests-icon])]]])})))
+           (when-not @command?
+             [animated-view {:style (st/message-input-button buttons-scale)}
+              (if (seq @suggestions)
+                [icon :close_gray st/close-icon]
+                [icon :input_list st/list-icon])
+              (when (and (seq @requests)
+                         (not (seq @suggestions)))
+                [view st/requests-icon])])]])})))
 
 (defn smile-animation-logic [{:keys [command? val width]}]
   (fn [_]

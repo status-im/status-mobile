@@ -6,10 +6,12 @@
                                         scroll-view
                                         text
                                         text-input]]
+    [status-im.components.status-bar :refer [status-bar]]
     [status-im.components.toolbar :refer [toolbar]]
     [status-im.discovery.views.popular :refer [popular]]
     [status-im.discovery.views.recent :refer [discovery-recent]]
     [status-im.discovery.styles :as st]
+    [status-im.components.styles :as cst]
     [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
     [status-im.i18n :refer [label]]))
 
@@ -33,9 +35,9 @@
 (defn toogle-search [current-value]
   (dispatch [:set ::show-search (not current-value)]))
 
-(defview discovery []
-  [show-search [:get ::show-search]]
-  [view st/discovery-container
+(defn discovery-toolbar [show-search platform-specific]
+  [view
+   [status-bar {:platform-specific platform-specific}]
    [toolbar
     {:style          st/discovery-toolbar
      :nav-action     {:image   {:source {:uri :icon_hamburger}
@@ -44,7 +46,12 @@
      :custom-content [title-content show-search]
      :action         {:image   {:source {:uri :icon_search}
                                 :style  st/search-icon}
-                      :handler #(toogle-search show-search)}}]
+                      :handler #(toogle-search show-search)}}]])
+
+(defview discovery [{platform-specific :platform-specific}]
+  [show-search [:get ::show-search]]
+  [view st/discovery-container
+   [discovery-toolbar show-search platform-specific]
    [scroll-view st/scroll-view-container
     [view st/section-spacing
      [text {:style st/discovery-subtitle} (label :t/popular-tags)]]

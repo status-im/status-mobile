@@ -39,6 +39,7 @@
                                       :address          ""
                                       :whisper-identity ""
                                       :phone-number     ""}
+             :keyboard-height        0
              :disable-group-creation false
              :animations             {;; todo clear this
                                       :tabs-bar-value               (anim/create-value 0)}})

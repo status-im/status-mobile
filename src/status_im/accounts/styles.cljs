@@ -1,7 +1,5 @@
 (ns status-im.accounts.styles
-  (:require [status-im.components.styles :refer [font
-                                                 title-font
-                                                 text1-color
+  (:require [status-im.components.styles :refer [text1-color
                                                  color-white
                                                  toolbar-background2
                                                  online-color]]
@@ -49,18 +47,16 @@
    :justifyContent :center})
 
 (def account-photo-container
-  {:flex            1
-   :backgroundColor "rgba(255, 255, 255, 0.2)"
-   :borderRadius    50
-   :width           36
-   :height          36
-   :alignItems      :center
-   :justifyContent  :center})
+  {:flex           1
+   :width          36
+   :height         36
+   :alignItems     :center
+   :justifyContent :center})
 
 (def photo-image
-  {:borderRadius 50
-   :width        36
-   :height       36})
+  {:width         36
+   :height        36
+   :border-radius 18})
 
 (def name-container
   {:flex          1
@@ -103,9 +99,3 @@
    :color         :white
    :fontSize      16
    :marginLeft    8})
-
-(def toolbar
-  {:position :absolute
-   :top      0
-   :left     0
-   :right    0})

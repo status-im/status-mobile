@@ -1,16 +1,18 @@
 (ns status-im.components.styles)
 
-(def font "sans-serif")
+(def font "HelveticaNeue")
 ;; (def font "Avenir-Roman")
 (def font-medium "sans-serif-medium")
 (def title-font font-medium)
 
+(def color-transparent "transparent")
 (def color-blue "#7099e6")
 (def color-blue-transparent "#7099e632")
 (def color-black "#000000de")
 (def color-purple "#a187d5")
 (def color-gray "#838c93de")
 (def color-gray2 "#8f838c93")
+(def color-gray3 "#00000040")
 (def color-white :white)
 (def color-light-blue "#bbc4cb")
 (def color-light-blue-transparent "#bbc4cb32")
@@ -32,6 +34,10 @@
 (def default-chat-color color-purple)
 
 (def toolbar-height 56)
+
+(defn with-font [style platform-specific font]
+  (let [font (get-in platform-specific [:styles :fonts font])]
+    (merge style font)))
 
 (def flex
   {:flex 1})
@@ -70,7 +76,7 @@
    :height 18})
 
 (def icon-plus
-  {:width 18
+  {:width  18
    :height 18})
 
 (def form-text-input
@@ -91,10 +97,9 @@
    :justifyContent :center})
 
 (def toolbar-title-text
-  {:marginTop  -2.5
+  {:margin-top -2.5
    :color      text1-color
-   :fontSize   16
-   :fontFamily font})
+   :font-size  16})
 
 (def button-input-container
   {:flex          1

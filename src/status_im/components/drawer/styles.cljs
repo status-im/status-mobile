@@ -13,7 +13,7 @@
                                                text3-color]]))
 
 (def user-photo
-  {:borderRadius 50
+  {:borderRadius 32
    :width        64
    :height       64})
 

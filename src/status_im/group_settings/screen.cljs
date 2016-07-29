@@ -11,11 +11,13 @@
                                                 picker-item
                                                 scroll-view
                                                 touchable-highlight]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action]]
             [status-im.group-settings.styles.group-settings :as st]
             [status-im.group-settings.views.member :refer [member-view]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [status-im.components.styles :as cst]))
 
 (defn remove-member []
   (dispatch [:remove-participants]))
@@ -130,9 +132,11 @@
   [view st/action
    [chat-icon-view-action chat-id group-chat name color false]])
 
-(defn new-group-toolbar []
-  [toolbar {:title         (label :t/chat-settings)
-            :custom-action [chat-icon]}])
+(defn new-group-toolbar [platform-specific]
+  [view
+   [status-bar {:platform-specific platform-specific}]
+   [toolbar {:title         (label :t/chat-settings)
+             :custom-action [chat-icon]}]])
 
 (defn focus []
   (dispatch [:set ::name-input-focused true]))
@@ -168,10 +172,10 @@
    (when (pos? (count validation-messages))
      [text {:style st/chat-name-validation-message} (first validation-messages)])])
 
-(defview group-settings []
+(defview group-settings [{platform-specific :platform-specific}]
   [show-color-picker [:group-settings :show-color-picker]]
   [view st/group-settings
-   [new-group-toolbar]
+   [new-group-toolbar platform-specific]
    [scroll-view st/body
     [chat-name]
     [text {:style st/members-text} (label :t/members-title)]
