@@ -10,7 +10,7 @@
 
 
 (defn window-page-width []
-  (.-width (.get (.. r/react -Dimensions) "window")))
+  (.-width (.get (.. r/react-native -Dimensions) "window")))
 
 (def defaults {:gap 10
                :sneak 10

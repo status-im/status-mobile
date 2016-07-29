@@ -1,13 +1,12 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "10.0.3.2",
+  "androidHost": "localhost",
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
     "awesome-phonenumber",
     "realm",
-    "react-native-loading-spinner-overlay",
     "react-native-i18n",
     "realm/react-native",
     "react-native-action-button",

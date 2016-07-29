@@ -6,12 +6,12 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha7"]
                  [org.clojure/clojurescript "1.9.76"]
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
-                 [re-frame "0.6.0"]
+                 [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo   "git@github.com:status-im/status-lib.git"
                           :branch "master"}}
                  [status-im/protocol "0.1.1-20160706_085008-ge61756a"]
-                 [natal-shell "0.1.6"]
+                 [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]]

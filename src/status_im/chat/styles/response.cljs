@@ -25,7 +25,7 @@
    :height          32
    :alignItems      :center
    :justifyContent  :center
-   :borderRadius    50
+   :borderRadius    16
    :backgroundColor color-white})
 
 (def command-icon

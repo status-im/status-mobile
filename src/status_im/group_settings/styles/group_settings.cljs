@@ -176,7 +176,7 @@
    :fontFamily font})
 
 (defn chat-color-icon [color]
-  {:borderRadius    50
+  {:borderRadius    12
    :width           24
    :height          24
    :backgroundColor color})

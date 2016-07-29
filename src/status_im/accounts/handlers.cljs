@@ -2,7 +2,7 @@
   (:require [status-im.models.accounts :as accounts]
             [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
             [status-im.utils.logging :as log]
-            [status-im.components.react :refer [geth]]
+            [status-im.components.geth :as geth]
             [status-im.utils.types :refer [json->clj]]
             [status-im.persistence.simple-kv-store :as kv]
             [status-im.protocol.state.storage :as storage]
@@ -45,7 +45,7 @@
 
 (register-handler :create-account
   (-> (fn [db [_ password]]
-          (.createAccount geth password (fn [result] (account-created db result password)))
+          (geth/create-account password (fn [result] (account-created db result password)))
         db)))
 
 (defn initialize-account [db account]
@@ -68,14 +68,14 @@
 
 (register-handler :login-account
   (-> (fn [db [_ address password]]
-        (.login geth address password (fn [result]
-                                        (let [data (json->clj result)
-                                              error (:error data)
-                                              success (zero? (count error))]
-                                          (log/debug "Logged in account: " address result)
-                                          (if success
-                                            (logged-in db address)
-                                            (dispatch [:set-in [:login :error] error])))))
+        (geth/login address password (fn [result]
+                                       (let [data (json->clj result)
+                                             error (:error data)
+                                             success (zero? (count error))]
+                                         (log/debug "Logged in account: " address result)
+                                         (if success
+                                           (logged-in db address)
+                                           (dispatch [:set-in [:login :error] error])))))
         db)))
 
 (defn load-accounts! [db _]

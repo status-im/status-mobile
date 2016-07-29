@@ -10,6 +10,7 @@
                                                 touchable-highlight]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.utils.identicon :refer [identicon]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.utils.utils :refer [log on-error http-post toast]]
             [status-im.components.styles :refer [color-purple
@@ -27,7 +28,8 @@
             [status-im.i18n :refer [label]]
             [cljs.spec :as s]
             [status-im.contacts.validations :as v]
-            [status-im.contacts.styles :as st]))
+            [status-im.contacts.styles :as st]
+            [status-im.components.styles :as cst]))
 
 
 (def toolbar-title
@@ -91,16 +93,18 @@
                                  new-contact)]
                    (on-add-contact whisper-identity contact)))}))
 
-(defview new-contact []
+(defview new-contact [{platform-specific :platform-specific}]
   [{:keys [name whisper-identity phone-number] :as new-contact} [:get :new-contact]
    error [:get :new-contact-address-error]]
   [view st/contact-form-container
-   [toolbar {:background-color :white
-             :nav-action       {:image   {:source {:uri :icon_back}
-                                          :style  icon-back}
-                                :handler #(dispatch [:navigate-back])}
-             :custom-content   toolbar-title
-             :action           (toolbar-action whisper-identity new-contact error)}]
+   [view
+    [status-bar {:platform-specific platform-specific}]
+    [toolbar {:background-color :white
+              :nav-action       {:image   {:source {:uri :icon_back}
+                                           :style  icon-back}
+                                 :handler #(dispatch [:navigate-back])}
+              :custom-content   toolbar-title
+              :action           (toolbar-action whisper-identity new-contact error)}]]
    [view st/form-container
     [contact-name-input name]
     [contact-whisper-id-input whisper-identity error]]

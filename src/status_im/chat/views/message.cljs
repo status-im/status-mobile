@@ -20,10 +20,13 @@
                                          content-type-command
                                          content-type-command-request]]))
 
-(defn message-date [timestamp]
+(defn message-date [timestamp platform-specific]
   [view {}
    [view st/message-date-container
-    [text {:style st/message-date-text} (time/to-short-str timestamp)]]])
+    [text {:style             st/message-date-text
+           :platform-specific platform-specific
+           :font              :default}
+     (time/to-short-str timestamp)]]])
 
 (defn contact-photo [{:keys [photo-path]}]
   [view st/contact-photo-container
@@ -38,15 +41,21 @@
      [view st/online-dot-left]
      [view st/online-dot-right]]))
 
-(defn message-content-status [{:keys [from content]}]
+(defn message-content-status [{:keys [from content]} platform-specific]
   [view st/status-container
    [view st/status-image-view
     [contact-photo {}]
     [contact-online {:online true}]]
-   [text {:style st/status-from} from]
-   [text {:style st/status-text} content]])
+   [text {:style             st/status-from
+          :platform-specific platform-specific
+          :font              :default}
+    from]
+   [text {:style             st/status-text
+          :platform-specific platform-specific
+          :font              :default}
+    content]])
 
-(defn message-content-audio [_]
+(defn message-content-audio [{:keys [platform-specific]}]
   [view st/audio-container
    [view st/play-view
     [image {:source res/play
@@ -54,16 +63,21 @@
    [view st/track-container
     [view st/track]
     [view st/track-mark]
-    [text {:style st/track-duration-text} "03:39"]]])
+    [text {:style             st/track-duration-text
+           :platform-specific platform-specific
+           :font              :default}
+     "03:39"]]])
 
-(defview message-content-command [content preview]
+(defview message-content-command [content preview platform-specific]
   [commands [:get-commands-and-responses]]
   (let [{:keys [command content]} (parse-command-msg-content commands content)
         {:keys [name icon type]} command]
     [view st/content-command-view
      [view st/command-container
       [view (st/command-view command)
-       [text {:style st/command-name}
+       [text {:style             st/command-name
+              :platform-specific platform-specific
+              :font              :default}
         (str (if (= :command type) "!" "") name)]]]
      (when icon
        [view st/command-image-view
@@ -71,7 +85,10 @@
                 :style  st/command-image}]])
      (if preview
        preview
-       [text {:style st/command-text} content])]))
+       [text {:style             st/command-text
+              :platform-specific platform-specific
+              :font              :default}
+        content])]))
 
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
@@ -84,40 +101,46 @@
         "Justas"])
    content])
 
-(defmulti message-content (fn [_ message]
+(defmulti message-content (fn [_ message _]
                             (message :content-type)))
 
 (defmethod message-content content-type-command-request
-  [wrapper message]
-  [wrapper message [message-content-command-request message]])
+  [wrapper message platform-specific]
+  [wrapper message [message-content-command-request message platform-specific] platform-specific])
 
 (defn text-message
-  [{:keys [content] :as message}]
+  [{:keys [content] :as message} platform-specific]
   [message-view message
-   [text {:style (st/text-message message)} content]])
+   [text {:style             (st/text-message message)
+          :platform-specific platform-specific
+          :font              :default}
+    content]])
 
 (defmethod message-content text-content-type
-  [wrapper message]
-  [wrapper message [text-message message]])
+  [wrapper message platform-specific]
+  [wrapper message [text-message message platform-specific] platform-specific])
 
 (defmethod message-content content-type-status
-  [_ message]
-  [message-content-status message])
+  [_ message platform-specific]
+  [message-content-status message platform-specific])
 
 (defmethod message-content content-type-command
-  [wrapper {:keys [content rendered-preview] :as message}]
+  [wrapper {:keys [content rendered-preview] :as message} platform-specific]
   [wrapper message
-   [message-view message [message-content-command content rendered-preview]]])
+   [message-view message [message-content-command content rendered-preview platform-specific]]
+   platform-specific])
 
 (defmethod message-content :default
-  [wrapper {:keys [content-type content] :as message}]
+  [wrapper {:keys [content-type content] :as message} platform-specific]
   [wrapper message
    [message-view message
-    [message-content-audio {:content      content
-                            :content-type content-type}]]])
+    [message-content-audio {:content           content
+                            :content-type      content-type
+                            :platform-specific platform-specific}]]
+   platform-specific])
 
 (defview message-delivery-status
-  [{:keys [delivery-status msg-id to] :as m}]
+  [{:keys [delivery-status msg-id to] :as m} platform-specific]
   [status [:get-in [:message-status to msg-id]]]
   [view st/delivery-view
    [image {:source (case (or status delivery-status)
@@ -126,7 +149,9 @@
                      :failed res/delivery-failed-icon
                      nil)
            :style  st/delivery-image}]
-   [text {:style st/delivery-text}
+   [text {:style             st/delivery-text
+          :platform-specific platform-specific
+          :font              :default}
     (case (or status delivery-status)
       :delivered "Sent"
       :seen "Seen"
@@ -142,11 +167,13 @@
            :style  st/photo}]])
 
 (defn incoming-group-message-body
-  [{:keys [selected same-author] :as message} content]
+  [{:keys [selected same-author] :as message} content platform-specific]
   (let [delivery-status :seen-by-everyone]
     [view st/group-message-wrapper
      (when selected
-       [text {:style st/selected-message}
+       [text {:style             st/selected-message
+              :platform-specific platform-specific
+              :font              :default}
         "Mar 7th, 15:22"])
      [view (st/incoming-group-message-body-st message)
       [view st/message-author
@@ -155,14 +182,14 @@
        content
        ;; TODO show for last or selected
        (when (and selected delivery-status)
-         [message-delivery-status {:delivery-status delivery-status}])]]]))
+         [message-delivery-status {:delivery-status delivery-status} platform-specific])]]]))
 
 (defn message-body
-  [{:keys [outgoing delivery-status] :as message} content]
+  [{:keys [outgoing delivery-status] :as message} content platform-specific]
   [view (st/message-body message)
    content
    (when outgoing
-     [message-delivery-status message])])
+     [message-delivery-status message platform-specific])])
 
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
@@ -202,7 +229,8 @@
 
 (defn chat-message
   [{:keys [outgoing delivery-status timestamp new-day group-chat msg-id chat-id]
-    :as   message}]
+    :as   message}
+   platform-specific]
   (let [status (subscribe [:get-in [:message-status chat-id msg-id]])]
     (r/create-class
       {:component-did-mount
@@ -217,7 +245,7 @@
          [message-container message
           ;; TODO there is no new-day info in message
           (when new-day
-            [message-date timestamp])
+            [message-date timestamp platform-specific])
           [view
            (let [incoming-group (and group-chat (not outgoing))]
              [message-content
@@ -225,4 +253,5 @@
                 incoming-group-message-body
                 message-body)
               (merge message {:delivery-status (keyword delivery-status)
-                              :incoming-group  incoming-group})])]])})))
+                              :incoming-group  incoming-group})
+              platform-specific])]])})))
