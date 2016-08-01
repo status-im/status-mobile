@@ -6,7 +6,8 @@
             [status-im.ios.styles :refer [styles]]
             [status-im.components.react :refer [app-registry
                                                 keyboard
-                                                orientation]]
+                                                orientation
+                                                show-action-sheet]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -22,6 +23,7 @@
             [status-im.participants.views.remove :refer [remove-participants]]
             [status-im.group-settings.screen :refer [group-settings]]
             [status-im.profile.screen :refer [profile my-profile]]
+            [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
             [status-im.utils.utils :refer [toast]]
             [status-im.utils.encryption]
             status-im.persistence.realm.core
@@ -34,9 +36,9 @@
   (let [signed-up       (subscribe [:get :signed-up])
         _               (log/debug "signed up: " @signed-up)
         view-id         (subscribe [:get :view-id])
-        account         (subscribe [:get :user-identity])
+        account-id      (subscribe [:get :current-account-id])
         keyboard-height (subscribe [:get :keyboard-height])]
-    (log/debug "Current account: " @account)
+    (log/debug "Current account: " @account-id)
     (r/create-class
       {:component-will-mount
        (fn []
@@ -58,7 +60,7 @@
                          #(dispatch [:set :keyboard-height 0]))))
        :render
        (fn []
-         (let [startup-view (if @account
+         (let [startup-view (if @account-id
                               (if @signed-up
                                 @view-id
                                 :chat)
@@ -80,10 +82,12 @@
                              :qr-scanner qr-scanner
                              :chat chat
                              :profile profile
+                             :profile-photo-capture profile-photo-capture
                              :accounts accounts
                              :login login
                              :my-profile my-profile)]
-             [component {:platform-specific {:styles styles}}])))})))
+             [component {:platform-specific {:styles            styles
+                                             :list-selection-fn show-action-sheet}}])))})))
 
 (defn init []
   (dispatch-sync [:reset-app])

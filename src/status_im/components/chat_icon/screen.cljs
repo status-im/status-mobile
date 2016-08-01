@@ -5,6 +5,7 @@
                                                 text
                                                 image
                                                 icon]]
+            [status-im.components.icons.custom-icons :refer [oct-icon]]
             [status-im.components.chat-icon.styles :as st]
             [status-im.components.styles :refer [default-chat-color]]
             [clojure.string :as s]))
@@ -18,20 +19,25 @@
   [image {:source {:uri photo-path}
           :style  (:chat-icon styles)}])
 
-(defn contact-online [online styles]
-  (when online
+(defn contact-badge [type styles]
+  (when (= type :edit)
     [view (:online-view styles)
-     [view (:online-dot-left styles)]
-     [view (:online-dot-right styles)]]))
+     (case type
+       :online [view
+                [view (:online-dot-left styles)]
+                [view (:online-dot-right styles)]]
+       :edit [view
+              [oct-icon {:name  :pencil
+                         :style st/photo-pencil}]])]))
 
 (defview chat-icon-view [chat-id group-chat name online styles]
-  [photo-path [:chat-photo chat-id]]
-  [view (:container styles)
+         [photo-path [:chat-photo chat-id]]
+         [view (:container styles)
    (if-not (s/blank? photo-path)
      [chat-icon photo-path styles]
      [default-chat-icon name styles])
    (when-not group-chat
-     [contact-online online styles])])
+     [contact-badge (if online :online :blank) styles])])
 
 (defn chat-icon-view-chat-list [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online
@@ -65,13 +71,13 @@
 
 (defn contact-icon-view [contact styles]
   (let [photo-path (:photo-path contact)
-        ;; TODO stub data
-        online true]
+        ;; TODO: stub
+        type       :online]
     [view (:container styles)
      (if-not (s/blank? photo-path)
        [chat-icon photo-path styles]
        [default-chat-icon (:name contact) styles])
-     [contact-online online styles]]))
+     [contact-badge type styles]]))
 
 (defn contact-icon-contacts-tab [contact]
   [contact-icon-view contact
@@ -83,7 +89,7 @@
     :default-chat-icon      (st/default-chat-icon-chat-list default-chat-color)
     :default-chat-icon-text st/default-chat-icon-text}])
 
-(defn profile-icon-view [photo-path name color online]
+(defn profile-icon-view [photo-path name color badge-type]
   (let [styles {:container              st/container-profile
                 :online-view            st/online-view-profile
                 :online-dot-left        st/online-dot-left-profile
@@ -95,19 +101,17 @@
      (if (and photo-path (not (empty? photo-path)))
        [chat-icon photo-path styles]
        [default-chat-icon name styles])
-     [contact-online online styles]]))
+     [contact-badge badge-type styles]]))
 
 (defview profile-icon []
   [contact [:contact]]
-  (let [;; TODO stub data
-        online true
-        color  default-chat-color]
-    [profile-icon-view (:photo-path contact) (:name contact) color online]))
+  (let [;; TODO: stub
+        type    :online
+        color   default-chat-color]
+    [profile-icon-view (:photo-path @contact) (:name @contact) color type]))
 
-(defview my-profile-icon []
-  [name       [:get :username]
-   photo-path [:get :photo-path]]
-  (let [;; TODO stub data
-        online true
-        color  default-chat-color]
-    [profile-icon-view photo-path name color online]))
+(defn my-profile-icon [{{:keys [photo-path name]} :account
+                        edit?                     :edit?}]
+  (let [type  (if edit? :edit :blank)
+        color default-chat-color]
+    [profile-icon-view photo-path name color type]))

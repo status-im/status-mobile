@@ -9,3 +9,8 @@
         result (.then result #(handler nil %))
         result (.catch result #(handler % nil))]
     result))
+
+(defn read-file [path encoding on-read on-error]
+  (-> (.readFile fs path encoding)
+      (.then on-read)
+      (.catch on-error)))

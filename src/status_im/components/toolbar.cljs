@@ -38,7 +38,7 @@
                  :alignItems     :center
                  :justifyContent :center}
            [image (:image nav-action)]]]
-         [touchable-highlight {:on-press #(dispatch [:navigate-back])
+         [touchable-highlight {:on-press            #(dispatch [:navigate-back])
                                :accessibility-label :navigate-back}
           [view {:width          56
                  :height         56

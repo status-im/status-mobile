@@ -6,6 +6,7 @@
 (def react-native (u/require "react-native"))
 (def native-modules (.-NativeModules react-native))
 (def geth (.-Geth native-modules))
+(def react-native-dialogs (u/require "react-native-dialogs"))
 
 (def linear-gradient-module (u/require "react-native-linear-gradient"))
 (def dismiss-keyboard! (u/require "dismissKeyboard"))
@@ -57,7 +58,6 @@
 (def dimensions (.-Dimensions js/ReactNative))
 (def keyboard (.-Keyboard react-native))
 
-
 ;; Accessor methods for React Components
 
 (defn text
@@ -108,6 +108,33 @@
 (defn linear-gradient
   [props & children]
   (vec (concat [linear-gradient-class (merge {:inverted true} props)] children)))
+
+
+;; List dialogs
+
+(defn show-dialog [{:keys [title options callback]}]
+  (let [dialog (new react-native-dialogs)]
+    (.set dialog (clj->js {:title         title
+                           :items         options
+                           :itemsCallback callback}))
+    (.show dialog)))
+
+(defn show-action-sheet [{:keys [options callback cancel-text]}]
+  (.showActionSheetWithOptions (get-class "ActionSheetIOS")
+                               (clj->js {:options           (conj options cancel-text)
+                                         :cancelButtonIndex (count options)})
+                               callback))
+
+
+;; Image picker
+
+(def image-picker-class (u/require "react-native-image-crop-picker"))
+
+(defn show-image-picker [images-fn]
+  (let [image-picker (.-default image-picker-class)]
+    (-> image-picker
+        (.openPicker (clj->js {:multiple false}))
+        (.then images-fn))))
 
 
 ;; Platform

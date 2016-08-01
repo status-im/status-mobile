@@ -82,7 +82,7 @@ android {
 
     defaultConfig {
         applicationId "com.statusim"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -120,6 +120,8 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-image-resizer')
+    compile project(':react-native-dialogs')
     compile project(':react-native-randombytes')
     compile project(':react-native-android-sms-listener')
     compile project(':realm')
@@ -134,6 +136,7 @@ dependencies {
     compile project(':react-native-status')
     compile project(':react-native-orientation')
     compile project(':react-native-fs')
+    compile project(':react-native-image-crop-picker')
     //compile(name:'statusgo-android-16', ext:'aar')
     compile(group: 'status-im', name: 'status-go', version: '0.1.0-201607011545-da53ec', ext: 'aar')
 

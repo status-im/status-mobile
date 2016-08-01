@@ -59,7 +59,8 @@
                      (dispatch [:set-in [:login :error] ""]))}]])
 
 (defview login [{platform-specific :platform-specific}]
-  [{:keys [address password error]} [:get :login]]
+  [{:keys [address password error]} [:get :login]
+   keyboard-height [:get :keyboard-height]]
   [view st/screen-container
    [linear-gradient {:colors    ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
                      :start     [0, 0]
@@ -79,20 +80,19 @@
     [view st/form-container-inner
      [address-input (or address "")]
      [password-input error]]]
-   (let [keyboard-height @(subscribe [:get :keyboard-height])]
-     [view st/bottom-actions-container
-      (when (= keyboard-height 0)
-        [view st/recover-button-container
-         [touchable-highlight
-          {:on-press #()}
-          [view st/recover-button
-           [text {:style             st/recover-button-text
-                  :platform-specific platform-specific}
-            (label :t/recover-access)]]]])
-      [view st/connect-button-container
+   [view st/bottom-actions-container
+    (when (= keyboard-height 0)
+      [view st/recover-button-container
        [touchable-highlight
-        {:on-press #(dispatch [:login-account address password])}
-        [view st/connect-button
-         [text {:style             st/connect-button-text
+        {:on-press #()}
+        [view st/recover-button
+         [text {:style             st/recover-button-text
                 :platform-specific platform-specific}
-          (label :t/connect)]]]]])])
+          (label :t/recover-access)]]]])
+    [view st/connect-button-container
+     [touchable-highlight
+      {:on-press #(dispatch [:login-account address password])}
+      [view st/connect-button
+       [text {:style             st/connect-button-text
+              :platform-specific platform-specific}
+        (label :t/connect)]]]]]])

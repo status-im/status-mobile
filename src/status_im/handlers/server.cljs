@@ -5,7 +5,8 @@
 
 (defn sign-up
   [db phone-number handler]
-  (let [{:keys [public-key address] :as account} (get-in db [:user-identity])]
+  (let [current-account-id (get db :current-account-id)
+        {:keys [public-key address]} (get-in db [:accounts current-account-id])]
     ;(user-data/save-phone-number phone-number)
     (log/debug "signing up with public-key" public-key "and phone " phone-number)
     (http-post "sign-up" {:phone-number     phone-number
