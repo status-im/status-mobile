@@ -9,7 +9,7 @@
                  [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo   "git@github.com:status-im/status-lib.git"
-                          :branch "master"}}
+                          :branch "discover-rework"}}
                  [status-im/protocol "0.1.1-20160706_085008-ge61756a"]
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]]

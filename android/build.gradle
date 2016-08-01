@@ -16,16 +16,10 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url "$rootDir/../node_modules/react-native/android"
-        }
+        maven { url "$rootDir/../node_modules/react-native/android" }
         // for geth
-        flatDir {
-            dirs 'libs'
-        }
-        maven {
-            url "http://185.90.37.89:8081/artifactory/libs-release-local"
-        }
+        flatDir { dirs 'libs' }
+        maven { url "http://185.90.37.89:8081/artifactory/libs-release-local" }
+        maven { url "https://jitpack.io" }
     }
 }

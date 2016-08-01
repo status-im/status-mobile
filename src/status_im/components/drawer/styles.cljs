@@ -1,21 +1,43 @@
 (ns status-im.components.drawer.styles
   (:require [status-im.components.styles :refer [font
-                                               color-light-blue-transparent
-                                               color-white
-                                               color-black
-                                               color-blue
-                                               color-blue-transparent
-                                               selected-message-color
-                                               online-color
-                                               separator-color
-                                               text1-color
-                                               text2-color
-                                               text3-color]]))
+                                                 color-light-blue-transparent
+                                                 color-white
+                                                 color-black
+                                                 color-blue
+                                                 color-blue-transparent
+                                                 selected-message-color
+                                                 online-color
+                                                 separator-color
+                                                 text1-color
+                                                 text2-color
+                                                 text3-color]]))
+
+(def drawer-menu
+  {:flex             1
+   :background-color color-white
+   :flex-direction   :column})
+
+(def user-photo-container
+  {:margin-top      40
+   :align-items     :center
+   :justify-content :center})
 
 (def user-photo
-  {:borderRadius 32
-   :width        64
-   :height       64})
+  {:border-radius 32
+   :width         64
+   :height        64})
+
+(def name-container
+  {:margin-top   20
+   :margin-left  16
+   :margin-right 16
+   :align-items  :center})
+
+(def menu-items-container
+  {:flex           1
+   :margin-top     50
+   :align-items    :stretch
+   :flex-direction :column})
 
 (def menu-item-touchable
   {:height      48
@@ -23,42 +45,19 @@
    :paddingTop  14})
 
 (def menu-item-text
-  {:fontSize   14
-   :fontFamily font
-   :lineHeight 21
-   :color      text1-color})
-
-(def drawer-menu
-  {:flex            1
-   :backgroundColor color-white
-   :flexDirection   :column})
-
-(def user-photo-container
-  {:marginTop      40
-   :alignItems     :center
-   :justifyContent :center})
-
-(def name-container
-  {:marginTop  20
-   :alignItems :center})
+  {:font-size   14
+   :line-height 21
+   :color       text1-color})
 
 (def name-text
-  {:marginTop -2.5
-   :color     text1-color
-   :fontSize  16})
-
-(def menu-items-container
-  {:flex          1
-   :marginTop     80
-   :alignItems    :stretch
-   :flexDirection :column})
+  {:color     text1-color
+   :font-size 16})
 
 (def switch-users-container
-  {:paddingVertical 36
-   :alignItems :center})
+  {:padding-vertical 36
+   :align-items      :center})
 
 (def switch-users-text
-  {:fontSize   14
-   :fontFamily font
-   :lineHeight 21
-   :color      text3-color})
+  {:font-size   14
+   :line-height 21
+   :color       text3-color})

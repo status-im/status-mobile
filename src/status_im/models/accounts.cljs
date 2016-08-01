@@ -2,21 +2,20 @@
   (:require [status-im.persistence.realm.core :as r]))
 
 (defn get-accounts []
-      (-> (r/get-all :base :accounts)
-          r/collection->map))
+  (-> (r/get-all :base :accounts)
+      r/collection->map))
 
-(defn create-account [{:keys [address public-key] :as account}]
-      (->> account
-           (r/create :base :accounts)))
+(defn save-account [update?]
+  #(r/create :base :accounts % update?))
 
-(defn save-accounts [accounts]
-      (r/write :base #(mapv create-account accounts)))
+(defn save-accounts [accounts update?]
+  (r/write :base #(mapv (save-account update?) accounts)))
 
 
 ;;;;;;;;;;;;;;;;;;;;----------------------------------------------
 
 (defn accounts-list []
-      (r/get-all :base :accounts))
+  (r/get-all :base :accounts))
 
 (defn account-by-address [address]
-      (r/single-cljs (r/get-by-field :base :accounts :address address)))
+  (r/single-cljs (r/get-by-field :base :accounts :address address)))

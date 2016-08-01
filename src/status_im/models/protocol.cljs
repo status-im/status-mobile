@@ -11,10 +11,10 @@
 (defn set-initialized [db initialized?]
   (assoc-in db db/protocol-initialized-path initialized?))
 
-(defn update-identity [db identity]
+(defn update-identity [db {:keys [address] :as identity}]
   (let [identity-string (to-edn-string identity)]
     (s/put kv/kv-store :identity identity-string)
-    (assoc db :user-identity identity)))
+    (assoc-in db [:accounts address] identity)))
 
 (defn stored-identity [db]
   (let [identity (s/get kv/kv-store :identity)]
