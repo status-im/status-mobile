@@ -67,11 +67,13 @@
      :or   {font :default}} t]
    (r/as-element
      [text-class
-      (if (and platform-specific font)
+      (cond
+        (and platform-specific font)
         (-> opts
             (dissoc :platform-specific :font)
             (assoc :style (st/with-font style platform-specific font)))
-        opts)
+        style opts
+        :else {:style opts})
       t])))
 
 (defn text-input [props text]
