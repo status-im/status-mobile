@@ -288,24 +288,25 @@
          [animated-view {:style (st/messages-container messages-offset)}
           messages])})))
 
-(defview chat [{platform-specific :platform-specific}]
-  [group-chat [:chat :group-chat]
-   show-actions-atom [:show-actions]
-   command [:get-chat-command]
-   command? [:command?]
-   suggestions [:get-suggestions]
-   to-msg-id [:get-chat-command-to-msg-id]
-   layout-height [:get :layout-height]]
-  [view {:style    st/chat-view
-         :onLayout (fn [event]
-                     (let [height (.. event -nativeEvent -layout -height)]
-                       (when (not= height layout-height)
-                         (dispatch [:set-layout-height height]))))}
-   [chat-toolbar platform-specific]
-   [messages-container
-    [messages-view platform-specific group-chat]]
-   (when group-chat [typing-all platform-specific])
-   [response-view]
-   (when-not command? [suggestion-container])
-   [chat-message-new platform-specific]
-   (when show-actions-atom [actions-view platform-specific])])
+(defn chat [{platform-specific :platform-specific}]
+  (let [group-chat (subscribe [:chat :group-chat])
+        show-actions (subscribe [:show-actions])
+        command? (subscribe [:command?])
+        layout-height (subscribe [:get :layout-height])]
+    (r/create-class
+      {:component-did-mount #(dispatch [:check-autorun])
+       :reagent-render
+       (fn [{platform-specific :platform-specific}]
+         [view {:style    st/chat-view
+                :onLayout (fn [event]
+                            (let [height (.. event -nativeEvent -layout -height)]
+                              (when (not= height @layout-height)
+                                (dispatch [:set-layout-height height]))))}
+          [chat-toolbar platform-specific]
+          [messages-container
+           [messages-view platform-specific @group-chat]]
+          (when @group-chat [typing-all platform-specific])
+          [response-view]
+          (when-not @command? [suggestion-container])
+          [chat-message-new platform-specific]
+          (when @show-actions [actions-view platform-specific])])})))

@@ -45,11 +45,13 @@
         (dispatch-sync [:add-account account])
         (dispatch [:login-account address password])))))
 
-(register-handler
-  :create-account
-  (fn [db [_ password]]
-    (geth/create-account password (fn [result] (account-created result password)))
-    db))
+(register-handler :create-account
+  (after #(dispatch [:init-wallet-chat]))
+  (u/side-effect!
+    (fn [_ [_ password]]
+      (geth/create-account
+        password
+        #(account-created % password)))))
 
 (defn save-account-to-realm!
   [{:keys [current-account-id accounts]} _]

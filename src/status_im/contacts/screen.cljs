@@ -11,7 +11,7 @@
                                                 list-item] :as react]
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
-            [status-im.contacts.views.contact :refer [contact-extended-view]]
+            [status-im.contacts.views.contact :refer [contact-extended-view on-press]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [open-drawer]]
@@ -41,7 +41,7 @@
 
 (def contacts-limit 10)
 
-(defn contact-group [contacts contacts-count title group top?]
+(defn contact-group [contacts contacts-count title group top? click-handler]
   [view st/contact-group
    [view st/contact-group-header
     (when-not top?
@@ -55,9 +55,14 @@
    ;; todo what if there is no contacts, should we show some information
    ;; about this?
    [view {:flexDirection :column}
-    (for [contact contacts]
+    (doall
       ;; TODO not imlemented: contact more button handler
-      ^{:key contact} [contact-extended-view contact nil nil])]
+      (map (fn [contact]
+             (let [whisper-identity (:whisper-identity contact)
+                   click-handler    (or click-handler on-press)]
+               ^{:key contact}
+               [contact-extended-view contact nil (click-handler whisper-identity) nil]))
+           contacts))]
    (when (= contacts-limit (count contacts))
      [view st/show-all
       [touchable-highlight {:on-press #(dispatch [:show-group-contacts group])}
@@ -66,6 +71,7 @@
 (defn contact-list [{platform-specific :platform-specific}]
   (let [contacts             (subscribe [:get-contacts-with-limit contacts-limit])
         contcats-count       (subscribe [:contacts-count])
+        click-handler        (subscribe [:get :contacts-click-handler])
         show-toolbar-shadow? (r/atom false)]
     (fn []
       [view st/contacts-list-container
@@ -79,17 +85,18 @@
                        :onScroll (fn [e]
                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
                                      (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
-          ;; TODO not implemented: dapps and persons separation
           [contact-group
            @contacts
            @contcats-count
            (label :t/contacs-group-dapps)
-           :dapps true]
+           :dapps true
+           @click-handler]
           [contact-group
            @contacts
            @contcats-count
            (label :t/contacs-group-people)
-           :people false]]
+           :people false
+           @click-handler]]
          [view st/empty-contact-groups
           [react/icon :group_big st/empty-contacts-icon]
           [text {:style st/empty-contacts-text} (label :t/no-contacts)]])

@@ -6,7 +6,7 @@
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
-            [status-im.contacts.views.contact :refer [contact-with-letter-view]]
+            [status-im.contacts.views.contact :refer [contact-with-letter-view on-press]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
@@ -20,9 +20,12 @@
             [status-im.i18n :refer [label]]
             [status-im.components.styles :as cst]))
 
-(defn render-row [row _ _]
-  (list-item [contact-with-letter-view row]))
-
+(defn render-row [click-handler]
+  (fn [row _ _]
+    (list-item [contact-with-letter-view row
+                (or click-handler
+                    (let [whisper-identity (:whisper-identity row)]
+                      (on-press whisper-identity)))])))
 
 (defview contact-list-toolbar [platform-specific]
   [group [:get :contacts-group]]
@@ -37,14 +40,16 @@
                                 :handler (fn [])}}]])
 
 (defview contact-list [{platform-specific :platform-specific}]
-  [contacts [:contacts-with-letters]]
-   [drawer-view {:platform-specific platform-specific}
-    [view st/contacts-list-container
-     [contact-list-toolbar platform-specific]
-     ;; todo what if there is no contacts, should we show some information
-     ;; about this?
-     (when contacts
-       [list-view {:dataSource          (lw/to-datasource contacts)
-                   :enableEmptySections true
-                   :renderRow           render-row
-                   :style               st/contacts-list}])]])
+  [contacts [:contacts-with-letters]
+   click-handler [:get :contacts-click-handler]]
+         (let [click-handler click-handler]
+           [drawer-view {:platform-specific platform-specific}
+           [view st/contacts-list-container
+            [contact-list-toolbar platform-specific]
+            ;; todo what if there is no contacts, should we show some information
+            ;; about this?
+            (when contacts
+              [list-view {:dataSource          (lw/to-datasource contacts)
+                          :enableEmptySections true
+                          :renderRow           (render-row click-handler)
+                          :style               st/contacts-list}])]]))

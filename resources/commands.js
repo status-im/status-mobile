@@ -274,6 +274,7 @@ function validateBalance(params) {
             ]
         };
     }
+
     var balance = web3.eth.getBalance(params.command.address);
     if (bn(val).greaterThan(bn(balance))) {
         return {
