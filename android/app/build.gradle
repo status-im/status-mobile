@@ -137,6 +137,7 @@ dependencies {
     compile project(':react-native-orientation')
     compile project(':react-native-fs')
     compile project(':react-native-image-crop-picker')
+    compile project(':react-native-webview-bridge')
     //compile(name:'statusgo-android-16', ext:'aar')
     compile(group: 'status-im', name: 'status-go', version: 'unlock', ext: 'aar')
 

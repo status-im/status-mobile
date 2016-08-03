@@ -131,6 +131,9 @@ var status = {
         var response = new Response();
         return response.create(h);
     },
+    autorun: function (commandName) {
+        _status_catalog.autorun = commandName;
+    },
     types: {
         TEXT: 'text',
         NUMBER: 'number',
