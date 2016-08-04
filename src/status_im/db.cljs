@@ -21,7 +21,9 @@
                                       :status     nil
                                       :photo-path nil}
 
-             :contacts               []
+             :new-contact-identity   ""
+             :contacts               {}
+
              :contacts-ids           #{}
              :selected-contacts      #{}
              :current-chat-id        "console"
@@ -36,10 +38,6 @@
              :navigation-stack       (list default-view)
              :current-tag            nil
              :qr-codes               {}
-             :new-contact            {:name             ""
-                                      :address          ""
-                                      :whisper-identity ""
-                                      :phone-number     ""}
              :keyboard-height        0
              :disable-group-creation false
              :animations             {;; todo clear this

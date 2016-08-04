@@ -5,19 +5,15 @@
     [status-im.components.react :refer [view list-view list-item]]
     [status-im.utils.listview :refer [to-datasource]]
     [status-im.discovery.styles :as st]
-    [status-im.discovery.views.popular-list-item
-     :refer [popular-list-item]]))
-
-(defn render-row [row _ _]
-  (list-item [popular-list-item row]))
+    [status-im.discovery.views.discovery-list-item :refer [discovery-list-item]]))
 
 (defn render-separator [_ row-id _]
   (list-item [view {:style st/row-separator
                     :key   row-id}]))
 
-(defview discovery-recent []
+(defview discovery-recent [{platform-specific :platform-specific}]
   [discoveries [:get :discoveries]]
-  [list-view {:dataSource      (to-datasource discoveries)
-              :renderRow       render-row
-              :renderSeparator render-separator
-              :style           st/recent-list}])
+  [view st/recent-list
+   (for [{:keys [msg-id] :as discovery} discoveries]
+     ^{:key (str "message-" msg-id)}
+     [discovery-list-item discovery platform-specific])])

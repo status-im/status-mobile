@@ -22,7 +22,8 @@
     status-im.commands.handlers.jail
     status-im.qr-scanner.handlers
     status-im.accounts.handlers
-    status-im.protocol.handlers))
+    status-im.protocol.handlers
+    [status-im.utils.datetime :as time]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -72,7 +73,10 @@
       (dispatch [:initialize-account-db])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
-      (dispatch [:init-chat]))))
+      (dispatch [:init-chat])
+      (dispatch [:init-discoveries])
+      (dispatch [:send-account-update-if-needed])
+      (dispatch [:remove-old-discoveries!]))))
 
 (register-handler :reset-app
   (u/side-effect!

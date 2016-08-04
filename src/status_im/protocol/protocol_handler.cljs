@@ -45,4 +45,8 @@
                                                    (dispatch [:participant-left-group from group-id msg-id]))
                          :discover-response (let [{:keys [from payload]} event]
                                               (dispatch [:discovery-response-received from payload]))
+                         :contact-update (let [{:keys [from payload]} event]
+                                           (dispatch [:contact-update-received from payload]))
+                         :contact-online (let [{:keys [from payload]} event]
+                                           (dispatch [:contact-online-received from payload]))
                          (log/info "Don't know how to handle" event-type)))})

@@ -5,87 +5,72 @@
 
 (defn get-tag [tag]
   (log/debug "Getting tag: " tag)
-  (-> (r/get-by-field :base :tag :name tag)
+  (-> (r/get-by-field :account :tag :name tag)
       (r/single-cljs)))
 
-(defn decrease-tag-counter [tag]
+(defn update-tag-counter [func tag]
   (let [tag        (:name tag)
         tag-object (get-tag tag)]
     (if tag-object
-      (let [counter (dec (:count tag-object))]
-        (if (zero? counter)
-          (r/delete :base tag-object)
-          (r/create :base :tag 
-                    {:name  tag
-                     :count counter}
-                    true))))))
-
-(defn increase-tag-counter [tag]
-  (let [tag        (:name tag)
-        tag-object (get-tag tag)]
-    (if tag-object
-      (r/create :base :tag 
+      (r/create :account :tag
                 {:name  tag
-                 :count (inc (:count tag-object))}
+                 :count (func (:count tag-object))}
                 true))))
 
-(defn decrease-tags-counter [tags]
-  (doseq [tag tags]
-    (decrease-tag-counter tag)))
+(defn update-tags-counter [func tags]
+  (doseq [tag (distinct tags)]
+    (update-tag-counter func tag)))
 
-(defn increase-tags-counter [tags]
-  (doseq [tag tags]
-    (increase-tag-counter tag)))
+(defn get-tags [msg-id]
+  (-> (r/get-by-field :account :discovery :msg-id msg-id)
+      (r/single-cljs)
+      (:tags)
+      (vals)))
 
-(defn get-tags [whisper-id]
-  (:tags (-> (r/get-by-field :base :discoveries :whisper-id whisper-id)
-             (r/single-cljs))))
-
-(defn- create-discovery [{:keys [tags] :as discovery}]
-  (log/debug "Creating discovery: " discovery tags)
-  (r/create :base :discoveries discovery true)
-  (increase-tags-counter tags))
-
-(defn- update-discovery [{:keys [whisper-id tags] :as discovery}]
-  (let [old-tags (get-tags whisper-id)
-        tags     (map :name tags)]
-    (decrease-tags-counter old-tags)
-    (r/create :base :discoveries discovery true)
-    (increase-tags-counter tags)))
-
-(defn- discovery-exist? [discoveries discovery]
-  (some #(= (:whisper-id discovery) (:whisper-id %)) discoveries))
+(defn- upsert-discovery [{:keys [msg-id tags] :as discovery}]
+  (log/debug "Creating/updating discovery with tags: " tags)
+  (let [prev-tags (get-tags msg-id)]
+    (if prev-tags
+      (update-tags-counter dec prev-tags))
+    (r/create :account :discovery discovery true)
+    (update-tags-counter inc tags)))
 
 (defn discovery-list []
-  (->> (-> (r/get-all :base :discoveries)
-           (r/sorted :last-updated :desc)
-           r/collection->map)
-       (map #(update % :tags vals))))
+  (->> (-> (r/get-all :account :discovery)
+           (r/sorted :priority :desc)
+           (r/collection->map))
+       (mapv #(update % :tags vals))))
 
 (defn- add-discoveries [discoveries]
-  (r/write :base 
+  (r/write :account
            (fn []
-             (let [db-discoveries (discovery-list)]
-               (mapv (fn [discovery]
-                       (if-not (discovery-exist? db-discoveries
-                                                 discovery)
-                         (create-discovery discovery)
-                         (update-discovery discovery)))
-                     discoveries)))))
+             (doseq [discovery discoveries]
+               (upsert-discovery discovery)))))
 
 (defn save-discoveries [discoveries]
   (add-discoveries discoveries))
 
+(defn remove-discoveries! [by ordering critical-count to-delete-count]
+  (let [objs  (r/get-all :account :discovery)
+        count (r/get-count objs)]
+    (if (> count critical-count)
+      (let [to-delete (-> (r/sorted objs by ordering)
+                          (r/page 0 to-delete-count))]
+        (r/write :account
+                 (fn []
+                   (log/debug (str "Deleting " (r/get-count to-delete) " discoveries"))
+                   (r/delete :account to-delete)))))))
+
 (defn discoveries-by-tag [tag limit]
-  (let [discoveries (-> (r/get-by-filter :base :discoveries (str "tags.name = '" tag "'"))
-                        (r/sorted :last-updated :desc))]
+  (let [discoveries (-> (r/get-by-filter :account :discovery (str "tags.name = '" tag "'"))
+                        (r/sorted :priority :desc))]
     (log/debug "Discoveries by tag: " tag)
     (if (pos? limit)
       (r/page discoveries 0 limit)
       discoveries)))
 
 (defn all-tags []
-  (-> (r/get-all :base :tag)
+  (-> (r/get-all :account :tag)
       (r/sorted :count :desc)
       r/collection->map))
 

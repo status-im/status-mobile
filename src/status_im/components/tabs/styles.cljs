@@ -10,7 +10,7 @@
                                                  text2-color
                                                  toolbar-background1]]))
 
-(def tabs-height 59)
+(def tabs-height 60)
 (def tab-height 56)
 
 (defn tabs-container [hidden? animation? offset-y]
@@ -67,5 +67,5 @@
    :left           0
    :right          0
    :bottom         0
-   :padding-bottom 59
+   :padding-bottom 60
    :transform      [{:translateX offset-x}]})

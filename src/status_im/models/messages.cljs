@@ -29,7 +29,7 @@
   [chat-id {:keys [delivery-status msg-id content]
             :or   {delivery-status :pending}
             :as   message}]
-  (when-not (r/exists? :account :msgs :msg-id msg-id)
+  (when-not (r/exists? :account :message :msg-id msg-id)
     (r/write :account
       (fn []
         (let [content' (if (string? content)
@@ -41,7 +41,7 @@
                                :content         content'
                                :delivery-status delivery-status
                                :timestamp       (timestamp)})]
-          (r/create :account :msgs message' true))))))
+          (r/create :account :message message' true))))))
 
 (defn command-type? [type]
   (contains?
@@ -51,7 +51,7 @@
 (defn get-messages
   ([chat-id] (get-messages chat-id 0))
   ([chat-id from]
-    (->> (-> (r/get-by-field :account :msgs :chat-id chat-id)
+    (->> (-> (r/get-by-field :account :message :chat-id chat-id)
              (r/sorted :timestamp :desc)
              (r/page from (+ from c/default-number-of-messages))
              (r/collection->map))
@@ -66,5 +66,5 @@
   (log/debug "update-message!" msg)
   (r/write :account
     (fn []
-      (when (r/exists? :account :msgs :msg-id msg-id)
-        (r/create :account :msgs msg true)))))
+      (when (r/exists? :account :message :msg-id msg-id)
+        (r/create :account :message msg true)))))
