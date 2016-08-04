@@ -15,7 +15,7 @@
   [_ [identity]]
   (dispatch [::fetch-commands! identity])
   ;; todo uncomment
-  #_(if-let [{:keys [file]} (realm/get-one-by-field :account :commands 
+  #_(if-let [{:keys [file]} (realm/get-one-by-field :account :command
                                                     :chat-id identity)]
       (dispatch [::parse-commands! identity file])
       (dispatch [::fetch-commands! identity])))
@@ -73,7 +73,7 @@
 
 (defn save-commands-js!
   [_ [id file]]
-    (realm/create-object :account :commands {:chat-id id :file file}))
+    (realm/create-object :account :command {:chat-id id :file file}))
 
 (defn loading-failed!
   [db [id reason details]]

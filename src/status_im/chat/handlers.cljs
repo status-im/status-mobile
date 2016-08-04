@@ -479,13 +479,13 @@
   [{:keys [current-chat-id]} _]
   (r/write :account
            (fn []
-             (r/delete :account (r/get-by-field :account :msgs :chat-id current-chat-id)))))
+             (r/delete :account (r/get-by-field :account :message :chat-id current-chat-id)))))
 
 (defn delete-chat!
   [{:keys [current-chat-id]} _]
   (r/write :account
            (fn [] :account
-             (->> (r/get-by-field :account :chats :chat-id current-chat-id)
+             (->> (r/get-by-field :account :chat :chat-id current-chat-id)
                   (r/single)
                   (r/delete :account)))))
 
@@ -550,3 +550,9 @@
                                  j/adjust-resize)))))
   (fn [db [_ chat-id mode]]
     (assoc-in db [:kb-mode chat-id] mode)))
+
+(register-handler :update-chat!
+  (fn [db [_ chat-id new-chat-data]]
+    (if (get-in db [:chats chat-id])
+      (update-in db [:chats chat-id] merge new-chat-data)
+      db)))

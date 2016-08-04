@@ -20,7 +20,21 @@
    :members                               {:one   "1 member, 1 active"
                                            :other "{{count}} members, {{count}} active"
                                            :zero  "no members"}
-   :last-active                           "Active a minute ago"
+   :active-online                         "online"
+   :active-unknown                        "unknown"
+
+   ;datetime
+   :datetime-second                       {:one   "second"
+                                           :other "seconds"}
+   :datetime-minute                       {:one   "minute"
+                                           :other "minutes"}
+   :datetime-hour                         {:one   "hour"
+                                           :other "hours"}
+   :datetime-day                          {:one   "day"
+                                           :other "days"}
+   :datetime-multiple                     "s"
+   :datetime-ago                          "ago"
+   :datetime-yesterday                    "yesterday"
 
    ;profile
    :profile                               "Profile"
@@ -80,7 +94,6 @@
 
    ;contacts
    :contacts                              "Contacts"
-   :no-name                               "Noname"
    :new-contact                           "New Contact"
    :show-all                              "SHOW ALL"
    :contacs-group-dapps                   "Dapps"

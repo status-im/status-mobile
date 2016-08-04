@@ -22,7 +22,7 @@
     (let [property (db-name db)]
       (r/write :account
                (fn []
-                 (-> (r/get-by-field :account :chats :chat-id current-chat-id)
+                 (-> (r/get-by-field :account :chat :chat-id current-chat-id)
                      (r/single)
                      (aset (name property-name) property)))))))
 
@@ -80,7 +80,7 @@
     (r/write :account
       (fn []
         (r/create :account
-          :chats
+          :chat
           (update chat :contacts remove-identities selected-participants)
           true)))))
 

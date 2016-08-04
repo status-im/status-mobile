@@ -4,7 +4,36 @@
             [status-im.components.react :refer [show-image-picker]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
-            [status-im.utils.handlers :as u]))
+            [status-im.utils.handlers :as u]
+            [clojure.string :as str]))
+
+(defn get-hashtags [status]
+  (let [hashtags (map #(subs % 1) (re-seq #"#[^ !?,;:.]+" status))]
+    (or hashtags [])))
+
+(defn message-user [identity]
+  (when identity
+    (dispatch [:navigate-to :chat identity])))
+
+(defn update-profile [{name       :name
+                       email      :email
+                       photo-path :photo-path
+                       status     :status}
+                      {new-name       :name
+                       new-email      :email
+                       new-status     :status
+                       new-photo-path :photo-path}]
+  (let [new-name        (if (or (not new-name) (str/blank? new-name)) name new-name)
+        status-updated? (and (not= new-status nil)
+                             (not= status new-status))]
+    (when status-updated?
+      (let [hashtags (get-hashtags new-status)]
+        (when-not (empty? hashtags)
+          (dispatch [:broadcast-status new-status hashtags]))))
+    (dispatch [:account-update {:name       new-name
+                                :email      (or new-email email)
+                                :status     (or new-status status)
+                                :photo-path (or new-photo-path photo-path)}])))
 
 (register-handler :open-image-picker
    (u/side-effect!

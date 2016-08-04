@@ -5,7 +5,7 @@
 
 (defn delivered-messages []
   (-> (realm/get-by-fields
-        :account :msgs
+        :account :message
         {:delivery-status :delivered
          :outgoing        false})
       (realm/collection->map)))

@@ -57,7 +57,7 @@
                    :renderRow           (fn [row _ _]
                                           (list-item [chat-list-item row]))
                    :style               st/list-container
-                   ;;; if "maximazing" chat list will make scroll to 0,
+                   ;;; if "maximizing" chat list will make scroll to 0,
                    ;;; then disable maximazing
                    :onLayout            (fn [event]
                                           (when-not @chats-scrolled?

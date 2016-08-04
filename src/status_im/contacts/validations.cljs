@@ -7,7 +7,7 @@
   (.isAddress js/Web3.prototype s))
 
 (defn unique-identity? [identity]
-  (not (realm/exists? :account :contacts :whisper-identity identity)))
+  (not (realm/exists? :account :contact :whisper-identity identity)))
 
 (defn valid-length? [identity]
   (let [length (count identity)]
