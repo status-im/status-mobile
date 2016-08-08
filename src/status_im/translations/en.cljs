@@ -27,8 +27,17 @@
    :report-user                           "REPORT USER"
    :message                               "Message"
    :username                              "Username"
+   :user-anonymous                        "Anonymous"
+   :not-specified                         "Not specified"
    :phone-number                          "Phone number"
    :email                                 "Email"
+   :profile-no-status                     "No status"
+
+   ;;make_photo
+   :image-source-title                    "Profile image"
+   :image-source-make-photo               "Capture"
+   :image-source-gallery                  "Select from gallery"
+   :image-source-cancel                   "Cancel"
 
    ;sign-up
    :contacts-syncronized                  "Your contacts have been synchronized"

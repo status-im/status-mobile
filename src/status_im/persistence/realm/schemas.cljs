@@ -1,32 +1,35 @@
 (ns status-im.persistence.realm.schemas
   (:require [status-im.components.styles :refer [default-chat-color]]))
 
-(def base {:schema [{:name       :accounts
-                     :primaryKey :address
-                     :properties {:address    "string"
-                                  :public-key "string"
-                                  :name       "string"
-                                  :photo-path "string"}}
-                    {:name       :tag
-                        :primaryKey :name
-                        :properties {:name  "string"
-                                     :count {:type     "int"
-                                             :optional true
-                                             :default  0}}}
-                    {:name       :discoveries
-                        :primaryKey :whisper-id
-                        :properties {:name         "string"
-                                     :status       "string"
-                                     :whisper-id   "string"
-                                     :photo        "string"
-                                     :location     "string"
-                                     :tags         {:type       "list"
-                                                    :objectType "tag"}
-                                     :last-updated "date"}}
-                    {:name       :kv-store
-                     :primaryKey :key
-                     :properties {:key   "string"
-                                  :value "string"}}]
+(def base {:schema        [{:name       :accounts
+                            :primaryKey :address
+                            :properties {:address    "string"
+                                         :public-key "string"
+                                         :name       "string"
+                                         :phone      {:type "string" :optional true}
+                                         :email      {:type "string" :optional true}
+                                         :status     {:type "string" :optional true}
+                                         :photo-path "string"}}
+                           {:name       :tag
+                            :primaryKey :name
+                            :properties {:name  "string"
+                                         :count {:type     "int"
+                                                 :optional true
+                                                 :default  0}}}
+                           {:name       :discoveries
+                            :primaryKey :whisper-id
+                            :properties {:name         "string"
+                                         :status       "string"
+                                         :whisper-id   "string"
+                                         :photo        "string"
+                                         :location     "string"
+                                         :tags         {:type       "list"
+                                                        :objectType "tag"}
+                                         :last-updated "date"}}
+                           {:name       :kv-store
+                            :primaryKey :key
+                            :properties {:key   "string"
+                                         :value "string"}}]
            :schemaVersion 0})
 
 (def account {:schema [{:name       :contacts

@@ -19,6 +19,9 @@ import com.centaurwarchief.smslistener.SmsListenerPackage;
 import com.github.yamill.orientation.OrientationPackage;
 import com.rnfs.RNFSPackage;
 import com.statusim.geth.module.GethPackage;
+import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
+import com.reactnative.picker.PickerPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +49,10 @@ public class MainApplication extends Application implements ReactApplication {
               new SmsListenerPackage(),
               new OrientationPackage(),
               new RNFSPackage(),
-              new GethPackage()
+              new GethPackage(),
+              new ReactNativeDialogsPackage(),
+              new ImageResizerPackage(),
+              new PickerPackage()
       );
     }
   };

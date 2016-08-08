@@ -18,8 +18,9 @@
 
 (register-handler :initialize-protocol
   (u/side-effect!
-    (fn [{:keys [user-identity] :as db} [_ account]]
-      (init-protocol (or account user-identity) (make-handler db)))))
+    (fn [db [_ current-account-id]]
+      (let [current-account (get-in db [:accounts current-account-id])]
+        (init-protocol current-account (make-handler db))))))
 
 (register-handler :protocol-initialized
   (fn [db [_ identity]]

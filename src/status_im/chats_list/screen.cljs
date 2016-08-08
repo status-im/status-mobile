@@ -19,7 +19,7 @@
                                                  toolbar-background2]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
-            [status-im.components.icons.ionicons :refer [icon]]
+            [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.i18n :refer [label]]
             [status-im.chats-list.styles :as st]
             [status-im.components.styles :as cst]
@@ -80,12 +80,12 @@
           {:title       (label :t/new-chat)
            :buttonColor :#9b59b6
            :onPress     #(dispatch [:show-group-contacts :people])}
-          [icon {:name  :md-create
-                 :style st/create-icon}]]
+          [ion-icon {:name  :md-create
+                     :style st/create-icon}]]
          [action-button-item
           {:title       (label :t/new-group-chat)
            :buttonColor :#1abc9c
            :onPress     #(dispatch [:show-group-new])}
-          [icon {:name  :md-person
-                 :style st/person-stalker-icon}]]]]
+          [ion-icon {:name  :md-person
+                     :style st/person-stalker-icon}]]]]
        [bottom-gradient]])))

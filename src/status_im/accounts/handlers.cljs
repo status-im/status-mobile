@@ -17,56 +17,64 @@
 
 
 (defn save-account [_ [_ account]]
-  (accounts/save-accounts [account]))
+  (accounts/save-accounts [account] false))
 
-(register-handler :add-account
+(register-handler
+  :add-account
   (-> (fn [db [_ {:keys [address] :as account}]]
-          (update db :accounts assoc address account))
+        (update db :accounts assoc address account))
       ((after save-account))))
 
 (defn save-password [password]
   (storage/put kv/kv-store :password password))
 
 (defn account-created [db result password]
-  (let [data (json->clj result)
+  (let [data       (json->clj result)
         public-key (:pubkey data)
-        address (:address data)
-        account {:public-key public-key
-                 :address address
-                 :name address
-                 :photo-path (identicon address)}
-        ]
+        address    (:address data)
+        account    {:public-key public-key
+                    :address    address
+                    :name       address
+                    :photo-path (identicon address)}]
     (log/debug "account-created: " account)
     (when (not (str/blank? public-key))
       (do
-        ;(save-password password)
         (dispatch-sync [:add-account account])
         (dispatch [:login-account address password])))))
 
-(register-handler :create-account
-  (-> (fn [db [_ password]]
-          (geth/create-account password (fn [result] (account-created db result password)))
-        db)))
+(register-handler
+  :create-account
+  (fn [db [_ password]]
+    (geth/create-account password (fn [result] (account-created db result password)))
+    db))
 
-(defn initialize-account [db account]
+(register-handler
+  :account-update
+  (fn [db [_ data]]
+    (let [current-account-id (get db :current-account-id)
+          account            (-> (get-in db [:accounts current-account-id])
+                                 (merge data))]
+      (accounts/save-accounts [account] true)
+      (assoc-in db [:accounts current-account-id] account))))
+
+(defn initialize-account [db address]
   (let [is-login-screen? (= (:view-id db) :login)]
     (dispatch [:set :login {}])
-    (dispatch [:set :is-logged-in true])
-    (dispatch [:set :user-identity account])
-    (dispatch [:initialize-account account])
+    (dispatch [:set :current-account-id address])
+    (dispatch [:initialize-account address])
     (when is-login-screen? (dispatch [:navigate-to-clean default-view]))))
 
 (defn logged-in [db address]
-  (let [account (get-in db [:accounts address])
-        is-login-screen? (= (:view-id db) :login)
+  (let [is-login-screen? (= (:view-id db) :login)
         new-account? (not is-login-screen?)]
-    (log/debug "Logged in: " address account)
+    (log/debug "Logged in: " address)
     (realm/change-account-realm address new-account?
                                 #(if (nil? %)
-                                   (initialize-account db account)
+                                   (initialize-account db address)
                                    (log/debug "Error changing acount realm: " %)))))
 
-(register-handler :login-account
+(register-handler
+  :login-account
   (-> (fn [db [_ address password]]
         (geth/login address password (fn [result]
                                        (let [data (json->clj result)

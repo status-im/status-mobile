@@ -310,8 +310,9 @@
     (assoc db :password-saved true)))
 
 (register-handler :sign-up
+  (after (fn [_ [_ phone-number]]
+           (dispatch [:account-update {:phone phone-number}])))
   (fn [db [_ phone-number]]
-    ;; todo save phone number to db
     (let [formatted (format-phone-number phone-number)]
       (-> db
           (assoc :user-phone-number formatted)

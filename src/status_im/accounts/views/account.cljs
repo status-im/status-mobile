@@ -16,7 +16,7 @@
   (dispatch [:set-in [:login :address] address]))
 
 (defview account-view [{:keys [address photo-path name] :as account}]
-  [current-account [:get :user-identity]]
+  [current-account [:get-current-account]]
   [touchable-highlight
    {:onPress #(on-press address)}
     [view st/account-container

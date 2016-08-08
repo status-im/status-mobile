@@ -10,7 +10,6 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
-            [status-im.components.icons.ionicons :refer [icon]]
             [status-im.components.styles :refer [color-blue
                                                  hamburger-icon
                                                  icon-search
@@ -39,7 +38,7 @@
 
 (defview contact-list [{platform-specific :platform-specific}]
   [contacts [:contacts-with-letters]]
-   [drawer-view
+   [drawer-view {:platform-specific platform-specific}
     [view st/contacts-list-container
      [contact-list-toolbar platform-specific]
      ;; todo what if there is no contacts, should we show some information

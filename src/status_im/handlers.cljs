@@ -17,6 +17,7 @@
     status-im.discovery.handlers
     status-im.new-group.handlers
     status-im.participants.handlers
+    status-im.profile.handlers
     status-im.commands.handlers.loading
     status-im.commands.handlers.jail
     status-im.qr-scanner.handlers
@@ -56,7 +57,7 @@
 (register-handler :initialize-db
   (fn [_ _]
     (realm/reset-account)
-    (assoc app-db :user-identity nil)))
+    (assoc app-db :current-account-id nil)))
 
 (register-handler :initialize-account-db
   (fn [db _]
@@ -66,8 +67,8 @@
 
 (register-handler :initialize-account
   (u/side-effect!
-    (fn [_ [_ account]]
-      (dispatch [:initialize-protocol account])
+    (fn [_ [_ address]]
+      (dispatch [:initialize-protocol address])
       (dispatch [:initialize-account-db])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
