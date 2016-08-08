@@ -4,4 +4,6 @@
 (def class (js/require "react-native-qrcode"))
 
 (defn qr-code [props]
-  (r/create-element class (clj->js (merge {:inverted true} props))))
+  (r/create-element
+    class
+    (clj->js (merge {:inverted true} props))))

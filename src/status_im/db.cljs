@@ -11,9 +11,16 @@
 ;; initial state of app-db
 (def app-db {:identity-password      "replace-me-with-user-entered-password"
              :identity               "me"
-             :is-logged-in           false
+
              :accounts               {}
-             :user-identity          nil
+             :current-account-id     nil
+
+             :profile-edit           {:edit?      false
+                                      :name       nil
+                                      :email      nil
+                                      :status     nil
+                                      :photo-path nil}
+
              :contacts               []
              :contacts-ids           #{}
              :selected-contacts      #{}
@@ -27,12 +34,6 @@
              :signed-up              false
              :view-id                default-view
              :navigation-stack       (list default-view)
-             ;; TODO fix hardcoded values
-             :photo-path             nil
-             :username               "My Name"
-             :phone-number           "3147984309"
-             :email                  "myemail@gmail.com"
-             :status                 "Hi, this is my status"
              :current-tag            nil
              :qr-codes               {}
              :new-contact            {:name             ""
@@ -42,7 +43,7 @@
              :keyboard-height        0
              :disable-group-creation false
              :animations             {;; todo clear this
-                                      :tabs-bar-value               (anim/create-value 0)}})
+                                      :tabs-bar-value (anim/create-value 0)}})
 
 (def protocol-initialized-path [:protocol-initialized])
 (defn chat-input-text-path [chat-id]

@@ -10,6 +10,7 @@
                                                 image
                                                 touchable-highlight
                                                 get-dimensions]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.components.animation :as anim]
             [status-im.chats-list.screen :refer [chats-list]]
@@ -99,12 +100,15 @@
   [tab-view-container view-id
    [screen]])
 
-(defview main-tabs []
+(defview main-tabs [{platform-specific :platform-specific}]
   [view-id [:get :view-id]
    tab-animation? [:get :prev-tab-view-id]]
-  [drawer-view
-   [view {:style         common-st/flex
-          :pointerEvents (if tab-animation? :none :auto)}
-    (doall (map #(tab-view %) tab-list))
-    [tabs {:selected-view-id view-id
-           :tab-list         tab-list}]]])
+  [view common-st/flex
+   [status-bar {:platform-specific platform-specific}]
+   [view common-st/flex
+    [drawer-view {:platform-specific platform-specific}
+     [view {:style         common-st/flex
+            :pointerEvents (if tab-animation? :none :auto)}
+      (doall (map #(tab-view %) tab-list))
+      [tabs {:selected-view-id view-id
+             :tab-list         tab-list}]]]]])

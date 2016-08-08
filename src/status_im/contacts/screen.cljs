@@ -15,7 +15,7 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.drawer.view :refer [open-drawer]]
-            [status-im.components.icons.ionicons :refer [icon]]
+            [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.components.styles :refer [color-blue
                                                  hamburger-icon
                                                  icon-search
@@ -101,6 +101,6 @@
           {:title       (label :t/new-contact)
            :buttonColor :#9b59b6
            :onPress     #(dispatch [:navigate-to :new-contact])}
-          [icon {:name  :md-create
-                 :style create-icon}]]]]
+          [ion-icon {:name  :md-create
+                     :style create-icon}]]]]
        [bottom-gradient]])))

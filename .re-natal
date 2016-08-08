@@ -11,6 +11,7 @@
     "realm/react-native",
     "react-native-action-button",
     "react-native-vector-icons/Ionicons",
+    "react-native-vector-icons/Octicons",
     "react-native-circle-checkbox",
     "react-native-randombytes",
     "dismissKeyboard",
@@ -21,7 +22,10 @@
     "react-native-qrcode",
     "react-native-orientation",
     "identicon.js",
-    "react-native-fs"
+    "react-native-fs",
+    "react-native-dialogs",
+    "react-native-image-resizer",
+    "react-native-image-crop-picker"
   ],
   "imageDirs": [
     "images"

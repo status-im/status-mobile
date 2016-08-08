@@ -59,8 +59,9 @@
 
 (def chat-icon-profile
   (merge chat-icon
-         {:width  64
-          :height 64}))
+         {:width         64
+          :height        64
+          :border-radius 32}))
 
 (def online-view
   {:position        :absolute
@@ -75,13 +76,15 @@
 
 (def online-view-menu-item
   (merge online-view
-         {:width  15
-          :height 15}))
+         {:width         14
+          :height        14
+          :border-radius 7}))
 
 (def online-view-profile
   (merge online-view
-         {:width  24
-          :height 24}))
+         {:width         24
+          :height        24
+          :border-radius 12}))
 
 (def online-dot
   {:position        :absolute
@@ -92,6 +95,12 @@
    :backgroundColor color-white})
 (def online-dot-left (merge online-dot {:left 3}))
 (def online-dot-right (merge online-dot {:left 9}))
+
+(def photo-pencil
+  {:margin-left 6
+   :margin-top  3
+   :font-size   12
+   :color       :white})
 
 (def online-dot-menu-item
   (merge online-dot
