@@ -4,18 +4,26 @@
             [status-im.models.contacts :as contacts]
             [status-im.utils.crypt :refer [encrypt]]
             [clojure.string :as s]
+            [status-im.protocol.api :as api]
             [status-im.utils.utils :refer [http-post]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.handlers :as u]
-            [status-im.utils.utils :refer [require]]))
+            [status-im.utils.utils :refer [require]]
+            [status-im.utils.logging :as log]))
 
 (defn save-contact
   [_ [_ contact]]
   (contacts/save-contacts [contact]))
 
-(register-handler :add-contact
+(defn watch-contact
+  [_ [_ contact]]
+  (api/watch-user contact))
+
+(register-handler :watch-contact (u/side-effect! watch-contact))
+
+(register-handler :update-contact
   (-> (fn [db [_ {:keys [whisper-identity] :as contact}]]
-        (update db :contacts assoc whisper-identity contact))
+        (update-in db [:contacts whisper-identity] merge contact))
       ((after save-contact))))
 
 (defn load-contacts! [db _]
@@ -23,6 +31,8 @@
                       (map (fn [{:keys [whisper-identity] :as contact}]
                              [whisper-identity contact]))
                       (into {}))]
+    (doseq [[_ contact] contacts]
+      (dispatch [:watch-contact contact]))
     (assoc db :contacts contacts)))
 
 (register-handler :load-contacts load-contacts!)
@@ -108,17 +118,34 @@
 (defn add-new-contact [db [_ {:keys [whisper-identity] :as contact}]]
   (-> db
       (update :contacts assoc whisper-identity contact)
-      (assoc :new-contact {:name ""
-                           :address ""
-                           :whisper-identity ""
-                           :phone-number ""})))
+      (assoc :new-contact-identity "")))
 
 (register-handler :add-new-contact
-  (after save-contact)
-  add-new-contact)
+   (-> add-new-contact
+       ((after save-contact))
+       ((after watch-contact))))
 
-(defn set-new-contact-from-qr
-  [{:keys [new-contact] :as db} [_ _ qr-contact]]
-  (assoc db :new-contact (merge new-contact qr-contact)))
+(defn set-contact-identity-from-qr
+  [db [_ _ contact-identity]]
+  (assoc db :new-contact-identity contact-identity))
 
-(register-handler :set-new-contact-from-qr set-new-contact-from-qr)
+(register-handler :set-contact-identity-from-qr set-contact-identity-from-qr)
+
+(register-handler :contact-update-received
+  (u/side-effect!
+    ;; TODO: security issue: we should use `from` instead of `public-key` here, but for testing it is much easier to use `public-key`
+    (fn [db [_ from {{:keys [public-key last-updated name] :as account} :account}]]
+      (let [prev-last-updated (get-in db [:contacts public-key :last-updated])]
+        (if (< prev-last-updated last-updated)
+          (let [contact (-> (assoc account :whisper-identity public-key)
+                            (dissoc :public-key))]
+            (dispatch [:update-contact contact])
+            (dispatch [:update-chat! public-key {:name name}])))))))
+
+(register-handler :contact-online-received
+  (u/side-effect!
+    (fn [db [_ from {last-online :at :as payload}]]
+      (let [prev-last-online (get-in db [:contacts from :last-online])]
+        (if (< prev-last-online last-online)
+          (dispatch [:update-contact {:whisper-identity from
+                                      :last-online      last-online}]))))))

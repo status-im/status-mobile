@@ -14,7 +14,6 @@
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
             [status-im.qr-scanner.screen :refer [qr-scanner]]
-            [status-im.discovery.screen :refer [discovery]]
             [status-im.discovery.tag :refer [discovery-tag]]
             [status-im.chat.screen :refer [chat]]
             [status-im.accounts.login.screen :refer [login]]

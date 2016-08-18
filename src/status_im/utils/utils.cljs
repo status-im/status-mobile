@@ -55,3 +55,13 @@
   (if (and (< max (count s)) s)
     (str (subs s 0 (- max 3)) "...")
     s))
+
+(defn first-index
+  [cond coll]
+  (loop [index 0
+         cond cond
+         coll coll]
+    (when (seq coll)
+      (if (cond (first coll))
+        index
+        (recur (inc index) cond (next coll))))))

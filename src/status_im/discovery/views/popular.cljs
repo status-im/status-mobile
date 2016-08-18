@@ -13,11 +13,13 @@
 (defn page-width []
   (.-width (.get (.. r/react-native -Dimensions) "window")))
 
-(defview popular []
-  [popular-tags [:get-popular-tags 3]]
+(defview popular [{:keys [contacts platform-specific]}]
+  [popular-tags [:get-popular-tags 10]]
   (if (pos? (count popular-tags))
-    [carousel {:pageStyle st/carousel-page-style
-               :sneak     20}
+    [carousel {:pageStyle st/carousel-page-style}
      (for [{:keys [name count]} popular-tags]
-       [discovery-popular-list name count])]
+       [discovery-popular-list {:tag               name
+                                :count             count
+                                :contacts          contacts
+                                :platform-specific platform-specific}])]
     [text (label :t/none)]))

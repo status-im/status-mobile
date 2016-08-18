@@ -20,7 +20,7 @@
       (if (pos? (count (:name contact)))
         name
         ;; todo is this correct behaviour?
-        (label :t/no-name))]
+        (label :t/user-anonymous))]
      (when info
        [text {:style st/info-text}
         info])]]))

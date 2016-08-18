@@ -12,8 +12,8 @@
 (defn window-page-width []
   (.-width (.get (.. r/react-native -Dimensions) "window")))
 
-(def defaults {:gap 10
-               :sneak 10
+(def defaults {:gap 8
+               :sneak 8
                :pageStyle {}
                :scrollThreshold 20})
 
@@ -175,5 +175,4 @@
                         :component-did-update component-did-update
                         :display-name "carousel"
                         :reagent-render reagent-render}]
-    (log/debug "Creating carousel component: " data)
     (reagent.core/create-class component-data)))

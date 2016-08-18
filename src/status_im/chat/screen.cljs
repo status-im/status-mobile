@@ -15,6 +15,7 @@
             [status-im.chat.styles.screen :as st]
             [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
+            [status-im.utils.datetime :as time]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
@@ -23,7 +24,8 @@
             [status-im.chat.views.new-message :refer [chat-message-new]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [clojure.string :as str]))
 
 
 (defn contacts-by-identity [contacts]
@@ -191,16 +193,27 @@
   [overlay {:on-click-outside #(dispatch [:set-show-actions false])}
    [actions-list-view platform-specific]])
 
+(defn online-text [contact chat-id]
+  (if contact
+    (if (> (get contact :last-online) 0)
+      (time/time-ago (time/to-date (get contact :last-online)))
+      (label :t/active-unknown))
+    (if (= chat-id "console")
+      (label :t/active-online)
+      (label :t/active-unknown))))
+
 (defn toolbar-content [platform-specific]
-  (let [{:keys [group-chat name contacts]}
-        (subscribe [:chat-properties [:group-chat :name :contacts]])
+  (let [{:keys [group-chat chat-id name contacts]} (subscribe [:chat-properties [:group-chat :chat-id :name :contacts]])
+        contact (subscribe [:get-in [:contacts @chat-id]])
         show-actions (subscribe [:show-actions])]
     (fn []
       [view (st/chat-name-view @show-actions)
        [text {:style             st/chat-name-text
               :platform-specific platform-specific
               :font              :medium}
-        (truncate-str (or @name (label :t/chat-name)) 30)]
+        (if (str/blank? @name)
+          (label :t/user-anonymous)
+          (truncate-str (or @name (label :t/chat-name)) 30))]
        (if @group-chat
          [view {:flexDirection :row}
           [icon :group st/group-icon]
@@ -209,11 +222,10 @@
                  :font              :medium}
            (let [cnt (inc (count @contacts))]
              (label-pluralize cnt :t/members))]]
-         ;; TODO stub data: last activity
          [text {:style             st/last-activity
                 :platform-specific platform-specific
                 :font              :default}
-          (label :t/last-active)])])))
+          (online-text @contact @chat-id)])])))
 
 (defn toolbar-action []
   (let [show-actions (subscribe [:show-actions])]

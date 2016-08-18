@@ -16,6 +16,9 @@
                                                            my-profile-icon]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.profile.styles :as st]
+            [status-im.profile.handlers :refer [get-hashtags
+                                                message-user
+                                                update-profile]]
             [status-im.components.qr-code :refer [qr-code]]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
@@ -24,32 +27,6 @@
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
             [clojure.string :as str]))
-
-(defn- get-hashtags [status]
-  (let [hashtags (map #(subs % 1) (re-seq #"#[^ !?,;:.]+" status))]
-    (or hashtags [])))
-
-(defn- message-user [identity]
-  (when identity
-    (dispatch [:navigate-to :chat identity])))
-
-(defn- update-profile [{name       :name
-                        email      :email
-                        photo-path :photo-path
-                        status     :status}
-                       {new-name       :name
-                        new-email      :email
-                        new-status     :status
-                        new-photo-path :photo-path}]
-  (let [new-name        (if (or (not new-name) (str/blank? new-name)) name new-name)
-        status-updated? (and (not= new-status nil)
-                             (not= status new-status))]
-    (when status-updated?
-      (dispatch [:broadcast-status new-status (get-hashtags new-status)]))
-    (dispatch [:account-update {:name       new-name
-                                :email      (or new-email email)
-                                :status     (or new-status status)
-                                :photo-path (or new-photo-path photo-path)}])))
 
 (defview toolbar [{:keys [account profile-edit-data edit?]}]
   [view
@@ -74,7 +51,8 @@
                   :style st/ok-btn-icon}]
        [icon :dots st/edit-btn-icon])]]])
 
-(defview status-image-view [{{:keys [list-selection-fn]} :platform-specific
+(defview status-image-view [{{:keys [list-selection-fn]
+                              :as   platform-specific} :platform-specific
                              {address  :address
                               username :name}            :account
                              photo-path                  :photo-path
@@ -122,19 +100,35 @@
                  :on-change-text on-change-text}
      (or value (when-not edit-mode? empty-value))]]])
 
-(defview profile []
-  [{:keys [name whisper-identity phone-number]} [:contact]]
+(defview profile [{platform-specific :platform-specific}]
+  [{whisper-identity :whisper-identity
+    address          :address
+    username         :name
+    email            :email
+    photo-path       :photo-path
+    phone            :phone
+    status           :status
+    :as              contact} [:contact]]
   [scroll-view {:style st/profile}
-   [touchable-highlight {:style    st/back-btn-touchable
-                         :on-press #(dispatch [:navigate-back])}
-    [view st/back-btn-container
-     [icon :back st/back-btn-icon]]]
+   [status-bar {:platform-specific platform-specific}]
+   [view
+    [touchable-highlight {:style    st/back-btn-touchable
+                          :on-press (fn []
+                                      (dispatch [:navigate-back]))}
+     [view st/back-btn-container
+      [icon :back st/back-btn-icon]]]
+    [touchable-highlight {:style    st/actions-btn-touchable
+                          :on-press (fn []
+                                      (.log js/console "Dots pressed!"))}
+     [view st/actions-btn-container
+      [icon :dots st/edit-btn-icon]]]]
+
+   [status-image-view {:platform-specific platform-specific
+                       :account           contact
+                       :photo-path        photo-path
+                       :edit?             false}]
+
    [view st/status-block
-    [view st/user-photo-container
-     [profile-icon]]
-    [text {:style st/username} name]
-    ;; TODO stub data
-    [text {:style st/status-input} (label :t/not-implemented)]
     [view st/btns-container
      [touchable-highlight {:onPress #(message-user whisper-identity)}
       [view st/message-btn
@@ -144,14 +138,23 @@
                                       )}
       [view st/more-btn
        [icon :more_vertical_blue st/more-btn-image]]]]]
-   [view st/profile-properties-container
-    [profile-property-view {:name  (label :t/username)
-                            :value name}]
-    [profile-property-view {:name  (label :t/phone-number)
-                            :value phone-number}]
-    ;; TODO stub data
-    [profile-property-view {:name  (label :t/email)
-                            :value (label :t/not-implemented)}]
+
+   [scroll-view st/profile-properties-container
+    [profile-property-view {:name              (label :t/username)
+                            :value             (if (not= username address)
+                                                 username)
+                            :empty-value       (label :t/not-specified)
+                            :platform-specific platform-specific}]
+    [profile-property-view {:name              (label :t/phone-number)
+                            :value             (if-not (or (not phone) (str/blank? phone))
+                                                 (format-phone-number phone))
+                            :empty-value       (label :t/not-specified)
+                            :platform-specific platform-specific}]
+    [profile-property-view {:name              (label :t/email)
+                            :value             (if-not (or (not email) (str/blank? email))
+                                                 email)
+                            :empty-value       (label :t/not-specified)
+                            :platform-specific platform-specific}]
     [view st/report-user-container
      [touchable-highlight {:on-press (fn []
                                        ;; TODO not implemented
@@ -180,7 +183,7 @@
    [status-image-view {:platform-specific platform-specific
                        :account           account
                        :photo-path        (or new-photo-path photo-path)
-                       :status            (if (and new-status (not (str/blank? new-status))) new-status status)
+                       :status            (or new-status status)
                        :edit?             edit?}]
 
    [scroll-view st/profile-properties-container
@@ -205,6 +208,6 @@
                             :profile-data      profile-edit-data
                             :platform-specific platform-specific}]
     [view st/qr-code-container
-     [qr-code {:value (clj->js {:name             username
-                                :whisper-identity public-key})
-               :size  150}]]]])
+     ;; TODO: this public key should be replaced by address
+     [qr-code {:value (str "ethereum:" public-key)
+               :size  220}]]]])

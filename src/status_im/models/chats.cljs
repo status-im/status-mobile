@@ -12,7 +12,7 @@
 (defn chat-name-from-contacts [identities]
   (let [chat-name (->> identities
                        (map (fn [identity]
-                              (-> (r/get-by-field :account :contacts :whisper-identity identity)
+                              (-> (r/get-by-field :account :contact :whisper-identity identity)
                                   (r/single-cljs)
                                   :name)))
                        (filter identity)
@@ -25,7 +25,7 @@
       chat-id))
 
 (defn chat-exists? [chat-id]
-  (r/exists? :account :chats :chat-id chat-id))
+  (r/exists? :account :chat :chat-id chat-id))
 
 (defn add-status-message [chat-id]
   ;; TODO Get real status
@@ -42,7 +42,7 @@
 (defn create-chat
   ([{:keys [last-msg-id] :as chat}]
    (let [chat (assoc chat :last-msg-id (or last-msg-id ""))]
-     (r/write :account #(r/create :account :chats chat))))
+     (r/write :account #(r/create :account :chat chat))))
   ([db chat-id identities group-chat? chat-name]
    (when-not (chat-exists? chat-id)
      (let [chat-name (or chat-name
@@ -52,7 +52,7 @@
          (fn []
            (let [contacts (mapv (fn [ident]
                                   {:identity ident}) identities)]
-             (r/create :account :chats 
+             (r/create :account :chat
                        {:chat-id     chat-id
                         :is-active   true
                         :name        chat-name
@@ -63,7 +63,7 @@
        (add-status-message chat-id)))))
 
 (defn chat-contacts [chat-id]
-  (-> (r/get-by-field :account :chats :chat-id chat-id)
+  (-> (r/get-by-field :account :chat :chat-id chat-id)
       (r/single)
       (aget "contacts")))
 
@@ -79,7 +79,7 @@
                                    (mapv (fn [ident]
                                            {:identity ident}))
                                    (concat only-old-contacts))]
-        (r/create :account :chats 
+        (r/create :account :chat
                   {:chat-id   group-id
                    :is-active true
                    :name      group-name
@@ -91,18 +91,18 @@
   (map #(update % :contacts vals) chats))
 
 (defn chats-list []
-  (-> (r/get-all :account :chats)
+  (-> (r/get-all :account :chat)
       (r/sorted :timestamp :desc)
       r/collection->map
       normalize-contacts))
 
 (defn chat-by-id [chat-id]
-  (-> (r/get-by-field :account :chats :chat-id chat-id)
+  (-> (r/get-by-field :account :chat :chat-id chat-id)
       (r/single-cljs)
       (r/list-to-array :contacts)))
 
 (defn chat-by-id2 [chat-id]
-  (-> (r/get-by-field :account :chats :chat-id chat-id)
+  (-> (r/get-by-field :account :chat :chat-id chat-id)
       r/collection->map
       first))
 
@@ -123,14 +123,14 @@
   (r/write :account
     (fn []
       (let [query (include-query :identity identities)
-            chat  (r/single (r/get-by-field :account :chats :chat-id chat-id))]
+            chat  (r/single (r/get-by-field :account :chat :chat-id chat-id))]
         (-> (aget chat "contacts")
             (r/filtered query)
             (.forEach (fn [object _ _]
                         (aset object "is-in-chat" false))))))))
 
 (defn active-group-chats []
-  (let [results (r/filtered (r/get-all :account :chats)
+  (let [results (r/filtered (r/get-all :account :chat)
                             "group-chat = true && is-active = true")]
     (js->clj (.map results (fn [object _ _]
                              (aget object "chat-id"))))))
@@ -138,6 +138,6 @@
 (defn set-chat-active [chat-id active?]
   (r/write :account
            (fn []
-             (-> (r/get-by-field :account :chats :chat-id chat-id)
+             (-> (r/get-by-field :account :chat :chat-id chat-id)
                  (r/single)
                  (aset "is-active" active?)))))

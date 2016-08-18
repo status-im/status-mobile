@@ -24,7 +24,7 @@
   [{:keys [current-chat-id] :as db} [_ chat-id]]
   (let [chat-id' (or chat-id current-chat-id)
         requests (-> ;; todo maybe limit is needed
-                     (realm/get-by-fields :account :requests
+                     (realm/get-by-fields :account :request
                                           {:chat-id chat-id'
                                            :status  "open"})
                      (realm/sorted :added :desc)
@@ -36,7 +36,7 @@
   [_ [_ chat-id message-id]]
   (realm/write :account
     (fn []
-      (-> (realm/get-by-fields :account :requests
+      (-> (realm/get-by-fields :account :request
                                {:chat-id    chat-id
                                 :message-id message-id})
           (realm/single)
