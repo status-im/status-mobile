@@ -37,14 +37,32 @@
    [text {:style toolbar-title-text}
     (label :t/add-new-contact)]])
 
-(defview contact-name-input [name]
-  []
-  [text-field
-   {:error (if (str/blank? name) "" nil)
-    :errorColor "#7099e6"
-    :value name
-    :label           (label :t/name)
-    :onChangeText          #(dispatch [:set-in [:new-contact :name] %])}])
+(defn on-add-contact [id]
+  (if (v/is-address? id)
+    (http-post "get-contacts-by-address" {:addresses [id]}
+               (fn [{:keys [contacts]}]
+                 (if (> (count contacts) 0)
+                   (let [{:keys [whisper-identity]} (first contacts)
+                         contact {:name             ""
+                                  :address          id
+                                  :photo-path       (identicon whisper-identity)
+                                  :whisper-identity whisper-identity}]
+                     (dispatch [:add-new-contact contact]))
+                   (dispatch [:set :new-contact-address-error (label :t/unknown-address)]))))
+    (dispatch [:add-new-contact {:name             ""
+                                 :photo-path       (identicon id)
+                                 :whisper-identity id}])))
+
+(defn toolbar-action [new-contact-identity error]
+  (let [valid-contact? (and
+                         (s/valid? ::v/whisper-identity new-contact-identity)
+                         (nil? error))]
+    {:image   {:source {:uri (if valid-contact?
+                               :icon_ok_blue
+                               :icon_ok_disabled)}
+               :style  icon-search}
+     :handler #(when valid-contact?
+                (on-add-contact new-contact-identity))}))
 
 (defview contact-whisper-id-input [whisper-identity error]
   []
@@ -53,48 +71,20 @@
                 error
                 (label :t/enter-valid-address))]
     [view button-input-container
-   [text-field
-    {:error error
-     :errorColor "#7099e6"
-     :value whisper-identity
-     :wrapperStyle                 (merge button-input)
-     :label           (label :t/address)
-     :onChangeText          #(do 
-                               (dispatch [:set-in [:new-contact :whisper-identity] %])
-                               (dispatch [:set :new-contact-address-error nil]))}]
-   [scan-button {:showLabel (zero? (count whisper-identity))
-                 :handler #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-new-contact-from-qr])}]]))
-
-(defn on-add-contact [whisper-identity new-contact]
-  (if (v/is-address? whisper-identity)
-    (http-post "get-contacts-by-address" {:addresses [whisper-identity]}
-               (fn [{:keys [contacts]}]
-                 (if (> (count contacts) 0)
-                   (let [contact (first contacts)
-                         new-contact (merge 
-                                       new-contact 
-                                       {:address whisper-identity
-                                        :whisper-identity (:whisper-identity contact)})]
-                     (dispatch [:add-new-contact new-contact]))
-                   (dispatch [:set :new-contact-address-error (label :t/unknown-address)]))))
-    (dispatch [:add-new-contact new-contact])))
-
-(defn toolbar-action [whisper-identity new-contact error]
-  (let [valid-contact? (and
-                         (s/valid? ::v/contact new-contact)
-                         (nil? error))]
-    {:image   {:source {:uri (if valid-contact?
-                               :icon_ok_blue
-                               :icon_ok_disabled)}
-               :style  icon-search}
-     :handler #(when valid-contact?
-                 (let [contact (merge 
-                                 {:photo-path (identicon whisper-identity)} 
-                                 new-contact)]
-                   (on-add-contact whisper-identity contact)))}))
+     [text-field
+      {:error        error
+       :errorColor   "#7099e6"
+       :value        whisper-identity
+       :wrapperStyle (merge button-input)
+       :label        (label :t/address)
+       :onChangeText #(do
+                       (dispatch [:set-in [:new-contact-identity] %])
+                       (dispatch [:set :new-contact-address-error nil]))}]
+     [scan-button {:showLabel (zero? (count whisper-identity))
+                   :handler   #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-contact-identity-from-qr])}]]))
 
 (defview new-contact [{platform-specific :platform-specific}]
-  [{:keys [name whisper-identity phone-number] :as new-contact} [:get :new-contact]
+  [new-contact-identity [:get :new-contact-identity]
    error [:get :new-contact-address-error]]
   [view st/contact-form-container
    [view
@@ -104,9 +94,11 @@
                                            :style  icon-back}
                                  :handler #(dispatch [:navigate-back])}
               :custom-content   toolbar-title
-              :action           (toolbar-action whisper-identity new-contact error)}]]
+              :action           (toolbar-action new-contact-identity error)}]]
    [view st/form-container
-    [contact-name-input name]
-    [contact-whisper-id-input whisper-identity error]]
+    [contact-whisper-id-input new-contact-identity error]]
    [view st/address-explication-container
-    [text {:style st/address-explication} (label :t/address-explication)]]])
+    [text {:style             st/address-explication
+           :platform-specific platform-specific
+           :font              :default}
+     (label :t/address-explication)]]])

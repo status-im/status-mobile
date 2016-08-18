@@ -1,7 +1,5 @@
 (ns status-im.discovery.styles
-  (:require [status-im.components.styles :refer [font
-                                                 title-font
-                                                 color-white
+  (:require [status-im.components.styles :refer [color-white
                                                  color-gray2
                                                  chat-background
                                                  online-color
@@ -14,55 +12,51 @@
 ;; common
 
 (def row-separator
-  {:borderBottomWidth 1
-   :borderBottomColor "#eff2f3"})
+  {:border-bottom-width 1
+   :border-bottom-color "#eff2f3"})
 
 (def row
-  {:flexDirection :row})
+  {:flex-direction :row})
 
 (def column
-  {:flexDirection "column"})
+  {:flex-direction :column})
 
-;; discovery.cljs
+;; Toolbar
 
 (def discovery-toolbar-content
-  {:flex           1
-   :alignItems     :center
-   :justifyContent :center})
-
-(def discovery-search-input
-  {:flex       1
-   :marginLeft 18
-   :lineHeight 42
-   :fontSize   14
-   :fontFamily "Avenir-Roman"
-   :color      "#9CBFC0"})
-
-(def discovery-title
-  {:color      "#000000de"
-   :alignSelf  :center
-   :textAlign  :center
-   :fontFamily "sans-serif"
-   :fontSize   16})
+  {:flex            1
+   :align-items     :center
+   :justify-content :center})
 
 (def discovery-toolbar
-  {:backgroundColor "#eef2f5"
-   :elevation       0})
+  {:background-color "#eef2f5"
+   :elevation        0})
+
+(def discovery-search-input
+  {:flex        1
+   :align-self  "stretch"
+   :margin-left 18
+   :line-height 42
+   :font-size   14
+   :color       "#9CBFC0"})
+
+(def discovery-title
+  {:color       "#000000de"
+   :align-self  :center
+   :text-align  :center
+   :font-size   16})
 
 (def discovery-subtitle
-  {:color      color-gray2
-   :fontFamily "sans-serif-medium"
-   :fontSize   14})
+  {:color     color-gray2
+   :font-size 14})
 
 (def section-spacing
-  {:paddingLeft   30
-   :paddingTop    15
-   :paddingBottom 15})
+  {:padding 16})
 
 (def scroll-view-container
   {})
 
-;; discovery_popular.cljs
+;; Popular
 
 (def carousel-page-style
   {:borderRadius  1
@@ -72,91 +66,84 @@
    :elevation     2
    :marginBottom  10})
 
-;; discovery_populat_list.cljs
-
 (def tag-name
-  {:color          "#7099e6"
-   :fontFamily     "sans-serif-medium"
-   :fontSize       14
-   :paddingRight   5
-   :paddingBottom  2
-   :alignItems     :center
-   :justifyContent :center})
+  {:color           "#7099e6"
+   :font-size       14
+   :padding-right   5
+   :padding-bottom  2
+   :align-items     :center
+   :justify-content :center})
 
 (def tag-name-container
-  {:flexDirection   "column"
-   :backgroundColor "#eef2f5"
-   :borderRadius    5
-   :padding         4})
+  {:flex-direction   "column"
+   :background-color "#eef2f5"
+   :border-radius    5
+   :padding          4})
 
 (def tag-count
-  {:color          "#838c93"
-   :fontFamily     "sans-serif"
-   :fontSize       12
-   :paddingRight   5
-   :paddingBottom  2
-   :alignItems     :center
-   :justifyContent :center})
+  {:color           "#838c93"
+   :font-size       12
+   :padding-right   5
+   :padding-bottom  2
+   :align-items     :center
+   :justify-content :center})
 
 (def tag-count-container
-  {:flex          0.2
-   :flexDirection "column"
-   :alignItems    "flex-end"
-   :paddingTop    10
-   :paddingRight  9})
+  {:flex           0.2
+   :flex-direction "column"
+   :align-items    "flex-end"
+   :padding-top    10
+   :padding-right  9})
 
 (def popular-list-container
-  {:flex            1
-   :backgroundColor :white
-   :paddingLeft     10
-   :paddingTop      16})
+  {:flex             1
+   :background-color :white
+   :padding-left     10
+   :padding-top      16})
 
 (def popular-list
-  {:backgroundColor :white
-   :paddingTop      13})
+  {:background-color :white
+   :padding-top      13})
 
-;; discover_popular_list_item.cjls
+;; Popular list item
 
 (def popular-list-item
-  {:flexDirection :row
-   :paddingTop    10
-   :paddingBottom 10})
+  {:flex-direction :row
+   :padding-top    10
+   :padding-bottom 10})
 
 (def popular-list-item-status
-  {:color      "black"
-   :fontFamily "sans-serif"
-   :lineHeight 22
-   :fontSize   14})
+  {:color       "black"
+   :line-height 22
+   :font-size   14})
 
 (def popular-list-item-name
-  {:color      "black"
-   :fontFamily "sans-serif-medium"
-   :fontSize   14
-   :lineHeight 24})
+  {:color       "black"
+   :font-size   14
+   :line-height 24})
 
 (def popular-list-item-name-container
-  {:flex          0.8
-   :flexDirection "column"})
+  {:flex           0.8
+   :flex-direction "column"})
 
 (def popular-list-item-avatar-container
-  {:flex          0.2
-   :flexDirection "column"
-   :alignItems    :center
-   :paddingTop    5})
+  {:flex           0.2
+   :flex-direction "column"
+   :align-items    :center
+   :padding-top    5})
 
 (def popular-list-item-avatar
-  {:resizeMode   "contain"
-   :borderRadius 20
-   :width        40
-   :height       40})
+  {:border-radius 18
+   :width         36
+   :height        36})
 
 ;; discovery_recent
 
 (def recent-list
-  {:backgroundColor :white
-   :paddingLeft     15})
+  {:background-color :white
+   :padding-left     16})
 
-;; discovery_tag
+;; Discovery tag
 
 (def discovery-tag-container
   {:flex            1

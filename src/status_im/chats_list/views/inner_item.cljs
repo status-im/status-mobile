@@ -4,7 +4,9 @@
             [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
             [status-im.chats-list.styles :as st]
             [status-im.utils.utils :refer [truncate-str]]
-            [status-im.utils.datetime :as time]))
+            [status-im.i18n :refer [label]]
+            [status-im.utils.datetime :as time]
+            [clojure.string :as str]))
 
 (defview chat-list-item-inner-view
   [{:keys [chat-id name color new-messages-count
@@ -16,7 +18,9 @@
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/item-container
       [view st/name-view
-       [text {:style st/name-text} (truncate-str name 20)]
+       [text {:style st/name-text} (if (str/blank? name)
+                                     (label :t/user-anonymous)
+                                     (truncate-str name 20))]
        (when group-chat
          [icon :group st/group-icon])
        (when group-chat

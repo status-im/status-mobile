@@ -10,7 +10,8 @@
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.qr-scanner.styles :as st]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.components.styles :as cst]))
+            [status-im.components.styles :as cst]
+            [clojure.string :as str]))
 
 (defn qr-scanner-toolbar [title platform-specific]
   [view
@@ -25,9 +26,10 @@
   [identifier [:get :current-qr-context]]
   [view st/barcode-scanner-container
    [qr-scanner-toolbar (:toolbar-title identifier) platform-specific]
-   [camera {;:on-bar-code-read #(js/alert "ok")
-            :onBarCodeRead #(let [data (json->clj (.-data %))]
-                             (dispatch [:set-qr-code identifier data]))
+   [camera {:onBarCodeRead (fn [code]
+                             (let [data (-> (.-data code)
+                                            (str/replace #"ethereum:" ""))]
+                               (dispatch [:set-qr-code identifier data])))
             :style         st/barcode-scanner}]
    [view st/rectangle-container
     [view st/rectangle
