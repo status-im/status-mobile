@@ -1,4 +1,4 @@
-(ns status-im.discovery.tag
+(ns status-im.discovery.search-results
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.utils.listview :refer [to-datasource]]
@@ -11,20 +11,25 @@
   (list-item [view {:style st/row-separator
                     :key   row-id}]))
 
-(defn title-content [tag]
+(defn title-content [tags platform-specific]
   [view st/tag-title-container
-   [view {:style st/tag-container}
-    [text {:style st/tag-title} (str " #" tag)]]])
+   (for [tag (take 3 tags)]
+     ^{:key (str "tag-" tag)}
+     [view {:style st/tag-container}
+      [text {:style             st/tag-title
+             :platform-specific platform-specific
+             :font              :default}
+       (str " #" tag)]])])
 
-(defview discovery-tag [{platform-specific :platform-specific}]
-  [tag [:get :current-tag]
-   discoveries [:get-discoveries-by-tags]]
+(defview discovery-search-results [{platform-specific :platform-specific}]
+  [discoveries [:get-discovery-search-results]
+   tags [:get :discovery-search-tags]]
   (let [datasource (to-datasource discoveries)]
     [view st/discovery-tag-container
      [toolbar {:nav-action     {:image   {:source {:uri :icon_back}
                                           :style  st/icon-back}
                                 :handler #(dispatch [:navigate-back])}
-               :custom-content (title-content tag)
+               :custom-content (title-content tags platform-specific)
                :action         {:image   {:source {:uri :icon_search}
                                           :style  st/icon-search}
                                 :handler (fn [])}}]

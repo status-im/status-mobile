@@ -23,6 +23,9 @@
 
              :new-contact-identity   ""
              :contacts               {}
+             :discoveries            []
+             :discovery-search-tags  []
+             :tags                   {}
 
              :contacts-ids           #{}
              :selected-contacts      #{}

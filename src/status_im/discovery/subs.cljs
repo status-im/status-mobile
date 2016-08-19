@@ -2,19 +2,28 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]))
 
-(register-sub :get-discoveries-by-tag
-  (fn [db [_ tag limit]]
-    (let [discoveries (reaction (:discoveries @db))
-          tag'        (or tag (:current-tag @db))
-          filter-tag  (filter #(some #{tag'} (map :name (:tags %))))
-          xform       (if limit
-                        (comp filter-tag (take limit))
-                        filter-tag)]
-      (->> @discoveries
-           (into [] xform)
-           (reaction)))))
+(defn- get-discoveries-by-tags [{:keys [discoveries current-tag]} tags limit]
+  (let [tags'       (or tags [current-tag])
+        filter-tag  (filter #(every? (->> (map :name (:tags %))
+                                          (into (hash-set)))
+                                     tags'))
+        xform       (if limit
+                      (comp filter-tag (take limit))
+                      filter-tag)]
+    (into [] xform discoveries)))
+
+(register-sub :get-discoveries-by-tags
+  (fn [db [_ tags limit]]
+    (-> (get-discoveries-by-tags @db tags limit)
+        (reaction))))
 
 (register-sub :get-popular-tags
   (fn [db [_ limit]]
-    (reaction (take limit (:tags @db)))))
+    (-> (take limit (:tags @db))
+        (reaction))))
 
+(register-sub :get-discovery-search-results
+  (fn [db _]
+    (let [tags (get-in @db [:discovery-search-tags])]
+      (-> (get-discoveries-by-tags @db tags nil)
+          (reaction)))))

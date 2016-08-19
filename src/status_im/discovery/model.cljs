@@ -1,7 +1,8 @@
 (ns status-im.discovery.model
   ;status-im.models.discoveries
   (:require [status-im.utils.logging :as log]
-            [status-im.persistence.realm.core :as r]))
+            [status-im.persistence.realm.core :as r]
+            [status-im.constants :as c]))
 
 (defn get-tag [tag]
   (log/debug "Getting tag: " tag)
@@ -60,14 +61,6 @@
                  (fn []
                    (log/debug (str "Deleting " (r/get-count to-delete) " discoveries"))
                    (r/delete :account to-delete)))))))
-
-(defn discoveries-by-tag [tag limit]
-  (let [discoveries (-> (r/get-by-filter :account :discovery (str "tags.name = '" tag "'"))
-                        (r/sorted :priority :desc))]
-    (log/debug "Discoveries by tag: " tag)
-    (if (pos? limit)
-      (r/page discoveries 0 limit)
-      discoveries)))
 
 (defn all-tags []
   (-> (r/get-all :account :tag)

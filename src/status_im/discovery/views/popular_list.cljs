@@ -16,7 +16,7 @@
                     :key   row-id}]))
 
 (defview discovery-popular-list [{:keys [tag count contacts platform-specific]}]
-  [discoveries [:get-discoveries-by-tag tag 3]]
+  [discoveries [:get-discoveries-by-tags [tag] 3]]
   [view st/popular-list-container
    [view st/row
     [view st/tag-name-container
