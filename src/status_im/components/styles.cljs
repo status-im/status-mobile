@@ -79,6 +79,10 @@
   {:width  18
    :height 18})
 
+(def icon-close
+  {:width 12
+   :height 12})
+
 (def form-text-input
   {:marginLeft -4
    :fontSize   14

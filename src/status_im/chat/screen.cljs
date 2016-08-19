@@ -123,7 +123,7 @@
 
 (defn actions-list-view [{styles :styles :as platform-specific}]
   (let [{:keys [group-chat chat-id]} (subscribe [:chat-properties [:group-chat :chat-id]])
-        members           (subscribe [:current-chat-contacts])
+        members (subscribe [:current-chat-contacts])
         status-bar-height (get-in styles [:components :status-bar :default :height])]
     (when-let [actions (if @group-chat
                          [{:title      (label :t/members-title)
@@ -203,9 +203,10 @@
       (label :t/active-unknown))))
 
 (defn toolbar-content [platform-specific]
-  (let [{:keys [group-chat chat-id name contacts]} (subscribe [:chat-properties [:group-chat :chat-id :name :contacts]])
-        contact (subscribe [:get-in [:contacts @chat-id]])
-        show-actions (subscribe [:show-actions])]
+  (let [{:keys [group-chat name contacts chat-id]}
+        (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
+        show-actions (subscribe [:show-actions])
+        contact (subscribe [:get-in [:contacts @chat-id]])]
     (fn []
       [view (st/chat-name-view @show-actions)
        [text {:style             st/chat-name-text
@@ -242,7 +243,7 @@
 
 (defn chat-toolbar [platform-specific]
   (let [{:keys [group-chat name contacts]} (subscribe [:chat-properties [:group-chat :name :contacts]])
-        show-actions      (subscribe [:show-actions])]
+        show-actions (subscribe [:show-actions])]
     [view
      [status-bar {:platform-specific platform-specific}]
      [toolbar {:hide-nav?      @show-actions
@@ -252,14 +253,15 @@
 
 (defview messages-view [platform-specific group-chat]
   [messages [:chat :messages]
-   contacts [:chat :contacts]]
+   contacts [:chat :contacts]
+   loaded?  [:all-messages-loaded?]]
   (let [contacts' (contacts-by-identity contacts)]
     [list-view {:renderRow                 (message-row {:contact-by-identity contacts'
                                                          :platform-specific   platform-specific
                                                          :group-chat          group-chat
                                                          :messages-count      (count messages)})
                 :renderScrollComponent     #(invertible-scroll-view (js->clj %))
-                :onEndReached              #(dispatch [:load-more-messages])
+                :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
                 :enableEmptySections       true
                 :keyboardShouldPersistTaps true
                 :dataSource                (to-datasource-inverted messages)}]))

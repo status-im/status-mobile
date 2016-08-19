@@ -16,19 +16,18 @@ public class GethService extends Service {
 
     private static final String TAG = "GethService";
 
-    private static boolean isGethStarted = false;
     private static boolean isGethInitialized = false;
     private final Handler handler = new Handler();
 
     private static String dataFolder;
 
-    static class IncomingHandler extends Handler {
+    private static class IncomingHandler extends Handler {
 
         private final WeakReference<GethService> service;
 
         IncomingHandler(GethService service) {
 
-            this.service = new WeakReference<GethService>(service);
+            this.service = new WeakReference<>(service);
         }
 
         @Override
@@ -43,11 +42,14 @@ public class GethService extends Service {
         }
     }
 
-    final Messenger serviceMessenger = new Messenger(new IncomingHandler(this));
+    private final Messenger serviceMessenger = new Messenger(new IncomingHandler(this));
 
 
     public static void signalEvent(String jsonEvent) {
-        System.out.println("\n\n\nIT WOOOOOORKS1111!!!!!!\n\n\n");
+        Log.d(TAG, "Signal event: " + jsonEvent);
+        Bundle replyData = new Bundle();
+        replyData.putString("event", jsonEvent);
+        //createAndSendReply(message, GethMessages.MSG_SIGNAL_EVENT, replyData);
     }
 
     @Nullable
@@ -68,7 +70,6 @@ public class GethService extends Service {
         super.onDestroy();
         //TODO: stop geth
         stopNode(null);
-        isGethStarted = false;
         isGethInitialized = false;
         Log.d(TAG, "Geth Service stopped !");
     }
@@ -78,7 +79,7 @@ public class GethService extends Service {
         return Service.START_STICKY;
     }
 
-    protected boolean handleMessage(Message message) {
+    private boolean handleMessage(Message message) {
         switch (message.what) {
 
             case GethMessages.MSG_START_NODE:
@@ -94,12 +95,12 @@ public class GethService extends Service {
                 createAccount(message);
                 break;
 
-            case GethMessages.MSG_ADD_ACCOUNT:
-                addAccount(message);
-                break;
-
             case GethMessages.MSG_LOGIN:
                 login(message);
+                break;
+
+            case GethMessages.MSG_COMPLETE_TRANSACTION:
+                completeTransaction(message);
                 break;
 
             default:
@@ -109,7 +110,7 @@ public class GethService extends Service {
         return true;
     }
 
-    protected void startNode(Message message) {
+    private void startNode(Message message) {
         if (!isGethInitialized) {
             isGethInitialized = true;
             Log.d(TAG, "Client messenger1: " + message.replyTo.toString());
@@ -120,12 +121,12 @@ public class GethService extends Service {
         }
     }
 
-    protected class StartTask extends AsyncTask<Void, Void, Void> {
+    private class StartTask extends AsyncTask<Void, Void, Void> {
 
-        protected String callbackIdentifier;
-        protected Messenger messenger;
+        String callbackIdentifier;
+        Messenger messenger;
 
-        public StartTask(Messenger messenger, String callbackIdentifier) {
+        StartTask(Messenger messenger, String callbackIdentifier) {
             this.messenger = messenger;
             this.callbackIdentifier = callbackIdentifier;
         }
@@ -140,9 +141,8 @@ public class GethService extends Service {
         }
     }
 
-    protected void onGethStarted(Messenger messenger, String callbackIdentifier) {
+    private void onGethStarted(Messenger messenger, String callbackIdentifier) {
         Log.d(TAG, "Geth Service started");
-        isGethStarted = true;
         Message replyMessage = Message.obtain(null, GethMessages.MSG_NODE_STARTED, 0, 0, null);
         Bundle replyData = new Bundle();
         Log.d(TAG, "Callback identifier: " + callbackIdentifier);
@@ -151,7 +151,7 @@ public class GethService extends Service {
         sendReply(messenger, replyMessage);
     }
 
-    protected void startGeth() {
+    private void startGeth() {
 
 
         File extStore = Environment.getExternalStorageDirectory();
@@ -160,28 +160,38 @@ public class GethService extends Service {
                 extStore.getAbsolutePath() + "/ethereum" :
                 getApplicationInfo().dataDir + "/ethereum";
         Log.d(TAG, "Starting background Geth Service in folder: " + dataFolder);
+
         try {
             final File newFile = new File(dataFolder);
+            // todo handle error?
             newFile.mkdir();
         } catch (Exception e) {
             Log.e(TAG, "error making folder: " + dataFolder, e);
         }
 
+        final Runnable addPeer = new Runnable() {
+            public void run() {
+                Log.w("Geth", "adding peer");
+                Statusgo.addPeer("enode://409772c7dea96fa59a912186ad5bcdb5e51b80556b3fe447d940f99d9eaadb51d4f0ffedb68efad232b52475dd7bd59b51cee99968b3cc79e2d5684b33c4090c@139.162.166.59:30303");
+            }
+        };
+
         new Thread(new Runnable() {
             public void run() {
-
                 Statusgo.StartNode(dataFolder);
             }
         }).start();
+
+        handler.postDelayed(addPeer, 5000);
     }
 
-    protected void stopNode(Message message) {
+    private void stopNode(Message message) {
         // TODO: stop node
 
         createAndSendReply(message, GethMessages.MSG_NODE_STOPPED, null);
     }
 
-    protected void createAccount(Message message) {
+    private void createAccount(Message message) {
         Bundle data = message.getData();
         String password = data.getString("password");
         // TODO: remove second argument
@@ -194,21 +204,7 @@ public class GethService extends Service {
         createAndSendReply(message, GethMessages.MSG_ACCOUNT_CREATED, replyData);
     }
 
-    protected void addAccount(Message message) {
-        Bundle data = message.getData();
-        String privateKey = data.getString("privateKey");
-        String password = data.getString("password");
-        // TODO: add account
-        //String address = Statusgo.doAddAccount(privateKey, password);
-        String address = "added account address";
-        Log.d(TAG, "Added account: " + address);
-
-        Bundle replyData = new Bundle();
-        replyData.putString("address", address);
-        createAndSendReply(message, GethMessages.MSG_ACCOUNT_ADDED, replyData);
-    }
-
-    protected void login(Message message) {
+    private void login(Message message) {
         Bundle data = message.getData();
         String address = data.getString("address");
         String password = data.getString("password");
@@ -221,11 +217,24 @@ public class GethService extends Service {
         createAndSendReply(message, GethMessages.MSG_LOGGED_IN, replyData);
     }
 
+    private void completeTransaction(Message message){
+        Bundle data = message.getData();
+        String hash = data.getString("hash");
+
+        Log.d(TAG, "Before CompleteTransaction: " + hash);
+        String result = Statusgo.CompleteTransaction(hash);
+        Log.d(TAG, "After CompleteTransaction: " + result);
+
+        Bundle replyData = new Bundle();
+        replyData.putString("result", result);
+        createAndSendReply(message, GethMessages.MSG_TRANSACTION_COMPLETED, replyData);
+    }
+
     public static boolean isRunning() {
         return isGethInitialized;
     }
 
-    protected void createAndSendReply(Message message, int replyIdMessage, Bundle replyData) {
+    private static void createAndSendReply(Message message, int replyIdMessage, Bundle replyData) {
 
         if (message == null) {
             return;
@@ -243,7 +252,7 @@ public class GethService extends Service {
         sendReply(message.replyTo, replyMessage);
     }
 
-    protected void sendReply(Messenger messenger, Message message) {
+    private static void sendReply(Messenger messenger, Message message) {
         try {
             messenger.send(message);
 

@@ -88,7 +88,7 @@
        [text {:style             st/command-text
               :platform-specific platform-specific
               :font              :default}
-        content])]))
+        (str content)])]))
 
 (defn set-chat-command [msg-id command]
   (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
@@ -114,7 +114,7 @@
    [text {:style             (st/text-message message)
           :platform-specific platform-specific
           :font              :default}
-    content]])
+    (str content)]])
 
 (defmethod message-content text-content-type
   [wrapper message platform-specific]
@@ -213,9 +213,7 @@
                    :callback anim-callback}
           on-update (message-container-animation-logic context)]
       (r/create-class
-        {:component-did-mount
-         on-update
-         :component-did-update
+        {:component-did-update
          on-update
          :reagent-render
          (fn [message & children]
@@ -241,7 +239,8 @@
            (dispatch [:send-seen! chat-id msg-id])))
        :reagent-render
        (fn [{:keys [outgoing delivery-status timestamp new-day group-chat]
-             :as   message}]
+             :as   message}
+            platform-specific]
          [message-container message
           ;; TODO there is no new-day info in message
           (when new-day

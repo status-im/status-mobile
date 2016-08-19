@@ -1,6 +1,6 @@
 (ns status-im.commands.handlers.loading
   (:require-macros [status-im.utils.slurp :refer [slurp]])
-  (:require [re-frame.core :refer [after dispatch subscribe trim-v debug]]
+  (:require [re-frame.core :refer [path after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [http-get toast]]
             [clojure.string :as s]
@@ -22,10 +22,13 @@
 
 (defn fetch-commands!
   [db [identity]]
-  (when-let [url (:dapp-url (get-in db [:chats identity]))]
-    (if (= "console" identity)
+  (when true
+    ;;when-let [url (:dapp-url (get-in db [:chats identity]))]
+    ;; todo fix this after demo
+    (if true
+      ;(= "console" identity)
       (dispatch [::validate-hash identity (slurp "resources/commands.js")])
-      (http-get (s/join "/" [url commands-js])
+      #_(http-get (s/join "/" [url commands-js])
                 #(dispatch [::validate-hash identity %])
                 #(dispatch [::loading-failed! identity ::file-was-not-found])))))
 
@@ -68,8 +71,9 @@
 (defn add-commands
   [db [id _ {:keys [commands responses]}]]
   (-> db
-      (update-in [:chats id :commands] merge (mark-as :command commands))
-      (update-in [:chats id :responses] merge (mark-as :response responses))))
+      (update-in [id :commands] merge (mark-as :command commands))
+      (update-in [id :responses] merge (mark-as :response responses))
+      (assoc-in [id :commands-loaded] true)))
 
 (defn save-commands-js!
   [_ [id file]]
@@ -96,7 +100,8 @@
 (reg-handler ::parse-commands! (u/side-effect! parse-commands!))
 
 (reg-handler ::add-commands
-  (after save-commands-js!)
+  [(path :chats)
+   (after save-commands-js!)]
   add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))

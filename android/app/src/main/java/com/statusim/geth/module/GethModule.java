@@ -3,6 +3,7 @@ package com.statusim.geth.module;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.RemoteException;
 import com.facebook.react.bridge.*;
 import com.statusim.geth.service.ConnectorHandler;
 import com.statusim.geth.service.GethConnector;
@@ -13,20 +14,19 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class GethModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
+class GethModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
     private static final String TAG = "GethModule";
 
-    protected GethConnector geth = null;
-    protected String handlerIdentifier = createIdentifier();
+    private GethConnector geth = null;
 
-    protected HashMap<String, Callback> startNodeCallbacks = new HashMap<>();
-    protected HashMap<String, Callback> createAccountCallbacks = new HashMap<>();
-    protected HashMap<String, Callback> addAccountCallbacks = new HashMap<>();
-    protected HashMap<String, Callback> unlockAccountCallbacks = new HashMap<>();
+    private HashMap<String, Callback> startNodeCallbacks = new HashMap<>();
+    private HashMap<String, Callback> createAccountCallbacks = new HashMap<>();
+    private HashMap<String, Callback> unlockAccountCallbacks = new HashMap<>();
+    private HashMap<String, Callback> transactionCallbacks = new HashMap<>();
 
 
-    public GethModule(ReactApplicationContext reactContext) {
+    GethModule(ReactApplicationContext reactContext) {
         super(reactContext);
         reactContext.addLifecycleEventListener(this);
     }
@@ -68,12 +68,6 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
     }
 
     @Override
-    public String getID() {
-
-        return handlerIdentifier;
-    }
-
-    @Override
     public void onConnectorConnected() {
     }
 
@@ -89,7 +83,7 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
         Bundle data = message.getData();
         String callbackIdentifier = data.getString(GethConnector.CALLBACK_IDENTIFIER);
         Log.d(TAG, "callback identifier: " + callbackIdentifier);
-        Callback callback = null;
+        Callback callback;
         switch (message.what) {
             case GethMessages.MSG_NODE_STARTED:
                 Log.d(TAG, "handle startNodeCallbacks size: " + startNodeCallbacks.size());
@@ -108,16 +102,18 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
                     callback.invoke(data.getString("data"));
                 }
                 break;
-            case GethMessages.MSG_ACCOUNT_ADDED:
-                callback = addAccountCallbacks.remove(callbackIdentifier);
-                if (callback != null) {
-                    callback.invoke(null, "{ \"address\": \"" + data.getString("address") + "\"}");
-                }
-                break;
             case GethMessages.MSG_LOGGED_IN:
                 callback = unlockAccountCallbacks.remove(callbackIdentifier);
                 if (callback != null) {
                     callback.invoke(data.getString("result"));
+                }
+                break;
+            case GethMessages.MSG_TRANSACTION_COMPLETED:
+                callback = transactionCallbacks.remove(callbackIdentifier);
+                String result = data.getString("result");
+                Log.d(TAG, "Send result: " + result + (callback == null));
+                if (callback != null) {
+                    callback.invoke(result);
                 }
                 break;
             default:
@@ -130,7 +126,7 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
     @ReactMethod
     public void startNode(Callback callback, Callback onAlreadyRunning) {
 
-        if(GethService.isRunning()){
+        if (GethService.isRunning()) {
             onAlreadyRunning.invoke();
             return;
         }
@@ -197,9 +193,12 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
         geth.createAccount(callbackIdentifier, password);
     }
 
-    @ReactMethod
-    public void addAccount(String privateKey, Callback callback) {
+    private String createIdentifier() {
+        return UUID.randomUUID().toString();
+    }
 
+    @ReactMethod
+    public void completeTransaction(String hash, Callback callback) {
         Activity currentActivity = getCurrentActivity();
 
         if (currentActivity == null) {
@@ -212,13 +211,27 @@ public class GethModule extends ReactContextBaseJavaModule implements LifecycleE
             return;
         }
 
+        Log.d(TAG, "Complete transaction: " + hash);
         String callbackIdentifier = createIdentifier();
-        addAccountCallbacks.put(callbackIdentifier, callback);
-        geth.addAccount(callbackIdentifier, privateKey);
+        transactionCallbacks.put(callbackIdentifier, callback);
+
+        geth.completeTransaction(callbackIdentifier, hash);
     }
 
-    protected String createIdentifier() {
-        return UUID.randomUUID().toString();
+    private static Callback signalEventCallback;
+
+    //todo: move this method to GethService
+    public static void signalEvent(String jsonEvent) {
+        Log.d(TAG, "Signal event: " + jsonEvent);
+        if(signalEventCallback != null) {
+            signalEventCallback.invoke(jsonEvent);
+        }
+    }
+
+    @ReactMethod
+    public void registerSignalEventCallback(Callback callback) {
+        Log.d(TAG, "registerSignalEventCallback");
+        signalEventCallback = callback;
     }
 
 }

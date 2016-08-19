@@ -18,6 +18,7 @@
             [status-im.chat.screen :refer [chat]]
             [status-im.accounts.login.screen :refer [login]]
             [status-im.accounts.screen :refer [accounts]]
+            [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
             [status-im.new-group.screen :refer [new-group]]
             [status-im.participants.views.add :refer [new-participants]]
@@ -98,6 +99,7 @@
                              :profile-photo-capture profile-photo-capture
                              :accounts accounts
                              :login login
+                             :confirm confirm
                              :my-profile my-profile)]
              [component {:platform-specific {:styles            styles
                                              :list-selection-fn show-dialog}}])))})))

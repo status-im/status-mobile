@@ -1,9 +1,9 @@
 (ns status-im.chat.handlers.requests
   (:require [re-frame.core :refer [after dispatch enrich]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.persistence.realm.core :as realm]
             [status-im.models.requests :as requests]
-            [status-im.utils.handlers :as u]))
+            [status-im.utils.handlers :refer [register-handler] :as u]
+            [status-im.persistence.realm.core :as realm]))
 
 (defn store-request!
   [{:keys [new-request] :as db}]

@@ -7,7 +7,9 @@
             [clojure.string :as str]
             [status-im.commands.utils :as cu]
             [status-im.utils.phone-number :as pn]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.utils.datetime :as time]
+            [status-im.utils.random :as random]))
 
 (def command-prefix "c ")
 
@@ -61,7 +63,7 @@
 
 (defn invoke-command-preview!
   [{:keys [staged-command]} [_ chat-id]]
-  (let [{:keys [command content]} staged-command
+  (let [{:keys [command content id]} staged-command
         {:keys [name type]} command
         path [(if (= :command type) :commands :responses)
               name
@@ -70,7 +72,7 @@
     (j/call chat-id
             path
             params
-            #(dispatch [:command-preview chat-id %]))))
+            #(dispatch [:command-preview chat-id id %]))))
 
 (defn command-input
   ([{:keys [current-chat-id] :as db}]
@@ -102,7 +104,8 @@
         path [(if (= :command type) :commands :responses)
               name
               :validator]
-        params {:value content}]
+        params {:value   content
+                :command data}]
     (j/call chat-id
             path
             params
@@ -110,13 +113,14 @@
 
 (register-handler :stage-command
   (after start-validate!)
-  (fn [{:keys [current-chat-id] :as db}]
+  (fn [{:keys [current-chat-id current-account-id] :as db}]
     (let [{:keys [command content]} (command-input db)
           content' (content-by-command command content)]
       (-> db
           (assoc ::command {:content content'
                             :command command
-                            :chat-id current-chat-id})
+                            :chat-id current-chat-id
+                            :address current-account-id})
           (assoc-in [:disable-staging current-chat-id] true)))))
 
 (register-handler ::finish-command-staging
@@ -128,7 +132,9 @@
           content' (content-by-command command content)
           command-info {:command    command
                         :content    content'
-                        :to-message to-msg-id}]
+                        :to-message to-msg-id
+                        :created-at (time/now-ms)
+                        :id         (random/id)}]
       (-> db
           (commands/stage-command command-info)
           (assoc :staged-command command-info)
@@ -172,14 +178,19 @@
   (fn [db]
     (dissoc db :validation-errors :custom-validation-errors)))
 
+(defn dispatch-error!
+  [chat-id title description]
+  (letfn [(wrap-params [p] (if (seqable? p) p [p]))]
+    (dispatch [::set-validation-error
+               chat-id
+               {:title       (apply i18n/label (wrap-params title))
+                :description (apply i18n/label (wrap-params description))}])))
+
 (def validation-handlers
   {:phone (fn [chat-id [number]]
             (if (pn/valid-mobile-number? number)
               (dispatch [::finish-command-staging chat-id])
-              (dispatch [::set-validation-error
-                         chat-id
-                         {:title       (i18n/label :t/phone-number)
-                          :description (i18n/label :t/invalid-phone)}])))})
+              (dispatch-error! chat-id :t/phone-number :t/invalid-phone)))})
 
 (defn validator [name]
   (validation-handlers (keyword name)))
@@ -189,7 +200,6 @@
     (fn [_ [_ chat-id name params]]
       (when-let [handler (validator name)]
         (handler chat-id params)))))
-
 
 (register-handler ::set-validation-error
   (after #(dispatch [:fix-response-height]))

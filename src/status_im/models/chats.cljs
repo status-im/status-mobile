@@ -101,11 +101,6 @@
       (r/single-cljs)
       (r/list-to-array :contacts)))
 
-(defn chat-by-id2 [chat-id]
-  (-> (r/get-by-field :account :chat :chat-id chat-id)
-      r/collection->map
-      first))
-
 (defn chat-add-participants [chat-id identities]
   (r/write :account
     (fn []

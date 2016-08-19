@@ -20,8 +20,10 @@
 (defn get-active-page [data]
   (get data :activePage 0))
 
-(defn get-sneak [data]
-  (get data :sneak (:sneak defaults)))
+(defn get-sneak [{:keys [sneak count] }]
+  (if (> (or count 2) 1)
+    (or sneak (:sneak defaults))
+    0))
 
 (defn get-gap [data]
   (get data :gap (:gap defaults)))
@@ -64,7 +66,7 @@
         state (reagent.core/state component)
         page-width (get-page-width state)
         gap (get-gap state)
-        page-position (* page (+ page-width gap))]
+        page-position (+ (* page page-width) (* (- page 1) gap))]
     (log/debug "go-to-page: props-page-width=" page-width "; gap=" gap
                "; page-position=" page-position)
     (scroll-to component page-position 0)

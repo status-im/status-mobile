@@ -6,7 +6,7 @@ public class GethMessages {
     /**
      * Start the node
      */
-    public static final int MSG_START_NODE = 1;
+    static final int MSG_START_NODE = 1;
 
     /**
      * Node started event
@@ -16,7 +16,7 @@ public class GethMessages {
     /**
      * Stop the node
      */
-    public static final int MSG_STOP_NODE = 3;
+    static final int MSG_STOP_NODE = 3;
 
     /**
      * Node stopped event
@@ -26,7 +26,7 @@ public class GethMessages {
     /**
      * Unlock an account
      */
-    public static final int MSG_LOGIN = 5;
+    static final int MSG_LOGIN = 5;
 
     /**
      * Account unlocked event
@@ -36,7 +36,7 @@ public class GethMessages {
     /**
      * Create an account
      */
-    public static final int MSG_CREATE_ACCOUNT = 7;
+    static final int MSG_CREATE_ACCOUNT = 7;
 
     /**
      * Account created event
@@ -44,13 +44,13 @@ public class GethMessages {
     public static final int MSG_ACCOUNT_CREATED = 8;
 
     /**
-     * Add an account
+     * Account complete transaction event
      */
-    public static final int MSG_ADD_ACCOUNT = 9;
+    static final int MSG_COMPLETE_TRANSACTION = 11;
 
     /**
-     * Account added event
+     * Account complete transaction event
      */
-    public static final int MSG_ACCOUNT_ADDED = 10;
+    public static final int MSG_TRANSACTION_COMPLETED = 11;
 
 }
