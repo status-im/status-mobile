@@ -14,12 +14,11 @@
    :active-group-ids (active-group-chats)
    :storage          kv/kv-store
    :handler          (fn [{:keys [event-type] :as event}]
-                       (log/info "Event:" (clj->js event))
                        (case event-type
                          :initialized (let [{:keys [identity]} event]
                                         (dispatch [:protocol-initialized identity]))
                          :new-msg (let [{:keys [from to payload]} event]
-                                    (dispatch [:received-msg (assoc payload :from from :to to)]))
+                                    (dispatch [:received-message (assoc payload :from from :to to)]))
                          :msg-acked (let [{:keys [msg-id from]} event]
                                       (dispatch [:acked-msg from msg-id]))
                          :msg-seen (let [{:keys [msg-id from]} event]

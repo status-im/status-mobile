@@ -3,15 +3,16 @@
             [status-im.chat.constants :as constants]))
 
 (def messages-container
-  {:background-color :red
+  {:background-color :#d50000
    :height           constants/request-info-height
    :padding-left     16
-   :padding-top      14})
+   :padding-top      12})
 
 (def title
   {:color       :white
-   :font-size   12
+   :font-size   14
    :font-family st/font})
 
 (def description
-  (assoc title :opacity 0.69))
+  (assoc title :opacity 0.9
+               :font-size 12))

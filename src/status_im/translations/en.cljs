@@ -160,9 +160,22 @@
    :login                                 "Login"
    :wrong-password                        "Wrong password"
 
-   ;users
+   ;accounts
    :add-account                           "Add account"
 
    ;validation
    :invalid-phone                         "Invalid phone number"
+   :amount                                "Amount"
+   :not-enough-eth                        (str "Not enough ETH on balance "
+                                               "({{balance}} ETH)")
+   ;transactions
+   :confirm-transactions                  {:one   "Confirm transaction"
+                                           :other "Confirm {{count}} transactions"
+                                           :zero  "No transactions"}
+   :status                                "Status"
+   :pending-confirmation                  "Pending confirmation"
+   :recipient                             "Recipient"
+   :one-more-item                         "One more item"
+   :fee                                   "Fee"
+   :value                                 "Value"
    })

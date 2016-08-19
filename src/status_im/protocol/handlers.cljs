@@ -128,3 +128,8 @@
    (after (fn [_ [_ chat-id]]
             (dispatch [:remove-unviewed-messages chat-id])))]
   (update-message-status :seen))
+
+(register-handler :send-transaction!
+  (u/side-effect!
+    (fn [_ [_ amount message]]
+      (println :send-transacion! amount message))))

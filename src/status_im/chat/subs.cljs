@@ -70,6 +70,7 @@
   (fn [db _]
     (->> [:chats (:current-chat-id @db) :staged-commands]
          (get-in @db)
+         vals
          (reaction))))
 
 (register-sub :valid-plain-message?
@@ -232,3 +233,8 @@
               20
 
               :else 0)))))
+
+(register-sub :all-messages-loaded?
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:chats @chat-id :all-loaded?])))))

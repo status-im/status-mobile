@@ -72,12 +72,14 @@
   [suggestions [:get-suggestions]
    requests [:get-requests]]
   [scroll-view {:keyboardShouldPersistTaps true}
+   ;; todo translations
    (when (seq requests) [title "Requests"])
    (when (seq requests)
      [view
       [list-view {:dataSource                (to-datasource requests)
                   :keyboardShouldPersistTaps true
                   :renderRow                 render-request-row}]])
+   ;; todo translations
    [title "Commands"]
    [view
     [list-view {:dataSource                (to-datasource suggestions)

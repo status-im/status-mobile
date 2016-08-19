@@ -1,6 +1,7 @@
 (ns status-im.contacts.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub subscribe]]))
+  (:require [re-frame.core :refer [register-sub subscribe]]
+            [status-im.utils.identicon :refer [identicon]]))
 
 (register-sub :get-contacts
   (fn [db _]
@@ -87,4 +88,6 @@
           (if (:group-chat @chat)
             ;; TODO return group chat icon
             nil
-            (:photo-path (first @contacts))))))))
+            (if (pos? (count @contacts))
+              (:photo-path (first @contacts))
+              (identicon chat-id))))))))

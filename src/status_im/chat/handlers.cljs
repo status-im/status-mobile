@@ -1,5 +1,6 @@
 (ns status-im.chat.handlers
-  (:require [re-frame.core :refer [enrich after debug dispatch]]
+  (:require-macros [cljs.core.async.macros :as am])
+  (:require [re-frame.core :refer [enrich after debug dispatch path]]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
             [status-im.components.styles :refer [default-chat-color]]
@@ -20,31 +21,39 @@
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
-            [status-im.utils.datetime :as time]
             [status-im.components.jail :as j]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.commands.utils :refer [generate-hiccup]]
             [status-im.chat.handlers.commands :refer [command-prefix]]
+            [status-im.chat.utils :refer [console? not-console?]]
             status-im.chat.handlers.animation
             status-im.chat.handlers.requests
-            status-im.chat.handlers.unviewed-messages))
+            status-im.chat.handlers.unviewed-messages
+            status-im.chat.handlers.send-message
+            status-im.chat.handlers.receive-message
+            [cljs.core.async :as a]))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
     (assoc db :show-actions show-actions)))
 
 (register-handler :load-more-messages
-  (fn [{:keys [current-chat-id] :as db} _]
+  (fn [{:keys [current-chat-id loading-allowed] :as db} _]
     (let [all-loaded? (get-in db [:chats current-chat-id :all-loaded?])]
-      (if all-loaded?
-        db
-        (let [messages-path [:chats current-chat-id :messages]
-              messages (get-in db messages-path)
-              new-messages (messages/get-messages current-chat-id (count messages))
-              all-loaded? (> default-number-of-messages (count new-messages))]
-          (-> db
-              (update-in messages-path concat new-messages)
-              (assoc-in [:chats current-chat-id :all-loaded?] all-loaded?)))))))
+      (if loading-allowed
+        (do (am/go
+              (<! (a/timeout 400))
+              (dispatch [:set :loading-allowed true]))
+            (if all-loaded?
+              db
+              (let [messages-path [:chats current-chat-id :messages]
+                    messages (get-in db messages-path)
+                    new-messages (messages/get-messages current-chat-id (count messages))
+                    all-loaded? (> default-number-of-messages (count new-messages))]
+                (-> db
+                    (assoc :loading-allowed false)
+                    (update-in messages-path concat new-messages)
+                    (assoc-in [:chats current-chat-id :all-loaded?] all-loaded?)))))
+        db))))
 
 (defn safe-trim [s]
   (when (string? s)
@@ -99,12 +108,6 @@
       (dispatch [:set-chat-command (ffirst suggestions)])
       (dispatch [::set-text chat-id text]))))
 
-(defn console? [s]
-  (= "console" s))
-
-(def not-console?
-  (complement console?))
-
 (register-handler :set-chat-input-text
   (u/side-effect!
     (fn [{:keys [current-chat-id]} [_ text]]
@@ -142,23 +145,6 @@
 
 (register-handler ::set-text update-text)
 
-(defn check-author-direction
-  [db chat-id {:keys [from outgoing] :as message}]
-  (let [previous-message (first (get-in db [:chats chat-id :messages]))]
-    (merge message
-           {:same-author    (if previous-message
-                              (= (:from previous-message) from)
-                              true)
-            :same-direction (if previous-message
-                              (= (:outgoing previous-message) outgoing)
-                              true)})))
-
-(defn add-message-to-db
-  [db chat-id message]
-  (let [messages [:chats chat-id :messages]]
-    (update-in db messages conj (assoc message :chat-id chat-id
-                                               :new? true))))
-
 (defn set-message-shown
   [db chat-id msg-id]
   (update-in db [:chats chat-id :messages] (fn [messages]
@@ -172,141 +158,14 @@
   (fn [db [_ {:keys [chat-id msg-id]}]]
     (set-message-shown db chat-id msg-id)))
 
-(defn default-delivery-status [chat-id]
-  (if (console? chat-id)
-    :seen
-    :pending))
-
-(defn prepare-message
-  [{:keys [identity current-chat-id] :as db} _]
-  (let [text (get-in db [:chats current-chat-id :input-text])
-        [command] (suggestions/check-suggestion db (str text " "))
-        message (check-author-direction
-                  db current-chat-id
-                  {:msg-id          (random/id)
-                   :chat-id         current-chat-id
-                   :content         text
-                   :to              current-chat-id
-                   :from            identity
-                   :content-type    text-content-type
-                   :delivery-status (default-delivery-status current-chat-id)
-                   :outgoing        true
-                   :timestamp       (time/now-ms)})]
-    _ (.log js/console "WOW3")
-    (if command
-      (commands/set-command-input db :commands command)
-      (assoc db :new-message (when-not (str/blank? text) message)))))
-
-(defn prepare-command
-  [identity chat-id {:keys [preview preview-string content command to-message]}]
-  (let [content {:command (command :name)
-                 :content content}]
-    {:msg-id           (random/id)
-     :from             identity
-     :to               chat-id
-     :content          content
-     :content-type     content-type-command
-     :delivery-status  (default-delivery-status chat-id)
-     :outgoing         true
-     :preview          preview-string
-     :rendered-preview preview
-     :to-message       to-message}))
-
-(defn prepare-staged-commans
-  [{:keys [current-chat-id identity] :as db} _]
-  (let [staged-commands (get-in db [:chats current-chat-id :staged-commands])]
-    (->> staged-commands
-         (map #(prepare-command identity current-chat-id %))
-         ;todo this is wrong :(
-         (map #(check-author-direction db current-chat-id %))
-         (assoc db :new-commands))))
-
-(defn add-message
-  [{:keys [new-message current-chat-id] :as db}]
-  (if new-message
-    (add-message-to-db db current-chat-id new-message)
-    db))
-
-(defn add-commands
-  [{:keys [new-commands current-chat-id] :as db}]
-  (reduce
-    #(add-message-to-db %1 current-chat-id %2)
-    db
-    new-commands))
-
-(defn clear-input
-  [{:keys [current-chat-id new-message] :as db} _]
-  (if new-message
-    (assoc-in db [:chats current-chat-id :input-text] nil)
-    db))
-
-(defn clear-staged-commands
-  [{:keys [current-chat-id] :as db} _]
-  (assoc-in db [:chats current-chat-id :staged-commands] []))
-
-(defn send-message!
-  [{:keys [new-message current-chat-id] :as db} _]
-  (when (and new-message (not-console? current-chat-id))
-    (let [{:keys [group-chat]} (get-in db [:chats current-chat-id])
-          message (select-keys new-message [:content :msg-id])]
-      (if group-chat
-        (api/send-group-user-msg (assoc message :group-id current-chat-id))
-        (api/send-user-msg (assoc message :to current-chat-id))))))
-
-(defn save-message-to-realm!
-  [{:keys [new-message current-chat-id]} _]
-  (when new-message
-    (messages/save-message current-chat-id new-message)))
-
-(defn save-commands-to-realm!
-  [{:keys [new-commands current-chat-id]} _]
-  (doseq [new-command new-commands]
-    (messages/save-message
-      current-chat-id
-      (dissoc new-command :rendered-preview :to-message))))
-
-(defn dispatch-responded-requests!
-  [{:keys [new-commands current-chat-id]} _]
-  (doseq [{:keys [to-message]} new-commands]
-    (when to-message
-      (dispatch [:request-answered! current-chat-id to-message]))))
-
-(defn invoke-commands-handlers!
-  [{:keys [new-commands current-chat-id]}]
-  (doseq [{:keys [content] :as com} new-commands]
-    (let [{:keys [command content]} content
-          type (:type command)
-          path [(if (= :command type) :commands :responses)
-                command
-                :handler]
-          params {:value content}]
-      (j/call current-chat-id
-              path
-              params
-              #(dispatch [:command-handler! com %])))))
-
-(register-handler :send-chat-msg
-  (-> prepare-message
-      ((enrich prepare-staged-commans))
-      ((enrich add-message))
-      ((enrich add-commands))
-      ((enrich clear-input))
-      ((enrich clear-staged-commands))
-      ((after send-message!))
-      ((after save-message-to-realm!))
-      ((after save-commands-to-realm!))
-      ((after dispatch-responded-requests!))
-      ;; todo maybe it is better to track if it was handled or not
-      ((after invoke-commands-handlers!))))
-
 (register-handler :init-console-chat
   (fn [db [_]]
     (sign-up-service/init db)))
 
 (register-handler :save-password
   (fn [db [_ password]]
-    (dispatch [:create-account password])
     (sign-up-service/save-password password)
+    (dispatch [:create-account password])
     (assoc db :password-saved true)))
 
 (register-handler :sign-up
@@ -372,35 +231,6 @@
   (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))
 
-(defn store-message!
-  [{:keys [new-message]} [_ {chat-id :from}]]
-  (messages/save-message chat-id new-message))
-
-(defn dispatch-request!
-  [{:keys [new-message]} [_ {chat-id :from}]]
-  (when (= (:content-type new-message) content-type-command-request)
-    (dispatch [:add-request chat-id new-message])))
-
-(defn receive-message
-  [db [_ {chat-id :from :as message}]]
-  (let [message' (-> db
-                     (check-author-direction chat-id message)
-                     (assoc :delivery-status :pending))]
-    (-> db
-        (add-message-to-db chat-id message')
-        (assoc :new-message message'))))
-
-(defn dispatch-unviewed-message!
-  [{:keys [new-message]} [_ {chat-id :from}]]
-  (let [{:keys [msg-id]} new-message]
-    (dispatch [:add-unviewed-message chat-id msg-id])))
-
-(register-handler :received-msg
-  [(after store-message!)
-   (after dispatch-request!)
-   (after dispatch-unviewed-message!)]
-  receive-message)
-
 (register-handler :group-received-msg
   (u/side-effect!
     (fn [_ [_ {chat-id :group-id :as msg}]]
@@ -412,6 +242,7 @@
         messages (get-in db [:chats chat-id :messages])
         db' (assoc db :current-chat-id chat-id)]
     (dispatch [:load-requests! chat-id])
+    (dispatch [:load-commands! chat-id])
     (if (seq messages)
       db'
       (-> db'
@@ -419,15 +250,15 @@
           init-chat))))
 
 (defn prepare-chat
-  [{:keys [contacts] :as db} [_ contcat-id]]
-  (let [name (get-in contacts [contcat-id :name])
-        chat {:chat-id    contcat-id
-              :name       name
+  [{:keys [contacts] :as db} [_ contact-id]]
+  (let [name (get-in contacts [contact-id :name])
+        chat {:chat-id    contact-id
+              :name       (or name contact-id)
               :color      default-chat-color
               :group-chat false
               :is-active  true
               :timestamp  (.getTime (js/Date.))
-              :contacts   [{:identity contcat-id}]
+              :contacts   [{:identity contact-id}]
               :dapp-url   nil
               :dapp-hash  nil}]
     (assoc db :new-chat chat)))
@@ -450,6 +281,11 @@
       ((enrich add-chat))
       ((after save-chat!))
       ((after open-chat!))))
+
+(register-handler :add-chat
+  (-> prepare-chat
+      ((enrich add-chat))
+      ((after save-chat!))))
 
 (register-handler :switch-command-suggestions!
   (u/side-effect!

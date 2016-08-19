@@ -5,6 +5,8 @@
 
  (enable-console-print!)
 
+(set! js/console.disableYellowBox true)
+
 (def cnt (r/atom 0))
 (defn reloader [] @cnt [core/app-root])
 (def root-el (r/as-element [reloader]))
