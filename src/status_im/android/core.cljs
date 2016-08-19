@@ -15,6 +15,7 @@
             [status-im.contacts.views.new-contact :refer [new-contact]]
             [status-im.qr-scanner.screen :refer [qr-scanner]]
             [status-im.discovery.tag :refer [discovery-tag]]
+            [status-im.discovery.search-results :refer [discovery-search-results]]
             [status-im.chat.screen :refer [chat]]
             [status-im.accounts.login.screen :refer [login]]
             [status-im.accounts.screen :refer [accounts]]
@@ -85,6 +86,7 @@
            (let [component (case (if true startup-view :chat)
                              :discovery main-tabs
                              :discovery-tag discovery-tag
+                             :discovery-search-results discovery-search-results
                              :add-participants new-participants
                              :remove-participants remove-participants
                              :chat-list main-tabs
