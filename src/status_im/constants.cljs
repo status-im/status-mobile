@@ -17,3 +17,5 @@
 (def response-suggesstion-resize-duration 100)
 
 (def default-number-of-messages 20)
+
+(def default-number-of-discovery-search-results 20)
