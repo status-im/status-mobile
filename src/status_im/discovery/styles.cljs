@@ -152,20 +152,22 @@
 (def tag-title-container
   {:flex           1
    :alignItems     "center"
-   :justifyContent "center"})
+   :justifyContent "center"
+   :flex-direction "row"})
 
 (def tag-title
   {:color         "#7099e6"
-   :fontFamily    "sans-serif-medium"
-   :fontSize      14
-   :paddingRight  5
-   :paddingBottom 2})
+   :font-size      14
+   :padding-right  5
+   :padding-bottom 2})
 
 (def tag-container
   {:backgroundColor "#eef2f5"
    :flexWrap        :wrap
    :borderRadius    5
-   :padding         4})
+   :padding         4
+   :margin-left     2
+   :margin-right    2})
 
 (def icon-back
   {:width  8
