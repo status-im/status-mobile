@@ -3,7 +3,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn handle-channel-events [chan handler]
-  (go (loop [[msg args] (<! chan)]
-        (when msg
-          (handler msg args)
+  (go (loop [[message args] (<! chan)]
+        (when message
+          (handler message args)
           (recur (<! chan))))))

@@ -27,16 +27,16 @@
 (defn set-command-input
   ([db type command-key]
     (set-command-input db type nil command-key))
-  ([{:keys [current-chat-id] :as db} type msg-id command-key]
+  ([{:keys [current-chat-id] :as db} type message-id command-key]
    (update-in db [:chats current-chat-id :command-input] merge
               {:content       nil
                :command       (get-response-or-command type db command-key)
                :parameter-idx 0
-               :to-msg-id     msg-id})))
+               :to-message-id message-id})))
 
-(defn get-chat-command-to-msg-id
+(defn get-chat-command-to-message-id
   [{:keys [current-chat-id] :as db}]
-  (get-in db (db/chat-command-to-msg-id-path current-chat-id)))
+  (get-in db (db/chat-command-to-message-id-path current-chat-id)))
 
 (defn compare-commands
   [{created-at-1 :created-at} {created-at-2 :created-at}]
@@ -58,14 +58,14 @@
 (defn get-chat-command-request
   [{:keys [current-chat-id] :as db}]
   (get-in db (db/chat-command-request-path current-chat-id
-                                           (get-chat-command-to-msg-id db))))
+                                           (get-chat-command-to-message-id db))))
 
 (defn set-chat-command-request
-  [{:keys [current-chat-id] :as db} msg-id handler]
+  [{:keys [current-chat-id] :as db} message-id handler]
   (update-in db (db/chat-command-requests-path current-chat-id)
-             #(assoc % msg-id handler)))
+             #(assoc % message-id handler)))
 
-(defn parse-command-msg-content [commands content]
+(defn parse-command-message-content [commands content]
   (update content :command #((keyword %) commands)))
 
 (defn parse-command-request [commands content]

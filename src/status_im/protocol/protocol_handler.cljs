@@ -17,35 +17,40 @@
                        (case event-type
                          :initialized (let [{:keys [identity]} event]
                                         (dispatch [:protocol-initialized identity]))
-                         :new-msg (let [{:keys [from to payload]} event]
-                                    (dispatch [:received-message (assoc payload
-                                                                   :chat-id from
-                                                                   :from from
-                                                                   :to to)]))
-                         :msg-acked (let [{:keys [msg-id from]} event]
-                                      (dispatch [:acked-msg from msg-id]))
-                         :msg-seen (let [{:keys [msg-id from]} event]
-                                     (dispatch [:msg-seen from msg-id]))
-                         :delivery-failed (let [{:keys [msg-id from]} event]
-                                            (dispatch [:msg-delivery-failed from msg-id]))
+                         :message-received (let [{:keys [from to payload]} event]
+                                             (dispatch [:received-message (assoc payload :chat-id from
+                                                                                         :from from
+                                                                                         :to to)]))
+                         :message-delivered (let [{:keys [message-id from]} event]
+                                              (dispatch [:message-delivered from message-id]))
+                         :message-seen (let [{:keys [message-id from]} event]
+                                         (dispatch [:message-seen from message-id]))
+                         :message-failed (let [{:keys [message-id chat-id] :as event} event]
+                                           (dispatch [:message-failed chat-id message-id]))
+                         :message-sent (let [{:keys [message-id chat-id]} event]
+                                         (dispatch [:message-sent chat-id message-id]))
+                         :pending-message-upsert (let [{message :message} event]
+                                                   (dispatch [:pending-message-upsert message]))
+                         :pending-message-remove (let [{:keys [message-id]} event]
+                                                   (dispatch [:pending-message-remove message-id]))
                          :new-group-chat (let [{:keys [from group-id identities group-name]} event]
                                            (dispatch [:group-chat-invite-received from group-id identities group-name]))
-                         :new-group-msg (let [{from     :from
-                                               group-id :group-id
-                                               payload  :payload} event]
-                                          (dispatch [:received-message (assoc payload
-                                                                               :chat-id group-id
-                                                                               :from from)]))
-                         :group-chat-invite-acked (let [{:keys [from group-id ack-msg-id]} event]
-                                                    (dispatch [:group-chat-invite-acked from group-id ack-msg-id]))
-                         :group-new-participant (let [{:keys [group-id identity from msg-id]} event]
-                                                  (dispatch [:participant-invited-to-group from group-id identity msg-id]))
-                         :group-removed-participant (let [{:keys [group-id identity from msg-id]} event]
-                                                      (dispatch [:participant-removed-from-group from group-id identity msg-id]))
-                         :removed-from-group (let [{:keys [group-id from msg-id]} event]
-                                               (dispatch [:you-removed-from-group from group-id msg-id]))
-                         :participant-left-group (let [{:keys [group-id from msg-id]} event]
-                                                   (dispatch [:participant-left-group from group-id msg-id]))
+                         :new-group-message (let [{from     :from
+                                                   group-id :group-id
+                                                   payload  :payload} event]
+                                              (dispatch [:received-message (assoc payload
+                                                                             :chat-id group-id
+                                                                             :from from)]))
+                         :group-chat-invite-acked (let [{:keys [from group-id ack-message-id]} event]
+                                                    (dispatch [:group-chat-invite-acked from group-id ack-message-id]))
+                         :group-new-participant (let [{:keys [group-id identity from message-id]} event]
+                                                  (dispatch [:participant-invited-to-group from group-id identity message-id]))
+                         :group-removed-participant (let [{:keys [group-id identity from message-id]} event]
+                                                      (dispatch [:participant-removed-from-group from group-id identity message-id]))
+                         :removed-from-group (let [{:keys [group-id from message-id]} event]
+                                               (dispatch [:you-removed-from-group from group-id message-id]))
+                         :participant-left-group (let [{:keys [group-id from message-id]} event]
+                                                   (dispatch [:participant-left-group from group-id message-id]))
                          :discover-response (let [{:keys [from payload]} event]
                                               (dispatch [:discovery-response-received from payload]))
                          :contact-update (let [{:keys [from payload]} event]

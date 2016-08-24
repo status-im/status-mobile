@@ -10,9 +10,9 @@
   (requests/save-request new-request))
 
 (defn add-request
-  [db [_ chat-id {:keys [msg-id content]}]]
+  [db [_ chat-id {:keys [message-id content]}]]
   (let [request {:chat-id    chat-id
-                 :message-id msg-id
+                 :message-id message-id
                  :type       (:command content)
                  :added      (js/Date.)}
         request' (update request :type keyword)]
@@ -24,9 +24,8 @@
   [{:keys [current-chat-id] :as db} [_ chat-id]]
   (let [chat-id' (or chat-id current-chat-id)
         requests (-> ;; todo maybe limit is needed
-                     (realm/get-by-fields :account :request
-                                          {:chat-id chat-id'
-                                           :status  "open"})
+                     (realm/get-by-fields :account :request :and [[:chat-id chat-id']
+                                                                  [:status "open"]])
                      (realm/sorted :added :desc)
                      (realm/collection->map))
         requests' (map #(update % :type keyword) requests)]
@@ -36,9 +35,8 @@
   [_ [_ chat-id message-id]]
   (realm/write :account
     (fn []
-      (-> (realm/get-by-fields :account :request
-                               {:chat-id    chat-id
-                                :message-id message-id})
+      (-> (realm/get-by-fields :account :request :and [[:chat-id chat-id]
+                                                       [:message-id message-id]])
           (realm/single)
           (.-status)
           (set! "answered")))))

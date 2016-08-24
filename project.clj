@@ -9,8 +9,8 @@
                  [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
                  ^{:voom {:repo   "git@github.com:status-im/status-lib.git"
-                          :branch "master"}}
-                 [status-im/protocol "0.1.3-20160818_172519-g2f734a6"]
+                          :branch "message-delivery"}}
+                 [status-im/protocol "0.2.0-20160829_094621-g83381b2"]
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]

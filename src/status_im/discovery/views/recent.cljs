@@ -14,6 +14,6 @@
 (defview discovery-recent [{platform-specific :platform-specific}]
   [discoveries [:get :discoveries]]
   [view st/recent-list
-   (for [{:keys [msg-id] :as discovery} discoveries]
-     ^{:key (str "message-" msg-id)}
+   (for [{:keys [message-id] :as discovery} discoveries]
+     ^{:key (str "message-" message-id)}
      [discovery-list-item discovery platform-specific])])

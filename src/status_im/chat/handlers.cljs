@@ -1,20 +1,20 @@
 (ns status-im.chat.handlers
   (:require-macros [cljs.core.async.macros :as am])
   (:require [re-frame.core :refer [enrich after debug dispatch]]
-
             [status-im.models.commands :as commands]
             [clojure.string :as str]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.api :as api]
+            [status-im.models.chats :as chats]
             [status-im.models.messages :as messages]
+            [status-im.models.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
                                          content-type-command-request
                                          default-number-of-messages]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
-            [status-im.models.chats :as chats]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.persistence.realm.core :as r]
@@ -149,17 +149,17 @@
 (register-handler ::set-text update-text)
 
 (defn set-message-shown
-  [db chat-id msg-id]
+  [db chat-id message-id]
   (update-in db [:chats chat-id :messages] (fn [messages]
-                                             (map (fn [msg]
-                                                    (if (= msg-id (:msg-id msg))
-                                                      (assoc msg :new? false)
-                                                      msg))
+                                             (map (fn [message]
+                                                    (if (= message-id (:message-id message))
+                                                      (assoc message :new? false)
+                                                      message))
                                                   messages))))
 
 (register-handler :set-message-shown
-  (fn [db [_ {:keys [chat-id msg-id]}]]
-    (set-message-shown db chat-id msg-id)))
+  (fn [db [_ {:keys [chat-id message-id]}]]
+    (set-message-shown db chat-id message-id)))
 
 (defn init-console-chat
   [{:keys [chats] :as db} existing-account?]
@@ -253,6 +253,11 @@
   (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))
 
+(register-handler :initialize-pending-messages
+  (u/side-effect!
+    (fn [_ _]
+      (api/init-pending-messages (pending-messages/get-pending-messages)))))
+
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
   (let [chat-id (or id current-chat-id)
@@ -332,7 +337,7 @@
   (messages/save-message
     current-chat-id
     {:from         "system"
-     :msg-id       (random/id)
+     :message-id   (random/id)
      :content      "You left this chat"
      :content-type text-content-type}))
 
@@ -392,7 +397,7 @@
 (register-handler :send-seen!
   (after (fn [_ [_ chat-id message-id]]
            (when-not (console? chat-id))
-           (dispatch [:msg-seen chat-id message-id])))
+           (dispatch [:message-seen chat-id message-id])))
   (u/side-effect!
     (fn [_ [_ chat-id message-id]]
       (when-not (console? chat-id)

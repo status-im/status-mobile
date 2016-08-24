@@ -74,6 +74,7 @@
       (dispatch [:initialize-protocol address])
       (dispatch [:initialize-account-db])
       (dispatch [:initialize-chats])
+      (dispatch [:initialize-pending-messages])
       (dispatch [:load-contacts])
       (dispatch [:init-chat])
       (dispatch [:init-discoveries])
