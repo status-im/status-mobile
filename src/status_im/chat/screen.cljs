@@ -22,12 +22,12 @@
             [status-im.chat.views.suggestions :refer [suggestion-container]]
             [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
+            [status-im.chat.views.actions :refer [actions-view]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [reagent.core :as r]
             [clojure.string :as str]
             [cljs-time.core :as t]))
-
 
 (defn contacts-by-identity [contacts]
   (->> contacts
@@ -86,114 +86,6 @@
     [view nil]]
    items])
 
-(defn action-view [{{:keys     [icon-style
-                                custom-icon
-                                handler
-                                title
-                                subtitle]
-                     icon-name :icon} :action
-                    platform-specific :platform-specific}]
-  [touchable-highlight {:on-press (fn []
-                                    (dispatch [:set-show-actions false])
-                                    (when handler
-                                      (handler)))}
-   [view st/action-icon-row
-    [view st/action-icon-view
-     (or custom-icon
-         [icon icon-name icon-style])]
-    [view st/action-view
-     [text {:style             st/action-title
-            :platform-specific platform-specific
-            :font              :medium} title]
-     (when-let [subtitle subtitle]
-       [text {:style             st/action-subtitle
-              :platform-specific platform-specific
-              :font              :default}
-        subtitle])]]])
-
-(defview menu-item-icon-profile []
-  [chat-id [:chat :chat-id]
-   group-chat [:chat :group-chat]
-   name [:chat :name]
-   color [:chat :color]]
-  ;; TODO stub data ('online' property)
-  [chat-icon-view-menu-item chat-id group-chat name color true])
-
-(defn members-text [members]
-  (truncate-str (str (s/join ", " (map #(:name %) members)) " " (label :t/and-you)) 35))
-
-(defn actions-list-view [{styles :styles :as platform-specific}]
-  (let [{:keys [group-chat chat-id]} (subscribe [:chat-properties [:group-chat :chat-id]])
-        members (subscribe [:current-chat-contacts])
-        status-bar-height (get-in styles [:components :status-bar :default :height])]
-    (when-let [actions (if @group-chat
-                         [{:title      (label :t/members-title)
-                           :subtitle   (members-text @members)
-                           :icon       :menu_group
-                           :icon-style {:width  25
-                                        :height 19}
-                           ;; TODO not implemented: action Members
-                           :handler    nil}
-                          {:title      (label :t/search-chat)
-                           :subtitle   (label :t/not-implemented)
-                           :icon       :search_gray_copy
-                           :icon-style {:width  17
-                                        :height 17}
-                           ;; TODO not implemented: action Search chat
-                           :handler    nil}
-                          {:title      (label :t/notifications-title)
-                           :subtitle   (label :t/not-implemented)
-                           ;;:subtitle   "Chat muted"
-                           :icon       :muted
-                           :icon-style {:width  18
-                                        :height 21}
-                           ;; TODO not implemented: action Notifications
-                           :handler    nil}
-                          {:title      (label :t/settings)
-                           :icon       :settings
-                           :icon-style {:width  20
-                                        :height 13}
-                           :handler    #(dispatch [:show-group-settings])}]
-                         [{:title       (label :t/profile)
-                           :custom-icon [menu-item-icon-profile]
-                           :icon        :menu_group
-                           :icon-style  {:width  25
-                                         :height 19}
-                           :handler     #(dispatch [:show-profile @chat-id])}
-                          {:title      (label :t/search-chat)
-                           :subtitle   (label :t/not-implemented)
-                           :icon       :search_gray_copy
-                           :icon-style {:width  17
-                                        :height 17}
-                           ;; TODO not implemented: action Search chat
-                           :handler    nil}
-                          {:title      (label :t/notifications-title)
-                           :subtitle   (label :t/not-implemented)
-                           ;;:subtitle   "Notifications on"
-                           :icon       :muted
-                           :icon-style {:width  18
-                                        :height 21}
-                           ;; TODO not implemented: action Notifications
-                           :handler    nil}
-                          {:title      (label :t/settings)
-                           :subtitle   (label :t/not-implemented)
-                           :icon       :settings
-                           :icon-style {:width  20
-                                        :height 13}
-                           ;; TODO not implemented: action Settings
-                           :handler    nil}])]
-      [view (-> (st/actions-wrapper status-bar-height)
-                (merge (get-in styles [:components :actions-list-view])))
-       [view st/actions-separator]
-       [view st/actions-view
-        (for [action actions]
-          ^{:key action} [action-view {:platform-specific platform-specific
-                                       :action            action}])]])))
-
-(defn actions-view [platform-specific]
-  [overlay {:on-click-outside #(dispatch [:set-show-actions false])}
-   [actions-list-view platform-specific]])
-
 (defn online-text [contact chat-id]
   (if contact
     (let [last-online      (get contact :last-online)
@@ -215,10 +107,11 @@
       [view (st/chat-name-view @show-actions)
        [text {:style             st/chat-name-text
               :platform-specific platform-specific
+              :number-of-lines   1
               :font              :medium}
         (if (str/blank? @name)
           (label :t/user-anonymous)
-          (truncate-str (or @name (label :t/chat-name)) 30))]
+          (or @name (label :t/chat-name)))]
        (if @group-chat
          [view {:flexDirection :row}
           [icon :group st/group-icon]

@@ -19,9 +19,10 @@
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/item-container
       [view st/name-view
-       [text {:style st/name-text} (if (str/blank? name)
-                                     (label :t/user-anonymous)
-                                     (truncate-str name 20))]
+       [text {:style st/name-text}
+        (if (str/blank? name)
+          (label :t/user-anonymous)
+          (truncate-str name 30))]
        (when group-chat
          [icon :group st/group-icon])
        (when group-chat

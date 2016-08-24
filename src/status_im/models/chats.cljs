@@ -42,7 +42,7 @@
 (defn create-chat
   ([{:keys [last-message-id] :as chat}]
    (let [chat (assoc chat :last-message-id (or last-message-id ""))]
-     (r/write :account #(r/create :account :chat chat))))
+     (r/write :account #(r/create :account :chat chat true))))
   ([db chat-id identities group-chat? chat-name]
    (when-not (chat-exists? chat-id)
      (let [chat-name (or chat-name

@@ -12,19 +12,21 @@
   (sort-by :name #(compare (clojure.string/lower-case %1)
                            (clojure.string/lower-case %2)) (vals contacts)))
 
-(register-sub :all-contacts
+(register-sub :all-added-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
-      (reaction (sort-contacts @contacts)))))
+      (->> (remove #(:pending %) @contacts)
+           (sort-contacts)
+           (reaction)))))
 
-(register-sub :get-contacts-with-limit
+(register-sub :get-added-contacts-with-limit
   (fn [_ [_ limit]]
-    (let [contacts (subscribe [:all-contacts])]
+    (let [contacts (subscribe [:all-added-contacts])]
       (reaction (take limit @contacts)))))
 
-(register-sub :contacts-count
+(register-sub :added-contacts-count
   (fn [_ _]
-    (let [contacts (subscribe [:all-contacts])]
+    (let [contacts (subscribe [:all-added-contacts])]
       (reaction (count @contacts)))))
 
 (defn get-contact-letter [contact]

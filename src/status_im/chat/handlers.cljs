@@ -33,7 +33,8 @@
             status-im.chat.handlers.receive-message
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
-            status-im.chat.handlers.wallet-chat))
+            status-im.chat.handlers.wallet-chat
+            [status-im.utils.logging :as log]))
 
 (register-handler :set-show-actions
   (fn [db [_ show-actions]]
@@ -291,9 +292,10 @@
       (update :chats assoc chat-id new-chat)
       (update :chats-ids conj chat-id)))
 
-(defn save-chat!
+(defn save-new-chat!
   [{:keys [new-chat]} _]
   (chats/create-chat new-chat))
+
 
 (defn open-chat!
   [_ [_ chat-id _ navigation-type]]
@@ -302,20 +304,20 @@
 (register-handler ::start-chat!
   (-> prepare-chat
       ((enrich add-chat))
-      ((after save-chat!))
+      ((after save-new-chat!))
       ((after open-chat!))))
 
 (register-handler :start-chat
   (u/side-effect!
-    (fn [{:keys [chats]} [_ contcat-id options navigation-type]]
-      (if (chats contcat-id)
-        (dispatch [(or navigation-type :navigate-to) :chat contcat-id])
-        (dispatch [::start-chat! contcat-id options navigation-type])))))
+    (fn [{:keys [chats]} [_ contact-id options navigation-type]]
+      (if (chats contact-id)
+        (dispatch [(or navigation-type :navigate-to) :chat contact-id])
+        (dispatch [::start-chat! contact-id options navigation-type])))))
 
 (register-handler :add-chat
-  (-> prepare-chat
-      ((enrich add-chat))
-      ((after save-chat!))))
+                  (-> prepare-chat
+                      ((enrich add-chat))
+                      ((after save-new-chat!))))
 
 (register-handler :switch-command-suggestions!
   (u/side-effect!
@@ -417,11 +419,16 @@
   (fn [db [_ chat-id mode]]
     (assoc-in db [:kb-mode chat-id] mode)))
 
+(defn save-chat!
+  [_ [_ chat]]
+  (chats/create-chat chat))
+
 (register-handler :update-chat!
-  (fn [db [_ chat-id new-chat-data]]
-    (if (get-in db [:chats chat-id])
-      (update-in db [:chats chat-id] merge new-chat-data)
-      db)))
+  (-> (fn [db [_ {:keys [chat-id] :as chat}]]
+        (if (get-in db [:chats chat-id])
+          (update-in db [:chats chat-id] merge chat)
+          db))
+      ((after save-chat!))))
 
 (register-handler :check-autorun
   (u/side-effect!
