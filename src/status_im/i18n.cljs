@@ -16,8 +16,14 @@
      (.t i18n (name path) (clj->js options))
      (name path))))
 
-
 (defn label-pluralize [count path & options]
   (if (exists? i18n.t)
     (.p i18n count (name path) (clj->js options))
     (name path)))
+
+(defn message-status-label [status]
+  (->> status
+       (name)
+       (str "t/status-")
+       (keyword)
+       (label)))

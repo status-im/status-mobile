@@ -4,17 +4,15 @@
             [status-im.persistence.realm.core :as realm]))
 
 (defn delivered-messages []
-  (-> (realm/get-by-fields
-        :account :message
-        {:delivery-status :delivered
-         :outgoing        false})
+  (-> (realm/get-by-fields :account :message :and [[:delivery-status :delivered]
+                                                   [:outgoing false]])
       (realm/collection->map)))
 
 (defn set-unviewed-messages [db]
   (let [messages (->> (::raw-unviewed-messages db)
                       (group-by :chat-id)
                       (map (fn [[id messages]]
-                             [id {:messages-ids (map :msg-id messages)
+                             [id {:messages-ids (map :message-id messages)
                                   :count        (count messages)}]))
                       (into {}))]
     (-> db

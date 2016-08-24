@@ -32,7 +32,7 @@
   (save-message chat-id
                 {:from         "Status"
                  :to           nil
-                 :msg-id       (random/id)
+                 :message-id   (random/id)
                  :content      (str "The brash businessman’s braggadocio "
                                     "and public exchange with candidates "
                                     "in the US presidential election")
@@ -40,8 +40,8 @@
                  :outgoing     false}))
 
 (defn create-chat
-  ([{:keys [last-msg-id] :as chat}]
-   (let [chat (assoc chat :last-msg-id (or last-msg-id ""))]
+  ([{:keys [last-message-id] :as chat}]
+   (let [chat (assoc chat :last-message-id (or last-message-id ""))]
      (r/write :account #(r/create :account :chat chat))))
   ([db chat-id identities group-chat? chat-name]
    (when-not (chat-exists? chat-id)
@@ -59,7 +59,7 @@
                         :group-chat  group-chat?
                         :timestamp   (timestamp)
                         :contacts    contacts
-                        :last-msg-id ""}))))
+                        :last-message-id ""}))))
        (add-status-message chat-id)))))
 
 (defn chat-contacts [chat-id]

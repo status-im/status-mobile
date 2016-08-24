@@ -128,11 +128,11 @@
    (after invoke-command-preview!)]
   (fn [db [_ chat-id]]
     (let [db (assoc-in db [:chats chat-id :input-text] nil)
-          {:keys [command content to-msg-id]} (command-input db)
+          {:keys [command content to-message-id]} (command-input db)
           content' (content-by-command command content)
           command-info {:command    command
                         :content    content'
-                        :to-message to-msg-id
+                        :to-message to-message-id
                         :created-at (time/now-ms)
                         :id         (random/id)}]
       (-> db
@@ -157,9 +157,9 @@
    (after #(dispatch [:command-edit-mode]))]
   set-chat-command)
 
-(defn set-response-command [db [_ to-msg-id command-key]]
+(defn set-response-command [db [_ to-message-id command-key]]
   (-> db
-      (commands/set-command-input :responses to-msg-id command-key)
+      (commands/set-command-input :responses to-message-id command-key)
       (assoc :canceled-command false)))
 
 (register-handler :set-response-chat-command

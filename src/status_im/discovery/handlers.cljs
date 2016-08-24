@@ -36,8 +36,8 @@
 (register-handler :discovery-response-received
   (u/side-effect!
     (fn [db [_ from payload]]
-      (let [{:keys [msg-id name photo-path status hashtags]} payload
-            discovery {:msg-id       msg-id
+      (let [{:keys [message-id name photo-path status hashtags]} payload
+            discovery {:message-id   message-id
                        :name         name
                        :photo-path   photo-path
                        :status       status
@@ -60,8 +60,8 @@
 
 (defn add-discovery
   [{db-discoveries :discoveries
-    :as            db} [_ {:keys [msg-id] :as discovery}]]
-  (let [updated-discoveries (if-let [i (first-index #(= (:msg-id %) msg-id) db-discoveries)]
+    :as            db} [_ {:keys [message-id] :as discovery}]]
+  (let [updated-discoveries (if-let [i (first-index #(= (:message-id %) message-id) db-discoveries)]
                               (assoc db-discoveries i discovery)
                               (conj db-discoveries discovery))]
     (-> db

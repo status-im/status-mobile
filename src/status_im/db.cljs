@@ -27,12 +27,13 @@
              :discovery-search-tags  []
              :tags                   {}
 
-             :contacts-ids           #{}
-             :selected-contacts      #{}
-             :current-chat-id        "console"
+             :chats                  {}
              :chat                   {:command      nil
                                       :last-message nil}
-             :chats                  {}
+             :current-chat-id        "console"
+
+             :contacts-ids           #{}
+             :selected-contacts      #{}
              :chats-updated-signal   0
              :show-actions           false
              :selected-participants  #{}
@@ -52,11 +53,11 @@
   [:chats chat-id :staged-commands])
 (defn chat-command-path [chat-id]
   [:chats chat-id :command-input :command])
-(defn chat-command-to-msg-id-path [chat-id]
-  [:chats chat-id :command-input :to-msg-id])
+(defn chat-command-to-message-id-path [chat-id]
+  [:chats chat-id :command-input :to-message-id])
 (defn chat-command-content-path [chat-id]
   [:chats chat-id :command-input :content])
 (defn chat-command-requests-path [chat-id]
   [:chats chat-id :command-requests])
-(defn chat-command-request-path [chat-id msg-id]
-  [:chats chat-id :command-requests msg-id])
+(defn chat-command-request-path [chat-id message-id]
+  [:chats chat-id :command-requests message-id])

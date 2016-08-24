@@ -8,7 +8,7 @@
             [cljs.reader :refer [read-string]]
             [status-im.models.chats :as c]))
 
-(defn check-previev [{:keys [content] :as message}]
+(defn check-preview [{:keys [content] :as message}]
   (if-let [preview (:preview content)]
     (let [rendered-preview (generate-hiccup (read-string preview))]
       (assoc message
@@ -24,8 +24,8 @@
   (:public-key (accounts current-account-id)))
 
 (defn receive-message
-  [db [_ {:keys [from group-id chat-id msg-id] :as message}]]
-  (let [same-message (messages/get-message msg-id)
+  [db [_ {:keys [from group-id chat-id message-id] :as message}]]
+  (let [same-message (messages/get-message message-id)
         current-identity (get-current-identity db)]
     (when-not (or same-message (= from current-identity))
       (let [group-chat? (not (nil? group-id))
@@ -33,8 +33,8 @@
             previous-message (messages/get-last-message chat-id')
             message' (assoc (->> message
                                  (cu/check-author-direction previous-message)
-                                 (check-previev))
-                       :delivery-status :pending
+                                 (check-preview))
+                       :delivery-status :sending
                        :chat-id chat-id')]
         (store-message message')
         (when-not (c/chat-exists? chat-id')
@@ -42,7 +42,7 @@
         (dispatch [::add-message message'])
         (when (= (:content-type message') content-type-command-request)
           (dispatch [:add-request chat-id' message']))
-        (dispatch [:add-unviewed-message chat-id' msg-id])))))
+        (dispatch [:add-unviewed-message chat-id' message-id])))))
 
 (register-handler :received-message
   (u/side-effect! receive-message))

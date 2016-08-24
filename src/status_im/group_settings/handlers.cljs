@@ -89,13 +89,13 @@
   (doseq [participant selected-participants]
     (api/group-remove-participant current-chat-id participant)))
 
-(defn system-message [msg-id content]
+(defn system-message [message-id content]
   {:from         "system"
-   :msg-id       msg-id
+   :message-id   message-id
    :content      content
    :content-type text-content-type})
 
-(defn removed-participant-msg [chat-id identity]
+(defn removed-participant-message [chat-id identity]
   (let [contact-name (:name (contacts/contact-by-identity identity))]
     (->> (str "You've removed " (or contact-name identity))
          (system-message (random/id))
@@ -104,7 +104,7 @@
 (defn create-removing-messages!
   [{:keys [current-chat-id selected-participants]} _]
   (doseq [participant selected-participants]
-    (removed-participant-msg current-chat-id participant)))
+    (removed-participant-message current-chat-id participant)))
 
 (defn deselect-members [db _]
   (assoc db :selected-participants #{}))
