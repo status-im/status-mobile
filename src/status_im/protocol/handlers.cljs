@@ -74,7 +74,7 @@
   (u/side-effect!
     (fn [_ [action from group-id ack-msg-id]]
       (log/debug action from group-id ack-msg-id)
-      (joined-chat-msg group-id from ack-msg-id))))
+      #_(joined-chat-msg group-id from ack-msg-id))))
 
 (register-handler :participant-removed-from-group
   (u/side-effect!

@@ -15,13 +15,18 @@
                                                         true
                                                         new?))))))
 
+(defn- check-message [previous-message {:keys [from outgoing] :as message}]
+  (merge message
+         {:same-author    (if previous-message
+                            (= (:from previous-message) from)
+                            false)
+          :same-direction (if previous-message
+                            (= (:outgoing previous-message) outgoing)
+                            true)}))
+
 (defn check-author-direction
-  [db chat-id {:keys [from outgoing] :as message}]
-  (let [previous-message (first (get-in db [:chats chat-id :messages]))]
-    (merge message
-           {:same-author    (if previous-message
-                              (= (:from previous-message) from)
-                              true)
-            :same-direction (if previous-message
-                              (= (:outgoing previous-message) outgoing)
-                              true)})))
+  ([previous-message message]
+   (check-message previous-message message))
+  ([db chat-id message]
+   (let [previous-message (first (get-in db [:chats chat-id :messages]))]
+     (check-message previous-message message))))

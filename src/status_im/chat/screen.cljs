@@ -207,7 +207,7 @@
         (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
         show-actions (subscribe [:show-actions])
         contact (subscribe [:get-in [:contacts @chat-id]])]
-    (fn []
+    (fn [platform-specific]
       [view (st/chat-name-view @show-actions)
        [text {:style             st/chat-name-text
               :platform-specific platform-specific
@@ -241,15 +241,14 @@
          [view st/action
           [chat-icon]]]))))
 
-(defn chat-toolbar [platform-specific]
-  (let [{:keys [group-chat name contacts]} (subscribe [:chat-properties [:group-chat :name :contacts]])
-        show-actions (subscribe [:show-actions])]
-    [view
-     [status-bar {:platform-specific platform-specific}]
-     [toolbar {:hide-nav?      @show-actions
-               :custom-content [toolbar-content platform-specific]
-               :custom-action  [toolbar-action]
-               :style          (get-in platform-specific [:styles :components :toolbar])}]]))
+(defview chat-toolbar [platform-specific]
+  [show-actions [:show-actions]]
+  [view
+   [status-bar {:platform-specific platform-specific}]
+   [toolbar {:hide-nav?      show-actions
+             :custom-content [toolbar-content platform-specific]
+             :custom-action  [toolbar-action]
+             :style          (get-in platform-specific [:styles :components :toolbar])}]])
 
 (defview messages-view [platform-specific group-chat]
   [messages [:chat :messages]
@@ -305,7 +304,8 @@
           [chat-toolbar platform-specific]
           [messages-container
            [messages-view platform-specific @group-chat]]
-          (when @group-chat [typing-all platform-specific])
+          ;; todo uncomment this
+          #_(when @group-chat [typing-all platform-specific])
           [response-view]
           (when-not @command? [suggestion-container])
           [chat-message-new platform-specific]

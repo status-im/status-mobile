@@ -102,8 +102,7 @@
    :opacity        (if enabled? 1 0.3)})
 
 (def chat-name-btn-edit-text
-  {:marginTop  -1
-   :color      text2-color
+  {:color      text2-color
    :fontFamily font
    :fontSize   16
    :lineHeight 20})
@@ -118,7 +117,7 @@
    :lineHeight   20})
 
 (def add-members-icon
-  {:marginVertical   19
+  {:marginVertical   -1
    :marginLeft       19
    :marginHorizontal 3
    :width            17

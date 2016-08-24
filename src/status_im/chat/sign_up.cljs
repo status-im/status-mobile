@@ -52,8 +52,9 @@
     (dispatch [:sign-up-confirm (second matches)])))
 
 (defn start-listening-confirmation-code-sms [db]
-  (when (not (:confirmation-code-sms-listener db))
-    (assoc db :confirmation-code-sms-listener (add-sms-listener handle-sms))))
+  (if (not (:confirmation-code-sms-listener db))
+    (assoc db :confirmation-code-sms-listener (add-sms-listener handle-sms))
+    db))
 
 (defn stop-listening-confirmation-code-sms [db]
   (when-let [listener (:confirmation-code-sms-listener db)]

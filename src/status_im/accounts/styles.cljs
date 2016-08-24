@@ -25,7 +25,7 @@
            {:flex 1})))
 
 (def account-list
-  {:margin-top 56
+  {:margin-top 20
    :height     100})
 
 (def row-separator

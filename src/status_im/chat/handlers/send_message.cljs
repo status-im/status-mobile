@@ -20,25 +20,6 @@
     :seen
     :pending))
 
-(defn prepare-message
-  [{:keys [identity current-chat-id] :as db} _]
-  (let [text (get-in db [:chats current-chat-id :input-text])
-        [command] (suggestions/check-suggestion db (str text " "))
-        message (cu/check-author-direction
-                  db current-chat-id
-                  {:msg-id          (random/id)
-                   :chat-id         current-chat-id
-                   :content         text
-                   :to              current-chat-id
-                   :from            identity
-                   :content-type    text-content-type
-                   :delivery-status (default-delivery-status current-chat-id)
-                   :outgoing        true
-                   :timestamp       (time/now-ms)})]
-    (if command
-      (commands/set-command-input db :commands command)
-      (assoc db :new-message (when-not (s/blank? text) message)))))
-
 (defn prepare-command
   [identity chat-id {:keys [preview preview-string content command to-message]}]
   (let [content {:command (command :name)
@@ -166,14 +147,15 @@
                         :timestamp       (time/now-ms)})
             params' (assoc params :message message')]
         (dispatch [::add-message params'])
-        (dispatch [::save-message! params'])
-        (dispatch [::send-message! params'])))))
+        (dispatch [::save-message! params'])))))
 
 (register-handler ::add-message
   (fn [db [_ {:keys [chat-id message]}]]
     (cu/add-message-to-db db chat-id message)))
 
 (register-handler ::save-message!
+  (after (fn [_ [_ params]]
+           (dispatch [::send-message! params])))
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id message]}]]
       (messages/save-message chat-id message))))
