@@ -39,7 +39,7 @@
    :onChangeText    (when-not disable? command/set-input-message)
    :onSubmitEditing (on-press-commands-handler command)})
 
-(defview message-input [input-options {:keys [suggestions-trigger] :as command}]
+(defview message-input [input-options command]
   [command? [:command?]
    input-message [:get-chat-input-text]
    input-command [:get-chat-command-content]
@@ -66,7 +66,7 @@
    [view st/input-view
     [plain-message/commands-button]
     [message-input-container
-     [message-input input-options]]
+     [message-input input-options command]]
     ;; TODO emoticons: not implemented
     [plain-message/smile-button]
     (when (or command? valid-plain-message?)

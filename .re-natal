@@ -25,7 +25,8 @@
     "react-native-fs",
     "react-native-dialogs",
     "react-native-image-resizer",
-    "react-native-image-crop-picker"
+    "react-native-image-crop-picker",
+    "react-native-webview-bridge"
   ],
   "imageDirs": [
     "images"

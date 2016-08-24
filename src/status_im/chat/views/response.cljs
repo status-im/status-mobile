@@ -1,6 +1,7 @@
 (ns status-im.chat.views.response
   (:require-macros [reagent.ratom :refer [reaction]]
-                   [status-im.utils.views :refer [defview]])
+                   [status-im.utils.views :refer [defview]]
+                   [status-im.utils.slurp :refer [slurp]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.components.react :refer [view
@@ -18,7 +19,8 @@
             [status-im.components.animation :as anim]
             [status-im.chat.suggestions-responder :as resp]
             [status-im.chat.constants :as c]
-            [status-im.chat.views.command-validation :as cv]))
+            [status-im.chat.views.command-validation :as cv]
+            [status-im.components.webview-bridge :refer [webview-bridge]]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -97,10 +99,14 @@
 (defview suggestions-web-view []
   [url [:web-view-url]]
   (when url
-    [web-view {:source                     {:uri url}
-               :java-script-enabled        true
-               :style                      {:height 300}
-               :on-navigation-state-change on-navigation-change}]))
+    [webview-bridge
+     {:ref                        #(dispatch [:set-webview-bridge %])
+      :on-bridge-message          #(dispatch [:webview-bridge-message %])
+      :source                     {:uri url}
+      :java-script-enabled        true
+      :injected-java-script       (slurp "resources/webview.js")
+      :style                      {:height 300}
+      :on-navigation-state-change on-navigation-change}]))
 
 (defview placeholder []
   [suggestions [:get-content-suggestions]]
