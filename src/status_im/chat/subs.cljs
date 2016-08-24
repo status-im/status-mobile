@@ -238,3 +238,8 @@
   (fn [db]
     (let [chat-id (subscribe [:get-current-chat-id])]
       (reaction (get-in @db [:chats @chat-id :all-loaded?])))))
+
+(register-sub :photo-path
+  (fn [_ [_ id]]
+    (let [contacts (subscribe [:get :contacts])]
+      (reaction (:photo-path (@contacts id))))))

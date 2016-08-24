@@ -234,11 +234,6 @@
   (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))
 
-(register-handler :group-received-msg
-  (u/side-effect!
-    (fn [_ [_ {chat-id :group-id :as msg}]]
-      (messages/save-message chat-id msg))))
-
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
   (let [chat-id (or id current-chat-id)

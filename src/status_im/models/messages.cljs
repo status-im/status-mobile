@@ -76,3 +76,8 @@
 (defn get-message [id]
   (r/get-one-by-field :account :message :msg-id id))
 
+(defn get-last-message [chat-id]
+  (-> (r/get-by-field :account :message :chat-id chat-id)
+      (r/sorted :timestamp :desc)
+      (r/single)
+      (js->clj :keywordize-keys true)))
