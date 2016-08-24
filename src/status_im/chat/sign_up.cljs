@@ -94,7 +94,7 @@
       (on-sign-up-response (label :t/incorrect-code)))))
 
 ;; -- Saving password ----------------------------------------
-(defn save-password [password]
+(defn save-password [password mnemonic]
   ;; TODO validate and save password
   (dispatch [:received-message
              {:msg-id       (random/id)
@@ -120,17 +120,14 @@
               :from         "console"
               :to           "me"
               :new?         false}])
-  ;; TODO generate passphrase
-  (let [passphrase (str "The brash businessman's braggadocio and public squabbing with "
-                        "candidates in the US presidential election")]
-    (dispatch [:received-message
-               {:msg-id       (random/id)
-                :content      passphrase
-                :content-type text-content-type
-                :outgoing     false
-                :from         "console"
-                :to           "me"
-                :new?         false}]))
+  (dispatch [:received-message
+             {:msg-id       (random/id)
+              :content      mnemonic
+              :content-type text-content-type
+              :outgoing     false
+              :from         "console"
+              :to           "me"
+              :new?         false}])
   (dispatch [:received-message
              {:msg-id       "8"
               :content      (label :t/written-down)
