@@ -17,7 +17,7 @@
             [status-im.group-settings.styles.group-settings :as st]
             [status-im.group-settings.views.member :refer [member-view]]
             [status-im.i18n :refer [label]]
-            [status-im.components.styles :as cst]))
+            [status-im.group-settings.views.color-settings :refer [color-settings]]))
 
 (defn remove-member []
   (dispatch [:remove-participants]))
@@ -59,33 +59,6 @@
        [text {:style st/setting-subtitle}
         subtitle])]]])
 
-(defn close-chat-color-picker []
-  (dispatch [:group-settings :show-color-picker false]))
-
-(defn set-chat-color []
-  (close-chat-color-picker)
-  (dispatch [:set-chat-color]))
-
-;; TODO not in design
-(defview chat-color-picker []
-  [show-color-picker [:group-settings :show-color-picker]
-   new-color [:get :new-chat-color]]
-  [modal {:animated       false
-          :transparent    false
-          :onRequestClose close-chat-color-picker}
-   [touchable-highlight {:style    st/modal-container
-                         :on-press close-chat-color-picker}
-    [view st/modal-color-picker-inner-container
-     [picker {:selectedValue new-color
-              :onValueChange #(dispatch [:set :new-chat-color %])}
-      [picker-item {:label (label :t/blue) :value "#7099e6"}]
-      [picker-item {:label (label :t/purple) :value "#a187d5"}]
-      [picker-item {:label (label :t/green) :value "green"}]
-      [picker-item {:label (label :t/red) :value "red"}]]
-     [touchable-highlight {:on-press set-chat-color}
-      [text {:style st/modal-color-picker-save-btn-text}
-       (label :t/save)]]]]])
-
 (defview chat-color-icon []
   [chat-color [:chat :color]]
   [view {:style (st/chat-color-icon chat-color)}])
@@ -125,10 +98,10 @@
        ^{:key setting} [setting-view setting])]))
 
 (defview chat-icon []
-  [chat-id    [:chat :chat-id]
+  [chat-id [:chat :chat-id]
    group-chat [:chat :group-chat]
-   name       [:chat :name]
-   color      [:chat :color]]
+   name [:chat :name]
+   color [:chat :color]]
   [view st/action
    [chat-icon-view-action chat-id group-chat name color false]])
 
@@ -172,15 +145,14 @@
    (when (pos? (count validation-messages))
      [text {:style st/chat-name-validation-message} (first validation-messages)])])
 
-(defview group-settings [{platform-specific :platform-specific}]
-  [show-color-picker [:group-settings :show-color-picker]]
+(defn group-settings [{platform-specific :platform-specific}]
   [view st/group-settings
    [new-group-toolbar platform-specific]
    [scroll-view st/body
     [chat-name]
     [text {:style st/members-text} (label :t/members-title)]
     [touchable-highlight {:on-press #(dispatch [:navigate-to :add-participants])}
-    ;; TODO add participants view is not in design
+     ;; TODO add participants view is not in design
      [view st/add-members-container
       [icon :add-gray st/add-members-icon]
       [text {:style st/add-members-text}
@@ -189,6 +161,5 @@
     [text {:style st/settings-text}
      (label :t/settings)]
     [settings-view]]
-   (when show-color-picker
-     [chat-color-picker])
+   [color-settings]
    [member-menu]])
