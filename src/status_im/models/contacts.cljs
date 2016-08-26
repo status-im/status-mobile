@@ -9,6 +9,9 @@
       (r/sorted :name :asc)
       r/collection->map))
 
+(defn get-contact [id]
+  (r/get-one-by-field :account :contact :whisper-identity id))
+
 (defn create-contact [{:keys [whisper-identity] :as contact}]
   (let [contact-from-db (r/get-one-by-field :account :contact
                                             :whisper-identity whisper-identity)]
