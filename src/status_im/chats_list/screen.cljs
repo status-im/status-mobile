@@ -42,50 +42,31 @@
                                           :style  st/search-icon}
                                 :handler (fn [])}}]])
 
-(defn chats-list [{platform-specific :platform-specific}]
-  (let [chats (subscribe [:get :chats])
-        chats-scrolled? (subscribe [:get :chats-scrolled?])
-        animation? (subscribe [:animations :tabs-bar-animation?])
-        tabs-bar-value (subscribe [:animations :tabs-bar-value])
-        container-height (r/atom 0)
-        content-height (r/atom 0)]
-    (dispatch [:set :chats-scrolled? false])
-    (fn []
-      [view st/chats-container
-       [chats-list-toolbar platform-specific]
-       [list-view {:dataSource          (to-datasource @chats)
-                   :renderRow           (fn [row _ _]
-                                          (list-item [chat-list-item row]))
-                   :style               st/list-container
-                   ;;; if "maximizing" chat list will make scroll to 0,
-                   ;;; then disable maximazing
-                   :onLayout            (fn [event]
-                                          (when-not @chats-scrolled?
-                                            (let [height (.. event -nativeEvent -layout -height)]
-                                              (reset! container-height height))))
-                   :onContentSizeChange (fn [width height]
-                                          (reset! content-height height))
-                   :onScroll            (fn [e]
-                                          (let [offset             (.. e -nativeEvent -contentOffset -y)
-                                                min-content-height (+ @container-height tabs-height)
-                                                scrolled?          (and (< 0 offset) (< min-content-height @content-height))]
-                                            (dispatch [:set :chats-scrolled? scrolled?])
-                                            (dispatch [:set-animation :tabs-bar-animation? true])))}]
-       [animated-view {:style         (st/action-buttons-container @animation? (or @tabs-bar-value 0))
-                       :pointerEvents :box-none}
-        [action-button {:buttonColor color-blue
-                        :offsetY     16
-                        :offsetX     16}
-         [action-button-item
-          {:title       (label :t/new-chat)
-           :buttonColor :#9b59b6
-           :onPress     #(dispatch [:show-group-contacts :people])}
-          [ion-icon {:name  :md-create
-                     :style st/create-icon}]]
-         [action-button-item
-          {:title       (label :t/new-group-chat)
-           :buttonColor :#1abc9c
-           :onPress     #(dispatch [:show-group-new])}
-          [ion-icon {:name  :md-person
-                     :style st/person-stalker-icon}]]]]
-       [bottom-gradient]])))
+(defview chats-list [{platform-specific :platform-specific}]
+  [chats [:get :chats]]
+  ;; todo what is this?!
+  #_(dispatch [:set :chats-scrolled? false])
+  [view st/chats-container
+   [chats-list-toolbar platform-specific]
+   [list-view {:dataSource (to-datasource chats)
+               :renderRow  (fn [row _ _]
+                             (list-item [chat-list-item row]))
+               :style      st/list-container}]
+   [view {:style         (st/action-buttons-container false 0)
+          :pointerEvents :box-none}
+    [action-button {:buttonColor color-blue
+                    :offsetY     16
+                    :offsetX     16}
+     [action-button-item
+      {:title       (label :t/new-chat)
+       :buttonColor :#9b59b6
+       :onPress     #(dispatch [:show-group-contacts :people])}
+      [ion-icon {:name  :md-create
+                 :style st/create-icon}]]
+     [action-button-item
+      {:title       (label :t/new-group-chat)
+       :buttonColor :#1abc9c
+       :onPress     #(dispatch [:show-group-new])}
+      [ion-icon {:name  :md-person
+                 :style st/person-stalker-icon}]]]]
+   [bottom-gradient]])
