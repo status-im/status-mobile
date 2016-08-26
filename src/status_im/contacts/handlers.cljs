@@ -122,9 +122,15 @@
       (assoc :new-contact-identity "")))
 
 (register-handler :add-new-contact
-   (-> add-new-contact
-       ((after save-contact))
-       ((after watch-contact))))
+   (u/side-effect!
+     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
+       (when-not (contacts/get-contact whisper-identity)
+         (dispatch [::new-contact contact])))))
+
+(register-handler ::new-contact
+  (-> add-new-contact
+      ((after save-contact))
+      ((after watch-contact))))
 
 (defn set-contact-identity-from-qr
   [db [_ _ contact-identity]]
