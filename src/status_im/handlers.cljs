@@ -59,7 +59,8 @@
 (register-handler :initialize-db
   (fn [_ _]
     (realm/reset-account)
-    (assoc app-db :current-account-id nil)))
+    (assoc app-db :current-account-id nil
+                  :current-public-key nil)))
 
 (register-handler :initialize-account-db
   (fn [db _]

@@ -18,11 +18,14 @@
                          :initialized (let [{:keys [identity]} event]
                                         (dispatch [:protocol-initialized identity]))
                          :new-msg (let [{:keys [from to payload]} event]
-                                    (dispatch [:received-message (assoc payload :from from :to to)]))
+                                    (dispatch [:received-message (assoc payload
+                                                                   :chat-id from
+                                                                   :from from
+                                                                   :to to)]))
                          :msg-acked (let [{:keys [msg-id from]} event]
                                       (dispatch [:acked-msg from msg-id]))
                          :msg-seen (let [{:keys [msg-id from]} event]
-                                      (dispatch [:msg-seen from msg-id]))
+                                     (dispatch [:msg-seen from msg-id]))
                          :delivery-failed (let [{:keys [msg-id from]} event]
                                             (dispatch [:msg-delivery-failed from msg-id]))
                          :new-group-chat (let [{:keys [from group-id identities group-name]} event]
@@ -30,8 +33,9 @@
                          :new-group-msg (let [{from     :from
                                                group-id :group-id
                                                payload  :payload} event]
-                                          (dispatch [:group-received-msg (assoc payload :from from
-                                                                                        :group-id group-id)]))
+                                          (dispatch [:received-message (assoc payload
+                                                                               :chat-id group-id
+                                                                               :from from)]))
                          :group-chat-invite-acked (let [{:keys [from group-id ack-msg-id]} event]
                                                     (dispatch [:group-chat-invite-acked from group-id ack-msg-id]))
                          :group-new-participant (let [{:keys [group-id identity from msg-id]} event]

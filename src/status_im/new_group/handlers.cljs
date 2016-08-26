@@ -4,7 +4,8 @@
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.models.chats :as chats]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [status-im.utils.handlers :as u]))
 
 (defn deselect-contact
   [db [_ id]]
@@ -33,7 +34,7 @@
 
 (defn prepare-chat
   [{:keys [selected-contacts new-group-id] :as db} [_ group-name]]
-  (let [contacts  (mapv #(hash-map :identity %) selected-contacts)
+  (let [contacts (mapv #(hash-map :identity %) selected-contacts)
         chat-name (if-not (s/blank? group-name)
                     group-name
                     (group-name-from-contacts db))]
@@ -87,7 +88,14 @@
 
 ; todo rewrite
 (register-handler :group-chat-invite-received
-  (fn [db [action from group-id identities group-name]]
-    (if (chats/chat-exists? group-id)
-      (chats/re-join-group-chat db group-id identities group-name)
-      (chats/create-chat db group-id identities true group-name))))
+  (u/side-effect!
+    (fn [{:keys [current-public-key] :as db}
+         [action from group-id identities group-name]]
+      (if (chats/chat-exists? group-id)
+        (chats/re-join-group-chat db group-id identities group-name)
+        (let [contacts (keep (fn [ident]
+                               (when (not= ident current-public-key)
+                                 {:identity ident})) identities)]
+          (dispatch [:add-chat group-id {:name       group-name
+                                         :group-chat true
+                                         :contacts contacts}]))))))

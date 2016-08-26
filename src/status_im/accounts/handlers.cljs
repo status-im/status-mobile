@@ -82,10 +82,12 @@
         (when needs-update?
           (dispatch [:account-update]))))))
 
-(defn initialize-account [db address]
+(defn initialize-account [{:keys [accounts] :as db} address]
   (let [is-login-screen? (= (:view-id db) :login)]
     (dispatch [:set :login {}])
     (dispatch [:set :current-account-id address])
+    (let [key (:public-key (accounts address))]
+      (dispatch [:set :current-public-key key]))
     (dispatch [:initialize-account address])
     (when is-login-screen? (dispatch [:navigate-to-clean default-view]))))
 
