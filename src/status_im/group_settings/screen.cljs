@@ -168,7 +168,7 @@
        [view [icon :ok-purple st/add-members-icon]]]
       [touchable-highlight {:style    (st/chat-name-btn-edit-container true)
                             :on-press focus}
-       [text {:style st/chat-name-btn-edit-text} (label :t/edit)]])]
+       [view [text {:style st/chat-name-btn-edit-text} (label :t/edit)]]])]
    (when (pos? (count validation-messages))
      [text {:style st/chat-name-validation-message} (first validation-messages)])])
 
