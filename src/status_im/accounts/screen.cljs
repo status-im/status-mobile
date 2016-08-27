@@ -25,6 +25,7 @@
                                                  white-form-text-input]]
             [status-im.utils.listview :as lw]
             [status-im.accounts.views.account :refer [account-view]]
+            [status-im.chat.sign-up :as sign-up-service]
             [status-im.i18n :refer [label]]
             [status-im.accounts.styles :as st]
             [status-im.utils.logging :as log]))
@@ -78,13 +79,22 @@
                   :renderRow             render-row
                   :style                 st/account-list
                   :contentContainerStyle (st/account-list-content (count accounts))}]
-      [view st/add-account-button-container
-       [touchable-highlight {:on-press            create-account
-                             :accessibility-label :create-account}
-        [view st/add-account-button
-         [image {:source {:uri :icon_add}
-                 :style  st/icon-plus}]
-         [text {:style             st/add-account-text
-                :platform-specific platform-specific
-                :font              :default}
-          (label :t/add-account)]]]]]]))
+      [view st/bottom-actions-container
+       [view st/recover-button-container
+        [touchable-highlight
+         {:on-press #(dispatch [:navigate-to :recover])}
+         [view st/recover-button
+          [text {:style             st/recover-button-text
+                 :platform-specific platform-specific}
+           (label :t/recover-access)]]]]
+       [view st/add-account-button-container
+        [touchable-highlight {:on-press            create-account
+                              :accessibility-label :create-account}
+         [view st/add-account-button
+          [image {:source {:uri :icon_add}
+                  :style  st/icon-plus}]
+          [text {:style             st/add-account-text
+                 :platform-specific platform-specific
+                 :font              :default}
+           (label :t/add-account)]]]]
+       ]]]))

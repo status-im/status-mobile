@@ -23,11 +23,15 @@
   (when geth
     (.createAccount geth password on-result)))
 
+(defn recover-account [passphrase password on-result]
+  (when geth
+    (.recoverAccount geth passphrase password on-result)))
+
 (defn login [address password on-result]
   (when geth
     (.login geth address password on-result)))
 
 (defn complete-transaction
-  [hash callback]
+  [hash password callback]
   (when geth
-    (.completeTransaction geth hash callback)))
+    (.completeTransaction geth hash password callback)))

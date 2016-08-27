@@ -71,10 +71,26 @@ public class GethConnector extends ServiceConnector {
         }
     }
 
-    public void completeTransaction(String callbackIdentifier, String hash){
+    public void recoverAccount(String callbackIdentifier, String passphrase, String password) {
+
+        if (checkBound()) {
+            Bundle data = new Bundle();
+            data.putString("passphrase", passphrase);
+            data.putString("password", password);
+            Message msg = createMessage(callbackIdentifier, GethMessages.MSG_RECOVER_ACCOUNT, data);
+            try {
+                serviceMessenger.send(msg);
+            } catch (RemoteException e) {
+                Log.e(TAG, "Exception sending message(recoverAccount) to service: ", e);
+            }
+        }
+    }
+
+    public void completeTransaction(String callbackIdentifier, String hash, String password){
         if (checkBound()) {
             Bundle data = new Bundle();
             data.putString("hash", hash);
+            data.putString("password", password);
             Message msg = createMessage(callbackIdentifier, GethMessages.MSG_COMPLETE_TRANSACTION, data);
             try {
                 serviceMessenger.send(msg);

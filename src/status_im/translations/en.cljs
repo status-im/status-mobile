@@ -63,7 +63,7 @@
                                                "it's me the Console nice to meet you!")
    :generate-passphrase                   (str "I'll generate a passphrase for you so you can restore your "
                                                "access or log in from another device")
-   :passphrase                            "Here's your passphrase:"
+   :here-is-your-passphrase               "Here's your passphrase:"
    :written-down                          "Make sure you had securely written it down"
    :phone-number-required                 (str "Your phone number is also required to use the app. Type the "
                                                "exclamation mark or hit the icon to open the command list "
@@ -72,7 +72,7 @@
                                                "and public exchange with candidates "
                                                "in the US presidential election")
    :intro-message1                        "Hello there! It's Status a Dapp browser in your phone."
-   :intro-message2                        (str "Status1 uses  a highly secure key-pair authentication type "
+   :intro-message2                        (str "Status uses  a highly secure key-pair authentication type "
                                                "to provide you a reliable way to access your account")
    :keypair-generated                     (str "A key pair has been generated and saved to your device. "
                                                "Create a password to secure your key")
@@ -153,14 +153,22 @@
 
 
    ;login
-   :recover-access                        "Recover access"
    :connect                               "Connect"
    :address                               "Address"
    :password                              "Password"
    :login                                 "Login"
    :wrong-password                        "Wrong password"
 
+   ;recover
+   :recover-from-passphrase               "Recover from passphrase"
+   :recover-explain                       "Please enter the passphrase for your password to recover access"
+   :passphrase                            "Passphrase"
+   :recover                               "Recover"
+   :enter-valid-passphrase                "Please enter a passphrase"
+   :enter-valid-password                  "Please enter a password"
+
    ;accounts
+   :recover-access                        "Recover access"
    :add-account                           "Add account"
 
    ;validation
@@ -178,4 +186,5 @@
    :one-more-item                         "One more item"
    :fee                                   "Fee"
    :value                                 "Value"
+
    })
