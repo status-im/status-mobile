@@ -112,3 +112,6 @@
 (def button-input
   {:flex          1
    :flexDirection :column})
+
+(def toolbar-gradient
+  {:height 4})

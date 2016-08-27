@@ -44,6 +44,16 @@ public class GethMessages {
     public static final int MSG_ACCOUNT_CREATED = 8;
 
     /**
+     * Create an account
+     */
+    static final int MSG_RECOVER_ACCOUNT = 9;
+
+    /**
+     * Account created event
+     */
+    public static final int MSG_ACCOUNT_RECOVERED = 10;
+
+    /**
      * Account complete transaction event
      */
     static final int MSG_COMPLETE_TRANSACTION = 11;
