@@ -20,7 +20,7 @@
 
 (def console-events
   {:save-password   (fn [[parameter]]
-                      (dispatch [:save-password parameter]))
+                      (dispatch [:create-account parameter]))
    :sign-up         (fn [[parameter]]
                       (dispatch [:sign-up parameter]))
    :confirm-sign-up (fn [[parameter]]
