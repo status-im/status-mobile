@@ -95,6 +95,10 @@ public class GethService extends Service {
                 createAccount(message);
                 break;
 
+            case GethMessages.MSG_RECOVER_ACCOUNT:
+                recoverAccount(message);
+                break;
+
             case GethMessages.MSG_LOGIN:
                 login(message);
                 break;
@@ -194,8 +198,7 @@ public class GethService extends Service {
     private void createAccount(Message message) {
         Bundle data = message.getData();
         String password = data.getString("password");
-        // TODO: remove second argument
-        Log.d(TAG, "Creating account: " + password + " - " + dataFolder);
+        Log.d(TAG, "Creating account: " + password);
         String jsonData = Statusgo.CreateAccount(password);
         Log.d(TAG, "Created account: " + jsonData);
 
@@ -204,13 +207,25 @@ public class GethService extends Service {
         createAndSendReply(message, GethMessages.MSG_ACCOUNT_CREATED, replyData);
     }
 
+    private void recoverAccount(Message message) {
+        Bundle data = message.getData();
+        String passphrase = data.getString("passphrase");
+        String password = data.getString("password");
+        Log.d(TAG, "Recovering account: " + passphrase + " - " + password);
+        String jsonData = Statusgo.RecoverAccount(password, passphrase);
+        Log.d(TAG, "Recovered account: " + jsonData);
+
+        Bundle replyData = new Bundle();
+        replyData.putString("data", jsonData);
+        createAndSendReply(message, GethMessages.MSG_ACCOUNT_RECOVERED, replyData);
+    }
+
     private void login(Message message) {
         Bundle data = message.getData();
         String address = data.getString("address");
         String password = data.getString("password");
-        // TODO: remove third argument
-        String result = Statusgo.UnlockAccount(address, password, 0);
-        Log.d(TAG, "Unlocked account: " + result);
+        String result = Statusgo.Login(address, password);
+        Log.d(TAG, "Loggedin account: " + result);
 
         Bundle replyData = new Bundle();
         replyData.putString("result", result);
@@ -220,9 +235,10 @@ public class GethService extends Service {
     private void completeTransaction(Message message){
         Bundle data = message.getData();
         String hash = data.getString("hash");
+        String password = data.getString("password");
 
         Log.d(TAG, "Before CompleteTransaction: " + hash);
-        String result = Statusgo.CompleteTransaction(hash);
+        String result = Statusgo.CompleteTransaction(hash, password);
         Log.d(TAG, "After CompleteTransaction: " + result);
 
         Bundle replyData = new Bundle();

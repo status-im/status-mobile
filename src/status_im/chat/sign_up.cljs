@@ -24,7 +24,7 @@
    :content-type text-content-type
    :outgoing     true})
 
-(defn- set-signed-up [db signed-up]
+(defn set-signed-up [db signed-up]
   (s/put kv/kv-store :signed-up signed-up)
   (assoc db :signed-up signed-up))
 
@@ -94,6 +94,18 @@
     (when (= :failed status)
       (on-sign-up-response (label :t/incorrect-code)))))
 
+(defn start-signup []
+  (let [msg-id (random/id)]
+    (dispatch [:received-message
+               {:msg-id       msg-id
+                :content      (command-content
+                                :phone
+                                (label :t/phone-number-required))
+                :content-type content-type-command-request
+                :outgoing     false
+                :from         "console"
+                :to           "me"}])))
+
 ;; -- Saving password ----------------------------------------
 (defn save-password [password]
   ;; TODO validate and save password
@@ -115,7 +127,7 @@
               :new?         false}])
   (dispatch [:received-message
              {:msg-id       (random/id)
-              :content      (label :t/passphrase)
+              :content      (label :t/here-is-your-passphrase)
               :content-type text-content-type
               :outgoing     false
               :from         "console"
@@ -141,16 +153,9 @@
               :to           "me"
               :new?         false}])
   ;; TODO highlight '!phone'
-  (let [msg-id (random/id)]
-    (dispatch [:received-message
-               {:msg-id       msg-id
-                :content      (command-content
-                                :phone
-                                (label :t/phone-number-required))
-                :content-type content-type-command-request
-                :outgoing     false
-                :from         "console"
-                :to           "me"}])))
+  (start-signup))
+
+
 
 (def intro-status
   {:msg-id          "intro-status"
@@ -162,7 +167,7 @@
    :outgoing        false
    :to              "me"})
 
-(defn intro [db]
+(defn intro [logged-in?]
   (dispatch [:received-message intro-status])
   (dispatch [:received-message
              {:msg-id       "intro-message1"
@@ -171,24 +176,24 @@
               :outgoing     false
               :from         "console"
               :to           "me"}])
-  (dispatch [:received-message
-             {:msg-id       "intro-message2"
-              :content      (label :t/intro-message2)
-              :content-type text-content-type
-              :outgoing     false
-              :from         "console"
-              :to           "me"}])
-  (let [msg-id "into-message3"]
+  (when-not logged-in?
     (dispatch [:received-message
-               {:msg-id       msg-id
+               {:msg-id       "intro-message2"
+                :content      (label :t/intro-message2)
+                :content-type text-content-type
+                :outgoing     false
+                :from         "console"
+                :to           "me"}])
+
+    (dispatch [:received-message
+               {:msg-id       "intro-message3"
                 :content      (command-content
                                 :keypair
                                 (label :t/keypair-generated))
                 :content-type content-type-command-request
                 :outgoing     false
                 :from         "console"
-                :to           "me"}]))
-  db)
+                :to           "me"}])))
 
 (def console-chat
   {:chat-id    "console"
@@ -203,21 +208,3 @@
    :contacts   [{:identity         "console"
                  :text-color       "#FFFFFF"
                  :background-color "#AB7967"}]})
-
-(defn create-chat [handler]
-  (fn [db]
-    (let [{:keys [new-chat] :as db'} (handler db)]
-      (when new-chat
-        (c/create-chat new-chat))
-      (dissoc db' :new-chat))))
-
-(def init
-  (create-chat
-    (fn [{:keys [chats] :as db}]
-      (if (chats "console")
-        db
-        (-> db
-            (assoc-in [:chats "console"] console-chat)
-            (assoc :new-chat console-chat)
-            (assoc :current-chat-id "console")
-            (intro))))))

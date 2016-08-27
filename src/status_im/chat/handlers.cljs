@@ -161,9 +161,26 @@
   (fn [db [_ {:keys [chat-id msg-id]}]]
     (set-message-shown db chat-id msg-id)))
 
+(defn init-console-chat
+  [{:keys [chats] :as db} existing-account?]
+  (let [chat-id  "console"
+        new-chat sign-up-service/console-chat]
+    (if (chats chat-id)
+      db
+      (do
+        (chats/create-chat new-chat)
+        (sign-up-service/intro existing-account?)
+        (when existing-account?
+          (sign-up-service/start-signup))
+        (-> db
+            (assoc :new-chat new-chat)
+            (update :chats assoc chat-id new-chat)
+            (update :chats-ids conj chat-id)
+            (assoc :current-chat-id "console"))))))
+
 (register-handler :init-console-chat
-  (fn [db [_]]
-    (sign-up-service/init db)))
+  (fn [db _]
+    (init-console-chat db false)))
 
 (register-handler :save-password
   (fn [db [_ password]]
@@ -221,15 +238,18 @@
                           [chat-id chat]))
                    (into {}))
         ids (set (keys chats))]
+
     (-> db
         (assoc :chats chats)
         (assoc :chats-ids ids)
-        (dissoc :loaded-chats))))
+        (dissoc :loaded-chats)
+        (init-console-chat true))))
 
 (defn load-chats!
   [db _]
   (assoc db :loaded-chats (chats/chats-list)))
 
+;TODO: check if its new account / signup status / create console chat
 (register-handler :initialize-chats
   (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))

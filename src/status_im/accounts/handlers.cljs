@@ -1,5 +1,5 @@
 (ns status-im.accounts.handlers
-  (:require [status-im.models.accounts :as accounts]
+  (:require [status-im.models.accounts :as accounts-model]
             [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
             [status-im.utils.logging :as log]
             [status-im.protocol.api :as api]
@@ -14,13 +14,14 @@
             [status-im.i18n :refer [label]]
             [status-im.constants :refer [content-type-command-request]]
             status-im.accounts.login.handlers
+            status-im.accounts.recover.handlers
             [clojure.string :as str]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as u]))
 
 
 (defn save-account [_ [_ account]]
-  (accounts/save-accounts [account] true))
+  (accounts-model/save-accounts [account] true))
 
 (register-handler
   :add-account
@@ -55,7 +56,7 @@
 
 (defn save-account-to-realm!
   [{:keys [current-account-id accounts]} _]
-  (accounts/save-accounts [(get accounts current-account-id)] true))
+  (accounts-model/save-accounts [(get accounts current-account-id)] true))
 
 (defn send-account-update
   [{:keys [current-account-id accounts]} _]
@@ -82,40 +83,17 @@
         (when needs-update?
           (dispatch [:account-update]))))))
 
-(defn initialize-account [{:keys [accounts] :as db} address]
-  (let [is-login-screen? (= (:view-id db) :login)]
-    (dispatch [:set :login {}])
-    (dispatch [:set :current-account-id address])
-    (let [key (:public-key (accounts address))]
-      (dispatch [:set :current-public-key key]))
-    (dispatch [:initialize-account address])
-    (when is-login-screen? (dispatch [:navigate-to-clean default-view]))))
+(defn set-current-account
+  [{:keys [accounts] :as db} [_ address]]
+  (let [key (:public-key (accounts address))]
+    (-> db
+        (assoc :current-account-id address)
+        (assoc :current-public-key key))))
 
-(defn logged-in [db address]
-  (let [is-login-screen? (= (:view-id db) :login)
-        new-account? (not is-login-screen?)]
-    (log/debug "Logged in: ")
-    (realm/change-account-realm address new-account?
-                                #(if (nil? %)
-                                   (initialize-account db address)
-                                   (log/debug "Error changing acount realm: " %)))))
-
-(register-handler
-  :login-account
-  (u/side-effect!
-    (fn [db [_ address password]]
-      (geth/login address password
-                  (fn [result]
-                    (let [data (json->clj result)
-                          error (:error data)
-                          success (zero? (count error))]
-                      (log/debug "Logged in account: ")
-                      (if success
-                        (logged-in db address)
-                        (dispatch [:set-in [:login :error] error]))))))))
+(register-handler :set-current-account set-current-account)
 
 (defn load-accounts! [db _]
-  (let [accounts (->> (accounts/get-accounts)
+  (let [accounts (->> (accounts-model/get-accounts)
                       (map (fn [{:keys [address] :as account}]
                              [address account]))
                       (into {}))]
