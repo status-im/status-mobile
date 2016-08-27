@@ -183,9 +183,8 @@
     (init-console-chat db false)))
 
 (register-handler :save-password
-  (fn [db [_ password]]
-    (sign-up-service/save-password password)
-    (dispatch [:create-account password])
+  (fn [db [_ password mnemonic]]
+    (sign-up-service/save-password password mnemonic)
     (assoc db :password-saved true)))
 
 (register-handler :sign-up
