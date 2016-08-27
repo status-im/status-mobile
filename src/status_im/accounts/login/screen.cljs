@@ -81,14 +81,6 @@
      [address-input (or address "")]
      [password-input error]]]
    [view st/bottom-actions-container
-    (when (= keyboard-height 0)
-      [view st/recover-button-container
-       [touchable-highlight
-        {:on-press #()}
-        [view st/recover-button
-         [text {:style             st/recover-button-text
-                :platform-specific platform-specific}
-          (label :t/recover-access)]]]])
     [view st/connect-button-container
      [touchable-highlight
       {:on-press #(dispatch [:login-account address password])}

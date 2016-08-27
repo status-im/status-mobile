@@ -12,25 +12,25 @@
   [{:keys [transactions-queue] :as db} _]
   (assoc db :transactions transactions-queue))
 
-(defn on-unlock [hashes]
-  (fn [result-str]
-    (let [{:keys [error]} (t/json->clj result-str)]
-      ;; todo: add message about wrong password
-      (if (s/blank? error)
-        (do
-          (dispatch [:set :wrong-password? false])
-          (doseq [hash hashes]
-            (g/complete-transaction
-              hash
-              #(dispatch [:transaction-completed hash %])))
-          (dispatch [:navigate-back]))
-        (dispatch [:set :wrong-password? true])))))
+(defn on-unlock 
+  [hashes password]
+  ;; todo: add message about wrong password
+  (do
+    ;(dispatch [:set :wrong-password? false])
+    (doseq [hash hashes]
+      (g/complete-transaction
+        hash
+        password
+        #(dispatch [:transaction-completed hash %])))
+    (dispatch [:navigate-back])))
+    ;(dispatch [:set :wrong-password? true])
+
 
 (register-handler :accept-transactions
   (u/side-effect!
     (fn [{:keys [transactions current-account-id]} [_ password]]
       (let [hashes (keys transactions)]
-        (g/login current-account-id password (on-unlock hashes))))))
+        (on-unlock hashes password)))))
 
 (register-handler :deny-transactions
   (u/side-effect!

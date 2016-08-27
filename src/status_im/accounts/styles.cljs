@@ -76,12 +76,16 @@
    :alignItems     :center
    :justifyContent :center})
 
+(def bottom-actions-container
+  {:position :absolute
+   :left     0
+   :right    0
+   :bottom   0})
+
 (def add-account-button-container
-  {:position       :absolute
-   :bottom         16
-   :height         50
-   :left           100
-   :right          100
+  {:flex           1
+   :paddingVertical   16
+   :paddingHorizontal 28
    :justifyContent :center
    :alignItems     :center})
 
@@ -99,3 +103,17 @@
    :color         :white
    :fontSize      16
    :marginLeft    8})
+
+(def recover-button-container
+  {:flex     1})
+
+(def recover-button
+  {:flex 1
+   :alignItems :center
+   :paddingVertical   16
+   :paddingHorizontal 28})
+
+(def recover-button-text
+  {:flex  1
+   :color color-white
+   :fontSize 16})

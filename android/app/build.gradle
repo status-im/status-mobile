@@ -139,7 +139,7 @@ dependencies {
     compile project(':react-native-image-crop-picker')
     compile project(':react-native-webview-bridge')
     //compile(name:'statusgo-android-16', ext:'aar')
-    compile(group: 'status-im', name: 'status-go', version: 'unlock', ext: 'aar')
+    compile(group: 'status-im', name: 'status-go', version: '0.1.0-574f67', ext: 'aar')
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }

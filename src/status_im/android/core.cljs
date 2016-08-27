@@ -18,6 +18,7 @@
             [status-im.discovery.search-results :refer [discovery-search-results]]
             [status-im.chat.screen :refer [chat]]
             [status-im.accounts.login.screen :refer [login]]
+            [status-im.accounts.recover.screen :refer [recover]]
             [status-im.accounts.screen :refer [accounts]]
             [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
@@ -49,7 +50,6 @@
 
 (defn app-root []
   (let [signed-up       (subscribe [:get :signed-up])
-        _               (log/debug "signed up: " @signed-up)
         view-id         (subscribe [:get :view-id])
         account-id      (subscribe [:get :current-account-id])
         keyboard-height (subscribe [:get :keyboard-height])]
@@ -78,8 +78,10 @@
          (let [startup-view (if @account-id
                               (if @signed-up
                                 @view-id
-                                :chat)
-                              (if (contains? #{:login :chat} @view-id)
+                                (if (= @view-id :accounts)
+                                  :accounts
+                                  :chat))
+                              (if (contains? #{:login :chat :recover} @view-id)
                                 @view-id
                                 :accounts))]
            (log/debug startup-view)
@@ -101,6 +103,7 @@
                              :profile-photo-capture profile-photo-capture
                              :accounts accounts
                              :login login
+                             :recover recover
                              :confirm confirm
                              :my-profile my-profile)]
              [component {:platform-specific {:styles            styles
