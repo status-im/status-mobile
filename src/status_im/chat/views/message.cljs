@@ -3,6 +3,7 @@
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
+            [status-im.i18n :refer [message-status-label]]
             [status-im.components.react :refer [view
                                                 text
                                                 image
@@ -11,14 +12,15 @@
             [status-im.components.animation :as anim]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
-            [status-im.models.commands :refer [parse-command-msg-content
+            [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
             [status-im.utils.datetime :as time]
             [status-im.constants :refer [text-content-type
                                          content-type-status
                                          content-type-command
-                                         content-type-command-request]]))
+                                         content-type-command-request]]
+            [status-im.utils.logging :as log]))
 
 (defn message-date [timestamp platform-specific]
   [view {}
@@ -70,7 +72,7 @@
 
 (defview message-content-command [content preview platform-specific]
   [commands [:get-commands-and-responses]]
-  (let [{:keys [command content]} (parse-command-msg-content commands content)
+  (let [{:keys [command content]} (parse-command-message-content commands content)
         {:keys [name icon type]} command]
     [view st/content-command-view
      [view st/command-container
@@ -90,8 +92,8 @@
               :font              :default}
         (str content)])]))
 
-(defn set-chat-command [msg-id command]
-  (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
+(defn set-chat-command [message-id command]
+  (dispatch [:set-response-chat-command message-id (keyword (:name command))]))
 
 (defn message-view
   [message content]
@@ -139,9 +141,8 @@
                             :platform-specific platform-specific}]]
    platform-specific])
 
-(defview message-delivery-status
-  [{:keys [delivery-status msg-id to] :as m} platform-specific]
-  [status [:get-in [:message-status to msg-id]]]
+(defview message-delivery-status [{:keys [delivery-status chat-id message-id] :as message} platform-specific]
+  [status [:get-in [:message-status chat-id message-id]]]
   [view st/delivery-view
    [image {:source (case (or status delivery-status)
                      :seen {:uri :icon_ok_small}
@@ -152,12 +153,7 @@
    [text {:style             st/delivery-text
           :platform-specific platform-specific
           :font              :default}
-    (case (or status delivery-status)
-      :delivered "Sent"
-      :seen "Seen"
-      :seen-by-everyone "Seen by everyone"
-      :failed "Failed"
-      "Pending")]])
+    (message-status-label (or status delivery-status))]])
 
 (defview member-photo [from]
   [photo-path [:photo-path from]]
@@ -186,7 +182,7 @@
          [message-delivery-status {:delivery-status delivery-status} platform-specific])]]]))
 
 (defn message-body
-  [{:keys [outgoing delivery-status] :as message} content platform-specific]
+  [{:keys [outgoing] :as message} content platform-specific]
   [view (st/message-body message)
    content
    (when outgoing
@@ -226,18 +222,17 @@
                   children)])}))
     (into [view] children)))
 
-(defn chat-message
-  [{:keys [outgoing delivery-status timestamp new-day group-chat msg-id chat-id]
-    :as   message}
-   platform-specific]
-  (let [status (subscribe [:get-in [:message-status chat-id msg-id]])]
+(defn chat-message [{:keys [outgoing delivery-status timestamp new-day group-chat message-id chat-id]
+                     :as   message}
+                    platform-specific]
+  (let [status (subscribe [:get-in [:message-status chat-id message-id]])]
     (r/create-class
       {:component-did-mount
        (fn []
          (when (and (not outgoing)
                     (not= :seen delivery-status)
                     (not= :seen @status))
-           (dispatch [:send-seen! chat-id msg-id])))
+           (dispatch [:send-seen! chat-id message-id])))
        :reagent-render
        (fn [{:keys [outgoing delivery-status timestamp new-day group-chat]
              :as   message}

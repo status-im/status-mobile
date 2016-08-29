@@ -31,8 +31,8 @@
     :else 10))
 
 (defn last-message-padding
-  [{:keys [last-msg typing]}]
-  (when (and last-msg (not typing))
+  [{:keys [last-message typing]}]
+  (when (and last-message (not typing))
     {:paddingBottom 20}))
 
 (def message-body-base

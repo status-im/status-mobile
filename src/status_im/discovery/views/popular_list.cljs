@@ -31,6 +31,6 @@
             :platform-specific platform-specific
             :font              :default}
       count]]]
-   (for [{:keys [msg-id] :as discovery} discoveries]
-     ^{:key (str "message-" msg-id)}
+   (for [{:keys [message-id] :as discovery} discoveries]
+     ^{:key (str "message-" message-id)}
      [discovery-list-item discovery platform-specific])])

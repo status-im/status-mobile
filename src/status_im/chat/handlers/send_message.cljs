@@ -13,18 +13,38 @@
                                          content-type-command
                                          content-type-command-request
                                          default-number-of-messages]]
-            [status-im.protocol.api :as api]))
+            [status-im.protocol.api :as api]
+            [status-im.utils.logging :as log]))
 
 (defn default-delivery-status [chat-id]
   (if (cu/console? chat-id)
     :seen
-    :pending))
+    :sending))
+
+(defn prepare-message
+  [{:keys [identity current-chat-id] :as db} _]
+  (let [text (get-in db [:chats current-chat-id :input-text])
+        [command] (suggestions/check-suggestion db (str text " "))
+        message (cu/check-author-direction
+                  db current-chat-id
+                  {:message-id      (random/id)
+                   :chat-id         current-chat-id
+                   :content         text
+                   :to              current-chat-id
+                   :from            identity
+                   :content-type    text-content-type
+                   :delivery-status (default-delivery-status current-chat-id)
+                   :outgoing        true
+                   :timestamp       (time/now-ms)})]
+    (if command
+      (commands/set-command-input db :commands command)
+      (assoc db :new-message (when-not (s/blank? text) message)))))
 
 (defn prepare-command
   [identity chat-id {:keys [preview preview-string content command to-message]}]
   (let [content {:command (command :name)
                  :content content}]
-    {:msg-id           (random/id)
+    {:message-id       (random/id)
      :from             identity
      :to               chat-id
      :content          (assoc content :preview preview-string)
@@ -37,7 +57,7 @@
      :type             (:type command)
      :has-handler      (:has-handler command)}))
 
-(register-handler :send-chat-msg
+(register-handler :send-chat-message
   (u/side-effect!
     (fn [{:keys [current-chat-id identity current-account-id] :as db}]
       (let [staged-commands (vals (get-in db [:chats current-chat-id :staged-commands]))
@@ -60,7 +80,7 @@
     (fn [_ [_ {:keys [commands message] :as params}]]
       (doseq [{:keys [command] :as message} commands]
         (let [params' (assoc params :command message)]
-          (if (:pending message)
+          (if (:sending message)
             (dispatch [:navigate-to :confirm])
             (if (:has-handler command)
               (dispatch [::invoke-command-handlers! params'])
@@ -134,18 +154,21 @@
 (register-handler ::prepare-message
   (u/side-effect!
     (fn [db [_ {:keys [chat-id identity message] :as params}]]
-      (let [message' (cu/check-author-direction
+      (let [{:keys [group-chat]} (get-in db [:chats chat-id])
+            message' (cu/check-author-direction
                        db chat-id
-                       {:msg-id          (random/id)
+                       {:message-id      (random/id)
                         :chat-id         chat-id
                         :content         message
-                        :to              chat-id
                         :from            identity
                         :content-type    text-content-type
                         :delivery-status (default-delivery-status chat-id)
                         :outgoing        true
                         :timestamp       (time/now-ms)})
-            params' (assoc params :message message')]
+            message'' (if group-chat
+                        (assoc message' :group-id chat-id :message-type :group-user-message)
+                        (assoc message' :to chat-id :message-type :user-message))
+            params' (assoc params :message message'')]
         (dispatch [::add-message params'])
         (dispatch [::save-message! params'])))))
 
@@ -162,13 +185,13 @@
 
 (register-handler ::send-message!
   (u/side-effect!
-    (fn [db [_ {:keys [message chat-id]}]]
+    (fn [_ [_ {{:keys [message-type]
+                :as   message} :message
+               chat-id         :chat-id}]]
       (when (and message (cu/not-console? chat-id))
-        (let [{:keys [group-chat]} (get-in db [:chats chat-id])
-              message' (select-keys message [:content :msg-id])]
-          (if group-chat
-            (api/send-group-user-msg (assoc message' :group-id chat-id))
-            (api/send-user-msg (assoc message' :to chat-id))))))))
+        (if (= message-type :group-user-message)
+          (api/send-group-user-message message)
+          (api/send-user-message message))))))
 
 (register-handler ::send-command-protocol!
   (u/side-effect!
@@ -179,5 +202,5 @@
                 message {:content      content
                          :content-type content-type-command}]
             (if group-chat
-              (api/send-group-user-msg (assoc message :group-id chat-id))
-              (api/send-user-msg (assoc message :to chat-id)))))))))
+              (api/send-group-user-message (assoc message :group-id chat-id))
+              (api/send-user-message (assoc message :to chat-id)))))))))

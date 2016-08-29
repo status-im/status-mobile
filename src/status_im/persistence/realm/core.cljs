@@ -100,8 +100,11 @@
   [schema schema-name obj]
   (write schema (fn [] (create schema schema-name obj true))))
 
-(defn and-q [queries]
+(defn and-query [queries]
   (str/join " and " queries))
+
+(defn or-query [queries]
+  (str/join " or " queries))
 
 (defmulti to-query (fn [schema schema-name operator field value]
                      operator))
@@ -122,11 +125,14 @@
   (let [q (to-query schema schema-name :eq field value)]
     (.filtered (.objects (realm schema) (name schema-name)) q)))
 
-(defn get-by-fields [schema schema-name fields]
+(defn get-by-fields [schema schema-name op fields]
   (let [queries (map (fn [[k v]]
                        (to-query schema schema-name :eq k v))
                      fields)]
-    (.filtered (.objects (realm schema) (name schema-name)) (and-q queries))))
+    (.filtered (.objects (realm schema) (name schema-name))
+               (case op
+                 :and (and-query queries)
+                 :or (or-query queries)))))
 
 (defn get-all [schema schema-name]
   (.objects (realm schema) (to-string schema-name)))
