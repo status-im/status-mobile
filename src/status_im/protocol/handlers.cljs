@@ -67,9 +67,11 @@
 
 (defn participant-left-group-message [chat-id from message-id]
   (let [left-name (:name (contacts/contact-by-identity from))]
-    (->> (str (or left-name from) " " (label :t/left))
-         (system-message message-id)
-         (messages/save-message chat-id))))
+    (let [message (->> (str (or left-name from) " " (label :t/left))
+                       (system-message message-id)
+                       (merge {:group-id chat-id
+                               :chat-id  chat-id}))]
+      (dispatch [:received-message message]))))
 
 (register-handler :group-chat-invite-acked
   (u/side-effect!
@@ -96,7 +98,20 @@
     (fn [_ [action from group-id message-id]]
       (log/debug action message-id from group-id)
       (when-not (= (api/my-identity) from)
-        (participant-left-group-message group-id from message-id)))))
+        (participant-left-group-message group-id from message-id)
+        (dispatch [::remove-identity-from-chat group-id from])
+        (dispatch [::remove-identity-from-chat! group-id from])))))
+
+(register-handler ::remove-identity-from-chat
+  (fn [db [_ chat-id id]]
+    (update-in db [:chats chat-id :contacts]
+               #(remove (fn [{:keys [identity]}]
+                          (= identity id)) %))))
+
+(register-handler ::remove-identity-from-chat!
+  (u/side-effect!
+    (fn [_ [_ group-id identity]]
+      (chats/chat-remove-participants group-id [identity]))))
 
 (register-handler :participant-invited-to-group
   (u/side-effect!
@@ -138,7 +153,7 @@
   (after
     (fn [_ [_ {:keys [message-id status] :as pending-message}]]
       (pending-messages/upsert-pending-message! pending-message)
-      (messages/update-message! {:message-id message-id
+      (messages/update-message! {:message-id      message-id
                                  :delivery-status status})))
   (fn [db [_ {:keys [message-id chat-id status] :as pending-message}]]
     (if chat-id

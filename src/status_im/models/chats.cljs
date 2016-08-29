@@ -122,7 +122,7 @@
         (-> (aget chat "contacts")
             (r/filtered query)
             (.forEach (fn [object _ _]
-                        (aset object "is-in-chat" false))))))))
+                        (r/delete :account object))))))))
 
 (defn active-group-chats []
   (let [results (r/filtered (r/get-all :account :chat)

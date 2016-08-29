@@ -359,9 +359,8 @@
   ;; todo oreder of operations tbd
   (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
   (-> remove-chat
-      ;; todo uncomment
-      ;((after notify-about-leaving!))
-      ;((after leaving-message!))
+      ((after notify-about-leaving!))
+      ((after leaving-message!))
       ((after delete-messages!))
       ((after delete-chat!))))
 
