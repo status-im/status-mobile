@@ -37,8 +37,8 @@
                                :properties {:name  "string"
                                             :count {:type "int" :optional true :default 0}}}
                               {:name       :discovery
-                               :primaryKey :msg-id
-                               :properties {:msg-id       "string"
+                               :primaryKey :message-id
+                               :properties {:message-id   "string"
                                             :name         {:type "string" :optional true}
                                             :status       "string"
                                             :whisper-id   "string"
@@ -52,10 +52,12 @@
                                :properties {:key   "string"
                                             :value "string"}}
                               {:name       :message
-                               :primaryKey :msg-id
-                               :properties {:msg-id          "string"
+                               :primaryKey :message-id
+                               :properties {:message-id      "string"
                                             :from            "string"
                                             :to              {:type     "string"
+                                                              :optional true}
+                                            :group-id        {:type     "string"
                                                               :optional true}
                                             :content         "string" ;; TODO make it ArrayBuffer
                                             :content-type    "string"
@@ -65,31 +67,49 @@
                                             :outgoing        "bool"
                                             :delivery-status {:type     "string"
                                                               :optional true}
+                                            :retry-count     {:type    :int
+                                                              :default 0}
                                             :same-author     "bool"
                                             :same-direction  "bool"
                                             :preview         {:type     :string
+                                                              :optional true}
+                                            :message-type    {:type     :string
                                                               :optional true}}}
+                              {:name       :pending-message
+                               :primaryKey :message-id
+                               :properties {:message-id  "string"
+                                            :chat-id     {:type     "string"
+                                                          :optional true}
+                                            :message     "string"
+                                            :timestamp   "int"
+                                            :status      "string"
+                                            :retry-count "int"
+                                            :send-once   "bool"
+                                            :identities  {:type     "string"
+                                                          :optional true}
+                                            :internal?   {:type     "bool"
+                                                          :optional true}}}
                               {:name       :chat-contact
                                :properties {:identity   "string"
                                             :is-in-chat {:type    "bool"
                                                          :default true}}}
                               {:name       :chat
                                :primaryKey :chat-id
-                               :properties {:chat-id     "string"
-                                            :name        "string"
-                                            :color       {:type    "string"
-                                                          :default default-chat-color}
-                                            :group-chat  {:type    "bool"
-                                                          :indexed true}
-                                            :is-active   "bool"
-                                            :timestamp   "int"
-                                            :contacts    {:type       "list"
-                                                          :objectType "chat-contact"}
-                                            :dapp-url    {:type     :string
-                                                          :optional true}
-                                            :dapp-hash   {:type     :int
-                                                          :optional true}
-                                            :last-msg-id "string"}}
+                               :properties {:chat-id         "string"
+                                            :name            "string"
+                                            :color           {:type    "string"
+                                                              :default default-chat-color}
+                                            :group-chat      {:type    "bool"
+                                                              :indexed true}
+                                            :is-active       "bool"
+                                            :timestamp       "int"
+                                            :contacts        {:type       "list"
+                                                              :objectType "chat-contact"}
+                                            :dapp-url        {:type     :string
+                                                              :optional true}
+                                            :dapp-hash       {:type     :int
+                                                              :optional true}
+                                            :last-message-id "string"}}
                               {:name       :command
                                :primaryKey :chat-id
                                :properties {:chat-id "string"

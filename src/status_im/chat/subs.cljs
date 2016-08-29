@@ -102,9 +102,9 @@
   (fn [db _]
     (reaction (commands/get-chat-command-content @db))))
 
-(register-sub :get-chat-command-to-msg-id
+(register-sub :get-chat-command-to-message-id
   (fn [db _]
-    (reaction (commands/get-chat-command-to-msg-id @db))))
+    (reaction (commands/get-chat-command-to-message-id @db))))
 
 (register-sub :chat-command-request
   (fn [db _]

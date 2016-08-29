@@ -104,9 +104,9 @@
 (register-handler :load-accounts load-accounts!)
 
 (defn console-create-account [db _]
-  (let [msg-id (random/id)]
+  (let [message-id (random/id)]
     (dispatch [:received-message
-               {:msg-id       msg-id
+               {:message-id   message-id
                 :content      {:command (name :keypair)
                                :content (label :t/keypair-generated)}
                 :content-type content-type-command-request

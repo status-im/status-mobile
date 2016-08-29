@@ -15,7 +15,7 @@
   (dispatch [:set-chat-input-text message]))
 
 (defn send []
-  (dispatch [:send-chat-msg]))
+  (dispatch [:send-chat-message]))
 
 (defn message-valid? [staged-commands message]
   (or (and (pos? (count message))

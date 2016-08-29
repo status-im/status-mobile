@@ -23,6 +23,14 @@
    :active-online                         "online"
    :active-unknown                        "unknown"
 
+   ;messages
+   :status-sending                        "Sending"
+   :status-sent                           "Sent"
+   :status-seen-by-everyone               "Seen by everyone"
+   :status-seen                           "Seen"
+   :status-delivered                      "Delivered"
+   :status-failed                         "Failed"
+
    ;datetime
    :datetime-second                       {:one   "second"
                                            :other "seconds"}

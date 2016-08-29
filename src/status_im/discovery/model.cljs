@@ -22,15 +22,15 @@
   (doseq [tag (distinct tags)]
     (update-tag-counter func tag)))
 
-(defn get-tags [msg-id]
-  (-> (r/get-by-field :account :discovery :msg-id msg-id)
+(defn get-tags [message-id]
+  (-> (r/get-by-field :account :discovery :message-id message-id)
       (r/single-cljs)
       (:tags)
       (vals)))
 
-(defn- upsert-discovery [{:keys [msg-id tags] :as discovery}]
+(defn- upsert-discovery [{:keys [message-id tags] :as discovery}]
   (log/debug "Creating/updating discovery with tags: " tags)
-  (let [prev-tags (get-tags msg-id)]
+  (let [prev-tags (get-tags message-id)]
     (if prev-tags
       (update-tags-counter dec prev-tags))
     (r/create :account :discovery discovery true)

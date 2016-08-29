@@ -12,8 +12,8 @@
 
 (def request-message-icon-scale-delay 600)
 
-(defn set-chat-command [msg-id command]
-  (dispatch [:set-response-chat-command msg-id (keyword (:name command))]))
+(defn set-chat-command [message-id command]
+  (dispatch [:set-response-chat-command message-id (keyword (:name command))]))
 
 (defn label [command]
   (when command
@@ -42,9 +42,9 @@
       (anim/start
         (button-animation val min-scale loop? answered?)))))
 
-(defn request-button [msg-id command]
+(defn request-button [message-id command]
   (let [scale-anim-val (anim/create-value min-scale)
-        answered? (subscribe [:is-request-answered? msg-id])
+        answered? (subscribe [:is-request-answered? message-id])
         loop? (r/atom true)
         context {:to-value  max-scale
                  :val       scale-anim-val
@@ -56,11 +56,11 @@
        :component-will-unmount
        #(reset! loop? false)
        :reagent-render
-       (fn [msg-id command]
+       (fn [message-id command]
          (if command
            [touchable-highlight
             {:on-press            (when-not @answered?
-                                    #(set-chat-command msg-id command))
+                                    #(set-chat-command message-id command))
              :style               st/command-request-image-touchable
              :accessibility-label (label command)}
             [animated-view {:style (st/command-request-image-view command scale-anim-val)}
@@ -68,9 +68,9 @@
                      :style  st/command-request-image}]]]))})))
 
 (defn message-content-command-request
-  [{:keys [msg-id content from incoming-group]} platform-specific]
+  [{:keys [message-id content from incoming-group]} platform-specific]
   (let [commands-atom (subscribe [:get-responses])]
-    (fn [{:keys [msg-id content from incoming-group]}]
+    (fn [{:keys [message-id content from incoming-group]}]
       (let [commands @commands-atom
             {:keys [command content]} (parse-command-request commands content)]
         [view st/comand-request-view
@@ -84,7 +84,7 @@
                  :platform-specific platform-specific
                  :font              :default}
            content]]
-         [request-button msg-id command]
+         [request-button message-id command]
          (when (:request-text command)
            [view st/command-request-text-view
             [text {:style             st/style-sub-text

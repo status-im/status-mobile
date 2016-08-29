@@ -34,13 +34,13 @@
               [identity contact]))
        (into {})))
 
-(defn add-msg-color [{:keys [from] :as msg} contact-by-identity]
+(defn add-message-color [{:keys [from] :as message} contact-by-identity]
   (if (= "system" from)
-    (assoc msg :text-color :#4A5258
-               :background-color :#D3EEEF)
+    (assoc message :text-color :#4A5258
+                   :background-color :#D3EEEF)
     (let [{:keys [text-color background-color]} (get contact-by-identity from)]
-      (assoc msg :text-color text-color
-                 :background-color background-color))))
+      (assoc message :text-color text-color
+                     :background-color background-color))))
 
 (defview chat-icon []
   [chat-id [:chat :chat-id]
@@ -66,11 +66,11 @@
 
 (defn message-row [{:keys [contact-by-identity platform-specific group-chat messages-count]}]
   (fn [row _ idx]
-    (let [msg (-> row
-                  (add-msg-color contact-by-identity)
-                  (assoc :group-chat group-chat)
-                  (assoc :last-msg (= (js/parseInt idx) (dec messages-count))))]
-      (list-item [chat-message msg platform-specific]))))
+    (let [message (-> row
+                      (add-message-color contact-by-identity)
+                      (assoc :group-chat group-chat)
+                      (assoc :last-message (= (js/parseInt idx) (dec messages-count))))]
+      (list-item [chat-message message platform-specific]))))
 
 (defn on-action-selected [position]
   (case position

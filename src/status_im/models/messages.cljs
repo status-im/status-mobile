@@ -26,10 +26,10 @@
 
 (defn save-message
   ;; todo remove chat-id parameter
-  [chat-id {:keys [delivery-status msg-id content]
-            :or   {delivery-status :pending}
+  [chat-id {:keys [delivery-status message-id content]
+            :or   {delivery-status :sending}
             :as   message}]
-  (when-not (r/exists? :account :message :msg-id msg-id)
+  (when-not (r/exists? :account :message :message-id message-id)
     (r/write :account
       (fn []
         (let [content' (if (string? content)
@@ -66,15 +66,14 @@
                                (generate-hiccup (read-string preview)))))
                   message))))))
 
-(defn update-message! [{:keys [msg-id] :as msg}]
-  (log/debug "update-message!" msg)
+(defn update-message! [{:keys [message-id] :as message}]
   (r/write :account
     (fn []
-      (when (r/exists? :account :message :msg-id msg-id)
-        (r/create :account :message msg true)))))
+      (when (r/exists? :account :message :message-id message-id)
+        (r/create :account :message message true)))))
 
 (defn get-message [id]
-  (r/get-one-by-field :account :message :msg-id id))
+  (r/get-one-by-field :account :message :message-id id))
 
 (defn get-last-message [chat-id]
   (-> (r/get-by-field :account :message :chat-id chat-id)
