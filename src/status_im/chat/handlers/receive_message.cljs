@@ -26,10 +26,14 @@
 (defn receive-message
   [db [_ {:keys [from group-id chat-id message-id] :as message}]]
   (let [same-message (messages/get-message message-id)
-        current-identity (get-current-identity db)]
-    (when-not (or same-message (= from current-identity))
+        current-identity (get-current-identity db)
+        chat-id' (or chat-id from)
+        exists? (c/chat-exists? chat-id')
+        active? (c/is-active? chat-id')]
+    (when (and (not same-message)
+               (not= from current-identity)
+               (or (not exists?) active?))
       (let [group-chat? (not (nil? group-id))
-            chat-id' (or chat-id from)
             previous-message (messages/get-last-message chat-id')
             message' (assoc (->> message
                                  (cu/check-author-direction previous-message)
@@ -37,7 +41,7 @@
                        :delivery-status :sending
                        :chat-id chat-id')]
         (store-message message')
-        (when-not (c/chat-exists? chat-id')
+        (when-not exists?
           (dispatch [:add-chat chat-id' (when group-chat? {:group-chat true})]))
         (dispatch [::add-message message'])
         (when (= (:content-type message') content-type-command-request)

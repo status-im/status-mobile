@@ -35,3 +35,10 @@
   (r/write :account
            (fn []
              (r/delete :account (r/get-by-field :account :pending-message :message-id message-id)))))
+
+(defn remove-all-by-chat [chat-id]
+  (r/write
+    :account
+    (fn []
+      (r/delete :account
+                (r/get-by-field :account :pending-message :chat-id chat-id)))))

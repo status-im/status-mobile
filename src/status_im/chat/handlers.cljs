@@ -163,7 +163,7 @@
 
 (defn init-console-chat
   [{:keys [chats] :as db} existing-account?]
-  (let [chat-id  "console"
+  (let [chat-id "console"
         new-chat sign-up-service/console-chat]
     (if (chats chat-id)
       db
@@ -278,7 +278,6 @@
                      :name       (or name contcat-id)
                      :color      default-chat-color
                      :group-chat false
-                     :is-active  true
                      :timestamp  (.getTime (js/Date.))
                      :contacts   [{:identity contcat-id}]
                      :dapp-url   nil
@@ -351,17 +350,24 @@
   [{:keys [current-chat-id]} _]
   (r/write :account
            (fn [] :account
-             (->> (r/get-by-field :account :chat :chat-id current-chat-id)
-                  (r/single)
-                  (r/delete :account)))))
+             (when-let [chat (->> (r/get-by-field :account :chat :chat-id current-chat-id)
+                             (r/single))]
+               (doto chat
+                 (aset "is-active" false)
+                 (aset "removed-at" (.getTime (js/Date.))))))))
+
+(defn remove-pending-messages!
+  [{:keys [current-chat-id]}]
+  (pending-messages/remove-all-by-chat current-chat-id))
 
 (register-handler :leave-group-chat
   ;; todo oreder of operations tbd
   (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
   (-> remove-chat
       ((after notify-about-leaving!))
-      ((after leaving-message!))
+      ;((after leaving-message!))
       ((after delete-messages!))
+      ((after remove-pending-messages!))
       ((after delete-chat!))))
 
 (defn edit-mode-handler [mode]

@@ -146,6 +146,5 @@
   ;; todo order of operations tbd
   (-> add-memebers
       ((after add-members-to-realm!))
-      ;; todo uncomment
-      ;((after notify-about-new-members!))
+      ((after notify-about-new-members!))
       ((enrich deselect-members))))

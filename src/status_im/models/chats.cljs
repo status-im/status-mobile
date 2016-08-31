@@ -27,6 +27,16 @@
 (defn chat-exists? [chat-id]
   (r/exists? :account :chat :chat-id chat-id))
 
+(defn get-property [chat-id property]
+  (when-let [chat (r/single (r/get-by-field :account :chat :chat-id chat-id))]
+    (aget chat (name property))))
+
+(defn is-active? [chat-id]
+  (get-property chat-id :is-active))
+
+(defn removed-at [chat-id]
+  (get-property chat-id :removed-at))
+
 (defn add-status-message [chat-id]
   ;; TODO Get real status
   (save-message chat-id
@@ -40,58 +50,30 @@
                  :outgoing     false}))
 
 (defn create-chat
-  ([{:keys [last-message-id] :as chat}]
-   (let [chat (assoc chat :last-message-id (or last-message-id ""))]
-     (r/write :account #(r/create :account :chat chat))))
-  ([db chat-id identities group-chat? chat-name]
-   (when-not (chat-exists? chat-id)
-     (let [chat-name (or chat-name
-                         (get-chat-name chat-id identities))
-           _         (log/debug "creating chat" chat-name)]
-       (r/write :account
-         (fn []
-           (let [contacts (mapv (fn [ident]
-                                  {:identity ident}) identities)]
-             (r/create :account :chat
-                       {:chat-id     chat-id
-                        :is-active   true
-                        :name        chat-name
-                        :group-chat  group-chat?
-                        :timestamp   (timestamp)
-                        :contacts    contacts
-                        :last-message-id ""}))))
-       (add-status-message chat-id)))))
+  [{:keys [last-message-id contacts] :as chat}]
+  (let [now (timestamp)
+        contacts' (map #(assoc % :added-at now) contacts)
+        chat' (assoc chat :last-message-id (or last-message-id "")
+                          :contacts contacts')]
+    (r/write :account #(r/create :account :chat chat' true))))
 
 (defn chat-contacts [chat-id]
   (-> (r/get-by-field :account :chat :chat-id chat-id)
       (r/single)
       (aget "contacts")))
 
-(defn re-join-group-chat [db group-id identities group-name]
-  (r/write :account
-    (fn []
-      (let [new-identities    (set identities)
-            only-old-contacts (->> (chat-contacts group-id)
-                                   (r/cljs-list)
-                                   (remove (fn [{:keys [identity]}]
-                                             (new-identities identity))))
-            contacts          (->> new-identities
-                                   (mapv (fn [ident]
-                                           {:identity ident}))
-                                   (concat only-old-contacts))]
-        (r/create :account :chat
-                  {:chat-id   group-id
-                   :is-active true
-                   :name      group-name
-                   :contacts  contacts} true))))
-  db)
+(defn contact [chat-id id]
+  (let [contacts (r/cljs-list (chat-contacts chat-id))]
+    (some (fn [{:keys [identity]}]
+            (= id identity))
+          contacts)))
 
 (defn normalize-contacts
   [chats]
   (map #(update % :contacts vals) chats))
 
 (defn chats-list []
-  (-> (r/get-all :account :chat)
+  (-> (r/get-by-field :account :chat :is-active true)
       (r/sorted :timestamp :desc)
       r/collection->map
       normalize-contacts))
@@ -103,32 +85,46 @@
 
 (defn chat-add-participants [chat-id identities]
   (r/write :account
-    (fn []
-      (let [contacts (chat-contacts chat-id)]
-        (doseq [contact-identity identities]
-          (if-let [contact-exists (.find contacts (fn [object index collection]
+           (fn []
+             (let [contacts (chat-contacts chat-id)
+                   added-at (timestamp)]
+               (doseq [contact-identity identities]
+                 (if-let [contact (.find contacts (fn [object index collection]
                                                     (= contact-identity (aget object "identity"))))]
-            (aset contact-exists "is-in-chat" true)
-            (.push contacts (clj->js {:identity contact-identity})))))))
+                   (doto contact
+                     (aset "is-in-chat" true)
+                     (aset "added-at" added-at))
+                   (.push contacts (clj->js {:identity contact-identity
+                                             :added-at added-at})))))))
   ;; TODO temp. Update chat in db atom
   (dispatch [:initialize-chats]))
 
-;; TODO deprecated? (is there need to remove multiple member at once?)
 (defn chat-remove-participants [chat-id identities]
   (r/write :account
-    (fn []
-      (let [query (include-query :identity identities)
-            chat  (r/single (r/get-by-field :account :chat :chat-id chat-id))]
-        (-> (aget chat "contacts")
-            (r/filtered query)
-            (.forEach (fn [object _ _]
-                        (r/delete :account object))))))))
+           (fn []
+             (let [query (include-query :identity identities)
+                   chat (r/single (r/get-by-field :account :chat :chat-id chat-id))]
+               (-> (aget chat "contacts")
+                   (r/filtered query)
+                   (.forEach (fn [object _ _]
+                               (r/delete :account object))))))))
+
+(defn- groups [active?]
+  (r/filtered (r/get-all :account :chat)
+              (str "group-chat = true && is-active = "
+                   (if active? "true" "false"))))
 
 (defn active-group-chats []
-  (let [results (r/filtered (r/get-all :account :chat)
-                            "group-chat = true && is-active = true")]
-    (js->clj (.map results (fn [object _ _]
-                             (aget object "chat-id"))))))
+  (js->clj (.map (groups true)
+                 (fn [object _ _]
+                   (aget object "chat-id")))))
+
+(defn inactive-group-chats []
+  (->> (groups false)
+       r/cljs-list
+       (map (fn [{:keys [chat-id] :as chat}]
+              [chat-id chat]))
+       (into {})))
 
 (defn set-chat-active [chat-id active?]
   (r/write :account
