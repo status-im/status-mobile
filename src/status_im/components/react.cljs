@@ -5,6 +5,7 @@
 
 (def react-native (u/require "react-native"))
 (def native-modules (.-NativeModules react-native))
+(def device-event-emitter (.-DeviceEventEmitter react-native))
 (def geth (.-Geth native-modules))
 (def react-native-dialogs (u/require "react-native-dialogs"))
 
