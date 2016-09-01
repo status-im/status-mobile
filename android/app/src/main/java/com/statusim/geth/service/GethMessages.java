@@ -63,4 +63,8 @@ public class GethMessages {
      */
     public static final int MSG_TRANSACTION_COMPLETED = 11;
 
+    /**
+     * Geth event
+     */
+    public static final int MSG_GETH_EVENT = 12;
 }

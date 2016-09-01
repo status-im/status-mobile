@@ -21,6 +21,8 @@ public class GethService extends Service {
 
     private static String dataFolder;
 
+    private static Messenger applicationMessenger = null;
+
     private static class IncomingHandler extends Handler {
 
         private final WeakReference<GethService> service;
@@ -49,7 +51,10 @@ public class GethService extends Service {
         Log.d(TAG, "Signal event: " + jsonEvent);
         Bundle replyData = new Bundle();
         replyData.putString("event", jsonEvent);
-        //createAndSendReply(message, GethMessages.MSG_SIGNAL_EVENT, replyData);
+
+        Message replyMessage = Message.obtain(null, GethMessages.MSG_GETH_EVENT, 0, 0, null);
+        replyMessage.setData(replyData);
+        sendReply(applicationMessenger, replyMessage);
     }
 
     @Nullable
@@ -221,6 +226,7 @@ public class GethService extends Service {
     }
 
     private void login(Message message) {
+        applicationMessenger = message.replyTo;
         Bundle data = message.getData();
         String address = data.getString("address");
         String password = data.getString("password");
@@ -230,6 +236,9 @@ public class GethService extends Service {
         Bundle replyData = new Bundle();
         replyData.putString("result", result);
         createAndSendReply(message, GethMessages.MSG_LOGGED_IN, replyData);
+
+        // Test signalEvent
+        //signalEvent("{ \"type\": \"test\", \"event\": \"test event\" }");
     }
 
     private void completeTransaction(Message message){
@@ -271,9 +280,7 @@ public class GethService extends Service {
     private static void sendReply(Messenger messenger, Message message) {
         try {
             messenger.send(message);
-
         } catch (Exception e) {
-
             Log.e(TAG, "Exception sending message id: " + message.what, e);
         }
     }
