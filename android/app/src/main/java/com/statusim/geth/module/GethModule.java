@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
 import com.facebook.react.bridge.*;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.statusim.geth.service.ConnectorHandler;
 import com.statusim.geth.service.GethConnector;
 import com.statusim.geth.service.GethMessages;
@@ -113,6 +114,11 @@ class GethModule extends ReactContextBaseJavaModule implements LifecycleEventLis
                     callback.invoke(result);
                 }
                 break;
+            case GethMessages.MSG_GETH_EVENT:
+                String event = data.getString("event");
+                WritableMap params = Arguments.createMap();
+                params.putString("jsonEvent", event);
+                getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
             default:
                 isClaimed = false;
         }
@@ -233,21 +239,4 @@ class GethModule extends ReactContextBaseJavaModule implements LifecycleEventLis
 
         geth.completeTransaction(callbackIdentifier, hash, password);
     }
-
-    private static Callback signalEventCallback;
-
-    //todo: move this method to GethService
-    public static void signalEvent(String jsonEvent) {
-        Log.d(TAG, "Signal event: " + jsonEvent);
-        if(signalEventCallback != null) {
-            signalEventCallback.invoke(jsonEvent);
-        }
-    }
-
-    @ReactMethod
-    public void registerSignalEventCallback(Callback callback) {
-        Log.d(TAG, "registerSignalEventCallback");
-        signalEventCallback = callback;
-    }
-
 }
