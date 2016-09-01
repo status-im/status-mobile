@@ -6,14 +6,8 @@
   (when (exists? (.-NativeModules r/react-native))
     (.-Geth (.-NativeModules r/react-native))))
 
-(defn register-signal-callback []
-  (when geth
-    (.registerSignalEventCallback
-      geth
-      #(do (dispatch [:signal-event %])
-           (register-signal-callback)))))
-
-(register-signal-callback)
+(.addListener r/device-event-emitter "gethEvent"
+              #(dispatch [:signal-event (.-jsonEvent %)]))
 
 (defn start-node [on-result on-already-running]
   (when geth
