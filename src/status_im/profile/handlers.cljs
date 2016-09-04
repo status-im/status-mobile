@@ -4,12 +4,8 @@
             [status-im.components.react :refer [show-image-picker]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
-            [status-im.utils.handlers :as u]
+            [status-im.utils.handlers :as u :refer [get-hashtags]]
             [clojure.string :as str]))
-
-(defn get-hashtags [status]
-  (let [hashtags (map #(str/lower-case (subs % 1)) (re-seq #"#[^ !?,;:.]+" status))]
-    (or hashtags [])))
 
 (defn message-user [identity]
   (when identity
