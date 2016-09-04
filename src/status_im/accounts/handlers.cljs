@@ -2,7 +2,7 @@
   (:require [status-im.models.accounts :as accounts-model]
             [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
             [status-im.utils.logging :as log]
-            [status-im.protocol.api :as api]
+            [status-im.protocol.core :as protocol]
             [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.persistence.simple-kv-store :as kv]
@@ -33,14 +33,17 @@
   (storage/put kv/kv-store :password password))
 
 (defn account-created [result password]
-  (let [data       (json->clj result)
+  (let [data (json->clj result)
         public-key (:pubkey data)
-        address    (:address data)
-        mnemonic   (:mnemonic data)
-        account    {:public-key public-key
-                    :address    address
-                    :name       address
-                    :photo-path (identicon public-key)}]
+        address (:address data)
+        mnemonic (:mnemonic data)
+        {:keys [public private]} (protocol/new-keypair!)
+        account {:public-key          public-key
+                 :address             address
+                 :name                address
+                 :updates-public-key  public
+                 :updates-private-key private
+                 :photo-path          (identicon public-key)}]
     (log/debug "account-created")
     (when (not (str/blank? public-key))
       (do
@@ -61,15 +64,25 @@
   (accounts-model/save-accounts [(get accounts current-account-id)] true))
 
 (defn send-account-update
-  [{:keys [current-account-id accounts]} _]
-  (api/send-account-update (get accounts current-account-id)))
+  [{:keys [current-account-id current-public-key web3 accounts]} _]
+  (let [{:keys [name photo-path status]} (get accounts current-account-id)
+        {:keys [updates-public-key updates-private-key]} (accounts current-account-id)]
+    (protocol/broadcats-profile!
+      {:web3    web3
+       :message {:from       current-public-key
+                 :message-id (random/id)
+                 :keypair    {:public  updates-public-key
+                              :private updates-private-key}
+                 :payload    {:profile {:name          name
+                                        :status        status
+                                        :profile-image photo-path}}}})))
 
 (register-handler
   :account-update
   (-> (fn [{:keys [current-account-id accounts] :as db} [_ data]]
-        (let [data               (assoc data :last-updated (time/now-ms))
-              account            (-> (get accounts current-account-id)
-                                     (merge data))]
+        (let [data (assoc data :last-updated (time/now-ms))
+              account (-> (get accounts current-account-id)
+                          (merge data))]
           (assoc-in db [:accounts current-account-id] account)))
       ((after save-account-to-realm!))
       ((after send-account-update))))
@@ -79,7 +92,7 @@
   (u/side-effect!
     (fn [{:keys [current-account-id accounts]} _]
       (let [{:keys [last-updated]} (get accounts current-account-id)
-            now           (time/now-ms)
+            now (time/now-ms)
             needs-update? (> (- now last-updated) time/week)]
         (log/info "Need to send account-update: " needs-update?)
         (when needs-update?
