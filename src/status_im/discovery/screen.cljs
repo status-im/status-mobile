@@ -17,7 +17,7 @@
     [status-im.i18n :refer [label]]))
 
 (defn get-hashtags [status]
-  (let [hashtags (map #(str/replace % #"#" "") (re-seq #"[^ !?,;:.]+" status))]
+  (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
     (or hashtags [])))
 
 (defn title-content [platform-specific show-search?]
