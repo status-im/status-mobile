@@ -8,7 +8,7 @@
             [clojure.string :as str]))
 
 (defn get-hashtags [status]
-  (let [hashtags (map #(subs % 1) (re-seq #"#[^ !?,;:.]+" status))]
+  (let [hashtags (map #(str/lower-case (subs % 1)) (re-seq #"#[^ !?,;:.]+" status))]
     (or hashtags [])))
 
 (defn message-user [identity]
