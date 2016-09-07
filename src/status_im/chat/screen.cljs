@@ -25,7 +25,8 @@
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [reagent.core :as r]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [cljs-time.core :as t]))
 
 
 (defn contacts-by-identity [contacts]
@@ -195,18 +196,21 @@
 
 (defn online-text [contact chat-id]
   (if contact
-    (if (> (get contact :last-online) 0)
-      (time/time-ago (time/to-date (get contact :last-online)))
-      (label :t/active-unknown))
+    (let [last-online      (get contact :last-online)
+          last-online-date (time/to-date last-online)
+          now-date         (t/now)]
+      (if (and (> last-online 0)
+               (<= last-online-date now-date))
+        (time/time-ago last-online-date)
+        (label :t/active-unknown)))
     (if (= chat-id "console")
       (label :t/active-online)
       (label :t/active-unknown))))
 
 (defn toolbar-content [platform-specific]
-  (let [{:keys [group-chat name contacts chat-id]}
-        (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
+  (let [{:keys [group-chat name contacts chat-id]} (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
         show-actions (subscribe [:show-actions])
-        contact (subscribe [:get-in [:contacts @chat-id]])]
+        contact      (subscribe [:get-in [:contacts @chat-id]])]
     (fn [platform-specific]
       [view (st/chat-name-view @show-actions)
        [text {:style             st/chat-name-text
