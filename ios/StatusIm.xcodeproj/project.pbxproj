@@ -25,7 +25,7 @@
 		2028DFFA1D4275B600227DCD /* SF-UI-Display-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2028DFF61D4275B600227DCD /* SF-UI-Display-Regular.otf */; };
 		2028DFFB1D4275B600227DCD /* SF-UI-Display-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2028DFF71D4275B600227DCD /* SF-UI-Display-Semibold.otf */; };
 		2028DFFC1D4275B600227DCD /* SF-UI-Display-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2028DFF81D4275B600227DCD /* SF-UI-Display-Thin.otf */; };
-		20AB9EC61D47CC0300E7FD9C /* libRCTJail.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 201067C41D4789F700FA83B6 /* libRCTJail.a */; };
+		20AB9EC61D47CC0300E7FD9C /* libRCTStatus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 201067C41D4789F700FA83B6 /* libRCTStatus.a */; };
 		20B2DBFC1D47C70C00427CD8 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20B2DBFB1D47C70C00427CD8 /* Statusgo.framework */; };
 		213311F38CA74CE280FD09AD /* libRNI18n.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52F6ED6465184513A082652B /* libRNI18n.a */; };
 		22118DE1207A419FBFE7B62D /* libRealmReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD48A32459B64E96843BB238 /* libRealmReact.a */; };
@@ -131,10 +131,10 @@
 		};
 		201067C31D4789F700FA83B6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 439B6B4B407A4E2AACAFE5BE /* RCTJail.xcodeproj */;
+			containerPortal = 439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 206C9F3A1D474E910063E3E6;
-			remoteInfo = RCTJail;
+			remoteInfo = RCTStatus;
 		};
 		20B7D0FD1D3F74CC00B70F14 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -249,16 +249,16 @@
 		2028DFF61D4275B600227DCD /* SF-UI-Display-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Display-Regular.otf"; sourceTree = "<group>"; };
 		2028DFF71D4275B600227DCD /* SF-UI-Display-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Display-Semibold.otf"; sourceTree = "<group>"; };
 		2028DFF81D4275B600227DCD /* SF-UI-Display-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Display-Thin.otf"; sourceTree = "<group>"; };
-		20B2DBDD1D47BD5E00427CD8 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../node_modules/react-native-status/ios/RCTJail/Statusgo.framework"; sourceTree = "<group>"; };
+		20B2DBDD1D47BD5E00427CD8 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../modules/react-native-status/ios/RCTStatus/Statusgo.framework"; sourceTree = "<group>"; };
 		20B2DBF71D47C25500427CD8 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Statusgo.framework; sourceTree = "<group>"; };
-		20B2DBFB1D47C70C00427CD8 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../node_modules/react-native-status/ios/Statusgo.framework"; sourceTree = "<group>"; };
+		20B2DBFB1D47C70C00427CD8 /* Statusgo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Statusgo.framework; path = "../modules/react-native-status/ios/Statusgo.framework"; sourceTree = "<group>"; };
 		2756305FAFF144C4A6B0A039 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		2F0276A9E90843E996A0E762 /* UdpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = UdpSockets.xcodeproj; path = "../node_modules/react-native-udp/ios/UdpSockets.xcodeproj"; sourceTree = "<group>"; };
 		305F194186D848FDB07AF34C /* RNFS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		3384AFA9609A409B81928AD5 /* libRCTContacts.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTContacts.a; sourceTree = "<group>"; };
 		359B076A658B4FBAB5128B03 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		38E1A2C8D0734EE99E2B16CE /* TcpSockets.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = TcpSockets.xcodeproj; path = "../node_modules/react-native-tcp/ios/TcpSockets.xcodeproj"; sourceTree = "<group>"; };
-		439B6B4B407A4E2AACAFE5BE /* RCTJail.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTJail.xcodeproj; path = "../node_modules/react-native-status/ios/RCTJail/RCTJail.xcodeproj"; sourceTree = "<group>"; };
+		439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTStatus.xcodeproj; path = "../modules/react-native-status/ios/RCTStatus/RCTStatus.xcodeproj"; sourceTree = "<group>"; };
 		43A6FA689D844B0BAF3AA8B4 /* RCTOrientation.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTOrientation.xcodeproj; path = "../node_modules/react-native-orientation/iOS/RCTOrientation.xcodeproj"; sourceTree = "<group>"; };
 		45FB5F523DE04BDE9877869C /* RNRandomBytes.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNRandomBytes.xcodeproj; path = "../node_modules/react-native-randombytes/RNRandomBytes.xcodeproj"; sourceTree = "<group>"; };
 		46E2F6052EB44C698C680894 /* RNI18n.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNI18n.xcodeproj; path = "../node_modules/react-native-i18n/RNI18n.xcodeproj"; sourceTree = "<group>"; };
@@ -301,7 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20B2DBFC1D47C70C00427CD8 /* Statusgo.framework in Frameworks */,
-				20AB9EC61D47CC0300E7FD9C /* libRCTJail.a in Frameworks */,
+				20AB9EC61D47CC0300E7FD9C /* libRCTStatus.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -462,7 +462,7 @@
 		201067BA1D4789F700FA83B6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				201067C41D4789F700FA83B6 /* libRCTJail.a */,
+				201067C41D4789F700FA83B6 /* libRCTStatus.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -583,7 +583,7 @@
 				F090E261B9854867A728CE4F /* RealmReact.xcodeproj */,
 				38E1A2C8D0734EE99E2B16CE /* TcpSockets.xcodeproj */,
 				2F0276A9E90843E996A0E762 /* UdpSockets.xcodeproj */,
-				439B6B4B407A4E2AACAFE5BE /* RCTJail.xcodeproj */,
+				439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */,
 				5E5A7625B76441D984EA8C0D /* RCTImageResizer.xcodeproj */,
 			);
 			name = Libraries;
@@ -724,7 +724,7 @@
 				},
 				{
 					ProductGroup = 201067BA1D4789F700FA83B6 /* Products */;
-					ProjectRef = 439B6B4B407A4E2AACAFE5BE /* RCTJail.xcodeproj */;
+					ProjectRef = 439B6B4B407A4E2AACAFE5BE /* RCTStatus.xcodeproj */;
 				},
 				{
 					ProductGroup = 78C398B11ACF4ADC00677621 /* Products */;
@@ -866,10 +866,10 @@
 			remoteRef = 201067711D477F5E00FA83B6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		201067C41D4789F700FA83B6 /* libRCTJail.a */ = {
+		201067C41D4789F700FA83B6 /* libRCTStatus.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libRCTJail.a;
+			path = libRCTStatus.a;
 			remoteRef = 201067C31D4789F700FA83B6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1144,8 +1144,8 @@
 					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-udp/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
@@ -1185,8 +1185,8 @@
 					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-udp/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = StatusIm/Info.plist;
@@ -1250,8 +1250,8 @@
 					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-udp/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -1304,8 +1304,8 @@
 					"$(SRCROOT)/../node_modules/realm/src/**",
 					"$(SRCROOT)/../node_modules/react-native-tcp/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-udp/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
-					"$(SRCROOT)/../node_modules/react-native-status/ios/RCTJail/RCTJail/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
+					"$(SRCROOT)/../modules/react-native-status/ios/RCTStatus/**",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;

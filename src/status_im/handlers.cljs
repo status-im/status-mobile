@@ -8,7 +8,7 @@
     [status-im.protocol.state.storage :as storage]
     [status-im.utils.logging :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
-    [status-im.components.geth :as geth]
+    [status-im.components.status :as status]
     [status-im.utils.handlers :refer [register-handler] :as u]
     status-im.chat.handlers
     status-im.group-settings.handlers
@@ -112,8 +112,8 @@
   (u/side-effect!
    (fn [db _]
      (log/debug "Starting node")
-     (geth/start-node (fn [result] (node-started db result))
-                      #(log/debug "Geth already initialized")))))
+     (status/start-node (fn [result] (node-started db result))
+                        #(log/debug "Geth already initialized")))))
 
 (register-handler :crypt-initialized
   (u/side-effect!
