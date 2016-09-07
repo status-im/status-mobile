@@ -5,7 +5,7 @@
             [status-im.utils.utils :refer [http-get toast]]
             [clojure.string :as s]
             [status-im.persistence.realm.core :as realm]
-            [status-im.components.jail :as j]
+            [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [reg-handler]]))
 
@@ -54,12 +54,12 @@
   (hash file))
 
 (defn parse-commands! [_ [identity file]]
-  (j/parse identity file
-           (fn [result]
-             (let [{:keys [error result]} (json->clj result)]
-               (if error
-                 (dispatch [::loading-failed! identity ::error-in-jail error])
-                 (dispatch [::add-commands identity file result]))))))
+  (status/parse-jail identity file
+                     (fn [result]
+                       (let [{:keys [error result]} (json->clj result)]
+                         (if error
+                           (dispatch [::loading-failed! identity ::error-in-jail error])
+                           (dispatch [::add-commands identity file result]))))))
 
 (defn validate-hash
   [db [identity file]]

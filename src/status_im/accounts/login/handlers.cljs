@@ -5,7 +5,7 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.db :refer [default-view]]
             [status-im.persistence.realm.core :as realm]
-            [status-im.components.geth :as geth]))
+            [status-im.components.status :as status]))
 
 
 (defn set-login-from-qr
@@ -48,12 +48,12 @@
   :login-account
   (u/side-effect!
     (fn [db [_ address password]]
-      (geth/login address password
-                  (fn [result]
-                    (let [data (json->clj result)
-                          error (:error data)
-                          success (zero? (count error))]
-                      (log/debug "Logged in account: ")
-                      (if success
-                        (logged-in db address)
-                        (dispatch [:set-in [:login :error] error]))))))))
+      (status/login address password
+                    (fn [result]
+                      (let [data (json->clj result)
+                            error (:error data)
+                            success (zero? (count error))]
+                        (log/debug "Logged in account: ")
+                        (if success
+                          (logged-in db address)
+                          (dispatch [:set-in [:login :error] error]))))))))

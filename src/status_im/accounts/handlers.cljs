@@ -3,7 +3,7 @@
             [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
             [status-im.utils.logging :as log]
             [status-im.protocol.api :as api]
-            [status-im.components.geth :as geth]
+            [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.persistence.simple-kv-store :as kv]
             [status-im.protocol.state.storage :as storage]
@@ -52,7 +52,7 @@
   (after #(dispatch [:init-wallet-chat]))
   (u/side-effect!
     (fn [_ [_ password]]
-      (geth/create-account
+      (status/create-account
         password
         #(account-created % password)))))
 

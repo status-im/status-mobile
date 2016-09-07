@@ -22,7 +22,7 @@
             [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
-            [status-im.components.jail :as j]
+            [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.chat.handlers.commands :refer [command-prefix]]
             [status-im.chat.utils :refer [console? not-console?]]
@@ -411,9 +411,9 @@
   (after
     (fn [{:keys [current-chat-id]} [_ mode chat-id]]
       (when (or (nil? chat-id) (= current-chat-id chat-id))
-        (j/set-soft-input-mode (if (= :pan mode)
-                                 j/adjust-pan
-                                 j/adjust-resize)))))
+        (status/set-soft-input-mode (if (= :pan mode)
+                                      status/adjust-pan
+                                      status/adjust-resize)))))
   (fn [db [_ chat-id mode]]
     (assoc-in db [:kb-mode chat-id] mode)))
 
