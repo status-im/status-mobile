@@ -23,4 +23,4 @@
 (defn register-handler
   ([name handler] (register-handler name nil handler))
   ([name middleware handler]
-   (re-core/register-handler name [debug-handlers-names middleware] handler)))
+   (re-core/register-handler name [#_debug-handlers-names middleware] handler)))

@@ -42,7 +42,6 @@
                          :name           chat-name
                          :color          default-chat-color
                          :group-chat     true
-                         :is-active      true
                          :timestamp      (.getTime (js/Date.))
                          :contacts       contacts
                          :same-author    false
@@ -86,16 +85,21 @@
   (after dispatch-create-group)
   disable-creat-button)
 
-; todo rewrite
 (register-handler :group-chat-invite-received
   (u/side-effect!
-    (fn [{:keys [current-public-key] :as db}
-         [action from group-id identities group-name]]
-      (if (chats/chat-exists? group-id)
-        (chats/re-join-group-chat db group-id identities group-name)
-        (let [contacts (keep (fn [ident]
-                               (when (not= ident current-public-key)
-                                 {:identity ident})) identities)]
+    (fn [{:keys [current-public-key]}
+         [_ {:keys [group-id identities group-name timestamp]}]]
+      (let [contacts (keep (fn [ident]
+                             (when (not= ident current-public-key)
+                               {:identity ident})) identities)]
+        (if (chats/chat-exists? group-id)
+          (let [removed-at (chats/removed-at group-id)
+                is-active (chats/is-active? group-id)]
+            (when (or is-active (> timestamp removed-at))
+              (dispatch [:add-chat group-id {:name      group-name
+                                             :contacts  contacts
+                                             :group-chat true
+                                             :is-active true}])))
           (dispatch [:add-chat group-id {:name       group-name
                                          :group-chat true
-                                         :contacts contacts}]))))))
+                                         :contacts   contacts}]))))))

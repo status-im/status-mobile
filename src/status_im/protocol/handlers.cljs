@@ -15,7 +15,8 @@
             [status-im.models.protocol :refer [update-identity
                                                set-initialized]]
             [status-im.constants :refer [text-content-type]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [clojure.string :as s]))
 
 (register-handler :initialize-protocol
   (u/side-effect!
@@ -35,22 +36,31 @@
    :content      content
    :content-type text-content-type})
 
+(defn get-identity-name [identity]
+  (or (:name (contacts/contact-by-identity identity)) identity))
+
 (defn joined-chat-message [chat-id from message-id]
-  (let [contact-name (:name (contacts/contact-by-identity from))]
-    (messages/save-message chat-id {:from         "system"
-                                    :message-id   (str message-id "_" from)
-                                    :content      (str (or contact-name from) " " (label :t/received-invitation))
-                                    :content-type text-content-type})))
+  (let [contact-name (get-identity-name from)
+        content (str contact-name " " (label :t/received-invitation))]
+    (dispatch [:received-message
+               {:from         "system"
+                :group-id     chat-id
+                :chat-id      chat-id
+                :message-id   (str message-id "_" from)
+                :content      content
+                :content-type text-content-type}])))
 
 (defn participant-invited-to-group-message [chat-id identity from message-id]
-  (let [inviter-name (:name (contacts/contact-by-identity from))
-        invitee-name (if (= identity (api/my-identity))
-                       (label :t/You)
-                       (:name (contacts/contact-by-identity identity)))]
-    (messages/save-message chat-id {:from         "system"
-                                    :message-id   message-id
-                                    :content      (str (or inviter-name from) " " (label :t/invited) " " (or invitee-name identity))
-                                    :content-type text-content-type})))
+  (let [inviter-name (get-identity-name from)
+        invitee-name (get-identity-name identity)
+        content (s/join " " [inviter-name (label :t/invited) invitee-name])]
+    (dispatch [:received-message
+               {:from         "system"
+                :group-id     chat-id
+                :chat-id      chat-id
+                :message-id   message-id
+                :content      content
+                :content-type text-content-type}])))
 
 (defn participant-removed-from-group-message [chat-id identity from message-id]
   (let [remover-name (:name (contacts/contact-by-identity from))
@@ -67,15 +77,16 @@
 
 (defn participant-left-group-message [chat-id from message-id]
   (let [left-name (:name (contacts/contact-by-identity from))]
-    (->> (str (or left-name from) " " (label :t/left))
-         (system-message message-id)
-         (messages/save-message chat-id))))
+    (let [message (->> (str (or left-name from) " " (label :t/left))
+                       (system-message message-id)
+                       (merge {:group-id chat-id
+                               :chat-id  chat-id}))]
+      (dispatch [:received-message message]))))
 
 (register-handler :group-chat-invite-acked
   (u/side-effect!
-    (fn [_ [action from group-id ack-message-id]]
-      (log/debug action from group-id ack-message-id)
-      #_(joined-chat-message group-id from ack-message-id))))
+    (fn [_ [_ from group-id ack-message-id]]
+      (joined-chat-message group-id from ack-message-id))))
 
 (register-handler :participant-removed-from-group
   (u/side-effect!
@@ -93,16 +104,48 @@
 
 (register-handler :participant-left-group
   (u/side-effect!
-    (fn [_ [action from group-id message-id]]
-      (log/debug action message-id from group-id)
-      (when-not (= (api/my-identity) from)
-        (participant-left-group-message group-id from message-id)))))
+    (fn [_ [_ {:keys [from group-id message-id timestamp]}]]
+      (let [contact (chats/contact group-id from)]
+        (when-not (or (= (api/my-identity) from)
+                      (< timestamp (:added-at contact)))
+          (participant-left-group-message group-id from message-id)
+          (dispatch [::remove-identity-from-chat group-id from])
+          (dispatch [::remove-identity-from-chat! group-id from]))))))
+
+(register-handler ::remove-identity-from-chat
+  (fn [db [_ chat-id id]]
+    (update-in db [:chats chat-id :contacts]
+               #(remove (fn [{:keys [identity]}]
+                          (= identity id)) %))))
+
+(register-handler ::remove-identity-from-chat!
+  (u/side-effect!
+    (fn [_ [_ group-id identity]]
+      (chats/chat-remove-participants group-id [identity]))))
 
 (register-handler :participant-invited-to-group
   (u/side-effect!
-    (fn [_ [action from group-id identity message-id]]
+    (fn [_ [action {:keys [from group-id identity message-id]}]]
       (log/debug action message-id from group-id identity)
-      (participant-invited-to-group-message group-id identity from message-id))))
+      (participant-invited-to-group-message group-id identity from message-id)
+      ;; todo uncomment
+      #_(dispatch [:add-contact-to-group! group-id identity]))))
+
+(register-handler :add-contact-to-group!
+  (u/side-effect!
+    (fn [_ [_ group-id identity]]
+      (when-not (chats/contact group-id identity)
+        (dispatch [::add-contact group-id identity])
+        (dispatch [::store-contact! group-id identity])))))
+
+(register-handler ::add-contact
+  (fn [db [_ group-id identity]]
+    (update-in db [:chats group-id :contacts] conj {:identity identity})))
+
+(register-handler ::store-contact!
+  (u/side-effect!
+    (fn [_ [_ group-id identity]]
+      (chats/chat-add-participants group-id [identity]))))
 
 (defn update-message! [status]
   (fn [_ [_ _ message-id]]
@@ -138,7 +181,7 @@
   (after
     (fn [_ [_ {:keys [message-id status] :as pending-message}]]
       (pending-messages/upsert-pending-message! pending-message)
-      (messages/update-message! {:message-id message-id
+      (messages/update-message! {:message-id      message-id
                                  :delivery-status status})))
   (fn [db [_ {:keys [message-id chat-id status] :as pending-message}]]
     (if chat-id
