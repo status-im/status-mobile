@@ -29,7 +29,7 @@
             event   (keyword (:event message))]
         (log/debug (str "message from webview: " message))
         (case event
-          :webview-send-transaction (dispatch [:show-contacts contacts-click-handler])
+          :webview-send-transaction (dispatch [:navigate-to :contact-list contacts-click-handler])
           (log/error (str "Unknown event: " event)))))))
 
 (register-handler :send-to-webview-bridge
