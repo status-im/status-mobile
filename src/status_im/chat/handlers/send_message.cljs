@@ -2,7 +2,7 @@
   (:require [status-im.utils.handlers :refer [register-handler] :as u]
             [clojure.string :as s]
             [status-im.models.messages :as messages]
-            [status-im.components.jail :as j]
+            [status-im.components.status :as status]
             [status-im.utils.random :as random]
             [status-im.utils.datetime :as time]
             [re-frame.core :refer [enrich after debug dispatch path]]
@@ -146,10 +146,10 @@
             params {:value   content
                     :command {:from address
                               :to   to}}]
-        (j/call chat-id
-                path
-                params
-                #(dispatch [:command-handler! chat-id parameters %]))))))
+        (status/call-jail chat-id
+                          path
+                          params
+                          #(dispatch [:command-handler! chat-id parameters %]))))))
 
 (register-handler ::prepare-message
   (u/side-effect!
