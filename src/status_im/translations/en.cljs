@@ -54,6 +54,7 @@
    :phone-number                          "Phone number"
    :email                                 "Email"
    :profile-no-status                     "No status"
+   :add-to-contacts                       "Add to contacts"
 
    ;;make_photo
    :image-source-title                    "Profile image"
