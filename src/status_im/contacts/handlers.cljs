@@ -179,7 +179,8 @@
   (u/side-effect!
     (fn [db [_ from {last-online :at :as payload}]]
       (let [prev-last-online (get-in db [:contacts from :last-online])]
-        (if (< prev-last-online last-online)
+        (when (< prev-last-online last-online)
+          (api/resend-pending-messages from)
           (dispatch [:update-contact! {:whisper-identity from
                                        :last-online      last-online}]))))))
 

@@ -12,7 +12,8 @@
 
 (defn get-pending-messages []
   (let [collection (-> (r/get-by-fields :account :pending-message :or [[:status :sending]
-                                                                       [:status :sent]])
+                                                                       [:status :sent]
+                                                                       [:status :failed]])
                        (r/sorted :timestamp :desc)
                        (r/collection->map))]
     (->> collection
