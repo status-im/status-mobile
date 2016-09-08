@@ -49,7 +49,7 @@
      [text {:style st/group-name-validation-message} (first validation-messages)])])
 
 (defview new-group [{platform-specific :platform-specific}]
-  [contacts [:all-contacts]]
+  [contacts [:all-added-contacts]]
   [view st/new-group-container
    [new-group-toolbar platform-specific]
    [view st/chat-name-container

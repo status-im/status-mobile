@@ -2,7 +2,8 @@
   (:require [status-im.persistence.realm.core :as r]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.persistence.realm-queries :refer [include-query
-                                                       exclude-query]]))
+                                                         exclude-query]]
+            [status-im.utils.logging :as log]))
 
 (defn get-contacts []
   (-> (r/get-all :account :contact)
@@ -12,10 +13,14 @@
 (defn get-contact [id]
   (r/get-one-by-field :account :contact :whisper-identity id))
 
-(defn create-contact [{:keys [whisper-identity] :as contact}]
-  (let [contact-from-db (r/get-one-by-field :account :contact
-                                            :whisper-identity whisper-identity)]
-    (r/create :account :contact contact (if contact-from-db true false))))
+(defn create-contact [{:keys [whisper-identity pending] :as contact}]
+  (let [{pending-db :pending
+         :as        contact-db} (r/get-one-by-field :account :contact
+                                                    :whisper-identity whisper-identity)
+        contact (assoc contact :pending (boolean (if contact-db
+                                                   (and pending-db pending)
+                                                   pending)))]
+    (r/create :account :contact contact (if contact-db true false))))
 
 (defn save-contacts [contacts]
   (r/write :account #(mapv create-contact contacts)))

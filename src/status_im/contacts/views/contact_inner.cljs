@@ -16,7 +16,8 @@
    [view st/contact-inner-container
     [contact-photo contact]
     [view st/info-container
-     [text {:style st/name-text}
+     [text {:style           st/name-text
+            :number-of-lines 1}
       (if (pos? (count (:name contact)))
         name
         ;; todo is this correct behaviour?

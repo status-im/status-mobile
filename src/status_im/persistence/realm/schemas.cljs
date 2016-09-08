@@ -24,7 +24,8 @@
                                             :name             {:type "string" :optional true}
                                             :photo-path       {:type "string" :optional true}
                                             :last-updated     {:type "int" :default 0}
-                                            :last-online      {:type "int" :default 0}}}
+                                            :last-online      {:type "int" :default 0}
+                                            :pending          {:type "bool" :default false}}}
                               {:name       :request
                                :properties {:message-id :string
                                             :chat-id    :string

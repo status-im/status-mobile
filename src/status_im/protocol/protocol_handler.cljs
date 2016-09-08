@@ -21,6 +21,8 @@
                                              (dispatch [:received-message (assoc payload :chat-id from
                                                                                          :from from
                                                                                          :to to)]))
+                         :contact-request (let [{:keys [from payload]} event]
+                                            (dispatch [:contact-request-received (assoc payload :from from)]))
                          :message-delivered (let [{:keys [message-id from]} event]
                                               (dispatch [:message-delivered from message-id]))
                          :message-seen (let [{:keys [message-id from]} event]
@@ -29,6 +31,8 @@
                                            (dispatch [:message-failed chat-id message-id]))
                          :message-sent (let [{:keys [message-id chat-id]} event]
                                          (dispatch [:message-sent chat-id message-id]))
+                         :user-discovery-keypair (let [{:keys [from]} event]
+                                                   (dispatch [:contact-keypair-received from]))
                          :pending-message-upsert (let [{message :message} event]
                                                    (dispatch [:pending-message-upsert message]))
                          :pending-message-remove (let [{:keys [message-id]} event]

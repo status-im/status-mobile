@@ -7,7 +7,8 @@
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [status-im.constants :as c]
             [status-im.utils.types :refer [clj->json json->clj]]
-            [status-im.commands.utils :refer [generate-hiccup]]))
+            [status-im.commands.utils :refer [generate-hiccup]]
+            [status-im.utils.logging :as log]))
 
 (defn get-pending-messages []
   (let [collection (-> (r/get-by-fields :account :pending-message :or [[:status :sending]

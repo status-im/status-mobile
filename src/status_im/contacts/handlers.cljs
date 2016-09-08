@@ -16,12 +16,17 @@
   (contacts/save-contacts [contact]))
 
 (defn watch-contact
-  [_ [_ contact]]
-  (api/watch-user contact))
+  [_ [_ {:keys [whisper-identity]}]]
+  (api/watch-user whisper-identity))
 
 (register-handler :watch-contact (u/side-effect! watch-contact))
 
-(register-handler :update-contact
+(defn send-contact-request
+  [{:keys [current-account-id accounts]} [_ contact]]
+  (let [account (get accounts current-account-id)]
+    (api/send-contact-request contact account)))
+
+(register-handler :update-contact!
   (-> (fn [db [_ {:keys [whisper-identity] :as contact}]]
         (update-in db [:contacts whisper-identity] merge contact))
       ((after save-contact))))
@@ -101,10 +106,18 @@
 (defn save-contacts! [{:keys [new-contacts]} _]
   (contacts/save-contacts new-contacts))
 
+(defn update-pending-status [old-contacts {:keys [whisper-identity pending] :as contact}]
+  (let [{old-pending :pending
+         :as         old-contact} (get old-contacts whisper-identity)]
+    (if old-contact
+      (assoc contact :pending (and old-pending pending))
+      (assoc contact :pending pending))))
+
 (defn add-new-contacts
   [{:keys [contacts] :as db} [_ new-contacts]]
   (let [identities    (set (map :whisper-identity contacts))
         new-contacts' (->> new-contacts
+                           (map #(update-pending-status contacts %))
                            (remove #(identities (:whisper-identity %)))
                            (map #(vector (:whisper-identity %) %))
                            (into {}))]
@@ -122,15 +135,27 @@
       (assoc :new-contact-identity "")))
 
 (register-handler :add-new-contact
-   (u/side-effect!
-     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
-       (when-not (contacts/get-contact whisper-identity)
-         (dispatch [::new-contact contact])))))
+  (u/side-effect!
+    (fn [_ [_ {:keys [whisper-identity] :as contact}]]
+      (when-not (contacts/get-contact whisper-identity)
+        (dispatch [::prepare-contact contact])))))
 
-(register-handler ::new-contact
+(register-handler ::prepare-contact
   (-> add-new-contact
       ((after save-contact))
+      ((after send-contact-request))
       ((after watch-contact))))
+
+(register-handler ::update-pending-contact
+  (-> add-new-contact
+      ((after save-contact))))
+
+(register-handler :add-pending-contact
+  (u/side-effect!
+    (fn [_ [_ {:keys [whisper-identity] :as contact}]]
+      (let [contact (assoc contact :pending false)]
+        (api/send-discovery-keypair whisper-identity)
+        (dispatch [::update-pending-contact contact])))))
 
 (defn set-contact-identity-from-qr
   [db [_ _ contact-identity]]
@@ -143,16 +168,30 @@
     ;; TODO: security issue: we should use `from` instead of `public-key` here, but for testing it is much easier to use `public-key`
     (fn [db [_ from {{:keys [public-key last-updated name] :as account} :account}]]
       (let [prev-last-updated (get-in db [:contacts public-key :last-updated])]
-        (if (< prev-last-updated last-updated)
+        (if (<= prev-last-updated last-updated)
           (let [contact (-> (assoc account :whisper-identity public-key)
                             (dissoc :public-key))]
-            (dispatch [:update-contact contact])
-            (dispatch [:update-chat! public-key {:name name}])))))))
+            (dispatch [:update-contact! contact])
+            (dispatch [:update-chat! {:chat-id public-key
+                                      :name    name}])))))))
 
 (register-handler :contact-online-received
   (u/side-effect!
     (fn [db [_ from {last-online :at :as payload}]]
       (let [prev-last-online (get-in db [:contacts from :last-online])]
         (if (< prev-last-online last-online)
-          (dispatch [:update-contact {:whisper-identity from
-                                      :last-online      last-online}]))))))
+          (dispatch [:update-contact! {:whisper-identity from
+                                       :last-online      last-online}]))))))
+
+(register-handler :contact-request-received
+  (u/side-effect!
+    (fn [_ [_ {:keys [contact from]}]]
+      (let [contact (assoc contact :whisper-identity from
+                                   :pending true)]
+        (dispatch [:add-contacts [contact]])))))
+
+(register-handler :contact-keypair-received
+  (u/side-effect!
+    (fn [_ [_ from]]
+      (api/stop-watching-user from)
+      (api/watch-user from))))

@@ -69,8 +69,8 @@
        [text {:style st/show-all-text} (label :show-all)]]])])
 
 (defn contact-list [{platform-specific :platform-specific}]
-  (let [contacts             (subscribe [:get-contacts-with-limit contacts-limit])
-        contcats-count       (subscribe [:contacts-count])
+  (let [contacts             (subscribe [:get-added-contacts-with-limit contacts-limit])
+        contacts-count       (subscribe [:added-contacts-count])
         click-handler        (subscribe [:get :contacts-click-handler])
         show-toolbar-shadow? (r/atom false)]
     (fn []
@@ -80,20 +80,20 @@
         (when @show-toolbar-shadow?
           [linear-gradient {:style  st/contact-group-header-gradient-bottom
                             :colors st/contact-group-header-gradient-bottom-colors}])]
-       (if (pos? @contcats-count)
+       (if (pos? @contacts-count)
          [scroll-view {:style    st/contact-groups
                        :onScroll (fn [e]
                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
                                      (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
           [contact-group
            @contacts
-           @contcats-count
+           @contacts-count
            (label :t/contacs-group-dapps)
            :dapps true
            @click-handler]
           [contact-group
            @contacts
-           @contcats-count
+           @contacts-count
            (label :t/contacs-group-people)
            :people false
            @click-handler]]
