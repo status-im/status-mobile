@@ -4,7 +4,7 @@
             [status-im.navigation.handlers :as nav]
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]
-            [status-im.components.geth :as g]
+            [status-im.components.status :as status]
             cljsjs.web3
             [clojure.string :as s]))
 
@@ -18,7 +18,7 @@
   (do
     ;(dispatch [:set :wrong-password? false])
     (doseq [hash hashes]
-      (g/complete-transaction
+      (status/complete-transaction
         hash
         password
         #(dispatch [:transaction-completed hash %])))

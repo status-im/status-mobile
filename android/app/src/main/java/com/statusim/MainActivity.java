@@ -14,7 +14,7 @@ import java.util.Properties;
 public class MainActivity extends ReactActivity {
     private static final String TAG = "MainActivity";
 
-    protected void startStatus() {
+    protected void configureStatus() {
         // Required because of crazy APN settings redirecting localhost (found in GB)
         Properties properties = System.getProperties();
         properties.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
@@ -26,7 +26,7 @@ public class MainActivity extends ReactActivity {
         super.onCreate(savedInstanceState);
 
         if (!RootUtil.isDeviceRooted()) {
-            startStatus();
+            configureStatus();
         } else {
             AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
                     .setMessage(getResources().getString(R.string.root_warning))
@@ -34,7 +34,7 @@ public class MainActivity extends ReactActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            startStatus();
+                            configureStatus();
                         }
                     })
                     .setNegativeButton(getResources().getString(R.string.root_cancel), new OnClickListener() {
