@@ -58,11 +58,6 @@ public class StatusService extends Service {
         sendReply(applicationMessenger, replyMessage);
     }
 
-    static {
-        System.loadLibrary("statusgoraw");
-        System.loadLibrary("statusgo");
-    }
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,7 +68,6 @@ public class StatusService extends Service {
     public void onCreate() {
         
         super.onCreate();
-
     }
 
     @Override
