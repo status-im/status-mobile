@@ -16,7 +16,8 @@ public class StatusPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-
+        System.loadLibrary("statusgoraw");
+        System.loadLibrary("statusgo");
         modules.add(new StatusModule(reactContext));
 
         return modules;
