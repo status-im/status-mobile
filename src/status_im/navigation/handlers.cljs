@@ -23,6 +23,11 @@
 
 (defmethod preload-data! :default [db _] db)
 
+(register-handler :navigate-forget
+  (enrich preload-data!)
+  (fn [db [_ new-view-id]]
+    (assoc db :view-id new-view-id)))
+
 (register-handler :navigate-to
   (enrich preload-data!)
   (fn [{:keys [view-id] :as db} [_ new-view-id]]
@@ -37,13 +42,16 @@
 
 (register-handler :navigate-back
   (enrich preload-data!)
-  (fn [{:keys [navigation-stack] :as db} _]
+  (fn [{:keys [navigation-stack view-id] :as db} _]
     (if (>= 1 (count navigation-stack))
       db
-      (let [[view-id :as navigation-stack'] (pop navigation-stack)]
-        (-> db
-            (assoc :view-id view-id)
-            (assoc :navigation-stack navigation-stack'))))))
+      (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
+            first-in-stack (first navigation-stack)]
+        (if (= view-id first-in-stack)
+          (-> db
+              (assoc :view-id previous-view-id)
+              (assoc :navigation-stack navigation-stack'))
+          (assoc db :view-id first-in-stack))))))
 
 (register-handler :navigate-to-tab
   (enrich preload-data!)
@@ -57,29 +65,9 @@
   (fn [db [_]]
     (assoc db :prev-tab-view-id nil)))
 
-(register-handler :show-group-new
-  (debug
-    (fn [db _]
-      (-> db
-          (push-view :new-group)
-          (assoc :new-group #{})
-          (assoc :new-chat-name nil)))))
-
-(register-handler :show-contacts
-  (fn [db [_ click-handler]]
-    (-> db
-        (assoc :contacts-click-handler click-handler)
-        (push-view :contact-list))))
-
 (register-handler :remove-contacts-click-handler
                   (fn [db]
                     (dissoc db :contacts-click-handler)))
-
-(register-handler :show-group-contacts
-  (fn [db [_ group]]
-    (-> db
-        (assoc :contacts-group group)
-        (push-view :group-contacts))))
 
 (defn show-profile
   [db [_ identity]]

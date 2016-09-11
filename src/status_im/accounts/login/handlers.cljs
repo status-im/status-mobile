@@ -1,6 +1,6 @@
 (ns status-im.accounts.login.handlers
-  (:require [re-frame.core :refer [register-handler after dispatch]]
-            [status-im.utils.handlers :as u]
+  (:require [re-frame.core :refer [after dispatch]]
+            [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.utils.logging :as log]
             [status-im.utils.types :refer [json->clj]]
             [status-im.db :refer [default-view]]

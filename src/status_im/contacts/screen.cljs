@@ -2,7 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
-            [status-im.components.react :refer [view text
+            [status-im.components.react :refer [view
+                                                text
                                                 image
                                                 touchable-highlight
                                                 linear-gradient
@@ -63,10 +64,11 @@
                ^{:key contact}
                [contact-extended-view contact nil (click-handler whisper-identity) nil]))
            contacts))]
-   (when (= contacts-limit (count contacts))
+   (when (<= contacts-limit (count contacts))
      [view st/show-all
-      [touchable-highlight {:on-press #(dispatch [:show-group-contacts group])}
-       [text {:style st/show-all-text} (label :show-all)]]])])
+      [touchable-highlight {:on-press #(dispatch [:navigate-to :group-contacts group])}
+       [view
+        [text {:style st/show-all-text} (label :t/show-all)]]]])])
 
 (defn contact-list [{platform-specific :platform-specific}]
   (let [contacts             (subscribe [:get-added-contacts-with-limit contacts-limit])
