@@ -9,7 +9,23 @@
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [require]]
-            [status-im.utils.logging :as log]))
+            [status-im.utils.logging :as log]
+            [status-im.navigation.handlers :as nav]))
+
+
+(defmethod nav/preload-data! :group-contacts
+  [db [_ _ group]]
+  (assoc db :contacts-group group))
+
+(defmethod nav/preload-data! :new-group
+  [db _]
+  (-> db
+      (assoc :new-group #{})
+      (assoc :new-chat-name nil)))
+
+(defmethod nav/preload-data! :contact-list
+  [db [_ _ click-handler]]
+  (assoc db :contacts-click-handler click-handler))
 
 (defn save-contact
   [_ [_ contact]]
