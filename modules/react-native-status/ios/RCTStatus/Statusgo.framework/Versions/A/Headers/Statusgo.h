@@ -54,9 +54,15 @@ extern "C" {
 
 extern char* CreateAccount(char* p0);
 
+extern char* RecoverAccount(char* p0, char* p1);
+
 extern char* Login(char* p0, char* p1);
 
+extern char* Logout();
+
 extern char* UnlockAccount(char* p0, char* p1, GoInt p2);
+
+extern char* CompleteTransaction(char* p0, char* p1);
 
 extern char* StartNode(char* p0);
 
@@ -65,6 +71,14 @@ extern char* parse(char* p0, char* p1);
 extern char* call(char* p0, char* p1, char* p2);
 
 extern void initJail(char* p0);
+
+extern char* addPeer(char* p0);
+
+extern char* addWhisperFilter(char* p0);
+
+extern void removeWhisperFilter(GoInt p0);
+
+extern void clearWhisperFilters();
 
 #ifdef __cplusplus
 }
