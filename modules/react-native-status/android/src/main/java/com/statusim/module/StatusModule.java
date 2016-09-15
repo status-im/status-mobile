@@ -125,12 +125,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     // Geth
 
     @ReactMethod
-    public void startNode(Callback callback, Callback onAlreadyRunning) {
-
-        if (StatusService.isRunning()) {
-            onAlreadyRunning.invoke();
-            return;
-        }
+    public void startNode(Callback callback) {
 
         if (!checkAvailability()) {
             callback.invoke(false);

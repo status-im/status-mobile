@@ -80,13 +80,6 @@
   (fn [db [_ hash]]
     (remove-pending-message db hash)))
 
-(register-handler :signal-event
-  (u/side-effect!
-    (fn [_ [_ event-str]]
-      (let [{:keys [type event]} (t/json->clj event-str)]
-        (case type
-          "sendTransactionQueued" (dispatch [:transaction-queued event]))))))
-
 (register-handler :transaction-queued
   (after #(dispatch [:navigate-to :confirm]))
   (fn [db [_ {:keys [hash args]}]]
