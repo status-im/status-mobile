@@ -5,11 +5,9 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
-            [status-im.android.styles :refer [styles]]
             [status-im.components.react :refer [app-registry
                                                 keyboard
-                                                orientation
-                                                show-dialog]]
+                                                orientation]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -106,8 +104,7 @@
                              :recover recover
                              :confirm confirm
                              :my-profile my-profile)]
-             [component {:platform-specific {:styles            styles
-                                             :list-selection-fn show-dialog}}])))})))
+             [component])))})))
 
 (defn init [& [env]]
   (dispatch-sync [:reset-app])

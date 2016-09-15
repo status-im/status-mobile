@@ -1,7 +1,7 @@
 (ns status-im.chat.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub dispatch subscribe path]]
-            [status-im.components.react :refer [ios?]]
+            [status-im.utils.platform :refer [ios?]]
             [status-im.models.commands :as commands]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
             [status-im.chat.constants :as c]

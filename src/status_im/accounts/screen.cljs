@@ -30,12 +30,11 @@
             [status-im.accounts.styles :as st]
             [status-im.utils.logging :as log]))
 
-(defn toolbar-title [platform-specific]
+(defn toolbar-title []
   (let [style (merge toolbar-title-text {:color color-white})]
     [view toolbar-title-container
-     [text {:style             style
-            :platform-specific platform-specific
-            :font              :medium}
+     [text {:style style
+            :font  :medium}
       (label :t/switch-users)]]))
 
 (defn render-row [row _ _]
@@ -51,7 +50,7 @@
   (dispatch [:navigate-to-clean :accounts])
   (dispatch [:navigate-to :chat "console"]))
 
-(defview accounts [{platform-specific :platform-specific}]
+(defview accounts []
   [accounts [:get :accounts]
    stack [:get :navigation-stack]]
   (let [accounts          (vals accounts)
@@ -64,16 +63,14 @@
                        :end       [0.5, 1]
                        :locations [0, 0.8, 1]
                        :style     st/gradient-background}
-      [status-bar {:platform-specific platform-specific
-                   :type              :transparent}]
-      [toolbar {:background-color  :transparent
-                :nav-action        {:image   {:source (if show-back? {:uri :icon_back_white} nil)
-                                              :style  icon-back}
-                                    :handler (if show-back? #(dispatch [:navigate-back]) nil)}
-                :custom-content    [toolbar-title platform-specific]
-                :action            {:image   {:style icon-search}
-                                    :handler #()}
-                :platform-specific platform-specific}]
+      [status-bar {:type :transparent}]
+      [toolbar {:background-color :transparent
+                :nav-action       {:image   {:source (if show-back? {:uri :icon_back_white} nil)
+                                             :style  icon-back}
+                                   :handler (if show-back? #(dispatch [:navigate-back]) nil)}
+                :custom-content   [toolbar-title]
+                :action           {:image   {:style icon-search}
+                                   :handler #()}}]
       [list-view {:dataSource            (lw/to-datasource accounts)
                   :enableEmptySections   true
                   :renderRow             render-row
@@ -84,8 +81,7 @@
         [touchable-highlight
          {:on-press #(dispatch [:navigate-to :recover])}
          [view st/recover-button
-          [text {:style             st/recover-button-text
-                 :platform-specific platform-specific}
+          [text {:style st/recover-button-text}
            (label :t/recover-access)]]]]
        [view st/add-account-button-container
         [touchable-highlight {:on-press            create-account
@@ -93,8 +89,7 @@
          [view st/add-account-button
           [image {:source {:uri :icon_add}
                   :style  st/icon-plus}]
-          [text {:style             st/add-account-text
-                 :platform-specific platform-specific
-                 :font              :default}
+          [text {:style st/add-account-text
+                 :font  :default}
            (label :t/add-account)]]]]
        ]]]))

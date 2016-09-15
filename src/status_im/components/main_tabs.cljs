@@ -95,20 +95,20 @@
          [animated-view {:style (st/tab-view-container anim-value)}
           content])})))
 
-(defn tab-view [platform-specific {:keys [view-id screen]}]
+(defn tab-view [{:keys [view-id screen]}]
   ^{:key view-id}
   [tab-view-container view-id
-   [screen {:platform-specific platform-specific}]])
+   [screen]])
 
-(defview main-tabs [{platform-specific :platform-specific}]
+(defview main-tabs []
   [view-id [:get :view-id]
    tab-animation? [:get :prev-tab-view-id]]
   [view common-st/flex
-   [status-bar {:platform-specific platform-specific}]
+   [status-bar]
    [view common-st/flex
-    [drawer-view {:platform-specific platform-specific}
+    [drawer-view
      [view {:style         common-st/flex
             :pointerEvents (if tab-animation? :none :auto)}
-      (doall (map #(tab-view platform-specific %) tab-list))
+      (doall (map #(tab-view %) tab-list))
       [tabs {:selected-view-id view-id
              :tab-list         tab-list}]]]]])
