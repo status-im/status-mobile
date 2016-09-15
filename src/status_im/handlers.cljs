@@ -24,7 +24,8 @@
     status-im.accounts.handlers
     status-im.protocol.handlers
     [status-im.utils.datetime :as time]
-    status-im.transactions.handlers))
+    status-im.transactions.handlers
+    [status-im.utils.types :as t]))
 
 ;; -- Middleware ------------------------------------------------------------
 ;;
@@ -112,8 +113,16 @@
   (u/side-effect!
    (fn [db _]
      (log/debug "Starting node")
-     (status/start-node (fn [result] (node-started db result))
-                        #(log/debug "Geth already initialized")))))
+     (status/start-node (fn [result] (node-started db result))))))
+
+(register-handler :signal-event
+  (u/side-effect!
+    (fn [_ [_ event-str]]
+      (let [{:keys [type event]} (t/json->clj event-str)]
+        (case type
+          "transaction.queued" (dispatch [:transaction-queued event])
+          "node.started" (log/debug "Event *node.started* received")
+          (log/debug "Event " type " not handled"))))))
 
 (register-handler :crypt-initialized
   (u/side-effect!

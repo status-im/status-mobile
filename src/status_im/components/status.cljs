@@ -17,9 +17,9 @@
 (.addListener r/device-event-emitter "gethEvent"
               #(dispatch [:signal-event (.-jsonEvent %)]))
 
-(defn start-node [on-result on-already-running]
+(defn start-node [on-result]
   (when status
-    (.startNode status on-result on-already-running)))
+    (.startNode status on-result)))
 
 (defn create-account [password on-result]
   (when status
