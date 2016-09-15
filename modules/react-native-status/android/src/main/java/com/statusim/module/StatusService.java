@@ -8,7 +8,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
-import com.github.status_im.status_go.Statusgo;
+import com.github.status_im.status_go.cmd.Statusgo;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ public class StatusService extends Service {
 
     private static final String TAG = "StatusService";
 
-    private static boolean isStatusInitialized = false;
+    private static boolean isNodeInitialized = false;
     private final Handler handler = new Handler();
 
     private static String dataFolder;
@@ -76,7 +76,7 @@ public class StatusService extends Service {
         super.onDestroy();
         //TODO: stop geth
         stopNode(null);
-        isStatusInitialized = false;
+        //isNodeInitialized = false;
         Log.d(TAG, "Status Service stopped !");
     }
 
@@ -87,11 +87,10 @@ public class StatusService extends Service {
     }
 
     private boolean handleMessage(Message message) {
-        
+        Log.d(TAG, "Received service message." + message.toString());
         switch (message.what) {
 
             case StatusMessages.MSG_START_NODE:
-                Log.d(TAG, "Received start node message." + message.toString());
                 startNode(message);
                 break;
 
@@ -135,80 +134,31 @@ public class StatusService extends Service {
     }
 
     private void startNode(Message message) {
-        
-        if (!isStatusInitialized) {
-            isStatusInitialized = true;
-            Log.d(TAG, "Client messenger1: " + message.replyTo.toString());
-            Bundle data = message.getData();
-            String callbackIdentifier = data.getString(StatusConnector.CALLBACK_IDENTIFIER);
-            Log.d(TAG, "Callback identifier: " + callbackIdentifier);
-            new StartTask(message.replyTo, callbackIdentifier).execute();
-        }
-    }
 
-    private class StartTask extends AsyncTask<Void, Void, Void> {
+        applicationMessenger = message.replyTo;
+        if (!isNodeInitialized) {
 
-        String callbackIdentifier;
-        Messenger messenger;
+            File extStore = Environment.getExternalStorageDirectory();
+            dataFolder = extStore.exists() ?
+                    extStore.getAbsolutePath() + "/ethereum" :
+                    getApplicationInfo().dataDir + "/ethereum";
+            Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
 
-        StartTask(Messenger messenger, String callbackIdentifier) {
-            
-            this.messenger = messenger;
-            this.callbackIdentifier = callbackIdentifier;
-        }
-
-        protected Void doInBackground(Void... args) {
-            
-            startGeth();
-            return null;
-        }
-
-        protected void onPostExecute(Void results) {
-            onGethStarted(messenger, callbackIdentifier);
-        }
-    }
-
-    private void onGethStarted(Messenger messenger, String callbackIdentifier) {
-        
-        Log.d(TAG, "Geth Node started");
-        Message replyMessage = Message.obtain(null, StatusMessages.MSG_START_NODE, 0, 0, null);
-        Bundle replyData = new Bundle();
-        Log.d(TAG, "Callback identifier: " + callbackIdentifier);
-        replyData.putString(StatusConnector.CALLBACK_IDENTIFIER, callbackIdentifier);
-        replyMessage.setData(replyData);
-        sendReply(messenger, replyMessage);
-    }
-
-    private void startGeth() {
-        
-        File extStore = Environment.getExternalStorageDirectory();
-        dataFolder = extStore.exists() ?
-                extStore.getAbsolutePath() + "/ethereum" :
-                getApplicationInfo().dataDir + "/ethereum";
-        Log.d(TAG, "Starting background Geth Service in folder: " + dataFolder);
-
-        try {
-            final File newFile = new File(dataFolder);
-            // todo handle error?
-            newFile.mkdir();
-        } catch (Exception e) {
-            Log.e(TAG, "error making folder: " + dataFolder, e);
-        }
-
-        final Runnable addPeer = new Runnable() {
-            public void run() {
-                Log.w("Geth", "adding peer");
-                Statusgo.addPeer("enode://409772c7dea96fa59a912186ad5bcdb5e51b80556b3fe447d940f99d9eaadb51d4f0ffedb68efad232b52475dd7bd59b51cee99968b3cc79e2d5684b33c4090c@139.162.166.59:30303");
+            try {
+                final File newFile = new File(dataFolder);
+                // todo handle error?
+                newFile.mkdir();
+            } catch (Exception e) {
+                Log.e(TAG, "error making folder: " + dataFolder, e);
             }
-        };
 
-        new Thread(new Runnable() {
-            public void run() {
-                Statusgo.StartNode(dataFolder);
-            }
-        }).start();
-
-        handler.postDelayed(addPeer, 5000);
+            Statusgo.StartNode(dataFolder);
+            Log.d(TAG, "Geth node started");
+            Log.w(TAG, "adding peer");
+            Statusgo.AddPeer("enode://409772c7dea96fa59a912186ad5bcdb5e51b80556b3fe447d940f99d9eaadb51d4f0ffedb68efad232b52475dd7bd59b51cee99968b3cc79e2d5684b33c4090c@139.162.166.59:30303");
+            isNodeInitialized = true;
+        }
+        createAndSendReply(message, StatusMessages.MSG_START_NODE, null);
     }
 
     private void stopNode(Message message) {
@@ -281,7 +231,7 @@ public class StatusService extends Service {
         Bundle data = message.getData();
         String js = data.getString("js");
 
-        Statusgo.initJail(js);
+        Statusgo.InitJail(js);
 
         Bundle replyData = new Bundle();
         createAndSendReply(message, StatusMessages.MSG_JAIL_INIT, replyData);
@@ -293,7 +243,7 @@ public class StatusService extends Service {
         String chatId = data.getString("chatId");
         String js = data.getString("js");
 
-        String result = Statusgo.parse(chatId, js);
+        String result = Statusgo.Parse(chatId, js);
 
         Bundle replyData = new Bundle();
         replyData.putString("data", result);
@@ -307,15 +257,15 @@ public class StatusService extends Service {
         String path = data.getString("path");
         String params = data.getString("params");
 
-        String result = Statusgo.call(chatId, path, params);
+        String result = Statusgo.Call(chatId, path, params);
 
         Bundle replyData = new Bundle();
         replyData.putString("data", result);
         createAndSendReply(message, StatusMessages.MSG_JAIL_CALL, replyData);
     }
 
-    public static boolean isRunning() {
-        return isStatusInitialized;
+    public static boolean isNodeInitialized() {
+        return isNodeInitialized;
     }
 
     private static void createAndSendReply(Message message, int replyIdMessage, Bundle replyData) {
