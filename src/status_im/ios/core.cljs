@@ -3,11 +3,9 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
-            [status-im.ios.styles :refer [styles]]
             [status-im.components.react :refer [app-registry
                                                 keyboard
-                                                orientation
-                                                show-action-sheet]]
+                                                orientation]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -87,8 +85,7 @@
                              :accounts accounts
                              :login login
                              :my-profile my-profile)]
-             [component {:platform-specific {:styles            styles
-                                             :list-selection-fn show-action-sheet}}])))})))
+             [component])))})))
 
 (defn init []
   (dispatch-sync [:reset-app])

@@ -22,12 +22,11 @@
                                          content-type-command-request]]
             [status-im.utils.logging :as log]))
 
-(defn message-date [timestamp platform-specific]
+(defn message-date [timestamp]
   [view {}
    [view st/message-date-container
-    [text {:style             st/message-date-text
-           :platform-specific platform-specific
-           :font              :default}
+    [text {:style st/message-date-text
+           :font  :default}
      (time/to-short-str timestamp)]]])
 
 (defn contact-photo [{:keys [photo-path]}]
@@ -43,21 +42,19 @@
      [view st/online-dot-left]
      [view st/online-dot-right]]))
 
-(defn message-content-status [{:keys [from content]} platform-specific]
+(defn message-content-status [{:keys [from content]}]
   [view st/status-container
    [view st/status-image-view
     [contact-photo {}]
     [contact-online {:online true}]]
-   [text {:style             st/status-from
-          :platform-specific platform-specific
-          :font              :default}
+   [text {:style st/status-from
+          :font  :default}
     from]
-   [text {:style             st/status-text
-          :platform-specific platform-specific
-          :font              :default}
+   [text {:style st/status-text
+          :font  :default}
     content]])
 
-(defn message-content-audio [{:keys [platform-specific]}]
+(defn message-content-audio [_]
   [view st/audio-container
    [view st/play-view
     [image {:source res/play
@@ -65,21 +62,19 @@
    [view st/track-container
     [view st/track]
     [view st/track-mark]
-    [text {:style             st/track-duration-text
-           :platform-specific platform-specific
-           :font              :default}
+    [text {:style st/track-duration-text
+           :font  :default}
      "03:39"]]])
 
-(defview message-content-command [content preview platform-specific]
+(defview message-content-command [content preview]
   [commands [:get-commands-and-responses]]
   (let [{:keys [command content]} (parse-command-message-content commands content)
         {:keys [name icon type]} command]
     [view st/content-command-view
      [view st/command-container
       [view (st/command-view command)
-       [text {:style             st/command-name
-              :platform-specific platform-specific
-              :font              :default}
+       [text {:style st/command-name
+              :font  :default}
         (str (if (= :command type) "!" "") name)]]]
      (when icon
        [view st/command-image-view
@@ -87,9 +82,8 @@
                 :style  st/command-image}]])
      (if preview
        preview
-       [text {:style             st/command-text
-              :platform-specific platform-specific
-              :font              :default}
+       [text {:style st/command-text
+              :font  :default}
         (str content)])]))
 
 (defn set-chat-command [message-id command]
@@ -107,41 +101,37 @@
                             (message :content-type)))
 
 (defmethod message-content content-type-command-request
-  [wrapper message platform-specific]
-  [wrapper message [message-content-command-request message platform-specific] platform-specific])
+  [wrapper message]
+  [wrapper message [message-content-command-request message]])
 
 (defn text-message
-  [{:keys [content] :as message} platform-specific]
+  [{:keys [content] :as message}]
   [message-view message
-   [text {:style             (st/text-message message)
-          :platform-specific platform-specific
-          :font              :default}
+   [text {:style (st/text-message message)
+          :font  :default}
     (str content)]])
 
 (defmethod message-content text-content-type
-  [wrapper message platform-specific]
-  [wrapper message [text-message message platform-specific] platform-specific])
+  [wrapper message]
+  [wrapper message [text-message message]])
 
 (defmethod message-content content-type-status
-  [_ message platform-specific]
-  [message-content-status message platform-specific])
+  [_ message]
+  [message-content-status message])
 
 (defmethod message-content content-type-command
-  [wrapper {:keys [content rendered-preview] :as message} platform-specific]
+  [wrapper {:keys [content rendered-preview] :as message}]
   [wrapper message
-   [message-view message [message-content-command content rendered-preview platform-specific]]
-   platform-specific])
+   [message-view message [message-content-command content rendered-preview]]])
 
 (defmethod message-content :default
-  [wrapper {:keys [content-type content] :as message} platform-specific]
+  [wrapper {:keys [content-type content] :as message}]
   [wrapper message
    [message-view message
-    [message-content-audio {:content           content
-                            :content-type      content-type
-                            :platform-specific platform-specific}]]
-   platform-specific])
+    [message-content-audio {:content      content
+                            :content-type content-type}]]])
 
-(defview message-delivery-status [{:keys [delivery-status chat-id message-id] :as message} platform-specific]
+(defview message-delivery-status [{:keys [delivery-status chat-id message-id] :as message}]
   [status [:get-in [:message-status chat-id message-id]]]
   [view st/delivery-view
    [image {:source (case (or status delivery-status)
@@ -150,9 +140,8 @@
                      :failed res/delivery-failed-icon
                      nil)
            :style  st/delivery-image}]
-   [text {:style             st/delivery-text
-          :platform-specific platform-specific
-          :font              :default}
+   [text {:style st/delivery-text
+          :font  :default}
     (message-status-label (or status delivery-status))]])
 
 (defview member-photo [from]
@@ -164,13 +153,12 @@
            :style  st/photo}]])
 
 (defn incoming-group-message-body
-  [{:keys [selected same-author from] :as message} content platform-specific]
+  [{:keys [selected same-author from] :as message} content]
   (let [delivery-status :seen-by-everyone]
     [view st/group-message-wrapper
      (when selected
-       [text {:style             st/selected-message
-              :platform-specific platform-specific
-              :font              :default}
+       [text {:style st/selected-message
+              :font  :default}
         "Mar 7th, 15:22"])
      [view (st/incoming-group-message-body-st message)
       [view st/message-author
@@ -179,14 +167,14 @@
        content
        ;; TODO show for last or selected
        (when (and selected delivery-status)
-         [message-delivery-status {:delivery-status delivery-status} platform-specific])]]]))
+         [message-delivery-status {:delivery-status delivery-status}])]]]))
 
 (defn message-body
-  [{:keys [outgoing] :as message} content platform-specific]
+  [{:keys [outgoing] :as message} content]
   [view (st/message-body message)
    content
    (when outgoing
-     [message-delivery-status message platform-specific])])
+     [message-delivery-status message])])
 
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
@@ -223,8 +211,7 @@
     (into [view] children)))
 
 (defn chat-message [{:keys [outgoing delivery-status timestamp new-day group-chat message-id chat-id]
-                     :as   message}
-                    platform-specific]
+                     :as   message}]
   (let [status (subscribe [:get-in [:message-status chat-id message-id]])]
     (r/create-class
       {:component-did-mount
@@ -235,12 +222,11 @@
            (dispatch [:send-seen! chat-id message-id])))
        :reagent-render
        (fn [{:keys [outgoing delivery-status timestamp new-day group-chat]
-             :as   message}
-            platform-specific]
+             :as   message}]
          [message-container message
           ;; TODO there is no new-day info in message
           (when new-day
-            [message-date timestamp platform-specific])
+            [message-date timestamp])
           [view
            (let [incoming-group (and group-chat (not outgoing))]
              [message-content
@@ -248,5 +234,4 @@
                 incoming-group-message-body
                 message-body)
               (merge message {:delivery-status (keyword delivery-status)
-                              :incoming-group  incoming-group})
-              platform-specific])]])})))
+                              :incoming-group  incoming-group})])]])})))

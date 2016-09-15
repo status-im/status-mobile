@@ -16,7 +16,7 @@
    [view {:style st/tag-container}
     [text {:style st/tag-title} (str " #" tag)]]])
 
-(defview discovery-tag [{platform-specific :platform-specific}]
+(defview discovery-tag []
   [tag [:get :current-tag]
    discoveries [:get-discoveries-by-tags]]
   (let [datasource (to-datasource discoveries)]
@@ -31,6 +31,6 @@
 
      [list-view {:dataSource      datasource
                  :renderRow       (fn [row _ _]
-                                    (list-item [discovery-list-item row platform-specific]))
+                                    (list-item [discovery-list-item row]))
                  :renderSeparator render-separator
                  :style           st/recent-list}]]))

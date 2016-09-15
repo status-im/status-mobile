@@ -7,23 +7,21 @@
             [status-im.utils.identicon :refer [identicon]]
             [status-im.i18n :refer [label]]))
 
-(defview discovery-list-item [{:keys [name photo-path status whisper-id]} platform-specific]
+(defview discovery-list-item [{:keys [name photo-path status whisper-id]}]
   [{contact-name       :name
     contact-photo-path :photo-path} [:get-in [:contacts whisper-id]]]
   [view st/popular-list-item
    [view st/popular-list-item-name-container
-    [text {:style             st/popular-list-item-name
-           :platform-specific platform-specific
-           :font              :medium
-           :number-of-lines   1}
+    [text {:style           st/popular-list-item-name
+           :font            :medium
+           :number-of-lines 1}
      (cond
        (not (str/blank? contact-name)) contact-name
        (not (str/blank? name)) name
        :else (label :t/user-anonymous))]
-    [text {:style             st/popular-list-item-status
-           :platform-specific platform-specific
-           :font              :default
-           :number-of-lines   2}
+    [text {:style           st/popular-list-item-status
+           :font            :default
+           :number-of-lines 2}
      status]]
    [view st/popular-list-item-avatar-container
     [image {:style  st/popular-list-item-avatar
