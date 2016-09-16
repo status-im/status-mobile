@@ -1,8 +1,5 @@
 (ns status-im.contacts.styles
-  (:require [status-im.components.styles :refer [font
-                                                 font-medium
-                                                 title-font
-                                                 text1-color
+  (:require [status-im.components.styles :refer [text1-color
                                                  text2-color
                                                  text3-color
                                                  text5-color
@@ -57,13 +54,11 @@
   {:flex       1
    :marginLeft 16
    :fontSize   14
-   :fontFamily font-medium
    :color      text5-color})
 
 (def contact-group-size-text
   {:marginRight 14
    :fontSize    12
-   :fontFamily  font
    :color       text2-color})
 
 (def contact-group-header-gradient-top
@@ -97,7 +92,6 @@
 (def show-all-text
   {:marginLeft    72
    :fontSize      14
-   :fontFamily    font-medium
    :color         text3-color
    ;; ios only:
    :letterSpacing 0.5})
@@ -113,7 +107,6 @@
 
 (def letter-text
   {:fontSize   24
-   :fontFamily font
    :color      text3-color})
 
 (def contact-photo-container
@@ -134,13 +127,11 @@
 
 (def name-text
   {:fontSize   16
-   :fontFamily font
    :color      text1-color})
 
 (def info-text
   {:marginTop  1
    :fontSize   12
-   :fontFamily font
    :color      text2-color})
 
 (def more-btn

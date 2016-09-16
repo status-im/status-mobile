@@ -1,8 +1,6 @@
 (ns status-im.utils.utils
   (:require-macros
-   [natal-shell.async-storage :refer [get-item set-item]]
-   [natal-shell.alert :refer [alert]]
-   [natal-shell.toast-android :as toast])
+   [natal-shell.async-storage :refer [get-item set-item]])
   (:require [status-im.constants :as const]))
 
 (defn require [module]
@@ -13,11 +11,12 @@
 (defn log [obj]
   (.log js/console obj))
 
-(defn toast [s]
-  (toast/show s (toast/long)))
+(def react-native (require "react-native"))
 
-(defn on-error [error]
-  (toast (str "error: " error)))
+(defn show-popup [title content]
+  (.alert (.-Alert react-native)
+          title
+          content))
 
 (defn http-post
   ([action data on-success]
@@ -38,7 +37,7 @@
                   (on-success obj))))
        (.catch (or on-error
                    (fn [error]
-                     (toast (str error))))))))
+                     (show-popup "Error" (str error))))))))
 
 (defn http-get
   ([url on-success on-error]
@@ -49,7 +48,7 @@
        (.then on-success)
        (.catch (or on-error
                    (fn [error]
-                     (toast (str error))))))))
+                     (show-popup "Error" (str error))))))))
 
 (defn truncate-str [s max]
   (if (and (< max (count s)) s)

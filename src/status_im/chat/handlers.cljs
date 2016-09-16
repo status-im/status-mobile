@@ -208,7 +208,9 @@
 
 (register-handler :stop-listening-confirmation-code-sms
   (fn [db [_]]
-    (sign-up-service/stop-listening-confirmation-code-sms db)))
+    (if (:confirmation-code-sms-listener db)
+      (sign-up-service/stop-listening-confirmation-code-sms db)
+      db)))
 
 (register-handler :sign-up-confirm
   (u/side-effect!

@@ -1,6 +1,5 @@
 (ns status-im.profile.styles
-  (:require [status-im.components.styles :refer [font
-                                                 color-light-blue-transparent
+  (:require [status-im.components.styles :refer [color-light-blue-transparent
                                                  color-white
                                                  color-black
                                                  color-blue
@@ -66,7 +65,9 @@
 (def status-block
   {:flex-direction "column"
    :align-items    "center"
-   :justifyContent "center"})
+   :justifyContent "center"
+   :margin-left 100
+   :margin-right 100})
 
 (def status-input
   {:align-self   "stretch"
@@ -94,7 +95,6 @@
 (def message-btn-text
   {:margin-top  -2.5
    :font-size   14
-   :font-family font
    :color       color-white})
 
 (def more-btn
@@ -144,7 +144,6 @@
 
 (def report-user-text
   {:font-size      14
-   :font-family    font
    :line-height    21
    :color          text2-color
    ;; IOS:

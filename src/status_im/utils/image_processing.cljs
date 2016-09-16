@@ -19,7 +19,7 @@
 
 (defn img->base64 [path on-success on-error]
   (let [on-resized (fn [path]
-                     (image-base64-encode (subs path 5) on-success on-error))
+                     (image-base64-encode path on-success on-error))
         on-error   (fn [error]
                      (on-error :resize error))]
     (resize path 150 150 on-resized on-error)))

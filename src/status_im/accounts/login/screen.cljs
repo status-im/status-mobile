@@ -6,7 +6,8 @@
                                                 text-input
                                                 image
                                                 linear-gradient
-                                                touchable-highlight]]
+                                                touchable-highlight
+                                                get-dimensions]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.text-field.view :refer [text-field]]
@@ -34,33 +35,35 @@
 (defview address-input [address]
   [view
    [text-field
-    {:value        address
-     :editable     false
-     :label        (label :t/address)
-     :labelColor   "#ffffff80"
-     :lineColor    :white
-     :inputStyle   st/input-style
-     :wrapperStyle (merge button-input st/address-input-wrapper)
-     :onChangeText #(dispatch [:set-in [:login :address] %])}]])
+    {:value          address
+     :editable       false
+     :label          (label :t/address)
+     :label-color    "#ffffff80"
+     :line-color     :white
+     :input-style    st/input-style
+     :wrapper-style  (merge button-input st/address-input-wrapper)
+     :on-change-text #(dispatch [:set-in [:login :address] %])}]])
 
 (defview password-input [error]
   [view
    [text-field
-    {:value        ""
-     :error        (when (pos? (count error)) (label :t/wrong-password))
-     :errorColor   :white
-     :label        (label :t/password)
-     :labelColor   "#ffffff80"
-     :lineColor    :white
-     :inputStyle   st/input-style
-     :onChangeText #(do
-                     (dispatch [:set-in [:login :password] %])
-                     (dispatch [:set-in [:login :error] ""]))}]])
+    {:editable          true
+     :error             (when (pos? (count error)) (label :t/wrong-password))
+     :error-color       :white
+     :label             (label :t/password)
+     :secure-text-entry true
+     :label-color       "#ffffff80"
+     :line-color        :white
+     :input-style       st/input-style
+     :on-change-text    #(do
+                          (dispatch [:set-in [:login :password] %])
+                          (dispatch [:set-in [:login :error] ""]))}]])
 
 (defview login []
   [{:keys [address password error]} [:get :login]
    keyboard-height [:get :keyboard-height]]
-  [view st/screen-container
+  [view (st/screen-container (- (:height (get-dimensions "window"))
+                                keyboard-height))
    [linear-gradient {:colors    ["rgba(182, 116, 241, 1)" "rgba(107, 147, 231, 1)" "rgba(43, 171, 238, 1)"]
                      :start     [0, 0]
                      :end       [0.5, 1]
@@ -80,8 +83,7 @@
      [password-input error]]]
    [view st/bottom-actions-container
     [view st/connect-button-container
-     [touchable-highlight
-      {:on-press #(dispatch [:login-account address password])}
+     [touchable-highlight {:on-press #(dispatch [:login-account address password])}
       [view st/connect-button
        [text {:style             st/connect-button-text}
         (label :t/connect)]]]]]])

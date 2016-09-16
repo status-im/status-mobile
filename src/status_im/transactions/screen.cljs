@@ -48,15 +48,15 @@
          [transaction-page transaction]))]]
    [view st/form-container
     [text-field
-     {:inputStyle      st/password-style
-      :secureTextEntry true
-      :error           (when wrong-password? (label :t/wrong-password))
-      :errorColor      :#ffffff80 #_:#7099e6
-      :lineColor       :white
-      :labelColor      :#ffffff80
-      :value           password
-      :label           (label :t/password)
-      :onChangeText    #(dispatch [:set-in [:confirm-transactions :password] %])}]]])
+     {:input-style       st/password-style
+      :secure-text-entry true
+      :error             (when wrong-password? (label :t/wrong-password))
+      :error-color       :#ffffff80 #_:#7099e6
+      :line-color        :white
+      :label-color       :#ffffff80
+      :value             password
+      :label             (label :t/password)
+      :on-change-text    #(dispatch [:set-in [:confirm-transactions :password] %])}]]])
 
 
 ;(re-frame.core/dispatch [:set :view-id :confirm])

@@ -1,10 +1,5 @@
 (ns status-im.components.styles)
 
-(def font "HelveticaNeue")
-;; (def font "Avenir-Roman")
-(def font-medium "sans-serif-medium")
-(def title-font font-medium)
-
 (def color-transparent "transparent")
 (def color-blue "#7099e6")
 (def color-blue-transparent "#7099e632")
@@ -82,13 +77,11 @@
 (def form-text-input
   {:marginLeft -4
    :fontSize   14
-   :fontFamily font
    :color      text1-color})
 
 (def white-form-text-input
   {:marginLeft -4
    :fontSize   14
-   :fontFamily font
    :color      color-white})
 
 (def toolbar-title-container

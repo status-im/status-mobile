@@ -1,6 +1,5 @@
 (ns status-im.chat.styles.content-suggestions
-  (:require [status-im.components.styles :refer [font
-                                                 color-light-blue-transparent
+  (:require [status-im.components.styles :refer [color-light-blue-transparent
                                                  color-white
                                                  color-black
                                                  color-blue
@@ -26,13 +25,11 @@
 (def value-text
   {:marginTop  9
    :fontSize   14
-   :fontFamily font
    :color      text1-color})
 
 (def description-text
   {:marginTop  1.5
    :fontSize   14
-   :fontFamily font
    :color      text2-color})
 
 (defn suggestions-container [suggestions-count]

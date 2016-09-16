@@ -114,7 +114,8 @@
     [view st/action-view
      [text {:style           st/action-title
             :number-of-lines 1
-            :font            :medium} title]
+            :font            :medium}
+      title]
      (when-let [subtitle subtitle]
        [text {:style           st/action-subtitle
               :number-of-lines 1

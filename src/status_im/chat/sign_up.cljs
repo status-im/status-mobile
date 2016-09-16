@@ -1,7 +1,7 @@
 (ns status-im.chat.sign-up
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.utils.utils :refer [on-error http-post toast]]
+            [status-im.utils.utils :refer [http-post]]
             [status-im.utils.random :as random]
             [status-im.utils.sms-listener :refer [add-sms-listener
                                                   remove-sms-listener]]
