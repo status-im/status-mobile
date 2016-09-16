@@ -16,7 +16,7 @@
             (r/single-cljs)
             (r/decode-value)))
   (contains-key? [_ key]
-    (r/exists? schema :kv-store :key key))
+    (r/exists? schema :kv-store {:key key}))
   (delete [_ key]
     (r/write schema
              (fn []

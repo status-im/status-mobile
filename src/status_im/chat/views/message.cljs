@@ -12,6 +12,7 @@
             [status-im.components.animation :as anim]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
+            [status-im.models.chats :refer [chat-by-id]]
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
@@ -20,7 +21,10 @@
                                          content-type-status
                                          content-type-command
                                          content-type-command-request]]
-            [status-im.utils.logging :as log]))
+            [status-im.utils.logging :as log]
+            [status-im.protocol.api :as api]
+            [status-im.utils.identicon :refer [identicon]]
+            [status-im.chat.utils :as cu]))
 
 (defn message-date [timestamp]
   [view {}
@@ -131,18 +135,64 @@
     [message-content-audio {:content      content
                             :content-type content-type}]]])
 
-(defview message-delivery-status [{:keys [delivery-status chat-id message-id] :as message}]
-  [status [:get-in [:message-status chat-id message-id]]]
-  [view st/delivery-view
-   [image {:source (case (or status delivery-status)
-                     :seen {:uri :icon_ok_small}
-                     :seen-by-everyone {:uri :icon_ok_small}
-                     :failed res/delivery-failed-icon
-                     nil)
-           :style  st/delivery-image}]
-   [text {:style st/delivery-text
-          :font  :default}
-    (message-status-label (or status delivery-status))]])
+(defview group-message-delivery-status [{:keys [message-id group-id message-status user-statuses] :as msg}]
+  [app-db-message-user-statuses [:get-in [:message-user-statuses message-id]]
+   app-db-message-status-value [:get-in [:message-statuses message-id :status]]
+   chat [:get-chat-by-id group-id]
+   contacts [:get-contacts]]
+  (let [status            (or message-status app-db-message-status-value :sending)
+        user-statuses     (merge user-statuses app-db-message-user-statuses)
+        participants      (:contacts chat)
+        seen-by-everyone? (and (= (count user-statuses) (count participants))
+                               (every? (fn [[_ {:keys [status]}]]
+                                         (= (keyword status) :seen)) user-statuses))]
+    (if (or (zero? (count user-statuses))
+            seen-by-everyone?)
+      [view st/delivery-view
+       [image {:source (case status
+                         :seen {:uri :icon_ok_small}
+                         :failed res/delivery-failed-icon
+                         nil)
+               :style  st/delivery-image}]
+       [text {:style st/delivery-text
+              :font  :default}
+        (message-status-label
+          (if seen-by-everyone?
+            :seen-by-everyone
+            status))]]
+      [touchable-highlight
+       {:on-press (fn []
+                    (dispatch [:show-message-details {:message-status status
+                                                      :user-statuses  user-statuses
+                                                      :participants   participants}]))}
+       [view st/delivery-view
+        (for [[_ {:keys [whisper-identity]}] (take 3 user-statuses)]
+          ^{:key whisper-identity}
+          [image {:source {:uri (or (get-in contacts [whisper-identity :photo-path])
+                                    (identicon whisper-identity))}
+                  :style  {:width        16
+                           :height       16
+                           :borderRadius 8}}])
+        (if (> (count user-statuses) 3)
+          [text {:style st/delivery-text
+                 :font  :default}
+           (str "+ " (- (count user-statuses) 3))])]])))
+
+(defview message-delivery-status [{:keys [message-id chat-id message-status user-statuses]}]
+  [app-db-message-status-value [:get-in [:message-statuses message-id :status]]]
+  (let [delivery-status (get-in user-statuses [chat-id :status])
+        status          (if (cu/console? chat-id)
+                          :seen
+                          (or delivery-status message-status app-db-message-status-value :sending))]
+    [view st/delivery-view
+     [image {:source (case status
+                       :seen {:uri :icon_ok_small}
+                       :failed res/delivery-failed-icon
+                       nil)
+             :style  st/delivery-image}]
+     [text {:style st/delivery-text
+            :font  :default}
+      (message-status-label status)]]))
 
 (defview member-photo [from]
   [photo-path [:photo-path from]]
@@ -167,14 +217,16 @@
        content
        ;; TODO show for last or selected
        (when (and selected delivery-status)
-         [message-delivery-status {:delivery-status delivery-status}])]]]))
+         [message-delivery-status message])]]]))
 
 (defn message-body
-  [{:keys [outgoing] :as message} content]
+  [{:keys [outgoing message-type] :as message} content]
   [view (st/message-body message)
    content
    (when outgoing
-     [message-delivery-status message])])
+     (if (= (keyword message-type) :group-user-message)
+       [group-message-delivery-status message]
+       [message-delivery-status message]))])
 
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
@@ -210,19 +262,18 @@
                   children)])}))
     (into [view] children)))
 
-(defn chat-message [{:keys [outgoing delivery-status timestamp new-day group-chat message-id chat-id]
-                     :as   message}]
-  (let [status (subscribe [:get-in [:message-status chat-id message-id]])]
+(defn chat-message [{:keys [outgoing message-id chat-id user-statuses]}]
+  (let [my-identity (api/my-identity)
+        status      (subscribe [:get-in [:message-user-statuses message-id my-identity]])]
     (r/create-class
       {:component-did-mount
        (fn []
          (when (and (not outgoing)
-                    (not= :seen delivery-status)
-                    (not= :seen @status))
+                    (not= :seen (keyword @status))
+                    (not= :seen (keyword (get-in user-statuses [my-identity :status]))))
            (dispatch [:send-seen! chat-id message-id])))
        :reagent-render
-       (fn [{:keys [outgoing delivery-status timestamp new-day group-chat]
-             :as   message}]
+       (fn [{:keys [outgoing timestamp new-day group-chat] :as message}]
          [message-container message
           ;; TODO there is no new-day info in message
           (when new-day
@@ -233,5 +284,4 @@
               (if incoming-group
                 incoming-group-message-body
                 message-body)
-              (merge message {:delivery-status (keyword delivery-status)
-                              :incoming-group  incoming-group})])]])})))
+              (merge message {:incoming-group incoming-group})])]])})))

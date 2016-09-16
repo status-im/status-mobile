@@ -35,7 +35,8 @@
              :contacts-ids           #{}
              :selected-contacts      #{}
              :chats-updated-signal   0
-             :show-actions           false
+             :chat-ui-props          {:show-actions?     false
+                                      :show-bottom-info? false}
              :selected-participants  #{}
              :signed-up              false
              :view-id                default-view

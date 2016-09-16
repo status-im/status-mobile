@@ -52,30 +52,38 @@
                                :primaryKey :key
                                :properties {:key   "string"
                                             :value "string"}}
+                              {:name       :user-status
+                               :primaryKey :id
+                               :properties {:id               "string"
+                                            :whisper-identity {:type    "string"
+                                                               :default ""}
+                                            :status           "string"}}
                               {:name       :message
                                :primaryKey :message-id
-                               :properties {:message-id      "string"
-                                            :from            "string"
-                                            :to              {:type     "string"
-                                                              :optional true}
-                                            :group-id        {:type     "string"
-                                                              :optional true}
-                                            :content         "string" ;; TODO make it ArrayBuffer
-                                            :content-type    "string"
-                                            :timestamp       "int"
-                                            :chat-id         {:type    "string"
-                                                              :indexed true}
-                                            :outgoing        "bool"
-                                            :delivery-status {:type     "string"
-                                                              :optional true}
-                                            :retry-count     {:type    :int
-                                                              :default 0}
-                                            :same-author     "bool"
-                                            :same-direction  "bool"
-                                            :preview         {:type     :string
-                                                              :optional true}
-                                            :message-type    {:type     :string
-                                                              :optional true}}}
+                               :properties {:message-id     "string"
+                                            :from           "string"
+                                            :to             {:type     "string"
+                                                             :optional true}
+                                            :group-id       {:type     "string"
+                                                             :optional true}
+                                            :content        "string" ;; TODO make it ArrayBuffer
+                                            :content-type   "string"
+                                            :timestamp      "int"
+                                            :chat-id        {:type    "string"
+                                                             :indexed true}
+                                            :outgoing       "bool"
+                                            :retry-count    {:type    :int
+                                                             :default 0}
+                                            :same-author    "bool"
+                                            :same-direction "bool"
+                                            :preview        {:type     :string
+                                                             :optional true}
+                                            :message-type   {:type     :string
+                                                             :optional true}
+                                            :message-status {:type     :string
+                                                             :optional true}
+                                            :user-statuses  {:type       :list
+                                                             :objectType "user-status"}}}
                               {:name       :pending-message
                                :primaryKey :message-id
                                :properties {:message-id  "string"

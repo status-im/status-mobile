@@ -157,7 +157,6 @@
 (def intro-status
   {:message-id      "intro-status"
    :content         (label :t/intro-status)
-   :delivery-status "seen"
    :from            "console"
    :chat-id         "console"
    :content-type    content-type-status

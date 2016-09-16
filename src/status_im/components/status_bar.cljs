@@ -1,6 +1,5 @@
 (ns status-im.components.status-bar
   (:require [status-im.components.react :as ui]
-            [status-im.components.styles :as cst]
             [status-im.utils.platform :refer [platform-specific]]))
 
 (defn status-bar [{type :type

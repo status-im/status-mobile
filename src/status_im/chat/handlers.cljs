@@ -36,9 +36,19 @@
             status-im.chat.handlers.wallet-chat
             [status-im.utils.logging :as log]))
 
-(register-handler :set-show-actions
-  (fn [db [_ show-actions]]
-    (assoc db :show-actions show-actions)))
+(register-handler :set-chat-ui-props
+  (fn [db [_ ui-element value]]
+    (assoc-in db [:chat-ui-props ui-element] value)))
+
+(register-handler :set-show-info
+  (fn [db [_ show-info]]
+    (assoc db :show-info show-info)))
+
+(register-handler :show-message-details
+  (u/side-effect!
+    (fn [_ [_ details]]
+      (dispatch [:set-chat-ui-props :show-bottom-info? true])
+      (dispatch [:set-chat-ui-props :bottom-info details]))))
 
 (register-handler :load-more-messages
   (fn [{:keys [current-chat-id loading-allowed] :as db} _]
@@ -296,7 +306,6 @@
   [{:keys [new-chat]} _]
   (chats/create-chat new-chat))
 
-
 (defn open-chat!
   [_ [_ chat-id _ navigation-type]]
   (dispatch [(or navigation-type :navigate-to) :chat chat-id]))
@@ -395,11 +404,10 @@
   (fn [db [_ h]]
     (assoc db :layout-height h)))
 
-
 (register-handler :send-seen!
   (after (fn [_ [_ chat-id message-id]]
-           (when-not (console? chat-id))
-           (dispatch [:message-seen chat-id message-id])))
+           (dispatch [:message-seen {:message-id message-id
+                                     :chat-id    chat-id}])))
   (u/side-effect!
     (fn [_ [_ chat-id message-id]]
       (when-not (console? chat-id)
@@ -419,16 +427,16 @@
   (fn [db [_ chat-id mode]]
     (assoc-in db [:kb-mode chat-id] mode)))
 
-(defn save-chat!
+(defn update-chat!
   [_ [_ chat]]
-  (chats/create-chat chat))
+  (chats/update-chat chat))
 
 (register-handler :update-chat!
   (-> (fn [db [_ {:keys [chat-id] :as chat}]]
         (if (get-in db [:chats chat-id])
           (update-in db [:chats chat-id] merge chat)
           db))
-      ((after save-chat!))))
+      ((after update-chat!))))
 
 (register-handler :check-autorun
   (u/side-effect!

@@ -1,12 +1,13 @@
 (ns status-im.chat.handlers.unviewed-messages
   (:require [re-frame.core :refer [after enrich path dispatch]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.persistence.realm.core :as realm]))
+            [status-im.persistence.realm.core :as realm]
+            [status-im.utils.logging :as log]))
 
 (defn delivered-messages []
-  (-> (realm/get-by-fields :account :message :and [[:delivery-status :delivered]
-                                                   [:outgoing false]])
-      (realm/collection->map)))
+  (-> (realm/get-by-fields :account :message :and {:outgoing       false
+                                                   :message-status nil})
+      (realm/realm-collection->list)))
 
 (defn set-unviewed-messages [db]
   (let [messages (->> (::raw-unviewed-messages db)

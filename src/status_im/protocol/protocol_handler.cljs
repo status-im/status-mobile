@@ -23,14 +23,18 @@
                                                                                          :to to)]))
                          :contact-request (let [{:keys [from payload]} event]
                                             (dispatch [:contact-request-received (assoc payload :from from)]))
-                         :message-delivered (let [{:keys [message-id from]} event]
-                                              (dispatch [:message-delivered from message-id]))
-                         :message-seen (let [{:keys [message-id from]} event]
-                                         (dispatch [:message-seen from message-id]))
-                         :message-failed (let [{:keys [message-id chat-id] :as event} event]
-                                           (dispatch [:message-failed chat-id message-id]))
-                         :message-sent (let [{:keys [message-id chat-id]} event]
-                                         (dispatch [:message-sent chat-id message-id]))
+                         :message-delivered (let [{:keys [from message-id]} event]
+                                              (dispatch [:message-delivered {:whisper-identity from
+                                                                             :message-id       message-id}]))
+                         :message-seen (let [{:keys [from message-id]} event]
+                                         (dispatch [:message-seen {:whisper-identity from
+                                                                   :message-id       message-id}]))
+                         :message-failed (let [{:keys [chat-id message-id]} event]
+                                           (dispatch [:message-failed {:chat-id    chat-id
+                                                                       :message-id message-id}]))
+                         :message-sent (let [{:keys [chat-id message-id] :as data} event]
+                                         (dispatch [:message-sent {:chat-id    chat-id
+                                                                   :message-id message-id}]))
                          :user-discovery-keypair (let [{:keys [from]} event]
                                                    (dispatch [:contact-keypair-received from]))
                          :pending-message-upsert (let [{message :message} event]

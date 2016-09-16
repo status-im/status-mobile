@@ -9,7 +9,6 @@
                                                 image
                                                 touchable-highlight]]
             [status-im.utils.listview :refer [to-datasource]]
-            [reagent.core :as r]
             [status-im.chats-list.views.chat-list-item :refer [chat-list-item]]
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
