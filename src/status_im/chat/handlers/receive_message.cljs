@@ -6,7 +6,8 @@
             [status-im.commands.utils :refer [generate-hiccup]]
             [status-im.constants :refer [content-type-command-request]]
             [cljs.reader :refer [read-string]]
-            [status-im.models.chats :as c]))
+            [status-im.models.chats :as c]
+            [status-im.utils.logging :as log]))
 
 (defn check-preview [{:keys [content] :as message}]
   (if-let [preview (:preview content)]
@@ -34,7 +35,6 @@
             message' (assoc (->> message
                                  (cu/check-author-direction previous-message)
                                  (check-preview))
-                       :delivery-status :sending
                        :chat-id chat-id')]
         (store-message message')
         (when-not (c/chat-exists? chat-id')

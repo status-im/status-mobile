@@ -16,11 +16,6 @@
             [status-im.protocol.api :as api]
             [status-im.utils.logging :as log]))
 
-(defn default-delivery-status [chat-id]
-  (if (cu/console? chat-id)
-    :seen
-    :sending))
-
 (defn prepare-message
   [{:keys [identity current-chat-id] :as db} _]
   (let [text (get-in db [:chats current-chat-id :input-text])
@@ -33,7 +28,6 @@
                    :to              current-chat-id
                    :from            identity
                    :content-type    text-content-type
-                   :delivery-status (default-delivery-status current-chat-id)
                    :outgoing        true
                    :timestamp       (time/now-ms)})]
     (if command
@@ -49,7 +43,6 @@
      :to               chat-id
      :content          (assoc content :preview preview-string)
      :content-type     content-type-command
-     :delivery-status  (default-delivery-status chat-id)
      :outgoing         true
      :preview          preview-string
      :rendered-preview preview
@@ -162,7 +155,6 @@
                         :content         message
                         :from            identity
                         :content-type    text-content-type
-                        :delivery-status (default-delivery-status chat-id)
                         :outgoing        true
                         :timestamp       (time/now-ms)})
             message'' (if group-chat

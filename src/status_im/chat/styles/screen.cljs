@@ -2,13 +2,15 @@
   (:require [status-im.components.styles :refer [font
                                                  title-font
                                                  color-white
+                                                 color-black
                                                  chat-background
                                                  online-color
                                                  selected-message-color
                                                  separator-color
                                                  text1-color
                                                  text2-color
-                                                 toolbar-background1]]))
+                                                 toolbar-background1]]
+            [status-im.utils.logging :as log]))
 
 (def chat-view
   {:flex            1
@@ -114,6 +116,13 @@
    :color      text2-color
    :font-size  12})
 
+(def actions-overlay
+  {:position :absolute
+   :top      0
+   :bottom   0
+   :left     0
+   :right    0})
+
 (def typing-all
   {:marginBottom 20})
 
@@ -137,12 +146,51 @@
    :fontFamily font
    :color      text2-color})
 
-(def actions-overlay
-  {:position :absolute
-   :top      0
-   :bottom   0
-   :left     0
-   :right    0})
-
 (def overlay-highlight
   {:flex 1})
+
+;; this map looks a bit strange
+;; but this way of setting elevation seems to be the only way to set z-index (in RN 0.30)
+(def bottom-info-overlay
+  {:position         :absolute
+   :top              -16
+   :bottom           -16
+   :left             -16
+   :right            -16
+   :background-color "#00000055"
+   :elevation 8})
+
+(defn bottom-info-container [height]
+  {:backgroundColor toolbar-background1
+   :elevation       2
+   :position        :absolute
+   :bottom          16
+   :left            16
+   :right           16
+   :height          height})
+
+(def bottom-info-list-container
+  {:padding-left   16
+   :padding-right  16
+   :padding-top    8
+   :padding-bottom 8})
+
+(def bottom-info-row
+  {:flex-direction "row"
+   :padding-top    4
+   :padding-bottom 4})
+
+(def bottom-info-row-photo
+  {:width        42
+   :height       42
+   :borderRadius 21})
+
+(def bottom-info-row-text-container
+  {:margin-left  16
+   :margin-right 16})
+
+(def bottom-info-row-text1
+  {:color "black"})
+
+(def bottom-info-row-text2
+  {:color "#888888"})

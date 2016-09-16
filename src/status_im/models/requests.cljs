@@ -3,7 +3,7 @@
 
 (defn get-requests []
   (-> (r/get-all :account :request)
-      r/collection->map))
+      r/realm-collection->list))
 
 (defn create-request [request]
   (r/create :account :request request true))
