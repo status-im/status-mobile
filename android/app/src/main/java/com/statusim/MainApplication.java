@@ -20,7 +20,7 @@ import com.github.yamill.orientation.OrientationPackage;
 import com.rnfs.RNFSPackage;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import fr.bamlab.rnimageresizer.ImageResizerPackage;
-import com.reactnative.picker.PickerPackage;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 
 import java.util.Arrays;
@@ -53,7 +53,6 @@ public class MainApplication extends Application implements ReactApplication {
               new ImageResizerPackage(),
               new PickerPackage(),
               new WebViewBridgePackage()
-
       );
     }
   };
