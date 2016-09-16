@@ -20,13 +20,13 @@
             [status-im.components.styles :as cst]))
 
 
-(defview new-group-toolbar [platform-specific]
+(defview new-group-toolbar []
   [group-name [:get :new-chat-name]
    creation-disabled? [:get :disable-group-creation]
    valid? [:new-chat-name-valid?]]
   (let [create-btn-enabled? (and valid? (not creation-disabled?))]
     [view
-     [status-bar {:platform-specific platform-specific}]
+     [status-bar]
      [toolbar
       {:title  (label :t/new-group-chat)
        :action {:image   {:source res/v                     ;; {:uri "icon_search"}
@@ -48,10 +48,10 @@
    (when (pos? (count validation-messages))
      [text {:style st/group-name-validation-message} (first validation-messages)])])
 
-(defview new-group [{platform-specific :platform-specific}]
+(defview new-group []
   [contacts [:all-added-contacts]]
   [view st/new-group-container
-   [new-group-toolbar platform-specific]
+   [new-group-toolbar]
    [view st/chat-name-container
     [text {:style st/chat-name-text} (label :t/chat-name)]
     [group-name-input]

@@ -27,10 +27,10 @@
                     (let [whisper-identity (:whisper-identity row)]
                       (on-press whisper-identity)))])))
 
-(defview contact-list-toolbar [platform-specific]
+(defview contact-list-toolbar []
   [group [:get :contacts-group]]
   [view
-   [status-bar {:platform-specific platform-specific}]
+   [status-bar]
    [toolbar {:title            (label (if (= group :dapps)
                                         :t/contacs-group-dapps
                                         :t/contacs-group-people))
@@ -39,17 +39,17 @@
                                           :style  icon-search}
                                 :handler (fn [])}}]])
 
-(defview contact-list [{platform-specific :platform-specific}]
+(defview contact-list []
   [contacts [:contacts-with-letters]
    click-handler [:get :contacts-click-handler]]
-         (let [click-handler click-handler]
-           [drawer-view {:platform-specific platform-specific}
-           [view st/contacts-list-container
-            [contact-list-toolbar platform-specific]
-            ;; todo what if there is no contacts, should we show some information
-            ;; about this?
-            (when contacts
-              [list-view {:dataSource          (lw/to-datasource contacts)
-                          :enableEmptySections true
-                          :renderRow           (render-row click-handler)
-                          :style               st/contacts-list}])]]))
+  (let [click-handler click-handler]
+    [drawer-view
+     [view st/contacts-list-container
+      [contact-list-toolbar]
+      ;; todo what if there is no contacts, should we show some information
+      ;; about this?
+      (when contacts
+        [list-view {:dataSource          (lw/to-datasource contacts)
+                    :enableEmptySections true
+                    :renderRow           (render-row click-handler)
+                    :style               st/contacts-list}])]]))

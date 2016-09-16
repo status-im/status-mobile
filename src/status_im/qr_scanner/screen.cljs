@@ -13,19 +13,19 @@
             [status-im.components.styles :as cst]
             [clojure.string :as str]))
 
-(defn qr-scanner-toolbar [title platform-specific]
+(defn qr-scanner-toolbar [title]
   [view
-   [status-bar {:platform-specific platform-specific}]
+   [status-bar]
    [toolbar {:title            title
              :background-color toolbar-background1
              :action           {:image   {:source {:uri :icon_lock_white}
                                           :style  icon-search}
                                 :handler #()}}]])
 
-(defview qr-scanner [{platform-specific :platform-specific}]
+(defview qr-scanner []
   [identifier [:get :current-qr-context]]
   [view st/barcode-scanner-container
-   [qr-scanner-toolbar (:toolbar-title identifier) platform-specific]
+   [qr-scanner-toolbar (:toolbar-title identifier)]
    [camera {:onBarCodeRead (fn [code]
                              (let [data (-> (.-data code)
                                             (str/replace #"ethereum:" ""))]

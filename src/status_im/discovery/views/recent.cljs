@@ -11,9 +11,9 @@
   (list-item [view {:style st/row-separator
                     :key   row-id}]))
 
-(defview discovery-recent [{platform-specific :platform-specific}]
+(defview discovery-recent [{:keys [contacts]}]
   [discoveries [:get :discoveries]]
   [view st/recent-list
    (for [{:keys [message-id] :as discovery} discoveries]
      ^{:key (str "message-" message-id)}
-     [discovery-list-item discovery platform-specific])])
+     [discovery-list-item discovery])])

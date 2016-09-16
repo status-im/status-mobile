@@ -12,9 +12,9 @@
             [status-im.i18n :refer [label]]
             [status-im.components.styles :as cst]))
 
-(defn new-participants-toolbar [platform-specific]
+(defn new-participants-toolbar []
   [view
-   [status-bar {:platform-specific platform-specific}]
+   [status-bar]
    [toolbar
     {:title  (label :t/add-participants)
      :action {:image   {:source res/v                       ;; {:uri "icon_search"}
@@ -26,10 +26,10 @@
   [row _ _]
   (list-item [participant-contact row]))
 
-(defview new-participants [{platform-specific :platform-specific}]
+(defview new-participants []
   [contacts [:all-new-contacts]]
   [view st/participants-container
-   [new-participants-toolbar platform-specific]
+   [new-participants-toolbar]
    [list-view {:dataSource (to-datasource contacts)
                :renderRow  new-participants-row
                :style      st/participants-list}]])
