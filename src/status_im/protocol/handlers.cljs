@@ -15,7 +15,8 @@
             [status-im.models.protocol :refer [update-identity
                                                set-initialized]]
             [status-im.constants :refer [text-content-type]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [status-im.utils.random :as random]))
 
 (register-handler :initialize-protocol
   (u/side-effect!
@@ -104,49 +105,54 @@
       (log/debug action message-id from group-id identity)
       (participant-invited-to-group-message group-id identity from message-id))))
 
-(defn update-message! [status]
-  (fn [_ [_ _ message-id]]
-    (messages/update-message! {:message-id      message-id
-                               :delivery-status status})))
+(defn save-message-status! [status]
+  (fn [_ [_ {:keys [message-id whisper-identity]}]]
+    (when-let [message (messages/get-message message-id)]
+      (let [message (if whisper-identity
+                      (update-in message
+                                 [:user-statuses whisper-identity]
+                                 (fn [{old-status :status}]
+                                   {:id               (random/id)
+                                    :whisper-identity whisper-identity
+                                    :status           (if (= (keyword old-status) :seen)
+                                                        old-status
+                                                        status)}))
+                      (assoc message :message-status status))]
+        (messages/update-message! message)))))
 
 (defn update-message-status [status]
-  (fn [db [_ chat-id message-id]]
-    (let [current-status (get-in db [:message-status chat-id message-id])]
+  (fn [db [_ {:keys [message-id whisper-identity]}]]
+    (let [db-key         (if whisper-identity
+                           [:message-user-statuses message-id whisper-identity]
+                           [:message-statuses message-id])
+          current-status (get-in db db-key)]
       (if-not (= :seen current-status)
-        (assoc-in db [:message-status chat-id message-id] status)
+        (assoc-in db db-key {:whisper-identity whisper-identity
+                             :status           status})
         db))))
 
-(register-handler :message-delivered
-  (after (update-message! :delivered))
-  (update-message-status :delivered))
-
 (register-handler :message-failed
-  (after (update-message! :failed))
+  (after (save-message-status! :failed))
   (update-message-status :failed))
 
 (register-handler :message-sent
-  (after (update-message! :sent))
+  (after (save-message-status! :sent))
   (update-message-status :sent))
 
+(register-handler :message-delivered
+  (after (save-message-status! :delivered))
+  (update-message-status :delivered))
+
 (register-handler :message-seen
-  [(after (update-message! :seen))
-   (after (fn [_ [_ chat-id]]
+  [(after (save-message-status! :seen))
+   (after (fn [_ [_ {:keys [chat-id]}]]
             (dispatch [:remove-unviewed-messages chat-id])))]
   (update-message-status :seen))
 
 (register-handler :pending-message-upsert
-  (after
-    (fn [_ [_ {:keys [message-id status] :as pending-message}]]
-      (pending-messages/upsert-pending-message! pending-message)
-      (messages/update-message! {:message-id message-id
-                                 :delivery-status status})))
-  (fn [db [_ {:keys [message-id chat-id status] :as pending-message}]]
-    (if chat-id
-      (let [current-status (get-in db [:message-status chat-id message-id])]
-        (if-not (= :seen current-status)
-          (assoc-in db [:message-status chat-id message-id] status)
-          db))
-      db)))
+  (u/side-effect!
+    (fn [_ [_ pending-message]]
+      (pending-messages/upsert-pending-message! pending-message))))
 
 (register-handler :pending-message-remove
   (u/side-effect!

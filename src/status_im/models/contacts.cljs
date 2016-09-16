@@ -8,7 +8,7 @@
 (defn get-contacts []
   (-> (r/get-all :account :contact)
       (r/sorted :name :asc)
-      r/collection->map))
+      r/realm-collection->list))
 
 (defn get-contact [id]
   (r/get-one-by-field :account :contact :whisper-identity id))

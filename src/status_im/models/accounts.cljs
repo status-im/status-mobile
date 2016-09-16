@@ -3,7 +3,7 @@
 
 (defn get-accounts []
   (-> (r/get-all :base :account)
-      r/collection->map))
+      r/realm-collection->list))
 
 (defn save-account [update?]
   #(r/create :base :account % update?))

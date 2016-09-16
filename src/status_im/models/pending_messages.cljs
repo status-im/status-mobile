@@ -15,7 +15,7 @@
                                                                        [:status :sent]
                                                                        [:status :failed]])
                        (r/sorted :timestamp :desc)
-                       (r/collection->map))]
+                       (r/realm-collection->list))]
     (->> collection
          (map (fn [{:keys [message-id] :as message}]
                 (let [message (-> message

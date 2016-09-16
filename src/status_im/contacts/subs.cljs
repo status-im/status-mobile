@@ -6,7 +6,7 @@
 (register-sub :get-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
-      (reaction (vals @contacts)))))
+      (reaction @contacts))))
 
 (defn sort-contacts [contacts]
   (sort-by :name #(compare (clojure.string/lower-case %1)
