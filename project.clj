@@ -3,8 +3,8 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha7"]
-                 [org.clojure/clojurescript "1.9.76"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha11"]
+                 [org.clojure/clojurescript "1.9.227"]
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
                  [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
@@ -13,7 +13,11 @@
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]
-                 [cljsjs/web3 "0.16.0-0"]]
+                 [cljsjs/web3 "0.16.0-0"]
+                 [com.taoensso/timbre "4.7.4"]
+                 [org.clojure/test.check "0.9.0"]
+                 [cljsjs/chance "0.7.3-0"]
+                 [cljsjs/eccjs "0.3.1-0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-2"]
             [lein-voom "0.1.0-20160311_203101-g259fbfc"]]

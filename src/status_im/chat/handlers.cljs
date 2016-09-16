@@ -6,6 +6,7 @@
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.api :as api]
+            [status-im.protocol.core :as protocol]
             [status-im.models.chats :as chats]
             [status-im.models.messages :as messages]
             [status-im.models.pending-messages :as pending-messages]
@@ -174,7 +175,7 @@
 
 (defn init-console-chat
   [{:keys [chats] :as db} existing-account?]
-  (let [chat-id  "console"
+  (let [chat-id "console"
         new-chat sign-up-service/console-chat]
     (if (chats chat-id)
       db
@@ -264,11 +265,6 @@
   (after #(dispatch [:load-unviewed-messages!]))
   ((enrich initialize-chats) load-chats!))
 
-(register-handler :initialize-pending-messages
-  (u/side-effect!
-    (fn [_ _]
-      (api/init-pending-messages (pending-messages/get-pending-messages)))))
-
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
   (let [chat-id (or id current-chat-id)
@@ -324,9 +320,9 @@
         (dispatch [::start-chat! contact-id options navigation-type])))))
 
 (register-handler :add-chat
-                  (-> prepare-chat
-                      ((enrich add-chat))
-                      ((after save-new-chat!))))
+  (-> prepare-chat
+      ((enrich add-chat))
+      ((after save-new-chat!))))
 
 (register-handler :switch-command-suggestions!
   (u/side-effect!
@@ -335,12 +331,8 @@
         (dispatch [:set-chat-input-text text])))))
 
 (defn remove-chat
-  [{:keys [current-chat-id] :as db} _]
-  (update db :chats dissoc current-chat-id))
-
-(defn notify-about-leaving!
-  [{:keys [current-chat-id]} _]
-  (api/leave-group-chat current-chat-id))
+  [db [_ chat-id]]
+  (update db :chats dissoc chat-id))
 
 ; todo do we really need this message?
 (defn leaving-message!
@@ -353,27 +345,47 @@
      :content-type text-content-type}))
 
 (defn delete-messages!
-  [{:keys [current-chat-id]} _]
-  (r/write :account
-           (fn []
-             (r/delete :account (r/get-by-field :account :message :chat-id current-chat-id)))))
+  [{:keys [current-chat-id]} [_ chat-id]]
+  (let [id (or chat-id current-chat-id)]
+    (r/write :account
+             (fn []
+               (r/delete :account
+                         (r/get-by-field :account :message :chat-id id))))))
 
 (defn delete-chat!
-  [{:keys [current-chat-id]} _]
+  [_ [_ chat-id]]
   (r/write :account
            (fn [] :account
-             (->> (r/get-by-field :account :chat :chat-id current-chat-id)
-                  (r/single)
-                  (r/delete :account)))))
+             (when-let [chat (->> (r/get-by-field :account :chat :chat-id chat-id)
+                                  (r/single))]
+               (doto chat
+                 (aset "is-active" false)
+                 (aset "removed-at" (.getTime (js/Date.))))))))
+
+(defn remove-pending-messages!
+  [_ [_ chat-id]]
+  (pending-messages/remove-all-by-chat chat-id))
 
 (register-handler :leave-group-chat
   ;; todo oreder of operations tbd
   (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
+  (u/side-effect!
+    (fn [{:keys [web3 current-chat-id chats current-public-key]} _]
+      (let [{:keys [public-key private-key]} (chats current-chat-id)]
+        (protocol/leave-group-chat!
+          {:web3     web3
+           :group-id current-chat-id
+           :keypair  {:public  public-key
+                      :private private-key}
+           :message  {:from       current-public-key
+                      :message-id (random/id)}}))
+      (dispatch [::remove-chat current-chat-id]))))
+
+(register-handler ::remove-chat
   (-> remove-chat
-      ;; todo uncomment
-      ;((after notify-about-leaving!))
       ;((after leaving-message!))
       ((after delete-messages!))
+      ((after remove-pending-messages!))
       ((after delete-chat!))))
 
 (defn edit-mode-handler [mode]
@@ -405,13 +417,18 @@
     (assoc db :layout-height h)))
 
 (register-handler :send-seen!
-  (after (fn [_ [_ chat-id message-id]]
-           (dispatch [:message-seen {:message-id message-id
-                                     :chat-id    chat-id}])))
+  (after (fn [_ [_ options]]
+           (dispatch [:message-seen options])))
   (u/side-effect!
-    (fn [_ [_ chat-id message-id]]
+    (fn [{:keys [web3 current-public-key chats]}
+         [_ {:keys [from chat-id message-id]}]]
       (when-not (console? chat-id)
-        (api/send-seen chat-id message-id)))))
+        (let [{:keys [group-chat]} (chats chat-id)]
+          (protocol/send-seen! {:web3    web3
+                                :message {:from       current-public-key
+                                          :to         from
+                                          :group-id   (when group-chat chat-id)
+                                          :message-id message-id}}))))))
 
 (register-handler :set-web-view-url
   (fn [{:keys [current-chat-id] :as db} [_ url]]

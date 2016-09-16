@@ -60,22 +60,22 @@
 (register-handler :initialize-db
   (fn [_ _]
     (realm/reset-account)
-    (assoc app-db :current-account-id nil
-                  :current-public-key nil)))
+    (assoc app-db :current-account-id nil)))
 
 (register-handler :initialize-account-db
   (fn [db _]
     (assoc db
+      :chats {}
+      :current-chat-id "console"
       :signed-up (storage/get kv/kv-store :signed-up)
       :password (storage/get kv/kv-store :password))))
 
 (register-handler :initialize-account
   (u/side-effect!
     (fn [_ [_ address]]
-      (dispatch [:initialize-protocol address])
       (dispatch [:initialize-account-db])
+      (dispatch [:initialize-protocol address])
       (dispatch [:initialize-chats])
-      (dispatch [:initialize-pending-messages])
       (dispatch [:load-contacts])
       (dispatch [:init-chat])
       (dispatch [:init-discoveries])
