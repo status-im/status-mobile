@@ -25,7 +25,7 @@
       chat-id))
 
 (defn chat-exists? [chat-id]
-  (r/exists? :account :chat :chat-id chat-id))
+  (r/exists? :account :chat {:chat-id chat-id}))
 
 (defn add-status-message [chat-id]
   ;; TODO Get real status
@@ -38,29 +38,6 @@
                                     "in the US presidential election")
                  :content-type content-type-status
                  :outgoing     false}))
-
-(defn create-chat
-  ([{:keys [last-message-id] :as chat}]
-   (let [chat (assoc chat :last-message-id (or last-message-id ""))]
-     (r/write :account #(r/create :account :chat chat true))))
-  ([db chat-id identities group-chat? chat-name]
-   (when-not (chat-exists? chat-id)
-     (let [chat-name (or chat-name
-                         (get-chat-name chat-id identities))
-           _         (log/debug "creating chat" chat-name)]
-       (r/write :account
-         (fn []
-           (let [contacts (mapv (fn [ident]
-                                  {:identity ident}) identities)]
-             (r/create :account :chat
-                       {:chat-id     chat-id
-                        :is-active   true
-                        :name        chat-name
-                        :group-chat  group-chat?
-                        :timestamp   (timestamp)
-                        :contacts    contacts
-                        :last-message-id ""}))))
-       (add-status-message chat-id)))))
 
 (defn chat-contacts [chat-id]
   (-> (r/get-by-field :account :chat :chat-id chat-id)
@@ -93,13 +70,44 @@
 (defn chats-list []
   (-> (r/get-all :account :chat)
       (r/sorted :timestamp :desc)
-      r/collection->map
+      r/realm-collection->list
       normalize-contacts))
 
 (defn chat-by-id [chat-id]
   (-> (r/get-by-field :account :chat :chat-id chat-id)
       (r/single-cljs)
       (r/list-to-array :contacts)))
+
+(defn update-chat [{:keys [last-message-id chat-id] :as chat}]
+  (let [{old-chat-id :chat-id
+         :as         old-chat} (chat-by-id chat-id)]
+    (when old-chat-id
+      (let [chat (-> (merge old-chat chat)
+                     (assoc chat :last-message-id (or last-message-id "")))]
+        (r/write :account #(r/create :account :chat chat true))))))
+
+(defn create-chat
+  ([{:keys [last-message-id] :as chat}]
+   (let [chat (assoc chat :last-message-id (or last-message-id ""))]
+     (r/write :account #(r/create :account :chat chat true))))
+  ([db chat-id identities group-chat? chat-name]
+   (when-not (chat-exists? chat-id)
+     (let [chat-name (or chat-name
+                         (get-chat-name chat-id identities))
+           _         (log/debug "creating chat" chat-name)]
+       (r/write :account
+                (fn []
+                  (let [contacts (mapv (fn [ident]
+                                         {:identity ident}) identities)]
+                    (r/create :account :chat
+                              {:chat-id     chat-id
+                               :is-active   true
+                               :name        chat-name
+                               :group-chat  group-chat?
+                               :timestamp   (timestamp)
+                               :contacts    contacts
+                               :last-message-id ""}))))
+       (add-status-message chat-id)))))
 
 (defn chat-add-participants [chat-id identities]
   (r/write :account

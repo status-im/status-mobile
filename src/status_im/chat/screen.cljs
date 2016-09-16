@@ -24,6 +24,7 @@
             [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
             [status-im.chat.views.actions :refer [actions-view]]
+            [status-im.chat.views.bottom-info :refer [bottom-info-view]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [reagent.core :as r]
@@ -101,7 +102,7 @@
 
 (defn toolbar-content []
   (let [{:keys [group-chat name contacts chat-id]} (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
-        show-actions (subscribe [:show-actions])
+        show-actions (subscribe [:chat-ui-props :show-actions?])
         contact      (subscribe [:get-in [:contacts @chat-id]])]
     (fn []
       [view (st/chat-name-view @show-actions)
@@ -123,20 +124,20 @@
           (online-text @contact @chat-id)])])))
 
 (defn toolbar-action []
-  (let [show-actions (subscribe [:show-actions])]
+  (let [show-actions (subscribe [:chat-ui-props :show-actions?])]
     (fn []
       (if @show-actions
         [touchable-highlight
-         {:on-press #(dispatch [:set-show-actions false])}
+         {:on-press #(dispatch [:set-chat-ui-props :show-actions? false])}
          [view st/action
           [icon :up st/up-icon]]]
         [touchable-highlight
-         {:on-press #(dispatch [:set-show-actions true])}
+         {:on-press #(dispatch [:set-chat-ui-props :show-actions? true])}
          [view st/action
           [chat-icon]]]))))
 
 (defview chat-toolbar []
-  [show-actions [:show-actions]]
+  [show-actions [:chat-ui-props :show-actions?]]
   [view
    [status-bar]
    [toolbar {:hide-nav?      show-actions
@@ -182,7 +183,8 @@
 
 (defn chat []
   (let [group-chat (subscribe [:chat :group-chat])
-        show-actions (subscribe [:show-actions])
+        show-actions? (subscribe [:chat-ui-props :show-actions?])
+        show-bottom-info? (subscribe [:chat-ui-props :show-bottom-info?])
         command? (subscribe [:command?])
         layout-height (subscribe [:get :layout-height])]
     (r/create-class
@@ -200,6 +202,10 @@
           ;; todo uncomment this
           #_(when @group-chat [typing-all])
           [response-view]
-          (when-not @command? [suggestion-container])
+          (when-not @command?
+            [suggestion-container])
           [chat-message-new]
-          (when @show-actions [actions-view])])})))
+          (when @show-actions?
+            [actions-view])
+          (when @show-bottom-info?
+            [bottom-info-view])])})))

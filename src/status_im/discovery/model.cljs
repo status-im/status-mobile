@@ -39,7 +39,7 @@
 (defn discovery-list []
   (->> (-> (r/get-all :account :discovery)
            (r/sorted :priority :desc)
-           (r/collection->map))
+           (r/realm-collection->list))
        (mapv #(update % :tags vals))))
 
 (defn- add-discoveries [discoveries]
@@ -65,5 +65,5 @@
 (defn all-tags []
   (-> (r/get-all :account :tag)
       (r/sorted :count :desc)
-      r/collection->map))
+      r/realm-collection->list))
 

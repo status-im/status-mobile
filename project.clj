@@ -8,9 +8,8 @@
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
                  [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
-                 ^{:voom {:repo "git@github.com:status-im/status-lib.git"
-                          :branch "master"}}
-                 [status-im/protocol "0.2.2-20160909_082306-gcfbb92b"]
+                 ^{:voom {:repo "git@github.com:status-im/status-lib.git" :branch "group-chat-statuses"}}
+                 [status-im/protocol "0.2.3-20160914_155558-gfed628a"]
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]

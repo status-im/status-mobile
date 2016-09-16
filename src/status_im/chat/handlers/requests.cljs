@@ -24,10 +24,10 @@
   [{:keys [current-chat-id] :as db} [_ chat-id]]
   (let [chat-id' (or chat-id current-chat-id)
         requests (-> ;; todo maybe limit is needed
-                     (realm/get-by-fields :account :request :and [[:chat-id chat-id']
+                   (realm/get-by-fields :account :request :and [[:chat-id chat-id']
                                                                   [:status "open"]])
-                     (realm/sorted :added :desc)
-                     (realm/collection->map))
+                   (realm/sorted :added :desc)
+                   (realm/realm-collection->list))
         requests' (map #(update % :type keyword) requests)]
     (assoc-in db [:chats chat-id' :requests] requests')))
 
