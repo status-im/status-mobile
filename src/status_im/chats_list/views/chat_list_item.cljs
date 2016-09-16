@@ -4,7 +4,6 @@
                                                 text
                                                 image
                                                 touchable-highlight]]
-            [status-im.components.styles :refer [font]]
             [status-im.chats-list.views.inner-item :refer [chat-list-item-inner-view]]))
 
 (defn chat-list-item [[chat-id chat]]

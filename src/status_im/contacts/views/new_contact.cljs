@@ -12,7 +12,7 @@
             [status-im.utils.identicon :refer [identicon]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar :refer [toolbar]]
-            [status-im.utils.utils :refer [log on-error http-post toast]]
+            [status-im.utils.utils :refer [log http-post]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
                                                  icon-search
@@ -72,14 +72,14 @@
                 (label :t/enter-valid-address))]
     [view button-input-container
      [text-field
-      {:error        error
-       :errorColor   "#7099e6"
-       :value        whisper-identity
-       :wrapperStyle (merge button-input)
-       :label        (label :t/address)
-       :onChangeText #(do
-                       (dispatch [:set-in [:new-contact-identity] %])
-                       (dispatch [:set :new-contact-address-error nil]))}]
+      {:error          error
+       :error-color    "#7099e6"
+       :value          whisper-identity
+       :wrapper-style  (merge button-input)
+       :label          (label :t/address)
+       :on-change-text #(do
+                         (dispatch [:set-in [:new-contact-identity] %])
+                         (dispatch [:set :new-contact-address-error nil]))}]
      [scan-button {:showLabel (zero? (count whisper-identity))
                    :handler   #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-contact-identity-from-qr])}]]))
 

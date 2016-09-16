@@ -22,7 +22,6 @@
             [status-im.group-settings.screen :refer [group-settings]]
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
-            [status-im.utils.utils :refer [toast]]
             status-im.persistence.realm.core
             [taoensso.timbre :as log]))
 
@@ -46,13 +45,13 @@
            #(dispatch [:set :orientation (orientation->keyword %)]))
          (.lockToPortrait orientation)
          (.addListener keyboard
-                       "keyboardDidShow"
+                       "keyboardWillShow"
                        (fn [e]
                          (let [h (.. e -endCoordinates -height)]
                            (when-not (= h @keyboard-height)
                              (dispatch [:set :keyboard-height h])))))
          (.addListener keyboard
-                       "keyboardDidHide"
+                       "keyboardWillHide"
                        (when-not (= 0 @keyboard-height)
                          #(dispatch [:set :keyboard-height 0]))))
        :render

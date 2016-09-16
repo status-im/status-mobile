@@ -1,6 +1,5 @@
 (ns status-im.chat.styles.suggestions
-  (:require [status-im.components.styles :refer [font
-                                                 color-light-blue-transparent
+  (:require [status-im.components.styles :refer [color-light-blue-transparent
                                                  color-white
                                                  color-black
                                                  color-gray
@@ -47,7 +46,6 @@
   {:marginTop        2.5
    :marginHorizontal 12
    :fontSize         12
-   :fontFamily       font
    :color            color-white})
 
 (def title-container
@@ -61,21 +59,19 @@
 (def value-text
   {:marginTop  6
    :fontSize   14
-   :fontFamily font
    :color      text1-color})
 
 (def description-text
   {:marginTop  2
    :fontSize   12
-   :fontFamily font
    :color      text2-color})
 
-(defn container [height]
+(defn container [keyboard-height height]
   {:flexDirection   :column
    :position        :absolute
    :left            0
    :right           0
-   :bottom          0
+   :bottom          keyboard-height
    :height          height
    :backgroundColor color-white
    :elevation       2})
@@ -117,6 +113,6 @@
 
 (def header-icon
   {:background-color :#838c93
-   :width 14
-   :border-radius 1
-   :height 3})
+   :width            14
+   :border-radius    1
+   :height           3})

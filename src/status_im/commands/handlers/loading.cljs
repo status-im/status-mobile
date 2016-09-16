@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [re-frame.core :refer [path after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as u]
-            [status-im.utils.utils :refer [http-get toast]]
+            [status-im.utils.utils :refer [http-get show-popup]]
             [clojure.string :as s]
             [status-im.persistence.realm.core :as realm]
             [status-im.components.status :as status]
@@ -94,7 +94,7 @@
                           id
                           (name reason)
                           details])]
-      (toast m)
+      (show-popup "Error" m)
       (println m))))
 
 (reg-handler :load-commands! (u/side-effect! load-commands!))

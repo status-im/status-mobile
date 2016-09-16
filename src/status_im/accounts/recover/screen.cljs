@@ -40,15 +40,15 @@
                 (label :t/enter-valid-passphrase))]
     [view
      [text-field
-      {:value        passphrase
-       :error        error
-       :errorColor   "#7099e6"
-       :label        (label :t/passphrase)
-       :labelColor   "#838c93de"
-       :lineColor    "#0000001f"
-       :inputStyle   st/input-style
-       :wrapperStyle (merge button-input st/address-input-wrapper)
-       :onChangeText #(dispatch [:set-in [:recover :passphrase] %])}]]))
+      {:value          passphrase
+       :error          error
+       :error-color    "#7099e6"
+       :label          (label :t/passphrase)
+       :label-color    "#838c93de"
+       :line-color     "#0000001f"
+       :input-style    st/input-style
+       :wrapper-style  (merge button-input st/address-input-wrapper)
+       :on-change-text #(dispatch [:set-in [:recover :passphrase] %])}]]))
 
 (defview password-input [password]
   [error [:get-in [:recover :password-error]]]
@@ -58,14 +58,14 @@
                 (label :t/enter-valid-password))]
     [view
      [text-field
-      {:value        password
-       :error        error
-       :errorColor   "#7099e6"
-       :label        (label :t/password)
-       :labelColor   "#838c93de"
-       :lineColor    "#0000001f"
-       :inputStyle   st/input-style
-       :onChangeText #(dispatch [:set-in [:recover :password] %])}]]))
+      {:value          password
+       :error          error
+       :error-color    "#7099e6"
+       :label          (label :t/password)
+       :label-color    "#838c93de"
+       :line-color     "#0000001f"
+       :input-style    st/input-style
+       :on-change-text #(dispatch [:set-in [:recover :password] %])}]]))
 
 (defview recover []
   [{:keys [passphrase password passphrase-error password-error]} [:get :recover]]

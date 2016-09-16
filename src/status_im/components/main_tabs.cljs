@@ -104,7 +104,7 @@
   [view-id [:get :view-id]
    tab-animation? [:get :prev-tab-view-id]]
   [view common-st/flex
-   [status-bar]
+   [status-bar {:type :main}]
    [view common-st/flex
     [drawer-view
      [view {:style         common-st/flex
