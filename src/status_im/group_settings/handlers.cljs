@@ -3,7 +3,7 @@
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.persistence.realm.core :as r]
             [status-im.chat.handlers :refer [delete-messages!]]
-            [status-im.protocol.api :as api]
+            [status-im.protocol.core :as protocol]
             [status-im.utils.random :as random]
             [status-im.models.contacts :as contacts]
             [status-im.models.messages :as messages]
@@ -84,16 +84,17 @@
   [{:keys [current-chat-id selected-participants] :as db} _]
   (let [chat (get-in db [:chats current-chat-id])]
     (r/write :account
-      (fn []
-        (r/create :account
-          :chat
-          (update chat :contacts remove-identities selected-participants)
-          true)))))
+             (fn []
+               (r/create :account
+                         :chat
+                         (update chat :contacts remove-identities selected-participants)
+                         true)))))
 
 (defn notify-about-removing!
   [{:keys [current-chat-id selected-participants]} _]
   (doseq [participant selected-participants]
-    (api/group-remove-participant current-chat-id participant)))
+    ;;todo implement
+    ))
 
 (defn system-message [message-id content]
   {:from         "system"
@@ -138,14 +139,33 @@
   (chats/chat-add-participants current-chat-id selected-participants))
 
 (defn notify-about-new-members!
-  [{:keys [current-chat-id selected-participants]} _]
-  (doseq [identity selected-participants]
-    (api/group-add-participant current-chat-id identity)))
+  [{:keys [current-chat-id selected-participants
+           current-public-key chats web3]} _]
+  (let [{:keys [public-key private-key name contacts]} (chats current-chat-id)
+        identities (map :identity contacts)
+        keypair {:public  public-key
+                 :private private-key}]
+    (protocol/invite-to-group!
+      {:web3       web3
+       :group      {:id       current-chat-id
+                    :name     name
+                    :contacts (conj identities current-public-key)
+                    :admin    current-public-key
+                    :keypair  keypair}
+       :identities selected-participants
+       :message    {:from       current-public-key
+                    :message-id (random/id)}})
+    (doseq [identity selected-participants]
+      (protocol/add-to-group! {:web3     web3
+                               :group-id current-chat-id
+                               :identity identity
+                               :keypair  keypair
+                               :message  {:from       current-public-key
+                                          :message-id (random/id)}}))))
 
 (register-handler :add-new-participants
   ;; todo order of operations tbd
   (-> add-memebers
       ((after add-members-to-realm!))
-      ;; todo uncomment
-      ;((after notify-about-new-members!))
+      ((after notify-about-new-members!))
       ((enrich deselect-members))))

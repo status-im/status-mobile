@@ -3,10 +3,12 @@
             [status-im.utils.utils :refer [first-index]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.protocol.api :as api]
+            [status-im.protocol.core :as protocol]
             [status-im.navigation.handlers :as nav]
             [status-im.discovery.model :as discoveries]
             [status-im.utils.handlers :as u]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im.utils.random :as random]))
 
 (register-handler :init-discoveries
   (fn [db _]
@@ -14,8 +16,8 @@
         (assoc :discoveries []))))
 
 (defn calculate-priority [{:keys [chats contacts]} from payload]
-  (let [contact               (get contacts from)
-        chat                  (get chats from)
+  (let [contact (get contacts from)
+        chat (get chats from)
         seen-online-recently? (< (- (time/now-ms) (get contact :last-online))
                                  time/hour)]
     (+ (time/now-ms)                                        ;; message is newer => priority is higher
@@ -35,23 +37,37 @@
 
 (register-handler :discovery-response-received
   (u/side-effect!
-    (fn [db [_ from payload]]
-      (let [{:keys [message-id name photo-path status hashtags]} payload
-            discovery {:message-id   message-id
-                       :name         name
-                       :photo-path   photo-path
-                       :status       status
-                       :whisper-id   from
-                       :tags         (map #(hash-map :name %) hashtags)
-                       :last-updated (js/Date.)
-                       :priority     (calculate-priority db from payload)}]
-        (dispatch [:add-discovery discovery])))))
+    (fn [{:keys [current-public-key] :as db} [_ {:keys [from payload]}]]
+      (when-not (= current-public-key from)
+        (let [{:keys [discovery-id profile hashtags]} payload
+              {:keys [name profile-image status]} profile
+              discovery {:message-id   discovery-id
+                         :name         name
+                         :photo-path   profile-image
+                         :status       status
+                         :whisper-id   from
+                         :tags         (map #(hash-map :name %) hashtags)
+                         :last-updated (js/Date.)
+                         :priority     (calculate-priority db from payload)}]
+          (dispatch [:add-discovery discovery]))))))
 
 (register-handler :broadcast-status
   (u/side-effect!
-    (fn [{:keys [current-account-id accounts]} [_ status hashtags]]
-      (let [account (get accounts current-account-id)]
-        (api/broadcast-discover-status account status hashtags)))))
+    (fn [{:keys [current-public-key web3 current-account-id accounts]}
+         [_ status hashtags]]
+      (let [{:keys [name photo-path]} (get accounts current-account-id)]
+        (protocol/broadcats-discoveries!
+          {:web3     web3
+           :hashtags (set hashtags)
+           :message  {:from       current-public-key
+                      :message-id (random/id)
+                      :payload    {:status  status
+                                   :profile {:name          name
+                                             :status        status
+                                             :profile-image photo-path}}}})
+        (protocol/watch-hashtags! {:web3     web3
+                                   :hashtags (set hashtags)
+                                   :callback #(dispatch [:incoming-message %1 %2])})))))
 
 (register-handler :show-discovery-tag
   (fn [db [_ tag]]

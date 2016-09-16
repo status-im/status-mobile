@@ -1,8 +1,6 @@
 (ns status-im.models.protocol
   (:require [cljs.reader :refer [read-string]]
             [status-im.protocol.state.storage :as s]
-            [status-im.utils.encryption :refer [password-encrypt
-                                              password-decrypt]]
             [status-im.utils.types :refer [to-edn-string]]
             [re-frame.db :refer [app-db]]
             [status-im.db :as db]

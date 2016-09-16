@@ -262,7 +262,7 @@
                   children)])}))
     (into [view] children)))
 
-(defn chat-message [{:keys [outgoing message-id chat-id user-statuses]}]
+(defn chat-message [{:keys [outgoing message-id chat-id user-statuses from]}]
   (let [my-identity (api/my-identity)
         status      (subscribe [:get-in [:message-user-statuses message-id my-identity]])]
     (r/create-class
@@ -271,7 +271,9 @@
          (when (and (not outgoing)
                     (not= :seen (keyword @status))
                     (not= :seen (keyword (get-in user-statuses [my-identity :status]))))
-           (dispatch [:send-seen! chat-id message-id])))
+           (dispatch [:send-seen! {:chat-id    chat-id
+                                   :from       from
+                                   :message-id message-id}])))
        :reagent-render
        (fn [{:keys [outgoing timestamp new-day group-chat] :as message}]
          [message-container message

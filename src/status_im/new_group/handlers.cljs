@@ -1,11 +1,13 @@
 (ns status-im.new-group.handlers
-  (:require [status-im.protocol.api :as api]
+  (:require [status-im.protocol.core :as protocol]
             [re-frame.core :refer [after dispatch debug enrich]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.models.chats :as chats]
             [clojure.string :as s]
-            [status-im.utils.handlers :as u]))
+            [status-im.utils.handlers :as u]
+            [status-im.utils.random :as random]
+            [taoensso.timbre :refer-macros [debug]]))
 
 (defn deselect-contact
   [db [_ id]]
@@ -19,11 +21,6 @@
 
 (register-handler :select-contact select-contact)
 
-(defn start-group-chat!
-  [{:keys [selected-contacts] :as db} [_ group-name]]
-  (let [group-id (api/start-group-chat selected-contacts group-name)]
-    (assoc db :new-group-id group-id)))
-
 (defn group-name-from-contacts
   [{:keys [contacts selected-contacts username]}]
   (->> (select-keys contacts selected-contacts)
@@ -33,20 +30,21 @@
        (s/join ", ")))
 
 (defn prepare-chat
-  [{:keys [selected-contacts new-group-id] :as db} [_ group-name]]
+  [{:keys [selected-contacts] :as db} [_ group-name]]
   (let [contacts (mapv #(hash-map :identity %) selected-contacts)
         chat-name (if-not (s/blank? group-name)
                     group-name
-                    (group-name-from-contacts db))]
-    (assoc db :new-chat {:chat-id        new-group-id
-                         :name           chat-name
-                         :color          default-chat-color
-                         :group-chat     true
-                         :is-active      true
-                         :timestamp      (.getTime (js/Date.))
-                         :contacts       contacts
-                         :same-author    false
-                         :same-direction false})))
+                    (group-name-from-contacts db))
+        {:keys [public private]} (protocol/new-keypair!)]
+    (assoc db :new-chat {:chat-id     (random/id)
+                         :public-key  public
+                         :private-key private
+                         :name        chat-name
+                         :color       default-chat-color
+                         :group-chat  true
+                         :is-active   true
+                         :timestamp   (.getTime (js/Date.))
+                         :contacts    contacts})))
 
 (defn add-chat
   [{:keys [new-chat] :as db} _]
@@ -59,22 +57,45 @@
   (chats/create-chat new-chat))
 
 (defn show-chat!
-  [{:keys [new-group-id]} _]
-  (dispatch [:navigation-replace :chat new-group-id]))
+  [{:keys [new-chat]} _]
+  (dispatch [:navigation-replace :chat (:chat-id new-chat)]))
 
-(defn enable-creat-buttion
+(defn start-listen-group!
+  [{:keys [new-chat web3 current-public-key]}]
+  (let [{:keys [chat-id public-key private-key contacts name]} new-chat
+        identities (mapv :identity contacts)]
+    (protocol/invite-to-group!
+      {:web3       web3
+       :group      {:id       chat-id
+                    :name     name
+                    :contacts (conj identities current-public-key)
+                    :admin    current-public-key
+                    :keypair  {:public  public-key
+                               :private private-key}}
+       :identities identities
+       :message    {:from       current-public-key
+                    :message-id (random/id)}})
+    (protocol/start-watching-group!
+      {:web3     web3
+       :group-id chat-id
+       :identity current-public-key
+       :keypair  {:public  public-key
+                  :private private-key}
+       :callback #(dispatch [:incoming-message %1 %2])})))
+
+(defn enable-create-button
   [db _]
   (assoc db :disable-group-creation false))
 
 (register-handler :create-new-group
-  (-> start-group-chat!
-      ((enrich prepare-chat))
+  (-> prepare-chat
       ((enrich add-chat))
       ((after create-chat!))
       ((after show-chat!))
-      ((enrich enable-creat-buttion))))
+      ((after start-listen-group!))
+      ((enrich enable-create-button))))
 
-(defn disable-creat-button
+(defn disable-create-button
   [db _]
   (assoc db :disable-group-creation true))
 
@@ -84,18 +105,32 @@
 
 (register-handler :init-group-creation
   (after dispatch-create-group)
-  disable-creat-button)
+  disable-create-button)
 
-; todo rewrite
 (register-handler :group-chat-invite-received
   (u/side-effect!
-    (fn [{:keys [current-public-key] :as db}
-         [action from group-id identities group-name]]
-      (if (chats/chat-exists? group-id)
-        (chats/re-join-group-chat db group-id identities group-name)
-        (let [contacts (keep (fn [ident]
-                               (when (not= ident current-public-key)
-                                 {:identity ident})) identities)]
-          (dispatch [:add-chat group-id {:name       group-name
-                                         :group-chat true
-                                         :contacts contacts}]))))))
+    (fn [{:keys [current-public-key web3] :as db}
+         [_ {{:keys [group-id group-name contacts keypair timestamp] :as payload} :payload}]]
+      (let [{:keys [private public]} keypair]
+        (let [removed-at (chats/removed-at group-id)
+              is-active (chats/is-active? group-id)
+              contacts' (keep (fn [ident]
+                                (when (not= ident current-public-key)
+                                  {:identity ident})) contacts)
+              chat {:name        group-name
+                    :group-chat  true
+                    :public-key  public
+                    :private-key private
+                    :contacts    contacts'}]
+          (when (or (not (chats/chat-exists? group-id))
+                    is-active
+                    (> timestamp removed-at))
+            (dispatch [:add-chat group-id (assoc chat :is-active true
+                                                      :timestamp timestamp)])
+            (when-not is-active
+              (protocol/start-watching-group!
+                {:web3     web3
+                 :group-id group-id
+                 :identity current-public-key
+                 :keypair  keypair
+                 :callback #(dispatch [:incoming-message %1 %2])}))))))))

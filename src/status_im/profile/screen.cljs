@@ -16,8 +16,8 @@
                                                            my-profile-icon]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.profile.styles :as st]
-            [status-im.profile.handlers :refer [get-hashtags
-                                                message-user
+            [status-im.utils.handlers :refer [get-hashtags]]
+            [status-im.profile.handlers :refer [message-user
                                                 update-profile]]
             [status-im.components.qr-code :refer [qr-code]]
             [status-im.utils.phone-number :refer [format-phone-number
