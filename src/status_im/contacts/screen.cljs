@@ -27,9 +27,9 @@
             [status-im.i18n :refer [label]]
             [status-im.components.styles :as cst]))
 
-(defn contact-list-toolbar [platform-specific]
+(defn contact-list-toolbar []
   [view
-   [status-bar {:platform-specific platform-specific}]
+   [status-bar]
    [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
                                           :style  hamburger-icon}
                                 :handler open-drawer}
@@ -70,14 +70,14 @@
        [view
         [text {:style st/show-all-text} (label :t/show-all)]]]])])
 
-(defn contact-list [{platform-specific :platform-specific}]
+(defn contact-list []
   (let [contacts             (subscribe [:get-added-contacts-with-limit contacts-limit])
         contacts-count       (subscribe [:added-contacts-count])
         click-handler        (subscribe [:get :contacts-click-handler])
         show-toolbar-shadow? (r/atom false)]
     (fn []
       [view st/contacts-list-container
-       [contact-list-toolbar platform-specific]
+       [contact-list-toolbar]
        [view {:style st/toolbar-shadow}
         (when @show-toolbar-shadow?
           [linear-gradient {:style  st/contact-group-header-gradient-bottom

@@ -19,9 +19,9 @@
             [status-im.i18n :refer [label]]
             [status-im.components.styles :as cst]))
 
-(defn remove-participants-toolbar [platform-specific]
+(defn remove-participants-toolbar []
   [view
-   [status-bar {:platform-specific platform-specific}]
+   [status-bar]
    [toolbar
     {:title  (label :t/remove-participants)
      :action {:handler #(do (dispatch [:remove-participants])
@@ -33,10 +33,10 @@
   [row _ _]
   (r/as-element [participant-contact row]))
 
-(defview remove-participants [{platform-specific :platform-specific}]
+(defview remove-participants []
   [contacts [:current-chat-contacts]]
   [view st/participants-container
-   [remove-participants-toolbar platform-specific]
+   [remove-participants-toolbar]
    [list-view {:dataSource (to-datasource contacts)
                :renderRow  remove-participants-row
                :style      st/participants-list}]])

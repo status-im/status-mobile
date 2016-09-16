@@ -16,15 +16,14 @@
                                                  icon-back
                                                  toolbar-height]]))
 
-(defn toolbar [{title             :title
-                nav-action        :nav-action
-                hide-nav?         :hide-nav?
-                action            :action
-                custom-action     :custom-action
-                background-color  :background-color
-                custom-content    :custom-content
-                style             :style
-                platform-specific :platform-specific}]
+(defn toolbar [{title            :title
+                nav-action       :nav-action
+                hide-nav?        :hide-nav?
+                action           :action
+                custom-action    :custom-action
+                background-color :background-color
+                custom-content   :custom-content
+                style            :style}]
   (let [style (merge {:flexDirection   :row
                       :backgroundColor (or background-color toolbar-background1)
                       :height          toolbar-height
@@ -48,9 +47,8 @@
                    :style  icon-back}]]]))
      (or custom-content
          [view {:style toolbar-title-container}
-          [text {:style             toolbar-title-text
-                 :platform-specific platform-specific
-                 :font              :medium}
+          [text {:style toolbar-title-text
+                 :font  :medium}
            title]])
      custom-action
      (when action

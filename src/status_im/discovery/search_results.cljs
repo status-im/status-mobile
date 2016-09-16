@@ -11,17 +11,16 @@
   (list-item [view {:style st/row-separator
                     :key   row-id}]))
 
-(defn title-content [tags platform-specific]
+(defn title-content [tags]
   [view st/tag-title-container
    (for [tag (take 3 tags)]
      ^{:key (str "tag-" tag)}
      [view {:style st/tag-container}
-      [text {:style             st/tag-title
-             :platform-specific platform-specific
-             :font              :default}
+      [text {:style st/tag-title
+             :font  :default}
        (str " #" tag)]])])
 
-(defview discovery-search-results [{platform-specific :platform-specific}]
+(defview discovery-search-results []
   [discoveries [:get-discovery-search-results]
    tags [:get :discovery-search-tags]]
   (let [datasource (to-datasource discoveries)]
@@ -29,13 +28,13 @@
      [toolbar {:nav-action     {:image   {:source {:uri :icon_back}
                                           :style  st/icon-back}
                                 :handler #(dispatch [:navigate-back])}
-               :custom-content (title-content tags platform-specific)
+               :custom-content (title-content tags)
                :action         {:image   {:source {:uri :icon_search}
                                           :style  st/icon-search}
                                 :handler (fn [])}}]
 
      [list-view {:dataSource      datasource
                  :renderRow       (fn [row _ _]
-                                    (list-item [discovery-list-item row platform-specific]))
+                                    (list-item [discovery-list-item row]))
                  :renderSeparator render-separator
                  :style           st/recent-list}]]))

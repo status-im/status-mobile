@@ -26,10 +26,10 @@
             [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
             [status-im.components.tabs.styles :refer [tabs-height]]))
 
-(defview chats-list-toolbar [platform-specific]
+(defview chats-list-toolbar []
   [chats-scrolled? [:get :chats-scrolled?]]
   [view
-   [status-bar {:platform-specific platform-specific}]
+   [status-bar]
    [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
                                           :style  st/hamburger-icon}
                                 :handler open-drawer}
@@ -42,12 +42,12 @@
                                           :style  st/search-icon}
                                 :handler (fn [])}}]])
 
-(defview chats-list [{platform-specific :platform-specific}]
+(defview chats-list []
   [chats [:get :chats]]
   ;; todo what is this?!
   #_(dispatch [:set :chats-scrolled? false])
   [view st/chats-container
-   [chats-list-toolbar platform-specific]
+   [chats-list-toolbar]
    [list-view {:dataSource (to-datasource chats)
                :renderRow  (fn [row _ _]
                              (list-item [chat-list-item row]))
