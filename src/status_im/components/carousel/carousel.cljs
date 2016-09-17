@@ -4,7 +4,7 @@
                                                 touchable-without-feedback
                                                 text]]
             [status-im.components.carousel.styles :as st]
-            [status-im.utils.logging :as log]
+            [taoensso.timbre :as log]
             [status-im.components.react :as r]))
 
 

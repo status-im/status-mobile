@@ -1,8 +1,6 @@
 (ns status-im.discovery.model
-  ;status-im.models.discoveries
-  (:require [status-im.utils.logging :as log]
-            [status-im.persistence.realm.core :as r]
-            [status-im.constants :as c]))
+  (:require [taoensso.timbre :as log]
+            [status-im.persistence.realm.core :as r]))
 
 (defn get-tag [tag]
   (log/debug "Getting tag: " tag)

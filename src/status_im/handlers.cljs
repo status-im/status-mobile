@@ -4,9 +4,7 @@
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
     [status-im.persistence.realm.core :as realm]
-    [status-im.persistence.simple-kv-store :as kv]
-    [status-im.protocol.state.storage :as storage]
-    [status-im.utils.logging :as log]
+    [taoensso.timbre :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.components.status :as status]
     [status-im.utils.handlers :refer [register-handler] :as u]
@@ -23,23 +21,8 @@
     status-im.qr-scanner.handlers
     status-im.accounts.handlers
     status-im.protocol.handlers
-    [status-im.utils.datetime :as time]
     status-im.transactions.handlers
     [status-im.utils.types :as t]))
-
-;; -- Middleware ------------------------------------------------------------
-;;
-;; See https://github.com/Day8/re-frame/wiki/Using-Handler-Middleware
-;;
-(defn check-and-throw
-  "throw an exception if db doesn't match the schema."
-  [a-schema db]
-  (if-let [problems (s/check a-schema db)]
-    (throw (js/Error. (str "schema check failed: " problems)))))
-
-(def validate-schema-mw
-  (after (partial check-and-throw schema)))
-
 
 ;; -- Common --------------------------------------------------------------
 
@@ -66,9 +49,7 @@
   (fn [db _]
     (assoc db
       :chats {}
-      :current-chat-id "console"
-      :signed-up (storage/get kv/kv-store :signed-up)
-      :password (storage/get kv/kv-store :password))))
+      :current-chat-id "console")))
 
 (register-handler :initialize-account
   (u/side-effect!

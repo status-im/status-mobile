@@ -3,7 +3,7 @@
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]
-            [status-im.utils.logging :as log]))
+            [taoensso.timbre :as log]))
 
 (register-handler :set-webview-bridge
   (fn [db [_ bridge]]

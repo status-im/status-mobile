@@ -4,7 +4,6 @@
             [status-im.persistence.realm.core :as r]
             [status-im.utils.random :as random :refer [timestamp]]
             [clojure.string :refer [join blank?]]
-            [status-im.utils.logging :as log]
             [status-im.constants :refer [content-type-status]]
             [status-im.models.messages :refer [save-message]]
             [status-im.persistence.realm-queries :refer [include-query]]))

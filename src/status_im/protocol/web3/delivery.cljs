@@ -5,7 +5,7 @@
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
             [cljs.spec :as s]
-            [taoensso.timbre :refer-macros [debug] :as timbre]
+            [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
             [clojure.set :as set]))
 
@@ -107,7 +107,7 @@
 (defn delivery-callback
   [web3 {:keys [id requires-ack? to]}]
   (fn [error _]
-    (when error (timbre/error :shh-post-error error))
+    (when error (log/error :shh-post-error error))
     (when-not error
       (debug :delivery-callback)
       (message-was-sent! web3 id to)
@@ -173,7 +173,7 @@
                       callback (delivery-callback web3 data)]
                   (t/post-message! web3 message' callback))
                 (catch :default err
-                  (timbre/error :post-message-error err))
+                  (log/error :post-message-error err))
                 (finally
                   (attempt-was-made! web3 id to)))))))
       (when-not @stop?

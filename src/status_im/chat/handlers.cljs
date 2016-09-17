@@ -5,7 +5,6 @@
             [clojure.string :as str]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.suggestions :as suggestions]
-            [status-im.protocol.api :as api]
             [status-im.protocol.core :as protocol]
             [status-im.models.chats :as chats]
             [status-im.models.messages :as messages]
@@ -20,7 +19,6 @@
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.persistence.realm.core :as r]
             [status-im.handlers.server :as server]
-            [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
             [status-im.components.status :as status]
@@ -34,8 +32,7 @@
             status-im.chat.handlers.receive-message
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
-            status-im.chat.handlers.wallet-chat
-            [status-im.utils.logging :as log]))
+            status-im.chat.handlers.wallet-chat))
 
 (register-handler :set-chat-ui-props
   (fn [db [_ ui-element value]]
@@ -219,8 +216,9 @@
       (server/sign-up-confirm confirmation-code sign-up-service/on-send-code-response))))
 
 (register-handler :set-signed-up
-  (fn [db [_ signed-up]]
-    (sign-up-service/set-signed-up db signed-up)))
+  (u/side-effect!
+    (fn [_ [_ signed-up]]
+      (dispatch [:account-update {:signed-up? signed-up}]))))
 
 (defn load-messages!
   ([db] (load-messages! db nil))
