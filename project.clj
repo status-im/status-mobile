@@ -3,13 +3,11 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha11"]
-                 [org.clojure/clojurescript "1.9.227"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha12"]
+                 [org.clojure/clojurescript "1.9.229"]
                  [reagent "0.5.1" :exclusions [cljsjs/react]]
                  [re-frame "0.7.0"]
                  [prismatic/schema "1.0.4"]
-                 ^{:voom {:repo "git@github.com:status-im/status-lib.git" :branch "group-chat-statuses"}}
-                 [status-im/protocol "0.2.3-20160914_155558-gfed628a"]
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]
@@ -19,8 +17,7 @@
                  [cljsjs/chance "0.7.3-0"]
                  [cljsjs/eccjs "0.3.1-0"]]
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.0-2"]
-            [lein-voom "0.1.0-20160311_203101-g259fbfc"]]
+            [lein-figwheel "0.5.0-2"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
                          ["do" "clean"

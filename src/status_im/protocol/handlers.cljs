@@ -1,21 +1,16 @@
-; todo everything inside this namespace must be revievew in common with future
-; changes in protocol lib
 (ns status-im.protocol.handlers
   (:require [status-im.utils.handlers :as u]
-            [status-im.utils.logging :as log]
             [re-frame.core :refer [dispatch after]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.models.contacts :as contacts]
             [status-im.models.messages :as messages]
             [status-im.models.pending-messages :as pending-messages]
             [status-im.models.chats :as chats]
-            [status-im.models.protocol :refer [update-identity
-                                               set-initialized]]
             [status-im.protocol.core :as protocol]
             [status-im.constants :refer [text-content-type]]
             [status-im.i18n :refer [label]]
             [status-im.utils.random :as random]
-            [taoensso.timbre :refer-macros [debug]]))
+            [taoensso.timbre :as log :refer-macros [debug]]))
 
 (register-handler :initialize-protocol
   (fn [db [_ current-account-id]]
@@ -72,12 +67,6 @@
                                         :group-id   group-id}}]
                 (dispatch [:message-sent message']))
         (debug "Unknown message type" type)))))
-
-(register-handler :protocol-initialized
-  (fn [db [_ identity]]
-    (-> db
-        (update-identity identity)
-        (set-initialized true))))
 
 (defn system-message [message-id content]
   {:from         "system"

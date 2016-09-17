@@ -8,7 +8,6 @@
             [status-im.constants :as c]
             [status-im.utils.types :refer [clj->json json->clj]]
             [status-im.commands.utils :refer [generate-hiccup]]
-            [status-im.utils.logging :as log]
             [cljs.reader :as reader]
             [clojure.string :as str]))
 

@@ -14,7 +14,9 @@
                                          :email               {:type "string" :optional true}
                                          :status              {:type "string" :optional true}
                                          :photo-path          "string"
-                                         :last-updated        {:type "int" :default 0}}}
+                                         :last-updated        {:type "int" :default 0}
+                                         :signed-up?          {:type    :bool
+                                                               :default false}}}
                            {:name       :kv-store
                             :primaryKey :key
                             :properties {:key   "string"

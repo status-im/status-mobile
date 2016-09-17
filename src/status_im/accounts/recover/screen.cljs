@@ -24,7 +24,7 @@
             [status-im.accounts.recover.validations :as v]
             [cljs.spec :as s]
             [clojure.string :as str]
-            [status-im.utils.logging :as log]))
+            [taoensso.timbre :as log]))
 
 (defn toolbar-title []
   [view toolbar-title-container

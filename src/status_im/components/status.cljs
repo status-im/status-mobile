@@ -3,7 +3,7 @@
   (:require [status-im.components.react :as r]
             [status-im.utils.types :as t]
             [re-frame.core :refer [dispatch]]
-            [status-im.utils.logging :as log]))
+            [taoensso.timbre :as log]))
 
 (def status-js (slurp "resources/status.js"))
 

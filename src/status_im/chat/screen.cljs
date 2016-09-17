@@ -1,7 +1,6 @@
 (ns status-im.chat.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [clojure.string :as s]
             [status-im.components.react :refer [view
                                                 animated-view
                                                 text
@@ -73,19 +72,6 @@
                       (assoc :group-chat group-chat)
                       (assoc :last-message (= (js/parseInt idx) (dec messages-count))))]
       (list-item [chat-message message]))))
-
-(defn on-action-selected [position]
-  (case position
-    0 (dispatch [:navigate-to :add-participants])
-    1 (dispatch [:navigate-to :remove-participants])
-    2 (dispatch [:leave-group-chat])))
-
-(defn overlay [{:keys [on-click-outside]} items]
-  [view st/actions-overlay
-   [touchable-highlight {:on-press on-click-outside
-                         :style    st/overlay-highlight}
-    [view nil]]
-   items])
 
 (defn online-text [contact chat-id]
   (if contact

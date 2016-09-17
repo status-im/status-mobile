@@ -25,10 +25,8 @@
                                                  white-form-text-input]]
             [status-im.utils.listview :as lw]
             [status-im.accounts.views.account :refer [account-view]]
-            [status-im.chat.sign-up :as sign-up-service]
             [status-im.i18n :refer [label]]
-            [status-im.accounts.styles :as st]
-            [status-im.utils.logging :as log]))
+            [status-im.accounts.styles :as st]))
 
 (defn toolbar-title []
   (let [style (merge toolbar-title-text {:color color-white})]
