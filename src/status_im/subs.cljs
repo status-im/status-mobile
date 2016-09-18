@@ -1,6 +1,6 @@
 (ns status-im.subs
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub]]
+  (:require [re-frame.core :refer [register-sub subscribe]]
             status-im.chat.subs
             status-im.group-settings.subs
             status-im.discovery.subs
@@ -25,3 +25,10 @@
 (register-sub :animations
   (fn [db [_ k]]
     (reaction (get-in @db [:animations k]))))
+
+(register-sub :signed-up?
+  (fn []
+    (let [account-id (subscribe [:get :current-account-id])
+          accounts (subscribe [:get :accounts])]
+      (reaction (when (and @accounts @account-id)
+                  (get-in @accounts [@account-id :signed-up?]))))))

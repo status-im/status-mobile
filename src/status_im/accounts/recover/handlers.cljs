@@ -3,12 +3,8 @@
             [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.utils.identicon :refer [identicon]]
-            [status-im.utils.logging :as log]
+            [taoensso.timbre :as log]
             [clojure.string :as str]))
-
-(defn on-account-changed
-  [error address new-account?]
-  (dispatch [:navigate-to-clean :accounts]))
 
 (defn account-recovered [result password]
   (let [_ (log/debug result)

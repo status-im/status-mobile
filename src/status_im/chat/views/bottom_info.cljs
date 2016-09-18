@@ -17,7 +17,6 @@
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.listview :as lw]
-            [status-im.utils.logging :as log]
             [clojure.string :as str]))
 
 (defn- container-animation-logic [{:keys [to-value val]}]

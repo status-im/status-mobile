@@ -1,16 +1,13 @@
 (ns status-im.accounts.handlers
   (:require [status-im.models.accounts :as accounts-model]
             [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
-            [status-im.utils.logging :as log]
+            [taoensso.timbre :as log]
             [status-im.protocol.core :as protocol]
             [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.persistence.simple-kv-store :as kv]
-            [status-im.protocol.state.storage :as storage]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.db :refer [default-view]]
             [status-im.utils.random :as random]
-            [status-im.persistence.realm.core :as realm]
             [status-im.i18n :refer [label]]
             [status-im.constants :refer [content-type-command-request]]
             status-im.accounts.login.handlers
@@ -28,9 +25,6 @@
   (-> (fn [db [_ {:keys [address] :as account}]]
         (update db :accounts assoc address account))
       ((after save-account))))
-
-(defn save-password [password]
-  (storage/put kv/kv-store :password password))
 
 (defn account-created [result password]
   (let [data (json->clj result)

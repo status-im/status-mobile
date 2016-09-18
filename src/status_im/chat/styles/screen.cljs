@@ -9,8 +9,7 @@
                                                  separator-color
                                                  text1-color
                                                  text2-color
-                                                 toolbar-background1]]
-            [status-im.utils.logging :as log]))
+                                                 toolbar-background1]]))
 
 (def chat-view
   {:flex            1

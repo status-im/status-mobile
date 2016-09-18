@@ -27,9 +27,8 @@
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
             [status-im.utils.utils :refer [toast]]
-            [status-im.utils.encryption]
             status-im.persistence.realm.core
-            [status-im.utils.logging :as log]
+            [taoensso.timbre :as log]
             [status-im.components.status :as status]))
 
 (defn init-back-button-handler! []
@@ -47,7 +46,7 @@
   (keyword (.toLowerCase o)))
 
 (defn app-root []
-  (let [signed-up       (subscribe [:get :signed-up])
+  (let [signed-up       (subscribe [:signed-up?])
         view-id         (subscribe [:get :view-id])
         account-id      (subscribe [:get :current-account-id])
         keyboard-height (subscribe [:get :keyboard-height])]

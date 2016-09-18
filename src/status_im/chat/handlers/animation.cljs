@@ -1,7 +1,6 @@
 (ns status-im.chat.handlers.animation
   (:require [re-frame.core :refer [after dispatch debug path]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.constants :refer [input-height request-info-height
                                               suggestions-header-height
                                               minimum-command-suggestions-height

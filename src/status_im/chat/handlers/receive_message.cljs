@@ -6,8 +6,7 @@
             [status-im.commands.utils :refer [generate-hiccup]]
             [status-im.constants :refer [content-type-command-request]]
             [cljs.reader :refer [read-string]]
-            [status-im.models.chats :as c]
-            [status-im.utils.logging :as log]))
+            [status-im.models.chats :as c]))
 
 (defn check-preview [{:keys [content] :as message}]
   (if-let [preview (:preview content)]

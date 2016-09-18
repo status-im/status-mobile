@@ -2,7 +2,6 @@
   (:require [re-frame.core :refer [after dispatch enrich]]
             [status-im.utils.utils :refer [first-index]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.protocol.api :as api]
             [status-im.protocol.core :as protocol]
             [status-im.navigation.handlers :as nav]
             [status-im.discovery.model :as discoveries]

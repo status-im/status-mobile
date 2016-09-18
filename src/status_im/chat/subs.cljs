@@ -6,7 +6,6 @@
             [status-im.models.chats :as chats]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
             [status-im.chat.constants :as c]
-            [status-im.handlers.content-suggestions :refer [get-content-suggestions]]
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]))
 
