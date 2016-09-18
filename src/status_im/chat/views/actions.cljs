@@ -12,8 +12,7 @@
             [status-im.components.chat-icon.screen :refer [chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.i18n :refer [label label-pluralize]]
-            [status-im.utils.platform :refer [platform-specific]]
-            [status-im.utils.logging :as log]))
+            [status-im.utils.platform :refer [platform-specific]]))
 
 (defview menu-item-icon-profile []
   [chat-id [:chat :chat-id]

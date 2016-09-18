@@ -4,7 +4,7 @@
             [status-im.utils.types :refer [to-string]]
             [status-im.utils.utils :as u]
             [status-im.utils.fs :as fs]
-            [status-im.utils.logging :as log]
+            [taoensso.timbre :as log]
             [status-im.persistence.realm.schemas :refer [base account]]
             [clojure.string :as str])
   (:refer-clojure :exclude [exists?]))

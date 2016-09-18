@@ -3,7 +3,6 @@
             [re-frame.core :refer [dispatch]]
             [cljs.reader :refer [read-string]]
             [status-im.utils.random :refer [timestamp]]
-            [status-im.utils.logging :as log]
             [clojure.string :refer [join split]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [status-im.constants :as c]

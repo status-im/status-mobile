@@ -39,7 +39,6 @@
              :chat-ui-props          {:show-actions?     false
                                       :show-bottom-info? false}
              :selected-participants  #{}
-             :signed-up              false
              :view-id                default-view
              :navigation-stack       (list default-view)
              :current-tag            nil
@@ -50,7 +49,6 @@
                                       :tabs-bar-value (anim/create-value 0)}
              :loading-allowed        true})
 
-(def protocol-initialized-path [:protocol-initialized])
 (defn chat-staged-commands-path [chat-id]
   [:chats chat-id :staged-commands])
 (defn chat-command-path [chat-id]

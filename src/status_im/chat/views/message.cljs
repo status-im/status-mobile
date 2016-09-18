@@ -21,8 +21,6 @@
                                          content-type-status
                                          content-type-command
                                          content-type-command-request]]
-            [status-im.utils.logging :as log]
-            [status-im.protocol.api :as api]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.chat.utils :as cu]))
 
@@ -263,14 +261,14 @@
     (into [view] children)))
 
 (defn chat-message [{:keys [outgoing message-id chat-id user-statuses from]}]
-  (let [my-identity (api/my-identity)
+  (let [my-identity (subscribe [:get :current-public-key])
         status      (subscribe [:get-in [:message-user-statuses message-id my-identity]])]
     (r/create-class
       {:component-did-mount
        (fn []
          (when (and (not outgoing)
                     (not= :seen (keyword @status))
-                    (not= :seen (keyword (get-in user-statuses [my-identity :status]))))
+                    (not= :seen (keyword (get-in user-statuses [@my-identity :status]))))
            (dispatch [:send-seen! {:chat-id    chat-id
                                    :from       from
                                    :message-id message-id}])))

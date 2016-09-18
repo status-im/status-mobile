@@ -1,7 +1,7 @@
 (ns status-im.accounts.login.handlers
   (:require [re-frame.core :refer [after dispatch]]
             [status-im.utils.handlers :refer [register-handler] :as u]
-            [status-im.utils.logging :as log]
+            [taoensso.timbre :as log]
             [status-im.utils.types :refer [json->clj]]
             [status-im.db :refer [default-view]]
             [status-im.persistence.realm.core :as realm]

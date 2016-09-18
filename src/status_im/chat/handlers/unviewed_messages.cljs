@@ -1,8 +1,7 @@
 (ns status-im.chat.handlers.unviewed-messages
   (:require [re-frame.core :refer [after enrich path dispatch]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.persistence.realm.core :as realm]
-            [status-im.utils.logging :as log]))
+            [status-im.persistence.realm.core :as realm]))
 
 (defn delivered-messages []
   (-> (realm/get-by-fields :account :message :and {:outgoing       false

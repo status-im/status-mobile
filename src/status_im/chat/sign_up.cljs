@@ -1,9 +1,5 @@
 (ns status-im.chat.sign-up
-  ;status-im.handlers.sign-up
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [status-im.persistence.simple-kv-store :as kv]
-            [status-im.protocol.state.storage :as s]
-            [status-im.models.chats :as c]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.utils.utils :refer [on-error http-post toast]]
             [status-im.utils.random :as random]
@@ -23,10 +19,6 @@
    :content      text
    :content-type text-content-type
    :outgoing     true})
-
-(defn set-signed-up [db signed-up]
-  (s/put kv/kv-store :signed-up signed-up)
-  (assoc db :signed-up signed-up))
 
 ; todo fn name is not too smart, but...
 (defn command-content
