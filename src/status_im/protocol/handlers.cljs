@@ -23,8 +23,8 @@
                   :identity                    public-key
                   :groups                      groups
                   :callback                    #(dispatch [:incoming-message %1 %2])
-                  :ack-not-received-s-interval 17
-                  :default-ttl                 15
+                  :ack-not-received-s-interval 125
+                  :default-ttl                 120
                   :send-online-s-interval      180
                   :ttl                         {}
                   :max-attempts-number         3
@@ -51,8 +51,12 @@
       (case type
         :message (dispatch [:received-protocol-message! message])
         :group-message (dispatch [:received-protocol-message! message])
-        :ack (when (#{:message :group-message} (:type payload))
-               (dispatch [:message-delivered message]))
+        :ack (cond
+               (#{:message :group-message} (:type payload))
+               (dispatch [:message-delivered message])
+
+               (= :contact-request (:type payload))
+               (dispatch [:pending-message-remove message]))
         :seen (dispatch [:message-seen message])
         :group-invitation (dispatch [:group-chat-invite-received message])
         :leave-group (dispatch [:participant-left-group message])

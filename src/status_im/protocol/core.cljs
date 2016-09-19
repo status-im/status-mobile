@@ -65,6 +65,7 @@
   {:pre [(valid? ::options options)]}
   (debug :init-whisper)
   (stop-watching-all!)
+  (d/reset-all-pending-messages!)
   (let [web3 (u/make-web3 rpc-url)
         listener-options {:web3     web3
                           :identity identity}]

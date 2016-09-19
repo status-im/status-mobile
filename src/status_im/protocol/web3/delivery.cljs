@@ -73,29 +73,44 @@
                    ::attempts ::was-sent?]))
 
 (defn add-prepeared-pending-message!
-  [web3 {:keys [id to] :as pending-message}]
+  [web3 {:keys [message-id to] :as pending-message}]
   {:pre [(valid? :delivery/pending-message pending-message)]}
   (debug :add-prepeared-pending-message!)
   (let [message (select-keys pending-message [:from :to :topics :payload])
-        pending-message' (assoc pending-message :message message)]
-    (swap! messages assoc-in [web3 id to] pending-message')
+        pending-message' (assoc pending-message :message message
+                                                :id message-id)]
+    (swap! messages assoc-in [web3 message-id to] pending-message')
     (when to
       (swap! recipient->pending-message
-             update to set/union #{[web3 id to]}))))
+             update to set/union #{[web3 message-id to]}))))
 
 (defn remove-pending-message! [web3 id to]
-  (swap! messages update-in [web3 id] dissoc to)
+  (swap! messages update web3
+         (fn [messages]
+           (when messages
+             (let [message (messages id)
+                   message' (dissoc message to)]
+               (if (seq message')
+                 (assoc messages id message')
+                 (dissoc messages id))))))
   (when to
     (swap! recipient->pending-message
            update to set/difference #{[web3 id to]})))
 
 (defn message-was-sent! [web3 id to]
-  (let [messages' (swap! messages update-in [web3 id to]
-                         (fn [message]
-                           (assoc message :was-sent? true
-                                          :attemps 1)))]
+  (let [messages' (swap! messages update web3
+                         (fn [messages]
+                           (let [message (get-in messages [id to])
+                                 message' (when message
+                                            (assoc message :was-sent? true
+                                                           :attemps 1))]
+                             (if message'
+                               (assoc-in messages [id to] message')
+                               messages))))]
     (when @pending-mesage-callback
-      (@pending-mesage-callback :sent (get-in messages' [web3 id to])))))
+      (let [message (get-in messages' [web3 id to])]
+        (when message
+          (@pending-mesage-callback :sent message))))))
 
 (defn attempt-was-made! [web3 id to]
   (debug :attempt-was-made id)
@@ -191,3 +206,6 @@
                (update-in messages key assoc
                           :last-attempt 0
                           :attempts 0))))))
+
+(defn reset-all-pending-messages! []
+  (reset! messages {}))

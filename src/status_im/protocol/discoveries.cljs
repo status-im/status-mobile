@@ -63,6 +63,7 @@
 (defn contact-request!
   [{:keys [web3 message]}]
   {:pre [(valid? :contact-request/message message)]}
+  (debug :send-command-request!)
   (d/add-pending-message!
     web3
     (assoc message :type :contact-request
