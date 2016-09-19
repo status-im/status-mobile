@@ -14,14 +14,12 @@
 (defn get-pending-messages! []
   (->> (r/get-all :account :pending-message)
        r/realm-collection->list
-       (map (fn [{:keys [message-id] :as message}]
-              (-> message
-                  (update :topics reader/read-string)
-                  (assoc :id message-id))))))
+       (map (fn [message]
+              (update message :topics reader/read-string)))))
 
 (defn- get-id
   [message-id to]
-  (let [to' (if (and to (str/starts-with? "0x" to))
+  (let [to' (if (and to (str/starts-with? to "0x"))
               (subs to 2)
               to)
         to'' (when to' (subs to' 0 7))

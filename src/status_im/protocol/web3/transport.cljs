@@ -13,5 +13,5 @@
 (defn post-message!
   [web3 message callback]
   {:pre [(valid? :shh/message message)]}
-  (debug :post-message web3 message)
+  (debug :post-message message)
   (.post (u/shh web3) (clj->js message) callback))
