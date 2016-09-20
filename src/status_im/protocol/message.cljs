@@ -3,7 +3,7 @@
 
 (s/def :message/ttl (s/and int? pos?))
 (s/def :message/from string?)
-(s/def :message/to string?)
+(s/def :message/to (s/nilable string?))
 (s/def :message/message-id string?)
 (s/def :message/requires-ack? boolean?)
 (s/def :keypair/private string?)
