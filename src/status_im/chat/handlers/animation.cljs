@@ -22,10 +22,6 @@
 
 (def response-height (+ input-height response-height-normal))
 
-(defn update-response-height
-  [{:keys [current-chat-id] :as db}]
-  (assoc-in db [:animations :to-response-height current-chat-id] response-height))
-
 (register-handler :animate-command-suggestions
   (fn [{chat-id :current-chat-id :as db} _]
     (let [suggestions? (seq (get-in db [:command-suggestions chat-id]))
@@ -47,7 +43,7 @@
         suggestion? (get-in db [:has-suggestions? current-chat-id])
         custom-errors (get-in db [:custom-validation-errors current-chat-id])
         validation-height (if (or (seq errors) (seq custom-errors))
-                            (+ suggestions-header-height request-info-height)
+                            request-info-height
                             0)]
     (+ validation-height
        (if (= :response type)
