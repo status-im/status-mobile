@@ -51,11 +51,8 @@
       (case type
         :message (dispatch [:received-protocol-message! message])
         :group-message (dispatch [:received-protocol-message! message])
-        :ack (cond
-               (#{:message :group-message} (:type payload))
+        :ack (if (#{:message :group-message} (:type payload))
                (dispatch [:message-delivered message])
-
-               (= :contact-request (:type payload))
                (dispatch [:pending-message-remove message]))
         :seen (dispatch [:message-seen message])
         :group-invitation (dispatch [:group-chat-invite-received message])
