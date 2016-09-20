@@ -39,18 +39,21 @@
   [{:keys [current-chat-id] :as db}]
   (let [path [:chats current-chat-id :command-input :command :type]
         type (get-in db path)
+        command? (= :command type)
+        response? (not command?)
         errors (get-in db [:validation-errors current-chat-id])
+        validation-errors? (seq errors)
         suggestion? (get-in db [:has-suggestions? current-chat-id])
         custom-errors (get-in db [:custom-validation-errors current-chat-id])
-        validation-height (if (or (seq errors) (seq custom-errors))
-                            request-info-height
-                            0)]
-    (+ validation-height
-       (if (= :response type)
-         minimum-suggestion-height
-         (if-not suggestion?
-           input-height
-           (+ input-height suggestions-header-height))))))
+        custom-errors? (seq custom-errors)
+        validation-errors?  (or validation-errors? custom-errors?)]
+    (cond-> 0
+            validation-errors? (+ request-info-height)
+            response? (+ minimum-suggestion-height)
+            command? (+ input-height)
+            (and suggestion? command?) (+ suggestions-header-height)
+            custom-errors? (+ suggestions-header-height)
+            (and command? validation-errors?) (+ suggestions-header-height))))
 
 (register-handler :animate-show-response
   ;[(after #(dispatch [:command-edit-mode]))]
