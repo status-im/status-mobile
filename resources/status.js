@@ -97,17 +97,19 @@ function webView(url) {
 
 function validationMessage(titleText, descriptionText) {
     var titleStyle = {
-        color: "white",
-        fontSize: 12,
-        fontFamily: "sans-serif"
+        style: {
+            color: "white",
+            fontSize: 12
+        }
     };
     var title = status.components.text(titleStyle, titleText);
 
     var descriptionStyle = {
-        color: "white",
-        fontSize: 12,
-        fontFamily: "sans-serif",
-        opacity: 0.9
+        style: {
+            color: "white",
+            fontSize: 12,
+            opacity: 0.9
+        }
     };
     var description = status.components.text(descriptionStyle, descriptionText);
 
