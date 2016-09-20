@@ -68,7 +68,7 @@
                    update to set/union #{[web3 message-id to]})))))))
 
 (s/def :delivery/pending-message
-  (s/keys :req-un [:message/to :message/from :shh/payload
+  (s/keys :req-un [:message/from :message/to :shh/payload
                    :message/requires-ack? :payload/ack? ::id :message/topics
                    ::attempts ::was-sent?]))
 
