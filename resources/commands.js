@@ -262,6 +262,17 @@ status.command({
 });
 
 function validateBalance(params) {
+    if(!params.value){
+        return {
+            errors: [
+                status.components.validationMessage(
+                    "Amount",
+                    "Amount must be specified"
+                )
+            ]
+        };
+    }
+
     try {
         var val = web3.toWei(params.value, "ether");
     } catch (err) {
