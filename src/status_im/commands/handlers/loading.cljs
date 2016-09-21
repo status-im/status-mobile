@@ -26,7 +26,7 @@
     ;-let [url (get-in db [:chats identity :dapp-url])]
     (cond
       (= "console" identity)
-      (dispatch [::validate-hash identity (slurp "resources/commands.js")])
+      (dispatch [::validate-hash identity (slurp "resources/console.js")])
 
       (= "wallet" identity)
       (dispatch [::validate-hash identity (slurp "resources/wallet.js")])
