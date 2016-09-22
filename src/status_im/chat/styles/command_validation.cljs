@@ -9,9 +9,8 @@
    :padding-top      12})
 
 (def title
-  {:color       :white
-   :font-size   14
-   :font-family st/font})
+  {:color     :white
+   :font-size 14})
 
 (def description
   (assoc title :opacity 0.9

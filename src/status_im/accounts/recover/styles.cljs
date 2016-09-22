@@ -1,6 +1,5 @@
 (ns status-im.accounts.recover.styles
-  (:require [status-im.components.styles :refer [title-font
-                                                 text1-color
+  (:require [status-im.components.styles :refer [text1-color
                                                  color-white
                                                  toolbar-background2
                                                  online-color]]))

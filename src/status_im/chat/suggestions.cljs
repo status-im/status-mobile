@@ -4,7 +4,7 @@
             [status-im.models.commands :refer [get-commands
                                                get-chat-command-request
                                                get-chat-command-to-message-id]]
-            [status-im.utils.utils :refer [log on-error http-get]]
+            [status-im.utils.utils :refer [log http-get]]
             [clojure.string :as s]))
 
 (defn suggestion? [text]

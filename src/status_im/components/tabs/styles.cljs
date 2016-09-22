@@ -1,7 +1,5 @@
 (ns status-im.components.tabs.styles
-  (:require [status-im.components.styles :refer [font
-                                                 title-font
-                                                 color-white
+  (:require [status-im.components.styles :refer [color-white
                                                  chat-background
                                                  online-color
                                                  selected-message-color
@@ -28,8 +26,7 @@
   {:position :absolute
    :bottom 0
    :left 0
-   :right 0
-   :height 4})
+   :right 0})
 
 (def tabs-inner-container
   {:flexDirection   :row
@@ -46,8 +43,7 @@
    :alignItems     :center})
 
 (def tab-title
-  {:fontFamily "sans-serif"
-   :fontSize   14
+  {:fontSize   14
    :color      "#6e93d8"})
 
 (def tab-icon

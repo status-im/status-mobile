@@ -1,6 +1,5 @@
 (ns status-im.chat.styles.plain-message
-  (:require [status-im.components.styles :refer [font
-                                                 text2-color]]))
+  (:require [status-im.components.styles :refer [text2-color]]))
 
 (defn message-input-button-touchable [w]
   {:width          w
@@ -37,7 +36,6 @@
    :marginTop  -2
    :padding    0
    :fontSize   14
-   :fontFamily font
    :color      text2-color})
 
 (def smile-icon

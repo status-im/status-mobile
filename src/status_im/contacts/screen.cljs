@@ -28,17 +28,15 @@
             [status-im.components.styles :as cst]))
 
 (defn contact-list-toolbar []
-  [view
-   [status-bar]
-   [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
-                                          :style  hamburger-icon}
-                                :handler open-drawer}
-             :title            (label :t/contacts)
-             :background-color toolbar-background2
-             :style            {:elevation 0}
-             :action           {:image   {:source {:uri :icon_search}
-                                          :style  icon-search}
-                                :handler (fn [])}}]])
+  [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
+                                         :style  hamburger-icon}
+                               :handler open-drawer}
+            :title            (label :t/contacts)
+            :background-color toolbar-background2
+            :style            {:elevation 0}
+            :action           {:image   {:source {:uri :icon_search}
+                                         :style  icon-search}
+                               :handler (fn [])}}])
 
 (def contacts-limit 10)
 

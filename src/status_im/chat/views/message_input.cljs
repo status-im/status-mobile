@@ -23,10 +23,10 @@
   [view st/message-input-container input])
 
 (defn plain-input-options [disable?]
-  {:style           st-message/message-input
-   :onChangeText    (when-not disable? plain-message/set-input-message)
-   :editable        (not disable?)
-   :onSubmitEditing plain-message/send})
+  {:style             st-message/message-input
+   :on-change-text    (when-not disable? plain-message/set-input-message)
+   :editable          (not disable?)
+   :on-submit-editing plain-message/send})
 
 (defn on-press-commands-handler
   [{:keys [suggestions-trigger]}]
@@ -35,9 +35,9 @@
     command/send-command))
 
 (defn command-input-options [command icon-width disable?]
-  {:style           (st-response/command-input icon-width disable?)
-   :onChangeText    (when-not disable? command/set-input-message)
-   :onSubmitEditing (on-press-commands-handler command)})
+  {:style             (st-response/command-input icon-width disable?)
+   :on-change-text    (when-not disable? command/set-input-message)
+   :on-submit-editing (on-press-commands-handler command)})
 
 (defview message-input [input-options command]
   [command? [:command?]
@@ -49,12 +49,13 @@
                 (if command?
                   (command-input-options command icon-width disable?)
                   (plain-input-options disable?))
-                {:autoFocus           false
-                 :blurOnSubmit        false
+                {:auto-focus          false
+                 :blur-on-submit      false
+                 :editable            true
                  :accessibility-label :input
                  :on-focus            #(dispatch [:set :focused true])
                  :on-blur             #(dispatch [:set :focused false])
-                 :default-value       (if command? input-command input-message)}
+                 :default-value       (if command? (or input-command "") input-message)}
                 input-options)])
 
 (defview plain-message-input-view [{:keys [input-options]}]

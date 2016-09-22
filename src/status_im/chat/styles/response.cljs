@@ -1,12 +1,12 @@
 (ns status-im.chat.styles.response
-  (:require [status-im.components.styles :refer [font
-                                                 color-white
+  (:require [status-im.components.styles :refer [color-white
                                                  color-blue
                                                  text1-color
                                                  text2-color
                                                  chat-background
                                                  color-black]]
-            [status-im.chat.constants :refer [input-height request-info-height
+            [status-im.chat.constants :refer [input-height
+                                              request-info-height
                                               response-height-normal]]))
 
 (def drag-container
@@ -39,22 +39,20 @@
 (def command-name
   {:marginTop  0
    :fontSize   12
-   :fontFamily font
    :color      color-white})
 
 (def message-info
   {:marginTop  1
    :fontSize   12
-   :fontFamily font
    :opacity    0.69
    :color      color-white})
 
-(defn response-view [height]
+(defn response-view [keyboard-height height]
   {:flexDirection   :column
    :position        :absolute
    :left            0
    :right           0
-   :bottom          0
+   :bottom          keyboard-height
    :height          height
    :backgroundColor color-white
    :elevation       2})
@@ -90,5 +88,4 @@
    :marginTop   -2
    :padding     0
    :fontSize    14
-   :fontFamily  font
    :color       (if disbale? color-white text1-color)})
