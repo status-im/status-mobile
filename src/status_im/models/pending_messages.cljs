@@ -46,10 +46,12 @@
                (r/create :account :pending-message message' true)))))
 
 (defn remove-pending-message!
-  [{{:keys [message-id]} :payload}]
+  [{{:keys [message-id ack-of-message]} :payload}]
   (r/write :account
            (fn []
-             (r/delete :account (r/get-by-field :account :pending-message :message-id message-id)))))
+             (r/delete :account
+                       (r/get-by-field :account :pending-message
+                                       :message-id (or ack-of-message message-id))))))
 
 (defn remove-all-by-chat [chat-id]
   (r/write

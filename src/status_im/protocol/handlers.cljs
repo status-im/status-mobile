@@ -180,32 +180,35 @@
 
 (defn save-message-status! [status]
   (fn [_ [_
-          {:keys                         [from]
-           {:keys [message-id group-id]} :payload}]]
-    (when-let [message (messages/get-message message-id)]
-      (let [group? (boolean group-id)
-            message (if (and group? (not= status :sent))
-                      (update-in message
-                                 [:user-statuses from]
-                                 (fn [{old-status :status}]
-                                   {:id               (random/id)
-                                    :whisper-identity from
-                                    :status           (if (= (keyword old-status) :seen)
-                                                        old-status
-                                                        status)}))
-                      (assoc message :message-status status))]
-        (messages/update-message! message)))))
+          {:keys                                        [from]
+           {:keys [message-id ack-of-message group-id]} :payload}]]
+    (let [message-id' (or ack-of-message message-id)]
+      (when-let [{:keys [message-status] :as message} (messages/get-message message-id')]
+        (when-not (= (keyword message-status) :seen)
+          (let [group?  (boolean group-id)
+                message (if (and group? (not= status :sent))
+                          (update-in message
+                                     [:user-statuses from]
+                                     (fn [{old-status :status}]
+                                       {:id               (random/id)
+                                        :whisper-identity from
+                                        :status           (if (= (keyword old-status) :seen)
+                                                            old-status
+                                                            status)}))
+                          (assoc message :message-status status))]
+            (messages/update-message! message)))))))
 
 
 (defn update-message-status [status]
   (fn [db
-       [_ {:keys                         [from]
-           {:keys [message-id group-id]} :payload}]]
+       [_ {:keys                                        [from]
+           {:keys [message-id ack-of-message group-id]} :payload}]]
     (if (chats/is-active? (or group-id from))
-      (let [group? (boolean group-id)
-            status-path (if (and group? (not= status :sent))
-                          [:message-user-statuses message-id from]
-                          [:message-statuses message-id])
+      (let [message-id'    (or ack-of-message message-id)
+            group?         (boolean group-id)
+            status-path    (if (and group? (not= status :sent))
+                             [:message-user-statuses message-id' from]
+                             [:message-statuses message-id'])
             current-status (get-in db status-path)]
         (if-not (= :seen current-status)
           (assoc-in db status-path {:whisper-identity from
@@ -232,8 +235,10 @@
 
 (register-handler :message-seen
   [(after (save-message-status! :seen))
-   (after (fn [_ [_ {:keys [chat-id]}]]
-            (dispatch [:remove-unviewed-messages chat-id])))]
+   (after (fn [_ [_ {:keys              [from]
+                     {:keys [group-id]} :payload}]]
+            (when-not group-id
+              (dispatch [:remove-unviewed-messages from]))))]
   (update-message-status :seen))
 
 (register-handler :pending-message-upsert
