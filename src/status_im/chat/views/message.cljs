@@ -195,9 +195,9 @@
 (defview member-photo [from]
   [photo-path [:photo-path from]]
   [view st/photo-view
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
+   [image {:source {:uri (if (s/blank? photo-path)
+                           (identicon from)
+                           photo-path)}
            :style  st/photo}]])
 
 (defn incoming-group-message-body
