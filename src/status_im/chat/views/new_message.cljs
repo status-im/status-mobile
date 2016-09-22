@@ -19,9 +19,9 @@
 
 (defn get-options [{:keys [type placeholder]} command-type]
   (let [options (case (keyword type)
-                  :phone {:input-options {:keyboardType :phone-pad}}
-                  :password {:input-options {:secureTextEntry true}}
-                  :number {:input-options {:keyboardType :numeric}}
+                  :phone {:input-options {:keyboard-type "phone-pad"}}
+                  :password {:input-options {:secure-text-entry true}}
+                  :number {:input-options {:keyboard-type "numeric"}}
                   ;; todo maybe nil is fine for now :)
                   nil #_(throw (js/Error. "Uknown command type")))]
     (if (= :response command-type)

@@ -1,7 +1,5 @@
 (ns status-im.chats-list.styles
-  (:require [status-im.components.styles :refer [font
-                                                 title-font
-                                                 color-white
+  (:require [status-im.components.styles :refer [color-white
                                                  color-blue
                                                  online-color
                                                  text1-color
@@ -32,8 +30,7 @@
 (def name-text
   {:marginTop  -2.5
    :color      text1-color
-   :fontSize   14
-   :fontFamily title-font})
+   :fontSize   14})
 
 (def group-icon
   {:marginTop  4
@@ -44,7 +41,6 @@
 (def memebers-text
   {:marginTop  -0.5
    :marginLeft 4
-   :fontFamily font
    :fontSize   12
    :color      text2-color})
 
@@ -52,7 +48,6 @@
   {:marginTop   7
    :marginRight 40
    :color       text1-color
-   :fontFamily  font
    :fontSize    14
    :lineHeight  20})
 
@@ -68,8 +63,7 @@
    :height    7})
 
 (def datetime-text
-  {:fontFamily font
-   :fontSize   12
+  {:fontSize   12
    :color      text2-color
    :marginLeft 5})
 
@@ -85,7 +79,6 @@
 (def new-messages-text
   {:top        4
    :left       0
-   :fontFamily title-font
    :fontSize   10
    :color      color-blue
    :textAlign  :center})

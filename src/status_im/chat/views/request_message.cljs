@@ -56,7 +56,7 @@
        :component-will-unmount
        #(reset! loop? false)
        :reagent-render
-       (fn [message-id command]
+       (fn [message-id {command-icon :icon :as command}]
          (if command
            [touchable-highlight
             {:on-press            (when-not @answered?
@@ -64,8 +64,9 @@
              :style               st/command-request-image-touchable
              :accessibility-label (label command)}
             [animated-view {:style (st/command-request-image-view command scale-anim-val)}
-             [image {:source {:uri (:icon command)}
-                     :style  st/command-request-image}]]]))})))
+             (if command-icon
+               [image {:source {:uri command-icon}
+                       :style  st/command-request-image}])]]))})))
 
 (defn message-content-command-request
   [{:keys [message-id content from incoming-group]}]
