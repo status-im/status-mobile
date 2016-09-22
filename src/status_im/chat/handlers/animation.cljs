@@ -52,7 +52,7 @@
             response? (+ minimum-suggestion-height)
             command? (+ input-height)
             (and suggestion? command?) (+ suggestions-header-height)
-            custom-errors? (+ suggestions-header-height)
+            ;custom-errors? (+ suggestions-header-height)
             (and command? validation-errors?) (+ suggestions-header-height))))
 
 (register-handler :animate-show-response
