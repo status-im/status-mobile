@@ -28,8 +28,7 @@
             [status-im.i18n :refer [label]]
             [cljs.spec :as s]
             [status-im.contacts.validations :as v]
-            [status-im.contacts.styles :as st]
-            [status-im.components.styles :as cst]))
+            [status-im.contacts.styles :as st]))
 
 
 (def toolbar-title
@@ -53,35 +52,39 @@
                                  :photo-path       (identicon id)
                                  :whisper-identity id}])))
 
+(defn- validation-error-message [whisper-identity error]
+  (cond
+    (not (s/valid? ::v/unique-identity whisper-identity)) (label :t/contact-already-added)
+    (not (s/valid? ::v/whisper-identity whisper-identity)) (label :t/enter-valid-address)
+    :else error))
+
 (defn toolbar-action [new-contact-identity error]
-  (let [valid-contact? (and
-                         (s/valid? ::v/whisper-identity new-contact-identity)
-                         (nil? error))]
-    {:image   {:source {:uri (if valid-contact?
+  (let [error-message (validation-error-message new-contact-identity error)]
+    {:image   {:source {:uri (if (str/blank? error-message)
                                :icon_ok_blue
                                :icon_ok_disabled)}
                :style  icon-search}
-     :handler #(when valid-contact?
+     :handler #(when (str/blank? error-message)
                 (on-add-contact new-contact-identity))}))
 
 (defview contact-whisper-id-input [whisper-identity error]
   []
-  (let [error (if (str/blank? whisper-identity) "" error)
-        error (if (s/valid? ::v/whisper-identity whisper-identity)
-                error
-                (label :t/enter-valid-address))]
+  (let [error (when-not (str/blank? whisper-identity)
+                (validation-error-message whisper-identity error))]
     [view button-input-container
      [text-field
       {:error          error
        :error-color    "#7099e6"
+       :input-style    st/qr-input
        :value          whisper-identity
-       :wrapper-style  (merge button-input)
+       :wrapper-style  button-input
        :label          (label :t/address)
        :on-change-text #(do
                          (dispatch [:set-in [:new-contact-identity] %])
                          (dispatch [:set :new-contact-address-error nil]))}]
      [scan-button {:showLabel (zero? (count whisper-identity))
                    :handler   #(dispatch [:scan-qr-code {:toolbar-title (label :t/new-contact)} :set-contact-identity-from-qr])}]]))
+
 
 (defview new-contact []
   [new-contact-identity [:get :new-contact-identity]
