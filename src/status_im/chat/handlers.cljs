@@ -58,9 +58,9 @@
             (if all-loaded?
               db
               (let [messages-path [:chats current-chat-id :messages]
-                    messages (get-in db messages-path)
-                    new-messages (messages/get-messages current-chat-id (count messages))
-                    all-loaded? (> default-number-of-messages (count new-messages))]
+                    messages      (get-in db messages-path)
+                    new-messages  (messages/get-messages current-chat-id (count messages))
+                    all-loaded?   (> default-number-of-messages (count new-messages))]
                 (-> db
                     (assoc :loading-allowed false)
                     (update-in messages-path concat new-messages)
@@ -172,7 +172,7 @@
 
 (defn init-console-chat
   [{:keys [chats] :as db} existing-account?]
-  (let [chat-id "console"
+  (let [chat-id  "console"
         new-chat sign-up-service/console-chat]
     (if (chats chat-id)
       db
@@ -249,7 +249,7 @@
                    (map (fn [{:keys [chat-id] :as chat}]
                           [chat-id chat]))
                    (into {}))
-        ids (set (keys chats))]
+        ids   (set (keys chats))]
 
     (-> db
         (assoc :chats chats)
@@ -268,9 +268,9 @@
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
-  (let [chat-id (or id current-chat-id)
+  (let [chat-id  (or id current-chat-id)
         messages (get-in db [:chats chat-id :messages])
-        db' (assoc db :current-chat-id chat-id)]
+        db'      (assoc db :current-chat-id chat-id)]
     (dispatch [:load-requests! chat-id])
     (dispatch [:load-commands! chat-id])
     (if (seq messages)
@@ -405,31 +405,35 @@
   [(after
      (fn [{:keys [current-chat-id] :as db}]
        (let [suggestions (get-in db [:has-suggestions? current-chat-id])
-             mode (get-in db [:edit-mode current-chat-id])]
+             mode        (get-in db [:edit-mode current-chat-id])]
          (when (and (= :command mode) suggestions)
            (dispatch [:fix-response-height nil nil true])))))
    (after
      (fn [{:keys [current-chat-id] :as db}]
        (let [suggestions (get-in db [:command-suggestions current-chat-id])
-             mode (get-in db [:edit-mode current-chat-id])]
+             mode        (get-in db [:edit-mode current-chat-id])]
          (when (and (not= :command mode) (seq suggestions))
            (dispatch [:fix-commands-suggestions-height nil nil true])))))]
   (fn [db [_ h]]
     (assoc db :layout-height h)))
 
+(defn send-seen!
+  [{:keys [web3 current-public-key chats]}
+   [_ {:keys [from chat-id message-id]}]]
+  (when-not (console? chat-id)
+    (let [{:keys [group-chat]} (chats chat-id)]
+      (protocol/send-seen! {:web3    web3
+                            :message {:from       current-public-key
+                                      :to         from
+                                      :group-id   (when group-chat chat-id)
+                                      :message-id message-id}}))))
 (register-handler :send-seen!
-  (after (fn [_ [_ options]]
-           (dispatch [:message-seen options])))
-  (u/side-effect!
-    (fn [{:keys [web3 current-public-key chats]}
-         [_ {:keys [from chat-id message-id]}]]
-      (when-not (console? chat-id)
-        (let [{:keys [group-chat]} (chats chat-id)]
-          (protocol/send-seen! {:web3    web3
-                                :message {:from       current-public-key
-                                          :to         from
-                                          :group-id   (when group-chat chat-id)
-                                          :message-id message-id}}))))))
+  [(after (fn [_ [_ {:keys [message-id]}]]
+            (messages/update-message! {:message-id     message-id
+                                       :message-status :seen})))
+   (after (fn [_ [_ {:keys [chat-id]}]]
+            (dispatch [:remove-unviewed-messages chat-id])))]
+  (u/side-effect! send-seen!))
 
 (register-handler :set-web-view-url
   (fn [{:keys [current-chat-id] :as db} [_ url]]
