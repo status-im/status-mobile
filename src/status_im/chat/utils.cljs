@@ -1,7 +1,8 @@
-(ns status-im.chat.utils)
+(ns status-im.chat.utils
+  (:require [status-im.constants :refer [console-chat-id]]))
 
 (defn console? [s]
-  (= "console" s))
+  (= console-chat-id s))
 
 (def not-console?
   (complement console?))

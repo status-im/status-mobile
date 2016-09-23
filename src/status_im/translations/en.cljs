@@ -56,6 +56,8 @@
    :email                                 "Email"
    :profile-no-status                     "No status"
    :add-to-contacts                       "Add to contacts"
+   :error-incorrect-name                  "Please, select another name"
+   :error-incorrect-email                 "Incorrect e-mail"
 
    ;;make_photo
    :image-source-title                    "Profile image"

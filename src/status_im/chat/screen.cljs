@@ -26,6 +26,7 @@
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
+            [status-im.constants :refer [console-chat-id]]
             [reagent.core :as r]
             [clojure.string :as str]
             [cljs-time.core :as t]))
@@ -82,7 +83,7 @@
                (<= last-online-date now-date))
         (time/time-ago last-online-date)
         (label :t/active-unknown)))
-    (if (= chat-id "console")
+    (if (= chat-id console-chat-id)
       (label :t/active-online)
       (label :t/active-unknown))))
 

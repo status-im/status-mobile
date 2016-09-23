@@ -1,4 +1,5 @@
-(ns status-im.components.text-field.styles)
+(ns status-im.components.text-field.styles
+  (:require [status-im.utils.platform :refer [platform-specific]]))
 
 
 (def text-field-container
@@ -15,12 +16,13 @@
    :text-align-vertical :top})
 
 (defn label [top font-size color]
-  {:position         :absolute
-   :top              top
-   :left             0
-   :color            color
-   :font-size        font-size
-   :background-color :transparent})
+  (let [input-label-style (get-in platform-specific [:component-styles :input-label])]
+    (merge input-label-style
+           {:position         :absolute
+            :top              top
+            :color            color
+            :font-size        font-size
+            :background-color :transparent})))
 
 (def label-float
   {})
@@ -36,6 +38,8 @@
    :width            width})
 
 (defn error-text [color]
-  {:color            color
-   :background-color :transparent
-   :font-size        12})
+  (let [input-error-text-style (get-in platform-specific [:component-styles :input-error-text])]
+    (merge input-error-text-style
+           {:color            color
+            :background-color :transparent
+            :font-size        12})))
