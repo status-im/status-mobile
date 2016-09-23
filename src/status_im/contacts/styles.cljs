@@ -178,3 +178,6 @@
    :right 0
    :width 200
    :height 170})
+
+(def qr-input
+  {:margin-right 42})

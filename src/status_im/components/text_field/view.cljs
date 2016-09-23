@@ -176,7 +176,8 @@
                                                                   :to-line-width 0}
                                                       :onBlur    on-blur})
                   :on-change-text    #(on-change-text %)
-                  :on-change         #(on-change %)} value]
+                  :on-change         #(on-change %)
+                  :default-value     value}]
      [view {:style    (st/underline-container line-color)
             :onLayout #(r/set-state component {:max-line-width (get-width %)})}
       [animated-view {:style (st/underline focus-line-color line-width)}]]
