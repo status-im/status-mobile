@@ -1,6 +1,6 @@
 /* Created by "go tool cgo" - DO NOT EDIT. */
 
-/* package github.com/status-im/status-go/src */
+/* package github.com/status-im/status-go/cmd/status */
 
 /* Start of preamble from import "C" comments.  */
 
@@ -54,6 +54,8 @@ extern "C" {
 
 extern char* CreateAccount(char* p0);
 
+extern char* CreateChildAccount(char* p0, char* p1);
+
 extern char* RecoverAccount(char* p0, char* p1);
 
 extern char* Login(char* p0, char* p1);
@@ -66,19 +68,19 @@ extern char* CompleteTransaction(char* p0, char* p1);
 
 extern char* StartNode(char* p0);
 
-extern char* parse(char* p0, char* p1);
+extern void InitJail(char* p0);
 
-extern char* call(char* p0, char* p1, char* p2);
+extern char* Parse(char* p0, char* p1);
 
-extern void initJail(char* p0);
+extern char* Call(char* p0, char* p1, char* p2);
 
-extern char* addPeer(char* p0);
+extern char* AddPeer(char* p0);
 
-extern char* addWhisperFilter(char* p0);
+extern char* AddWhisperFilter(char* p0);
 
-extern void removeWhisperFilter(GoInt p0);
+extern void RemoveWhisperFilter(GoInt p0);
 
-extern void clearWhisperFilters();
+extern void ClearWhisperFilters();
 
 #ifdef __cplusplus
 }
