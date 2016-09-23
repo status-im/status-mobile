@@ -234,11 +234,7 @@
   (update-message-status :sent))
 
 (register-handler :message-seen
-  [(after (save-message-status! :seen))
-   (after (fn [_ [_ {:keys              [from]
-                     {:keys [group-id]} :payload}]]
-            (when-not group-id
-              (dispatch [:remove-unviewed-messages from]))))]
+  [(after (save-message-status! :seen))]
   (update-message-status :seen))
 
 (register-handler :pending-message-upsert
