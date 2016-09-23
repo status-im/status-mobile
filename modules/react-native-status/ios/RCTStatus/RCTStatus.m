@@ -16,9 +16,9 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_METHOD(initJail: (NSString *) js
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"initJail() method called");
+    NSLog(@"InitJail() method called");
 #endif
-    initJail((char *) [js UTF8String]);
+    InitJail((char *) [js UTF8String]);
     callback(@[[NSNull null]]);
 }
 
@@ -27,9 +27,9 @@ RCT_EXPORT_METHOD(parseJail:(NSString *)chatId
                   js:(NSString *)js
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"parseJail() method called");
+    NSLog(@"ParseJail() method called");
 #endif
-    char * result = parse((char *) [chatId UTF8String], (char *) [js UTF8String]);
+    char * result = Parse((char *) [chatId UTF8String], (char *) [js UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
@@ -39,9 +39,9 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
                   params:(NSString *)params
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"callJail() method called");
+    NSLog(@"CallJail() method called");
 #endif
-    char * result = call((char *) [chatId UTF8String], (char *) [path UTF8String], (char *) [params UTF8String]);
+    char * result = Call((char *) [chatId UTF8String], (char *) [path UTF8String], (char *) [params UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
@@ -50,7 +50,7 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
 //////////////////////////////////////////////////////////////////// startNode
 RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
 #if DEBUG
-    NSLog(@"startNode() method called");
+    NSLog(@"StartNode() method called");
 #endif
     if (!isStatusInitialized){
         isStatusInitialized = true;
@@ -77,7 +77,7 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)),
                        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                        ^(void) {
-                           addPeer((char *) [peer UTF8String]);
+                           AddPeer((char *) [peer UTF8String]);
         });
         onResultCallback(@[[NSNull null]]);
         return;
@@ -99,7 +99,7 @@ RCT_EXPORT_METHOD(stopNode:(RCTResponseSenderBlock)callback) {
 RCT_EXPORT_METHOD(createAccount:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"createAccount() method called");
+    NSLog(@"CreateAccount() method called");
 #endif
     char * result = CreateAccount((char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
@@ -110,7 +110,7 @@ RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"recoverAccount() method called");
+    NSLog(@"RecoverAccount() method called");
 #endif
     char * result = RecoverAccount((char *) [password UTF8String], (char *) [passphrase UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
@@ -121,7 +121,7 @@ RCT_EXPORT_METHOD(login:(NSString *)address
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"login() method called");
+    NSLog(@"Login() method called");
 #endif
     char * result = Login((char *) [address UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
@@ -134,7 +134,7 @@ RCT_EXPORT_METHOD(completeTransaction:(NSString *)hash
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"completeTransaction() method called");
+    NSLog(@"CompleteTransaction() method called");
 #endif
     char * result = CompleteTransaction((char *) [hash UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
