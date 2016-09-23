@@ -18,7 +18,9 @@
                        :border-bottom-width 0.5}
    :chat              {:new-message {:border-top-color styles/color-gray3
                                      :border-top-width 0.5}}
-   :bottom-gradient   {:height 1}})
+   :bottom-gradient   {:height 1}
+   :input-label       {:left 0}
+   :input-error-text  {:margin-left 0}})
 
 (def fonts
   {:default {:font-family "SFUIDisplay-Regular"}

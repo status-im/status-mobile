@@ -1,6 +1,7 @@
 (ns status-im.profile.styles
   (:require [status-im.components.styles :refer [color-light-blue-transparent
                                                  color-white
+                                                 color-gray
                                                  color-black
                                                  color-blue
                                                  color-blue-transparent
@@ -8,6 +9,7 @@
                                                  online-color
                                                  separator-color
                                                  text1-color
+                                                 text1-disabled-color
                                                  text2-color]]))
 
 (def profile
@@ -42,9 +44,9 @@
   {:width  4
    :height 16})
 
-(def ok-btn-icon
+(defn ok-btn-icon [enabled?]
   {:font-size 22
-   :color     :black})
+   :color     (if enabled? color-black color-gray)})
 
 (def user-photo-container
   {:margin-top 22})
@@ -113,32 +115,21 @@
 
 (def profile-properties-container
   {:margin-top     20
+   :margin-left    16
    :align-items    :stretch
    :flex-firection :column})
 
-(def profile-property-view-container
-  {:padding-left 16})
+(def profile-input-wrapper
+  {:margin-bottom 16})
 
-(def profile-property-view-sub-container
-  {:border-bottom-width 1
-   :border-bottom-color separator-color
-   :padding-right       16})
+(def profile-input-text
+  {:color text1-color})
 
-(def profile-property-view-label
-  {:margin-top 18
-   :font-size  14
-   :color      text2-color})
-
-(def profile-property-view-value
-  {:margin-top    8
-   :margin-bottom 8
-   :padding       0
-   :height        40
-   :font-size     16
-   :color         text1-color})
+(def profile-input-text-non-editable
+  {:color text1-disabled-color})
 
 (def report-user-container
-  {:margin-top    50
+  {:margin-top    32
    :margin-bottom 43
    :align-items   :center})
 

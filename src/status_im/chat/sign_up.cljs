@@ -6,7 +6,8 @@
             [status-im.utils.sms-listener :refer [add-sms-listener
                                                   remove-sms-listener]]
             [status-im.utils.phone-number :refer [format-phone-number]]
-            [status-im.constants :refer [text-content-type
+            [status-im.constants :refer [console-chat-id
+                                         text-content-type
                                          content-type-command
                                          content-type-command-request
                                          content-type-status]]
@@ -15,7 +16,7 @@
 (defn send-console-message [text]
   {:message-id   (random/id)
    :from         "me"
-   :to           "console"
+   :to           console-chat-id
    :content      text
    :content-type text-content-type
    :outgoing     true})
@@ -36,7 +37,7 @@
                                 (or message (label :t/confirmation-code)))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         "console"
+                :from         console-chat-id
                 :to           "me"}])))
 
 (defn handle-sms [{body :body}]
@@ -60,7 +61,7 @@
               :content      (label :t/contacts-syncronized)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"}])
   (dispatch [:set-signed-up true]))
 
@@ -74,7 +75,7 @@
               :content      (:message body)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"}])
   (let [status (keyword (:status body))]
     (when (= :confirmed status)
@@ -95,7 +96,7 @@
                                 (label :t/phone-number-required))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         "console"
+                :from         console-chat-id
                 :to           "me"}])))
 
 ;; -- Saving password ----------------------------------------
@@ -106,7 +107,7 @@
               :content      (label :t/password-saved)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"
               :new?         false}])
   (dispatch [:received-message
@@ -114,7 +115,7 @@
               :content      (label :t/generate-passphrase)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"
               :new?         false}])
   (dispatch [:received-message
@@ -122,7 +123,7 @@
               :content      (label :t/here-is-your-passphrase)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"
               :new?         false}])
   (dispatch [:received-message
@@ -130,7 +131,7 @@
               :content      mnemonic
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"
               :new?         false}])
   (dispatch [:received-message
@@ -138,7 +139,7 @@
               :content      (label :t/written-down)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"
               :new?         false}])
   ;; TODO highlight '!phone'
@@ -149,8 +150,8 @@
 (def intro-status
   {:message-id      "intro-status"
    :content         (label :t/intro-status)
-   :from            "console"
-   :chat-id         "console"
+   :from            console-chat-id
+   :chat-id         console-chat-id
    :content-type    content-type-status
    :outgoing        false
    :to              "me"})
@@ -162,7 +163,7 @@
               :content      (label :t/intro-message1)
               :content-type text-content-type
               :outgoing     false
-              :from         "console"
+              :from         console-chat-id
               :to           "me"}])
   (when-not logged-in?
     (dispatch [:received-message
@@ -170,7 +171,7 @@
                 :content      (label :t/intro-message2)
                 :content-type text-content-type
                 :outgoing     false
-                :from         "console"
+                :from         console-chat-id
                 :to           "me"}])
 
     (dispatch [:received-message
@@ -180,12 +181,12 @@
                                 (label :t/keypair-generated))
                 :content-type content-type-command-request
                 :outgoing     false
-                :from         "console"
+                :from         console-chat-id
                 :to           "me"}])))
 
 (def console-chat
-  {:chat-id    "console"
-   :name       "console"
+  {:chat-id    console-chat-id
+   :name       console-chat-id
    ; todo remove/change dapp config fot console
    :dapp-url   "http://localhost:8185/resources"
    :dapp-hash  858845357
@@ -193,6 +194,6 @@
    :group-chat false
    :is-active  true
    :timestamp  (.getTime (js/Date.))
-   :contacts   [{:identity         "console"
+   :contacts   [{:identity         console-chat-id
                  :text-color       "#FFFFFF"
                  :background-color "#AB7967"}]})

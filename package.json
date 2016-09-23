@@ -18,6 +18,7 @@
     "dns.js": "^1.0.1",
     "domain-browser": "^1.1.7",
     "events": "^1.1.1",
+    "homoglyph-finder": "^1.1.1",
     "https-browserify": "0.0.1",
     "identicon.js": "github:status-im/identicon.js",
     "os-browserify": "^0.1.2",
