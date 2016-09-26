@@ -104,7 +104,7 @@
 (defn stop-watching-group!
   [{:keys [web3 group-id]}]
   {:pre [(valid? :message/chat-id group-id)]}
-  (f/remove-filter! web3 [group-id]))
+  (f/remove-filter! web3 {:topics [group-id]}))
 
 (defn start-watching-group!
   [{:keys [web3 group-id keypair callback identity]}]

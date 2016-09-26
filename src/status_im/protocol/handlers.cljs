@@ -18,30 +18,30 @@
                   updates-private-key]}
           (get-in db [:accounts current-account-id])]
       (let [groups (chats/active-group-chats)
-            w3 (protocol/init-whisper!
-                 {:rpc-url                     "http://localhost:8545"
-                  :identity                    public-key
-                  :groups                      groups
-                  :callback                    #(dispatch [:incoming-message %1 %2])
-                  :ack-not-received-s-interval 125
-                  :default-ttl                 120
-                  :send-online-s-interval      180
-                  :ttl                         {}
-                  :max-attempts-number         3
-                  :delivery-loop-ms-interval   500
-                  :profile-keypair             {:public  updates-public-key
-                                                :private updates-private-key}
-                  :hashtags                    (u/get-hashtags status)
-                  :pending-messages            (pending-messages/get-pending-messages!)
-                  :contacts                    (keep (fn [{:keys [whisper-identity
-                                                                  public-key
-                                                                  private-key]}]
-                                                       (when (and public-key private-key)
-                                                         {:identity whisper-identity
-                                                          :keypair  {:public  public-key
-                                                                     :private private-key}}))
+            w3     (protocol/init-whisper!
+                     {:rpc-url                     "http://localhost:8545"
+                      :identity                    public-key
+                      :groups                      groups
+                      :callback                    #(dispatch [:incoming-message %1 %2])
+                      :ack-not-received-s-interval 125
+                      :default-ttl                 120
+                      :send-online-s-interval      180
+                      :ttl                         {}
+                      :max-attempts-number         3
+                      :delivery-loop-ms-interval   500
+                      :profile-keypair             {:public  updates-public-key
+                                                    :private updates-private-key}
+                      :hashtags                    (u/get-hashtags status)
+                      :pending-messages            (pending-messages/get-pending-messages!)
+                      :contacts                    (keep (fn [{:keys [whisper-identity
+                                                                      public-key
+                                                                      private-key]}]
+                                                           (when (and public-key private-key)
+                                                             {:identity whisper-identity
+                                                              :keypair  {:public  public-key
+                                                                         :private private-key}}))
 
-                                                     (contacts/get-contacts))})]
+                                                         (contacts/get-contacts))})]
         (assoc db :web3 w3)))))
 
 (register-handler :incoming-message
@@ -56,6 +56,7 @@
                (dispatch [:pending-message-remove message]))
         :seen (dispatch [:message-seen message])
         :group-invitation (dispatch [:group-chat-invite-received message])
+        :add-group-identity (dispatch [:participant-invited-to-group message])
         :leave-group (dispatch [:participant-left-group message])
         :contact-request (dispatch [:contact-request-received message])
         :discovery (dispatch [:discovery-response-received message])
@@ -156,11 +157,12 @@
 
 (register-handler :participant-invited-to-group
   (u/side-effect!
-    (fn [{:keys [current-public-key]} [action from group-id identity message-id]]
-      (log/debug action message-id from group-id identity)
+    (fn [{:keys [current-public-key]}
+         [_ {:keys                                   [from]
+             {:keys [group-id identity message-id]} :payload}]]
       (participant-invited-to-group-message group-id current-public-key identity from message-id)
-      ;; todo uncomment
-      #_(dispatch [:add-contact-to-group! group-id identity]))))
+      (when-not (= current-public-key identity)
+        (dispatch [:add-contact-to-group! group-id identity])))))
 
 (register-handler :add-contact-to-group!
   (u/side-effect!
@@ -244,9 +246,9 @@
       (when (#{:message :group-message} type)
         (messages/update-message! {:message-id      id
                                    :delivery-status :pending}))))
-  (fn [db [_ {:keys [type id to groupd-id]}]]
+  (fn [db [_ {:keys [type id to group-id]}]]
     (if (#{:message :group-message} type)
-      (let [chat-id (or groupd-id to)
+      (let [chat-id        (or group-id to)
             current-status (get-in db [:message-status chat-id id])]
         (if-not (= :seen current-status)
           (assoc-in db [:message-status chat-id id] :pending)
