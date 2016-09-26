@@ -89,7 +89,14 @@
          (fn [messages]
            (when messages
              (let [message (messages id)
-                   message' (dissoc message to)]
+                   ;; Message that is send without specified "from" option
+                   ;; is stored in pending "messages" map as
+                   ;; {message-id {nil message}}.
+                   ;; When we receive the first ack for such message it is
+                   ;; removed from pending messages adding of the nil key
+                   ;; to the next dissoc form
+                   ;; todo rewrite handling of ack message in more clear way
+                   message' (dissoc message to nil)]
                (if (seq message')
                  (assoc messages id message')
                  (dissoc messages id))))))
