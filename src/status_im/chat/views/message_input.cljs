@@ -11,16 +11,16 @@
             [status-im.chat.views.command :as command]
             [status-im.chat.styles.message-input :as st]
             [status-im.chat.styles.plain-message :as st-message]
-            [status-im.chat.styles.response :as st-response]))
+            [status-im.chat.styles.response :as st-response]
+            [reagent.core :as r]
+            [clojure.string :as str]))
 
 (defn send-button [{:keys [on-press accessibility-label]}]
   [touchable-highlight {:on-press            on-press
                         :accessibility-label accessibility-label}
-   [view st/send-container
-    [icon :send st/send-icon]]])
-
-(defn message-input-container [input]
-  [view st/message-input-container input])
+   [view st/send-wrapper
+    [view st/send-container
+     [icon :send st/send-icon]]]])
 
 (defn plain-input-options [disable?]
   {:style             st-message/message-input
@@ -39,42 +39,79 @@
    :on-change-text    (when-not disable? command/set-input-message)
    :on-submit-editing (on-press-commands-handler command)})
 
-(defview message-input [input-options command]
-  [command? [:command?]
-   input-message [:get-chat-input-text]
-   input-command [:get-chat-command-content]
+(defview message-input [input-options set-layout-size]
+  [input-message [:get-chat-input-text]
+   disable? [:get :disable-input]]
+  [text-input (merge
+                (plain-input-options disable?)
+                {:auto-focus          false
+                 :blur-on-submit      true
+                 :multiline           true
+                 :on-change           #(let [size (-> (.-nativeEvent %)
+                                                      (.-contentSize)
+                                                      (.-height))]
+                                        (set-layout-size size))
+                 :accessibility-label :input
+                 :on-focus            #(dispatch [:set :focused true])
+                 :on-blur             #(do (dispatch [:set :focused false])
+                                           (set-layout-size 0))
+                 :default-value       (or input-message "")}
+                input-options)])
+
+(defview command-input [input-options command]
+  [input-command [:get-chat-command-content]
    icon-width [:command-icon-width]
    disable? [:get :disable-input]]
   [text-input (merge
-                (if command?
-                  (command-input-options command icon-width disable?)
-                  (plain-input-options disable?))
-                {:auto-focus          false
+                (command-input-options command icon-width disable?)
+                {:auto-focus          true
                  :blur-on-submit      false
-                 :editable            true
                  :accessibility-label :input
                  :on-focus            #(dispatch [:set :focused true])
                  :on-blur             #(dispatch [:set :focused false])
-                 :default-value       (if command? (or input-command "") input-message)}
+                 :default-value       (or input-command "")}
                 input-options)])
 
-(defview plain-message-input-view [{:keys [input-options]}]
-  [command? [:command?]
-   {:keys [type] :as command} [:get-chat-command]
-   input-command [:get-chat-command-content]
-   valid-plain-message? [:valid-plain-message?]]
-  [view st/input-container
-   [view st/input-view
-    [plain-message/commands-button]
-    [message-input-container
-     [message-input input-options command]]
-    ;; TODO emoticons: not implemented
-    [plain-message/smile-button]
-    (when (or command? valid-plain-message?)
-      (let [on-press (if command?
-                       (on-press-commands-handler command)
-                       plain-message/send)]
-        [send-button {:on-press            on-press
-                      :accessibility-label :send-message}]))
-    (when (and command? (= :command type))
-      [command/command-icon command])]])
+(defn plain-message-get-initial-state [_]
+  {:height 0})
+
+(defn plain-message-render [_]
+  (let [command?             (subscribe [:command?])
+        command              (subscribe [:get-chat-command])
+        input-command        (subscribe [:get-chat-command-content])
+        input-message        (subscribe [:get-chat-input-text])
+        valid-plain-message? (subscribe [:valid-plain-message?])
+        component            (r/current-component)
+        set-layout-size      #(r/set-state component {:height %})]
+    (r/create-class
+      {:component-will-update
+       (fn [_]
+         (when (or (and @command? (str/blank? @input-command))
+                   (and (not @command?) (not @input-message)))
+           (set-layout-size 0)))
+       :reagent-render
+       (fn [{:keys [input-options]}]
+         (let [{:keys [height]} (r/state component)]
+           [view st/input-container
+            [view (st/input-view height)
+             [plain-message/commands-button height #(set-layout-size 0)]
+             [view (st/message-input-container height)
+              (if @command?
+                [command-input input-options @command]
+                [message-input input-options set-layout-size])]
+             ;; TODO emoticons: not implemented
+             [plain-message/smile-button height]
+             (when (or @command? @valid-plain-message?)
+               (let [on-press (if @command?
+                                (on-press-commands-handler @command)
+                                plain-message/send)]
+                 [send-button {:on-press            #(on-press %)
+                               :accessibility-label :send-message}]))
+             (when (and @command? (= :command (:type @command)))
+               [command/command-icon @command])]]))})))
+
+(defn plain-message-input-view [_]
+  (r/create-class {:get-initial-state plain-message-get-initial-state
+                   :reagent-render    plain-message-render}))
+
+
