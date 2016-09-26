@@ -138,7 +138,7 @@
     (if (or focused? (not= name new-name))
       [touchable-highlight {:style    (st/chat-name-btn-edit-container valid?)
                             :on-press save}
-       [view [icon :ok-purple st/add-members-icon]]]
+       [view [icon :ok_purple st/add-members-icon]]]
       [touchable-highlight {:style    (st/chat-name-btn-edit-container true)
                             :on-press focus}
        [view [text {:style st/chat-name-btn-edit-text} (label :t/edit)]]])]
@@ -154,7 +154,7 @@
     [touchable-highlight {:on-press #(dispatch [:navigate-to :add-participants])}
      ;; TODO add participants view is not in design
      [view st/add-members-container
-      [icon :add-gray st/add-members-icon]
+      [icon :add_gray st/add-members-icon]
       [text {:style st/add-members-text}
        (label :t/add-members)]]]
     [chat-members]
