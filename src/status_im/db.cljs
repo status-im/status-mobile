@@ -45,7 +45,6 @@
              :current-tag            nil
              :qr-codes               {}
              :keyboard-height        0
-             :disable-group-creation false
              :animations             {;; todo clear this
                                       :tabs-bar-value (anim/create-value 0)}
              :loading-allowed        true})
