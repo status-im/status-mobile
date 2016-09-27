@@ -765,7 +765,6 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 259TWTDE52;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -1246,7 +1245,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 259TWTDE52;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1290,7 +1289,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 259TWTDE52;
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../modules/react-native-status/ios/RCTStatus";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

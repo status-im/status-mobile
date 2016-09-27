@@ -37,7 +37,7 @@
                                       :delay    delay})
                   #(dispatch [:set :disable-input false])))))
 
-(defn commands-button []
+(defn commands-button [height on-press]
   (let [command? (subscribe [:command?])
         requests (subscribe [:get-requests])
         suggestions (subscribe [:get-suggestions])
@@ -55,11 +55,11 @@
        :component-did-update
        on-update
        :reagent-render
-       (fn []
-         [touchable-highlight {:on-press #(dispatch [:switch-command-suggestions!])
+       (fn [on-press]
+         [touchable-highlight {:on-press #(do (dispatch [:switch-command-suggestions!])
+                                              (on-press))
                                :disabled @command?}
-          [animated-view {:style (st/message-input-button-touchable
-                                   container-width)}
+          [animated-view {:style (st/message-input-button-touchable container-width height)}
            (when-not @command?
              [animated-view {:style (st/message-input-button buttons-scale)}
               (if (seq @suggestions)
@@ -79,7 +79,7 @@
                     (when (and @command? (.-finished e))
                       (anim/set-value width 0.1)))))))
 
-(defn smile-button []
+(defn smile-button [height]
   (let [command? (subscribe [:command?])
         buttons-scale (anim/create-value (if @command? 1 0))
         container-width (anim/create-value (if @command? 0.1 56))
@@ -98,7 +98,6 @@
                                            ;; TODO emoticons: not implemented
                                            )
                                :disabled @command?}
-          [animated-view {:style (st/message-input-button-touchable
-                                   container-width)}
+          [animated-view {:style (st/message-input-button-touchable container-width height)}
            [animated-view {:style (st/message-input-button buttons-scale)}
             [icon :smile st/smile-icon]]]])})))

@@ -30,4 +30,4 @@
     [touchable-highlight
      {:on-press more-click-handler}
      [view st/more-btn
-      [icon :more-vertical st/more-btn-icon]]]]])
+      [icon :more_vertical st/more-btn-icon]]]]])
