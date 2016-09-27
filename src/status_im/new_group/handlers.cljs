@@ -83,29 +83,12 @@
                   :private private-key}
        :callback #(dispatch [:incoming-message %1 %2])})))
 
-(defn enable-create-button
-  [db _]
-  (assoc db :disable-group-creation false))
-
 (register-handler :create-new-group
   (-> prepare-chat
       ((enrich add-chat))
       ((after create-chat!))
       ((after show-chat!))
-      ((after start-listen-group!))
-      ((enrich enable-create-button))))
-
-(defn disable-create-button
-  [db _]
-  (assoc db :disable-group-creation true))
-
-(defn dispatch-create-group
-  [_ [_ group-name]]
-  (dispatch [:create-new-group group-name]))
-
-(register-handler :init-group-creation
-  (after dispatch-create-group)
-  disable-create-button)
+      ((after start-listen-group!))))
 
 (register-handler :group-chat-invite-received
   (u/side-effect!
