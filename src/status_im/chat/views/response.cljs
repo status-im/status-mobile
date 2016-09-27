@@ -24,12 +24,12 @@
 
 (defn drag-icon []
   [view st/drag-container
-   [icon :drag-white st/drag-icon]])
+   [icon :drag_white st/drag-icon]])
 
 (defn command-icon []
   [view st/command-icon-container
    ;; TODO stub data: command icon
-   [icon :dollar-green st/command-icon]])
+   [icon :dollar_green st/command-icon]])
 
 (defn info-container [command]
   [view st/info-container
@@ -55,7 +55,7 @@
           [info-container @command]
           [touchable-highlight {:on-press #(dispatch [:start-cancel-command])}
            [view st/cancel-container
-            [icon :close-white st/cancel-icon]]]]]
+            [icon :close_white st/cancel-icon]]]]]
         [view (merge (drag/pan-handlers pan-responder)
                      {:style ddst/drag-down-touchable})
          [icon :drag_down ddst/drag-down-icon]]))))
