@@ -14,8 +14,7 @@
 (defview new-group-contact [{:keys [whisper-identity] :as contact}]
   [checked [:is-contact-selected? whisper-identity]]
   [view st/contact-container
-   [item-checkbox
-    {:onToggle (on-toggle whisper-identity)
-     :checked  checked
-     :size     30}]
+   [item-checkbox (merge {:on-toggle   (on-toggle whisper-identity)
+                          :checked     checked}
+                         st/contact-item-checkbox)]
    [contact-inner-view contact]])
