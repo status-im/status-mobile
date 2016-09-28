@@ -1,7 +1,8 @@
 (ns status-im.db
   (:require [schema.core :as s :include-macros true]
             [status-im.components.react :refer [animated]]
-            [status-im.components.animation :as anim]))
+            [status-im.components.animation :as anim]
+            [status-im.constants :refer [console-chat-id]]))
 
 ;; schema of app-db
 (def schema {:greeting s/Str})
@@ -31,7 +32,7 @@
              :chats                  {}
              :chat                   {:command      nil
                                       :last-message nil}
-             :current-chat-id        "console"
+             :current-chat-id        console-chat-id
 
              :contacts-ids           #{}
              :selected-contacts      #{}

@@ -3,17 +3,19 @@
             [status-im.utils.utils :as u]))
 
 (def component-styles
-  {:status-bar      {:default     {:height    0
-                                   :bar-style "default"
-                                   :color     styles/color-gray}
-                     :main        {:height    0
-                                   :bar-style "default"
-                                   :color     styles/color-gray}
-                     :transparent {:height       20
-                                   :bar-style    "default"
-                                   :translucent? true
-                                   :color        styles/color-transparent}}
-   :bottom-gradient {:height 3}})
+  {:status-bar       {:default     {:height    0
+                                    :bar-style "default"
+                                    :color     styles/color-gray}
+                      :main        {:height    0
+                                    :bar-style "default"
+                                    :color     styles/color-gray}
+                      :transparent {:height       20
+                                    :bar-style    "default"
+                                    :translucent? true
+                                    :color        styles/color-transparent}}
+   :bottom-gradient  {:height 3}
+   :input-label      {:left 4}
+   :input-error-text {:margin-left 4}})
 
 (def fonts
   {:default {:font-family "sans-serif"}
