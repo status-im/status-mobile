@@ -1,4 +1,0 @@
-framework module "Statusgo" {
-  header "Statusgo.h"
-  export *
-}
