@@ -12,6 +12,8 @@
 
 (defn valid-mobile-number? [number]
   (when (string? number)
-    (let [number-obj (awesome-phonenumber. number country-code "international")]
-      (and (.isValid number-obj)
+    (let [pattern    #"^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{2})[-. ]*(\d{2})\s*$"
+          number-obj (awesome-phonenumber. number country-code "international")]
+      (and (re-matches pattern number)
+           (.isValid number-obj)
            (.isMobile number-obj)))))
