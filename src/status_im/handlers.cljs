@@ -22,7 +22,8 @@
     status-im.accounts.handlers
     status-im.protocol.handlers
     status-im.transactions.handlers
-    [status-im.utils.types :as t]))
+    [status-im.utils.types :as t]
+    [status-im.constants :refer [console-chat-id]]))
 
 ;; -- Common --------------------------------------------------------------
 
@@ -49,7 +50,7 @@
   (fn [db _]
     (assoc db
       :chats {}
-      :current-chat-id "console")))
+      :current-chat-id console-chat-id)))
 
 (register-handler :initialize-account
   (u/side-effect!
@@ -69,7 +70,7 @@
       (dispatch [:initialize-db])
       (dispatch [:load-accounts])
       (dispatch [:init-console-chat])
-      (dispatch [:load-commands! "console"]))))
+      (dispatch [:load-commands! console-chat-id]))))
 
 (register-handler :initialize-crypt
   (u/side-effect!

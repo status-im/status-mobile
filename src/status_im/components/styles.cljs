@@ -15,6 +15,7 @@
 (def color-light-gray "#EEF2F5")
 
 (def text1-color color-black)
+(def text1-disabled-color "#555555")
 (def text2-color color-gray)
 (def text3-color color-blue)
 (def text4-color color-white)

@@ -8,6 +8,7 @@
             [status-im.components.icons.custom-icons :refer [oct-icon]]
             [status-im.components.chat-icon.styles :as st]
             [status-im.components.styles :refer [default-chat-color]]
+            [status-im.constants :refer [console-chat-id]]
             [clojure.string :as s]))
 
 (defn default-chat-icon [name styles]
@@ -33,7 +34,7 @@
 (defview chat-icon-view [chat-id group-chat name online styles]
   [photo-path [:chat-photo chat-id]]
   [view (:container styles)
-   (if-not (or (s/blank? photo-path) (= chat-id "console"))
+   (if-not (or (s/blank? photo-path) (= chat-id console-chat-id))
      [chat-icon photo-path styles]
      [default-chat-icon name styles])
    (when-not group-chat

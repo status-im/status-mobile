@@ -6,7 +6,8 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup reg-handler]]
             [clojure.string :as s]
-            [status-im.components.react :as r]))
+            [status-im.components.react :as r]
+            [status-im.constants :refer [console-chat-id]]))
 
 (defn init-render-command!
   [_ [chat-id command message-id data]]
@@ -37,7 +38,7 @@
           parameters' (assoc parameters :command command')]
       (if transaction-hash
         (dispatch [:wait-for-transaction transaction-hash parameters'])
-        (let [events (if (= "console" chat-id)
+        (let [events (if (= console-chat-id chat-id)
                        (merge regular-events console-events)
                        regular-events)
               parameters'' (if-let [handler (events (keyword event))]
