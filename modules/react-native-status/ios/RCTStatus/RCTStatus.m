@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
         }else
             NSLog(@"folderName: %@", folderName);
         
-        NSString *peer = @"enode://409772c7dea96fa59a912186ad5bcdb5e51b80556b3fe447d940f99d9eaadb51d4f0ffedb68efad232b52475dd7bd59b51cee99968b3cc79e2d5684b33c4090c@139.162.166.59:30303";
+        NSString *peer = @"enode://4e2bb6b09aa34375ae2df23fa063edfe7aaec952dba972449158ae0980a4abd375aca3c06a519d4f562ff298565afd288a0ed165944974b2557e6ff2c31424de@138.68.73.175:30303";
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                        ^(void) {
             StartNode((char *) [folderName.path UTF8String]);
