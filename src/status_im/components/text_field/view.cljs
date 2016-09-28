@@ -145,15 +145,17 @@
                 line-width
                 current-value
                 max-line-width] :as state} (r/state component)
-        {:keys [wrapper-style input-style line-color focus-line-color secure-text-entry
+        {:keys [wrapper-style input-style label-hidden? line-color focus-line-color secure-text-entry
                 label-color error-color error label value on-focus on-blur
                 on-change-text on-change editable] :as props} (merge default-props (r/props component))
         line-color       (if error error-color line-color)
         focus-line-color (if error error-color focus-line-color)
         label-color      (if (and error (not float-label?)) error-color label-color)
-        label            (if error (str label " *") label)]
+        label            (when-not label-hidden?
+                           (if error (str label " *") label))]
     [view (merge st/text-field-container wrapper-style)
-     [animated-text {:style (st/label label-top label-font-size label-color)} label]
+     (when-not label-hidden?
+       [animated-text {:style (st/label label-top label-font-size label-color)} label])
      [text-input {:style             (merge st/text-input input-style)
                   :placeholder       ""
                   :editable          editable

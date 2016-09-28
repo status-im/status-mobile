@@ -1,6 +1,6 @@
 (ns status-im.new-group.styles
   (:require [status-im.components.styles :refer [color-white
-                                                 color-purple
+                                                 color-blue
                                                  text1-color
                                                  text2-color
                                                  toolbar-background1]]))
@@ -11,55 +11,56 @@
    :opacity (if enabled? 1 0.3)})
 
 (def new-group-container
-  {:flex            1
-   :flexDirection   :column
-   :backgroundColor color-white})
+  {:flex             1
+   :flex-direction   :column
+   :background-color color-white})
 
 (def chat-name-container
-  {:marginHorizontal 16})
+  {:margin-left 16})
 
-(def chat-name-text
-  {:marginTop    24
-   :marginBottom 16
-   :color        text2-color
-   :fontSize     14
-   :lineHeight   20})
-
-(def group-name-input
-  {:marginLeft -4
-   :fontSize   14
+(def group-chat-name-input
+  {:font-size  14
    :color      text1-color})
 
-(def group-name-validation-message
-  {:color :red})
+(def group-chat-name-wrapper
+  {:padding-top 0})
 
 (def members-text
-  {:marginTop    24
-   :marginBottom 16
-   :color        text2-color
-   :fontSize     14
-   :lineHeight   20})
+  {:margin-top    24
+   :margin-bottom 8
+   :color         text2-color
+   :font-size     14
+   :line-height   20})
 
 (def add-container
-  {:flexDirection :row
-   :marginBottom  16})
+  {:flex-direction :row
+   :margin-bottom  16})
 
 (def add-icon
-  {:marginVertical   19
-   :marginHorizontal 3
-   :width            17
-   :height           17})
+  {:margin-vertical   18
+   :margin-horizontal 3
+   :width             17
+   :height            17})
 
 (def add-text
-  {:marginTop  18
-   :marginLeft 32
-   :color      text2-color
-   :fontSize   14
-   :lineHeight 20})
+  {:margin-top  16
+   :margin-left 32
+   :color       text2-color
+   :font-size   14
+   :line-height 20})
 
 (def contacts-list
-  {:backgroundColor :white})
+  {:background-color :white})
 
 (def contact-container
-  {:flexDirection :row
-   :height        56})
+  {:flex-direction :row
+   :justify-content :center
+   :align-items :center
+   :height         56})
+
+(def contact-item-checkbox
+  {:outer-size  20
+   :filter-size 16
+   :inner-size  12
+   :outer-color color-blue
+   :inner-color color-blue})
