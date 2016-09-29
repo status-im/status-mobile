@@ -75,7 +75,11 @@
       (list-item [chat-message message]))))
 
 (defn online-text [contact chat-id]
-  (if contact
+  (cond
+    (= chat-id console-chat-id)
+    (label :t/available)
+
+    contact
     (let [last-online      (get contact :last-online)
           last-online-date (time/to-date last-online)
           now-date         (t/now)]
@@ -83,9 +87,8 @@
                (<= last-online-date now-date))
         (time/time-ago last-online-date)
         (label :t/active-unknown)))
-    (if (= chat-id console-chat-id)
-      (label :t/active-online)
-      (label :t/active-unknown))))
+
+    :else (label :t/active-unknown)))
 
 (defn toolbar-content []
   (let [{:keys [group-chat name contacts chat-id]} (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
@@ -94,8 +97,7 @@
     (fn []
       [view (st/chat-name-view @show-actions)
        [text {:style           st/chat-name-text
-              :number-of-lines 1
-              :font            :medium}
+              :number-of-lines 1}
         (if (str/blank? @name)
           (label :t/user-anonymous)
           (or @name (label :t/chat-name)))]

@@ -66,14 +66,15 @@
   ([t]
    (r/as-element [text-class t]))
   ([{:keys [style font] :as opts
-     :or   {font :default}} t]
+     :or   {font :default}} t & other]
    (r/as-element
      (let [font (get-in platform-specific [:fonts font])]
-       [text-class
-        (-> opts
-            (dissoc :font)
-            (assoc :style (merge style font)))
-        t]))))
+       (vec (concat
+              [text-class
+               (-> opts
+                   (dissoc :font)
+                   (assoc :style (merge style font)))]
+              (conj other t)))))))
 
 (defn text-input [props text]
   [text-input-class (merge

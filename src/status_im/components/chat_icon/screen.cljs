@@ -20,6 +20,12 @@
   [image {:source {:uri photo-path}
           :style  (:chat-icon styles)}])
 
+(defn dapp-badge [styles]
+  [view (:online-view styles)
+   [view
+    [view (:online-dot-left styles)]
+    [view (:online-dot-right styles)]]])
+
 (defn contact-badge [type styles]
   (when (= type :edit)
     [view (:online-view styles)
@@ -32,13 +38,14 @@
                          :style st/photo-pencil}]])]))
 
 (defview chat-icon-view [chat-id group-chat name online styles]
-  [photo-path [:chat-photo chat-id]]
+  [photo-path [:chat-photo chat-id]
+   dapp-url [:chat :dapp-url]]
   [view (:container styles)
-   (if-not (or (s/blank? photo-path) (= chat-id console-chat-id))
+   (if-not (s/blank? photo-path)
      [chat-icon photo-path styles]
      [default-chat-icon name styles])
-   (when-not group-chat
-     [contact-badge (if online :online :blank) styles])])
+   (when dapp-url
+     [dapp-badge styles])])
 
 (defn chat-icon-view-chat-list [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online

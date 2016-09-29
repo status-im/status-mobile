@@ -7,6 +7,7 @@
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.core :as protocol]
             [status-im.models.chats :as chats]
+            [status-im.models.contacts :as contacts]
             [status-im.models.messages :as messages]
             [status-im.models.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
@@ -178,7 +179,8 @@
       db
       (do
         (chats/create-chat new-chat)
-        (sign-up-service/intro existing-account?)
+        (contacts/save-contacts [sign-up-service/console-contact])
+        (sign-up-service/intro)
         (when existing-account?
           (sign-up-service/start-signup))
         (-> db
@@ -192,8 +194,8 @@
     (init-console-chat db false)))
 
 (register-handler :save-password
-  (fn [db [_ password mnemonic]]
-    (sign-up-service/save-password password mnemonic)
+  (fn [db [_ _ mnemonic]]
+    (sign-up-service/passpharse-messages mnemonic)
     (assoc db :password-saved true)))
 
 (register-handler :sign-up

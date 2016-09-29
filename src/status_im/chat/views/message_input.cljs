@@ -44,18 +44,19 @@
    disable? [:get :disable-input]]
   [text-input (merge
                 (plain-input-options disable?)
-                {:auto-focus          false
-                 :blur-on-submit      true
-                 :multiline           true
-                 :on-change           #(let [size (-> (.-nativeEvent %)
-                                                      (.-contentSize)
-                                                      (.-height))]
-                                        (set-layout-size size))
-                 :accessibility-label :input
-                 :on-focus            #(dispatch [:set :focused true])
-                 :on-blur             #(do (dispatch [:set :focused false])
-                                           (set-layout-size 0))
-                 :default-value       (or input-message "")}
+                {:placeholder-text-color :#c0c5c9
+                 :auto-focus             false
+                 :blur-on-submit         true
+                 :multiline              true
+                 :on-change              #(let [size (-> (.-nativeEvent %)
+                                                         (.-contentSize)
+                                                         (.-height))]
+                                           (set-layout-size size))
+                 :accessibility-label    :input
+                 :on-focus               #(dispatch [:set :focused true])
+                 :on-blur                #(do (dispatch [:set :focused false])
+                                              (set-layout-size 0))
+                 :default-value          (or input-message "")}
                 input-options)])
 
 (defview command-input [input-options command]
@@ -93,9 +94,9 @@
        (fn [{:keys [input-options]}]
          (let [{:keys [height]} (r/state component)]
            [view st/input-container
-            [view (st/input-view height)
+            [view st/input-view
              [plain-message/commands-button height #(set-layout-size 0)]
-             [view (st/message-input-container height)
+             [view st/message-input-container
               (if @command?
                 [command-input input-options @command]
                 [message-input input-options set-layout-size])]
