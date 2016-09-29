@@ -1,7 +1,8 @@
 (ns status-im.transactions.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [status-im.utils.hex :as i]))
 
 (register-sub :transactions
   (fn [db]
@@ -19,9 +20,7 @@
   (fn [_ [_ address]]
     (let [contacts (subscribe [:contacts-by-address])
           address' (when address
-                     (if (s/starts-with? address "0x")
-                       (subs address 2)
-                       address))]
+                     (i/normalize-hex address))]
       (reaction (@contacts address')))))
 
 (register-sub :wrong-password?

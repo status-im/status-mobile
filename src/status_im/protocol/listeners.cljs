@@ -3,7 +3,8 @@
             [status-im.protocol.ack :as ack]
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
-            [taoensso.timbre :refer-macros [debug] :as log]))
+            [taoensso.timbre :refer-macros [debug] :as log]
+            [status-im.utils.hex :as i]))
 
 (defn- parse-payload [payload]
   (debug :parse-payload)
@@ -34,7 +35,8 @@
       (debug :message-received)
       (let [{:keys [from payload to] :as message}
             (js->clj js-message :keywordize-keys true)]
-        (when-not (= identity from)
+        (when-not (= (i/normalize-hex identity)
+                     (i/normalize-hex from))
           (let [{:keys [type ack?] :as payload'}
                 (parse-payload payload)
 

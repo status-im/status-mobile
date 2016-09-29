@@ -373,6 +373,9 @@
   (u/side-effect!
     (fn [{:keys [web3 current-chat-id chats current-public-key]} _]
       (let [{:keys [public-key private-key]} (chats current-chat-id)]
+        (protocol/stop-watching-group!
+          {:web3     web3
+           :group-id current-chat-id})
         (protocol/leave-group-chat!
           {:web3     web3
            :group-id current-chat-id
