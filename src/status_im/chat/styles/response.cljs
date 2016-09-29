@@ -85,7 +85,6 @@
   {:flex        1
    :marginRight 16
    :margin-left (- ml 5)
-   :margin-top  4
    :padding     0
    :fontSize    14
    :color       (if disable? color-white text1-color)})

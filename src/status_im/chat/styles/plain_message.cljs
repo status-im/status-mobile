@@ -1,34 +1,45 @@
 (ns status-im.chat.styles.plain-message
   (:require [status-im.components.styles :refer [text1-color]]
             [status-im.chat.constants :refer [max-input-height
-                                              min-input-height]]))
+                                              min-input-height]]
+            [status-im.utils.platform :as p]))
 
 (defn message-input-button-touchable [width content-height]
-  {:width            width
-   :flex             1
-   :margin-bottom    14
-   :align-items      :center
-   :justify-content  :flex-end})
+  {:width width
+   :flex  1})
 
-(defn message-input-button [scale]
-  {:transform       [{:scale scale}]
-   :width           24
-   :height          24
-   :align-items     :center
-   :justify-content :center})
+(defn message-input-button [scale margin-top]
+  {:transform        [{:scale scale}]
+   :width            24
+   :height           24
+   :margin-top       margin-top
+   :margin-left      16
+   :align-items      :center
+   :justify-content  :center})
 
 (def list-icon
-  {:width  20
-   :height 16})
+  {:margin-left   4
+   :margin-top    5.5
+   :margin-bottom 5.5
+   :margin-right  4
+   :width         16
+   :height        13})
+
+(def requests-icon-container
+  {:width            12
+   :height           12
+   :border-radius    12
+   :left             -1
+   :top              -1
+   :background-color :white
+   :position         :absolute})
 
 (def requests-icon
   {:background-color :#7099e6
+   :margin           2
    :width            8
    :height           8
-   :border-radius    8
-   :left             0
-   :top              0
-   :position         :absolute})
+   :border-radius    8})
 
 (def close-icon
   {:width  12
@@ -39,7 +50,8 @@
    :padding     0
    :font-size   14
    :line-height 20
-   :color       text1-color})
+   :color       text1-color
+   :padding-top (when p/ios? -6)})
 
 (def smile-icon
   {:width  20

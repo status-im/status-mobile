@@ -35,7 +35,9 @@
                                             :public-key       {:type     :string
                                                                :optional true}
                                             :private-key      {:type     :string
-                                                               :optional true}}}
+                                                               :optional true}
+                                            :dapp?            {:type    :bool
+                                                               :default false}}}
                               {:name       :request
                                :properties {:message-id :string
                                             :chat-id    :string

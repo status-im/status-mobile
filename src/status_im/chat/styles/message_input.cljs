@@ -4,27 +4,26 @@
             [status-im.chat.constants :refer [max-input-height
                                               min-input-height
                                               input-spacing-top
-                                              input-spacing-bottom]]))
+                                              input-spacing-bottom]]
+            [status-im.utils.platform :as p]))
 
 (def input-container
   {:flex-direction :column})
 
-(defn input-view [content-height]
+(def input-view
   {:flex-direction   :row
    :align-items      :center
    :justify-content  :center
-   :height           (+ (min (max min-input-height content-height) max-input-height)
-                        input-spacing-top
-                        input-spacing-bottom)
+   :height           56
    :background-color color-white})
 
-(defn message-input-container [content-height]
-  {:height           (min (max min-input-height content-height) max-input-height)
-   :margin-top       input-spacing-top
-   :margin-bottom    input-spacing-bottom
-   :flex             1
-   :flex-direction   "column"
-   :margin-right     0})
+(def message-input-container
+  {:height         16.5
+   :margin-top     20
+   :margin-bottom  19.5
+   :flex           1
+   :flex-direction :column
+   :margin-right   0})
 
 (def send-wrapper
   {:margin-bottom   8

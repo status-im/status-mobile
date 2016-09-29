@@ -31,43 +31,46 @@
 (defn list-container [min]
   (fn [{:keys [command? width]}]
     (let [n-width (if @command? min 56)
-          delay (if @command? 100 0)]
+          delay   (if @command? 100 0)]
       (anim/start (anim/timing width {:toValue  n-width
                                       :duration response-input-hiding-duration
                                       :delay    delay})
                   #(dispatch [:set :disable-input false])))))
 
 (defn commands-button [height on-press]
-  (let [command? (subscribe [:command?])
-        requests (subscribe [:get-requests])
-        suggestions (subscribe [:get-suggestions])
-        buttons-scale (anim/create-value (if @command? 1 0))
+  (let [command?        (subscribe [:command?])
+        requests        (subscribe [:get-requests])
+        suggestions     (subscribe [:get-suggestions])
+        buttons-scale   (anim/create-value (if @command? 1 0))
         container-width (anim/create-value (if @command? 20 56))
-        context {:command? command?
-                 :val      buttons-scale
-                 :width    container-width}
-        on-update (fn [_]
-                    ((button-animation-logic context))
-                    ((list-container 20) context))]
+        context         {:command? command?
+                         :val      buttons-scale
+                         :width    container-width}
+        on-update       (fn [_]
+                          ((button-animation-logic context))
+                          ((list-container 20) context))]
     (r/create-class
       {:component-did-mount
        on-update
        :component-did-update
        on-update
        :reagent-render
-       (fn [on-press]
+       (fn [height on-press]
          [touchable-highlight {:on-press #(do (dispatch [:switch-command-suggestions!])
                                               (on-press))
                                :disabled @command?}
           [animated-view {:style (st/message-input-button-touchable container-width height)}
            (when-not @command?
-             [animated-view {:style (st/message-input-button buttons-scale)}
+             [animated-view {:style (st/message-input-button
+                                      buttons-scale
+                                      (if (seq @suggestions) 16 17))}
               (if (seq @suggestions)
                 [icon :close_gray st/close-icon]
                 [icon :input_list st/list-icon])
               (when (and (seq @requests)
                          (not (seq @suggestions)))
-                [view st/requests-icon])])]])})))
+                [view st/requests-icon-container
+                 [view st/requests-icon]])])]])})))
 
 (defn smile-animation-logic [{:keys [command? val width]}]
   (fn [_]
@@ -80,13 +83,13 @@
                       (anim/set-value width 0.1)))))))
 
 (defn smile-button [height]
-  (let [command? (subscribe [:command?])
-        buttons-scale (anim/create-value (if @command? 1 0))
+  (let [command?        (subscribe [:command?])
+        buttons-scale   (anim/create-value (if @command? 1 0))
         container-width (anim/create-value (if @command? 0.1 56))
-        context {:command? command?
-                 :val      buttons-scale
-                 :width    container-width}
-        on-update (smile-animation-logic context)]
+        context         {:command? command?
+                         :val      buttons-scale
+                         :width    container-width}
+        on-update       (smile-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
@@ -99,5 +102,5 @@
                                            )
                                :disabled @command?}
           [animated-view {:style (st/message-input-button-touchable container-width height)}
-           [animated-view {:style (st/message-input-button buttons-scale)}
+           [animated-view {:style (st/message-input-button buttons-scale 15)}
             [icon :smile st/smile-icon]]]])})))

@@ -26,18 +26,6 @@
 (defn chat-exists? [chat-id]
   (r/exists? :account :chat {:chat-id chat-id}))
 
-(defn add-status-message [chat-id]
-  ;; TODO Get real status
-  (save-message chat-id
-                {:from         "Status"
-                 :to           nil
-                 :message-id   (random/id)
-                 :content      (str "The brash businessman’s braggadocio "
-                                    "and public exchange with candidates "
-                                    "in the US presidential election")
-                 :content-type content-type-status
-                 :outgoing     false}))
-
 (defn chat-contacts [chat-id]
   (-> (r/get-by-field :account :chat :chat-id chat-id)
       (r/single)
