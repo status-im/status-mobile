@@ -70,6 +70,7 @@
       (dispatch [:initialize-db])
       (dispatch [:load-accounts])
       (dispatch [:init-console-chat])
+      (dispatch [:init-wallet-chat])
       (dispatch [:load-commands! console-chat-id]))))
 
 (register-handler :initialize-crypt
