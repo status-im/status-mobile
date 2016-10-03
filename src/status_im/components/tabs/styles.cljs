@@ -65,3 +65,6 @@
    :bottom         0
    :padding-bottom 60
    :transform      [{:translateX offset-x}]})
+
+(defn animated-offset [value]
+  {:top value})
