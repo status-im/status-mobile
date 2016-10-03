@@ -10,7 +10,8 @@
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [require]]
             [status-im.navigation.handlers :as nav]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [taoensso.timbre :as log]))
 
 
 (defmethod nav/preload-data! :group-contacts
@@ -94,7 +95,7 @@
   (.getAll react-native-contacts
            (fn [error contacts]
              (if error
-               (dispatch [:error-on-fetching-loading error])
+               (log/debug :error-on-fetching-loading error)
                (let [contacts' (normalize-phone-contacts contacts)]
                  (dispatch [:get-contacts-identities contacts']))))))
 
