@@ -36,9 +36,13 @@
   (when (and last-message (not typing))
     {:paddingBottom 20}))
 
+(def message-datemark
+  {:margin-top    10
+   :margin-bottom -4})
+
 (def message-body-base
-  {:paddingRight 8
-   :paddingLeft  8})
+  {:padding-right 8
+   :padding-left  8})
 
 (defn message-body
   [{:keys [outgoing] :as message}]

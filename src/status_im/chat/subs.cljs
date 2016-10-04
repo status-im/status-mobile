@@ -7,7 +7,9 @@
             [status-im.constants :refer [response-suggesstion-resize-duration]]
             [status-im.chat.constants :as c]
             [status-im.chat.views.plain-message :as plain-message]
-            [status-im.chat.views.command :as command]))
+            [status-im.chat.views.command :as command]
+            [status-im.constants :refer [content-type-status]]
+            [status-im.utils.datetime :as time]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]
@@ -28,7 +30,6 @@
     (-> @db
         (get-in [:chats (:current-chat-id @db) k])
         (reaction))))
-
 
 (register-sub :get-chat-messages
   (fn [db _]
