@@ -5,7 +5,10 @@
 
 (register-handler :init-wallet-chat
   (u/side-effect!
-    (fn []
-      (dispatch [:add-chat wallet-chat-id {:name     "Wallet"
-                                           :dapp-url "http://127.0.0.1:3450"}]))))
+    (fn [{:keys [chats]}]
+      (when-not (chats wallet-chat-id)
+        (dispatch [:add-chat
+                   wallet-chat-id
+                   {:name     "Wallet"
+                    :dapp-url "http://127.0.0.1:3450"}])))))
 

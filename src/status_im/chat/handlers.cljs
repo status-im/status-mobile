@@ -173,21 +173,22 @@
     (set-message-shown db chat-id message-id)))
 
 (defn init-console-chat
-  [{:keys [chats] :as db} existing-account?]
-  (let [new-chat sign-up-service/console-chat]
-    (if (chats console-chat-id)
-      db
-      (do
-        (chats/create-chat new-chat)
-        (contacts/save-contacts [sign-up-service/console-contact])
-        (sign-up-service/intro)
-        (when existing-account?
-          (sign-up-service/start-signup))
-        (-> db
-            (assoc :new-chat new-chat)
-            (update :chats assoc console-chat-id new-chat)
-            (update :chats-ids conj console-chat-id)
-            (assoc :current-chat-id console-chat-id))))))
+  ([existing-account?] (init-console-chat {} existing-account?))
+  ([{:keys [chats] :as db} existing-account?]
+   (let [new-chat sign-up-service/console-chat]
+     (if (chats console-chat-id)
+       db
+       (do
+         (chats/create-chat new-chat)
+         (contacts/save-contacts [sign-up-service/console-contact])
+         (sign-up-service/intro)
+         (when existing-account?
+           (sign-up-service/start-signup))
+         (-> db
+             (assoc :new-chat new-chat)
+             (update :chats assoc console-chat-id new-chat)
+             (update :chats-ids conj console-chat-id)
+             (assoc :current-chat-id console-chat-id)))))))
 
 (register-handler :init-console-chat
   (fn [db _]
@@ -215,7 +216,6 @@
       db)))
 
 (register-handler :sign-up-confirm
-  (after #(dispatch [:init-wallet-chat]))
   (u/side-effect!
     (fn [_ [_ confirmation-code]]
       (server/sign-up-confirm confirmation-code sign-up-service/on-send-code-response))))
@@ -265,7 +265,8 @@
 
 ;TODO: check if its new account / signup status / create console chat
 (register-handler :initialize-chats
-  (after #(dispatch [:load-unviewed-messages!]))
+  [(after #(dispatch [:load-unviewed-messages!]))
+   (after #(dispatch [:init-wallet-chat]))]
   ((enrich initialize-chats) load-chats!))
 
 (defmethod nav/preload-data! :chat
