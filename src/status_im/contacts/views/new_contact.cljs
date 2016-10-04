@@ -28,7 +28,8 @@
             [status-im.i18n :refer [label]]
             [cljs.spec :as s]
             [status-im.contacts.validations :as v]
-            [status-im.contacts.styles :as st]))
+            [status-im.contacts.styles :as st]
+            [status-im.utils.hex :refer [normalize-hex]]))
 
 
 (def toolbar-title
@@ -52,14 +53,23 @@
                                  :photo-path       (identicon id)
                                  :whisper-identity id}])))
 
-(defn- validation-error-message [whisper-identity error]
+(defn- validation-error-message
+  [whisper-identity {:keys [address public-key]} error]
   (cond
-    (not (s/valid? ::v/unique-identity whisper-identity)) (label :t/contact-already-added)
-    (not (s/valid? ::v/whisper-identity whisper-identity)) (label :t/enter-valid-address)
+    (#{(normalize-hex address) (normalize-hex public-key)}
+      (normalize-hex whisper-identity))
+    (label :t/can-not-add-yourself)
+
+    (not (s/valid? ::v/unique-identity whisper-identity))
+    (label :t/contact-already-added)
+
+    (not (s/valid? ::v/whisper-identity whisper-identity))
+    (label :t/enter-valid-address)
+
     :else error))
 
-(defn toolbar-action [new-contact-identity error]
-  (let [error-message (validation-error-message new-contact-identity error)]
+(defn toolbar-action [new-contact-identity account error]
+  (let [error-message (validation-error-message new-contact-identity account error)]
     {:image   {:source {:uri (if (str/blank? error-message)
                                :icon_ok_blue
                                :icon_ok_disabled)}
@@ -68,9 +78,9 @@
                 (on-add-contact new-contact-identity))}))
 
 (defview contact-whisper-id-input [whisper-identity error]
-  []
+  [current-account [:get-current-account]]
   (let [error (when-not (str/blank? whisper-identity)
-                (validation-error-message whisper-identity error))]
+                (validation-error-message whisper-identity current-account error))]
     [view button-input-container
      [text-field
       {:error          error
@@ -88,7 +98,8 @@
 
 (defview new-contact []
   [new-contact-identity [:get :new-contact-identity]
-   error [:get :new-contact-address-error]]
+   error [:get :new-contact-address-error]
+   account [:get-current-account]]
   [view st/contact-form-container
    [view
     [status-bar]
@@ -97,7 +108,7 @@
                                            :style  icon-back}
                                  :handler #(dispatch [:navigate-back])}
               :custom-content   toolbar-title
-              :action           (toolbar-action new-contact-identity error)}]]
+              :action           (toolbar-action new-contact-identity account error)}]]
    [view st/form-container
     [contact-whisper-id-input new-contact-identity error]]
    [view st/address-explication-container
