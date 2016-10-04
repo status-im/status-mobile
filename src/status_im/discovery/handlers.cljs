@@ -4,7 +4,7 @@
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.protocol.core :as protocol]
             [status-im.navigation.handlers :as nav]
-            [status-im.discovery.model :as discoveries]
+            [status-im.data-store.discovery :as discoveries]
             [status-im.utils.handlers :as u]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]))
@@ -28,11 +28,11 @@
 (defmethod nav/preload-data! :discovery
   [{:keys [discoveries] :as db} _]
   (-> db
-      (assoc :tags (discoveries/all-tags))
+      (assoc :tags (discoveries/get-all-tags))
       ;; todo add limit
       ;; todo hash-map with whisper-id as key and sorted by last-update
       ;; may be more efficient here
-      (assoc :discoveries (discoveries/discovery-list))))
+      (assoc :discoveries (discoveries/get-all))))
 
 (register-handler :discovery-response-received
   (u/side-effect!
@@ -85,11 +85,11 @@
 
 (defn save-discovery!
   [{:keys [new-discovery]} _]
-  (discoveries/save-discoveries [new-discovery]))
+  (discoveries/save new-discovery))
 
 (defn reload-tags!
   [db _]
-  (assoc db :tags (discoveries/all-tags)))
+  (assoc db :tags (discoveries/get-all-tags)))
 
 (register-handler :add-discovery
   (-> add-discovery
@@ -100,4 +100,4 @@
   :remove-old-discoveries!
   (u/side-effect!
     (fn [_ _]
-      (discoveries/remove-discoveries! :priority :asc 1000 200))))
+      (discoveries/delete :priority :asc 1000 200))))

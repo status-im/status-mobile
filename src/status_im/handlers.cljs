@@ -3,7 +3,7 @@
     [re-frame.core :refer [after dispatch dispatch-sync debug]]
     [schema.core :as s :include-macros true]
     [status-im.db :refer [app-db schema]]
-    [status-im.persistence.realm.core :as realm]
+    [status-im.data-store.core :as data-store]
     [taoensso.timbre :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.components.status :as status]
@@ -43,7 +43,7 @@
 
 (register-handler :initialize-db
   (fn [_ _]
-    (realm/reset-account)
+    (data-store/init)
     (assoc app-db :current-account-id nil)))
 
 (register-handler :initialize-account-db

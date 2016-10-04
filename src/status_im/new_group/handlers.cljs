@@ -3,7 +3,7 @@
             [re-frame.core :refer [after dispatch debug enrich]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.models.chats :as chats]
+            [status-im.data-store.chats :as chats]
             [clojure.string :as s]
             [status-im.utils.handlers :as u]
             [status-im.utils.random :as random]
@@ -54,7 +54,7 @@
 
 (defn create-chat!
   [{:keys [new-chat]} _]
-  (chats/create-chat new-chat))
+  (chats/save new-chat))
 
 (defn show-chat!
   [{:keys [new-chat]} _]
@@ -105,7 +105,7 @@
                     :public-key  public
                     :private-key private
                     :contacts    contacts'}]
-          (when (or (not (chats/chat-exists? group-id))
+          (when (or (not (chats/exists? group-id))
                     is-active
                     (> timestamp removed-at))
             (dispatch [:add-chat group-id (assoc chat :is-active true

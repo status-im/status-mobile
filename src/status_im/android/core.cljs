@@ -26,7 +26,7 @@
             [status-im.group-settings.screen :refer [group-settings]]
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
-            status-im.persistence.realm.core
+            status-im.data-store.core
             [taoensso.timbre :as log]
             [status-im.components.status :as status]))
 

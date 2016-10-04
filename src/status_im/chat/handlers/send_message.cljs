@@ -1,7 +1,7 @@
 (ns status-im.chat.handlers.send-message
   (:require [status-im.utils.handlers :refer [register-handler] :as u]
             [clojure.string :as s]
-            [status-im.models.messages :as messages]
+            [status-im.data-store.messages :as messages]
             [status-im.components.status :as status]
             [status-im.utils.random :as random]
             [status-im.utils.datetime :as time]
@@ -97,7 +97,7 @@
 (register-handler ::save-command!
   (u/side-effect!
     (fn [{:keys [current-public-key]} [_ {:keys [command chat-id]}]]
-      (messages/save-message
+      (messages/save
         chat-id
         (dissoc command :rendered-preview :to-message :has-handler)))))
 
@@ -154,7 +154,7 @@
            (dispatch [::send-message! params])))
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id message]}]]
-      (messages/save-message chat-id message))))
+      (messages/save chat-id message))))
 
 (register-handler ::send-message!
   (u/side-effect!
