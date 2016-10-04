@@ -6,7 +6,9 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.handlers :as u :refer [get-hashtags]]
             [status-im.utils.platform :refer [ios?]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [status-im.profile.validations :as v]
+            [cljs.spec :as s]))
 
 (defn message-user [identity]
   (when identity
@@ -20,7 +22,11 @@
                        new-email      :email
                        new-status     :status
                        new-photo-path :photo-path}]
-  (let [new-name        (if (or (not new-name) (str/blank? new-name)) name new-name)
+  (let [new-name        (if (or (not new-name)
+                                (str/blank? new-name)
+                                (not (s/valid? ::v/name new-name)))
+                          name
+                          new-name)
         status-updated? (and (not= new-status nil)
                              (not= status new-status))]
     (when status-updated?

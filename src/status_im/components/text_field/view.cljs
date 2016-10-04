@@ -144,10 +144,10 @@
                 label-font-size
                 line-width
                 current-value
-                max-line-width] :as state} (r/state component)
+                max-line-width]} (r/state component)
         {:keys [wrapper-style input-style label-hidden? line-color focus-line-color secure-text-entry
                 label-color error-color error label value on-focus on-blur
-                on-change-text on-change editable] :as props} (merge default-props (r/props component))
+                on-change-text on-change on-end-editing editable placeholder]} (merge default-props (r/props component))
         line-color       (if error error-color line-color)
         focus-line-color (if error error-color focus-line-color)
         label-color      (if (and error (not float-label?)) error-color label-color)
@@ -157,7 +157,7 @@
      (when-not label-hidden?
        [animated-text {:style (st/label label-top label-font-size label-color)} label])
      [text-input {:style             (merge st/text-input input-style)
-                  :placeholder       ""
+                  :placeholder       (or placeholder "")
                   :editable          editable
                   :secure-text-entry secure-text-entry
                   :on-focus          #(on-input-focus {:component component
@@ -181,7 +181,9 @@
                                        (r/set-state component {:current-value text})
                                        (on-change-text text))
                   :on-change         #(on-change %)
-                  :default-value     value}]
+                  :default-value     value
+                  :on-end-editing    (when on-end-editing
+                                       on-end-editing)}]
      [view {:style    (st/underline-container line-color)
             :onLayout #(r/set-state component {:max-line-width (get-width %)})}
       [animated-view {:style (st/underline focus-line-color line-width)}]]
