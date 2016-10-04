@@ -4,6 +4,7 @@
             [status-im.data-store.messages :as messages]
             [status-im.chat.utils :as cu]
             [status-im.commands.utils :refer [generate-hiccup]]
+            [status-im.utils.random :as random]
             [status-im.constants :refer [content-type-command-request]]
             [cljs.reader :refer [read-string]]
             [status-im.data-store.chats :as chats]))
@@ -24,7 +25,7 @@
   (:public-key (accounts current-account-id)))
 
 (defn receive-message
-  [db [_ {:keys [from group-id chat-id message-id] :as message}]]
+  [db [_ {:keys [from group-id chat-id message-id timestamp] :as message}]]
   (let [same-message (messages/get-by-id message-id)
         current-identity (get-current-identity db)
         chat-id' (or group-id chat-id from)
@@ -39,7 +40,7 @@
                                  (cu/check-author-direction previous-message)
                                  (check-preview))
                        :chat-id chat-id'
-                       :timestamp (.getTime (js/Date.)))]
+                       :timestamp (or timestamp (random/timestamp)))]
         (store-message message')
         (when-not exists?
           (dispatch [:add-chat chat-id' (when group-chat? {:group-chat true})]))

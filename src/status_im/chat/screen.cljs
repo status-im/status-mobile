@@ -19,6 +19,7 @@
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
+            [status-im.chat.views.datemark :refer [chat-datemark]]
             [status-im.chat.views.suggestions :refer [suggestion-container]]
             [status-im.chat.views.response :refer [response-view]]
             [status-im.chat.views.new-message :refer [chat-message-new]]
@@ -26,7 +27,8 @@
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
-            [status-im.constants :refer [console-chat-id]]
+            [status-im.constants :refer [console-chat-id
+                                         content-type-status]]
             [reagent.core :as r]
             [clojure.string :as str]
             [cljs-time.core :as t]))
@@ -66,13 +68,19 @@
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
 
-(defn message-row [{:keys [contact-by-identity group-chat messages-count]}]
-  (fn [row _ idx]
-    (let [message (-> row
-                      (add-message-color contact-by-identity)
-                      (assoc :group-chat group-chat)
-                      (assoc :last-message (= (js/parseInt idx) (dec messages-count))))]
-      (list-item [chat-message message]))))
+(defmulti message-row (fn [{{:keys [type]} :row}] type))
+
+(defmethod message-row :datemark
+  [{{:keys [value]} :row}]
+  (list-item [chat-datemark value]))
+
+(defmethod message-row :default
+  [{:keys [contact-by-identity group-chat messages-count row index]}]
+  (let [message (-> row
+                    (add-message-color contact-by-identity)
+                    (assoc :group-chat group-chat)
+                    (assoc :last-message (= (js/parseInt index) (dec messages-count))))]
+    (list-item [chat-message message])))
 
 (defn online-text [contact chat-id]
   (cond
@@ -134,14 +142,31 @@
              :custom-action  [toolbar-action]
              :style          (get-in platform-specific [:component-styles :toolbar])}]])
 
+(defn messages-with-timemarks [all-messages]
+  (let [messages     (->> all-messages
+                          (map #(assoc % :datemark (time/day-relative (:timestamp %))))
+                          (group-by :datemark)
+                          (map (fn [[k v]] [v {:type :datemark :value k}]))
+                          (flatten))
+        remove-last? (some (fn [{:keys [content-type]}]
+                             (= content-type content-type-status))
+                           messages)]
+    (if remove-last?
+      (drop-last messages)
+      messages)))
+
 (defview messages-view [group-chat]
   [messages [:chat :messages]
    contacts [:chat :contacts]
    loaded?  [:all-messages-loaded?]]
-  (let [contacts' (contacts-by-identity contacts)]
-    [list-view {:renderRow                 (message-row {:contact-by-identity contacts'
-                                                         :group-chat          group-chat
-                                                         :messages-count      (count messages)})
+  (let [contacts' (contacts-by-identity contacts)
+        messages  (messages-with-timemarks messages)]
+    [list-view {:renderRow                 (fn [row _ index]
+                                             (message-row {:contact-by-identity contacts'
+                                                           :group-chat          group-chat
+                                                           :messages-count      (count messages)
+                                                           :row                 row
+                                                           :index               index}))
                 :renderScrollComponent     #(invertible-scroll-view (js->clj %))
                 :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
                 :enableEmptySections       true
