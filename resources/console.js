@@ -171,13 +171,14 @@ status.response({
 });
 
 status.response({
-    name: "keypair",
+    name: "password",
     color: "#7099e6",
-    description: "Keypair password",
+    description: "Password Request",
     icon: "icon_lock_white",
     params: [{
         name: "password",
-        type: status.types.PASSWORD
+        type: status.types.PASSWORD,
+        placeholder: "Type your password"
     }],
     handler: function (params) {
         return {
@@ -198,15 +199,20 @@ status.response({
         }
     },
     preview: function (params) {
-        return status.components.text(
-            {
-                style: {
-                    marginTop: 5,
-                    marginHorizontal: 0,
-                    fontSize: 14,
-                    fontFamily: "font",
-                    color: "black"
-                }
-            }, "*****");
+        var style = {
+            marginTop: 5,
+            marginHorizontal: 0,
+            fontSize: 14,
+            color: "black"
+        };
+
+        if(params.platform == "ios"){
+            style.fontSize = 8;
+            style.marginTop = 10;
+            style.marginBottom = 2;
+            style.letterSpacing = 1;
+        }
+
+        return status.components.text({style: style}, "●●●●●●●●●●");
     }
 });

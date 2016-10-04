@@ -16,9 +16,9 @@
    :elevation       4})
 
 (def command-container
-  {:left 0
+  {:left            0
    :backgroundColor :white
-   :position :absolute})
+   :position        :absolute})
 
 (defn command-text-container
   [{:keys [color]}]
@@ -80,34 +80,23 @@
 (def staged-command-background
   {:flexDirection   :column
    :margin          16
-   :padding         12
+   :padding-bottom  12
+   :padding-left    12
    :backgroundColor chat-background
    :borderRadius    14})
 
 (def staged-command-info-container
-  {:flexDirection :row})
-
-(defn staged-command-text-container
-  [{:keys [color]}]
-  {:backgroundColor   color
-   :height            24
-   :borderRadius      50
-   :marginRight       32
-   :paddingTop        3
-   :paddingHorizontal 12})
-
-(def staged-command-text
-  {:fontSize   12
-   :color      color-white})
+  {:flexDirection :row
+   :margin-top    12})
 
 (def staged-command-cancel
-  {:position :absolute
-   :top      7
-   :right    4})
+  {:padding-left  12
+   :padding-top   16
+   :padding-right 12})
 
 (def staged-command-cancel-icon
-  {:width  10
-   :height 10})
+  {:width  16
+   :height 16})
 
 (def staged-command-content
   {:marginTop        5

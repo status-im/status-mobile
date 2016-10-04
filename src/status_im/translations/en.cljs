@@ -22,6 +22,7 @@
                                            :zero  "no members"}
    :active-online                         "online"
    :active-unknown                        "unknown"
+   :available                             "available"
 
    ;messages
    :status-sending                        "Sending"
@@ -75,19 +76,11 @@
                                                "it's me the Console nice to meet you!")
    :generate-passphrase                   (str "I'll generate a passphrase for you so you can restore your "
                                                "access or log in from another device")
-   :here-is-your-passphrase               "Here's your passphrase:"
+   :here-is-your-passphrase               "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :written-down                          "Make sure you had securely written it down"
-   :phone-number-required                 (str "Your phone number is also required to use the app. Type the "
-                                               "exclamation mark or hit the icon to open the command list "
-                                               "and choose the !phone command")
-   :intro-status                          (str "The brash businessman’s braggadocio "
-                                               "and public exchange with candidates "
-                                               "in the US presidential election")
-   :intro-message1                        "Hello there! It's Status a Dapp browser in your phone."
-   :intro-message2                        (str "Status uses  a highly secure key-pair authentication type "
-                                               "to provide you a reliable way to access your account")
-   :keypair-generated                     (str "A key pair has been generated and saved to your device. "
-                                               "Create a password to secure your key")
+   :phone-number-required                 "Tap here to enter your phone number & I'll find your friends"
+   :intro-status                          "Chat with me to setup your account and change your settings!"
+   :intro-message1                        "Welcome to Status\nTap this message to set your password & get started!"
 
    ;chats
    :chats                                 "Chats"

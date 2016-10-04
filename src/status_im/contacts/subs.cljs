@@ -90,6 +90,12 @@
           (if (:group-chat @chat)
             ;; TODO return group chat icon
             nil
-            (if (pos? (count @contacts))
+            (cond
+              (:photo-path @chat)
+              (:photo-path @chat)
+
+              (pos? (count @contacts))
               (:photo-path (first @contacts))
+
+              :else
               (identicon chat-id))))))))

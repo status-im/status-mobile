@@ -12,6 +12,7 @@
             [status-im.components.animation :as anim]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
+            [status-im.chat.styles.command-pill :as pill-st]
             [status-im.models.chats :refer [chat-by-id]]
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
@@ -31,7 +32,7 @@
            :font  :default}
      (time/to-short-str timestamp)]]])
 
-(defn contact-photo [{:keys [photo-path]}]
+(defn contact-photo [photo-path]
   [view st/contact-photo-container
    [image {:source (if (s/blank? photo-path)
                      res/user-no-photo
@@ -44,14 +45,17 @@
      [view st/online-dot-left]
      [view st/online-dot-right]]))
 
-(defn message-content-status [{:keys [from content]}]
+(defview message-content-status
+  [{:keys [from content]}]
+  [{chat-name :name} [:get-chat-by-id from]
+   photo-path [:chat-photo from]]
   [view st/status-container
    [view st/status-image-view
-    [contact-photo {}]
+    [contact-photo photo-path]
     [contact-online {:online true}]]
    [text {:style st/status-from
           :font  :default}
-    from]
+    (or chat-name from)]
    [text {:style st/status-text
           :font  :default}
     content]])
@@ -74,10 +78,10 @@
         {:keys [name icon type]} command]
     [view st/content-command-view
      [view st/command-container
-      [view (st/command-view command)
-       [text {:style st/command-name
+      [view (pill-st/pill command)
+       [text {:style pill-st/pill-text
               :font  :default}
-        (str (if (= :command type) "!" "") name)]]]
+        (str (if (= :command type) "!" "?") name)]]]
      (when icon
        [view st/command-image-view
         [image {:source {:uri icon}
@@ -106,12 +110,31 @@
   [wrapper message]
   [wrapper message [message-content-command-request message]])
 
+;; todo rewrite this, naive implementation
+(defn- parse-text [string]
+  (if (string? string)
+    (let [regx         #"\*[^*]+\*"
+          general-text (s/split string regx)
+          bold-text    (vec (map-indexed
+                              (fn [idx string]
+                                [text
+                                 {:key   (str idx "_" string)
+                                  :style {:font-weight :bold}}
+                                 (subs string 1 (- (count string) 1))])
+                              (re-seq regx string)))
+          bold-text'   (if (> (count general-text)
+                              (count bold-text))
+                         (conj bold-text nil)
+                         bold-text)]
+      (mapcat vector general-text bold-text'))
+    (str string)))
+
 (defn text-message
   [{:keys [content] :as message}]
   [message-view message
    [text {:style (st/text-message message)
           :font  :default}
-    (str content)]])
+    (parse-text content)]])
 
 (defmethod message-content text-content-type
   [wrapper message]
@@ -241,12 +264,12 @@
 (defn message-container [message & children]
   (if (:new? message)
     (let [layout-height (r/atom 0)
-          anim-value (anim/create-value 1)
+          anim-value    (anim/create-value 1)
           anim-callback #(dispatch [:set-message-shown message])
-          context {:to-value layout-height
-                   :val      anim-value
-                   :callback anim-callback}
-          on-update (message-container-animation-logic context)]
+          context       {:to-value layout-height
+                         :val      anim-value
+                         :callback anim-callback}
+          on-update     (message-container-animation-logic context)]
       (r/create-class
         {:component-did-update
          on-update

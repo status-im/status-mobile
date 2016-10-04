@@ -62,6 +62,9 @@
 	</dict>
 	<key>UIAppFonts</key>
 	<array>
+		<string>SF-UI-Text-Bold.otf</string>
+		<string>SF-UI-Text-Regular.otf</string>
+		<string>SF-UI-Text-Medium.otf</string>
 		<string>SF-UI-Display-Medium.otf</string>
 		<string>SF-UI-Display-Regular.otf</string>
 		<string>SF-UI-Display-Semibold.otf</string>

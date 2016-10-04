@@ -23,9 +23,9 @@
    :input-error-text  {:margin-left 0}})
 
 (def fonts
-  {:default {:font-family "SFUIDisplay-Regular"}
-   :medium  {:font-family "SFUIDisplay-Medium"}})
-
+  {:default {:font-family "SFUIText-Regular"}
+   :medium  {:font-family "SFUIText-Medium"}
+   :bold    {:font-family "SFUIText-Bold"}})
 
 ;; Dialogs
 
