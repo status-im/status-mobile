@@ -8,11 +8,10 @@
 (def color-gray "#838c93de")
 (def color-gray2 "#8f838c93")
 (def color-gray3 "#00000040")
-(def color-white :white)
-(def color-light-blue "#bbc4cb")
+(def color-white "white")
 (def color-light-blue-transparent "#bbc4cb32")
-(def color-dark-mint "#5fc48d")
 (def color-light-gray "#EEF2F5")
+(def color-red "red")
 
 (def text1-color color-black)
 (def text1-disabled-color "#555555")
