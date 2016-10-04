@@ -2,14 +2,14 @@
   (:require [re-frame.core :refer [enrich after dispatch]]
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.components.status :as status]
-            [status-im.components.react :as r]
             [status-im.models.commands :as commands]
             [clojure.string :as str]
             [status-im.commands.utils :as cu]
             [status-im.utils.phone-number :as pn]
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as time]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [status-im.utils.platform :as platform]))
 
 (def command-prefix "c ")
 
@@ -68,7 +68,8 @@
         path [(if (= :command type) :commands :responses)
               name
               :preview]
-        params {:value content}]
+        params {:value content
+                :platform platform/platform}]
     (status/call-jail chat-id
                       path
                       params

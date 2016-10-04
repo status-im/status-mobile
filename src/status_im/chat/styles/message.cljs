@@ -7,6 +7,7 @@
                                                  online-color
                                                  text1-color
                                                  text2-color]]
+            [status-im.utils.platform :as p]
             [status-im.constants :refer [text-content-type
                                          content-type-command]]))
 
@@ -175,17 +176,6 @@
   {:flexDirection :row
    :marginRight   32})
 
-(defn command-view [command]
-  {:backgroundColor   (:color command)
-   :height            24
-   :borderRadius      50
-   :paddingTop        3
-   :paddingHorizontal 12})
-
-(def command-name
-  {:fontSize   12
-   :color      color-white})
-
 (def command-image
   {:margin-top 5
    :width      12
@@ -293,9 +283,9 @@
   {:borderRadius 32})
 
 (def contact-photo
-  {:borderRadius 32
-   :width        64
-   :height       64})
+  {:border-radius 32
+   :width         64
+   :height        64})
 
 (def message-date-container
   {:backgroundColor   color-light-blue-transparent

@@ -11,7 +11,8 @@
                                          content-type-command
                                          content-type-command-request
                                          content-type-status]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [clojure.string :as s]))
 
 (defn send-console-message [text]
   {:message-id   (random/id)
@@ -100,24 +101,7 @@
                 :to           "me"}])))
 
 ;; -- Saving password ----------------------------------------
-(defn save-password [password mnemonic]
-  ;; TODO validate and save password
-  (dispatch [:received-message
-             {:message-id   (random/id)
-              :content      (label :t/password-saved)
-              :content-type text-content-type
-              :outgoing     false
-              :from         console-chat-id
-              :to           "me"
-              :new?         false}])
-  (dispatch [:received-message
-             {:message-id   (random/id)
-              :content      (label :t/generate-passphrase)
-              :content-type text-content-type
-              :outgoing     false
-              :from         console-chat-id
-              :to           "me"
-              :new?         false}])
+(defn passpharse-messages [mnemonic]
   (dispatch [:received-message
              {:message-id   (random/id)
               :content      (label :t/here-is-your-passphrase)
@@ -134,59 +118,35 @@
               :from         console-chat-id
               :to           "me"
               :new?         false}])
-  (dispatch [:received-message
-             {:message-id   "8"
-              :content      (label :t/written-down)
-              :content-type text-content-type
-              :outgoing     false
-              :from         console-chat-id
-              :to           "me"
-              :new?         false}])
   ;; TODO highlight '!phone'
   (start-signup))
 
 
 
 (def intro-status
-  {:message-id      "intro-status"
-   :content         (label :t/intro-status)
-   :from            console-chat-id
-   :chat-id         console-chat-id
-   :content-type    content-type-status
-   :outgoing        false
-   :to              "me"})
+  {:message-id   "intro-status"
+   :content      (label :t/intro-status)
+   :from         console-chat-id
+   :chat-id      console-chat-id
+   :content-type content-type-status
+   :outgoing     false
+   :to           "me"})
 
-(defn intro [logged-in?]
+(defn intro []
   (dispatch [:received-message intro-status])
   (dispatch [:received-message
              {:message-id   "intro-message1"
-              :content      (label :t/intro-message1)
-              :content-type text-content-type
+              :content      (command-content
+                              :password
+                              (label :t/intro-message1))
+              :content-type content-type-command-request
               :outgoing     false
               :from         console-chat-id
-              :to           "me"}])
-  (when-not logged-in?
-    (dispatch [:received-message
-               {:message-id   "intro-message2"
-                :content      (label :t/intro-message2)
-                :content-type text-content-type
-                :outgoing     false
-                :from         console-chat-id
-                :to           "me"}])
-
-    (dispatch [:received-message
-               {:message-id   "intro-message3"
-                :content      (command-content
-                                :keypair
-                                (label :t/keypair-generated))
-                :content-type content-type-command-request
-                :outgoing     false
-                :from         console-chat-id
-                :to           "me"}])))
+              :to           "me"}]))
 
 (def console-chat
   {:chat-id    console-chat-id
-   :name       console-chat-id
+   :name       (s/capitalize console-chat-id)
    ; todo remove/change dapp config fot console
    :dapp-url   "http://localhost:8185/resources"
    :dapp-hash  858845357
@@ -194,6 +154,13 @@
    :group-chat false
    :is-active  true
    :timestamp  (.getTime (js/Date.))
+   :photo-path console-chat-id
    :contacts   [{:identity         console-chat-id
                  :text-color       "#FFFFFF"
                  :background-color "#AB7967"}]})
+
+(def console-contact
+  {:whisper-identity console-chat-id
+   :name             (s/capitalize console-chat-id)
+   :photo-path       console-chat-id
+   :dapp?            true})
