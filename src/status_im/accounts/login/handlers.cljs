@@ -4,7 +4,7 @@
             [taoensso.timbre :as log]
             [status-im.utils.types :refer [json->clj]]
             [status-im.db :refer [default-view]]
-            [status-im.persistence.realm.core :as realm]
+            [status-im.data-store.core :as data-store]
             [status-im.components.status :as status]
             [status-im.constants :refer [console-chat-id]]))
 
@@ -29,24 +29,24 @@
       (dispatch [:navigate-to default-view]))))
 
 (register-handler
-  :change-realm-account
+  :change-account
   (u/side-effect!
     (fn [db [_ address new-account? callback]]
-      (realm/change-account-realm address new-account?
-                                  #(callback % address new-account?)))))
+      (data-store/change-account address new-account?
+                                 #(callback % address new-account?)))))
 
 (defn on-account-changed
   [error address new-account?]
   (if (nil? error)
     (initialize-account address new-account?)
-    (log/debug "Error changing acount realm: " error)))
+    (log/debug "Error changing acount: " error)))
 
 (defn logged-in
   [db address]
   (let [is-login-screen? (= (:view-id db) :login)
         new-account? (not is-login-screen?)]
     (log/debug "Logged in: ")
-    (dispatch [:change-realm-account address new-account? on-account-changed])))
+    (dispatch [:change-account address new-account? on-account-changed])))
 
 (register-handler
   :login-account
