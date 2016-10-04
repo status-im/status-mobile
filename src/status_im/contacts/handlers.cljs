@@ -1,7 +1,7 @@
 (ns status-im.contacts.handlers
   (:require [re-frame.core :refer [after dispatch]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.models.contacts :as contacts]
+            [status-im.data-store.contacts :as contacts]
             [status-im.utils.crypt :refer [encrypt]]
             [clojure.string :as s]
             [status-im.protocol.core :as protocol]
@@ -30,7 +30,7 @@
 
 (defn save-contact
   [_ [_ contact]]
-  (contacts/save-contacts [contact]))
+  (contacts/save contact))
 
 (defn watch-contact
   [{:keys [web3]} [_ {:keys [whisper-identity public-key private-key]}]]
@@ -64,7 +64,7 @@
       ((after save-contact))))
 
 (defn load-contacts! [db _]
-  (let [contacts (->> (contacts/get-contacts)
+  (let [contacts (->> (contacts/get-all)
                       (map (fn [{:keys [whisper-identity] :as contact}]
                              [whisper-identity contact]))
                       (into {}))]
@@ -136,7 +136,7 @@
   (u/side-effect! get-identities-by-contacts!))
 
 (defn save-contacts! [{:keys [new-contacts]} _]
-  (contacts/save-contacts new-contacts))
+  (contacts/save-all new-contacts))
 
 (defn update-pending-status [old-contacts {:keys [whisper-identity pending] :as contact}]
   (let [{old-pending :pending
@@ -169,7 +169,7 @@
 (register-handler :add-new-contact
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
-      (when-not (contacts/get-contact whisper-identity)
+      (when-not (contacts/get-by-id whisper-identity)
         (dispatch [::prepare-contact contact])))))
 
 (register-handler ::prepare-contact

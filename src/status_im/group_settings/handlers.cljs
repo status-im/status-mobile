@@ -1,13 +1,12 @@
 (ns status-im.group-settings.handlers
   (:require [re-frame.core :refer [debug dispatch after enrich]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.persistence.realm.core :as r]
             [status-im.chat.handlers :refer [delete-messages!]]
             [status-im.protocol.core :as protocol]
             [status-im.utils.random :as random]
-            [status-im.models.contacts :as contacts]
-            [status-im.models.messages :as messages]
-            [status-im.models.chats :as chats]
+            [status-im.data-store.contacts :as contacts]
+            [status-im.data-store.messages :as messages]
+            [status-im.data-store.chats :as chats]
             [status-im.constants :refer [text-content-type]]
             [status-im.utils.handlers :as u]
             [status-im.navigation.handlers :as nav]))
@@ -18,11 +17,7 @@
 
 (defn save-property!
   [current-chat-id property-name value]
-  (r/write :account
-           (fn []
-             (-> (r/get-by-field :account :chat :chat-id current-chat-id)
-                 (r/single)
-                 (aset (name property-name) value)))))
+  (chats/save-property current-chat-id property-name value))
 
 (defn save-chat-property!
   [db-name property-name]
@@ -80,15 +75,9 @@
   (update-in db [:chats current-chat-id :contacts]
              remove-identities selected-participants))
 
-(defn remove-members-from-realm!
+(defn remove-members-from-chat!
   [{:keys [current-chat-id selected-participants] :as db} _]
-  (let [chat (get-in db [:chats current-chat-id])]
-    (r/write :account
-             (fn []
-               (r/create :account
-                         :chat
-                         (update chat :contacts remove-identities selected-participants)
-                         true)))))
+  (chats/remove-contacts current-chat-id selected-participants))
 
 (defn notify-about-removing!
   [{:keys [current-chat-id selected-participants]} _]
@@ -103,10 +92,10 @@
    :content-type text-content-type})
 
 (defn removed-participant-message [chat-id identity]
-  (let [contact-name (:name (contacts/contact-by-identity identity))]
+  (let [contact-name (:name (contacts/get-by-id identity))]
     (->> (str "You've removed " (or contact-name identity))
          (system-message (random/id))
-         (messages/save-message chat-id))))
+         (messages/save chat-id))))
 
 (defn create-removing-messages!
   [{:keys [current-chat-id selected-participants]} _]
@@ -122,7 +111,7 @@
   (-> remove-members
       ;; todo shouldn't this be done only after receiving of the "ack message"
       ;; about the api call that removes participants from the group?
-      ((after remove-members-from-realm!))
+      ((after remove-members-from-chat!))
       ;; todo uncomment
       ;((after notify-about-removing!))
       ((after create-removing-messages!))
@@ -134,9 +123,9 @@
   (let [new-identities (map #(hash-map :identity %) selected-participants)]
     (update db [:chats current-chat-id :contacts] concat new-identities)))
 
-(defn add-members-to-realm!
+(defn add-members-to-chat!
   [{:keys [current-chat-id selected-participants]} _]
-  (chats/chat-add-participants current-chat-id selected-participants))
+  (chats/add-contacts current-chat-id selected-participants))
 
 (defn notify-about-new-members!
   [{:keys [current-chat-id selected-participants
@@ -166,6 +155,6 @@
 (register-handler :add-new-participants
   ;; todo order of operations tbd
   (-> add-memebers
-      ((after add-members-to-realm!))
+      ((after add-members-to-chat!))
       ((after notify-about-new-members!))
       ((enrich deselect-members))))

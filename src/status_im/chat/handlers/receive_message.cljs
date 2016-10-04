@@ -1,12 +1,12 @@
 (ns status-im.chat.handlers.receive-message
   (:require [status-im.utils.handlers :refer [register-handler] :as u]
             [re-frame.core :refer [enrich after debug dispatch path]]
-            [status-im.models.messages :as messages]
+            [status-im.data-store.messages :as messages]
             [status-im.chat.utils :as cu]
             [status-im.commands.utils :refer [generate-hiccup]]
             [status-im.constants :refer [content-type-command-request]]
             [cljs.reader :refer [read-string]]
-            [status-im.models.chats :as c]))
+            [status-im.data-store.chats :as chats]))
 
 (defn check-preview [{:keys [content] :as message}]
   (if-let [preview (:preview content)]
@@ -17,7 +17,7 @@
     message))
 
 (defn store-message [{chat-id :chat-id :as message}]
-  (messages/save-message chat-id (dissoc message :rendered-preview :new?)))
+  (messages/save chat-id (dissoc message :rendered-preview :new?)))
 
 (defn get-current-identity
   [{:keys [current-account-id accounts]}]
@@ -25,11 +25,11 @@
 
 (defn receive-message
   [db [_ {:keys [from group-id chat-id message-id] :as message}]]
-  (let [same-message (messages/get-message message-id)
+  (let [same-message (messages/get-by-id message-id)
         current-identity (get-current-identity db)
         chat-id' (or group-id chat-id from)
-        exists? (c/chat-exists? chat-id')
-        active? (c/is-active? chat-id')]
+        exists? (chats/exists? chat-id')
+        active? (chats/is-active? chat-id')]
     (when (and (not same-message)
                (not= from current-identity)
                (or (not exists?) active?))

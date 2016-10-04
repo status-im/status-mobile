@@ -6,10 +6,10 @@
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.suggestions :as suggestions]
             [status-im.protocol.core :as protocol]
-            [status-im.models.chats :as chats]
-            [status-im.models.contacts :as contacts]
-            [status-im.models.messages :as messages]
-            [status-im.models.pending-messages :as pending-messages]
+            [status-im.data-store.chats :as chats]
+            [status-im.data-store.contacts :as contacts]
+            [status-im.data-store.messages :as messages]
+            [status-im.data-store.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
                                          content-type-command-request
@@ -18,7 +18,6 @@
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.handlers :refer [register-handler] :as u]
-            [status-im.persistence.realm.core :as r]
             [status-im.handlers.server :as server]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
@@ -61,7 +60,7 @@
               db
               (let [messages-path [:chats current-chat-id :messages]
                     messages      (get-in db messages-path)
-                    new-messages  (messages/get-messages current-chat-id (count messages))
+                    new-messages  (messages/get-by-chat-id current-chat-id (count messages))
                     all-loaded?   (> default-number-of-messages (count new-messages))]
                 (-> db
                     (assoc :loading-allowed false)
@@ -179,8 +178,8 @@
      (if (chats console-chat-id)
        db
        (do
-         (chats/create-chat new-chat)
-         (contacts/save-contacts [sign-up-service/console-contact])
+         (chats/save new-chat)
+         (contacts/save-all [sign-up-service/console-contact])
          (sign-up-service/intro)
          (when existing-account?
            (sign-up-service/start-signup))
@@ -228,7 +227,7 @@
 (defn load-messages!
   ([db] (load-messages! db nil))
   ([{:keys [current-chat-id] :as db} _]
-   (assoc db :messages (messages/get-messages current-chat-id))))
+   (assoc db :messages (messages/get-by-chat-id current-chat-id))))
 
 (defn init-chat
   ([db] (init-chat db nil))
@@ -261,7 +260,7 @@
 
 (defn load-chats!
   [db _]
-  (assoc db :loaded-chats (chats/chats-list)))
+  (assoc db :loaded-chats (chats/get-all)))
 
 ;TODO: check if its new account / signup status / create console chat
 (register-handler :initialize-chats
@@ -304,7 +303,7 @@
 
 (defn save-new-chat!
   [{:keys [new-chat]} _]
-  (chats/create-chat new-chat))
+  (chats/save new-chat))
 
 (defn open-chat!
   [_ [_ chat-id _ navigation-type]]
@@ -341,7 +340,7 @@
 ; todo do we really need this message?
 (defn leaving-message!
   [{:keys [current-chat-id]} _]
-  (messages/save-message
+  (messages/save
     current-chat-id
     {:from         "system"
      :message-id   (random/id)
@@ -351,24 +350,15 @@
 (defn delete-messages!
   [{:keys [current-chat-id]} [_ chat-id]]
   (let [id (or chat-id current-chat-id)]
-    (r/write :account
-             (fn []
-               (r/delete :account
-                         (r/get-by-field :account :message :chat-id id))))))
+    (messages/delete-by-chat-id id)))
 
 (defn delete-chat!
   [_ [_ chat-id]]
-  (r/write :account
-           (fn [] :account
-             (when-let [chat (->> (r/get-by-field :account :chat :chat-id chat-id)
-                                  (r/single))]
-               (doto chat
-                 (aset "is-active" false)
-                 (aset "removed-at" (.getTime (js/Date.))))))))
+  (chats/delete chat-id))
 
 (defn remove-pending-messages!
   [_ [_ chat-id]]
-  (pending-messages/remove-all-by-chat chat-id))
+  (pending-messages/delete-all-by-chat-id chat-id))
 
 (register-handler :leave-group-chat
   ;; todo oreder of operations tbd
@@ -435,8 +425,8 @@
                                       :message-id message-id}}))))
 (register-handler :send-seen!
   [(after (fn [_ [_ {:keys [message-id]}]]
-            (messages/update-message! {:message-id     message-id
-                                       :message-status :seen})))
+            (messages/update {:message-id     message-id
+                              :message-status :seen})))
    (after (fn [_ [_ {:keys [chat-id]}]]
             (dispatch [:remove-unviewed-messages chat-id])))]
   (u/side-effect! send-seen!))
@@ -457,7 +447,7 @@
 
 (defn update-chat!
   [_ [_ chat]]
-  (chats/update-chat chat))
+  (chats/save chat))
 
 (register-handler :update-chat!
   (-> (fn [db [_ {:keys [chat-id] :as chat}]]
