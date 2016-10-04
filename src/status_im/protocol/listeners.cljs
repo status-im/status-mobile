@@ -34,15 +34,17 @@
     (when-not error
       (debug :message-received)
       (let [{:keys [from payload to] :as message}
-            (js->clj js-message :keywordize-keys true)]
-        (when-not (= (i/normalize-hex identity)
-                     (i/normalize-hex from))
-          (let [{:keys [type ack?] :as payload'}
-                (parse-payload payload)
+            (js->clj js-message :keywordize-keys true)
 
-                content (parse-content (:private keypair) payload' (not= "0x0" to))
+            {:keys [type ack?] :as payload'}
+            (parse-payload payload)]
+        (when (or (not= (i/normalize-hex identity)
+                        (i/normalize-hex from))
+                  ;; allow user to receive his own discoveries
+                  (= type :discovery))
+          (let [content   (parse-content (:private keypair) payload' (not= "0x0" to))
                 payload'' (assoc payload' :content content)
 
-                message' (assoc message :payload payload'')]
+                message'  (assoc message :payload payload'')]
             (callback (if ack? :ack type) message')
             (ack/check-ack! web3 from payload'' identity)))))))
