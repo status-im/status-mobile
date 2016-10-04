@@ -36,6 +36,7 @@
         account {:public-key          public-key
                  :address             address
                  :name                address
+                 :signed-up?          true
                  :updates-public-key  public
                  :updates-private-key private
                  :photo-path          (identicon public-key)}]
