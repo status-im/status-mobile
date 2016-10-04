@@ -5,7 +5,8 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.db :refer [default-view]]
             [status-im.persistence.realm.core :as realm]
-            [status-im.components.status :as status]))
+            [status-im.components.status :as status]
+            [status-im.constants :refer [console-chat-id]]))
 
 
 (defn set-login-from-qr
@@ -19,7 +20,10 @@
   (dispatch [:set :login {}])
   (dispatch [:set-current-account address])
   (dispatch [:initialize-account address])
-  (when new-account?
+  (if new-account?
+    (do
+      (dispatch [:navigate-to-clean :chat-list])
+      (dispatch [:navigate-to :chat console-chat-id]))
     (do
       (dispatch [:navigate-to-clean :accounts])
       (dispatch [:navigate-to default-view]))))
@@ -34,7 +38,7 @@
 (defn on-account-changed
   [error address new-account?]
   (if (nil? error)
-    (initialize-account address true)
+    (initialize-account address new-account?)
     (log/debug "Error changing acount realm: " error)))
 
 (defn logged-in
