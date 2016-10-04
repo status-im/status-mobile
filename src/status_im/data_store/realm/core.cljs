@@ -156,12 +156,13 @@
 (defmulti to-query (fn [realm schema-name operator field value]
                      operator))
 
-(defmethod to-query :eq [realm schema-name operator field value]
-  (let [value (to-string value)
-        field-type (field-type realm schema-name field)
-        query (str (name field) "=" (if (= "string" (name field-type))
-                                      (str "\"" value "\"")
-                                      value))]
+(defmethod to-query :eq [schema schema-name operator field value]
+  (let [value         (to-string value)
+        field-type    (field-type schema schema-name field)
+        escaped-value (when value (str/replace (str value) #"\"" "\\\""))
+        query         (str (name field) "=" (if (= "string" (name field-type))
+                                              (str "\"" escaped-value "\"")
+                                              value))]
     query))
 
 (defn get-by-field [realm schema-name field value]
