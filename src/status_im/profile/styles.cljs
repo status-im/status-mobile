@@ -10,7 +10,8 @@
                                                  separator-color
                                                  text1-color
                                                  text1-disabled-color
-                                                 text2-color]]))
+                                                 text2-color
+                                                 color-red]]))
 
 (def profile
   {:flex             1
@@ -51,18 +52,17 @@
 (def user-photo-container
   {:margin-top 22})
 
-(def username
-  {:margin-top 12
-   :font-size  18
-   :color      text1-color})
+(def username-wrapper
+  {:width 300
+   :margin-top -22
+   :margin-bottom -16})
 
-(def username-input
-  {:align-self    "stretch"
-   :margin-top    -8
-   :margin-bottom -22
-   :font-size     18
-   :text-align    :center
-   :color         text1-color})
+(defn username-input [edit? valid?]
+  {:font-size  18
+   :text-align :center
+   :color      (if edit?
+                 (if valid? text1-color color-red)
+                 text1-disabled-color)})
 
 (def status-block
   {:flex-direction "column"

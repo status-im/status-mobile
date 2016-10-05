@@ -23,7 +23,6 @@
                        new-status     :status
                        new-photo-path :photo-path}]
   (let [new-name        (if (or (not new-name)
-                                (str/blank? new-name)
                                 (not (s/valid? ::v/name new-name)))
                           name
                           new-name)
