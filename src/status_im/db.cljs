@@ -7,7 +7,7 @@
 ;; schema of app-db
 (def schema {:greeting s/Str})
 
-(def default-view :chat-list)
+(def default-view :chat)
 
 ;; initial state of app-db
 (def app-db {:identity-password      "replace-me-with-user-entered-password"
