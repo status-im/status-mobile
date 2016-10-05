@@ -43,9 +43,9 @@
     (log/debug "account-created")
     (when (not (str/blank? public-key))
       (do
-        (dispatch-sync [:add-account account])
-        (dispatch-sync [:save-password password mnemonic])
-        (dispatch-sync [:login-account address password])))))
+        (dispatch [:add-account account])
+        (dispatch [:show-mnemonic mnemonic])
+        (dispatch [:login-account address password])))))
 
 (register-handler :create-account
   (u/side-effect!
@@ -96,9 +96,8 @@
 (defn set-current-account
   [{:keys [accounts] :as db} [_ address]]
   (let [key (:public-key (accounts address))]
-    (-> db
-        (assoc :current-account-id address)
-        (assoc :current-public-key key))))
+    (assoc db :current-account-id address
+              :current-public-key key)))
 
 (register-handler :set-current-account set-current-account)
 
@@ -107,7 +106,10 @@
                       (map (fn [{:keys [address] :as account}]
                              [address account]))
                       (into {}))]
-    (assoc db :accounts accounts)))
+    (assoc db :accounts accounts
+              :view-id (if (empty? accounts)
+                         :chat
+                         :accounts))))
 
 (register-handler :load-accounts load-accounts!)
 

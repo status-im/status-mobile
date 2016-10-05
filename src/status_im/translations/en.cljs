@@ -75,9 +75,6 @@
    :confirmation-code                     (str "Thanks! We've sent you a text message with a confirmation "
                                                "code. Please provide that code to confirm your phone number")
    :incorrect-code                        (str "Sorry the code was incorrect, please enter again")
-   :password-saved                        (str "OK great! Your password has been saved. Just to let you "
-                                               "know you can always change it in the Console by the way "
-                                               "it's me the Console nice to meet you!")
    :generate-passphrase                   (str "I'll generate a passphrase for you so you can restore your "
                                                "access or log in from another device")
    :here-is-your-passphrase               "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
