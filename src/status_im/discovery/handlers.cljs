@@ -1,7 +1,7 @@
 (ns status-im.discovery.handlers
   (:require [re-frame.core :refer [after dispatch enrich]]
             [status-im.utils.utils :refer [first-index]]
-            [status-im.utils.handlers :refer [register-handler]]
+            [status-im.utils.handlers :refer [register-handler get-hashtags]]
             [status-im.protocol.core :as protocol]
             [status-im.navigation.handlers :as nav]
             [status-im.data-store.discovery :as discoveries]
@@ -36,19 +36,37 @@
 
 (register-handler :discovery-response-received
   (u/side-effect!
-    (fn [{:keys [current-public-key] :as db} [_ {:keys [from payload]}]]
-      (when-not (= current-public-key from)
-        (let [{:keys [discovery-id profile hashtags]} payload
-              {:keys [name profile-image status]} profile
-              discovery {:message-id   discovery-id
-                         :name         name
-                         :photo-path   profile-image
-                         :status       status
-                         :whisper-id   from
-                         :tags         (map #(hash-map :name %) hashtags)
-                         :last-updated (js/Date.)
-                         :priority     (calculate-priority db from payload)}]
-          (dispatch [:add-discovery discovery]))))))
+    (fn [db [_ {:keys [from payload]}]]
+      (let [{:keys [discovery-id profile hashtags]} payload
+            {:keys [name profile-image status]} profile
+            discovery {:message-id   discovery-id
+                       :name         name
+                       :photo-path   profile-image
+                       :status       status
+                       :whisper-id   from
+                       :tags         (map #(hash-map :name %) hashtags)
+                       :last-updated (js/Date.)
+                       :priority     (calculate-priority db from payload)}]
+        (dispatch [:add-discovery discovery])))))
+
+(register-handler :check-status!
+  (u/side-effect!
+    (fn [db [_ {:keys [whisper-identity status]} payload]]
+      (let [{old-status :status} (contacts/get-contact whisper-identity)]
+        (when (not= old-status status)
+          (let [hashtags (get-hashtags status)]
+            (when-not (empty? hashtags)
+              (let [{:keys [message-id content]} payload
+                    {:keys [name profile-image status]} (content :profile)
+                    discovery {:message-id   message-id
+                               :name         name
+                               :photo-path   profile-image
+                               :status       status
+                               :whisper-id   whisper-identity
+                               :tags         (map #(hash-map :name %) hashtags)
+                               :last-updated (js/Date.)
+                               :priority     (calculate-priority db whisper-identity payload)}]
+                (dispatch [:add-discovery discovery])))))))))
 
 (register-handler :broadcast-status
   (u/side-effect!
