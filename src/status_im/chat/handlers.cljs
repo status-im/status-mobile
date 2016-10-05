@@ -193,10 +193,10 @@
   (fn [db _]
     (init-console-chat db false)))
 
-(register-handler :save-password
-  (fn [db [_ _ mnemonic]]
-    (sign-up-service/passpharse-messages mnemonic)
-    (assoc db :password-saved true)))
+(register-handler :show-mnemonic
+  (u/side-effect!
+    (fn [_ [_ mnemonic]]
+      (sign-up-service/passpharse-messages mnemonic))))
 
 (register-handler :sign-up
   (after (fn [_ [_ phone-number]]

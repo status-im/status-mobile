@@ -26,7 +26,7 @@
       (dispatch [:navigate-to :chat console-chat-id]))
     (do
       (dispatch [:navigate-to-clean :accounts])
-      (dispatch [:navigate-to default-view]))))
+      (dispatch [:navigate-to :chat-list]))))
 
 (register-handler
   :change-account
@@ -45,7 +45,7 @@
   [db address]
   (let [is-login-screen? (= (:view-id db) :login)
         new-account? (not is-login-screen?)]
-    (log/debug "Logged in: ")
+    (log/debug "Logged in: " (:view-id db) is-login-screen? new-account?)
     (dispatch [:change-account address new-account? on-account-changed])))
 
 (register-handler
