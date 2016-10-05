@@ -14,29 +14,35 @@
                                                         action-button-item]]
             [status-im.contacts.views.contact :refer [contact-extended-view on-press]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.components.styles :refer [color-blue
                                                  hamburger-icon
                                                  icon-search
-                                                 create-icon
-                                                 toolbar-background2]]
+                                                 create-icon]]
             [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
             [status-im.contacts.styles :as st]
             [status-im.i18n :refer [label]]
-            [status-im.components.styles :as cst]))
+            [status-im.utils.platform :refer [platform-specific]]))
 
 (defn contact-list-toolbar []
-  [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
-                                         :style  hamburger-icon}
-                               :handler open-drawer}
-            :title            (label :t/contacts)
-            :background-color toolbar-background2
-            :style            {:elevation 0}
-            :action           {:image   {:source {:uri :icon_search}
-                                         :style  icon-search}
-                               :handler (fn [])}}])
+  (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
+        actions   (cond->> [{:image   {:source {:uri :icon_search}
+                                       :style  icon-search}
+                             :handler (fn [])}]
+                           new-contact?
+                           (into [{:image   {:source {:uri :icon_add}
+                                             :style  icon-search}
+                                   :handler #(dispatch [:navigate-to :new-contact])}]))]
+    [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
+                                           :style  hamburger-icon}
+                                 :handler open-drawer}
+              :title            (label :t/contacts)
+              :background-color toolbar-background2
+              :style            {:elevation 0}
+              :actions          actions}]))
 
 (def contacts-limit 10)
 
@@ -68,6 +74,18 @@
        [view
         [text {:style st/show-all-text} (label :t/show-all)]]]])])
 
+(defn contacts-action-button []
+  [view st/buttons-container
+   [action-button {:buttonColor color-blue
+                   :offsetY     16
+                   :offsetX     16}
+    [action-button-item
+     {:title       (label :t/new-contact)
+      :buttonColor :#9b59b6
+      :onPress     #(dispatch [:navigate-to :new-contact])}
+     [ion-icon {:name  :md-create
+                :style create-icon}]]]])
+
 (defn contact-list []
   (let [contacts             (subscribe [:get-added-contacts-with-limit contacts-limit])
         contacts-count       (subscribe [:added-contacts-count])
@@ -88,26 +106,18 @@
           [contact-group
            @contacts
            @contacts-count
-           (label :t/contacs-group-dapps)
+           (label :t/contacts-group-dapps)
            :dapps true
            @click-handler]
           [contact-group
            @contacts
            @contacts-count
-           (label :t/contacs-group-people)
+           (label :t/contacts-group-people)
            :people false
            @click-handler]]
          [view st/empty-contact-groups
           [react/icon :group_big st/empty-contacts-icon]
           [text {:style st/empty-contacts-text} (label :t/no-contacts)]])
-       [view st/buttons-container
-        [action-button {:buttonColor color-blue
-                        :offsetY     16
-                        :offsetX     16}
-         [action-button-item
-          {:title       (label :t/new-contact)
-           :buttonColor :#9b59b6
-           :onPress     #(dispatch [:navigate-to :new-contact])}
-          [ion-icon {:name  :md-create
-                     :style create-icon}]]]]
+       (when (get-in platform-specific [:contacts :action-button?])
+         [contacts-action-button])
        [bottom-gradient]])))

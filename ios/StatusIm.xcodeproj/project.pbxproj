@@ -19,7 +19,6 @@
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		2028DFF91D4275B600227DCD /* SF-UI-Display-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2028DFF51D4275B600227DCD /* SF-UI-Display-Medium.otf */; };
@@ -51,6 +50,7 @@
 		A6AF670051B842249D520C7B /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7ED174A34D7D42358313368B /* Foundation.ttf */; };
 		AD5063BC2B2A4C52ACE0A0B4 /* libUdpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A96279092BEC4C4B93914F48 /* libUdpSockets.a */; };
 		AE97D4B08C9F4821B8E9C50B /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 359B076A658B4FBAB5128B03 /* Ionicons.ttf */; };
+		B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */; };
 		B45B40B471414274A7A83185 /* libRCTContacts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3384AFA9609A409B81928AD5 /* libRCTContacts.a */; };
 		BA68A2377A20496EA737000D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
 		C3EE9AEA6F77464588FBAA64 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B5870D9ED504F32B6A09C35 /* FontAwesome.ttf */; };
@@ -287,7 +287,6 @@
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = StatusIm/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = StatusIm/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = StatusIm/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = StatusIm/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = StatusIm/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
@@ -332,6 +331,7 @@
 		9ED2F4601D9D577B00B36508 /* SF-UI-Text-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Bold.otf"; sourceTree = "<group>"; };
 		9F1854E6D9654226B1FC8308 /* RCTCamera.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RCTCamera.xcodeproj"; sourceTree = "<group>"; };
 		A96279092BEC4C4B93914F48 /* libUdpSockets.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libUdpSockets.a; sourceTree = "<group>"; };
+		B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = StatusIm/Images.xcassets; sourceTree = "<group>"; };
 		B3B19223008342D096AA356E /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		C2A4E93F6B154AEFA3485B45 /* libTcpSockets.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTcpSockets.a; sourceTree = "<group>"; };
 		CD48A32459B64E96843BB238 /* libRealmReact.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRealmReact.a; sourceTree = "<group>"; };
@@ -465,10 +465,10 @@
 		13B07FAE1A68108700A75B9A /* StatusIm */ = {
 			isa = PBXGroup;
 			children = (
+				B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
@@ -1099,7 +1099,6 @@
 				9ED2F4611D9D579900B36508 /* SF-UI-Text-Bold.otf in Resources */,
 				9ED2F45E1D9D535A00B36508 /* SF-UI-Text-Regular.otf in Resources */,
 				9ED2F45F1D9D535A00B36508 /* SF-UI-Text-Medium.otf in Resources */,
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				2028DFFA1D4275B600227DCD /* SF-UI-Display-Regular.otf in Resources */,
 				2028DFF91D4275B600227DCD /* SF-UI-Display-Medium.otf in Resources */,
@@ -1109,6 +1108,7 @@
 				82E689BAF9FB43C8AC6FF1CA /* EvilIcons.ttf in Resources */,
 				C3EE9AEA6F77464588FBAA64 /* FontAwesome.ttf in Resources */,
 				A6AF670051B842249D520C7B /* Foundation.ttf in Resources */,
+				B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */,
 				AE97D4B08C9F4821B8E9C50B /* Ionicons.ttf in Resources */,
 				0F942CF509F74CCDB5CB35B0 /* MaterialIcons.ttf in Resources */,
 				EF2B5857B4A34E0C9707FB3F /* Octicons.ttf in Resources */,

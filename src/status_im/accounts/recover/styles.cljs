@@ -1,13 +1,10 @@
 (ns status-im.accounts.recover.styles
-  (:require [status-im.components.styles :refer [text1-color
-                                                 color-white
-                                                 toolbar-background2
-                                                 online-color]]))
+  (:require [status-im.components.styles :refer [color-white]]))
 
 
 (def screen-container
-  {:flex  1
-   :color :white
+  {:flex             1
+   :color            :white
    :background-color color-white})
 
 (def gradient-background
@@ -19,19 +16,19 @@
 
 (def recover-explain-container
   {:padding-horizontal 35
-   :padding-top 20
-   :justify-content :center})
+   :padding-top        20
+   :justify-content    :center})
 
 (def recover-explain-text
-  {:color "#838c93de"
-   :font-size 16
+  {:color       "#838c93de"
+   :font-size   16
    :line-height 20
-   :text-align :center})
+   :text-align  :center})
 
 (def form-container
-  {:flex            1
-   :flex-direction  "row"
-   :justifyContent  "center"})
+  {:flex           1
+   :flex-direction "row"
+   :justifyContent "center"})
 
 (def form-container-inner
   {:flex           1
@@ -48,10 +45,10 @@
   {:flex 1})
 
 (defn recover-button [valid-form?]
-  {:backgroundColor (if valid-form? "#7099e6" :gray)
-   :color :white
-   :flex 1
-   :alignItems :center
+  {:backgroundColor   (if valid-form? "#7099e6" :gray)
+   :color             :white
+   :flex              1
+   :alignItems        :center
    :paddingVertical   16
    :paddingHorizontal 28})
 
@@ -60,7 +57,7 @@
    :fontSize 16})
 
 (def input-style
-  {:color "#323232"
+  {:color     "#323232"
    :font-size 12})
 
 (def scan-label

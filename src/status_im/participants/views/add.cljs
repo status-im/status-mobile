@@ -4,7 +4,7 @@
             [status-im.resources :as res]
             [status-im.components.react :refer [view list-view list-item]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.participants.views.contact :refer [participant-contact]]
             [reagent.core :as r]
@@ -16,11 +16,11 @@
   [view
    [status-bar]
    [toolbar
-    {:title  (label :t/add-participants)
-     :action {:image   {:source res/v                       ;; {:uri "icon_search"}
-                        :style  st/new-participant-image}
-              :handler #(do (dispatch [:add-new-participants])
-                            (dispatch [:navigate-back]))}}]])
+    {:title   (label :t/add-participants)
+     :actions [{:image   {:source res/v                     ;; {:uri "icon_search"}
+                          :style  st/new-participant-image}
+                :handler #(do (dispatch [:add-new-participants])
+                              (dispatch [:navigate-back]))}]}]])
 
 (defn new-participants-row
   [row _ _]

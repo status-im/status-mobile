@@ -10,7 +10,7 @@
                                                 list-view
                                                 list-item]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.participants.views.contact
              :refer [participant-contact]]
@@ -23,11 +23,11 @@
   [view
    [status-bar]
    [toolbar
-    {:title  (label :t/remove-participants)
-     :action {:handler #(do (dispatch [:remove-participants])
-                            (dispatch [:navigate-back]))
-              :image   {:source res/trash-icon              ;; {:uri "icon_search"}
-                        :style  st/remove-participants-image}}}]])
+    {:title   (label :t/remove-participants)
+     :actions [{:handler #(do (dispatch [:remove-participants])
+                              (dispatch [:navigate-back]))
+                :image   {:source res/trash-icon            ;; {:uri "icon_search"}
+                          :style  st/remove-participants-image}}]}]])
 
 (defn remove-participants-row
   [row _ _]
