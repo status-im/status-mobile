@@ -9,10 +9,10 @@
                                                 touchable-highlight
                                                 touchable-opacity]]
             [status-im.components.styles :refer [icon-ok
-                                                 icon-close
-                                                 toolbar-title-container]]
+                                                 icon-close]]
             [status-im.components.carousel.carousel :refer [carousel]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.styles :refer [toolbar-title-container]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.transactions.views.transaction-page :refer [transaction-page]]
             [status-im.transactions.styles :as st]
@@ -33,11 +33,11 @@
      :custom-content [view {:style toolbar-title-container}
                       [text {:style st/toolbar-title-text}
                        (label-pluralize (count transactions) :t/confirm-transactions)]]
-     :action         {:image   {:source {:uri (if-not (s/blank? password)
-                                                :icon_ok
-                                                :icon_ok_disabled_inversed)}
-                                :style  icon-ok}
-                      :handler #(dispatch [:accept-transactions password])}}]
+     :actions        [{:image   {:source {:uri (if-not (s/blank? password)
+                                                 :icon_ok
+                                                 :icon_ok_disabled_inversed)}
+                                 :style  icon-ok}
+                       :handler #(dispatch [:accept-transactions password])}]}]
    [view st/carousel-container
     [carousel {:pageStyle st/carousel-page-style
                :gap       16

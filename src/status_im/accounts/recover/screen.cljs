@@ -8,15 +8,15 @@
                                                 linear-gradient
                                                 touchable-highlight]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.styles :refer [toolbar-gradient
+                                                         toolbar-title-container
+                                                         toolbar-title-text]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
                                                  icon-back
                                                  icon-search
-                                                 toolbar-title-container
-                                                 toolbar-title-text
-                                                 toolbar-gradient
                                                  button-input]]
             [status-im.components.react :refer [linear-gradient]]
             [status-im.i18n :refer [label]]
@@ -83,8 +83,8 @@
                                           :style  icon-back}
                                 :handler #(dispatch [:navigate-back])}
              :custom-content   [toolbar-title]
-             :action           {:image   {:style icon-search}
-                                :handler #()}}]
+             :actions          [{:image   {:style icon-search}
+                                 :handler #()}]}]
    [linear-gradient {:locations [0 0.6 1]
                      :colors    gradient-colors
                      :style     toolbar-gradient}]

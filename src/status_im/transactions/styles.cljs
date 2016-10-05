@@ -1,7 +1,4 @@
-(ns status-im.transactions.styles
-  (:require [status-im.components.styles :refer [toolbar-height
-                                                 color-white]]))
-
+(ns status-im.transactions.styles)
 
 (def transactions-screen
   {:flex 1

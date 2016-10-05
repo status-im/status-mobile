@@ -13,7 +13,7 @@
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.styles :refer [color-purple]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.new-group.views.contact :refer [new-group-contact]]
             [status-im.new-group.styles :as st]
@@ -27,11 +27,11 @@
     [view
      [status-bar]
      [toolbar
-      {:title  (label :t/new-group-chat)
-       :action {:image   {:source res/v                     ;; {:uri "icon_search"}
-                          :style  (st/toolbar-icon create-btn-enabled?)}
-                :handler (when create-btn-enabled?
-                           #(dispatch [:create-new-group new-chat-name]))}}]]))
+      {:title   (label :t/new-group-chat)
+       :actions [{:image   {:source res/v                   ;; {:uri "icon_search"}
+                            :style  (st/toolbar-icon create-btn-enabled?)}
+                  :handler (when create-btn-enabled?
+                             #(dispatch [:create-new-group new-chat-name]))}]}]]))
 
 (defview group-name-input []
   [new-chat-name [:get :new-chat-name]]

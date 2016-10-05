@@ -1,8 +1,5 @@
 (ns status-im.accounts.styles
-  (:require [status-im.components.styles :refer [text1-color
-                                                 color-white
-                                                 toolbar-background2
-                                                 online-color]]
+  (:require [status-im.components.styles :refer [color-white]]
             [status-im.components.react :as r]))
 
 
@@ -82,11 +79,11 @@
    :bottom   0})
 
 (def add-account-button-container
-  {:flex           1
+  {:flex              1
    :paddingVertical   16
    :paddingHorizontal 28
-   :justifyContent :center
-   :alignItems     :center})
+   :justifyContent    :center
+   :alignItems        :center})
 
 (def add-account-button
   {:flexDirection :row})
@@ -104,15 +101,15 @@
    :marginLeft    8})
 
 (def recover-button-container
-  {:flex     1})
+  {:flex 1})
 
 (def recover-button
-  {:flex 1
-   :alignItems :center
+  {:flex              1
+   :alignItems        :center
    :paddingVertical   16
    :paddingHorizontal 28})
 
 (def recover-button-text
-  {:flex  1
-   :color color-white
+  {:flex     1
+   :color    color-white
    :fontSize 16})
