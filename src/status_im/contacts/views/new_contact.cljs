@@ -103,7 +103,7 @@
                                            :style  icon-back}
                                  :handler #(dispatch [:navigate-back])}
               :custom-content   toolbar-title
-              :actions          (toolbar-actions new-contact-identity accounts error)}]]
+              :actions          (toolbar-actions new-contact-identity account error)}]]
    [view st/form-container
     [contact-whisper-id-input new-contact-identity error]]
    [view st/address-explication-container
