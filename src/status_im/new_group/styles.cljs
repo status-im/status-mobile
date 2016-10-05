@@ -2,8 +2,7 @@
   (:require [status-im.components.styles :refer [color-white
                                                  color-blue
                                                  text1-color
-                                                 text2-color
-                                                 toolbar-background1]]))
+                                                 text2-color]]))
 
 (defn toolbar-icon [enabled?]
   {:width   20

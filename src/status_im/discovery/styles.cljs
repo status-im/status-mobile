@@ -1,13 +1,5 @@
 (ns status-im.discovery.styles
-  (:require [status-im.components.styles :refer [color-white
-                                                 color-gray2
-                                                 chat-background
-                                                 online-color
-                                                 selected-message-color
-                                                 separator-color
-                                                 text1-color
-                                                 text2-color
-                                                 toolbar-background1]]))
+  (:require [status-im.components.styles :refer [color-gray2]]))
 
 ;; common
 

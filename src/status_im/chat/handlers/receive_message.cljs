@@ -38,7 +38,8 @@
             message' (assoc (->> message
                                  (cu/check-author-direction previous-message)
                                  (check-preview))
-                       :chat-id chat-id')]
+                       :chat-id chat-id'
+                       :timestamp (.getTime (js/Date.)))]
         (store-message message')
         (when-not exists?
           (dispatch [:add-chat chat-id' (when group-chat? {:group-chat true})]))

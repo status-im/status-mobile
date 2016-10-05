@@ -4,13 +4,14 @@
                                                  text3-color
                                                  text5-color
                                                  color-white
-                                                 toolbar-background2
-                                                 online-color
-                                                 color-gray2]]))
+                                                 color-black
+                                                 color-light-gray
+                                                 color-separator
+                                                 color-gray2]]
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
 (def contacts-list-container
-  {:flex            1
-   :backgroundColor :white})
+  {:flex 1})
 
 (def toolbar-shadow
   {:height          2
@@ -35,7 +36,7 @@
    :color      color-gray2})
 
 (def contacts-list
-  {:backgroundColor :white})
+  {:backgroundColor color-white})
 
 (def contact-group
   {:flexDirection :column})
@@ -97,8 +98,8 @@
    :letterSpacing 0.5})
 
 (def contact-container
-  {:flexDirection   :row
-   :backgroundColor color-white})
+  {:flex-direction   :row
+   :background-color color-white})
 
 (def letter-container
   {:paddingTop  11
@@ -106,12 +107,40 @@
    :width       56})
 
 (def letter-text
-  {:fontSize   24
-   :color      text3-color})
+  {:fontSize 24
+   :color    text3-color})
 
 (def contact-photo-container
   {:marginTop  4
    :marginLeft 12})
+
+(def option-inner-container
+  {:flex                1
+   :flex-direction      :row
+   :height              56
+   :background-color    color-white
+   :border-bottom-color color-separator
+   :border-bottom-width 0.5})
+
+(def option-inner
+  {:width       48
+   :height      48
+   :margin-top  4
+   :margin-left 12})
+
+(def option-inner-image
+  {:width  24
+   :height 18
+   :top 16
+   :left 13})
+
+(def spacing-top
+  {:background-color color-white
+   :height           8})
+
+(def spacing-bottom
+  {:background-color color-white
+   :height           8})
 
 (def contact-inner-container
   {:flex            1
@@ -126,13 +155,13 @@
    :justifyContent :center})
 
 (def name-text
-  {:fontSize   16
-   :color      text1-color})
+  {:fontSize 15
+   :color    text1-color})
 
 (def info-text
-  {:marginTop  1
-   :fontSize   12
-   :color      text2-color})
+  {:marginTop 1
+   :fontSize  12
+   :color     text2-color})
 
 (def more-btn
   {:width          56
@@ -147,8 +176,8 @@
 ; new contact
 
 (def contact-form-container
-  {:flex  1
-   :color :white
+  {:flex            1
+   :color           :white
    :backgroundColor :white})
 
 (def gradient-background
@@ -163,21 +192,21 @@
    :margin-top  16})
 
 (def address-explication-container
-  {:flex 1
-   :margin-top 30
-   :paddingLeft 16
+  {:flex         1
+   :margin-top   30
+   :paddingLeft  16
    :paddingRight 16})
 
 (def address-explication
   {:textAlign :center
-   :color "#838c93de"})
+   :color     "#838c93de"})
 
 (def buttons-container
   {:position :absolute
-   :bottom 0
-   :right 0
-   :width 200
-   :height 170})
+   :bottom   0
+   :right    0
+   :width    200
+   :height   170})
 
 (def qr-input
   {:margin-right 42})

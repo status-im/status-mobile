@@ -5,7 +5,6 @@
                                                 text
                                                 image
                                                 touchable-highlight]]
-            [status-im.components.toolbar :refer [toolbar]]
             [status-im.components.styles :refer [icon-qr]]
             [status-im.i18n :refer [label]]
             [status-im.qr-scanner.styles :as st]))

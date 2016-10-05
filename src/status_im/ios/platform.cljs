@@ -1,6 +1,7 @@
 (ns status-im.ios.platform
   (:require [status-im.components.styles :as styles]
-            [status-im.utils.utils :as u]))
+            [status-im.utils.utils :as u]
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
 (def component-styles
   {:status-bar        {:default     {:height    20
@@ -8,7 +9,7 @@
                                      :color     styles/color-white}
                        :main        {:height    20
                                      :bar-style "default"
-                                     :color     styles/toolbar-background2}
+                                     :color     toolbar-background2}
                        :transparent {:height    20
                                      :bar-style "light-content"
                                      :color     styles/color-transparent}}
@@ -43,5 +44,9 @@
 (def platform-specific
   {:component-styles  component-styles
    :fonts             fonts
-   :list-selection-fn show-action-sheet})
+   :list-selection-fn show-action-sheet
+   :chats             {:action-button?       false
+                       :new-chat-in-toolbar? true}
+   :contacts          {:action-button?          false
+                       :new-contact-in-toolbar? true}})
 

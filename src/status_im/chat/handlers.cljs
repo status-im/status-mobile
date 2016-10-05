@@ -248,7 +248,8 @@
   [{:keys [loaded-chats] :as db} _]
   (let [chats (->> loaded-chats
                    (map (fn [{:keys [chat-id] :as chat}]
-                          [chat-id chat]))
+                          (let [last-message (messages/get-last-message chat-id)]
+                            [chat-id (assoc chat :last-message last-message)])))
                    (into {}))
         ids   (set (keys chats))]
 
@@ -275,7 +276,8 @@
         db'      (assoc db :current-chat-id chat-id)]
     (dispatch [:load-requests! chat-id])
     (dispatch [:load-commands! chat-id])
-    (if (seq messages)
+    (if (and (seq messages)
+             (not= (count messages) 1))
       db'
       (-> db'
           load-messages!

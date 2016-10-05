@@ -1,12 +1,4 @@
-(ns status-im.components.carousel.styles
-  (:require [status-im.components.styles :refer [color-white
-                                                 chat-background
-                                                 online-color
-                                                 selected-message-color
-                                                 separator-color
-                                                 text1-color
-                                                 text2-color
-                                                 toolbar-background1]]))
+(ns status-im.components.carousel.styles)
 
 (def scroll-view-container
   {:flex 1})

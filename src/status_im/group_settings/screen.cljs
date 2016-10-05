@@ -12,7 +12,7 @@
                                                 scroll-view
                                                 touchable-highlight]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action]]
             [status-im.group-settings.styles.group-settings :as st]
             [status-im.group-settings.views.member :refer [member-view]]

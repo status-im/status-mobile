@@ -9,17 +9,15 @@
                                                 touchable-highlight
                                                 get-dimensions]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.styles :refer [toolbar-title-container
+                                                         toolbar-title-text]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
                                                  icon-search
                                                  icon-back
                                                  icon-qr
-                                                 toolbar-background1
-                                                 toolbar-title-container
-                                                 toolbar-title-text
-                                                 button-input-container
                                                  button-input
                                                  white-form-text-input]]
             [status-im.qr-scanner.views.scan-button :refer [scan-button]]
@@ -75,8 +73,8 @@
                                           :style  icon-back}
                                 :handler #(dispatch [:navigate-back])}
              :custom-content   [toolbar-title]
-             :action           {:image   {:style icon-search}
-                                :handler #()}}]
+             :actions          [{:image   {:style icon-search}
+                                 :handler #()}]}]
    [view st/form-container
     [view st/form-container-inner
      [address-input (or address "")]

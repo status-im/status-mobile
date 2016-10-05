@@ -8,12 +8,11 @@
             [status-im.components.camera :refer [camera
                                                  aspects
                                                  capture-targets]]
-            [status-im.components.styles :refer [toolbar-background1
-                                                 icon-search
-                                                 icon-back]]
+            [status-im.components.styles :refer [icon-back]]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.styles :refer [toolbar-background1]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.profile.photo-capture.styles :as st]
             [status-im.i18n :refer [label]]
