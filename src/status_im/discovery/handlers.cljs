@@ -7,7 +7,8 @@
             [status-im.data-store.discovery :as discoveries]
             [status-im.utils.handlers :as u]
             [status-im.utils.datetime :as time]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [status-im.data-store.contacts :as contacts]))
 
 (register-handler :init-discoveries
   (fn [db _]
@@ -52,7 +53,7 @@
 (register-handler :check-status!
   (u/side-effect!
     (fn [db [_ {:keys [whisper-identity status]} payload]]
-      (let [{old-status :status} (contacts/get-contact whisper-identity)]
+      (let [{old-status :status} (contacts/get-by-id whisper-identity)]
         (when (not= old-status status)
           (let [hashtags (get-hashtags status)]
             (when-not (empty? hashtags)
