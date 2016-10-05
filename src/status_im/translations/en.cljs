@@ -49,6 +49,7 @@
    :datetime-multiple                     "s"
    :datetime-ago                          "ago"
    :datetime-yesterday                    "yesterday"
+   :datetime-today                        "today"
 
    ;profile
    :profile                               "Profile"

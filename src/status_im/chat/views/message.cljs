@@ -13,6 +13,7 @@
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
             [status-im.chat.styles.command-pill :as pill-st]
+            [status-im.chat.views.datemark :refer [chat-datemark]]
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
@@ -23,13 +24,6 @@
                                          content-type-command-request]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.chat.utils :as cu]))
-
-(defn message-date [timestamp]
-  [view {}
-   [view st/message-date-container
-    [text {:style st/message-date-text
-           :font  :default}
-     (time/to-short-str timestamp)]]])
 
 (defn contact-photo [photo-path]
   [view st/contact-photo-container
@@ -45,7 +39,7 @@
      [view st/online-dot-right]]))
 
 (defview message-content-status
-  [{:keys [from content]}]
+  [{:keys [from content datemark]}]
   [{chat-name :name} [:get-chat-by-id from]
    photo-path [:chat-photo from]]
   [view st/status-container
@@ -57,7 +51,9 @@
     (or chat-name from)]
    [text {:style st/status-text
           :font  :default}
-    content]])
+    content]
+   [view st/message-datemark
+    [chat-datemark datemark]]])
 
 (defn message-content-audio [_]
   [view st/audio-container
@@ -295,11 +291,8 @@
                                    :from       from
                                    :message-id message-id}])))
        :reagent-render
-       (fn [{:keys [outgoing timestamp new-day group-chat] :as message}]
+       (fn [{:keys [outgoing group-chat] :as message}]
          [message-container message
-          ;; TODO there is no new-day info in message
-          (when new-day
-            [message-date timestamp])
           [view
            (let [incoming-group (and group-chat (not outgoing))]
              [message-content

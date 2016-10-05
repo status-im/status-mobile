@@ -22,6 +22,7 @@
     {:message-id       (random/id)
      :from             identity
      :to               chat-id
+     :timestamp        (time/now-ms)
      :content          (assoc content :preview preview-string)
      :content-type     content-type-command
      :outgoing         true
