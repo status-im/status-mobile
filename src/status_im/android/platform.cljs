@@ -39,4 +39,8 @@
 (def platform-specific
   {:component-styles  component-styles
    :fonts             fonts
-   :list-selection-fn show-dialog})
+   :list-selection-fn show-dialog
+   :chats             {:action-button?       true
+                       :new-chat-in-toolbar? false}
+   :contacts          {:action-button?          true
+                       :new-contact-in-toolbar? false}})

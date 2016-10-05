@@ -4,22 +4,64 @@
             [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
             [status-im.chats-list.styles :as st]
             [status-im.utils.utils :refer [truncate-str]]
-            [status-im.i18n :refer [label]]
+            [status-im.i18n :refer [label label-pluralize]]
             [status-im.utils.datetime :as time]
+            [status-im.constants :refer [console-chat-id]]
             [clojure.string :as str]))
 
-(defview chat-list-item-inner-view
-  [{:keys [chat-id name color new-messages-count
-           online group-chat contacts] :as chat}]
+(defn message-content [{:keys [content] :as message}]
+  (let [content (if message
+                  (if (string? content)
+                    content
+                    (:content content)))]
+    (if (str/blank? content)
+      [text {:style st/last-message-text-no-messages}
+       (label :t/no-messages)]
+      [text {:style           st/last-message-text
+             :number-of-lines 2}
+       content])))
+
+(defview message-status [{:keys [chat-id contacts]}
+                         {:keys [message-id message-status user-statuses message-type outgoing] :as msg}]
+  [app-db-message-status-value [:get-in [:message-statuses message-id :status]]]
+  (let [delivery-status (get-in user-statuses [chat-id :status])]
+    (when (and outgoing
+               (or (some #(= (keyword %) :seen) [delivery-status
+                                                 message-status
+                                                 app-db-message-status-value])
+                   (and (= (keyword message-type) :group-user-message)
+                        (and (= (count user-statuses) (count contacts))
+                             (every? (fn [[_ {:keys [status]}]]
+                                       (= (keyword status) :seen)) user-statuses)))
+                   (= chat-id console-chat-id)))
+      [image {:source {:uri :icon_ok_small}
+              :style  st/status-image}])))
+
+(defn message-timestamp [{:keys [timestamp]}]
+  (when timestamp
+    [text {:style st/datetime-text}
+     (time/to-short-str timestamp)]))
+
+(defview unviewed-indicator [chat-id]
   [unviewed-messages [:unviewed-messages-count chat-id]]
-  (let [last-message (first (:messages chat))
-        name (or name chat-id)]
+  (when (pos? unviewed-messages)
+    [view st/new-messages-container
+     [text {:style st/new-messages-text
+            :font  :medium}
+      unviewed-messages]]))
+
+(defn chat-list-item-inner-view [{:keys [chat-id name color last-message
+                                         online group-chat contacts] :as chat}]
+  (let [last-message (or (first (:messages chat))
+                         last-message)
+        name         (or name chat-id)]
     [view st/chat-container
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/item-container
       [view st/name-view
-       [text {:style st/name-text}
+       [text {:style st/name-text
+              :font  :medium}
         (if (str/blank? name)
           (label :t/user-anonymous)
           (truncate-str name 30))]
@@ -27,29 +69,11 @@
          [icon :group st/group-icon])
        (when group-chat
          [text {:style st/memebers-text}
-          (if (< 0 (count contacts))
-            (str (inc (count contacts)) " members")
-            "1 member")])]
-      [text {:style         st/last-message-text
-             :numberOfLines 2}
-       (when last-message
-         (let [content (:content last-message)]
-           (if (string? content)
-             content
-             (:content content))))]]
+          (label-pluralize (inc (count contacts)) :t/members)])]
+      [message-content last-message]]
      [view
       (when last-message
         [view st/status-container
-         ;; TODO currently there is not :delivery-status in last-message
-         (when (:delivery-status last-message)
-           [image {:source (if (= (keyword (:delivery-status last-message)) :seen)
-                             {:uri :icon_ok_small}
-                             ;; todo change icon
-                             {:uri :icon_ok_small})
-                   :style  st/status-image}])
-         (when (:timestamp last-message)
-           [text {:style st/datetime-text}
-            (time/to-short-str (:timestamp last-message))])])
-      (when (pos? unviewed-messages)
-        [view st/new-messages-container
-         [text {:style st/new-messages-text} unviewed-messages]])]]))
+         [message-status chat last-message]
+         [message-timestamp last-message]])
+      [unviewed-indicator chat-id]]]))

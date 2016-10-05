@@ -1,13 +1,9 @@
 (ns status-im.group-settings.styles.group-settings
   (:require [status-im.components.styles :refer [color-white
                                                  color-purple
-                                                 chat-background
-                                                 online-color
-                                                 selected-message-color
                                                  separator-color
                                                  text1-color
-                                                 text2-color
-                                                 toolbar-background1]]))
+                                                 text2-color]]))
 
 (def modal-container
   {:flex           1

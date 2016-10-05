@@ -3,7 +3,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.components.react :refer [view text list-view list-item]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.discovery.views.discovery-list-item :refer [discovery-list-item]]
             [status-im.discovery.styles :as st]))
 
@@ -25,9 +25,9 @@
                                           :style  st/icon-back}
                                 :handler #(dispatch [:navigate-back])}
                :custom-content (title-content tag)
-               :action         {:image   {:source {:uri :icon_search}
-                                          :style  st/icon-search}
-                                :handler (fn [])}}]
+               :actions        [{:image   {:source {:uri :icon_search}
+                                           :style  st/icon-search}
+                                 :handler (fn [])}]}]
 
      [list-view {:dataSource      datasource
                  :renderRow       (fn [row _ _]

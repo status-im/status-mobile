@@ -17,7 +17,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
             [status-im.chat.views.suggestions :refer [suggestion-container]]
             [status-im.chat.views.response :refer [response-view]]
@@ -107,7 +107,7 @@
           [text {:style st/members
                  :font  :medium}
            (let [cnt (inc (count @contacts))]
-             (label-pluralize cnt :t/members))]]
+             (label-pluralize cnt :t/members-active))]]
          [text {:style st/last-activity
                 :font  :default}
           (online-text @contact @chat-id)])])))

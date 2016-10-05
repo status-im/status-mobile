@@ -6,8 +6,8 @@
                                                  selected-message-color
                                                  separator-color
                                                  text1-color
-                                                 text2-color
-                                                 toolbar-background1]]))
+                                                 text2-color]]
+            [status-im.components.toolbar.styles :refer [toolbar-background1]]))
 
 (def chat-view
   {:flex            1

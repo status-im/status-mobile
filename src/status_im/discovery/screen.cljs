@@ -7,7 +7,7 @@
                                         scroll-view
                                         text
                                         text-input]]
-    [status-im.components.toolbar :refer [toolbar]]
+    [status-im.components.toolbar.view :refer [toolbar]]
     [status-im.components.drawer.view :refer [open-drawer]]
     [status-im.discovery.views.popular :refer [discovery-popular]]
     [status-im.discovery.views.recent :refer [discovery-recent]]
@@ -45,9 +45,9 @@
                                :style  st/hamburger-icon}
                      :handler open-drawer}
     :custom-content [title-content show-search?]
-    :action         {:image   {:source {:uri :icon_search}
-                               :style  st/search-icon}
-                     :handler #(toogle-search show-search?)}}])
+    :actions        [{:image   {:source {:uri :icon_search}
+                                :style  st/search-icon}
+                      :handler #(toogle-search show-search?)}]}])
 
 (defview discovery []
   [show-search? [:get ::show-search?]

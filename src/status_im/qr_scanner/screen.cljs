@@ -4,10 +4,10 @@
             [status-im.components.react :refer [view
                                                 image]]
             [status-im.components.camera :refer [camera]]
-            [status-im.components.styles :refer [toolbar-background1
-                                                 icon-search]]
+            [status-im.components.styles :refer [icon-search]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.styles :refer [toolbar-background1]]
             [status-im.qr-scanner.styles :as st]
             [status-im.utils.types :refer [json->clj]]
             [status-im.components.styles :as cst]
@@ -18,9 +18,9 @@
    [status-bar]
    [toolbar {:title            title
              :background-color toolbar-background1
-             :action           {:image   {:source {:uri :icon_lock_white}
-                                          :style  icon-search}
-                                :handler #()}}]])
+             :actions          [{:image   {:source {:uri :icon_lock_white}
+                                           :style  icon-search}
+                                 :handler #()}]}]])
 
 (defview qr-scanner []
   [identifier [:get :current-qr-context]]
