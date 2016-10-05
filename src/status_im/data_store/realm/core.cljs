@@ -65,8 +65,8 @@
     (close-account-realm)
     (log/debug "is new account? " new-account?)
     (if new-account?
-      (let [new-path (str/replace path new-accout-realm-file (str address ".realm"))]
-        (log/debug "Moving file to " new-path)
+      (let [new-path (str/replace path new-account-filename address)]
+        (log/debug "Moving file " path " to " new-path)
         (fs/move-file path new-path #(move-file-handler address % handler)))
       (do
         (reset! account-realm (open-migrated-realm address account/schemas))
