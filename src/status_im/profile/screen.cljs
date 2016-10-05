@@ -3,6 +3,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
             [cljs.spec :as s]
+            [reagent.core :as r]
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
@@ -32,11 +33,7 @@
     [view
      [touchable-highlight {:style    st/back-btn-touchable
                            :on-press (fn []
-                                       (dispatch [:set :profile-edit {:edit?      false
-                                                                      :name       nil
-                                                                      :email      nil
-                                                                      :status     nil
-                                                                      :photo-path nil}])
+                                       (dispatch [:set-in [:profile-edit :edit?] false])
                                        (dispatch [:navigate-back]))}
       [view st/back-btn-container
        [icon :back st/back-btn-icon]]]
@@ -77,10 +74,11 @@
       (label :t/user-anonymous)
       username)]
    [text-input {:style          st/status-input
+                :maxLength      140
                 :editable       edit?
                 :placeholder    (label :t/profile-no-status)
                 :on-change-text #(dispatch [:set-in [:profile-edit :status] %])
-                :value          status}]])
+                :default-value  status}]])
 
 (defview profile []
   [{whisper-identity :whisper-identity
@@ -156,70 +154,82 @@
                                        )}
       [view [text {:style st/report-user-text} (label :t/report-user)]]]]]])
 
-(defview my-profile []
+(defview my-profile-render []
   [{public-key :public-key
-    address    :address
-    username   :name
-    email      :email
+    address :address
+    username :name
+    email :email
     photo-path :photo-path
-    phone      :phone
-    status     :status
-    :as        account} [:get-current-account]
+    phone :phone
+    status :status
+    :as account} [:get-current-account]
    {edit?          :edit?
     new-name       :name
     new-email      :email
     new-status     :status
     new-photo-path :photo-path
     :as            profile-edit-data} [:get :profile-edit]]
-  [scroll-view {:style st/profile}
-   [status-bar]
-   [toolbar {:account           account
-             :profile-edit-data profile-edit-data
-             :edit?             edit?}]
+   [scroll-view {:style st/profile}
+    [status-bar]
+    [toolbar {:account           account
+              :profile-edit-data profile-edit-data
+              :edit?             edit?}]
 
-   [status-image-view {:account    account
-                       :photo-path (or new-photo-path photo-path)
-                       :status     (or new-status status)
-                       :edit?      edit?}]
+    [status-image-view {:account    account
+                        :photo-path (or new-photo-path photo-path)
+                        :status     (or new-status status)
+                        :edit?      edit?}]
 
-   [scroll-view st/profile-properties-container
-    [text-field
-     {:error          (if-not (s/valid? ::v/name new-name)
-                        (label :t/error-incorrect-name))
-      :error-color    "#7099e6"
-      :editable       edit?
-      :input-style    (if edit?
-                        st/profile-input-text
-                        st/profile-input-text-non-editable)
-      :wrapper-style  st/profile-input-wrapper
-      :value          (if (not= username address)
-                        username)
-      :label          (label :t/username)
-      :on-change-text #(dispatch [:set-in [:profile-edit :name] %])}]
+    [scroll-view st/profile-properties-container
+     [text-field
+      {:error          (if-not (s/valid? ::v/name new-name)
+                         (label :t/error-incorrect-name))
+       :error-color    "#7099e6"
+       :editable       edit?
+       :input-style    (if edit?
+                         st/profile-input-text
+                         st/profile-input-text-non-editable)
+       :wrapper-style  st/profile-input-wrapper
+       :value          (if (not= username address)
+                         username)
+       :label          (label :t/username)
+       :on-change-text #(dispatch [:set-in [:profile-edit :name] %])}]
 
-    [text-field
-     {:editable      false
-      :input-style   st/profile-input-text-non-editable
-      :wrapper-style st/profile-input-wrapper
-      :value         (if (and phone (not (str/blank? phone)))
-                       (format-phone-number phone))
-      :label         (label :t/phone-number)}]
+     [text-field
+      {:editable      false
+       :input-style   st/profile-input-text-non-editable
+       :wrapper-style st/profile-input-wrapper
+       :value         (if (and phone (not (str/blank? phone)))
+                        (format-phone-number phone))
+       :label         (label :t/phone-number)}]
 
-    [text-field
-     {:error          (if-not (s/valid? ::v/email new-email)
-                        (label :t/error-incorrect-email))
-      :error-color    "#7099e6"
-      :editable       edit?
-      :input-style    (if edit?
-                        st/profile-input-text
-                        st/profile-input-text-non-editable)
-      :wrapper-style  st/profile-input-wrapper
-      :value          (if (and email (not (str/blank? email)))
-                        email)
-      :label          (label :t/email)
-      :on-change-text #(dispatch [:set-in [:profile-edit :email] %])}]
+     [text-field
+      {:error                (if-not (s/valid? ::v/email new-email)
+                               (label :t/error-incorrect-email))
+       :error-color          "#7099e6"
+       :editable             edit?
+       :input-style          (if edit?
+                               st/profile-input-text
+                               st/profile-input-text-non-editable)
+       :wrapper-style        st/profile-input-wrapper
+       :value                (if (and email (not (str/blank? email)))
+                               email)
+       :label                (label :t/email)
+       :on-change-text       #(dispatch [:set-in [:profile-edit :email] %])}]
 
-    [view st/qr-code-container
-     ;; TODO: this public key should be replaced by address
-     [qr-code {:value (str "ethereum:" public-key)
-               :size  220}]]]])
+     [view st/qr-code-container
+      ;; TODO: this public key should be replaced by address
+      [qr-code {:value (str "ethereum:" public-key)
+                :size  220}]]]])
+
+(defview my-profile []
+  [{username :name
+    email :email} [:get-current-account]]
+  (r/create-class
+    {:component-will-mount
+     (fn []
+       (dispatch [:set :profile-edit {:edit? false
+                                      :name  username
+                                      :email email}]))
+     :reagent-render
+     my-profile-render}))
