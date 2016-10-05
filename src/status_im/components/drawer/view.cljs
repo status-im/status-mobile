@@ -1,17 +1,23 @@
 (ns status-im.components.drawer.view
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [clojure.string :as s]
+  (:require [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [reagent.core :as r]
-            [status-im.components.react :refer [react-native
-                                                view
+            [clojure.string :as str]
+            [cljs.spec :as s]
+            [status-im.components.react :refer [view
                                                 text
+                                                text-input
                                                 image
                                                 drawer-layout
+                                                touchable-without-feedback
                                                 touchable-opacity]]
-            [status-im.resources :as res]
+            [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.drawer.styles :as st]
-            [status-im.i18n :refer [label]]))
+            [status-im.profile.validations :as v]
+            [status-im.profile.handlers :refer [update-profile]]
+            [status-im.resources :as res]
+            [status-im.i18n :refer [label]]
+            [status-im.components.react :refer [dismiss-keyboard!]]))
 
 (defonce drawer-atom (atom))
 
@@ -22,7 +28,7 @@
   (.closeDrawer @drawer-atom))
 
 (defn user-photo [{:keys [photo-path]}]
-  [image {:source (if (s/blank? photo-path)
+  [image {:source (if (str/blank? photo-path)
                     res/user-no-photo
                     {:uri photo-path})
           :style  st/user-photo}])
@@ -37,47 +43,70 @@
     name]])
 
 (defview drawer-menu []
-  [{:keys [name address photo-path]} [:get-current-account]]
+  [{:keys [name address photo-path status] :as account} [:get-current-account]
+   {new-name :name :as profile-edit-data} [:get :profile-edit]
+   keyboard-height [:get :keyboard-height]]
   [view st/drawer-menu
-   [view st/user-photo-container
-    [user-photo {:photo-path photo-path}]]
-   [view st/name-container
-    [text {:style           st/name-text
-           :number-of-lines 1
-           :font            :default}
-     (if (= name address)
-       (label :t/user-anonymous)
-       name)]]
-   [view st/menu-items-container
-    [menu-item {:name    (label :t/profile)
-                :handler #(dispatch [:navigate-to :my-profile])}]
-    [menu-item {:name    (label :t/settings)
-                :handler (fn []
-                           ;; TODO not implemented
-                           )}]
-    [menu-item {:name    (label :t/discovery)
-                :handler #(dispatch [:navigate-to :discovery])}]
-    [menu-item {:name    (label :t/contacts)
-                :handler #(dispatch [:navigate-to :contact-list])}]
-    [menu-item {:name    (label :t/invite-friends)
-                :handler (fn []
-                           ;; TODO not implemented
-                           )}]
-    [menu-item {:name    (label :t/faq)
-                :handler (fn [])}]]
-   [view st/switch-users-container
-    [touchable-opacity {:onPress (fn []
-                                   (close-drawer)
-                                   (dispatch [:navigate-to :accounts])
-                                   ;; TODO not implemented
-                                   )}
-     [text {:style st/switch-users-text
-            :font  :default}
-      (label :t/switch-users)]]]])
+   [touchable-without-feedback {:on-press #(dismiss-keyboard!)}
+    [view st/drawer-menu
+     [touchable-opacity {:on-press #(dispatch [:navigate-to :my-profile])}
+      [view st/user-photo-container
+       [user-photo {:photo-path photo-path}]]]
+     [view st/name-container
+      [text-field
+       {:line-color       :white
+        :focus-line-color :white
+        :placeholder      (label :t/user-anonymous)
+        :editable         true
+        :input-style      (st/name-input-text (s/valid? ::v/name (or new-name name)))
+        :wrapper-style    st/name-input-wrapper
+        :value            (if (not= name address)
+                            name)
+        :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])
+        :on-end-editing   #(update-profile account profile-edit-data)}]]
+     [view st/status-container
+      [text-input {:style               st/status-input
+                   :editable            true
+                   :multiline           true
+                   :blur-on-submit      true
+                   :maxLength           140
+                   :accessibility-label :input
+                   :placeholder         (label :t/profile-no-status)
+                   :on-change-text      #(dispatch [:set-in [:profile-edit :status] %])
+                   :on-blur             #(update-profile account profile-edit-data)
+                   :default-value       status}]]
+     [view st/menu-items-container
+      [menu-item {:name    (label :t/profile)
+                  :handler #(dispatch [:navigate-to :my-profile])}]
+      [menu-item {:name    (label :t/settings)
+                  :handler (fn []
+                             ;; TODO not implemented
+                             )}]
+      [menu-item {:name    (label :t/discovery)
+                  :handler #(dispatch [:navigate-to :discovery])}]
+      [menu-item {:name    (label :t/contacts)
+                  :handler #(dispatch [:navigate-to :contact-list])}]
+      [menu-item {:name    (label :t/invite-friends)
+                  :handler (fn []
+                             ;; TODO not implemented
+                             )}]
+      [menu-item {:name    (label :t/faq)
+                  :handler (fn [])}]]
+     (when (= keyboard-height 0)
+       [view st/switch-users-container
+        [touchable-opacity {:onPress (fn []
+                                       (close-drawer)
+                                       (dispatch [:navigate-to :accounts])
+                                       ;; TODO not implemented
+                                       )}
+         [text {:style st/switch-users-text
+                :font  :default}
+          (label :t/switch-users)]]])]]])
 
 (defn drawer-view [items]
-  [drawer-layout {:drawerWidth            260
-                  :render-navigation-view #(r/as-element [drawer-menu])
-                  :ref                    (fn [drawer]
-                                            (reset! drawer-atom drawer))}
+  [drawer-layout {:drawerWidth          260
+                  :renderNavigationView #(r/as-element [drawer-menu])
+                  :onDrawerSlide        dismiss-keyboard!
+                  :ref                  (fn [drawer]
+                                          (reset! drawer-atom drawer))}
    items])
