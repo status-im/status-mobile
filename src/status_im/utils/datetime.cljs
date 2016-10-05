@@ -18,18 +18,25 @@
 
 (def time-zone-offset (hours (- (/ (.getTimezoneOffset (js/Date.)) 60))))
 
-(defn to-short-str [ms]
-  (let [date       (from-long ms)
-        local      (plus date time-zone-offset)
-        today-date (t/today)
-        today      (date-time (t/year today-date)
-                              (t/month today-date)
-                              (t/day today-date))
-        yesterday  (plus today (days -1))]
-    (cond
-      (before? local yesterday) (unparse (formatter "dd MMM") local)
-      (before? local today)     (label :t/datetime-yesterday)
-      :else                     (unparse (formatters :hour-minute) local))))
+(defn to-short-str
+  ([ms]
+    (to-short-str ms #(unparse (formatters :hour-minute) %)))
+  ([ms today-format-fn]
+   (let [date       (from-long ms)
+         local      (plus date time-zone-offset)
+         today-date (t/today)
+         today      (date-time (t/year today-date)
+                               (t/month today-date)
+                               (t/day today-date))
+         yesterday  (plus today (days -1))]
+     (cond
+       (before? local yesterday) (unparse (formatter "dd MMM") local)
+       (before? local today) (label :t/datetime-yesterday)
+       :else (today-format-fn local)))))
+
+(defn day-relative [ms]
+  (when (> ms 0)
+    (to-short-str ms #(label :t/datetime-today))))
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]
