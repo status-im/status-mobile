@@ -10,11 +10,14 @@
             [status-im.components.toolbar.styles :refer [toolbar-background1]]))
 
 (def chat-view
-  {:flex            1
-   :backgroundColor chat-background})
+  {:flex             1
+   :background-color chat-background})
+
+(def toolbar-container
+  {})
 
 (defn messages-container [bottom]
-  {:flex   1
+  {:flex           1
    :padding-bottom bottom})
 
 (def toolbar-view
@@ -26,6 +29,7 @@
 (def action
   {:width          56
    :height         56
+   :margin-top     -2
    :alignItems     :center
    :justifyContent :center})
 
@@ -40,14 +44,13 @@
    :height     14})
 
 (defn chat-name-view [show-actions]
-  {:flex           1
-   :marginLeft     (if show-actions 16 0)
-   :alignItems     :flex-start
-   :justifyContent :center})
+  {:flex            1
+   :margin-left     (if show-actions 16 0)
+   :align-items     :flex-start
+   :justify-content :center})
 
 (def chat-name-text
-  {:marginTop  -2.5
-   :color      text1-color
+  {:color      text1-color
    :fontSize   16})
 
 (def group-icon
@@ -66,9 +69,13 @@
    :color      text2-color})
 
 (def last-activity
-  {:marginTop  1
-   :color      text2-color
-   :fontSize   12})
+  {:margin-top 3
+   :height     18})
+
+(def last-activity-text
+  {:color            text2-color
+   :background-color :transparent
+   :font-size        12})
 
 (defn actions-wrapper [status-bar-height]
   {:backgroundColor toolbar-background1

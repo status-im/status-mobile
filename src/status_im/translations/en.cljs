@@ -7,6 +7,7 @@
    :not-implemented                       "!not implemented"
    :chat-name                             "Chat name"
    :notifications-title                   "Notifications and sounds"
+   :offline                               "Offline"
 
    ;drawer
    :invite-friends                        "Invite friends"
@@ -23,10 +24,14 @@
    :members-active                        {:one   "1 member, 1 active"
                                            :other "{{count}} members, {{count}} active"
                                            :zero  "no members"}
-   :active-online                         "online"
-   :active-unknown                        "unknown"
-   :available                             "available"
+   :active-online                         "Online"
+   :active-unknown                        "Unknown"
+   :available                             "Available"
    :no-messages                           "No messages"
+
+   ;sync
+   :sync-in-progress                      "Syncing..."
+   :sync-synced                           "In sync"
 
    ;messages
    :status-sending                        "Sending"
