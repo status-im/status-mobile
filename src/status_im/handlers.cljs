@@ -57,6 +57,7 @@
     (fn [_ [_ address]]
       (dispatch [:initialize-account-db])
       (dispatch [:initialize-protocol address])
+      (dispatch [:initialize-sync-listener])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
       (dispatch [:init-chat])

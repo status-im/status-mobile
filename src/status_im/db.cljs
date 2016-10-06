@@ -47,7 +47,10 @@
              :keyboard-height        0
              :animations             {;; todo clear this
                                       :tabs-bar-value (anim/create-value 0)}
-             :loading-allowed        true})
+             :loading-allowed        true
+
+             :sync-state             :done
+             :sync-listener          nil})
 
 (defn chat-staged-commands-path [chat-id]
   [:chats chat-id :staged-commands])

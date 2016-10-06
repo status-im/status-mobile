@@ -25,12 +25,12 @@
             [status-im.chat.views.new-message :refer [chat-message-new]]
             [status-im.chat.views.actions :refer [actions-view]]
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
+            [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
-            [status-im.constants :refer [console-chat-id
-                                         content-type-status]]
+            [status-im.components.sync-state.offline :refer [offline-view]]
+            [status-im.constants :refer [content-type-status]]
             [reagent.core :as r]
-            [clojure.string :as str]
             [cljs-time.core :as t]))
 
 (defn contacts-by-identity [contacts]
@@ -82,44 +82,6 @@
                     (assoc :last-message (= (js/parseInt index) (dec messages-count))))]
     (list-item [chat-message message])))
 
-(defn online-text [contact chat-id]
-  (cond
-    (= chat-id console-chat-id)
-    (label :t/available)
-
-    contact
-    (let [last-online      (get contact :last-online)
-          last-online-date (time/to-date last-online)
-          now-date         (t/now)]
-      (if (and (> last-online 0)
-               (<= last-online-date now-date))
-        (time/time-ago last-online-date)
-        (label :t/active-unknown)))
-
-    :else (label :t/active-unknown)))
-
-(defn toolbar-content []
-  (let [{:keys [group-chat name contacts chat-id]} (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
-        show-actions (subscribe [:chat-ui-props :show-actions?])
-        contact      (subscribe [:get-in [:contacts @chat-id]])]
-    (fn []
-      [view (st/chat-name-view @show-actions)
-       [text {:style           st/chat-name-text
-              :number-of-lines 1}
-        (if (str/blank? @name)
-          (label :t/user-anonymous)
-          (or @name (label :t/chat-name)))]
-       (if @group-chat
-         [view {:flexDirection :row}
-          [icon :group st/group-icon]
-          [text {:style st/members
-                 :font  :medium}
-           (let [cnt (inc (count @contacts))]
-             (label-pluralize cnt :t/members-active))]]
-         [text {:style st/last-activity
-                :font  :default}
-          (online-text @contact @chat-id)])])))
-
 (defn toolbar-action []
   (let [show-actions (subscribe [:chat-ui-props :show-actions?])]
     (fn []
@@ -138,7 +100,7 @@
   [view
    [status-bar]
    [toolbar {:hide-nav?      show-actions
-             :custom-content [toolbar-content]
+             :custom-content [toolbar-content-view]
              :custom-action  [toolbar-action]
              :style          (get-in platform-specific [:component-styles :toolbar])}]])
 
@@ -222,4 +184,5 @@
           (when @show-actions?
             [actions-view])
           (when @show-bottom-info?
-            [bottom-info-view])])})))
+            [bottom-info-view])
+          [offline-view {:top (get-in platform-specific [:component-styles :status-bar :default :height])}]])})))

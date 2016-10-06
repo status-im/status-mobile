@@ -7,7 +7,8 @@
             [status-im.data-store.pending-messages :as pending-messages]
             [status-im.data-store.chats :as chats]
             [status-im.protocol.core :as protocol]
-            [status-im.constants :refer [text-content-type]]
+            [status-im.constants :refer [text-content-type
+                                         blocks-per-hour]]
             [status-im.i18n :refer [label]]
             [status-im.utils.random :as random]
             [taoensso.timbre :as log :refer-macros [debug]]))
@@ -42,6 +43,32 @@
                                                                          :private private-key}}))
                                                          (contacts/get-all))})]
         (assoc db :web3 w3)))))
+
+(register-handler :update-sync-state
+  (u/side-effect!
+    (fn [{:keys [sync-state]} [_ error sync]]
+      (let [{:keys [highestBlock currentBlock]} (js->clj sync :keywordize-keys true)
+            syncing?  (> (- highestBlock currentBlock) blocks-per-hour)
+            new-state (cond
+                        error :offline
+                        syncing? (if (= sync-state :done)
+                                   :pending
+                                   :in-progress)
+                        :else (if (or (= sync-state :done)
+                                      (= sync-state :pending))
+                                :done
+                                :synced))]
+        (when (not= sync-state new-state)
+          (dispatch [:set :sync-state new-state]))))))
+
+(register-handler :initialize-sync-listener
+  (fn [{:keys [web3 sync-listener] :as db} _]
+    (when sync-listener
+      (.stopWatching sync-listener))
+    (->> (.isSyncing (.-eth web3)
+                     (fn [error sync]
+                       (dispatch [:update-sync-state error sync])))
+         (assoc db :sync-listener))))
 
 (register-handler :incoming-message
   (u/side-effect!

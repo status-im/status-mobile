@@ -13,11 +13,13 @@
 (def toolbar-gradient
   {:height 4})
 
-(defn toolbar [background-color]
-  {:flexDirection   :row
-   :backgroundColor (or background-color toolbar-background1)
-   :height          toolbar-height
+(defn toolbar-wrapper [background-color]
+  {:backgroundColor (or background-color toolbar-background1)
    :elevation       2})
+
+(def toolbar
+  {:flex-direction :row
+   :height         toolbar-height})
 
 (defn toolbar-nav-actions-container [actions]
   {:width          (if (and actions (> (count actions) 0))
