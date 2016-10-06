@@ -9,9 +9,6 @@
   [type {:keys [current-chat-id] :as db} command-key]
   ((or (get-in db [:chats current-chat-id type]) {}) command-key))
 
-(defn find-command [commands command-key]
-  (first (filter #(= command-key (:command %)) commands)))
-
 (defn get-chat-command-content
   [{:keys [current-chat-id] :as db}]
   (get-in db (db/chat-command-content-path current-chat-id)))
@@ -20,18 +17,26 @@
   [{:keys [current-chat-id] :as db} content]
   (assoc-in db [:chats current-chat-id :command-input :content] content))
 
+(defn set-command-parameter
+  [{:keys [current-chat-id] :as db} name value]
+  (assoc-in db [:chats current-chat-id :command-input :params name] value))
+
 (defn get-chat-command
   [{:keys [current-chat-id] :as db}]
   (get-in db (db/chat-command-path current-chat-id)))
 
+(defn get-command-input [{:keys [current-chat-id] :as db}]
+  (get-in db [:chats current-chat-id :command-input]))
+
 (defn set-command-input
   ([db type command-key]
-    (set-command-input db type nil command-key))
+   (set-command-input db type nil command-key))
   ([{:keys [current-chat-id] :as db} type message-id command-key]
    (update-in db [:chats current-chat-id :command-input] merge
               {:content       nil
                :command       (get-response-or-command type db command-key)
                :parameter-idx 0
+               :params        nil
                :to-message-id message-id})))
 
 (defn get-chat-command-to-message-id
@@ -44,11 +49,11 @@
 
 (defn stage-command
   [{:keys [current-chat-id] :as db} {:keys [id] :as command-info}]
-  (let [path (db/chat-staged-commands-path current-chat-id)
-        staged-commands (get-in db path)
+  (let [path             (db/chat-staged-commands-path current-chat-id)
+        staged-commands  (get-in db path)
         staged-coomands' (if (seq staged-commands)
-                          staged-commands
-                          (priority-map-by compare-commands))]
+                           staged-commands
+                           (priority-map-by compare-commands))]
     (assoc-in db path (assoc staged-coomands' id command-info))))
 
 (defn unstage-command [db {:keys [id]}]
@@ -59,11 +64,6 @@
   [{:keys [current-chat-id] :as db}]
   (get-in db (db/chat-command-request-path current-chat-id
                                            (get-chat-command-to-message-id db))))
-
-(defn set-chat-command-request
-  [{:keys [current-chat-id] :as db} message-id handler]
-  (update-in db (db/chat-command-requests-path current-chat-id)
-             #(assoc % message-id handler)))
 
 (defn parse-command-message-content [commands content]
   (update content :command #((keyword %) commands)))
