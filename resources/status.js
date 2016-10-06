@@ -61,7 +61,7 @@ function call(pathStr, paramsStr) {
         return null;
     }
 
-    res = fn(params);
+    res = fn(params.parameters, params.context);
 
     return JSON.stringify(res);
 }

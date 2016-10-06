@@ -80,7 +80,7 @@
 
 (register-sub :valid-plain-message?
   (fn [_ _]
-    (let [input-message (subscribe [:get-chat-input-text])
+    (let [input-message   (subscribe [:get-chat-input-text])
           staged-commands (subscribe [:get-chat-staged-commands])]
       (reaction
         (plain-message/message-valid? @staged-commands @input-message)))))
@@ -100,7 +100,7 @@
           chat-id (subscribe [:get-current-chat-id])]
       (reaction
         (let [path [:chats @chat-id :command-input :parameter-idx]
-              n (get-in @db path)]
+              n    (get-in @db path)]
           (when n (nth (:params @command) n)))))))
 
 (register-sub :get-chat-command-content
@@ -141,10 +141,10 @@
 
 (register-sub :messages-offset
   (fn []
-    (let [command? (subscribe [:command?])
-          type (subscribe [:command-type])
+    (let [command?            (subscribe [:command?])
+          type                (subscribe [:command-type])
           command-suggestions (subscribe [:get-content-suggestions])
-          suggestions (subscribe [:get-suggestions])]
+          suggestions         (subscribe [:get-suggestions])]
       (reaction
         (cond (and @command? (= @type :response))
               c/request-info-height
@@ -160,7 +160,7 @@
 (register-sub :command-icon-width
   (fn []
     (let [width (subscribe [:get :command-icon-width])
-          type (subscribe [:command-type])]
+          type  (subscribe [:command-type])]
       (reaction (if (= :command @type)
                   @width
                   0)))))
@@ -169,6 +169,19 @@
   (fn [db]
     (let [chat-id (subscribe [:get-current-chat-id])]
       (reaction (get-in @db [:chats @chat-id :requests])))))
+
+(register-sub :get-requests-map
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (->> (get-in @db [:chats @chat-id :requests])
+                     (map #(vector (:message-id %) %))
+                     (into {}))))))
+
+(register-sub :get-current-request
+  (fn []
+    (let [requests   (subscribe [:get-requests-map])
+          message-id (subscribe [:get-chat-command-to-message-id])]
+      (reaction (@requests @message-id)))))
 
 (register-sub :get-response
   (fn [db [_ n]]
@@ -224,9 +237,9 @@
 (register-sub :input-margin
   (fn []
     (let [kb-height (subscribe [:get :keyboard-height])
-          command (subscribe [:get-chat-command])
-          focused (subscribe [:get :focused])
-          mode (subscribe [:kb-mode])]
+          command   (subscribe [:get-chat-command])
+          focused   (subscribe [:get :focused])
+          mode      (subscribe [:kb-mode])]
       (reaction
         (cond (or ios?
                   (and (not @focused)

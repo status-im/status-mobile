@@ -22,14 +22,14 @@
 (defn invoke-suggestions-handler!
   [{:keys [current-chat-id canceled-command] :as db} _]
   (when-not canceled-command
-    (let [{:keys [command content]} (get-in db [:chats current-chat-id :command-input])
+    (let [{:keys [command content params]} (get-in db [:chats current-chat-id :command-input])
           {:keys [name type]} command
-          path [(if (= :command type) :commands :responses)
-                name
-                :params
-                0
-                :suggestions]
-          params {:value (content-by-command command content)}]
+          path   [(if (= :command type) :commands :responses)
+                  name
+                  :params
+                  0
+                  :suggestions]
+          params {:parameters (or params {})}]
       (status/call-jail current-chat-id
                         path
                         params
@@ -55,21 +55,25 @@
    (after #(dispatch [:clear-validation-errors]))]
   (fn [{:keys [current-chat-id] :as db} [_ content]]
     (let [starts-as-command? (str/starts-with? content command-prefix)
-          command? (= :command (current-command db :type))]
+          command?           (= :command (current-command db :type))
+          {:keys [parameter-idx command]} (commands/get-command-input db)
+          parameter-name     (-> command :params (get parameter-idx) :name)]
       (as-> db db
             (commands/set-chat-command-content db content)
+            (commands/set-command-parameter db parameter-name content)
             (assoc-in db [:chats current-chat-id :input-text] nil)
             (assoc db :canceled-command (and command? (not starts-as-command?)))))))
 
 (defn invoke-command-preview!
-  [{:keys [staged-command]} [_ chat-id]]
-  (let [{:keys [command content id]} staged-command
+  [{:keys [staged-command] :as db} [_ chat-id]]
+  (let [{:keys [command id]} staged-command
         {:keys [name type]} command
-        path [(if (= :command type) :commands :responses)
-              name
-              :preview]
-        params {:value content
-                :platform platform/platform}]
+        parameters (:params (commands/get-command-input db))
+        path       [(if (= :command type) :commands :responses)
+                    name
+                    :preview]
+        params     {:parameters parameters
+                    :context    {:platform platform/platform}}]
     (status/call-jail chat-id
                       path
                       params
@@ -84,7 +88,7 @@
 
 (register-handler ::validate!
   (u/side-effect!
-    (fn [_ [_ {:keys [chat-id]} {:keys [error result]}]]
+    (fn [_ [_ {:keys [chat-id handler]} {:keys [error result]}]]
       ;; todo handle error
       (when-not error
         (let [{:keys [errors validationHandler parameters]} result]
@@ -97,42 +101,28 @@
                            validationHandler
                            parameters])
 
-                :else (dispatch [::finish-command-staging chat-id])))))))
-
-(defn start-validate! [db]
-  (let [{:keys [content command chat-id] :as data} (::command db)
-        {:keys [name type]} command
-        path [(if (= :command type) :commands :responses)
-              name
-              :validator]
-        params {:value   content
-                :command data}]
-    (status/call-jail chat-id
-                      path
-                      params
-                      #(dispatch [::validate! data %]))))
+                :else (if handler
+                        (handler)
+                        (dispatch [::finish-command-staging chat-id]))))))))
 
 (register-handler :stage-command
-  (after start-validate!)
   (fn [{:keys [current-chat-id current-account-id] :as db}]
-    (let [{:keys [command content]} (command-input db)
-          content' (content-by-command command content)]
-      (-> db
-          (assoc ::command {:content content'
-                            :command command
-                            :chat-id current-chat-id
-                            :address current-account-id})
-          (assoc-in [:disable-staging current-chat-id] true)))))
+    (let [command-input (commands/get-command-input db)
+          command       (commands/get-chat-command db)]
+      (dispatch [::start-command-validation! {:command-input command-input
+                                              :command       command
+                                              :chat-id       current-chat-id
+                                              :address       current-account-id}])
+      (assoc-in db [:disable-staging current-chat-id] true))))
 
 (register-handler ::finish-command-staging
   [(after #(dispatch [:start-cancel-command]))
    (after invoke-command-preview!)]
   (fn [db [_ chat-id]]
-    (let [db (assoc-in db [:chats chat-id :input-text] nil)
-          {:keys [command content to-message-id]} (command-input db)
-          content' (content-by-command command content)
+    (let [db           (assoc-in db [:chats chat-id :input-text] nil)
+          {:keys [command content to-message-id params]} (command-input db)
           command-info {:command    command
-                        :content    content'
+                        :params     params
                         :to-message to-message-id
                         :created-at (time/now-ms)
                         :id         (random/id)}]
@@ -210,3 +200,65 @@
 (register-handler :invoke-commands-suggestions!
   (u/side-effect!
     invoke-suggestions-handler!))
+
+(register-handler :send-command!
+  (u/side-effect!
+    (fn [{:keys [current-chat-id current-account-id] :as db}]
+      (let [{:keys [params] :as command} (commands/get-chat-command db)
+            {:keys [parameter-idx]} (commands/get-command-input db)
+
+            last-parameter? (= (inc parameter-idx) (count params))
+
+            parameters      {:command command :input command-input}
+
+            {:keys [command content]} (command-input db)
+            content'        (content-by-command command content)]
+        (dispatch [:set-command-parameter
+                   {:value     content'
+                    :parameter (params parameter-idx)}])
+        (if last-parameter?
+          (dispatch [:check-suggestions-trigger! parameters])
+          (dispatch [::start-command-validation!
+                     {:chat-id current-chat-id
+                      :address current-account-id
+                      :handler #(dispatch [:next-command-parameter])}]))))))
+
+(register-handler ::start-command-validation!
+  (u/side-effect!
+    (fn [db [_ {:keys [command-input chat-id] :as data}]]
+      (let [command-input'    (or command-input (commands/get-command-input db))
+            {:keys [parameter-idx params command]} command-input'
+            {:keys [name type]} command
+            current-parameter (-> command
+                                  :params
+                                  (get parameter-idx)
+                                  :name)
+            context           {:current-parameter current-parameter}
+            path              [(if (= :command type) :commands :responses)
+                               name
+                               :validator]
+            parameters        {:context    context
+                               :parameters params}]
+        (status/call-jail chat-id
+                          path
+                          parameters
+                          #(dispatch [::validate! data %]))))))
+
+(register-handler :set-command-parameter
+  (fn [db [_ {:keys [value parameter]}]]
+    (let [name (:name parameter)]
+      (commands/set-command-parameter db name value))))
+
+(register-handler :next-command-parameter
+  (fn [{:keys [current-chat-id] :as db}]
+    (-> db
+        (update-in [:chats current-chat-id :command-input :parameter-idx] inc)
+        (commands/set-chat-command-content nil))))
+
+(register-handler :check-suggestions-trigger!
+  (u/side-effect!
+    (fn [_ [_ {:keys [command]}]]
+      (let [suggestions-trigger (keyword (:suggestions-trigger command))]
+        (if (= :on-send suggestions-trigger)
+          (dispatch [:invoke-commands-suggestions!])
+          (dispatch [:stage-command]))))))

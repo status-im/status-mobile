@@ -12,8 +12,9 @@
 (defn cancel-command-input [staged-command]
   (dispatch [:unstage-command staged-command]))
 
-(defn simple-command-staged-view [staged-command]
-  (let [{:keys [type name] :as command} (:command staged-command)]
+(defn simple-command-staged-view
+  [{:keys [command params] :as staged-command}]
+  (let [{:keys [type name]} command]
     [view st/staged-command-container
      [view st/staged-command-background
       [view {:flex-direction :row}
@@ -30,4 +31,6 @@
       (if-let [preview (:preview staged-command)]
         preview
         [text {:style st/staged-command-content}
-         (:content staged-command)])]]))
+         (if (= 1 (count params))
+           (first (vals params))
+           (str params))])]]))

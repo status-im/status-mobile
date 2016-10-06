@@ -47,10 +47,12 @@
 
 (defn call-jail [chat-id path params callback]
   (when status
-    (println :call chat-id (cljs->json path) (cljs->json params))
+    (log/debug :chat-id chat-id)
+    (log/debug :path path)
+    (log/debug :params params)
     (let [cb (fn [r]
                (let [r' (t/json->clj r)]
-                 (println r')
+                 (log/debug r')
                  (callback r')))]
       (.callJail status chat-id (cljs->json path) (cljs->json params) cb))))
 
