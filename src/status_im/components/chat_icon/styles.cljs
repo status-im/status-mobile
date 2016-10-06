@@ -33,10 +33,10 @@
    :lineHeight 20})
 
 (def chat-icon
-  {:margin       4
-   :borderRadius 20
-   :width        40
-   :height       40})
+  {:margin        4
+   :border-radius 20
+   :width         40
+   :height        40})
 
 (def chat-icon-chat-list
   (merge chat-icon
@@ -45,8 +45,9 @@
 
 (def chat-icon-menu-item
   (merge chat-icon
-         {:width  24
-          :height 24}))
+         {:width         24
+          :height        24
+          :border-radius 12}))
 
 (def chat-icon-profile
   (merge chat-icon
@@ -55,15 +56,15 @@
           :border-radius 32}))
 
 (def online-view
-  {:position        :absolute
-   :bottom          0
-   :right           0
-   :width           20
-   :height          20
-   :borderRadius    10
-   :backgroundColor online-color
-   :borderWidth     2
-   :borderColor     color-white})
+  {:position         :absolute
+   :bottom           0
+   :right            0
+   :width            20
+   :height           20
+   :border-radius    10
+   :background-color online-color
+   :border-width     2
+   :border-color     color-white})
 
 (def online-view-menu-item
   (merge online-view
@@ -78,21 +79,21 @@
           :border-radius 12}))
 
 (def online-dot
-  {:position        :absolute
-   :top             6
-   :width           4
-   :height          4
-   :borderRadius    2
-   :backgroundColor color-white})
+  {:position         :absolute
+   :top              6
+   :width            4
+   :height           4
+   :border-radius    2
+   :background-color color-white})
 (def online-dot-left (merge online-dot {:left 3}))
 (def online-dot-right (merge online-dot {:left 9}))
 
 (def photo-pencil
-  {:margin-left 5
+  {:margin-left  5
    :margin-right 5
-   :margin-top  3
-   :font-size   12
-   :color       :white})
+   :margin-top   3
+   :font-size    12
+   :color        :white})
 
 (def online-dot-menu-item
   (merge online-dot
