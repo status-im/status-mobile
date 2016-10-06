@@ -29,13 +29,13 @@
 
 (defn contact-list-toolbar []
   (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
-        actions   (cond->> [{:image   {:source {:uri :icon_search}
-                                       :style  icon-search}
-                             :handler (fn [])}]
-                           new-contact?
-                           (into [{:image   {:source {:uri :icon_add}
-                                             :style  icon-search}
-                                   :handler #(dispatch [:navigate-to :new-contact])}]))]
+        actions      (cond->> [{:image   {:source {:uri :icon_search}
+                                          :style  icon-search}
+                                :handler (fn [])}]
+                              new-contact?
+                              (into [{:image   {:source {:uri :icon_add}
+                                                :style  icon-search}
+                                      :handler #(dispatch [:navigate-to :new-contact])}]))]
     [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
                                            :style  hamburger-icon}
                                  :handler open-drawer}
@@ -87,8 +87,10 @@
                 :style create-icon}]]]])
 
 (defn contact-list []
-  (let [contacts             (subscribe [:get-added-contacts-with-limit contacts-limit])
-        contacts-count       (subscribe [:added-contacts-count])
+  (let [peoples              (subscribe [:get-added-people-with-limit contacts-limit])
+        dapps                (subscribe [:get-added-dapps-with-limit contacts-limit])
+        people-count         (subscribe [:added-people-count])
+        dapps-count          (subscribe [:added-dapps-count])
         click-handler        (subscribe [:get :contacts-click-handler])
         show-toolbar-shadow? (r/atom false)]
     (fn []
@@ -98,23 +100,25 @@
         (when @show-toolbar-shadow?
           [linear-gradient {:style  st/contact-group-header-gradient-bottom
                             :colors st/contact-group-header-gradient-bottom-colors}])]
-       (if (pos? @contacts-count)
+       (if (pos? (+ @dapps-count @people-count))
          [scroll-view {:style    st/contact-groups
                        :onScroll (fn [e]
                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
                                      (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
-          [contact-group
-           @contacts
-           @contacts-count
-           (label :t/contacts-group-dapps)
-           :dapps true
-           @click-handler]
-          [contact-group
-           @contacts
-           @contacts-count
-           (label :t/contacts-group-people)
-           :people false
-           @click-handler]]
+          (when (pos? @dapps-count)
+            [contact-group
+             @dapps
+             @dapps-count
+             (label :t/contacts-group-dapps)
+             :dapps true
+             @click-handler])
+          (when (pos? @people-count)
+            [contact-group
+             @peoples
+             @people-count
+             (label :t/contacts-group-people)
+             :people false
+             @click-handler])]
          [view st/empty-contact-groups
           [react/icon :group_big st/empty-contacts-icon]
           [text {:style st/empty-contacts-text} (label :t/no-contacts)]])

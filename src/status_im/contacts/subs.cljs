@@ -19,18 +19,39 @@
 (register-sub :all-added-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
-      (->> (remove #(:pending %) @contacts)
+      (->> (remove :pending @contacts)
            (sort-contacts)
            (reaction)))))
 
-(register-sub :get-added-contacts-with-limit
-  (fn [_ [_ limit]]
+(register-sub :all-added-people
+  (fn []
     (let [contacts (subscribe [:all-added-contacts])]
+      (reaction (remove :dapp? @contacts)))))
+
+(register-sub :all-added-dapps
+  (fn []
+    (let [contacts (subscribe [:all-added-contacts])]
+      (reaction (filter :dapp? @contacts)))))
+
+
+(register-sub :get-added-people-with-limit
+  (fn [_ [_ limit]]
+    (let [contacts (subscribe [:all-added-people])]
       (reaction (take limit @contacts)))))
 
-(register-sub :added-contacts-count
+(register-sub :get-added-dapps-with-limit
+  (fn [_ [_ limit]]
+    (let [contacts (subscribe [:all-added-dapps])]
+      (reaction (take limit @contacts)))))
+
+(register-sub :added-people-count
   (fn [_ _]
-    (let [contacts (subscribe [:all-added-contacts])]
+    (let [contacts (subscribe [:all-added-people])]
+      (reaction (count @contacts)))))
+
+(register-sub :added-dapps-count
+  (fn [_ _]
+    (let [contacts (subscribe [:all-added-dapps])]
       (reaction (count @contacts)))))
 
 (defn get-contact-letter [contact]
