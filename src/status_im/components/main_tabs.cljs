@@ -102,6 +102,7 @@
 
 (defview main-tabs []
   [view-id [:get :view-id]
+   prev-view-id [:get :prev-view-id]
    tab-animation? [:get :prev-tab-view-id]]
   [view common-st/flex
    [status-bar {:type :main}]
@@ -111,4 +112,5 @@
             :pointerEvents (if tab-animation? :none :auto)}
       (doall (map #(tab-view %) tab-list))
       [tabs {:selected-view-id view-id
+             :prev-view-id     prev-view-id
              :tab-list         tab-list}]]]]])
