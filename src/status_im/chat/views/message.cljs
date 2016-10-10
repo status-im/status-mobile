@@ -7,6 +7,7 @@
             [status-im.components.react :refer [view
                                                 text
                                                 image
+                                                icon
                                                 animated-view
                                                 touchable-highlight]]
             [status-im.components.animation :as anim]
@@ -17,7 +18,6 @@
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
-            [status-im.utils.datetime :as time]
             [status-im.constants :refer [text-content-type
                                          content-type-status
                                          content-type-command
@@ -69,23 +69,25 @@
 
 (defview message-content-command [content preview]
   [commands [:get-commands-and-responses]]
-  (let [{:keys [command content]} (parse-command-message-content commands content)
-        {:keys [name icon type]} command]
+  (let [{:keys [command params]} (parse-command-message-content commands content)
+        {:keys     [name type]
+         icon-path :icon} command]
     [view st/content-command-view
      [view st/command-container
       [view (pill-st/pill command)
        [text {:style pill-st/pill-text
               :font  :default}
         (str (if (= :command type) "!" "?") name)]]]
-     (when icon
+     (when icon-path
        [view st/command-image-view
-        [image {:source {:uri icon}
-                :style  st/command-image}]])
+        [icon icon-path st/command-image]])
      (if preview
        preview
        [text {:style st/command-text
               :font  :default}
-        (str content)])]))
+        (if (= 1 (count params))
+          (first (vals params))
+          (str params))])]))
 
 (defn set-chat-command [message-id command]
   (dispatch [:set-response-chat-command message-id (keyword (:name command))]))
