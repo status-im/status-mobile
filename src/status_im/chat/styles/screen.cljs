@@ -29,7 +29,7 @@
 (def action
   {:width          56
    :height         56
-   :margin-top     -2
+   :top            0
    :alignItems     :center
    :justifyContent :center})
 
@@ -45,12 +45,14 @@
 
 (defn chat-name-view [show-actions]
   {:flex            1
+   :margin-bottom   2
    :margin-left     (if show-actions 16 0)
    :align-items     :flex-start
    :justify-content :center})
 
 (def chat-name-text
   {:color      text1-color
+   :margin-top 2
    :fontSize   16})
 
 (def group-icon
@@ -69,13 +71,7 @@
    :color      text2-color})
 
 (def last-activity
-  {:margin-top 3
-   :height     18})
-
-(def last-activity-text
-  {:color            text2-color
-   :background-color :transparent
-   :font-size        12})
+  {:height 18})
 
 (defn actions-wrapper [status-bar-height]
   {:backgroundColor toolbar-background1
