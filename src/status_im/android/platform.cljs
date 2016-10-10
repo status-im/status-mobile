@@ -3,23 +3,33 @@
             [status-im.utils.utils :as u]))
 
 (def component-styles
-  {:status-bar       {:default     {:height    0
-                                    :bar-style "default"
-                                    :color     styles/color-gray}
-                      :main        {:height    0
-                                    :bar-style "default"
-                                    :color     styles/color-gray}
-                      :transparent {:height       20
-                                    :bar-style    "default"
-                                    :translucent? true
-                                    :color        styles/color-transparent}}
-   :bottom-gradient  {:height 3}
-   :input-label      {:left 4}
-   :input-error-text {:margin-left 4}})
+  {:status-bar            {:default     {:height    0
+                                         :bar-style "default"
+                                         :color     styles/color-gray}
+                           :main        {:height    0
+                                         :bar-style "default"
+                                         :color     styles/color-gray}
+                           :transparent {:height       20
+                                         :bar-style    "default"
+                                         :translucent? true
+                                         :color        styles/color-transparent}}
+   :bottom-gradient       {:height 3}
+   :input-label           {:left 4}
+   :input-error-text      {:margin-left 4}
+   :toolbar-nav-action    {:width           56
+                           :height          56
+                           :align-items     :center
+                           :justify-content :center}
+   :toolbar-last-activity {:color            styles/text2-color
+                           :background-color :transparent
+                           :top              0
+                           :font-size        12}})
 
 (def fonts
-  {:default {:font-family "sans-serif"}
-   :medium  {:font-family "sans-serif-medium"}})
+  {:default       {:font-family "sans-serif"}
+   :medium        {:font-family "sans-serif-medium"}
+
+   :toolbar-title {:font-family "sans-serif"}})
 
 
 ;; Dialogs
