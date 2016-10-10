@@ -13,10 +13,11 @@
             [status-im.components.tabs.tab :refer [tab]]
             [status-im.components.animation :as anim]))
 
-(defn create-tab [index data selected-view-id]
+(defn create-tab [index data selected-view-id prev-view-id]
   (let [data (merge data {:key              index
                           :index            index
-                          :selected-view-id selected-view-id})]
+                          :selected-view-id selected-view-id
+                          :prev-view-id     prev-view-id})]
     [tab data]))
 
 (defn animation-logic [{:keys [hidden? val]}]
@@ -53,7 +54,7 @@
                                :pointerEvents (if @chats-scrolled? :none :auto)}]
                children))})))
 
-(defn tabs [{:keys [tab-list selected-view-id]}]
+(defn tabs [{:keys [tab-list selected-view-id prev-view-id]}]
   [tabs-container
    [view st/tabs-inner-container
-    (doall (map-indexed #(create-tab %1 %2 selected-view-id) tab-list))]])
+    (doall (map-indexed #(create-tab %1 %2 selected-view-id prev-view-id) tab-list))]])
