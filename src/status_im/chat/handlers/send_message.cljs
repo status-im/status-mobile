@@ -16,9 +16,9 @@
             [taoensso.timbre :refer-macros [debug]]))
 
 (defn prepare-command
-  [identity chat-id {:keys [preview preview-string content command to-message]}]
+  [identity chat-id {:keys [preview preview-string params command to-message]}]
   (let [content {:command (command :name)
-                 :content content}]
+                 :params  params}]
     {:message-id       (random/id)
      :from             identity
      :to               chat-id
@@ -36,12 +36,12 @@
   (u/side-effect!
     (fn [{:keys [current-chat-id current-public-key current-account-id] :as db}]
       (let [staged-commands (vals (get-in db [:chats current-chat-id :staged-commands]))
-            text (get-in db [:chats current-chat-id :input-text])
-            data {:commands staged-commands
-                  :message  text
-                  :chat-id  current-chat-id
-                  :identity current-public-key
-                  :address  current-account-id}]
+            text            (get-in db [:chats current-chat-id :input-text])
+            data            {:commands staged-commands
+                             :message  text
+                             :chat-id  current-chat-id
+                             :identity current-public-key
+                             :address  current-account-id}]
         (dispatch [:clear-input current-chat-id])
         (cond
           (seq staged-commands)
@@ -54,7 +54,7 @@
   (u/side-effect!
     (fn [_ [_ {:keys [commands message] :as params}]]
       (doseq [{:keys [command] :as message} commands]
-        (let [params' (assoc params :command message)]
+        (let [params' (assoc params :staged-command message)]
           (if (:sending message)
             (dispatch [:navigate-to :confirm])
             (if (:has-handler command)
@@ -70,11 +70,12 @@
 
 (register-handler :prepare-command!
   (u/side-effect!
-    (fn [{:keys [current-public-key] :as db} [_ {:keys [chat-id command] :as params}]]
-      (let [command' (->> command
+    (fn [{:keys [current-public-key] :as db}
+         [_ {:keys [chat-id staged-command] :as params}]]
+      (let [command' (->> staged-command
                           (prepare-command current-public-key chat-id)
                           (cu/check-author-direction db chat-id))]
-        (dispatch [::clear-command chat-id (:id command)])
+        (dispatch [::clear-command chat-id (:id staged-command)])
         (dispatch [::send-command! (assoc params :command command')])))))
 
 (register-handler ::clear-command
@@ -97,7 +98,7 @@
 
 (register-handler ::save-command!
   (u/side-effect!
-    (fn [{:keys [current-public-key]} [_ {:keys [command chat-id]}]]
+    (fn [_ [_ {:keys [command chat-id]}]]
       (messages/save
         chat-id
         (dissoc command :rendered-preview :to-message :has-handler)))))
@@ -111,16 +112,16 @@
 
 (register-handler ::invoke-command-handlers!
   (u/side-effect!
-    (fn [db [_ {:keys [chat-id address] :as parameters}]]
-      (let [{:keys [command content]} (:command parameters)
+    (fn [db [_ {:keys [chat-id address staged-command] :as parameters}]]
+      (let [{:keys [command params]} staged-command
             {:keys [type name]} command
-            path [(if (= :command type) :commands :responses)
-                  name
-                  :handler]
-            to (get-in db [:contacts chat-id :address])
-            params {:value   content
-                    :command {:from address
-                              :to   to}}]
+            path   [(if (= :command type) :commands :responses)
+                    name
+                    :handler]
+            to     (get-in db [:contacts chat-id :address])
+            params {:parameters params
+                    :context    {:from address
+                                 :to   to}}]
         (status/call-jail chat-id
                           path
                           params
@@ -130,19 +131,19 @@
   (u/side-effect!
     (fn [db [_ {:keys [chat-id identity message] :as params}]]
       (let [{:keys [group-chat]} (get-in db [:chats chat-id])
-            message' (cu/check-author-direction
-                       db chat-id
-                       {:message-id      (random/id)
-                        :chat-id         chat-id
-                        :content         message
-                        :from            identity
-                        :content-type    text-content-type
-                        :outgoing        true
-                        :timestamp       (time/now-ms)})
+            message'  (cu/check-author-direction
+                        db chat-id
+                        {:message-id   (random/id)
+                         :chat-id      chat-id
+                         :content      message
+                         :from         identity
+                         :content-type text-content-type
+                         :outgoing     true
+                         :timestamp    (time/now-ms)})
             message'' (if group-chat
                         (assoc message' :group-id chat-id :message-type :group-user-message)
                         (assoc message' :to chat-id :message-type :user-message))
-            params' (assoc params :message message'')]
+            params'   (assoc params :message message'')]
         (dispatch [::add-message params'])
         (dispatch [::save-message! params'])))))
 
@@ -164,9 +165,9 @@
                                   chat-id         :chat-id}]]
       (when (and message (cu/not-console? chat-id))
         (let [message' (select-keys message [:from :message-id])
-              payload (select-keys message [:timestamp :content :content-type])
-              options {:web3    web3
-                       :message (assoc message' :payload payload)}]
+              payload  (select-keys message [:timestamp :content :content-type])
+              options  {:web3    web3
+                        :message (assoc message' :payload payload)}]
           (if (= message-type :group-user-message)
             (let [{:keys [public-key private-key]} (chats chat-id)]
               (protocol/send-group-message! (assoc options

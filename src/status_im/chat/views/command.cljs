@@ -22,10 +22,6 @@
     (validator message)
     (pos? (count message))))
 
-(defn try-send [message validator]
-  (when (valid? message validator)
-    (send-command)))
-
 (defview command-icon [command]
   [icon-width [:get :command-icon-width]]
   [view st/command-container
