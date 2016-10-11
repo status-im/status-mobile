@@ -1,12 +1,22 @@
 #import "RCTStatus.h"
-
+#import "RCTBridge.h"
+#import "RCTEventDispatcher.h"
 #import <Statusgo/Statusgo.h>
 
 static bool isStatusInitialized;
-
+static RCTBridge *bridge;
 @implementation Status{
 }
 
+-(RCTBridge *)bridge
+{
+    return bridge;
+}
+
+-(void)setBridge:(RCTBridge *)newBridge
+{
+    bridge = newBridge;
+}
 
 RCT_EXPORT_MODULE();
 
@@ -41,8 +51,12 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
 #if DEBUG
     NSLog(@"CallJail() method called");
 #endif
-    char * result = Call((char *) [chatId UTF8String], (char *) [path UTF8String], (char *) [params UTF8String]);
-    callback(@[[NSString stringWithUTF8String: result]]);
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        char * result = Call((char *) [chatId UTF8String], (char *) [path UTF8String], (char *) [params UTF8String]);
+        dispatch_async( dispatch_get_main_queue(), ^{
+            callback(@[[NSString stringWithUTF8String: result]]);
+        });
+    });
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -68,8 +82,9 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
             NSLog(@"error %@", error);
         }else
             NSLog(@"folderName: %@", folderName);
-        
-        NSString *peer = @"enode://e15869ba08a25e49be7568b951e15af5d77a472c8e4104a14a4951f99936d65f91240d5b5f23674aee44f1ac09d8adfc6a9bff75cd8c2df73a26442f313f2da4@162.243.63.248:30303";
+
+        NSString *peer1 = @"enode://e15869ba08a25e49be7568b951e15af5d77a472c8e4104a14a4951f99936d65f91240d5b5f23674aee44f1ac09d8adfc6a9bff75cd8c2df73a26442f313f2da4@162.243.63.248:30303";
+        NSString *peer2 = @"enode://ad61a21f83f12b0ca494611650f5e4b6427784e7c62514dcb729a3d65106de6f12836813acf39bdc35c12ecfd0e230723678109fd4e7091ce389697bd7da39b4@139.59.212.114:30303";
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                        ^(void) {
             StartNode((char *) [folderName.path UTF8String]);
@@ -77,7 +92,8 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)),
                        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                        ^(void) {
-                           AddPeer((char *) [peer UTF8String]);
+                           AddPeer((char *) [peer1 UTF8String]);
+                           AddPeer((char *) [peer2 UTF8String]);
         });
         onResultCallback(@[[NSNull null]]);
         return;
@@ -159,6 +175,17 @@ RCT_EXPORT_METHOD(setSoftInputMode: (NSInteger) i) {
 #if DEBUG
     NSLog(@"setSoftInputMode() works only on Android");
 #endif
+}
+
++ (void)signalEvent:(char *) signal
+{
+    NSString *sig = [NSString stringWithUTF8String:signal];
+#if DEBUG
+    NSLog(@"SignalEvent");
+    NSLog(sig);
+#endif
+    [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
+                                            body:@{@"jsonEvent": sig}];
 }
 
 @end

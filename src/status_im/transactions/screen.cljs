@@ -57,6 +57,3 @@
       :value             password
       :label             (label :t/password)
       :on-change-text    #(dispatch [:set-in [:confirm-transactions :password] %])}]]])
-
-
-;(re-frame.core/dispatch [:set :view-id :confirm])
