@@ -15,6 +15,7 @@
             [clojure.string :as str]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as u]
+            [status-im.accounts.statuses :as statuses]
             [status-im.constants :refer [console-chat-id]]))
 
 
@@ -23,9 +24,9 @@
 
 (register-handler
   :add-account
-  (-> (fn [db [_ {:keys [address] :as account}]]
-        (update db :accounts assoc address account))
-      ((after save-account))))
+  ((after save-account)
+    (fn [db [_ {:keys [address] :as account}]]
+      (update db :accounts assoc address account))))
 
 (defn account-created [result password]
   (let [data (json->clj result)
@@ -36,12 +37,13 @@
         account {:public-key          public-key
                  :address             address
                  :name                address
+                 :status              (rand-nth statuses/data)
                  :signed-up?          true
                  :updates-public-key  public
                  :updates-private-key private
                  :photo-path          (identicon public-key)}]
     (log/debug "account-created")
-    (when (not (str/blank? public-key))
+    (when-not (str/blank? public-key)
       (do
         (dispatch [:add-account account])
         (dispatch [:show-mnemonic mnemonic])
@@ -76,8 +78,7 @@
   :account-update
   (-> (fn [{:keys [current-account-id accounts] :as db} [_ data]]
         (let [data (assoc data :last-updated (time/now-ms))
-              account (-> (get accounts current-account-id)
-                          (merge data))]
+              account (merge (get accounts current-account-id) data)]
           (assoc-in db [:accounts current-account-id] account)))
       ((after save-account!))
       ((after send-account-update))))
