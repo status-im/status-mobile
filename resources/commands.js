@@ -62,8 +62,8 @@ status.command({
     }]
 });
 
-function validateBalance(params) {
-    if(!params.value){
+function validateBalance(params, context) {
+    if (!params.amount) {
         return {
             errors: [
                 status.components.validationMessage(
@@ -75,19 +75,19 @@ function validateBalance(params) {
     }
 
     try {
-        var val = web3.toWei(params.value, "ether");
+        var val = web3.toWei(params.amount, "ether");
     } catch (err) {
         return {
             errors: [
                 status.components.validationMessage(
                     "Amount",
-                    "Amount is not valid number"//err.message
+                    "Amount is not valid number"
                 )
             ]
         };
     }
 
-    var balance = web3.eth.getBalance(params.command.address);
+    var balance = web3.eth.getBalance(context.from);
     if (bn(val).greaterThan(bn(balance))) {
         return {
             errors: [
@@ -102,15 +102,18 @@ function validateBalance(params) {
     }
 }
 
-function sendTransaction(params) {
+function sendTransaction(params, context) {
     var data = {
-        from: params.command.from,
-        to: params.command.to,
-        value: web3.toWei(params.value, "ether")
+        from: context.from,
+        to: context.to,
+        value: web3.toWei(params.amount, "ether")
     };
-    var hash = web3.eth.sendTransaction(data);
 
-    return {"transaction-hash": hash};
+    try {
+        return web3.eth.sendTransaction(data);
+    } catch (err) {
+        return {error: err};
+    }
 }
 
 status.command({
@@ -124,7 +127,7 @@ status.command({
     preview: function (params) {
         return status.components.text(
             {},
-            params.value + " ETH"
+            params.amount + " ETH"
         );
     },
     handler: sendTransaction,

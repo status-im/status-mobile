@@ -14,11 +14,11 @@
             [status-im.i18n :refer [label label-pluralize]]
             cljsjs.web3))
 
-(defn title-bar [title hash]
+(defn title-bar [title id]
   [view st/title-bar
    [text {:style st/title-bar-text} title]
    [touchable-highlight {:style    st/icon-close-container
-                         :on-press #(dispatch [:deny-transaction hash])}
+                         :on-press #(dispatch [:deny-transaction id])}
     [view [image {:source {:uri :icon_close_gray}
                   :style  st/icon-close}]]]])
 
@@ -31,7 +31,7 @@
     [view st/transaction-info-column-value
      [text {:style st/transaction-info-value} value]]]])
 
-(defview transaction-page [{:keys [hash from to value] :as transaction}]
+(defview transaction-page [{:keys [id from to value] :as transaction}]
   [{:keys [name] :as contact} [:contact-by-address to]]
   (let [eth-value (.fromWei js/Web3.prototype value "ether")
         title (str eth-value " ETH to " name)
@@ -39,8 +39,8 @@
                            [(label :t/recipient) name]
                            [(label :t/value) (str eth-value " ETH")]]]
     [view {:style st/transaction-page
-           :key   hash}
-     [title-bar title hash]
+           :key   id}
+     [title-bar title id]
      [view st/scroll-view-container
       [scroll-view {:style                        st/scroll-view
                     :contentContainerStyle        st/scroll-view-content

@@ -16,14 +16,16 @@
             [taoensso.timbre :refer-macros [debug]]))
 
 (defn prepare-command
-  [identity chat-id {:keys [preview preview-string params command to-message]}]
+  [identity chat-id
+   {:keys [id preview preview-string params command to-message handler-data]}]
   (let [content {:command (command :name)
                  :params  params}]
-    {:message-id       (random/id)
+    {:message-id       id
      :from             identity
      :to               chat-id
      :timestamp        (time/now-ms)
-     :content          (assoc content :preview preview-string)
+     :content          (assoc content :preview preview-string
+                                      :handler-data handler-data)
      :content-type     content-type-command
      :outgoing         true
      :preview          preview-string
@@ -55,7 +57,9 @@
     (fn [_ [_ {:keys [commands message] :as params}]]
       (doseq [{:keys [command] :as message} commands]
         (let [params' (assoc params :staged-command message)]
-          (if (:sending message)
+          (if (:sent-to-jail? message)
+            ;; todo there could be other reasons for "long-running"
+            ;; hanling of the command besides sendTransaction
             (dispatch [:navigate-to :confirm])
             (if (:has-handler command)
               (dispatch [::invoke-command-handlers! params'])
@@ -71,16 +75,18 @@
 (register-handler :prepare-command!
   (u/side-effect!
     (fn [{:keys [current-public-key] :as db}
-         [_ {:keys [chat-id staged-command] :as params}]]
-      (let [command' (->> staged-command
+         [_ {:keys [chat-id staged-command handler-data] :as params}]]
+      (let [command' (->> (assoc staged-command :handler-data handler-data)
                           (prepare-command current-public-key chat-id)
                           (cu/check-author-direction db chat-id))]
-        (dispatch [::clear-command chat-id (:id staged-command)])
+        (dispatch [:clear-command chat-id (:id staged-command)])
         (dispatch [::send-command! (assoc params :command command')])))))
 
-(register-handler ::clear-command
+(register-handler :clear-command
   (fn [db [_ chat-id id]]
-    (update-in db [:chats chat-id :staged-commands] dissoc id)))
+    (if chat-id
+      (update-in db [:chats chat-id :staged-commands] dissoc id)
+      db)))
 
 (register-handler ::send-command!
   (u/side-effect!
@@ -112,20 +118,28 @@
 
 (register-handler ::invoke-command-handlers!
   (u/side-effect!
-    (fn [db [_ {:keys [chat-id address staged-command] :as parameters}]]
-      (let [{:keys [command params]} staged-command
+    (fn [db [_ {:keys [chat-id address staged-command]
+                :as   parameters}]]
+      (let [{:keys [id command params]} staged-command
             {:keys [type name]} command
             path   [(if (= :command type) :commands :responses)
                     name
                     :handler]
             to     (get-in db [:contacts chat-id :address])
             params {:parameters params
-                    :context    {:from address
-                                 :to   to}}]
-        (status/call-jail chat-id
-                          path
-                          params
-                          #(dispatch [:command-handler! chat-id parameters %]))))))
+                    :context    {:from       address
+                                 :to         to
+                                 :message-id id}}]
+        (dispatch [::command-in-processing chat-id id])
+        (status/call-jail
+          chat-id
+          path
+          params
+          #(dispatch [:command-handler! chat-id parameters %]))))))
+
+(register-handler ::command-in-processing
+  (fn [db [_ chat-id id]]
+    (assoc-in db [:chats chat-id :staged-commands id :sent-to-jail?] true)))
 
 (register-handler ::prepare-message
   (u/side-effect!
