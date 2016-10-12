@@ -20,7 +20,7 @@
   (merge message
          {:same-author    (if previous-message
                             (= (:from previous-message) from)
-                            false)
+                            true)
           :same-direction (if previous-message
                             (= (:outgoing previous-message) outgoing)
                             true)}))

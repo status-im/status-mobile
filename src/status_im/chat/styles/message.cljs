@@ -40,6 +40,9 @@
   {:margin-top    10
    :margin-bottom -4})
 
+(def message-empty-spacing
+  {:height 16})
+
 (def message-body-base
   {:padding-right 8
    :padding-left  8})
