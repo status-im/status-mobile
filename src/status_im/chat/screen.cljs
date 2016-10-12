@@ -79,6 +79,7 @@
   (let [message (-> row
                     (add-message-color contact-by-identity)
                     (assoc :group-chat group-chat)
+                    (assoc :messages-count messages-count)
                     (assoc :last-message (= (js/parseInt index) (dec messages-count))))]
     (list-item [chat-message message])))
 
@@ -142,15 +143,27 @@
              :custom-action  [toolbar-action]
              :style          (get-in platform-specific [:component-styles :toolbar])}]])
 
+(defn get-intro-status-message [all-messages]
+  (let [{:keys [timestamp content-type] :as last-message} (last all-messages)]
+    (when (not= content-type content-type-status)
+      {:message-id   "intro-status"
+       :content-type content-type-status
+       :timestamp    (or timestamp (time/now-ms))})))
+
+
 (defn messages-with-timemarks [all-messages]
-  (let [messages     (->> all-messages
-                          (map #(assoc % :datemark (time/day-relative (:timestamp %))))
-                          (group-by :datemark)
-                          (map (fn [[k v]] [v {:type :datemark :value k}]))
-                          (flatten))
-        remove-last? (some (fn [{:keys [content-type]}]
-                             (= content-type content-type-status))
-                           messages)]
+  (let [status-message (get-intro-status-message all-messages)
+        all-messages   (if status-message
+                         (concat all-messages [status-message])
+                         all-messages)
+        messages       (->> all-messages
+                            (map #(assoc % :datemark (time/day-relative (:timestamp %))))
+                            (group-by :datemark)
+                            (map (fn [[k v]] [v {:type :datemark :value k}]))
+                            (flatten))
+        remove-last?   (some (fn [{:keys [content-type]}]
+                               (= content-type content-type-status))
+                             messages)]
     (if remove-last?
       (drop-last messages)
       messages)))

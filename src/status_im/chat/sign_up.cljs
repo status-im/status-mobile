@@ -121,8 +121,6 @@
   ;; TODO highlight '!phone'
   (start-signup))
 
-
-
 (def intro-status
   {:message-id   "intro-status"
    :content      (label :t/intro-status)
