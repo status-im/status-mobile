@@ -31,7 +31,7 @@
     "querystring-es3": "^0.2.1",
     "re-natal": "0.2.38",
     "react": "^15.3.1",
-    "react-native": "^0.34.0",
+    "react-native": "^0.36.0",
     "react-native-action-button": "^1.1.11",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",
