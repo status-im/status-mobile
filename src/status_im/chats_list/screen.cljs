@@ -24,6 +24,7 @@
             [status-im.chats-list.styles :as st]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
+            [status-im.components.sync-state.offline :refer [offline-view]]
             [status-im.components.tabs.styles :refer [tabs-height]]))
 
 (defview chats-list-toolbar []
@@ -86,4 +87,5 @@
                :style           st/list-container}]
    (when (get-in platform-specific [:chats :action-button?])
      [chats-action-button])
-   [bottom-gradient]])
+   [bottom-gradient]
+   [offline-view]])
