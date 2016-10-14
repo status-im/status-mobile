@@ -16,15 +16,18 @@
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.profile.photo-capture.styles :as st]
             [status-im.i18n :refer [label]]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [taoensso.timbre :as log]))
 
-(defn image-captured [path]
-  (let [path       (subs path 5)
+(defn image-captured [data]
+  (let [path       (.-path data)
+        _ (log/debug "Captured image: " path)
         on-success (fn [base64]
+                     (log/debug "Captured success: " base64)
                      (dispatch [:set-in [:profile-edit :photo-path] (str "data:image/jpeg;base64," base64)])
                      (dispatch [:navigate-back]))
         on-error   (fn [type error]
-                     (.log js/console type error))]
+                     (log/debug type error))]
     (img->base64 path on-success on-error)))
 
 (defn profile-photo-capture []
@@ -47,7 +50,8 @@
                             :on-press (fn []
                                         (let [camera @camera-ref]
                                           (-> (.capture camera)
-                                              (.then image-captured))))}
+                                              (.then image-captured)
+                                              (.catch #(log/debug "Error capturing image: " %)))))}
        [view
         [ion-icon {:name  :md-camera
                    :style {:font-size 36}}]]]]]))

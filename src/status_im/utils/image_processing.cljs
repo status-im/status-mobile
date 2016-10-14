@@ -1,6 +1,8 @@
 (ns status-im.utils.image-processing
   (:require [reagent.core :as r]
-            [status-im.utils.fs :refer [read-file]]))
+            [status-im.utils.fs :refer [read-file]]
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
 (def resizer-class (js/require "react-native-image-resizer"))
 
@@ -19,7 +21,10 @@
 
 (defn img->base64 [path on-success on-error]
   (let [on-resized (fn [path]
-                     (image-base64-encode path on-success on-error))
+                     (let [path (str/replace path "file:" "")]
+                      (log/debug "Resized: " path)
+                      (image-base64-encode path on-success on-error)))
         on-error   (fn [error]
+                     (log/debug "Resized error: " error)
                      (on-error :resize error))]
     (resize path 150 150 on-resized on-error)))

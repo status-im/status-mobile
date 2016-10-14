@@ -18,4 +18,4 @@
 (s/def ::name correct-name?)
 (s/def ::email correct-email?)
 
-(s/def ::profile (s/keys :req-un [::name ::email]))
+(s/def ::profile (s/keys :req-un [::name]))
