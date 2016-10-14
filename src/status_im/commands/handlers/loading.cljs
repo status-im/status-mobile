@@ -9,7 +9,8 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [reg-handler]]
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.homoglyph :as h]))
 
 (def commands-js "commands.js")
 
@@ -36,8 +37,8 @@
       (dispatch [::validate-hash identity (slurp "resources/commands.js")])
       #_(http-get (s/join "/" [url commands-js])
 
-                #(dispatch [::validate-hash identity %])
-                #(dispatch [::loading-failed! identity ::file-was-not-found])))))
+                  #(dispatch [::validate-hash identity %])
+                  #(dispatch [::loading-failed! identity ::file-was-not-found])))))
 
 (defn dispatch-loaded!
   [db [identity file]]
@@ -75,17 +76,27 @@
        (map (fn [[k v]] [k (assoc v :type as)]))
        (into {})))
 
+(defn filter-forbidden-names [id commands]
+  (->> commands
+       (remove (fn [[n]]
+                 (and
+                   (not (= console-chat-id id))
+                   (h/matches (name n) "password"))))
+       (into {})))
+
 (defn add-commands
-  [db [id _ {:keys [commands responses autorun] :as data}]]
-  (-> db
-      (update-in [id :commands] merge (mark-as :command commands))
-      (update-in [id :responses] merge (mark-as :response responses))
-      (assoc-in [id :commands-loaded] true)
-      (assoc-in [id :autorun] autorun)))
+  [db [id _ {:keys [commands responses autorun]}]]
+  (let [commands'  (filter-forbidden-names id commands)
+        responses' (filter-forbidden-names id responses)]
+    (-> db
+        (update-in [id :commands] merge (mark-as :command commands'))
+        (update-in [id :responses] merge (mark-as :response responses'))
+        (assoc-in [id :commands-loaded] true)
+        (assoc-in [id :autorun] autorun))))
 
 (defn save-commands-js!
   [_ [id file]]
-    (commands/save {:chat-id id :file file}))
+  (commands/save {:chat-id id :file file}))
 
 (defn loading-failed!
   [db [id reason details]]

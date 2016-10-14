@@ -1,14 +1,13 @@
 (ns status-im.profile.validations
   (:require [cljs.spec :as s]
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
-            [clojure.string :as str]))
-
-(def homoglyph-finder (js/require "homoglyph-finder"))
+            [clojure.string :as str]
+            [status-im.utils.homoglyph :as h]))
 
 (defn correct-name? [username]
   (let [username (some-> username (str/trim))]
-    (and (not (.isMatches homoglyph-finder username console-chat-id))
-         (not (.isMatches homoglyph-finder username wallet-chat-id)))))
+    (and (not (h/matches username console-chat-id))
+         (not (h/matches username wallet-chat-id)))))
 
 (defn correct-email? [email]
   (let [pattern #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"]
