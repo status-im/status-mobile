@@ -3,6 +3,7 @@
             [status-im.components.react :refer [view image text]]
             [status-im.components.chat-icon.screen :refer [contact-icon-contacts-tab]]
             [status-im.contacts.styles :as st]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]))
 
 (defn contact-photo [contact]
@@ -21,7 +22,7 @@
       (if (pos? (count (:name contact)))
         name
         ;; todo is this correct behaviour?
-        (label :t/user-anonymous))]
+        (generate-gfy))]
      (when info
        [text {:style st/info-text}
         info])]]))

@@ -25,6 +25,7 @@
                                          content-type-command
                                          content-type-command-request]]
             [status-im.utils.identicon :refer [identicon]]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]))
@@ -66,7 +67,7 @@
                 :font            :default
                 :number-of-lines 1}
           (if (str/blank? @name)
-            (label :t/user-anonymous)
+            (generate-gfy)
             (or @name (label :t/chat-name)))]
          (when (or status content)
            [text {:style st/status-text
