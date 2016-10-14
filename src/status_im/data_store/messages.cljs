@@ -14,7 +14,12 @@
 
 (defn- str-to-map
   [s]
-  (keywordize-keys (apply hash-map (split s #"[;=]"))))
+  (->> (keywordize-keys (apply hash-map (split s #"[;=]")))
+       (map (fn [[k v]]
+              [k (if (= k :params)
+                   (read-string v)
+                   v)]))
+       (into {})))
 
 (defn- user-statuses-to-map
   [user-statuses]
@@ -76,9 +81,9 @@
                      (map-to-str content))
           message' (merge default-values
                           message
-                          {:chat-id         chat-id
-                           :content         content'
-                           :timestamp       (timestamp)})]
+                          {:chat-id   chat-id
+                           :content   content'
+                           :timestamp (timestamp)})]
       (data-store/save message'))))
 
 (defn update
