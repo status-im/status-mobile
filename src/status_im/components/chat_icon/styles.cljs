@@ -111,9 +111,9 @@
 (def online-dot-right (merge online-dot {:left 10}))
 
 (def photo-pencil
-  {:margin-left  5
-   :margin-right 5
-   :margin-top   3
+  {:margin-left  8
+   :margin-right 2
+   :margin-top   6
    :font-size    12
    :color        :white})
 
