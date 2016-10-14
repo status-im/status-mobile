@@ -6,6 +6,7 @@
             [taoensso.timbre :as log]
             [clojure.string :as str]
             [status-im.utils.handlers :as u]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.protocol.core :as protocol]))
 
 (defn account-recovered [result]
@@ -16,7 +17,7 @@
         {:keys [public private]} (protocol/new-keypair!)
         account    {:public-key          public-key
                     :address             address
-                    :name                address
+                    :name                (generate-gfy)
                     :photo-path          (identicon public-key)
                     :updates-public-key  public
                     :updates-private-key private
