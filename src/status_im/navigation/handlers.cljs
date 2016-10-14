@@ -78,12 +78,6 @@
 
 (register-handler :show-profile show-profile)
 
-(defn show-profile-photo-capture
-  [db _]
-  (push-view db :profile-photo-capture))
-
-(register-handler :show-profile-photo-capture show-profile-photo-capture)
-
 (defn navigate-to-clean
   [db [_ view-id]]
   (-> db

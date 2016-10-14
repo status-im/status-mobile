@@ -63,6 +63,7 @@
    :username                              "Username"
    :user-anonymous                        "Anonymous"
    :not-specified                         "Not specified"
+   :public-key                            "Public Key"
    :phone-number                          "Phone number"
    :email                                 "Email"
    :profile-no-status                     "No status"

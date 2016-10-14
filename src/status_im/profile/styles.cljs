@@ -53,8 +53,8 @@
   {:margin-top 22})
 
 (def username-wrapper
-  {:width 300
-   :margin-top -22
+  {:width         300
+   :margin-top    -22
    :margin-bottom -16})
 
 (defn username-input [edit? valid?]
@@ -68,18 +68,26 @@
   {:flex-direction "column"
    :align-items    "center"
    :justifyContent "center"
-   :margin-left 100
-   :margin-right 100})
+   :margin-bottom  38
+   :margin-left    55
+   :margin-right   55})
 
 (def status-input
   {:align-self   "stretch"
    :margin-left  16
    :margin-right 16
    :height       40
-   :margin-top   -4
+   :margin-top   0
    :font-size    14
    :line-height  20
    :text-align   :center
+   :color        text2-color})
+
+(def status-text
+  {:text-align   :center
+   :margin-left  0
+   :margin-right 0
+   :margin-top   10
    :color        text2-color})
 
 (def btns-container
@@ -95,9 +103,9 @@
    :border-radius    20})
 
 (def message-btn-text
-  {:margin-top  -2.5
-   :font-size   14
-   :color       color-white})
+  {:margin-top -2.5
+   :font-size  14
+   :color      color-white})
 
 (def more-btn
   {:margin-left      10
@@ -114,10 +122,11 @@
    :height 16})
 
 (def profile-properties-container
-  {:margin-top     20
-   :margin-left    16
-   :align-items    :stretch
+  {:align-items    :stretch
    :flex-firection :column})
+
+(def profile-property
+  {:margin-left 16})
 
 (def profile-input-wrapper
   {:margin-bottom 16})
@@ -144,3 +153,12 @@
   {:flex       1
    :alignItems :center
    :margin     32})
+
+(def hashtag
+  {:color "#7099e6"})
+
+(def underline-container
+  {:background-color "#0000001f"
+   :margin-bottom    18
+   :height           1
+   :align-items      :center})
