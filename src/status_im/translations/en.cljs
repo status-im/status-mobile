@@ -61,7 +61,6 @@
    :report-user                           "REPORT USER"
    :message                               "Message"
    :username                              "Username"
-   :user-anonymous                        "Anonymous"
    :not-specified                         "Not specified"
    :public-key                            "Public Key"
    :phone-number                          "Phone number"
