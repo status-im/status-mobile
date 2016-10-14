@@ -6,6 +6,7 @@
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.utils.datetime :as time]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id]]
             [clojure.string :as str]))
 
@@ -54,7 +55,7 @@
                                          online group-chat contacts] :as chat}]
   (let [last-message (or (first (:messages chat))
                          last-message)
-        name         (or name chat-id)]
+        name         (or name (generate-gfy))]
     [view st/chat-container
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
@@ -63,7 +64,7 @@
        [text {:style st/name-text
               :font  :medium}
         (if (str/blank? name)
-          (label :t/user-anonymous)
+          (generate-gfy)
           (truncate-str name 30))]
        (when group-chat
          [icon :group st/group-icon])

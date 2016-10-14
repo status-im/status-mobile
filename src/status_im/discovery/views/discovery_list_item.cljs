@@ -4,6 +4,7 @@
             [clojure.string :as str]
             [status-im.components.react :refer [view text image]]
             [status-im.discovery.styles :as st]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.i18n :refer [label]]))
 
@@ -18,7 +19,7 @@
      (cond
        (not (str/blank? contact-name)) contact-name
        (not (str/blank? name)) name
-       :else (label :t/user-anonymous))]
+       :else (generate-gfy))]
     [text {:style           st/popular-list-item-status
            :font            :default
            :number-of-lines 2}
