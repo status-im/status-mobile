@@ -13,10 +13,11 @@
                                          default-number-of-messages]]
             [status-im.utils.datetime :as datetime]
             [status-im.protocol.core :as protocol]
-            [taoensso.timbre :refer-macros [debug]]))
+            [taoensso.timbre :refer-macros [debug]]
+            [taoensso.timbre :as log]))
 
 (defn prepare-command
-  [identity chat-id
+  [identity chat-id clock-value
    {:keys [id preview preview-string params command to-message handler-data]}]
   (let [content {:command (command :name)
                  :params  params}]
@@ -32,7 +33,8 @@
      :rendered-preview preview
      :to-message       to-message
      :type             (:type command)
-     :has-handler      (:has-handler command)}))
+     :has-handler      (:has-handler command)
+     :clock-value      (inc clock-value)}))
 
 (register-handler :send-chat-message
   (u/side-effect!
@@ -76,8 +78,9 @@
   (u/side-effect!
     (fn [{:keys [current-public-key] :as db}
          [_ {:keys [chat-id staged-command handler-data] :as params}]]
-      (let [command' (->> (assoc staged-command :handler-data handler-data)
-                          (prepare-command current-public-key chat-id)
+      (let [{:keys [clock-value]} (get-in db [:chats chat-id])
+            command' (->> (assoc staged-command :handler-data handler-data)
+                          (prepare-command current-public-key chat-id clock-value)
                           (cu/check-author-direction db chat-id))]
         (dispatch [:clear-command chat-id (:id staged-command)])
         (dispatch [::send-command! (assoc params :command command')])))))
@@ -144,7 +147,7 @@
 (register-handler ::prepare-message
   (u/side-effect!
     (fn [db [_ {:keys [chat-id identity message] :as params}]]
-      (let [{:keys [group-chat]} (get-in db [:chats chat-id])
+      (let [{:keys [group-chat clock-value]} (get-in db [:chats chat-id])
             message'  (cu/check-author-direction
                         db chat-id
                         {:message-id   (random/id)
@@ -153,7 +156,8 @@
                          :from         identity
                          :content-type text-content-type
                          :outgoing     true
-                         :timestamp    (time/now-ms)})
+                         :timestamp    (time/now-ms)
+                         :clock-value  (inc clock-value)})
             message'' (if group-chat
                         (assoc message' :group-id chat-id :message-type :group-user-message)
                         (assoc message' :to chat-id :message-type :user-message))
@@ -179,7 +183,7 @@
                                   chat-id         :chat-id}]]
       (when (and message (cu/not-console? chat-id))
         (let [message' (select-keys message [:from :message-id])
-              payload  (select-keys message [:timestamp :content :content-type])
+              payload  (select-keys message [:timestamp :content :content-type :clock-value])
               options  {:web3    web3
                         :message (assoc message' :payload payload)}]
           (if (= message-type :group-user-message)
@@ -189,26 +193,29 @@
                                               :keypair {:public  public-key
                                                         :private private-key})))
             (protocol/send-message! (assoc-in options
-                                              [:message :to] (:to message)))))))))
+                                              [:message :to] (:to message))))
+          (dispatch [:inc-clock chat-id]))))))
 
 (register-handler ::send-command-protocol!
   (u/side-effect!
     (fn [{:keys [web3 current-public-key chats] :as db} [_ {:keys [chat-id command]}]]
-      (let [{:keys [content message-id]} command]
+      (let [{:keys [content message-id clock-value]} command]
         (when (cu/not-console? chat-id)
           (let [{:keys [public-key private-key]} (chats chat-id)
                 {:keys [group-chat]} (get-in db [:chats chat-id])
                 payload {:content      content
                          :content-type content-type-command
-                         :timestamp    (datetime/now-ms)}
+                         :timestamp    (datetime/now-ms)
+                         :clock-value  clock-value}
                 options {:web3    web3
-                         :message {:from       current-public-key
-                                   :message-id message-id
-                                   :payload    payload}}]
+                         :message {:from        current-public-key
+                                   :message-id  message-id
+                                   :payload     payload}}]
             (if group-chat
               (protocol/send-group-message! (assoc options
                                               :group-id chat-id
                                               :keypair {:public  public-key
                                                         :private private-key}))
               (protocol/send-message! (assoc-in options
-                                                [:message :to] chat-id)))))))))
+                                                [:message :to] chat-id)))
+            (dispatch [:inc-clock chat-id])))))))
