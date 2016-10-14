@@ -39,12 +39,12 @@
 
 (defview chat-icon-view [chat-id group-chat name online styles]
   [photo-path [:chat-photo chat-id]
-   dapp-url [:chat :dapp-url]]
+   dapp? [:get-in [:contacts chat-id :dapp?]]]
   [view (:container styles)
    (if-not (s/blank? photo-path)
      [chat-icon photo-path styles]
      [default-chat-icon name styles])
-   (when dapp-url
+   (when dapp?
      [dapp-badge styles])])
 
 (defn chat-icon-view-chat-list [chat-id group-chat name color online]
