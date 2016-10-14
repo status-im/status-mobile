@@ -13,18 +13,27 @@
 
 (defn default-chat-icon-chat-list [color]
   (merge (default-chat-icon color)
-         {:width  40
-          :height 40}))
+         {:width         40
+          :height        40
+          :border-radius 20}))
 
 (defn default-chat-icon-menu-item [color]
   (merge (default-chat-icon color)
-         {:width  24
-          :height 24}))
+         {:width         24
+          :height        24
+          :border-radius 12}))
 
 (defn default-chat-icon-profile [color]
   (merge (default-chat-icon color)
-         {:width  64
-          :height 64}))
+         {:width         64
+          :height        64
+          :border-radius 32}))
+
+(defn default-chat-icon-view-action [color]
+  (merge (default-chat-icon color)
+         {:width         36
+          :height        36
+          :border-radius 18}))
 
 (def default-chat-icon-text
   {:marginTop  -2
@@ -55,16 +64,29 @@
           :height        64
           :border-radius 32}))
 
+(def chat-icon-view-action
+  (merge chat-icon
+         {:width         36
+          :height        36
+          :border-radius 1}))
+
+(def online-view-wrapper
+  {:position         :absolute
+   :bottom           -1
+   :right            0
+   :width            22
+   :height           22
+   :border-radius    11
+   :background-color :white})
+
 (def online-view
   {:position         :absolute
-   :bottom           0
-   :right            0
-   :width            20
-   :height           20
-   :border-radius    10
-   :background-color online-color
-   :border-width     2
-   :border-color     color-white})
+   :bottom           2
+   :right            2
+   :width            18
+   :height           18
+   :border-radius    9
+   :background-color online-color})
 
 (def online-view-menu-item
   (merge online-view
@@ -80,13 +102,13 @@
 
 (def online-dot
   {:position         :absolute
-   :top              6
+   :top              7
    :width            4
    :height           4
    :border-radius    2
    :background-color color-white})
-(def online-dot-left (merge online-dot {:left 3}))
-(def online-dot-right (merge online-dot {:left 9}))
+(def online-dot-left (merge online-dot {:left 4}))
+(def online-dot-right (merge online-dot {:left 10}))
 
 (def photo-pencil
   {:margin-left  5

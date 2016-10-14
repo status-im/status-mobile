@@ -9,6 +9,7 @@
             [status-im.chat.styles.screen :as st]
             [status-im.components.refreshable-text.view :refer [refreshable-text]]
             [status-im.utils.datetime :as time]
+            [status-im.utils.platform :refer [platform-specific]]
             [status-im.constants :refer [console-chat-id]]))
 
 (defn online-text [contact chat-id]
@@ -25,7 +26,7 @@
 
 (defn last-activity [{:keys [online-text sync-state]}]
   [refreshable-text {:style      st/last-activity
-                     :text-style st/last-activity-text
+                     :text-style (get-in platform-specific [:component-styles :toolbar-last-activity])
                      :font       :default
                      :value      (case sync-state
                                    :in-progress (label :t/sync-in-progress)
@@ -54,7 +55,8 @@
     (fn []
       [view (st/chat-name-view @show-actions)
        [text {:style           st/chat-name-text
-              :number-of-lines 1}
+              :number-of-lines 1
+              :font            :toolbar-title}
         (if (str/blank? @name)
           (label :t/user-anonymous)
           (or @name (label :t/chat-name)))]
