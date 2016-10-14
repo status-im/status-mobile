@@ -11,7 +11,8 @@
                                                  text1-color
                                                  text1-disabled-color
                                                  text2-color
-                                                 color-red]]))
+                                                 color-red]]
+            [status-im.utils.platform :as p]))
 
 (def profile
   {:flex             1
@@ -54,7 +55,7 @@
 
 (def username-wrapper
   {:width         300
-   :margin-top    -22
+   :margin-top    (if p/ios? -18 -22)
    :margin-bottom -16})
 
 (defn username-input [edit? valid?]
@@ -76,18 +77,10 @@
   {:align-self   "stretch"
    :margin-left  16
    :margin-right 16
-   :height       40
-   :margin-top   0
+   :margin-top   (if p/ios? 6 1)
    :font-size    14
-   :line-height  20
+   :min-height   60
    :text-align   :center
-   :color        text2-color})
-
-(def status-text
-  {:text-align   :center
-   :margin-left  0
-   :margin-right 0
-   :margin-top   10
    :color        text2-color})
 
 (def btns-container

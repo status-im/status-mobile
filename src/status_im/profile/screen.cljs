@@ -68,7 +68,7 @@
     (map get-text)))
 
 (defn status-image-view [{{:keys [name status photo-path]} :account
-                          edit?            :edit?}]
+                          edit?                            :edit?}]
   [view st/status-block
    [view st/user-photo-container
     (if edit?
@@ -90,14 +90,13 @@
      :wrapper-style    st/username-wrapper
      :value            name
      :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])}]
-   (if edit?
-     [text-input {:style          st/status-input
-                  :maxLength      140
-                  :editable       edit?
-                  :placeholder    (label :t/profile-no-status)
-                  :on-change-text #(dispatch [:set-in [:profile-edit :status] %])
-                  :default-value  status}]
-     [text {:style st/status-text} (highlight-tags status)])])
+   [text-input {:style          st/status-input
+                :maxLength      140
+                :multiline      true
+                :editable       edit?
+                :placeholder    (label :t/profile-no-status)
+                :on-change-text #(dispatch [:set-in [:profile-edit :status] %])
+                :default-value  status}]])
 
 (defview profile []
   [{whisper-identity :whisper-identity
@@ -163,42 +162,42 @@
       [view [text {:style st/report-user-text} (label :t/report-user)]]]]]])
 
 (defview my-profile []
-  [edit?           [:get-in [:profile-edit :edit?]]
+  [edit? [:get-in [:profile-edit :edit?]]
    current-account [:get-current-account]
    changed-account [:get :profile-edit]]
-   (let [{:keys [phone
-                 address
-                 public-key] :as account} (if edit?
-                                            changed-account
-                                            current-account)]
-     [scroll-view {:style                     st/profile
-                   :keyboardShouldPersistTaps true}
-      [status-bar]
-      [toolbar {:account account
-                :edit?   edit?}]
+  (let [{:keys [phone
+                address
+                public-key] :as account} (if edit?
+                                           changed-account
+                                           current-account)]
+    [scroll-view {:style                     st/profile
+                  :keyboardShouldPersistTaps true}
+     [status-bar]
+     [toolbar {:account account
+               :edit?   edit?}]
 
-      [status-image-view {:account account
-                          :edit?   edit?}]
+     [status-image-view {:account account
+                         :edit?   edit?}]
 
-      [scroll-view (merge st/profile-properties-container {:keyboardShouldPersistTaps true})
-       [view st/profile-property
-        [selectable-field {:label (label :t/phone-number)
-                           :value (if (and phone (not (str/blank? phone)))
-                                    (format-phone-number phone)
-                                    (label :t/not-specified))}]
-        [view st/underline-container]]
+     [scroll-view (merge st/profile-properties-container {:keyboardShouldPersistTaps true})
+      [view st/profile-property
+       [selectable-field {:label (label :t/phone-number)
+                          :value (if (and phone (not (str/blank? phone)))
+                                   (format-phone-number phone)
+                                   (label :t/not-specified))}]
+       [view st/underline-container]]
 
-       [view st/profile-property
-        [selectable-field {:label (label :t/address)
-                           :value address}]
-        [view st/underline-container]]
+      [view st/profile-property
+       [selectable-field {:label (label :t/address)
+                          :value address}]
+       [view st/underline-container]]
 
-       [view st/profile-property
-        [selectable-field {:label (label :t/public-key)
-                           :value public-key}]]
+      [view st/profile-property
+       [selectable-field {:label (label :t/public-key)
+                          :value public-key}]]
 
-       [view st/underline-container]
+      [view st/underline-container]
 
-       [view st/qr-code-container
-        [qr-code {:value (str "ethereum:" public-key)
-                  :size  220}]]]]))
+      [view st/qr-code-container
+       [qr-code {:value (str "ethereum:" public-key)
+                 :size  220}]]]]))
