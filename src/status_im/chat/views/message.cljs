@@ -18,12 +18,16 @@
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
-            [status-im.constants :refer [text-content-type
+            [status-im.utils.datetime :as time]
+            [status-im.constants :refer [console-chat-id
+                                         text-content-type
                                          content-type-status
                                          content-type-command
                                          content-type-command-request]]
             [status-im.utils.identicon :refer [identicon]]
-            [status-im.chat.utils :as cu]))
+            [status-im.i18n :refer [label]]
+            [status-im.chat.utils :as cu]
+            [clojure.string :as str]))
 
 (defn contact-photo [photo-path]
   [view st/contact-photo-container
@@ -32,28 +36,46 @@
                      {:uri photo-path})
            :style  st/contact-photo}]])
 
-(defn contact-online [{:keys [online]}]
-  (when online
+(defn contact-online [online?]
+  (when online?
     [view st/online-container
      [view st/online-dot-left]
      [view st/online-dot-right]]))
 
-(defview message-content-status
-  [{:keys [from content datemark]}]
-  [{chat-name :name} [:get-chat-by-id from]
-   photo-path [:chat-photo from]]
-  [view st/status-container
-   [view st/status-image-view
-    [contact-photo photo-path]
-    [contact-online {:online true}]]
-   [text {:style st/status-from
-          :font  :default}
-    (or chat-name from)]
-   [text {:style st/status-text
-          :font  :default}
-    content]
-   [view st/message-datemark
-    [chat-datemark datemark]]])
+;;[photo-path (subscribe [:chat-photo from])
+
+(defn message-content-status [{:keys [from]}]
+  (let [chat-photo-path (subscribe [:chat-photo from])
+        {:keys [group-chat name]} (subscribe [:chat-properties [:group-chat :name]])
+        members (subscribe [:current-chat-contacts])]
+    (fn [{:keys [messages-count content datemark]}]
+      (let [{:keys [photo-path
+                    status
+                    last-online]} (if @group-chat
+                                    {:photo-path  nil
+                                     :status      nil
+                                     :last-online 0}
+                                    (first @members))
+            online? (-> (- (time/now-ms) last-online)
+                        (< (* 60 1000)))]
+        [view st/status-container
+         [view st/status-image-view
+          [contact-photo (or photo-path @chat-photo-path)]
+          [contact-online online?]]
+         [text {:style           st/status-from
+                :font            :default
+                :number-of-lines 1}
+          (if (str/blank? @name)
+            (label :t/user-anonymous)
+            (or @name (label :t/chat-name)))]
+         (when (or status content)
+           [text {:style st/status-text
+                  :font  :default}
+            (or status content)])
+         (if (> messages-count 1)
+           [view st/message-datemark
+            [chat-datemark datemark]]
+           [view st/message-empty-spacing])]))))
 
 (defn message-content-audio [_]
   [view st/audio-container
