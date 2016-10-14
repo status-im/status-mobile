@@ -15,6 +15,7 @@
             [status-im.components.drawer.styles :as st]
             [status-im.profile.validations :as v]
             [status-im.resources :as res]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
             [status-im.components.react :refer [dismiss-keyboard!]]))
 
@@ -55,7 +56,7 @@
       [text-field
        {:line-color       :white
         :focus-line-color :white
-        :placeholder      (label :t/user-anonymous)
+        :placeholder      (generate-gfy)
         :editable         true
         :input-style      (st/name-input-text (s/valid? ::v/name (or new-name name)))
         :wrapper-style    st/name-input-wrapper

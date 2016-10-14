@@ -10,6 +10,7 @@
             [status-im.components.refreshable-text.view :refer [refreshable-text]]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id]]))
 
 (defn online-text [contact chat-id]
@@ -58,7 +59,7 @@
               :number-of-lines 1
               :font            :toolbar-title}
         (if (str/blank? @name)
-          (label :t/user-anonymous)
+          (generate-gfy)
           (or @name (label :t/chat-name)))]
        (if @group-chat
          [group-last-activity {:contacts   @contacts
