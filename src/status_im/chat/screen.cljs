@@ -31,7 +31,8 @@
             [status-im.components.sync-state.offline :refer [offline-view]]
             [status-im.constants :refer [content-type-status]]
             [reagent.core :as r]
-            [cljs-time.core :as t]))
+            [cljs-time.core :as t]
+            [taoensso.timbre :as log]))
 
 (defn contacts-by-identity [contacts]
   (->> contacts
@@ -120,6 +121,7 @@
                          (concat all-messages [status-message])
                          all-messages)
         messages       (->> all-messages
+                            (sort-by :clock-value >)
                             (map #(assoc % :datemark (time/day-relative (:timestamp %))))
                             (group-by :datemark)
                             (map (fn [[k v]] [v {:type :datemark :value k}]))
