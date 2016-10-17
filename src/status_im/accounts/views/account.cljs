@@ -12,6 +12,7 @@
             [status-im.accounts.styles :as st]))
 
 (defn on-press [address]
+  (dispatch [:navigate-to-clean :accounts])
   (dispatch [:navigate-to :login address])
   (dispatch [:set-in [:login :address] address]))
 

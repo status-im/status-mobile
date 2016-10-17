@@ -7,8 +7,6 @@
 ;; schema of app-db
 (def schema {:greeting s/Str})
 
-(def default-view :chat)
-
 ;; initial state of app-db
 (def app-db {:identity-password      "replace-me-with-user-entered-password"
              :identity               "me"
@@ -40,8 +38,8 @@
              :chat-ui-props          {:show-actions?     false
                                       :show-bottom-info? false}
              :selected-participants  #{}
-             :view-id                default-view
-             :navigation-stack       (list default-view)
+             :view-id                nil
+             :navigation-stack       '()
              :current-tag            nil
              :qr-codes               {}
              :keyboard-height        0

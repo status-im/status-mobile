@@ -97,10 +97,11 @@
           [chat-icon]]]))))
 
 (defview chat-toolbar []
-  [show-actions [:chat-ui-props :show-actions?]]
+  [show-actions? [:chat-ui-props :show-actions?]
+   accounts [:get :accounts]]
   [view
    [status-bar]
-   [toolbar {:hide-nav?      show-actions
+   [toolbar {:hide-nav?      (or (empty? accounts) show-actions?)
              :custom-content [toolbar-content-view]
              :custom-action  [toolbar-action]
              :style          (get-in platform-specific [:component-styles :toolbar])}]])
