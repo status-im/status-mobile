@@ -28,9 +28,16 @@
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
 
+(defn validate-current-view
+  [current-view signed-up?]
+  (if (or (contains? #{:login :chat :recover :accounts} current-view)
+          signed-up?)
+    current-view
+    :chat))
+
 (defn app-root []
-  (let [signed-up       (subscribe [:signed-up?])
-        _               (log/debug "signed up: " @signed-up)
+  (let [signed-up?      (subscribe [:signed-up?])
+        _               (log/debug "signed up: " @signed-up?)
         view-id         (subscribe [:get :view-id])
         account-id      (subscribe [:get :current-account-id])
         keyboard-height (subscribe [:get :keyboard-height])]
@@ -56,34 +63,28 @@
                          #(dispatch [:set :keyboard-height 0]))))
        :render
        (fn []
-         (let [startup-view (if @account-id
-                              (if @signed-up
-                                @view-id
-                                :chat)
-                              (if (contains? #{:login :chat} @view-id)
-                                @view-id
-                                :accounts))]
-           (log/debug startup-view)
-           (let [component (case (if true startup-view :chat)
-                             :discovery main-tabs
-                             :discovery-tag discovery-tag
-                             :discovery-search-results discovery-search-results
-                             :add-participants new-participants
-                             :remove-participants remove-participants
-                             :chat-list main-tabs
-                             :new-group new-group
-                             :group-settings group-settings
-                             :contact-list main-tabs
-                             :group-contacts contact-list
-                             :new-contact new-contact
-                             :qr-scanner qr-scanner
-                             :chat chat
-                             :profile profile
-                             :profile-photo-capture profile-photo-capture
-                             :accounts accounts
-                             :login login
-                             :my-profile my-profile)]
-             [component])))})))
+         (when @view-id
+           (let [current-view (validate-current-view @view-id @signed-up?)]
+             (let [component (case current-view
+                               :discovery main-tabs
+                               :discovery-tag discovery-tag
+                               :discovery-search-results discovery-search-results
+                               :add-participants new-participants
+                               :remove-participants remove-participants
+                               :chat-list main-tabs
+                               :new-group new-group
+                               :group-settings group-settings
+                               :contact-list main-tabs
+                               :group-contacts contact-list
+                               :new-contact new-contact
+                               :qr-scanner qr-scanner
+                               :chat chat
+                               :profile profile
+                               :profile-photo-capture profile-photo-capture
+                               :accounts accounts
+                               :login login
+                               :my-profile my-profile)]
+               [component]))))})))
 
 (defn init []
   (dispatch-sync [:reset-app])

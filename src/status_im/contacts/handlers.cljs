@@ -16,7 +16,9 @@
 
 (defmethod nav/preload-data! :group-contacts
   [db [_ _ group]]
-  (assoc db :contacts-group group))
+  (if group
+    (assoc db :contacts-group group)
+    db))
 
 (defmethod nav/preload-data! :new-group
   [db _]

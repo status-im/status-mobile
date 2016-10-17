@@ -6,7 +6,6 @@
             [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.utils.identicon :refer [identicon]]
-            [status-im.db :refer [default-view]]
             [status-im.utils.random :as random]
             [status-im.i18n :refer [label]]
             [status-im.constants :refer [content-type-command-request]]
