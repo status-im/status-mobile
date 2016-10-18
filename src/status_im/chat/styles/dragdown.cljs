@@ -2,10 +2,10 @@
   (:require [status-im.components.styles :refer [color-white]]))
 
 (def drag-down-touchable
-  {:height         22
+  {:height           22
    :background-color color-white
-   :alignItems     :center
-   :justifyContent :center})
+   :alignItems       :center
+   :justifyContent   :center})
 
 (def drag-down-icon
   {:width  16

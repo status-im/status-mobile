@@ -17,6 +17,6 @@
         (dispatch [:add-chat
                    wallet-chat-id
                    {:name     "Wallet"
-                    :dapp-url "http://127.0.0.1:3450"}])
+                    :dapp-url "http://192.168.1.125:3450"}])
         (dispatch [:add-contacts [dapp-contact]])))))
 

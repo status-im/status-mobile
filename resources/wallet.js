@@ -5,8 +5,8 @@ function wallet() {
 }
 
 status.command({
-    name: "wallet",
-    description: "wallet",
+    name: "browse",
+    description: "Browse wallet",
     color: "#ffa500",
     fullscreen: true,
     suggestionsTrigger: 'on-send',
@@ -17,4 +17,4 @@ status.command({
     }]
 });
 
-status.autorun("wallet");
+status.autorun("browse");
