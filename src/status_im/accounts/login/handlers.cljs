@@ -3,7 +3,6 @@
             [status-im.utils.handlers :refer [register-handler] :as u]
             [taoensso.timbre :as log]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.db :refer [default-view]]
             [status-im.data-store.core :as data-store]
             [status-im.components.status :as status]
             [status-im.constants :refer [console-chat-id]]))

@@ -36,7 +36,7 @@
                            new-chat?
                            (into [{:image   {:source {:uri :icon_add}
                                              :style  st/toolbar-icon}
-                                   :handler #(dispatch [:navigate-forget :group-contacts :people])}]))]
+                                   :handler #(dispatch [:navigate-to :group-contacts :people])}]))]
     [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
                                            :style  st/hamburger-icon}
                                  :handler open-drawer}
@@ -56,7 +56,7 @@
     [action-button-item
      {:title       (label :t/new-chat)
       :buttonColor :#9b59b6
-      :onPress     #(dispatch [:navigate-forget :group-contacts :people])}
+      :onPress     #(dispatch [:navigate-to :group-contacts :people])}
      [ion-icon {:name  :md-create
                 :style st/create-icon}]]
     [action-button-item
