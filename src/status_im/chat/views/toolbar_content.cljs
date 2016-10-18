@@ -50,11 +50,13 @@
                 name
                 contacts
                 chat-id]} (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
-        show-actions (subscribe [:chat-ui-props :show-actions?])
-        contact      (subscribe [:get-in [:contacts @chat-id]])
-        sync-state   (subscribe [:get :sync-state])]
+        show-actions? (subscribe [:chat-ui-props :show-actions?])
+        accounts      (subscribe [:get :accounts])
+        contact       (subscribe [:get-in [:contacts @chat-id]])
+        sync-state    (subscribe [:get :sync-state])]
     (fn []
-      [view (st/chat-name-view @show-actions)
+      [view (st/chat-name-view (or (empty? @accounts)
+                                   @show-actions?))
        [text {:style           st/chat-name-text
               :number-of-lines 1
               :font            :toolbar-title}
