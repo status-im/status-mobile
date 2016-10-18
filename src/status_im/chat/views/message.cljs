@@ -24,22 +24,15 @@
                                          content-type-status
                                          content-type-command
                                          content-type-command-request]]
+            [status-im.components.chat-icon.screen :refer [chat-icon-message-status]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]))
 
-(defn contact-photo [photo-path]
-  [view st/contact-photo-container
-   [image {:source (if (s/blank? photo-path)
-                     res/user-no-photo
-                     {:uri photo-path})
-           :style  st/contact-photo}]])
-
-(defn message-content-status [{:keys [from]}]
-  (let [chat-photo-path (subscribe [:chat-photo from])
-        {:keys [group-chat name]} (subscribe [:chat-properties [:group-chat :name]])
+(defn message-content-status [_]
+  (let [{:keys [chat-id group-chat name color]} (subscribe [:chat-properties [:chat-id :group-chat :name :color]])
         members (subscribe [:current-chat-contacts])]
     (fn [{:keys [messages-count content datemark]}]
       (let [{:keys [photo-path
@@ -48,12 +41,9 @@
                                     {:photo-path  nil
                                      :status      nil
                                      :last-online 0}
-                                    (first @members))
-            online? (-> (- (time/now-ms) last-online)
-                        (< (* 60 1000)))]
+                                    (first @members))]
         [view st/status-container
-         [view st/status-image-view
-          [contact-photo (or photo-path @chat-photo-path)]]
+         [chat-icon-message-status @chat-id @group-chat @name @color false]
          [text {:style           st/status-from
                 :font            :default
                 :number-of-lines 1}
