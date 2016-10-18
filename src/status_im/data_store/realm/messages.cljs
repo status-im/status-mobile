@@ -31,8 +31,7 @@
   [chat-id]
   (-> (realm/get-by-field @realm/account-realm :message :chat-id chat-id)
       (realm/sorted :timestamp :desc)
-      (realm/single)
-      (js->clj :keywordize-keys true)))
+      (realm/single-cljs)))
 
 (defn get-unviewed
   []
