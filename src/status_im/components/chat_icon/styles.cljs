@@ -68,7 +68,7 @@
   (merge chat-icon
          {:width         36
           :height        36
-          :border-radius 1}))
+          :border-radius 18}))
 
 (def online-view-wrapper
   {:position         :absolute
