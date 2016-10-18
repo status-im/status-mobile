@@ -37,14 +37,6 @@
                      {:uri photo-path})
            :style  st/contact-photo}]])
 
-(defn contact-online [online?]
-  (when online?
-    [view st/online-container
-     [view st/online-dot-left]
-     [view st/online-dot-right]]))
-
-;;[photo-path (subscribe [:chat-photo from])
-
 (defn message-content-status [{:keys [from]}]
   (let [chat-photo-path (subscribe [:chat-photo from])
         {:keys [group-chat name]} (subscribe [:chat-properties [:group-chat :name]])
@@ -61,8 +53,7 @@
                         (< (* 60 1000)))]
         [view st/status-container
          [view st/status-image-view
-          [contact-photo (or photo-path @chat-photo-path)]
-          [contact-online online?]]
+          [contact-photo (or photo-path @chat-photo-path)]]
          [text {:style           st/status-from
                 :font            :default
                 :number-of-lines 1}
