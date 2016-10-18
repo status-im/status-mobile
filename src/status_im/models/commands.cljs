@@ -1,6 +1,7 @@
 (ns status-im.models.commands
   (:require [status-im.db :as db]
-            [tailrecursion.priority-map :refer [priority-map-by]]))
+            [tailrecursion.priority-map :refer [priority-map-by]]
+            [taoensso.timbre :as log]))
 
 (defn get-commands [{:keys [current-chat-id] :as db}]
   (or (get-in db [:chats current-chat-id :commands]) {}))
