@@ -91,10 +91,8 @@
 (reg-handler :suggestions-handler
   [(after #(dispatch [:animate-show-response]))
    (after (print-error-message! "Error on param suggestions"))
-   (after (fn [_ [{:keys [command]} {:keys [result]}]]
+   (after (fn [_ [{:keys [command]}]]
             (when (= :on-send (keyword (:suggestions-trigger command)))
-              (when (:webViewUrl result)
-                (dispatch [:set-soft-input-mode :pan]))
               (r/dismiss-keyboard!))))]
   suggestions-handler!)
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
