@@ -261,52 +261,6 @@
    :textAlign  :center
    :color      text2-color})
 
-(def online-container
-  {:position        :absolute
-   :top             44
-   :left            44
-   :width           24
-   :height          24
-   :borderRadius    12
-   :backgroundColor online-color
-   :borderWidth     2
-   :borderColor     color-white})
-
-(def online-dot
-  {:position        :absolute
-   :top             8
-   :width           4
-   :height          4
-   :borderRadius    2
-   :backgroundColor color-white})
-
-(def online-dot-left
-  (assoc online-dot :left 5))
-
-(def online-dot-right
-  (assoc online-dot :left 11))
-
-(def contact-photo-container
-  {:borderRadius 32})
-
-(def contact-photo
-  {:border-radius 32
-   :width         64
-   :height        64})
-
-(def message-date-container
-  {:backgroundColor   color-light-blue-transparent
-   :height            24
-   :borderRadius      12
-   :alignSelf         :center
-   :marginTop         20
-   :marginBottom      20
-   :paddingTop        5
-   :paddingHorizontal 12})
-
-(def message-date-text
-  (assoc style-sub-text :textAlign :center))
-
 (defn message-container [height]
   {:height height})
 

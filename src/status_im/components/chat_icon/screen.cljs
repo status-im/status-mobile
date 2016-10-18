@@ -78,6 +78,16 @@
     :default-chat-icon      (st/default-chat-icon-menu-item color)
     :default-chat-icon-text st/default-chat-icon-text}])
 
+(defn chat-icon-message-status [chat-id group-chat name color online]
+  [chat-icon-view chat-id group-chat name online
+   {:container              st/container-message-status
+    :online-view            st/online-view
+    :online-dot-left        st/online-dot-left
+    :online-dot-right       st/online-dot-right
+    :chat-icon              st/chat-icon-message-status
+    :default-chat-icon      (st/default-chat-icon-message-status color)
+    :default-chat-icon-text st/message-status-icon-text}])
+
 (defn contact-icon-view [contact styles]
   (let [photo-path (:photo-path contact)
         ;; TODO: stub
