@@ -13,8 +13,9 @@
                                          default-number-of-messages]]
             [status-im.utils.datetime :as datetime]
             [status-im.protocol.core :as protocol]
-            [taoensso.timbre :refer-macros [debug]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :refer-macros [debug] :as log]
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.chat.handlers.console :as console]))
 
 (defn prepare-command
   [identity chat-id clock-value
@@ -53,18 +54,28 @@
           (not (s/blank? text))
           (dispatch [::prepare-message data]))))))
 
+(defn console-command? [chat-id command-name]
+  (and (= console-chat-id chat-id)
+       (console/commands-names (keyword command-name))))
 
 (register-handler ::check-commands-handlers!
   (u/side-effect!
-    (fn [_ [_ {:keys [commands message] :as params}]]
+    (fn [_ [_ {:keys [commands message chat-id] :as params}]]
       (doseq [{:keys [command] :as message} commands]
-        (let [params' (assoc params :staged-command message)]
+        (let [params' (assoc params :staged-command message)
+              command-name (:name (:command message))]
           (if (:sent-to-jail? message)
             ;; todo there could be other reasons for "long-running"
             ;; hanling of the command besides sendTransaction
             (dispatch [:navigate-to :confirm])
-            (if (:has-handler command)
+            (cond
+              (console-command? chat-id command-name)
+              (dispatch [:invoke-console-command-handler! params'])
+
+              (:has-handler command)
               (dispatch [::invoke-command-handlers! params'])
+
+              :else
               (dispatch [:prepare-command! params'])))))
       (when-not (s/blank? message)
         (dispatch [::prepare-message params])))))
