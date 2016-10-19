@@ -134,7 +134,7 @@
 (defview messages-view [group-chat]
   [messages [:chat :messages]
    contacts [:chat :contacts]
-   loaded?  [:all-messages-loaded?]]
+   loaded? [:all-messages-loaded?]]
   (let [contacts' (contacts-by-identity contacts)
         messages  (messages-with-timemarks messages)]
     [list-view {:renderRow                 (fn [row _ index]
@@ -155,11 +155,11 @@
     (anim/start (anim/spring val {:toValue @offset}))))
 
 (defn messages-container [messages]
-  (let [offset (subscribe [:messages-offset])
+  (let [offset          (subscribe [:messages-offset])
         messages-offset (anim/create-value 0)
-        context {:offset offset
-                 :val    messages-offset}
-        on-update (messages-container-animation-logic context)]
+        context         {:offset offset
+                         :val    messages-offset}
+        on-update       (messages-container-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
@@ -172,11 +172,11 @@
           messages])})))
 
 (defn chat []
-  (let [group-chat (subscribe [:chat :group-chat])
-        show-actions? (subscribe [:chat-ui-props :show-actions?])
+  (let [group-chat        (subscribe [:chat :group-chat])
+        show-actions?     (subscribe [:chat-ui-props :show-actions?])
         show-bottom-info? (subscribe [:chat-ui-props :show-bottom-info?])
-        command? (subscribe [:command?])
-        layout-height (subscribe [:get :layout-height])]
+        command?          (subscribe [:command?])
+        layout-height     (subscribe [:get :layout-height])]
     (r/create-class
       {:component-did-mount #(dispatch [:check-autorun])
        :reagent-render

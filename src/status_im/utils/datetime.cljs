@@ -46,8 +46,8 @@
   (let [diff (t/in-seconds (t/interval time (t/now)))]
     (if (< diff 60)
       (label :t/active-online)
-      (let [unit (first (drop-while #(or (>= diff (:limit %))
-                                         (not (:limit %)))
+      (let [unit (first (drop-while #(and (>= diff (:limit %))
+                                          (:limit %))
                                     units))]
         (-> (/ diff (:in-second unit))
             Math/floor

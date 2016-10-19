@@ -35,6 +35,7 @@
 
 (defn complete-transaction
   [hash password callback]
+  (log/debug :complete-transaction (boolean status) hash password)
   (when status
     (.completeTransaction status hash password callback)))
 
