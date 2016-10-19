@@ -4,13 +4,10 @@
                                                 text
                                                 image
                                                 touchable-highlight]]
-            [status-im.chats-list.views.inner-item :refer [chat-list-item-inner-view]]))
+            [status-im.chats-list.views.inner-item :refer [chat-list-item-inner-view]]
+            [taoensso.timbre :as log]))
 
 (defn chat-list-item [[chat-id chat]]
   [touchable-highlight {:on-press #(dispatch [:navigate-to :chat chat-id])}
    [view
-    [chat-list-item-inner-view (merge chat
-                                      ;; TODO stub data
-                                      {:chat-id            chat-id
-                                       :new-messages-count 3
-                                       :online             true})]]])
+    [chat-list-item-inner-view (assoc chat :chat-id chat-id)]]])
