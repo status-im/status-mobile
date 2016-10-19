@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.os.*;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import java.util.concurrent.Callable;
 
 import java.lang.ref.WeakReference;
 
 import com.github.status_im.status_go.cmd.Statusgo;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class StatusService extends Service {
 
@@ -18,6 +21,8 @@ public class StatusService extends Service {
 
     private static boolean isNodeInitialized = false;
     private final Handler handler = new Handler();
+
+    private ExecutorService executor = null;
 
     private static String dataFolder;
 
@@ -74,6 +79,9 @@ public class StatusService extends Service {
     public void onDestroy() {
         
         super.onDestroy();
+        if (executor != null) {
+            executor.shutdownNow();
+        }
         //TODO: stop geth
         stopNode(null);
         //isNodeInitialized = false;
@@ -83,6 +91,9 @@ public class StatusService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        if (executor == null) {
+            executor = Executors.newCachedThreadPool();
+        }
         return Service.START_STICKY;
     }
 
@@ -155,7 +166,11 @@ public class StatusService extends Service {
             Statusgo.StartNode(dataFolder);
             Log.d(TAG, "Geth node started");
             Log.w(TAG, "adding peer");
-            Statusgo.AddPeer("enode://e15869ba08a25e49be7568b951e15af5d77a472c8e4104a14a4951f99936d65f91240d5b5f23674aee44f1ac09d8adfc6a9bff75cd8c2df73a26442f313f2da4@162.243.63.248:30303");
+
+            Statusgo.AddPeer("enode://efe4e6899e05237180c0970aedb81cb5aecf5b200779c7c9e1f955783e8299b364c0b981c03f4c36ad5328ef972b417afde260bbf2c5a8db37ba7f5738033952@198.199.105.122:30303");
+            Statusgo.AddPeer("enode://5a5839435f48d1e3f2f907e4582f0a134e0b7857afe507073978ca32cf09ea54989dac433605047d0bc4cd19a8c80affac6876069014283aa7c7bb4954d0e623@95.85.40.211:30303");
+            Statusgo.AddPeer("enode://2f05d430b4cb1c0e2a0772d48da3a034f1b596ea7163ab80d3404802d10b7d55bde323897c2be0d36026181e1a68510ea1f42a646ef9494c27e61f61e4088b7d@188.166.229.119:30303");
+            Statusgo.AddPeer("enode://ad61a21f83f12b0ca494611650f5e4b6427784e7c62514dcb729a3d65106de6f12836813acf39bdc35c12ecfd0e230723678109fd4e7091ce389697bd7da39b4@139.59.212.114:30303");
             isNodeInitialized = true;
         }
         createAndSendReply(message, StatusMessages.MSG_START_NODE, null);
@@ -256,12 +271,45 @@ public class StatusService extends Service {
         String chatId = data.getString("chatId");
         String path = data.getString("path");
         String params = data.getString("params");
+        String callbackIdentifier = data.getString(StatusConnector.CALLBACK_IDENTIFIER);
 
-        String result = Statusgo.Call(chatId, path, params);
+        Log.d(TAG, "Before StatusGo.Call");
+        Callable<String> callable = new JailRequest(message.replyTo, chatId, path, params, callbackIdentifier);
+        executor.submit(callable);
+    }
 
-        Bundle replyData = new Bundle();
-        replyData.putString("data", result);
-        createAndSendReply(message, StatusMessages.MSG_JAIL_CALL, replyData);
+    public class JailRequest implements Callable<String> {
+
+        String chatId;
+        String path;
+        String params;
+        String callbackIdentifier;
+        Messenger messenger;
+
+        JailRequest(Messenger messenger, String chatId, String path, String params, String callbackIdentifier) {
+
+            this.messenger = messenger;
+            this.chatId = chatId;
+            this.path = path;
+            this.params = params;
+            this.callbackIdentifier = callbackIdentifier;
+        }
+
+        public String call() throws Exception {
+            Log.d(TAG, "StatusGo.Call");
+            String result = Statusgo.Call(chatId, path, params);
+
+            Bundle replyData = new Bundle();
+            replyData.putString("data", result);
+            Message replyMessage = Message.obtain(null, StatusMessages.MSG_JAIL_CALL, 0, 0, null);
+            Log.d(TAG, "Callback identifier: " + callbackIdentifier);
+            replyData.putString(StatusConnector.CALLBACK_IDENTIFIER, callbackIdentifier);
+            replyMessage.setData(replyData);
+            sendReply(messenger, replyMessage);
+
+            return result;
+        }
+
     }
 
     public static boolean isNodeInitialized() {
