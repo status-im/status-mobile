@@ -139,6 +139,9 @@
    :keypair-password-command-description  ""
    :help-command-description              "Help"
    :request                               "Request"
+   :command-text-location                 "Location: {{address}}"
+   :command-text-browse                   "Browsing webpage: {{webpage}}"
+   :command-text-send                     "Transaction: {{amount}} ETH"
 
    ;new-group
    :group-chat-name                       "Chat name"

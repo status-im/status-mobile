@@ -1,20 +1,37 @@
 (ns status-im.chats-list.views.inner-item
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [status-im.components.react :refer [view image icon text]]
+  (:require [re-frame.core :refer [subscribe dispatch]]
+            [clojure.string :as str]
+            [status-im.components.react :refer [view image icon text]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
+            [status-im.models.commands :refer [parse-command-message-content]]
             [status-im.chats-list.styles :as st]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.constants :refer [console-chat-id]]
-            [clojure.string :as str]))
+            [status-im.constants :refer [console-chat-id
+                                         content-type-command
+                                         content-type-command-request]]
+            [taoensso.timbre :as log]))
 
-(defn message-content [{:keys [content] :as message}]
-  (let [content (if message
-                  (if (string? content)
-                    content
-                    (:content content)))]
+(defmulti message-content (fn [{:keys [content-type] :as message}] content-type))
+
+(defmethod message-content content-type-command
+  [{{:keys [command params]} :content}]
+  (let [kw (keyword (str "t/command-text-" (name command)))]
+    (label kw params)))
+
+(defmethod message-content content-type-command-request
+  [{{:keys [content]} :content}]
+  content)
+
+(defmethod message-content :default
+  [{:keys [content]}]
+  content)
+
+(defn message-content-text [message]
+  (let [content (message-content message)]
     (if (str/blank? content)
       [text {:style st/last-message-text-no-messages}
        (label :t/no-messages)]
@@ -71,7 +88,7 @@
        (when group-chat
          [text {:style st/memebers-text}
           (label-pluralize (inc (count contacts)) :t/members)])]
-      [message-content last-message]]
+      [message-content-text last-message]]
      [view
       (when last-message
         [view st/status-container
