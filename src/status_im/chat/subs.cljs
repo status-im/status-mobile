@@ -219,8 +219,10 @@
     (let [chat-id (subscribe [:get-current-chat-id])]
       (reaction
         (min (get-in @db [:animations :to-response-height @chat-id])
-             (- (:layout-height @db)
-                (get-in platform-specific [:component-styles :status-bar status-bar :height])))))))
+             (if (> (:layout-height @db) 0)
+               (- (:layout-height @db)
+                  (get-in platform-specific [:component-styles :status-bar status-bar :height]))
+               0))))))
 
 (register-sub :web-view-url
   (fn [db]
