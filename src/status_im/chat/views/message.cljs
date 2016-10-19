@@ -29,7 +29,8 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
             [status-im.chat.utils :as cu]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [status-im.chat.handlers.console :as console]))
 
 (defn message-content-status [_]
   (let [{:keys [chat-id group-chat name color]} (subscribe [:chat-properties [:chat-id :group-chat :name :color]])
@@ -200,10 +201,13 @@
                  :font  :default}
            (str "+ " (- (count user-statuses) 3))])]])))
 
-(defview message-delivery-status [{:keys [message-id chat-id message-status user-statuses]}]
+(defview message-delivery-status
+  [{:keys [message-id chat-id message-status user-statuses content]}]
   [app-db-message-status-value [:get-in [:message-statuses message-id :status]]]
   (let [delivery-status (get-in user-statuses [chat-id :status])
-        status          (if (cu/console? chat-id)
+        command-name    (keyword (:command content))
+        status          (if (and (not (console/commands-with-delivery-status command-name))
+                                 (cu/console? chat-id))
                           :seen
                           (or delivery-status message-status app-db-message-status-value :sending))]
     [view st/delivery-view

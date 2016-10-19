@@ -18,12 +18,13 @@
                                   :duration 250})))
 
 (defn offline-view [_]
-  (let [sync-state          (subscribe [:get :sync-state])
-        offline-opacity     (anim/create-value 0.0)
-        on-update           (fn [_ _]
-                              (anim/set-value offline-opacity 0)
-                              (when (= @sync-state :offline)
-                                (start-offline-animation offline-opacity)))]
+  (let [sync-state      (subscribe [:get :sync-state])
+        network-status  (subscribe [:get :network-status])
+        offline-opacity (anim/create-value 0.0)
+        on-update       (fn [_ _]
+                          (anim/set-value offline-opacity 0)
+                          (when (or (= @network-status :offline) (= @sync-state :offline))
+                            (start-offline-animation offline-opacity)))]
     (r/create-class
       {:component-did-mount
        on-update
@@ -31,7 +32,7 @@
        on-update
        :reagent-render
        (fn [{:keys [top]}]
-         (when (= @sync-state :offline)
+         (when (or (= @network-status :offline) (= @sync-state :offline))
            [animated-view {:style (st/offline-wrapper top offline-opacity window-width)}
             [view
              [text {:style st/offline-text}

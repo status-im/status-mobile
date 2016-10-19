@@ -1,7 +1,8 @@
 (ns status-im.utils.utils
   (:require-macros
    [natal-shell.async-storage :refer [get-item set-item]])
-  (:require [status-im.constants :as const]))
+  (:require [status-im.constants :as const]
+            [reagent.core :as r]))
 
 (defn require [module]
   (if (exists? js/window)
@@ -64,3 +65,13 @@
       (if (cond (first coll))
         index
         (recur (inc index) cond (next coll))))))
+
+(defn get-react-property [name]
+  (aget react-native name))
+
+(defn adapt-class [class]
+  (when class
+    (r/adapt-react-class class)))
+
+(defn get-class [name]
+  (adapt-class (get-react-property name)))

@@ -184,7 +184,7 @@
 (register-handler :participant-invited-to-group
   (u/side-effect!
     (fn [{:keys [current-public-key]}
-         [_ {:keys                                   [from]
+         [_ {:keys                                  [from]
              {:keys [group-id identity message-id]} :payload}]]
       (participant-invited-to-group-message group-id current-public-key identity from message-id)
       (when-not (= current-public-key identity)
@@ -232,11 +232,11 @@
        [_ {:keys                                        [from]
            {:keys [message-id ack-of-message group-id]} :payload}]]
     (if (chats/is-active? (or group-id from))
-      (let [message-id'    (or ack-of-message message-id)
-            group?         (boolean group-id)
-            status-path    (if (and group? (not= status :sent))
-                             [:message-user-statuses message-id' from]
-                             [:message-statuses message-id'])
+      (let [message-id' (or ack-of-message message-id)
+            group?      (boolean group-id)
+            status-path (if (and group? (not= status :sent))
+                          [:message-user-statuses message-id' from]
+                          [:message-statuses message-id'])
             {current-status :status} (get-in db status-path)]
         (if-not (= :seen current-status)
           (assoc-in db status-path {:whisper-identity from

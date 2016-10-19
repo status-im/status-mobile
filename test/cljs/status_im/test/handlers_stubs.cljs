@@ -8,7 +8,6 @@
 (defn init-stubs []
   (register-handler :sign-up
     (fn []
-      (println :ohh)
       ;; todo save phone number to db
       (sign-up-service/on-sign-up-response)))
 
