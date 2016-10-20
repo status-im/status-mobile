@@ -11,10 +11,6 @@
     [status-im.utils.listview :refer [to-datasource]]
     [status-im.discovery.views.discovery-list-item :refer [discovery-list-item]]))
 
-(defn render-separator [_ row-id _]
-  (list-item [view {:style st/row-separator
-                    :key   row-id}]))
-
 (defview discovery-popular-list [{:keys [tag count contacts]}]
   [discoveries [:get-discoveries-by-tags [tag] 3]]
   [view st/popular-list-container
