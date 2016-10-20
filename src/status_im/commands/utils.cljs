@@ -6,6 +6,8 @@
             [re-frame.core :refer [dispatch trim-v debug]]
             [status-im.utils.handlers :refer [register-handler]]))
 
+(def command-prefix "c ")
+
 (defn json->clj [json]
   (when-not (= json "undefined")
     (js->clj (.parse js/JSON json) :keywordize-keys true)))

@@ -25,7 +25,8 @@
             [status-im.utils.datetime :as dt]
             [taoensso.timbre :as log]
             [status-im.utils.name :refer [shortened-name]]
-            [status-im.utils.js-resources :as js-res]))
+            [status-im.utils.js-resources :as js-res]
+            [status-im.commands.utils :as cu]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -117,7 +118,7 @@
     (when-not (= "about:blank" url)
       (if loading
         (dispatch [:set-web-view-url url])
-        (dispatch [:set-chat-command-content (str "c " url)])))))
+        (dispatch [:set-chat-command-content (str cu/command-prefix url)])))))
 
 (defn web-view-error []
   (r/as-element

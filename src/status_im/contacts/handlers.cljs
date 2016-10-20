@@ -30,6 +30,13 @@
   [db [_ _ click-handler]]
   (assoc db :contacts-click-handler click-handler))
 
+
+(register-handler :remove-contacts-click-handler
+  (fn [db]
+    (dissoc db
+            :contacts-click-handler
+            :contacts-click-action)))
+
 (defn save-contact
   [_ [_ contact]]
   (contacts/save contact))

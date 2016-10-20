@@ -5,6 +5,7 @@
                                                 animated-view
                                                 text
                                                 icon
+                                                modal
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]

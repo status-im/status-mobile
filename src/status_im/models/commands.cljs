@@ -70,4 +70,5 @@
   (update content :command #((keyword %) commands)))
 
 (defn parse-command-request [commands content]
+  (log/debug "parse-command-request: " commands content)
   (update content :command #((keyword %) commands)))

@@ -59,6 +59,7 @@
   (status/parse-jail identity file
                      (fn [result]
                        (let [{:keys [error result]} (json->clj result)]
+                         (log/debug "Error parsing commands: " error result)
                          (if error
                            (dispatch [::loading-failed! identity ::error-in-jail error])
                            (if identity
@@ -125,7 +126,8 @@
    (after save-commands-js!)
    (after #(dispatch [:check-autorun]))
    (after (fn [_ [id]]
-            (dispatch [:invoke-commands-loading-callbacks id])))]
+            (dispatch [:invoke-commands-loading-callbacks id])
+            (dispatch [:invoke-chat-loaded-callbacks id])))]
   add-commands)
 
 (reg-handler ::add-all-commands

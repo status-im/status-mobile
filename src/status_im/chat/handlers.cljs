@@ -24,7 +24,8 @@
                                                   valid-mobile-number?]]
             [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.chat.handlers.commands :refer [command-prefix]]
+            status-im.chat.handlers.commands
+            [status-im.commands.utils :refer [command-prefix]]
             [status-im.chat.utils :refer [console? not-console?]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
@@ -324,14 +325,35 @@
     (when (= current-chat-id wallet-chat-id)
       (dispatch [:cancel-command]))
     (dispatch [:load-requests! chat-id])
-    (when-not commands-loaded?
-      (dispatch [:load-commands! chat-id]))
+    (if-not commands-loaded?
+      (dispatch [:load-commands! chat-id])
+      (dispatch [:invoke-chat-loaded-callbacks chat-id]))
     (if (and (seq messages)
              (not= (count messages) 1))
       db'
       (-> db'
           load-messages!
           init-chat))))
+
+(register-handler :add-chat-loaded-callback
+  (fn [db [_ chat-id callback]]
+    (log/debug "Add chat loaded callback: " chat-id callback)
+    (update-in db [::chat-loaded-callbacks chat-id] conj callback)))
+
+(register-handler ::clear-chat-loaded-callbacks
+  (fn [db [_ chat-id]]
+    (log/debug "Clear chat loaded callback: " chat-id)
+    (assoc-in db [::chat-loaded-callbacks chat-id] nil)))
+
+(register-handler :invoke-chat-loaded-callbacks
+  (u/side-effect!
+    (fn [db [_ chat-id]]
+      (log/debug "Invoking chat loaded callbacks: " chat-id)
+      (let [callbacks (get-in db [::chat-loaded-callbacks chat-id])]
+        (log/debug "Invoking chat loaded callbacks: " callbacks)
+        (doseq [callback callbacks]
+          (callback))
+        (dispatch [::clear-chat-loaded-callbacks chat-id])))))
 
 (defn prepare-chat [{:keys [contacts]} chat-id chat]
   (let [name (get-in contacts [chat-id :name])]

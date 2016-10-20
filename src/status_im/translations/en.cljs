@@ -201,6 +201,10 @@
    :recover-access                        "Recover access"
    :add-account                           "Add account"
 
+   ;wallet-qr-code
+   :done                                  "Done"
+   :main-wallet                           "Main Wallet"
+
    ;validation
    :invalid-phone                         "Invalid phone number"
    :amount                                "Amount"

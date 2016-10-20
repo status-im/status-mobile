@@ -7,7 +7,9 @@
             [status-im.subs]
             [status-im.components.react :refer [app-registry
                                                 keyboard
-                                                orientation]]
+                                                orientation
+                                                view
+                                                modal]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -28,7 +30,9 @@
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
             status-im.data-store.core
             [taoensso.timbre :as log]
-            [status-im.components.status :as status]))
+            [status-im.components.status :as status]
+            [status-im.chat.styles.screen :as st]
+            [status-im.accounts.views.wallet-qr-code :refer [wallet-qr-code]]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -55,7 +59,8 @@
   (let [signed-up?      (subscribe [:signed-up?])
         view-id         (subscribe [:get :view-id])
         account-id      (subscribe [:get :current-account-id])
-        keyboard-height (subscribe [:get :keyboard-height])]
+        keyboard-height (subscribe [:get :keyboard-height])
+        modal-view      (subscribe [:get :modal])]
     (log/debug "Current account: " @account-id)
     (r/create-class
       {:component-will-mount
@@ -75,7 +80,7 @@
          (.addListener keyboard
                        "keyboardDidHide"
                        #(when-not (= 0 @keyboard-height)
-                         (dispatch [:set :keyboard-height 0]))))
+                          (dispatch [:set :keyboard-height 0]))))
        :render
        (fn []
          (when @view-id
@@ -101,14 +106,28 @@
                                :recover recover
                                :confirm confirm
                                :my-profile my-profile)]
-               [component]))))})))
+               [view
+                {:flex 1}
+                [component]
+                (when @modal-view
+                  [view
+                   st/chat-modal
+                   [modal {:animation-type   :slide
+                           :transparent      false
+                           :on-request-close #(dispatch [:navigate-back])}
+                    (let [component (case @modal-view
+                                      :qr-scanner qr-scanner
+                                      :wallet-qr-code wallet-qr-code
+                                      :confirm confirm
+                                      :contact-list-modal contact-list)]
+                      [component])]])]))))})))
 
 (defn init [& [env]]
   (dispatch-sync [:reset-app])
-  (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)
+  (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root))
   (dispatch [:listen-to-network-status!])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
   (status/set-soft-input-mode status/adjust-resize)
   (dispatch [:load-user-phone-number])
-  (init-back-button-handler!)))
+  (init-back-button-handler!))

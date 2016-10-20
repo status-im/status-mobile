@@ -4,20 +4,25 @@
             [status-im.components.react :refer [view
                                                 image]]
             [status-im.components.camera :refer [camera]]
-            [status-im.components.styles :refer [icon-search]]
+            [status-im.components.styles :refer [icon-search
+                                                 icon-back]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.toolbar.styles :refer [toolbar-background1]]
             [status-im.qr-scanner.styles :as st]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.components.styles :as cst]
             [clojure.string :as str]))
 
-(defn qr-scanner-toolbar [title]
+(defview qr-scanner-toolbar [title]
+  [modal [:get :modal]]
   [view
    [status-bar]
    [toolbar {:title            title
              :background-color toolbar-background1
+             :nav-action       (when modal
+                                 {:handler #(dispatch [:navigate-back])
+                                  :image   {:source {:uri :icon_back}
+                                            :style  icon-back}})
              :actions          [{:image   {:source {:uri :icon_lock_white}
                                            :style  icon-search}
                                  :handler #()}]}]])
@@ -30,6 +35,7 @@
                              (let [data (-> (.-data code)
                                             (str/replace #"ethereum:" ""))]
                                (dispatch [:set-qr-code identifier data])))
+            :barCodeTypes  [:qr]
             :style         st/barcode-scanner}]
    [view st/rectangle-container
     [view st/rectangle

@@ -24,6 +24,11 @@
 
 (defmethod preload-data! :default [db _] db)
 
+(defn -preload-data! [{:keys [was-modal?] :as db} & args]
+  (if was-modal?
+    (dissoc db :was-modal)
+    (apply preload-data! db args)))
+
 (register-handler :navigate-forget
   (enrich preload-data!)
   (fn [db [_ new-view-id]]
@@ -36,16 +41,25 @@
       db
       (push-view db new-view-id))))
 
+(register-handler :navigate-to-modal
+  (enrich preload-data!)
+  (fn [db [_ modal-view]]
+    (assoc db :modal modal-view)))
+
 (register-handler :navigation-replace
   (enrich preload-data!)
   (fn [db [_ view-id]]
     (replace-view db view-id)))
 
 (register-handler :navigate-back
-  (enrich preload-data!)
-  (fn [{:keys [navigation-stack view-id] :as db} _]
-    (if (>= 1 (count navigation-stack))
-      db
+  (enrich -preload-data!)
+  (fn [{:keys [navigation-stack view-id modal] :as db} _]
+    (cond
+      modal (assoc db :modal nil
+                      :was-modal? true)
+      (>= 1 (count navigation-stack)) db
+
+      :else
       (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
             first-in-stack (first navigation-stack)]
         (if (= view-id first-in-stack)
@@ -66,10 +80,6 @@
   (enrich preload-data!)
   (fn [db [_]]
     (assoc db :prev-tab-view-id nil)))
-
-(register-handler :remove-contacts-click-handler
-                  (fn [db]
-                    (dissoc db :contacts-click-handler)))
 
 (defn show-profile
   [db [_ identity]]
