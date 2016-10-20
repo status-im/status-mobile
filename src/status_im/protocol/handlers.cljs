@@ -63,12 +63,12 @@
 
 (register-handler :initialize-sync-listener
   (fn [{:keys [web3 sync-listener] :as db} _]
-    (when sync-listener
-      (.stopWatching sync-listener))
-    (->> (.isSyncing (.-eth web3)
-                     (fn [error sync]
-                       (dispatch [:update-sync-state error sync])))
-         (assoc db :sync-listener))))
+    (if-not sync-listener
+      (->> (.isSyncing (.-eth web3)
+                       (fn [error sync]
+                         (dispatch [:update-sync-state error sync])))
+           (assoc db :sync-listener))
+      db)))
 
 (register-handler :incoming-message
   (u/side-effect!
