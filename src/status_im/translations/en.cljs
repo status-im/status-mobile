@@ -100,6 +100,7 @@
    :search-tags                           "Type your search tags here"
    :popular-tags                          "Popular tags"
    :recent                                "Recent"
+   :no-statuses-discovered                "No statuses discovered"
 
    ;settings
    :settings                              "Settings"
