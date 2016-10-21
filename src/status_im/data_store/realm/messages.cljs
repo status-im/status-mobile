@@ -30,7 +30,7 @@
 (defn get-last-message
   [chat-id]
   (-> (realm/get-by-field @realm/account-realm :message :chat-id chat-id)
-      (realm/sorted :timestamp :desc)
+      (realm/sorted :clock-value :desc)
       (realm/single-cljs)))
 
 (defn get-unviewed
