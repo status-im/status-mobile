@@ -206,4 +206,7 @@
    :recipient                             "Recipient"
    :one-more-item                         "One more item"
    :fee                                   "Fee"
-   :value                                 "Value"})
+   :value                                 "Value"
+
+   ;:webview
+   :web-view-error                        "oops, error"})
