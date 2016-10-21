@@ -49,6 +49,5 @@
 
 (defn delete-by-chat-id
   [chat-id]
-  (realm/write @realm/account-realm
-               #(realm/delete @realm/account-realm
-                              (get-by-chat-id chat-id))))
+  (realm/delete @realm/account-realm
+                (get-by-chat-id chat-id)))
