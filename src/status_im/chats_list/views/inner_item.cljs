@@ -70,7 +70,7 @@
 
 (defn chat-list-item-inner-view [{:keys [chat-id name color last-message
                                          online group-chat contacts] :as chat}]
-  (let [last-message (or (first (:messages chat))
+  (let [last-message (or (first (sort-by :clock-value > (:messages chat)))
                          last-message)
         name         (or name (generate-gfy))]
     [view st/chat-container
