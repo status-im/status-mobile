@@ -12,12 +12,12 @@ status.command({
                     fontFamily: "font",
                     color: "black"
                 }
-            }, params.value);
+            }, params.address);
         var uri = "https://maps.googleapis.com/maps/api/staticmap?center="
-            + params.value
+            + params.address
             + "&size=100x100&maptype=roadmap&key=AIzaSyBNsj1qoQEYPb3IllmWMAscuXW0eeuYqAA&language=en"
             + "&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C"
-            + params.value;
+            + params.address;
 
         var image = status.components.image(
             {
@@ -39,8 +39,8 @@ status.command({
 
 
 function browseSuggestions(params) {
-    if (params.value != "") {
-        var url = params.value;
+    if (params.url && params.url !== "undefined" && params.url != "") {
+        var url = params.url;
         if (!/^[a-zA-Z-_]+:/.test(url)) {
             url = 'http://' + url;
         }
@@ -56,7 +56,7 @@ status.command({
     fullscreen: true,
     suggestionsTrigger: 'on-send',
     params: [{
-        name: "webpage",
+        name: "url",
         suggestions: browseSuggestions,
         type: status.types.TEXT
     }]

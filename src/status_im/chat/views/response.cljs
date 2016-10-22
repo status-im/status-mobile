@@ -38,7 +38,7 @@
 (defview info-container
   [command]
   [{:keys [name chat-id]} [:get-current-chat]
-   {:keys [added]}        [:get-current-request]]
+   {:keys [added]} [:get-current-request]]
   [view st/info-container
    [text {:style st/command-name}
     (str (:description command) " " (label :t/request))]
@@ -112,6 +112,13 @@
         (dispatch [:set-web-view-url url])
         (dispatch [:set-chat-command-content (str "c " url)])))))
 
+(defn web-view-error []
+  (r/as-element
+    [view {:justify-content :center
+           :align-items     :center
+           :flex-direction  :row}
+     [text (label :t/web-view-error)]]))
+
 (defview suggestions-web-view []
   [url [:web-view-url]]
   (when url
@@ -119,6 +126,7 @@
      {:ref                        #(dispatch [:set-webview-bridge %])
       :on-bridge-message          #(dispatch [:webview-bridge-message %])
       :source                     {:uri url}
+      :render-error               web-view-error
       :java-script-enabled        true
       :injected-java-script       (slurp "resources/webview.js")
       :bounces                    false
