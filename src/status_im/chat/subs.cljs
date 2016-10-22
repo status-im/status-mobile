@@ -10,7 +10,8 @@
             [status-im.chat.views.command :as command]
             [status-im.constants :refer [content-type-status]]
             [status-im.utils.datetime :as time]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.utils.platform :refer [platform-specific]]
+            [taoensso.timbre :as log]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]
@@ -79,6 +80,17 @@
          vals
          (reaction))))
 
+(register-sub :get-chat-staged-commands-scroll-height
+  (fn [db _]
+    (let [{:keys [staged-commands
+                  staged-scroll-height]} (get-in @db [:chats (:current-chat-id @db)])]
+      (reaction
+        (if (seq staged-commands) staged-scroll-height 0)))))
+
+(register-sub :get-message-input-view-height
+  (fn [db _]
+    (reaction (get-in @db [:chats (:current-chat-id @db) :message-input-height]))))
+
 (register-sub :valid-plain-message?
   (fn [_ _]
     (let [input-message   (subscribe [:get-chat-input-text])
@@ -145,15 +157,12 @@
     (let [command?            (subscribe [:command?])
           type                (subscribe [:command-type])
           command-suggestions (subscribe [:get-content-suggestions])
-          suggestions         (subscribe [:get-suggestions])]
+          staged-commands     (subscribe [:get-chat-staged-commands])]
       (reaction
-        (cond (and @command? (= @type :response))
+        (cond (and @command? (= @type :response) (not (seq @staged-commands)))
               c/request-info-height
 
               (and @command? (= @type :command) (seq @command-suggestions))
-              c/suggestions-header-height
-
-              (and (not @command?) (seq @suggestions))
               c/suggestions-header-height
 
               :else 0)))))
@@ -256,6 +265,14 @@
               20
 
               :else 0)))))
+
+(register-sub :max-layout-height
+  (fn [db [_ status-bar]]
+    (let [layout-height     (subscribe [:get :layout-height])
+          input-margin      (subscribe [:input-margin])
+          status-bar-height (get-in platform-specific [:component-styles :status-bar status-bar :height])]
+      (reaction
+        (- @layout-height @input-margin status-bar-height)))))
 
 (register-sub :all-messages-loaded?
   (fn [db]

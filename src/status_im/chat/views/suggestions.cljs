@@ -18,7 +18,8 @@
             [status-im.components.drag-drop :as drag]
             [status-im.utils.platform :refer [ios?]]
             [status-im.chat.suggestions-responder :as resp]
-            [status-im.chat.constants :as c]))
+            [status-im.chat.constants :as c]
+            [taoensso.timbre :as log]))
 
 (defn set-command-input [command]
   (dispatch [:set-chat-command command]))
@@ -88,7 +89,7 @@
                 :renderRow                 render-row}]]])
 
 (defn header [h]
-  (let [layout-height (subscribe [:get :layout-height])
+  (let [layout-height (subscribe [:max-layout-height :default])
         pan-responder (resp/pan-responder h
                                           layout-height
                                           :fix-commands-suggestions-height)]
@@ -109,13 +110,14 @@
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:command-suggestions-height])
-        keyboard-height    (subscribe [:get :keyboard-height])
-        changed (subscribe [:animations :commands-height-changed])
-        animate? (subscribe [:animate?])
-        context {:to-value to-response-height
-                 :val      h
-                 :animate? animate?}
-        on-update #(container-animation-logic context)]
+        input-margin       (subscribe [:input-margin])
+        changed            (subscribe [:animations :commands-height-changed])
+        animate?           (subscribe [:animate?])
+        staged-commands    (subscribe [:get-chat-staged-commands])
+        context            {:to-value to-response-height
+                            :val      h
+                            :animate? animate?}
+        on-update          #(container-animation-logic context)]
     (r/create-class
       {:component-did-mount
        on-update
@@ -124,9 +126,9 @@
        :reagent-render
        (fn [h & elements]
          @to-response-height @changed
-         (into [animated-view {:style (st/container (if ios? @keyboard-height 0) h)}] elements))})))
+         (into [animated-view {:style (st/container h @input-margin @staged-commands)}] elements))})))
 
-(defn suggestion-container []
+(defview suggestion-container [any-staged-commands?]
   (let [h (anim/create-value c/input-height)]
     [container h
      [header h]

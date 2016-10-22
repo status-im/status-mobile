@@ -49,15 +49,15 @@
    :opacity   0.69
    :color     color-white})
 
-(defn response-view [keyboard-height height]
+(defn response-view [keyboard-height height staged-commands]
   {:flexDirection   :column
    :position        :absolute
+   :elevation       (if (seq staged-commands) 5 4)
    :left            0
    :right           0
    :bottom          keyboard-height
    :height          height
-   :backgroundColor color-white
-   :elevation       2})
+   :backgroundColor color-white})
 
 (def input-placeholder
   {:height input-height})

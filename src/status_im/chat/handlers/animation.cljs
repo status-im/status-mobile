@@ -1,11 +1,13 @@
 (ns status-im.chat.handlers.animation
-  (:require [re-frame.core :refer [after dispatch debug path]]
+  (:require [re-frame.core :refer [after dispatch subscribe debug path]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.chat.constants :refer [input-height request-info-height
                                               suggestions-header-height
                                               minimum-command-suggestions-height
                                               response-height-normal minimum-suggestion-height]]
-            [status-im.constants :refer [response-input-hiding-duration]]))
+            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.constants :refer [response-input-hiding-duration]]
+            [taoensso.timbre :as log]))
 
 ;; todo magic value
 (def middle-height 270)
@@ -71,7 +73,10 @@
 (defn fix-height
   [height-key height-signal-key suggestions-key minimum]
   (fn [{:keys [current-chat-id] :as db} [_ vy current no-animation]]
-    (let [max-height (get-in db [:layout-height])
+    (let [input-margin           (subscribe [:input-margin])
+          max-height             (- (get-in db [:layout-height])
+                                    (get-in platform-specific [:component-styles :status-bar :default :height])
+                                    @input-margin)
           moving-down? (pos? vy)
           moving-up? (not moving-down?)
           under-middle-position? (<= current middle-height)

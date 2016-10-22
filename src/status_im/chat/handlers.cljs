@@ -36,7 +36,8 @@
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
             status-im.chat.handlers.wallet-chat
-            status-im.chat.handlers.console))
+            status-im.chat.handlers.console
+            [taoensso.timbre :as log]))
 
 (register-handler :set-chat-ui-props
   (fn [db [_ ui-element value]]
@@ -153,6 +154,29 @@
     (fn [_ [_ [command type] text]]
       (dispatch [:set-chat-command command type])
       (dispatch [:set-chat-command-content text]))))
+
+(register-handler :set-staged-commands-scroll-view
+  (fn [{:keys [current-chat-id] :as db} [_ view]]
+    (assoc-in db [:chats current-chat-id :staged-scroll-view] view)))
+
+(register-handler :set-staged-commands-scroll-height
+  (fn [{:keys [current-chat-id] :as db} [_ height]]
+    (assoc-in db [:chats current-chat-id :staged-scroll-height] height)))
+
+(register-handler :staged-commands-scroll-to
+  (u/side-effect!
+    (fn [{:keys [current-chat-id chats]} [_ height]]
+      (let [{:keys [staged-scroll-view staged-scroll-height]} (get chats current-chat-id)]
+        (when staged-scroll-view
+          (let [y (if (and (> staged-scroll-height 0)
+                           (< staged-scroll-height height))
+                    (- height staged-scroll-height)
+                    0)]
+            (.scrollTo staged-scroll-view (clj->js {:x 0 :y y}))))))))
+
+(register-handler :set-message-input-view-height
+  (fn [{:keys [current-chat-id] :as db} [_ height]]
+    (assoc-in db [:chats current-chat-id :message-input-height] height)))
 
 (register-handler ::check-suggestions
   [(after select-suggestion!)
