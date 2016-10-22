@@ -1,20 +1,18 @@
 (ns status-im.chat.views.new-message
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require
-    [re-frame.core :refer [subscribe]]
-    [status-im.components.react :refer [view]]
+    [re-frame.core :refer [dispatch subscribe]]
+    [status-im.components.react :refer [view
+                                        scroll-view]]
     [status-im.chat.views.message-input :refer [plain-message-input-view]]
-    [status-im.chat.views.staged-command :refer [simple-command-staged-view]]
+    [status-im.chat.views.staged-commands :refer [simple-command-staged-view]]
+    [status-im.chat.constants :refer [input-height]]
     [status-im.utils.platform :refer [platform-specific]]
-    [status-im.chat.styles.message :as st]))
+    [status-im.chat.styles.message :as st]
+    [taoensso.timbre :as log]))
 
-(defn staged-command-view [stage-command]
-  [simple-command-staged-view stage-command])
-
-(defn staged-commands-view [staged-commands]
-  [view {}
-   (for [command staged-commands]
-     ^{:key command} [staged-command-view command])])
+(defn get-height [event]
+  (.-height (.-layout (.-nativeEvent event))))
 
 (defn get-options [{:keys [type placeholder]} command-type]
   (let [options (case (keyword type)
@@ -29,19 +27,20 @@
         options)
       (assoc-in options [:input-options :placeholder] ""))))
 
-(defview show-input []
-  [parameter [:get-command-parameter]
+(defview chat-message-input-view []
+  [margin [:input-margin]
    command? [:command?]
-   type [:command-type]]
-  [plain-message-input-view
-   (when command? (get-options parameter type))])
-
-(defview chat-message-new []
-  [staged-commands [:get-chat-staged-commands]
-   margin [:input-margin]]
-  (let [style (get-in platform-specific [:component-styles :chat :new-message])]
-    [view (merge (st/new-message-container margin)
-                 style)
-     (when (seq staged-commands)
-       [staged-commands-view staged-commands])
-     [show-input]]))
+   response-height [:response-height]
+   parameter [:get-command-parameter]
+   type [:command-type]
+   suggestions [:get-suggestions]
+   staged-commands [:get-chat-staged-commands]]
+  (let [on-top? (or (and (not (empty? suggestions))
+                         (not command?))
+                    (not= response-height input-height))
+        style   (when-not (seq staged-commands)
+                  (get-in platform-specific [:component-styles :chat :new-message]))]
+    [view {:style     (merge (st/new-message-container margin on-top?) style)
+           :on-layout #(dispatch [:set-message-input-view-height (get-height %)])}
+     [plain-message-input-view
+      (when command? (get-options parameter type))]]))

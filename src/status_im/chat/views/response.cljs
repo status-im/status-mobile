@@ -87,6 +87,7 @@
         changed            (subscribe [:animations :response-height-changed])
         animate?           (subscribe [:animate?])
         keyboard-height    (subscribe [:get :keyboard-height])
+        staged-commands    (subscribe [:get-chat-staged-commands])
         context            {:to-value to-response-height
                             :val      response-height
                             :animate? animate?}
@@ -101,7 +102,8 @@
          @to-response-height @changed
          (into [animated-view {:style (st/response-view
                                         (if ios? @keyboard-height 0)
-                                        response-height)}]
+                                        response-height
+                                        @staged-commands)}]
                children))})))
 
 (defn on-navigation-change
