@@ -1,9 +1,9 @@
 (ns status-im.protocol.web3.utils
-  (:require cljsjs.web3
-            [cljs-time.core :refer [now]]
+  (:require [cljs-time.core :refer [now]]
             [cljs-time.coerce :refer [to-long]]))
 
-(def web3 js/Web3)
+(def web3 (js/require "web3"))
+
 (def status-app-topic "status-app")
 
 (defn from-utf8 [s]

@@ -77,7 +77,7 @@
 (register-handler :load-contacts load-contacts!)
 
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
-(def react-native-contacts (require "react-native-contacts"))
+(def react-native-contacts (js/require "react-native-contacts"))
 
 (defn contact-name [contact]
   (->> contact

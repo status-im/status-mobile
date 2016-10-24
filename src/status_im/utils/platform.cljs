@@ -3,7 +3,7 @@
             [status-im.android.platform :as android]
             [status-im.ios.platform :as ios]))
 
-(def react-native (u/require "react-native"))
+(def react-native (js/require "react-native"))
 
 (def platform
   (when-let [pl (.-Platform react-native)]

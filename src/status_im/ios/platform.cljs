@@ -40,7 +40,7 @@
 
 ;; Dialogs
 
-(def react-native (u/require "react-native"))
+(def react-native (js/require "react-native"))
 
 (defn show-action-sheet [{:keys [options callback cancel-text]}]
   (.showActionSheetWithOptions (.-ActionSheetIOS react-native)

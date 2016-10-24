@@ -1,7 +1,7 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "localhost",
+  "androidHost": "10.0.3.2",
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
@@ -28,7 +28,10 @@
     "react-native-image-crop-picker",
     "react-native-webview-bridge",
     "react-native-drawer-layout",
-    "homoglyph-finder"
+    "homoglyph-finder",
+    "web3",
+    "eccjs",
+    "chance"
   ],
   "imageDirs": [
     "images"

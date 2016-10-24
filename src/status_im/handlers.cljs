@@ -75,6 +75,8 @@
       (dispatch [:init-wallet-chat])
       (dispatch [:load-commands! console-chat-id]))))
 
+(def ecc (js/require "eccjs"))
+
 (register-handler :initialize-crypt
   (u/side-effect!
     (fn [_ _]
@@ -87,8 +89,8 @@
                                                             :error error}]))
                                  (do
                                    (->> (.toString buffer "hex")
-                                        (.toBits (.. js/ecc -sjcl -codec -hex))
-                                        (.addEntropy (.. js/ecc -sjcl -random)))
+                                        (.toBits (.. ecc -sjcl -codec -hex))
+                                        (.addEntropy (.. ecc -sjcl -random)))
                                    (dispatch [:crypt-initialized]))))))))
 
 (defn node-started [db result]
@@ -96,9 +98,9 @@
 
 (register-handler :initialize-geth
   (u/side-effect!
-   (fn [db _]
-     (log/debug "Starting node")
-     (status/start-node (fn [result] (node-started db result))))))
+    (fn [db _]
+      (log/debug "Starting node")
+      (status/start-node (fn [result] (node-started db result))))))
 
 (register-handler :signal-event
   (u/side-effect!
@@ -108,7 +110,13 @@
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
           "node.started" (log/debug "Event *node.started* received")
+          "module.initialized" (dispatch [:status-module-initialized!])
           (log/debug "Event " type " not handled"))))))
+
+(register-handler :status-module-initialized!
+  (u/side-effect!
+    (fn [db]
+      (status/module-initialized!))))
 
 (register-handler :crypt-initialized
   (u/side-effect!

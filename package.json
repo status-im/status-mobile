@@ -13,10 +13,12 @@
     "assert": "^1.4.1",
     "awesome-phonenumber": "^1.0.13",
     "browserify-zlib": "^0.1.4",
+    "chance": "1.0.4",
     "console-browserify": "^1.1.0",
     "constants-browserify": "0.0.1",
     "dns.js": "^1.0.1",
     "domain-browser": "^1.1.7",
+    "eccjs": "0.3.1",
     "events": "^1.1.1",
     "homoglyph-finder": "^1.1.1",
     "https-browserify": "0.0.1",
@@ -28,7 +30,7 @@
     "querystring-es3": "^0.2.1",
     "re-natal": "0.2.38",
     "react": "^15.3.1",
-    "react-native": "^0.33.0",
+    "react-native": "^0.34.0",
     "react-native-action-button": "^1.1.11",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",
@@ -58,7 +60,8 @@
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
-    "vm-browserify": "0.0.4"
+    "vm-browserify": "0.0.4",
+    "web3": "0.16.0"
   },
   "browser": {
     "crypto": "react-native-crypto",

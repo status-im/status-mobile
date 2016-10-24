@@ -2,7 +2,7 @@
   (:require [clojure.string :as s]
             [status-im.utils.utils :as u]))
 
-(def fs (u/require "react-native-fs"))
+(def fs (js/require "react-native-fs"))
 
 (defn move-file [src dst handler]
   (let [result (.moveFile fs src dst)

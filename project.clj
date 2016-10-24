@@ -11,12 +11,9 @@
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]
-                 [cljsjs/web3 "0.16.0-0"]
                  [com.taoensso/timbre "4.7.4"]
-                 [org.clojure/test.check "0.9.0"]
-                 [cljsjs/chance "0.7.3-0"]
-                 [cljsjs/eccjs "0.3.1-0"]]
-  :plugins [[lein-cljsbuild "1.1.1"]
+                 [org.clojure/test.check "0.9.0"]]
+  :plugins [[lein-cljsbuild "1.1.4"]
             [lein-figwheel "0.5.0-2"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
@@ -55,13 +52,21 @@
                                                                           :optimizations :none
                                                                           :target        :nodejs}}}}
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
-             :prod {:cljsbuild {:builds {:ios     {:source-paths ["src" "env/prod"]
-                                                   :compiler     {:output-to     "index.ios.js"
-                                                                  :main          "env.ios.main"
-                                                                  :output-dir    "target/ios"
-                                                                  :optimizations :simple}}
-                                         :android {:source-paths ["src" "env/prod"]
-                                                   :compiler     {:output-to     "index.android.js"
-                                                                  :main          "env.android.main"
-                                                                  :output-dir    "target/android"
-                                                                  :optimizations :simple}}}}}})
+             :prod {:cljsbuild {:builds [{:id           "ios"
+                                          :source-paths ["src" "env/prod"]
+                                          :compiler     {:output-to     "index.ios.js"
+                                                         :main          "env.ios.main"
+                                                         :output-dir    "target/ios"
+                                                         :static-fns    true
+                                                         :optimize-constants true
+                                                         :optimizations :simple
+                                                         :closure-defines {"goog.DEBUG" false}}}
+                                         {:id            "android"
+                                          :source-paths ["src" "env/prod"]
+                                          :compiler     {:output-to     "index.android.js"
+                                                         :main          "env.android.main"
+                                                         :output-dir    "target/android"
+                                                         :static-fns    true
+                                                         :optimize-constants true
+                                                         :optimizations :simple
+                                                         :closure-defines {"goog.DEBUG" false}}}]}}})

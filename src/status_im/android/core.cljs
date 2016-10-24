@@ -105,10 +105,10 @@
 
 (defn init [& [env]]
   (dispatch-sync [:reset-app])
+  (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)
   (dispatch [:listen-to-network-status!])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
   (status/set-soft-input-mode status/adjust-resize)
   (dispatch [:load-user-phone-number])
-  (init-back-button-handler!)
-  (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)))
+  (init-back-button-handler!)))
