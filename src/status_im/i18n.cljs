@@ -3,7 +3,7 @@
     [status-im.translations.en :as en]
     [status-im.utils.utils :as u]))
 
-(def i18n (u/require "react-native-i18n"))
+(def i18n (js/require "react-native-i18n"))
 (set! (.-fallbacks i18n) true)
 (set! (.-defaultSeparator i18n) "/")
 

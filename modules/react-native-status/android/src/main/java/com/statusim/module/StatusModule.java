@@ -32,21 +32,28 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @Override
     public void onHostResume() {  // Actvity `onResume`
-
         Activity currentActivity = getCurrentActivity();
         if (currentActivity == null) {
+            Log.d(TAG, "On host Activity doesn't exist");
             return;
         }
         if (status == null) {
             status = new StatusConnector(currentActivity, StatusService.class);
             status.registerHandler(this);
         }
+
         status.bindService();
+
+        WritableMap params = Arguments.createMap();
+        Log.d(TAG, "Send module.initialized event");
+        params.putString("jsonEvent", "{\"type\":\"module.initialized\"}");
+        getReactApplicationContext()
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit("gethEvent", params);
     }
 
     @Override
     public void onHostPause() {  // Actvity `onPause`
-
         if (status != null) {
             status.unbindService();
         }
@@ -54,7 +61,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @Override
     public void onHostDestroy() {  // Actvity `onDestroy`
-
         if (status != null) {
             status.stopNode(null);
         }
@@ -126,7 +132,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void startNode(Callback callback) {
-
+        Log.d(TAG, "startNode");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -140,7 +146,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void login(String address, String password, Callback callback) {
-
+        Log.d(TAG, "login");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -154,7 +160,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void createAccount(String password, Callback callback) {
-
+        Log.d(TAG, "createAccount");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -168,7 +174,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void recoverAccount(String passphrase, String password, Callback callback) {
-
+        Log.d(TAG, "recoverAccount");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -186,7 +192,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void completeTransaction(String hash, String password, Callback callback) {
-
+        Log.d(TAG, "completeTransaction");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -203,7 +209,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void initJail(String js, Callback callback) {
-
+        Log.d(TAG, "initJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -217,7 +223,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void parseJail(String chatId, String js, Callback callback) {
-
+        Log.d(TAG, "parseJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -231,7 +237,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void callJail(String chatId, String path, String params, Callback callback) {
-
+        Log.d(TAG, "callJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -245,7 +251,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void setAdjustResize() {
-
+        Log.d(TAG, "setAdjustResize");
         final Activity activity = getCurrentActivity();
         if (activity == null) {
             return;
@@ -261,7 +267,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void setAdjustPan() {
-
+        Log.d(TAG, "setAdjustPan");
         final Activity activity = getCurrentActivity();
         if (activity == null) {
             return;
@@ -277,7 +283,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void setSoftInputMode(final int mode) {
-
+        Log.d(TAG, "setSoftInputMode");
         final Activity activity = getCurrentActivity();
         if (activity == null) {
             return;

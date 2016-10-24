@@ -5,7 +5,6 @@
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]
             [status-im.components.status :as status]
-            cljsjs.web3
             [clojure.string :as s]
             [taoensso.timbre :as log]))
 

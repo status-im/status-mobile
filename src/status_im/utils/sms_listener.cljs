@@ -2,7 +2,7 @@
   (:require [status-im.utils.platform :refer [android?]]
             [status-im.utils.utils :as u]))
 
-(def sms-listener (.-default (u/require "react-native-android-sms-listener")))
+(def sms-listener (.-default (js/require "react-native-android-sms-listener")))
 
 ;; Only android is supported!
 

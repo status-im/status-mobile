@@ -4,7 +4,7 @@
             [status-im.utils.utils :as u])
   (:import goog.crypt.Sha256))
 
-(def random-bytes (u/require "react-native-randombytes"))
+(def random-bytes (js/require "react-native-randombytes"))
 
 (def sha-256 (Sha256.))
 

@@ -34,7 +34,7 @@
 
 ;; Dialogs
 
-(def react-native-dialogs (u/require "react-native-dialogs"))
+(def react-native-dialogs (js/require "react-native-dialogs"))
 
 (defn show-dialog [{:keys [title options callback]}]
   (let [dialog (new react-native-dialogs)]

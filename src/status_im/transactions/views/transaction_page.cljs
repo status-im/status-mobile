@@ -11,8 +11,7 @@
             [status-im.components.styles :refer [icon-ok
                                                  icon-close]]
             [status-im.transactions.styles :as st]
-            [status-im.i18n :refer [label label-pluralize]]
-            cljsjs.web3))
+            [status-im.i18n :refer [label label-pluralize]]))
 
 (defn title-bar [title id]
   [view st/title-bar
