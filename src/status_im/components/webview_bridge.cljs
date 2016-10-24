@@ -3,7 +3,7 @@
             [reagent.core :as r]))
 
 (def webview-bridge-class
-  (r/adapt-react-class (u/require "react-native-webview-bridge")))
+  (r/adapt-react-class (js/require "react-native-webview-bridge")))
 
 (defn webview-bridge [opts]
   [webview-bridge-class opts])

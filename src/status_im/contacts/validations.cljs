@@ -1,10 +1,11 @@
 (ns status-im.contacts.validations
   (:require [cljs.spec :as s]
-            [cljsjs.web3]
             [status-im.data-store.contacts :as contacts]))
 
+(def web3 (js/require "web3"))
+
 (defn is-address? [s]
-  (.isAddress js/Web3.prototype s))
+  (.isAddress web3.prototype s))
 
 (defn unique-identity? [identity]
   (not (contacts/exists? identity)))

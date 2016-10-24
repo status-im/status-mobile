@@ -8,7 +8,7 @@
             [clojure.string :as str])
   (:refer-clojure :exclude [exists?]))
 
-(def realm-class (u/require "realm"))
+(def realm-class (js/require "realm"))
 
 (defn realm-version
   [file-name]

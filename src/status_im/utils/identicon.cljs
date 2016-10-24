@@ -4,7 +4,7 @@
 
 (def default-size 40)
 
-(def identicon-js (u/require "identicon.js"))
+(def identicon-js (js/require "identicon.js"))
 
 (defn identicon
   ([hash] (identicon hash default-size))

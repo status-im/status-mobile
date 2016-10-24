@@ -5,14 +5,14 @@
              :refer [get-react-property get-class adapt-class]]
             [status-im.utils.platform :refer [platform-specific]]))
 
-(def react-native (u/require "react-native"))
+(def react-native (js/require "react-native"))
 (def native-modules (.-NativeModules react-native))
 (def device-event-emitter (.-DeviceEventEmitter react-native))
 
-(def linear-gradient-module (u/require "react-native-linear-gradient"))
-(def dismiss-keyboard! (u/require "dismissKeyboard"))
-(def orientation (u/require "react-native-orientation"))
-(def drawer (u/require "react-native-drawer-layout"))
+(def linear-gradient-module (js/require "react-native-linear-gradient"))
+(def dismiss-keyboard! (js/require "dismissKeyboard"))
+(def orientation (js/require "react-native-orientation"))
+(def drawer (js/require "react-native-drawer-layout"))
 
 ;; React Components
 
@@ -101,7 +101,7 @@
 
 ;; Image picker
 
-(def image-picker-class (u/require "react-native-image-crop-picker"))
+(def image-picker-class (js/require "react-native-image-crop-picker"))
 
 (defn show-image-picker [images-fn]
   (let [image-picker (.-default image-picker-class)]
