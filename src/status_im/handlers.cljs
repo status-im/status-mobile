@@ -1,8 +1,7 @@
 (ns status-im.handlers
   (:require
     [re-frame.core :refer [after dispatch dispatch-sync debug]]
-    [schema.core :as s :include-macros true]
-    [status-im.db :refer [app-db schema]]
+    [status-im.db :refer [app-db]]
     [status-im.data-store.core :as data-store]
     [taoensso.timbre :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
@@ -109,6 +108,7 @@
       (let [{:keys [type event]} (t/json->clj event-str)]
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
+          "transaction.failed" (dispatch [:transaction-failed event])
           "node.started" (log/debug "Event *node.started* received")
           "module.initialized" (dispatch [:status-module-initialized!])
           (log/debug "Event " type " not handled"))))))

@@ -1,11 +1,7 @@
 (ns status-im.db
-  (:require [schema.core :as s :include-macros true]
-            [status-im.components.react :refer [animated]]
+  (:require [status-im.components.react :refer [animated]]
             [status-im.components.animation :as anim]
             [status-im.constants :refer [console-chat-id]]))
-
-;; schema of app-db
-(def schema {:greeting s/Str})
 
 ;; initial state of app-db
 (def app-db {:identity-password      "replace-me-with-user-entered-password"
