@@ -23,7 +23,11 @@
 
 (defmethod nav/preload-data! :confirm
   [{:keys [transactions-queue] :as db} _]
-  (assoc db :transactions transactions-queue))
+  (-> db
+      (assoc :transactions transactions-queue
+             :wrong-password-counter 0
+             :wrong-password? false)
+      (assoc-in [:confirm-transactions :password] 0)))
 
 (defn on-unlock
   [ids password previous-view-id]
@@ -69,6 +73,9 @@
         (update :transactions-queue #(apply dissoc % hashes)))))
 
 (register-handler ::remove-transaction
+  (after (fn [{:keys [transactions]}]
+           (when-not (seq transactions)
+             (dispatch [:navigate-back]))))
   (fn [db [_ hash]]
     (-> db
         (update :transactions dissoc hash)
@@ -122,19 +129,11 @@
 
 (register-handler :transaction-completed
   (u/side-effect!
-    (fn [{:keys [transactions command->chat]} [_ {:keys [id response previous-view-id]}]]
+    (fn [{:keys [transactions]} [_ {:keys [id response previous-view-id]}]]
       (let [{:keys [hash error] :as parsed-response} (t/json->clj response)
             {:keys [message-id]} (transactions id)]
         (log/debug :parsed-response parsed-response)
-        (if (and error (string? error) (not (s/blank? error)))
-          ;; todo: revisit this
-          ;; currently transaction is removed after attempt
-          ;; to complete it with wrong password
-          (do
-            (dispatch [::remove-transaction id])
-            (dispatch [:set :wrong-password? true])
-            (when-let [chat-id (get command->chat message-id)]
-              (dispatch [:clear-command chat-id message-id])))
+        (when-not (and error (string? error) (not (s/blank? error)))
           (if message-id
             (do (dispatch [::add-transactions-hash {:id         id
                                                     :hash       hash
@@ -172,3 +171,27 @@
         (when (and pending-message id hash)
           (dispatch [::send-pending-message message-id hash])
           (dispatch [::remove-transaction id]))))))
+
+(def wrong-password-code "2")
+
+(register-handler :transaction-failed
+  (u/side-effect!
+    (fn [_ [_ {:keys [id message_id error_code]}]]
+      (if-not (= wrong-password-code error_code)
+        (do (when message_id
+              (dispatch [::remove-pending-message message_id]))
+            (dispatch [::remove-transaction id]))
+        (dispatch [:set-wrong-password!])))))
+
+(def attempts-limit 3)
+
+(register-handler :set-wrong-password!
+  (after (fn [{:keys [wrong-password-counter]}]
+           (when (>= wrong-password-counter attempts-limit)
+             (dispatch [:set :wrong-password? false])
+             (dispatch [:set :wrong-password-counter 0])
+             (dispatch [:set-in [:confirm-transactions :password] ""]))))
+  (fn [db]
+    (-> db
+        (assoc :wrong-password? true)
+        (update :wrong-password-counter (fnil inc 0)))))
