@@ -22,6 +22,7 @@
     status-im.accounts.handlers
     status-im.protocol.handlers
     status-im.transactions.handlers
+    status-im.network.handlers
     [status-im.utils.types :as t]
     [status-im.constants :refer [console-chat-id]]))
 

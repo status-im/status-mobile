@@ -101,24 +101,12 @@ var phoneConfig = {
     name: "phone",
     description: "Send phone number",
     color: "#5fc48d",
-    validator: function (params) {
-        return {
-            validationHandler: "phone",
-            parameters: [params.phone]
-        };
-    },
     params: [{
         name: "phone",
         type: status.types.PHONE,
         suggestions: phoneSuggestions,
         placeholder: "Phone number"
-    }],
-    handler: function (params) {
-        return {
-            event: "sign-up",
-            params: [params.phone, params]
-        };
-    }
+    }]
 };
 status.response(phoneConfig);
 status.command(phoneConfig);
@@ -128,16 +116,6 @@ status.command({
     name: "help",
     description: "Help",
     color: "#7099e6",
-    /* Validator example
-     validator: function (params) {
-     if (params.value != "3") {
-     var error = status.components.view(
-     {backgroundColor: "red"},
-     [status.components.text({}, "ooops :(")]
-     );
-     return {errors: [error]}
-     }
-     },*/
     params: [{
         name: "query",
         type: status.types.TEXT
@@ -152,12 +130,6 @@ status.response({
         name: "code",
         type: status.types.NUMBER
     }],
-    handler: function (params) {
-        return {
-            event: "confirm-sign-up",
-            params: [params.code]
-        };
-    },
     validator: function (params) {
         if (!/^[\d]{4}$/.test(params.code)) {
             var error = status.components.validationMessage(
@@ -184,12 +156,6 @@ status.response({
         type: status.types.PASSWORD,
         placeholder: "Please re-enter password to confirm"
     }],
-    handler: function (params) {
-        return {
-            event: "save-password",
-            params: [params.password]
-        };
-    },
     validator: function (params, context) {
         var errorMessages = [];
         var currentParameter = context["current-parameter"];

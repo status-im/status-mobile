@@ -105,6 +105,7 @@
 
 (defn init [& [env]]
   (dispatch-sync [:reset-app])
+  (dispatch [:listen-to-network-status!])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
   (status/set-soft-input-mode status/adjust-resize)

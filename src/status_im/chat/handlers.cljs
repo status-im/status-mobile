@@ -36,7 +36,7 @@
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
             status-im.chat.handlers.wallet-chat
-            [taoensso.timbre :as log]))
+            status-im.chat.handlers.console))
 
 (register-handler :set-chat-ui-props
   (fn [db [_ ui-element value]]
@@ -204,12 +204,14 @@
 (register-handler :sign-up
   (after (fn [_ [_ phone-number]]
            (dispatch [:account-update {:phone phone-number}])))
-  (fn [db [_ phone-number]]
-    (let [formatted (format-phone-number phone-number)]
+  (fn [db [_ phone-number message-id]]
+    (let [formatted        (format-phone-number phone-number)]
       (-> db
           (assoc :user-phone-number formatted)
           sign-up-service/start-listening-confirmation-code-sms
-          (server/sign-up formatted sign-up-service/on-sign-up-response)))))
+          (server/sign-up formatted
+                          message-id
+                          sign-up-service/on-sign-up-response)))))
 
 (register-handler :stop-listening-confirmation-code-sms
   (fn [db [_]]
@@ -219,8 +221,11 @@
 
 (register-handler :sign-up-confirm
   (u/side-effect!
-    (fn [_ [_ confirmation-code]]
-      (server/sign-up-confirm confirmation-code sign-up-service/on-send-code-response))))
+    (fn [_ [_ confirmation-code message-id]]
+      (server/sign-up-confirm
+        confirmation-code
+        message-id
+        sign-up-service/on-send-code-response))))
 
 (register-handler :set-signed-up
   (u/side-effect!
@@ -274,9 +279,9 @@
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
-  (let [chat-id  (or id current-chat-id)
-        messages (get-in db [:chats chat-id :messages])
-        db'      (assoc db :current-chat-id chat-id)
+  (let [chat-id          (or id current-chat-id)
+        messages         (get-in db [:chats chat-id :messages])
+        db'              (assoc db :current-chat-id chat-id)
         commands-loaded? (get-in db [:chats chat-id :commands-loaded])]
     (when (= current-chat-id wallet-chat-id)
       (dispatch [:cancel-command]))
