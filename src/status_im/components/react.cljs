@@ -1,31 +1,18 @@
 (ns status-im.components.react
   (:require [reagent.core :as r]
             [status-im.components.styles :as st]
-            [status-im.utils.utils :as u]
+            [status-im.utils.utils :as u
+             :refer [get-react-property get-class adapt-class]]
             [status-im.utils.platform :refer [platform-specific]]))
 
 (def react-native (u/require "react-native"))
 (def native-modules (.-NativeModules react-native))
 (def device-event-emitter (.-DeviceEventEmitter react-native))
-(def geth (.-Geth native-modules))
 
 (def linear-gradient-module (u/require "react-native-linear-gradient"))
 (def dismiss-keyboard! (u/require "dismissKeyboard"))
 (def orientation (u/require "react-native-orientation"))
 (def drawer (u/require "react-native-drawer-layout"))
-
-;; Getters
-
-(defn- get-react-property [name]
-  (aget react-native name))
-
-(defn- adapt-class [class]
-  (when class
-    (r/adapt-react-class class)))
-
-(defn- get-class [name]
-  (adapt-class (get-react-property name)))
-
 
 ;; React Components
 

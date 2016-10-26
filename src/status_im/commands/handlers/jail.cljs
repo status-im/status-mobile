@@ -15,23 +15,12 @@
   (let [hiccup (generate-hiccup markup)]
     (assoc-in db [:rendered-commands chat-id message-id] hiccup)))
 
-(def console-events
-  {:save-password   (fn [[parameter]]
-                      (dispatch [:create-account parameter]))
-   :sign-up         (fn [[parameter]]
-                      (dispatch [:sign-up parameter]))
-   :confirm-sign-up (fn [[parameter]]
-                      (dispatch [:sign-up-confirm parameter]))})
-
-(def regular-events {})
-
 (defn command-hadler!
   [_ [chat-id
       {:keys [staged-command] :as parameters}
       {:keys [result error]}]]
   (let [{:keys [context returned]} result
-        {:keys         [event params]
-         handler-error :error} returned]
+        {handler-error :error} returned]
     (cond
       handler-error
       (log/debug :error-from-handler handler-error
@@ -39,18 +28,11 @@
                  :command staged-command)
 
       result
-      (let [{:keys [event params]} returned
-            command'    (assoc staged-command :handler-data returned)
+      (let [command'    (assoc staged-command :handler-data returned)
             parameters' (assoc parameters :command command')]
         (if (:eth_sendTransaction context)
           (dispatch [:wait-for-transaction (:id staged-command) parameters'])
-          (let [events       (if (= console-chat-id chat-id)
-                               (merge regular-events console-events)
-                               regular-events)
-                parameters'' (if-let [handler (events (keyword event))]
-                               (assoc parameters' :handler #(handler params command'))
-                               parameters')]
-            (dispatch [:prepare-command! parameters'']))))
+          (dispatch [:prepare-command! parameters'])))
 
       (not (or error handler-error))
       (dispatch [:prepare-command! parameters])
