@@ -344,14 +344,16 @@
       ((after save-new-chat!))))
 
 (defn update-chat!
-  [_ [_ chat]]
-  (chats/save chat))
+  [_ [_ {:keys [name] :as chat}]]
+  (let [chat' (if name chat (dissoc chat :name))]
+    (chats/save chat')))
 
 (register-handler :update-chat!
-  (-> (fn [db [_ {:keys [chat-id] :as chat}]]
-        (if (get-in db [:chats chat-id])
-          (update-in db [:chats chat-id] merge chat)
-          db))
+  (-> (fn [db [_ {:keys [chat-id name] :as chat}]]
+        (let [chat' (if name chat (dissoc chat :name))]
+          (if (get-in db [:chats chat-id])
+            (update-in db [:chats chat-id] merge chat')
+            db)))
       ((after update-chat!))))
 
 (register-handler :upsert-chat!
