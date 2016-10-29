@@ -4,47 +4,48 @@
             [status-im.constants :refer [console-chat-id]]))
 
 ;; initial state of app-db
-(def app-db {:identity-password      "replace-me-with-user-entered-password"
-             :identity               "me"
-             :current-public-key     "me"
+(def app-db {:identity-password          "replace-me-with-user-entered-password"
+             :identity                   "me"
+             :current-public-key         "me"
 
-             :accounts               {}
-             :current-account-id     nil
+             :accounts                   {}
+             :current-account-id         nil
 
-             :profile-edit           {:edit?      false
-                                      :name       nil
-                                      :email      nil
-                                      :status     nil
-                                      :photo-path nil}
+             :profile-edit               {:edit?      false
+                                          :name       nil
+                                          :email      nil
+                                          :status     nil
+                                          :photo-path nil}
 
-             :new-contact-identity   ""
-             :contacts               {}
-             :discoveries            []
-             :discovery-search-tags  []
-             :tags                   {}
+             :new-contact-identity       ""
+             :contacts                   {}
+             :discoveries                []
+             :discovery-search-tags      []
+             :tags                       {}
 
-             :chats                  {}
-             :chat                   {:command      nil
-                                      :last-message nil}
-             :current-chat-id        console-chat-id
+             :chats                      {}
+             :chat                       {:command      nil
+                                          :last-message nil}
+             :current-chat-id            console-chat-id
 
-             :contacts-ids           #{}
-             :selected-contacts      #{}
-             :chats-updated-signal   0
-             :chat-ui-props          {:show-actions?     false
-                                      :show-bottom-info? false}
-             :selected-participants  #{}
-             :view-id                nil
-             :navigation-stack       '()
-             :current-tag            nil
-             :qr-codes               {}
-             :keyboard-height        0
-             :animations             {;; todo clear this
-                                      :tabs-bar-value (anim/create-value 0)}
-             :loading-allowed        true
+             :contacts-ids               #{}
+             :selected-contacts          #{}
+             :chats-updated-signal       0
+             :chat-ui-props              {:show-actions?     false
+                                          :show-bottom-info? false}
+             :selected-participants      #{}
+             :view-id                    nil
+             :navigation-stack           '()
+             :current-tag                nil
+             :qr-codes                   {}
+             :keyboard-height            0
+             :animations                 {;; todo clear this
+                                          :tabs-bar-value (anim/create-value 0)}
+             :loading-allowed            true
 
-             :sync-state             :done
-             :sync-listener          nil})
+             :sync-state                 :done
+             :sync-listener              nil
+             :status-module-initialized? js/goog.DEBUG})
 
 (defn chat-staged-commands-path [chat-id]
   [:chats chat-id :staged-commands])

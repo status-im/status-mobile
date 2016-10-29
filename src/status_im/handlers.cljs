@@ -114,9 +114,11 @@
           (log/debug "Event " type " not handled"))))))
 
 (register-handler :status-module-initialized!
-  (u/side-effect!
-    (fn [db]
-      (status/module-initialized!))))
+  (after (u/side-effect!
+           (fn [db]
+             (status/module-initialized!))))
+  (fn [db]
+    (assoc db :status-module-initialized? true)))
 
 (register-handler :crypt-initialized
   (u/side-effect!

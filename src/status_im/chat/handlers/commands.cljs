@@ -154,11 +154,18 @@
       (commands/set-command-input :responses to-message-id command-key)
       (assoc :canceled-command false)))
 
-(register-handler :set-response-chat-command
+(register-handler ::set-response-chat-command
   [(after invoke-suggestions-handler!)
    (after #(dispatch [:command-edit-mode]))
    (after #(dispatch [:set-chat-input-text ""]))]
   set-response-command)
+
+(register-handler :set-response-chat-command
+  (u/side-effect!
+    (fn [{:keys [current-chat-id] :as db}
+         [_ to-message-id command-key]]
+      (when (get-in db [:chats current-chat-id :responses command-key])
+        (dispatch [::set-response-chat-command to-message-id command-key])))))
 
 (register-handler ::add-validation-errors
   (after #(dispatch [:fix-response-height]))
