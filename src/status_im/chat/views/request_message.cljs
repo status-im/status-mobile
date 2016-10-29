@@ -38,29 +38,29 @@
     (button-animation val to-value loop? answered?)
     #(if (and @loop? (not @answered?))
       (let [new-value (if (= to-value min-scale) max-scale min-scale)
-            context' (assoc context :to-value new-value)]
+            context'  (assoc context :to-value new-value)]
         (request-button-animation-logic context'))
       (anim/start
         (button-animation val min-scale loop? answered?)))))
 
-(defn request-button [message-id command]
+(defn request-button [message-id command status-initialized?]
   (let [scale-anim-val (anim/create-value min-scale)
-        answered? (subscribe [:is-request-answered? message-id])
-        loop? (r/atom true)
-        context {:to-value  max-scale
-                 :val       scale-anim-val
-                 :answered? answered?
-                 :loop?     loop?}]
+        answered?      (subscribe [:is-request-answered? message-id])
+        loop?          (r/atom true)
+        context        {:to-value  max-scale
+                        :val       scale-anim-val
+                        :answered? answered?
+                        :loop?     loop?}]
     (r/create-class
       {:component-did-mount
        (when-not @answered? #(request-button-animation-logic context))
        :component-will-unmount
        #(reset! loop? false)
        :reagent-render
-       (fn [message-id {command-icon :icon :as command}]
+       (fn [message-id {command-icon :icon :as command} status-initialized?]
          (if command
            [touchable-highlight
-            {:on-press            (when-not @answered?
+            {:on-press            (when (and (not @answered?) status-initialized?)
                                     #(set-chat-command message-id command))
              :style               st/command-request-image-touchable
              :accessibility-label (label command)}
@@ -70,15 +70,16 @@
 
 (defn message-content-command-request
   [{:keys [message-id content from incoming-group]}]
-  (let [commands-atom (subscribe [:get-responses])
-        answered? (subscribe [:is-request-answered? message-id])]
+  (let [commands-atom       (subscribe [:get-responses])
+        answered?           (subscribe [:is-request-answered? message-id])
+        status-initialized? (subscribe [:get :status-module-initialized?])]
     (fn [{:keys [message-id content from incoming-group]}]
       (let [commands @commands-atom
             {:keys [command content]} (parse-command-request commands content)]
         [view st/comand-request-view
          [touchable-highlight
-          {:on-press            (when-not @answered?
-                                  #(set-chat-command message-id command))}
+          {:on-press (when (and (not @answered?) @status-initialized?)
+                       #(set-chat-command message-id command))}
           [view st/command-request-message-view
            (when incoming-group
              [text {:style st/command-request-from-text
@@ -87,7 +88,7 @@
            [text {:style st/style-message-text
                   :font  :default}
             content]]]
-         [request-button message-id command]
+         [request-button message-id command @status-initialized?]
          (when (:request-text command)
            [view st/command-request-text-view
             [text {:style st/style-sub-text
