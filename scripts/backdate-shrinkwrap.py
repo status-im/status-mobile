@@ -2,6 +2,7 @@
 
 import json
 import subprocess
+import copy
 from dateutil import parser
 from datetime import datetime, timedelta
 from distutils.version import StrictVersion
@@ -10,7 +11,8 @@ from distutils.version import StrictVersion
 min_age = datetime.today() - timedelta(days=7)
 
 newest_date = (datetime.utcfromtimestamp(0), '')  # epoch
-
+DEPS = 'dependencies'
+VER = 'version'
 
 def version_info(package):
     ''' Gets all versions from npm package, returns json '''
@@ -33,15 +35,31 @@ def rollback_version(package):
             best_candidate = (date, version)
     return best_candidate
 
-with open('../npm-shrinkwrap.json') as f:
-    shrinkwrap = json.load(f)
-    dependencies = shrinkwrap['dependencies']
-    for package, info in dependencies.iteritems():
+def alter_deps(pkg_obj):
+    tmp_pkg = copy.deepcopy(pkg_obj)
+
+    for package, info in tmp_pkg.iteritems():
         date, version = rollback_version(package)
+        current_version = info['version']
+
+        if DEPS in tmp_pkg[package]:
+            tmp_pkg[package][DEPS] = alter_deps(tmp_pkg[package][DEPS])
+
+        del tmp_pkg[package]['from']
+        del tmp_pkg[package]['resolved']
         # if info['version'] != version:  # if use this, many inconsistencies
         try:
-            if StrictVersion(info['version']) > StrictVersion(version):
-                print(package, info['version'], version)
+            if StrictVersion(current_version) > StrictVersion(version):
+                tmp_pkg[package]['version'] = version
+                print(package, current_version, version)
         except:
-            print('ERR!', package, info['version'], version)
+            print('ERR!', package, current_version, version)
+
+    return tmp_pkg
+
+
+with open('../npm-shrinkwrap.json') as f:
+    shrinkwrap = json.load(f)
+    shrinkwrap[DEPS] = alter_deps(shrinkwrap[DEPS])
+    print(json.dumps(shrinkwrap,indent=4))
 # TODO write new file
