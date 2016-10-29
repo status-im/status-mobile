@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 from distutils.version import StrictVersion
 
 # Set this date for rollback
-min_age = datetime.today() - timedelta(days=7)
+# min_age = datetime.today() - timedelta(days=7)
+min_age = parser.parse('2016-10-22').replace(tzinfo=None)
 
 newest_date = (datetime.utcfromtimestamp(0), '')  # epoch
 DEPS = 'dependencies'
