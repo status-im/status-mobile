@@ -101,10 +101,12 @@
 
 (defn container-animation-logic [{:keys [to-value val animate?]}]
   (when-let [to-value @to-value]
-    (when-not (= to-value (.-_value val))
-      (if (or (nil? @animate?) @animate?)
-        (anim/start (anim/spring val {:toValue to-value}))
-        (anim/set-value val to-value)))))
+    (let [max-layout-height (subscribe [:max-layout-height :default])
+          to-value          (min to-value (max 0 @max-layout-height))]
+      (when-not (= to-value (.-_value val))
+        (if (or (nil? @animate?) @animate?)
+          (anim/start (anim/spring val {:toValue to-value}))
+          (anim/set-value val to-value))))))
 
 (defn container [h & elements]
   (let [;; todo to-response-height, cur-response-height must be specific

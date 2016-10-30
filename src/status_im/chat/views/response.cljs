@@ -23,7 +23,8 @@
             [status-im.utils.platform :refer [ios?]]
             [status-im.components.webview-bridge :refer [webview-bridge]]
             [status-im.i18n :refer [label]]
-            [status-im.utils.datetime :as dt]))
+            [status-im.utils.datetime :as dt]
+            [taoensso.timbre :as log]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -52,7 +53,7 @@
            (dt/format-date "HH:mm" added))])])
 
 (defn request-info [response-height]
-  (let [layout-height (subscribe [:get :layout-height])
+  (let [layout-height (subscribe [:max-layout-height :default])
         pan-responder (resp/pan-responder response-height
                                           layout-height
                                           :fix-response-height)
@@ -74,19 +75,21 @@
 
 (defn container-animation-logic [{:keys [to-value val animate?]}]
   (when-let [to-value @to-value]
-    (when-not (= to-value (.-_value val))
-      (if (or (nil? @animate?) @animate?)
-        (anim/start (anim/timing val {:toValue  to-value
-                                      :duration 300}))
-        (anim/set-value val to-value)))))
+    (let [max-layout-height (subscribe [:max-layout-height :default])
+          to-value          (min to-value (max 0 @max-layout-height))]
+      (when-not (= to-value (.-_value val))
+        (if (or (nil? @animate?) @animate?)
+          (anim/start (anim/timing val {:toValue  to-value
+                                        :duration 300}))
+          (anim/set-value val to-value))))))
 
 (defn container [response-height & children]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:response-height :default])
+        input-margin       (subscribe [:input-margin])
         changed            (subscribe [:animations :response-height-changed])
         animate?           (subscribe [:animate?])
-        keyboard-height    (subscribe [:get :keyboard-height])
         staged-commands    (subscribe [:get-chat-staged-commands])
         context            {:to-value to-response-height
                             :val      response-height
@@ -101,8 +104,8 @@
        (fn [response-height & children]
          @to-response-height @changed
          (into [animated-view {:style (st/response-view
-                                        (if ios? @keyboard-height 0)
                                         response-height
+                                        @input-margin
                                         @staged-commands)}]
                children))})))
 
