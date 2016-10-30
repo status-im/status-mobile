@@ -251,19 +251,11 @@
 (register-sub :input-margin
   (fn []
     (let [kb-height (subscribe [:get :keyboard-height])
-          command   (subscribe [:get-chat-command])
           focused   (subscribe [:get :focused])
           mode      (subscribe [:kb-mode])]
       (reaction
-        (cond (or ios?
-                  (and (not @focused)
-                       (= :on-send (keyword (:suggestions-trigger @command)))
-                       (pos? @kb-height)))
-              @kb-height
-
-              (and @focused (= :pan @mode) (pos? @kb-height))
-              20
-
+        (cond ios? @kb-height
+              (and @focused (= :pan @mode) (pos? @kb-height)) 20
               :else 0)))))
 
 (register-sub :max-layout-height

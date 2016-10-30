@@ -168,8 +168,7 @@
     (fn [{:keys [current-chat-id chats]} [_ height]]
       (let [{:keys [staged-scroll-view staged-scroll-height]} (get chats current-chat-id)]
         (when staged-scroll-view
-          (let [y (if (and (> staged-scroll-height 0)
-                           (< staged-scroll-height height))
+          (let [y (if (< 0 staged-scroll-height height)
                     (- height staged-scroll-height)
                     0)]
             (.scrollTo staged-scroll-view (clj->js {:x 0 :y y}))))))))
