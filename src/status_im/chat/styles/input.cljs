@@ -12,8 +12,7 @@
 (def command-input-container
   {:flexDirection   :row
    :height          56
-   :backgroundColor color-white
-   :elevation       4})
+   :backgroundColor color-white})
 
 (def command-container
   {:left            0
@@ -71,6 +70,15 @@
    :width      12
    :height     12})
 
+(defn staged-commands [message-input-height input-margin]
+  {:position         :absolute
+   :background-color color-white
+   :bottom           (+ message-input-height input-margin)
+   :left             0
+   :right            0
+   :max-height       150
+   :elevation        5})
+
 (def staged-command-container
   {:flex            1
    :alignItems      :flex-start
@@ -79,7 +87,9 @@
 
 (def staged-command-background
   {:flexDirection   :column
-   :margin          16
+   :margin-top      16
+   :margin-left     16
+   :margin-right    16
    :padding-bottom  12
    :padding-left    12
    :backgroundColor chat-background
@@ -103,3 +113,7 @@
    :marginHorizontal 0
    :fontSize         14
    :color            color-black})
+
+(def staged-commands-bottom
+  {:height 16
+   :background-color "white"})

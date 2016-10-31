@@ -20,19 +20,18 @@
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.chat.views.message :refer [chat-message]]
             [status-im.chat.views.datemark :refer [chat-datemark]]
-            [status-im.chat.views.suggestions :refer [suggestion-container]]
             [status-im.chat.views.response :refer [response-view]]
-            [status-im.chat.views.new-message :refer [chat-message-new]]
+            [status-im.chat.views.new-message :refer [chat-message-input-view]]
+            [status-im.chat.views.staged-commands :refer [staged-commands-view]]
             [status-im.chat.views.actions :refer [actions-view]]
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
+            [status-im.chat.views.suggestions :refer [suggestion-container]]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [status-im.components.sync-state.offline :refer [offline-view]]
             [status-im.constants :refer [content-type-status]]
-            [reagent.core :as r]
-            [cljs-time.core :as t]
-            [taoensso.timbre :as log]))
+            [reagent.core :as r]))
 
 (defn contacts-by-identity [contacts]
   (->> contacts
@@ -171,14 +170,16 @@
        :reagent-render
        (fn [messages]
          @offset
-         [animated-view {:style (st/messages-container messages-offset)}
-          messages])})))
+         (let [staged-scroll-height (subscribe [:get-chat-staged-commands-scroll-height])]
+           [animated-view {:style (st/messages-container @staged-scroll-height messages-offset)}
+            messages]))})))
 
 (defn chat []
   (let [group-chat        (subscribe [:chat :group-chat])
         show-actions?     (subscribe [:chat-ui-props :show-actions?])
         show-bottom-info? (subscribe [:chat-ui-props :show-bottom-info?])
         command?          (subscribe [:command?])
+        staged-commands   (subscribe [:get-chat-staged-commands])
         layout-height     (subscribe [:get :layout-height])]
     (r/create-class
       {:component-did-mount #(dispatch [:check-autorun])
@@ -194,10 +195,12 @@
            [messages-view @group-chat]]
           ;; todo uncomment this
           #_(when @group-chat [typing-all])
-          [response-view]
+          (when (seq @staged-commands)
+            [staged-commands-view @staged-commands])
           (when-not @command?
             [suggestion-container])
-          [chat-message-new]
+          [response-view]
+          [chat-message-input-view]
           (when @show-actions?
             [actions-view])
           (when @show-bottom-info?
