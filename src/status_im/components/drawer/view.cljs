@@ -19,7 +19,8 @@
             [status-im.i18n :refer [label]]
             [status-im.components.react :refer [dismiss-keyboard!]]
             [clojure.string :as str]
-            [cljs.spec :as s]))
+            [cljs.spec :as s]
+            [status-im.components.chat-icon.screen :as ci]))
 
 (defonce drawer-atom (atom))
 
@@ -28,12 +29,6 @@
 
 (defn close-drawer []
   (.closeDrawer @drawer-atom))
-
-(defn user-photo [{:keys [photo-path]}]
-  [image {:source (if (str/blank? photo-path)
-                    res/user-no-photo
-                    {:uri photo-path})
-          :style  st/user-photo}])
 
 (defn menu-item [{:keys [name handler]}]
   [touchable-opacity {:style   st/menu-item-touchable
@@ -58,7 +53,7 @@
           [view st/drawer-menu
            [touchable-opacity {:on-press #(dispatch [:navigate-to :my-profile])}
             [view st/user-photo-container
-             [user-photo {:photo-path photo-path}]]]
+             [ci/chat-icon photo-path {:size 64}]]]
            [view st/name-container
             [text-field
              {:line-color       :white
