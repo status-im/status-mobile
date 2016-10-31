@@ -1,17 +1,11 @@
 (ns status-im.chat.styles.datemark)
 
 (def datemark-wrapper
-  {:flex            1
-   :flex-direction  :column
-   :align-items     :center
-   :justify-content :center})
+  {:flex        1
+   :align-items :center})
 
 (def datemark
-  {:flex            1
-   :flex-direction  :column
-   :align-items     :center
-   :justify-content :center
-   :background-color "#bbc4cb33"
+  {:background-color "#bbc4cb33"
    :padding-left     12
    :padding-right    12
    :margin-top       8
@@ -21,4 +15,5 @@
 
 (def datemark-text
   {:color     "#838c93"
+   :top       4
    :font-size 12})
