@@ -255,37 +255,31 @@
        [group-message-delivery-status message]
        [message-delivery-status message]))])
 
-(defn message-container-animation-logic [{:keys [to-value val callback]}]
+(defn message-container-animation-logic [{:keys [top-offset callback]}]
   (fn [_]
-    (let [to-value @to-value]
-      (when (< 0 to-value)
-        (anim/start
-          (anim/timing val {:toValue  to-value
-                            :duration 250})
-          (fn [arg]
-            (when (.-finished arg)
-              (callback))))))))
+    (anim/start
+      (anim/timing top-offset {:toValue  0
+                               :duration 150})
+      (fn [arg]
+        (when (.-finished arg)
+          (callback))))))
 
 (defn message-container [message & children]
   (if (:new? message)
-    (let [layout-height (r/atom 0)
-          anim-value    (anim/create-value 1)
+    (let [top-offset    (anim/create-value 40)
           anim-callback #(dispatch [:set-message-shown message])
-          context       {:to-value layout-height
-                         :val      anim-value
-                         :callback anim-callback}
+          context       {:top-offset top-offset
+                         :callback   anim-callback}
           on-update     (message-container-animation-logic context)]
       (r/create-class
         {:component-did-update
          on-update
+         :component-did-mount
+         on-update
          :reagent-render
          (fn [message & children]
-           @layout-height
-           [animated-view {:style (st/message-container anim-value)}
-            (into [view {:onLayout (fn [event]
-                                     (let [height (.. event -nativeEvent -layout -height)]
-                                       (reset! layout-height height)))}]
-                  children)])}))
+           [animated-view {:style (st/message-container top-offset)}
+            (into [view] children)])}))
     (into [view] children)))
 
 (defn chat-message [{:keys [outgoing message-id chat-id user-statuses from]}]
