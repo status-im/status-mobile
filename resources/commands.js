@@ -1,7 +1,8 @@
 status.command({
     name: "location",
+    icon: "location",
     description: "Send location",
-    color: "#9a5dcf",
+    color: "#a187d5",
     preview: function (params) {
         var text = status.components.text(
             {
@@ -118,6 +119,7 @@ function sendTransaction(params, context) {
 
 status.command({
     name: "send",
+    icon: "money_white",
     color: "#5fc48d",
     description: "Send transaction",
     params: [{

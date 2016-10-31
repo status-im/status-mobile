@@ -48,9 +48,9 @@
    :lineHeight 20})
 
 (def message-status-icon-text
-  {:marginTop  -2
-   :color      color-white
-   :fontSize   24})
+  {:marginTop -2
+   :color     color-white
+   :fontSize  24})
 
 (def chat-icon
   {:margin        4
@@ -61,13 +61,13 @@
 (def chat-icon-chat-list
   (merge chat-icon
          {:width  40
-          :height 40}))
+          :height 40
+          :margin 0}))
 
 (def chat-icon-menu-item
-  (merge chat-icon
-         {:width         24
-          :height        24
-          :border-radius 12}))
+  {:width         24
+   :height        24
+   :border-radius 12})
 
 (def chat-icon-profile
   (merge chat-icon
@@ -79,7 +79,8 @@
   (merge chat-icon
          {:width         36
           :height        36
-          :border-radius 18}))
+          :border-radius 18
+          :margin        0}))
 
 (def chat-icon-message-status
   {:border-radius 32
@@ -171,3 +172,19 @@
 
 (def container-message-status
   {:margin-top 20})
+
+(def default-border-style
+  {:margin 4})
+
+(defn border-style [size]
+  {:width            size
+   :height           size
+   :border-radius    (/ size 2)
+   :background-color :#b9c8d6
+   :padding          0.5})
+
+(defn image-style [size]
+  (let [image-size (dec size)]
+    {:width         image-size
+     :height        image-size
+     :border-radius (/ image-size 2)}))
