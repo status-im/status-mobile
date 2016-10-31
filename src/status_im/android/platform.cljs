@@ -1,16 +1,17 @@
 (ns status-im.android.platform
   (:require [status-im.components.styles :as styles]
-            [status-im.utils.utils :as u]))
+            [status-im.utils.utils :as u]
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
 (def component-styles
   {:status-bar            {:default     {:height    0
-                                         :bar-style "default"
-                                         :color     styles/color-gray}
+                                         :bar-style "dark-content"
+                                         :color     styles/color-white}
                            :main        {:height    0
-                                         :bar-style "default"
-                                         :color     styles/color-gray}
+                                         :bar-style "dark-content"
+                                         :color     toolbar-background2}
                            :transparent {:height       20
-                                         :bar-style    "default"
+                                         :bar-style    "light-content"
                                          :translucent? true
                                          :color        styles/color-transparent}}
    :chat                  {:new-message {:border-top-color styles/color-transparent

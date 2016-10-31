@@ -88,9 +88,9 @@
            [text {:style st/style-message-text
                   :font  :default}
             content]]]
-         [request-button message-id command @status-initialized?]
          (when (:request-text command)
            [view st/command-request-text-view
             [text {:style st/style-sub-text
                    :font  :default}
-             (:request-text command)]])]))))
+             (:request-text command)]])
+         [request-button message-id command @status-initialized?]]))))

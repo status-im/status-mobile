@@ -28,6 +28,8 @@
    :active-unknown                        "Unknown"
    :available                             "Available"
    :no-messages                           "No messages"
+   :suggestions-requests                  "Requests"
+   :suggestions-commands                  "Commands"
 
    ;sync
    :sync-in-progress                      "Syncing..."
