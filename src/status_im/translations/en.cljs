@@ -143,6 +143,7 @@
    :command-text-location                 "Location: {{address}}"
    :command-text-browse                   "Browsing webpage: {{webpage}}"
    :command-text-send                     "Transaction: {{amount}} ETH"
+   :command-text-help                     "Help"
 
    ;new-group
    :group-chat-name                       "Chat name"

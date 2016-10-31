@@ -26,7 +26,7 @@
    :margin-right   0})
 
 (def send-wrapper
-  {:margin-bottom   8
+  {:margin-bottom   10
    :margin-right    10
    :width           36
    :flex            1

@@ -13,6 +13,8 @@
                                          :bar-style    "default"
                                          :translucent? true
                                          :color        styles/color-transparent}}
+   :chat                  {:new-message {:border-top-color styles/color-transparent
+                                         :border-top-width 0.5}}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}
