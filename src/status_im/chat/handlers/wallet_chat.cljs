@@ -7,7 +7,8 @@
 (def dapp-contact
   {:whisper-identity wallet-chat-id
    :name             (s/capitalize wallet-chat-id)
-   :dapp?            true})
+   :dapp?            true
+   :photo-path       :icon_wallet_avatar})
 
 
 (register-handler :init-wallet-chat

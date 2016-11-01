@@ -16,9 +16,13 @@
    [text {:style (:default-chat-icon-text styles)}
     (first name)]])
 
-(defn chat-icon [photo-path styles]
-  [image {:source {:uri photo-path}
-          :style  (:chat-icon styles)}])
+(defn chat-icon [photo-path {:keys [size border]}]
+  [view
+   (merge st/default-border-style
+          border
+          (st/border-style size))
+   [image {:source {:uri photo-path}
+           :style  (st/image-style size)}]])
 
 (defn dapp-badge [styles]
   [view st/online-view-wrapper
@@ -54,6 +58,7 @@
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
+    :size                   40
     :chat-icon              st/chat-icon-chat-list
     :default-chat-icon      (st/default-chat-icon-chat-list color)
     :default-chat-icon-text st/default-chat-icon-text}])
@@ -64,6 +69,7 @@
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
+    :size                   36
     :chat-icon              st/chat-icon-view-action
     :default-chat-icon      (st/default-chat-icon-view-action color)
     :default-chat-icon-text st/default-chat-icon-text}])
@@ -74,6 +80,7 @@
     :online-view            st/online-view-menu-item
     :online-dot-left        st/online-dot-left-menu-item
     :online-dot-right       st/online-dot-right-menu-item
+    :size                   24
     :chat-icon              st/chat-icon-menu-item
     :default-chat-icon      (st/default-chat-icon-menu-item color)
     :default-chat-icon-text st/default-chat-icon-text}])
@@ -84,6 +91,8 @@
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
+    :size                   64
+    :border                 {}
     :chat-icon              st/chat-icon-message-status
     :default-chat-icon      (st/default-chat-icon-message-status color)
     :default-chat-icon-text st/message-status-icon-text}])
@@ -104,6 +113,7 @@
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
+    :size                   40
     :chat-icon              st/chat-icon-chat-list
     :default-chat-icon      (st/default-chat-icon-chat-list default-chat-color)
     :default-chat-icon-text st/default-chat-icon-text}])
@@ -113,6 +123,7 @@
                 :online-view            st/online-view-profile
                 :online-dot-left        st/online-dot-left-profile
                 :online-dot-right       st/online-dot-right-profile
+                :size                   64
                 :chat-icon              st/chat-icon-profile
                 :default-chat-icon      (st/default-chat-icon-profile color)
                 :default-chat-icon-text st/default-chat-icon-text}]
@@ -125,8 +136,8 @@
 (defview profile-icon []
   [contact [:contact]]
   (let [;; TODO: stub
-        type    :online
-        color   default-chat-color]
+        type  :online
+        color default-chat-color]
     [profile-icon-view (:photo-path @contact) (:name @contact) color type]))
 
 (defn my-profile-icon [{{:keys [photo-path name]} :account
