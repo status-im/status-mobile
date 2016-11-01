@@ -71,6 +71,15 @@ public class StatusConnector extends ServiceConnector {
         }
     }
 
+    public void discardTransaction(String id){
+
+        if (checkBound()) {
+            Bundle data = new Bundle();
+            data.putString("id", id);
+            sendMessage(null, StatusMessages.MSG_DISCARD_TRANSACTION, data);
+        }
+    }
+
     public void initJail(String callbackIdentifier, String js){
 
         if (checkBound()) {

@@ -54,6 +54,9 @@ public class StatusMessages {
      */
     public static final int MSG_JAIL_CALL = 10;
 
-
+    /**
+     * Account discard transaction event
+     */
+    public static final int  MSG_DISCARD_TRANSACTION = 11;
 
 }

@@ -56,6 +56,8 @@
             ids           (map :id transactions')]
         (dispatch [::remove-pending-messages messages-ids])
         (dispatch [::remove-transactions ids])
+        (doseq [id ids]
+          (dispatch [::discard-transaction id]))
         (dispatch [:navigate-back])))))
 
 (register-handler :deny-transaction
@@ -64,7 +66,13 @@
       (let [{:keys [message-id] :as transaction} (get transactions id)]
         (when transaction
           (dispatch [::remove-pending-message message-id])
-          (dispatch [::remove-transaction id]))))))
+          (dispatch [::remove-transaction id])
+          (dispatch [::discard-transaction id]))))))
+
+(register-handler ::discard-transaction
+  (u/side-effect!
+    (fn [db [_ id]]
+      (status/discard-transaction id))))
 
 (register-handler ::remove-transactions
   (fn [db [_ hashes]]
@@ -173,15 +181,22 @@
           (dispatch [::remove-transaction id]))))))
 
 (def wrong-password-code "2")
+(def discard-code "4")
 
 (register-handler :transaction-failed
   (u/side-effect!
     (fn [_ [_ {:keys [id message_id error_code]}]]
-      (if-not (= wrong-password-code error_code)
+      (cond
+
+        (= error_code wrong-password-code)
+        (dispatch [:set-wrong-password!])
+
+        (not= discard-code error_code)
         (do (when message_id
               (dispatch [::remove-pending-message message_id]))
             (dispatch [::remove-transaction id]))
-        (dispatch [:set-wrong-password!])))))
+
+        :else nil))))
 
 (def attempts-limit 3)
 

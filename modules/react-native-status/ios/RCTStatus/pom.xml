@@ -24,8 +24,8 @@
                     <artifactItems>
                         <artifactItem>
                             <groupId>status-im</groupId>
-                            <artifactId>status-go-ios</artifactId>
-                            <version>tx-complete-updates-3</version>
+                            <artifactId>status-go-ios-simulator</artifactId>
+                            <version>tx-discard</version>
                             <type>zip</type>
                             <overWrite>true</overWrite>
                             <outputDirectory>./</outputDirectory>

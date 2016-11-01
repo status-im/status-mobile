@@ -76,6 +76,12 @@
   (when status
     (call-module #(.completeTransaction status hash password callback))))
 
+(defn discard-transaction
+  [id]
+  (log/debug :discard-transaction id)
+  (when status
+    (call-module #(.discardTransaction status id))))
+
 (defn parse-jail [chat-id file callback]
   (when status
     (call-module #(.parseJail status chat-id file callback))))
