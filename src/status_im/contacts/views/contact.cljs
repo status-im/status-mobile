@@ -6,7 +6,7 @@
             [status-im.contacts.views.contact-inner :refer [contact-inner-view]]))
 
 (defn on-press [whisper-identity]
-  #(dispatch [:start-chat whisper-identity]))
+  #(dispatch [:start-chat whisper-identity {} :navigation-replace]))
 
 (defview contact-view [{:keys [whisper-identity] :as contact}]
   [chat [:get-chat whisper-identity]]
