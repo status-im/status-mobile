@@ -99,8 +99,9 @@ function phoneSuggestions(params) {
 
 var phoneConfig = {
     name: "phone",
+    icon: "phone_white",
     description: "Send phone number",
-    color: "#5fc48d",
+    color: "#5bb2a2",
     params: [{
         name: "phone",
         type: status.types.PHONE,

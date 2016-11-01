@@ -6,7 +6,8 @@
             [status-im.discovery.styles :as st]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.identicon :refer [identicon]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [status-im.components.chat-icon.screen :as ci]))
 
 (defview discovery-list-item [{:keys [name photo-path status whisper-id]}]
   [{contact-name       :name
@@ -25,8 +26,8 @@
            :number-of-lines 2}
      status]]
    [view st/popular-list-item-avatar-container
-    [image {:style  st/popular-list-item-avatar
-            :source {:uri (cond
-                            (not (str/blank? contact-photo-path)) contact-photo-path
-                            (not (str/blank? photo-path)) photo-path
-                            :else (identicon whisper-id))}}]]])
+    [ci/chat-icon (cond
+                    (not (str/blank? contact-photo-path)) contact-photo-path
+                    (not (str/blank? photo-path)) photo-path
+                    :else (identicon whisper-id))
+     {:size 36}]]])
