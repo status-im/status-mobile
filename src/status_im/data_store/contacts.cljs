@@ -1,5 +1,6 @@
 (ns status-im.data-store.contacts
-  (:require [status-im.data-store.realm.contacts :as data-store])
+  (:require [status-im.data-store.realm.contacts :as data-store]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [exists?]))
 
 (defn get-all

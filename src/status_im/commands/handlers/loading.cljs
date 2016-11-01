@@ -61,7 +61,9 @@
                        (let [{:keys [error result]} (json->clj result)]
                          (if error
                            (dispatch [::loading-failed! identity ::error-in-jail error])
-                           (dispatch [::add-commands identity file result]))))))
+                           (if identity
+                             (dispatch [::add-commands identity file result])
+                             (dispatch [::add-all-commands result])))))))
 
 (defn validate-hash
   [db [identity file]]
@@ -125,6 +127,11 @@
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])))]
   add-commands)
+
+(reg-handler ::add-all-commands
+  (fn [db [{:keys [commands responses]}]]
+    (assoc db :all-commands {:commands  (mark-as :command commands)
+                             :responses (mark-as :response responses)})))
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))
 

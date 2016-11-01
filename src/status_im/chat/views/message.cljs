@@ -20,6 +20,7 @@
             [status-im.resources :as res]
             [status-im.utils.datetime :as time]
             [status-im.constants :refer [console-chat-id
+                                         wallet-chat-id
                                          text-content-type
                                          content-type-status
                                          content-type-command
@@ -30,7 +31,8 @@
             [status-im.i18n :refer [label]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]
-            [status-im.chat.handlers.console :as console]))
+            [status-im.chat.handlers.console :as console]
+            [taoensso.timbre :as log]))
 
 (defn message-content-status [_]
   (let [{:keys [chat-id group-chat name color]} (subscribe [:chat-properties [:chat-id :group-chat :name :color]])
@@ -72,8 +74,36 @@
            :font  :default}
      "03:39"]]])
 
-(defview message-content-command [content preview]
-  [commands [:get-commands-and-responses]]
+(defmulti command-preview (fn [{:keys [command]}] command))
+
+(defmethod command-preview "send"
+  [{{:keys [name]} :contact-chat
+    :keys          [contact-address params outgoing? current-chat-id]}]
+  (let [amount (if (= 1 (count params))
+                 (first (vals params))
+                 (str params))]
+    [text {:style st/command-text
+           :font  :default}
+     (if (= current-chat-id wallet-chat-id)
+       (let [label-val (if outgoing? :t/chat-send-eth-to :t/chat-send-eth-from)]
+         (label label-val {:amount    amount
+                           :chat-name (or name contact-address)}))
+       (label :t/chat-send-eth {:amount amount}))]))
+
+(defmethod command-preview :default
+  [{:keys [params preview]}]
+  (if preview
+    preview
+    [text {:style st/command-text
+           :font  :default}
+     (if (= 1 (count params))
+       (first (vals params))
+       (str params))]))
+
+(defview message-content-command [{:keys [content rendered-preview chat-id to from outgoing] :as message}]
+  [commands [:get-commands-and-responses (if outgoing to from)]
+   current-chat-id [:get-current-chat-id]
+   contact-chat [:get-in [:chats (if outgoing to from)]]]
   (let [{:keys [command params]} (parse-command-message-content commands content)
         {:keys     [name type]
          icon-path :icon} command]
@@ -86,13 +116,13 @@
      (when icon-path
        [view st/command-image-view
         [icon icon-path st/command-image]])
-     (if preview
-       preview
-       [text {:style st/command-text
-              :font  :default}
-        (if (= 1 (count params))
-          (first (vals params))
-          (str params))])]))
+     [command-preview {:command         (:name command)
+                       :params          params
+                       :outgoing?       outgoing
+                       :preview         rendered-preview
+                       :contact-chat    contact-chat
+                       :contact-address (if outgoing to from)
+                       :current-chat-id current-chat-id}]]))
 
 (defn set-chat-command [message-id command]
   (dispatch [:set-response-chat-command message-id (keyword (:name command))]))
@@ -147,9 +177,9 @@
   [message-content-status message])
 
 (defmethod message-content content-type-command
-  [wrapper {:keys [content rendered-preview] :as message}]
+  [wrapper message]
   [wrapper message
-   [message-view message [message-content-command content rendered-preview]]])
+   [message-view message [message-content-command message]]])
 
 (defmethod message-content :default
   [wrapper {:keys [content-type content] :as message}]
@@ -206,10 +236,15 @@
   [app-db-message-status-value [:get-in [:message-statuses message-id :status]]]
   (let [delivery-status (get-in user-statuses [chat-id :status])
         command-name    (keyword (:command content))
-        status          (if (and (not (console/commands-with-delivery-status command-name))
-                                 (cu/console? chat-id))
-                          :seen
-                          (or delivery-status message-status app-db-message-status-value :sending))]
+        status          (cond (and (not (console/commands-with-delivery-status command-name))
+                                   (cu/console? chat-id))
+                              :seen
+
+                              (cu/wallet? chat-id)
+                              :sent
+
+                              :else
+                              (or delivery-status message-status app-db-message-status-value :sending))]
     [view st/delivery-view
      [image {:source (case status
                        :seen {:uri :icon_ok_small}

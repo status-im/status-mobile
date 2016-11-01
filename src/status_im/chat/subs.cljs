@@ -9,6 +9,7 @@
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]
             [status-im.constants :refer [content-type-status]]
+            [status-im.chat.utils :as cu]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
             [taoensso.timbre :as log]))
@@ -61,11 +62,13 @@
       (reaction (or (get-in @db [:chats current-chat :responses]) {})))))
 
 (register-sub :get-commands-and-responses
-  (fn [db _]
-    (let [current-chat (@db :current-chat-id)]
-      (reaction _ (or (->> (get-in @db [:chats current-chat])
-                           ((juxt :commands :responses))
-                           (apply merge)) {})))))
+  (fn [db [_ chat-id]]
+    (reaction (or (->> (get-in @db [:chats chat-id])
+                       ((juxt :commands :responses))
+                       (apply merge))
+                  (->> (get @db :all-commands)
+                       ((juxt :commands :responses))
+                       (apply merge))))))
 
 (register-sub :get-chat-input-text
   (fn [db _]

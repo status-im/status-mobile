@@ -152,9 +152,9 @@
 (register-handler ::send-pending-message
   (u/side-effect!
     (fn [{:keys [transaction-subscribers]} [_ message-id hash]]
-      (when-let [params (transaction-subscribers message-id)]
+      (when-let [{:keys [chat-id] :as params} (transaction-subscribers message-id)]
         (let [params' (assoc-in params [:handler-data :transaction-hash] hash)]
-          (dispatch [:prepare-command! params']))
+          (dispatch [:prepare-command! chat-id params']))
         (dispatch [::remove-transaction-subscriber message-id])))))
 
 (register-handler ::remove-transaction-subscriber

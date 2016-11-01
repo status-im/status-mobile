@@ -32,10 +32,10 @@
             parameters' (assoc parameters :command command')]
         (if (:eth_sendTransaction context)
           (dispatch [:wait-for-transaction (:id staged-command) parameters'])
-          (dispatch [:prepare-command! parameters'])))
+          (dispatch [:prepare-command! chat-id parameters'])))
 
       (not (or error handler-error))
-      (dispatch [:prepare-command! parameters])
+      (dispatch [:prepare-command! chat-id parameters])
 
       :else nil)))
 
