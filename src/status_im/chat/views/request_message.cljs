@@ -53,12 +53,12 @@
                         :loop?     loop?}]
     (r/create-class
       {:component-did-mount
-       (when-not @answered? #(request-button-animation-logic context))
+       (if @answered? #(request-button-animation-logic context) (fn []))
        :component-will-unmount
        #(reset! loop? false)
        :reagent-render
        (fn [message-id {command-icon :icon :as command} status-initialized?]
-         (if command
+         (when command
            [touchable-highlight
             {:on-press            (when (and (not @answered?) status-initialized?)
                                     #(set-chat-command message-id command))

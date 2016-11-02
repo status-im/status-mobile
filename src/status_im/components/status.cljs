@@ -1,11 +1,12 @@
 (ns status-im.components.status
-  (:require-macros [status-im.utils.slurp :refer [slurp]]
-                   [cljs.core.async.macros :refer [go-loop go]])
+  (:require-macros
+    [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.components.react :as r]
             [status-im.utils.types :as t]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
-            [cljs.core.async :refer [<! timeout]]))
+            [cljs.core.async :refer [<! timeout]]
+            [status-im.utils.js-resources :as js-res]))
 
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
@@ -23,7 +24,7 @@
   (swap! calls conj args))
 
 (defn call-module [f]
-  (log/debug :call-module)
+  (log/debug :call-module f)
   (if @module-initialized?
     (f)
     (store-call f)))
@@ -40,14 +41,12 @@
           (reset! loop-started false))
       (recur (<! (timeout 500))))))
 
-(def status-js (slurp "resources/status.js"))
-
 (def status
   (when (exists? (.-NativeModules r/react-native))
     (.-Status (.-NativeModules r/react-native))))
 
 (defn init-jail []
-  (.initJail status status-js #(log/debug "jail initialized")))
+  (.initJail status js-res/status-js #(log/debug "jail initialized")))
 
 (when status (call-module init-jail))
 

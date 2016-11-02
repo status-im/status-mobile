@@ -305,7 +305,9 @@
   (let [chat-id          (or id current-chat-id)
         messages         (get-in db [:chats chat-id :messages])
         db'              (assoc db :current-chat-id chat-id)
-        commands-loaded? (get-in db [:chats chat-id :commands-loaded])]
+        commands-loaded? (if js/goog.DEBUG
+                           false
+                           (get-in db [:chats chat-id :commands-loaded]))]
     (when (= current-chat-id wallet-chat-id)
       (dispatch [:cancel-command]))
     (dispatch [:load-requests! chat-id])

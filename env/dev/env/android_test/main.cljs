@@ -2,8 +2,8 @@
   (:require [reagent.core :as r]
             [status-im.android.core :as core]
             [figwheel.client :as figwheel :include-macros true]
-            [status-im.test.handlers-stubs :refer [init-stubs]]))
-
+    ;[status-im.test.handlers-stubs :refer [init-stubs]]
+            ))
 (enable-console-print!)
 
 (set! js/console.disableYellowBox true)
@@ -18,4 +18,4 @@
   :jsload-callback #(swap! cnt inc))
 
 (core/init :test)
-(init-stubs)
+;(init-stubs)
