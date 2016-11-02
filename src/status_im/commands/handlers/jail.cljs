@@ -52,7 +52,7 @@
 (defn suggestions-events-handler!
   [db [[n data]]]
   (case (keyword n)
-    :set-value (dispatch [:set-chat-command-content data])
+    :set-value (dispatch [:fill-chat-command-content data])
     ;; todo show error?
     nil))
 
@@ -92,3 +92,8 @@
 (reg-handler :command-preview
   (after (print-error-message! "Error on command preview"))
   command-preview)
+
+(reg-handler :set-local-storage
+  (fn [{:keys [current-chat-id] :as db} [{:keys [data] :as event}]]
+    (log/debug "Got event: " event)
+    (assoc-in db [:local-storage current-chat-id] data)))

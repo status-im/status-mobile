@@ -26,7 +26,7 @@
   (swap! calls conj args))
 
 (defn call-module [f]
-  (log/debug :call-module f)
+  ;(log/debug :call-module f)
   (if @module-initialized?
     (f)
     (store-call f)))
@@ -106,10 +106,14 @@
                                :debug js/goog.DEBUG
                                :locale i/i18n.locale)
                cb      (fn [r]
-                         (let [r' (t/json->clj r)]
+                         (let [{:keys [result] :as r'} (t/json->clj r)
+                               {:keys [messages]} result]
                            (log/debug r')
+                           (doseq [{:keys [type message]} messages]
+                             (log/debug (str "VM console(" type ") - " message)))
                            (callback r')))]
            (.callJail status chat-id (cljs->json path) (cljs->json params') cb))))))
+
 
 (defn set-soft-input-mode [mode]
   (when status

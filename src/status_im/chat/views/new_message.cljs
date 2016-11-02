@@ -34,13 +34,17 @@
    parameter [:get-command-parameter]
    type [:command-type]
    suggestions [:get-suggestions]
-   staged-commands [:get-chat-staged-commands]]
+   staged-commands [:get-chat-staged-commands]
+   message-input-height [:get-message-input-view-height]]
   (let [on-top? (or (and (not (empty? suggestions))
                          (not command?))
                     (not= response-height input-height))
         style   (when-not (seq staged-commands)
                   (get-in platform-specific [:component-styles :chat :new-message]))]
     [view {:style     (merge (st/new-message-container margin on-top?) style)
-           :on-layout #(dispatch [:set-message-input-view-height (get-height %)])}
+           :on-layout (fn [event]
+                        (let [height (get-height event)]
+                          (when (not= height message-input-height)
+                            (dispatch [:set-message-input-view-height height]))))}
      [plain-message-input-view
       (when command? (get-options parameter type))]]))

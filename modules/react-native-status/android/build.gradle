@@ -14,5 +14,5 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile(group: 'status-im', name: 'status-go', version: 'rebase-to-1.5.4-unstable', ext: 'aar')
+    compile(group: 'status-im', name: 'status-go', version: 'local-storage', ext: 'aar')
 }
