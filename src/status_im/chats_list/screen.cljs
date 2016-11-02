@@ -50,9 +50,11 @@
 (defn chats-action-button []
   [view {:style         (st/action-buttons-container false 0)
          :pointerEvents :box-none}
-   [action-button {:buttonColor color-blue
-                   :offsetY     16
-                   :offsetX     16}
+   [action-button {:button-color color-blue
+                   :offset-x     16
+                   :offset-y     -2
+                   :hide-shadow  true
+                   :spacing      13}
     [action-button-item
      {:title       (label :t/new-chat)
       :buttonColor :#9b59b6
