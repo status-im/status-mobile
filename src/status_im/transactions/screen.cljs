@@ -11,6 +11,7 @@
             [status-im.components.styles :refer [icon-ok
                                                  icon-close]]
             [status-im.components.carousel.carousel :refer [carousel]]
+            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.toolbar.styles :refer [toolbar-title-container]]
             [status-im.components.text-field.view :refer [text-field]]
@@ -25,6 +26,7 @@
    {:keys [password]} [:get :confirm-transactions]
    wrong-password? [:wrong-password?]]
   [view st/transactions-screen
+   [status-bar {:type :transparent}]
    [toolbar
     {:style          st/transactions-toolbar
      :nav-action     {:image   {:source {:uri :icon_close_white}
@@ -41,19 +43,19 @@
    [view st/carousel-container
     [carousel {:pageStyle st/carousel-page-style
                :gap       16
-               :count     (count transactions)
-               :sneak     20}
+               :sneak     20
+               :count     (count transactions)}
      (when transactions
        (for [transaction transactions]
          [transaction-page transaction]))]]
    [view st/form-container
     [text-field
-     {:input-style       st/password-style
-      :secure-text-entry true
+     {:editable          true
       :error             (when wrong-password? (label :t/wrong-password))
       :error-color       :#ffffff80 #_:#7099e6
-      :line-color        :white
-      :label-color       :#ffffff80
-      :value             password
       :label             (label :t/password)
+      :secure-text-entry true
+      :label-color       :#ffffff80
+      :line-color        :white
+      :input-style       st/password-style
       :on-change-text    #(dispatch [:set-in [:confirm-transactions :password] %])}]]])
