@@ -1,6 +1,6 @@
 (ns status-im.components.refreshable-text.view
   (:require [reagent.core :as r]
-            [reagent.impl.util :as ru]
+            [reagent.impl.component :as rc]
             [status-im.components.react :refer [view
                                                 animated-view
                                                 text]]
@@ -39,7 +39,7 @@
           :value     value})
        :component-will-update
        (fn [component props]
-         (let [{new-value :value} (ru/extract-props props)
+         (let [{new-value :value} (rc/extract-props props)
                {old-value :value} (r/props component)]
            (r/set-state component {:old-value old-value
                                    :value     new-value})
