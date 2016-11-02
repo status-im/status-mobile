@@ -131,6 +131,6 @@
   {:position  :absolute
    :right     0
    :height    230
-   :width     220
+   :width     230
    :bottom    0
    :transform [{:translateY (if animation? offset-y 1)}]})

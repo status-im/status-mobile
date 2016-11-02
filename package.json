@@ -32,7 +32,7 @@
     "re-natal": "0.2.38",
     "react": "^15.3.1",
     "react-native": "^0.36.0",
-    "react-native-action-button": "^1.1.11",
+    "react-native-action-button": "2.0.13",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",
     "react-native-circle-checkbox": "github:paramoshkinandrew/ReactNativeCircleCheckbox",

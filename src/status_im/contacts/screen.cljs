@@ -76,9 +76,11 @@
 
 (defn contacts-action-button []
   [view st/buttons-container
-   [action-button {:buttonColor color-blue
-                   :offsetY     16
-                   :offsetX     16}
+   [action-button {:button-color color-blue
+                   :offset-x     16
+                   :offset-y     -2
+                   :hide-shadow  true
+                   :spacing      13}
     [action-button-item
      {:title       (label :t/new-contact)
       :buttonColor :#9b59b6
