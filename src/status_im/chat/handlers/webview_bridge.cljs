@@ -19,7 +19,6 @@
 
 (defn scan-qr-handler
   [{:keys [contacts]} [_ _ data]]
-  (log/debug "scaned qr" data)
   (let [data'  (read-string data)
         data'' (cond
                  (map? data') data'
@@ -39,7 +38,6 @@
     (assoc db :webview-bridge bridge)))
 
 (defn contacts-click-handler [whisper-identity action params]
-  (log/debug "Contact clicked: " whisper-identity action params)
   (dispatch [:navigate-back])
   (when action
     (if (= whisper-identity :qr-scan)
@@ -57,7 +55,6 @@
                            :parameter-idx 0
                            :params        {"amount" (:amount params)}
                            :to-message-id nil}]
-        (log/debug "Staging command: " command-key command command-input)
         (dispatch [:stage-command command-input command])))))
 
 

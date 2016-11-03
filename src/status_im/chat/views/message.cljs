@@ -130,9 +130,6 @@
                        :contact-address (if outgoing to from)
                        :current-chat-id current-chat-id}]]))
 
-(defn set-chat-command [message-id command]
-  (dispatch [:set-response-chat-command message-id (keyword (:name command))]))
-
 (defn message-view
   [message content]
   [view (st/message-view message)

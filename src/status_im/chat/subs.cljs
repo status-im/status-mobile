@@ -9,10 +9,7 @@
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]
             [status-im.constants :refer [content-type-status]]
-            [status-im.chat.utils :as cu]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.platform :refer [platform-specific]]
-            [taoensso.timbre :as log]))
+            [status-im.utils.platform :refer [platform-specific]]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]
@@ -116,9 +113,8 @@
     (let [command (subscribe [:get-chat-command])
           chat-id (subscribe [:get-current-chat-id])]
       (reaction
-        (let [path [:chats @chat-id :command-input :parameter-idx]
-              n    (get-in @db path)]
-          (when n (nth (:params @command) n)))))))
+        (let [parameter-index (commands/get-command-parameter-index @db @chat-id)]
+          (when parameter-index (nth (:params @command) parameter-index)))))))
 
 (register-sub :get-chat-command-content
   (fn [db _]
