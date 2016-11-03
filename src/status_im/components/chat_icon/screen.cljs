@@ -17,12 +17,9 @@
     (first name)]])
 
 (defn chat-icon [photo-path {:keys [size border]}]
-  [view
-   (merge st/default-border-style
-          border
-          (st/border-style size))
-   [image {:source {:uri photo-path}
-           :style  (st/image-style size)}]])
+  [image {:source {:uri photo-path}
+          :style  (merge st/default-image-style
+                         (st/image-style size))}])
 
 (defn dapp-badge [styles]
   [view st/online-view-wrapper
@@ -92,7 +89,6 @@
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
     :size                   64
-    :border                 {}
     :chat-icon              st/chat-icon-message-status
     :default-chat-icon      (st/default-chat-icon-message-status color)
     :default-chat-icon-text st/message-status-icon-text}])

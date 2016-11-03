@@ -173,7 +173,7 @@
 (def container-message-status
   {:margin-top 20})
 
-(def default-border-style
+(def default-image-style
   {:margin 4})
 
 (defn border-style [size]
