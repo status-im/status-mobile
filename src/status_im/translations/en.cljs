@@ -85,11 +85,13 @@
    :incorrect-code                        (str "Sorry the code was incorrect, please enter again")
    :generate-passphrase                   (str "I'll generate a passphrase for you so you can restore your "
                                                "access or log in from another device")
+   :phew-here-is-your-passphrase          "*Phew* that was hard, here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :here-is-your-passphrase               "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :written-down                          "Make sure you had securely written it down"
    :phone-number-required                 "Tap here to enter your phone number & I'll find your friends"
    :intro-status                          "Chat with me to setup your account and change your settings!"
    :intro-message1                        "Welcome to Status\nTap this message to set your password & get started!"
+   :account-generation-message            "Gimmie a sec, I gotta do some crazy math to generate your account!"
 
    ;chats
    :chats                                 "Chats"
