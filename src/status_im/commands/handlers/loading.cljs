@@ -1,5 +1,4 @@
 (ns status-im.commands.handlers.loading
-  (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [re-frame.core :refer [path after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [http-get show-popup]]
@@ -10,13 +9,14 @@
             [status-im.commands.utils :refer [reg-handler]]
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [taoensso.timbre :as log]
-            [status-im.utils.homoglyph :as h]))
+            [status-im.utils.homoglyph :as h]
+            [status-im.utils.js-resources :as js-res]))
 
 (def commands-js "commands.js")
 
 (defn load-commands!
-  [_ [identity]]
-  (dispatch [::fetch-commands! identity])
+  [{:keys [current-chat-id]} [identity]]
+  (dispatch [::fetch-commands! (or identity current-chat-id)])
   ;; todo uncomment
   #_(if-let [{:keys [file]} (commands/get-by-chat-id identity)]
       (dispatch [::parse-commands! identity file])
@@ -28,13 +28,13 @@
     ;-let [url (get-in db [:chats identity :dapp-url])]
     (cond
       (= console-chat-id identity)
-      (dispatch [::validate-hash identity (slurp "resources/console.js")])
+      (dispatch [::validate-hash identity js-res/console-js])
 
       (= wallet-chat-id identity)
-      (dispatch [::validate-hash identity (slurp "resources/wallet.js")])
+      (dispatch [::validate-hash identity js-res/wallet-js])
 
       :else
-      (dispatch [::validate-hash identity (slurp "resources/commands.js")])
+      (dispatch [::validate-hash identity js-res/commands-js])
       #_(http-get (s/join "/" [url commands-js])
 
                   #(dispatch [::validate-hash identity %])
@@ -89,8 +89,8 @@
   (let [commands'  (filter-forbidden-names id commands)
         responses' (filter-forbidden-names id responses)]
     (-> db
-        (update-in [id :commands] merge (mark-as :command commands'))
-        (update-in [id :responses] merge (mark-as :response responses'))
+        (assoc-in [id :commands] (mark-as :command commands'))
+        (assoc-in [id :responses] (mark-as :response responses'))
         (assoc-in [id :commands-loaded] true)
         (assoc-in [id :autorun] autorun))))
 

@@ -1,7 +1,6 @@
 (ns status-im.chat.views.response
   (:require-macros [reagent.ratom :refer [reaction]]
-                   [status-im.utils.views :refer [defview]]
-                   [status-im.utils.slurp :refer [slurp]])
+                   [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.components.react :refer [view
@@ -25,7 +24,8 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.datetime :as dt]
             [taoensso.timbre :as log]
-            [status-im.utils.name :refer [shortened-name]]))
+            [status-im.utils.name :refer [shortened-name]]
+            [status-im.utils.js-resources :as js-res]))
 
 (defn drag-icon []
   [view st/drag-container
@@ -135,7 +135,7 @@
       :source                     {:uri url}
       :render-error               web-view-error
       :java-script-enabled        true
-      :injected-java-script       (slurp "resources/webview.js")
+      :injected-java-script       js-res/webview-js
       :bounces                    false
       :on-navigation-state-change on-navigation-change}]))
 

@@ -57,7 +57,7 @@ fi
 lein deps && re-natal deps && re-natal use-android-device "${device_type}" && re-natal use-figwheel
 
 # open figwheel in new tab
-tab "lein figwheel ${cljs_build}"
+tab "BUILD_IDS=${cljs_build} lein repl"
 
 # open react-native package in new tab
 tab "react-native start"
