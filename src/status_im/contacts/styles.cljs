@@ -189,7 +189,8 @@
 
 (def form-container
   {:margin-left 16
-   :margin-top  16})
+   :margin-top  16
+   :height      72})
 
 (def address-explication-container
   {:flex         1
