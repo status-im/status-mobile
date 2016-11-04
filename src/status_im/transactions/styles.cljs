@@ -20,7 +20,8 @@
    :paddingLeft 16})
 
 (def password-style
-  {:color :white})
+  {:color     :white
+   :font-size 12})
 
 ;transaction-page
 
@@ -34,9 +35,10 @@
    :justifyContent :center})
 
 (def title-bar-text
-  {:color "#838c93"
-   :fontSize 13
-   :marginLeft 12})
+  {:color        "#838c93"
+   :font-size    13
+   :margin-left  12
+   :margin-right 30})
 
 (def icon-close-container
   {:position :absolute
@@ -63,9 +65,7 @@
 
 (def transaction-info-row
   {:flex 1
-   :flexDirection :row
-   :height 20
-   })
+   :flexDirection :row})
 
 (def transaction-info-column-title
   {:flex 0.4
