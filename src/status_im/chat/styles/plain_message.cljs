@@ -51,7 +51,7 @@
    :font-size   14
    :line-height 20
    :color       text1-color
-   :padding-top (when p/ios? -6)})
+   :padding-top 0})
 
 (def smile-icon
   {:width  20

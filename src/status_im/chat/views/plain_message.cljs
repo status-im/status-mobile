@@ -102,5 +102,5 @@
                                            )
                                :disabled @command?}
           [animated-view {:style (st/message-input-button-touchable container-width height)}
-           [animated-view {:style (st/message-input-button buttons-scale 15)}
+           [animated-view {:style (st/message-input-button buttons-scale 16)}
             [icon :smile st/smile-icon]]]])})))

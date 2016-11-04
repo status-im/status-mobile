@@ -93,9 +93,9 @@
        (fn [{:keys [input-options]}]
          (let [{:keys [height]} (r/state component)]
            [view st/input-container
-            [view st/input-view
+            [view (st/input-view height)
              [plain-message/commands-button height #(set-layout-size 0)]
-             [view st/message-input-container
+             [view (st/message-input-container height)
               (if @command?
                 [command-input input-options @command]
                 [message-input input-options set-layout-size])]

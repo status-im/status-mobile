@@ -4,7 +4,7 @@
 (def max-input-height 66)
 (def min-input-height 22)
 (def input-spacing-top 16)
-(def input-spacing-bottom 16)
+(def input-spacing-bottom 18)
 
 (def request-info-height 61)
 (def response-height-normal 211)

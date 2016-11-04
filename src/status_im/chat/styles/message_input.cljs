@@ -10,29 +10,31 @@
 (def input-container
   {:flex-direction :column})
 
-(def input-view
+(defn input-view [content-height]
   {:flex-direction   :row
    :align-items      :center
    :justify-content  :center
-   :height           56
+   :height           (+ (min (max min-input-height content-height) max-input-height)
+                        input-spacing-top
+                        input-spacing-bottom)
    :background-color color-white})
 
-(def message-input-container
-  {:height         16.5
-   :margin-top     20
-   :margin-bottom  19.5
-   :flex           1
-   :flex-direction :column
-   :margin-right   0})
+(defn message-input-container [content-height]
+  {:height           (min (max min-input-height content-height) max-input-height)
+   :margin-top       input-spacing-top
+   :margin-bottom    input-spacing-bottom
+   :flex             1
+   :flex-direction   "column"
+   :margin-right     0})
 
 (def send-wrapper
-  {:margin-bottom   10
+  {:margin-top      10
    :margin-right    10
    :width           36
    :flex            1
    :flex-direction  "column"
    :align-items     :center
-   :justify-content :flex-end})
+   :justify-content :flex-start})
 
 (def send-container
   {:width            36
