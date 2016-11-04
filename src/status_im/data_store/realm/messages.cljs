@@ -27,6 +27,13 @@
        (realm/page from (+ from number-of-messages))
        (realm/realm-collection->list))))
 
+(defn get-by-fields
+  [fields from number-of-messages]
+  (-> (realm/get-by-fields @realm/account-realm :message :and fields)
+      (realm/sorted :timestamp :desc)
+      (realm/page from (+ from number-of-messages))
+      (realm/realm-collection->list)))
+
 (defn get-last-message
   [chat-id]
   (-> (realm/get-by-field @realm/account-realm :message :chat-id chat-id)

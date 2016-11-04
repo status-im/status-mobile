@@ -64,7 +64,8 @@
               db
               (let [messages-path [:chats current-chat-id :messages]
                     messages      (get-in db messages-path)
-                    new-messages  (messages/get-by-chat-id current-chat-id (count messages))
+                    chat-messages (filter #(= current-chat-id (:chat-id %)) messages)
+                    new-messages  (messages/get-by-chat-id current-chat-id (count chat-messages))
                     all-loaded?   (> default-number-of-messages (count new-messages))]
                 (-> db
                     (assoc :loading-allowed false)

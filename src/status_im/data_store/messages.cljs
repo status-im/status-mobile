@@ -5,7 +5,8 @@
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [status-im.commands.utils :refer [generate-hiccup]]
             [cljs.reader :refer [read-string]]
-            [status-im.constants :as c])
+            [status-im.constants :as c]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [update]))
 
 (defn- map-to-str
@@ -45,6 +46,21 @@
   [message-id]
   (some-> (data-store/get-by-id message-id)
           (clojure.core/update :user-statuses user-statuses-to-map)))
+
+(defn get-messages
+  [messages]
+  (->> messages
+       (mapv #(clojure.core/update % :user-statuses user-statuses-to-map))
+       (into '())
+       reverse
+       (keep (fn [{:keys [content-type preview] :as message}]
+               (if (command-type? content-type)
+                 (-> message
+                     (clojure.core/update :content str-to-map)
+                     (assoc :rendered-preview
+                            (when preview
+                              (generate-hiccup (read-string preview)))))
+                 message)))))
 
 (defn get-by-chat-id
   ([chat-id]

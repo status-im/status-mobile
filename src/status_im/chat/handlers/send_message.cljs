@@ -14,7 +14,7 @@
             [status-im.utils.datetime :as datetime]
             [status-im.protocol.core :as protocol]
             [taoensso.timbre :refer-macros [debug] :as log]
-            [status-im.constants :refer [console-chat-id]]
+            [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [status-im.chat.handlers.console :as console]))
 
 (defn prepare-command
@@ -76,7 +76,7 @@
               (dispatch [::invoke-command-handlers! params'])
 
               :else
-              (dispatch [:prepare-command! params'])))))
+              (dispatch [:prepare-command! chat-id params'])))))
       (when-not (s/blank? message)
         (dispatch [::prepare-message params])))))
 
@@ -88,13 +88,19 @@
 (register-handler :prepare-command!
   (u/side-effect!
     (fn [{:keys [current-public-key] :as db}
-         [_ {:keys [chat-id staged-command handler-data] :as params}]]
-      (let [{:keys [clock-value]} (get-in db [:chats chat-id])
+         [_ add-to-chat-id {:keys [chat-id staged-command handler-data] :as params}]]
+      (let [{:keys [clock-value]} (get-in db [:chats add-to-chat-id])
             command' (->> (assoc staged-command :handler-data handler-data)
                           (prepare-command current-public-key chat-id clock-value)
                           (cu/check-author-direction db chat-id))]
         (dispatch [:clear-command chat-id (:id staged-command)])
-        (dispatch [::send-command! (assoc params :command command')])))))
+        (dispatch [::send-command! add-to-chat-id (assoc params :command command')])
+
+        (when (and (= "send" (get-in staged-command [:command :name]))
+                   (not= add-to-chat-id wallet-chat-id))
+          (let [staged-command' (assoc staged-command :id (random/id))
+                params'         (assoc params :staged-command staged-command')]
+            (dispatch [:prepare-command! wallet-chat-id params'])))))))
 
 (register-handler :clear-command
   (fn [db [_ chat-id id]]
@@ -104,21 +110,22 @@
 
 (register-handler ::send-command!
   (u/side-effect!
-    (fn [_ [_ params]]
-      (dispatch [::add-command params])
-      (dispatch [::save-command! params])
-      (dispatch [::dispatch-responded-requests! params])
-      (dispatch [::send-command-protocol! params]))))
+    (fn [_ [_ add-to-chat-id params]]
+      (dispatch [::add-command add-to-chat-id params])
+      (dispatch [::save-command! add-to-chat-id params])
+      (when (not= add-to-chat-id wallet-chat-id)
+        (dispatch [::dispatch-responded-requests! params])
+        (dispatch [::send-command-protocol! params])))))
 
 (register-handler ::add-command
-  (after (fn [_ [_ {:keys [handler]}]]
+  (after (fn [_ [_ _ {:keys [handler]}]]
            (when handler (handler))))
-  (fn [db [_ {:keys [chat-id command]}]]
-    (cu/add-message-to-db db chat-id command)))
+  (fn [db [_ add-to-chat-id {:keys [chat-id command]}]]
+    (cu/add-message-to-db db add-to-chat-id chat-id command)))
 
 (register-handler ::save-command!
   (u/side-effect!
-    (fn [_ [_ {:keys [command chat-id]}]]
+    (fn [_ [_ chat-id {:keys [command]}]]
       (messages/save
         chat-id
         (dissoc command :rendered-preview :to-message :has-handler)))))
@@ -178,7 +185,7 @@
 
 (register-handler ::add-message
   (fn [db [_ {:keys [chat-id message]}]]
-    (cu/add-message-to-db db chat-id message)))
+    (cu/add-message-to-db db chat-id chat-id message)))
 
 (register-handler ::save-message!
   (after (fn [_ [_ params]]

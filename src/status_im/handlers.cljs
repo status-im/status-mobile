@@ -72,7 +72,8 @@
       (dispatch [:load-accounts])
       (dispatch [:init-console-chat])
       (dispatch [:init-wallet-chat])
-      (dispatch [:load-commands! console-chat-id]))))
+      (dispatch [:load-commands! console-chat-id])
+      (dispatch [:load-commands!]))))
 
 (def ecc (js/require "eccjs"))
 

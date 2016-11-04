@@ -5,7 +5,8 @@
             [status-im.chat.utils :as cu]
             [status-im.commands.utils :refer [generate-hiccup]]
             [status-im.utils.random :as random]
-            [status-im.constants :refer [content-type-command-request]]
+            [status-im.constants :refer [wallet-chat-id
+                                         content-type-command-request]]
             [cljs.reader :refer [read-string]]
             [status-im.data-store.chats :as chats]
             [taoensso.timbre :as log]))
@@ -25,8 +26,10 @@
   [{:keys [current-account-id accounts]}]
   (:public-key (accounts current-account-id)))
 
-(defn receive-message
-  [db [_ {:keys [from group-id chat-id message-id timestamp clock-value] :as message :or {clock-value 0}}]]
+(declare add-message-to-wallet)
+
+(defn add-message
+  [db {:keys [from group-id chat-id message-id timestamp clock-value] :as message :or {clock-value 0}}]
   (let [same-message     (messages/get-by-id message-id)
         current-identity (get-current-identity db)
         chat-id'         (or group-id chat-id from)
@@ -40,22 +43,31 @@
     (when (and (not same-message)
                (not= from current-identity)
                (or (not exists?) active?))
-      (let [group-chat? (not (nil? group-id))
+      (let [group-chat?      (not (nil? group-id))
             previous-message (messages/get-last-message chat-id')
-            message' (assoc (->> message
-                                 (cu/check-author-direction previous-message)
-                                 (check-preview))
-                       :chat-id chat-id'
-                       :timestamp (or timestamp (random/timestamp))
-                       :clock-value clock-value)]
+            message'         (assoc (->> message
+                                         (cu/check-author-direction previous-message)
+                                         (check-preview))
+                               :chat-id chat-id'
+                               :timestamp (or timestamp (random/timestamp))
+                               :clock-value clock-value)]
         (store-message message')
         (dispatch [:upsert-chat! {:chat-id     chat-id'
                                   :group-chat  group-chat?
                                   :clock-value clock-value}])
-        (dispatch [::add-message message'])
+        (dispatch [::add-message chat-id message'])
         (when (= (:content-type message') content-type-command-request)
           (dispatch [:add-request chat-id' message']))
-        (dispatch [:add-unviewed-message chat-id' message-id])))))
+        (dispatch [:add-unviewed-message chat-id' message-id]))
+      (if (and (not= chat-id wallet-chat-id)
+               (= "send" (get-in message [:content :command])))
+        (add-message-to-wallet db message)))))
+
+(defn add-message-to-wallet [db message]
+  (let [message' (assoc message :clock-value 0
+                                :message-id (random/id)
+                                :chat-id wallet-chat-id)]
+    (add-message db message')))
 
 (register-handler :received-protocol-message!
   (u/side-effect!
@@ -66,8 +78,10 @@
                                            :chat-id     from})]))))
 
 (register-handler :received-message
-  (u/side-effect! receive-message))
+  (u/side-effect!
+    (fn [db [_ message]]
+      (add-message db message))))
 
 (register-handler ::add-message
-  (fn [db [_ {:keys [chat-id new?] :as message}]]
-    (cu/add-message-to-db db chat-id message new?)))
+  (fn [db [_ add-to-chat-id {:keys [chat-id new?] :as message}]]
+    (cu/add-message-to-db db add-to-chat-id chat-id message new?)))
