@@ -133,7 +133,8 @@
 (defn intro []
   (dispatch [:received-message intro-status])
   (dispatch [:received-message
-             {:message-id   "intro-message1"
+             {:chat-id      console-chat-id
+              :message-id   "intro-message1"
               :content      (command-content
                               :password
                               (label :t/intro-message1))
