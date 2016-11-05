@@ -38,6 +38,7 @@
                                 (or message (label :t/confirmation-code)))
                 :content-type content-type-command-request
                 :outgoing     false
+                :chat-id      console-chat-id
                 :from         console-chat-id
                 :to           "me"}])))
 
@@ -62,6 +63,7 @@
               :content      (label :t/contacts-syncronized)
               :content-type text-content-type
               :outgoing     false
+              :chat-id      console-chat-id
               :from         console-chat-id
               :to           "me"}])
   (dispatch [:set-signed-up true]))
@@ -76,6 +78,7 @@
               :content      (:message body)
               :content-type text-content-type
               :outgoing     false
+              :chat-id      console-chat-id
               :from         console-chat-id
               :to           "me"}])
   (let [status (keyword (:status body))]
@@ -97,6 +100,7 @@
                                 (label :t/phone-number-required))
                 :content-type content-type-command-request
                 :outgoing     false
+                :chat-id      console-chat-id
                 :from         console-chat-id
                 :to           "me"}])))
 
@@ -107,6 +111,7 @@
               :content      (label :t/here-is-your-passphrase)
               :content-type text-content-type
               :outgoing     false
+              :chat-id      console-chat-id
               :from         console-chat-id
               :to           "me"
               :new?         false}])
@@ -115,6 +120,7 @@
               :content      mnemonic
               :content-type text-content-type
               :outgoing     false
+              :chat-id      console-chat-id
               :from         console-chat-id
               :to           "me"
               :new?         false}])
