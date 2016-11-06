@@ -205,6 +205,7 @@
      (if (chats console-chat-id)
        db
        (do
+         (dispatch [:add-contacts [sign-up-service/console-contact]])
          (chats/save new-chat)
          (contacts/save-all [sign-up-service/console-contact])
          (sign-up-service/intro)
@@ -220,10 +221,17 @@
   (fn [db _]
     (init-console-chat db false)))
 
+(register-handler :account-generation-message
+  (u/side-effect!
+    (fn [{:keys [chats]}]
+      (when (> 4 (count (get-in chats [console-chat-id :messages])))
+        (sign-up-service/account-generation-message)))))
+
 (register-handler :show-mnemonic
   (u/side-effect!
-    (fn [_ [_ mnemonic]]
-      (sign-up-service/passpharse-messages mnemonic))))
+    (fn [{:keys [chats]} [_ mnemonic]]
+      (let [messages-count (count (get-in chats [console-chat-id :messages]))]
+        (sign-up-service/passpharse-messages mnemonic messages-count)))))
 
 (register-handler :sign-up
   (after (fn [_ [_ phone-number]]
@@ -277,23 +285,27 @@
       ((after load-commands!))))
 
 (defn initialize-chats
-  [{:keys [loaded-chats] :as db} _]
-  (let [chats (->> loaded-chats
-                   (map (fn [{:keys [chat-id] :as chat}]
-                          (let [last-message (messages/get-last-message chat-id)]
-                            [chat-id (assoc chat :last-message last-message)])))
-                   (into {}))
-        ids   (set (keys chats))]
+  [{:keys [loaded-chats account-creation? chats] :as db} _]
+  (let [chats' (if account-creation?
+                chats
+                (->> loaded-chats
+                     (map (fn [{:keys [chat-id] :as chat}]
+                            (let [last-message (messages/get-last-message db chat-id)]
+                              [chat-id (assoc chat :last-message last-message)])))
+                     (into {})))
+        ids   (set (keys chats'))]
 
     (-> db
-        (assoc :chats chats)
+        (assoc :chats chats')
         (assoc :chats-ids ids)
         (dissoc :loaded-chats)
         (init-console-chat true))))
 
 (defn load-chats!
-  [db _]
-  (assoc db :loaded-chats (chats/get-all)))
+  [{:keys [account-creation?] :as db} _]
+  (if account-creation?
+    db
+    (assoc db :loaded-chats (chats/get-all))))
 
 ;TODO: check if its new account / signup status / create console chat
 (register-handler :initialize-chats

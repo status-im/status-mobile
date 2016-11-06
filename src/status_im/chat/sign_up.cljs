@@ -105,16 +105,27 @@
                 :to           "me"}])))
 
 ;; -- Saving password ----------------------------------------
-(defn passpharse-messages [mnemonic]
+(defn account-generation-message []
   (dispatch [:received-message
              {:message-id   (random/id)
-              :content      (label :t/here-is-your-passphrase)
+              :content      (label :t/account-generation-message)
               :content-type text-content-type
               :outgoing     false
               :chat-id      console-chat-id
               :from         console-chat-id
-              :to           "me"
-              :new?         false}])
+              :to           "me"}]))
+
+(defn passpharse-messages [mnemonic messages-count]
+  (dispatch [:received-message
+             {:message-id   (random/id)
+              :content      (if (> messages-count 3)
+                              (label :t/phew-here-is-your-passphrase)
+                              (label :t/here-is-your-passphrase))
+              :content-type text-content-type
+              :outgoing     false
+              :chat-id      console-chat-id
+              :from         console-chat-id
+              :to           "me"}])
   (dispatch [:received-message
              {:message-id   (random/id)
               :content      mnemonic
@@ -122,8 +133,7 @@
               :outgoing     false
               :chat-id      console-chat-id
               :from         console-chat-id
-              :to           "me"
-              :new?         false}])
+              :to           "me"}])
   ;; TODO highlight '!phone'
   (start-signup))
 
@@ -138,7 +148,8 @@
 
 (defn intro []
   (dispatch [:received-message intro-status])
-  (dispatch [:received-message
+  (dispatch [:received-message-when-commands-loaded
+             console-chat-id
              {:chat-id      console-chat-id
               :message-id   "intro-message1"
               :content      (command-content

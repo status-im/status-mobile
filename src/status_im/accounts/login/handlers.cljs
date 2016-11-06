@@ -49,7 +49,7 @@
 
 (register-handler
   :login-account
-  (u/side-effect!
+  (after
     (fn [db [_ address password]]
       (status/login address password
                     (fn [result]
@@ -59,4 +59,6 @@
                         (log/debug "Logged in account: ")
                         (if success
                           (logged-in db address)
-                          (dispatch [:set-in [:login :error] error]))))))))
+                          (dispatch [:set-in [:login :error] error])))))))
+  (fn [db [_ _ _ account-creation?]]
+    (assoc db :account-creation? account-creation?)))
