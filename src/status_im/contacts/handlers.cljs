@@ -172,7 +172,8 @@
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
       (when-not (contacts/get-by-id whisper-identity)
-        (dispatch [::prepare-contact contact])))))
+        (dispatch [::prepare-contact contact])
+        (dispatch [:start-chat whisper-identity {} :navigation-replace])))))
 
 (register-handler ::prepare-contact
   (-> add-new-contact
