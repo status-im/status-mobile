@@ -398,7 +398,7 @@
   (fn [db [_ {:keys [chat-id clock-value] :as opts}]]
     (let [chat (if (chats/exists? chat-id)
                  (let [{old-clock-value :clock-value :as chat} (chats/get-by-id chat-id)]
-                   (assoc chat :clock-value (+ (max old-clock-value clock-value)) 1))
+                   (assoc chat :clock-value (max old-clock-value clock-value)))
                  (prepare-chat db chat-id opts))]
       (chats/save chat)
       (update-in db [:chats chat-id] merge chat))))

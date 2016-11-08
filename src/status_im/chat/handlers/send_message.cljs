@@ -211,8 +211,8 @@
                                               :keypair {:public  public-key
                                                         :private private-key})))
             (protocol/send-message! (assoc-in options
-                                              [:message :to] (:to message))))
-          (dispatch [:inc-clock chat-id]))))))
+                                              [:message :to] (:to message))))))
+      (dispatch [:inc-clock chat-id]))))
 
 (register-handler ::send-command-protocol!
   (u/side-effect!
@@ -226,14 +226,14 @@
                          :timestamp    (datetime/now-ms)
                          :clock-value  clock-value}
                 options {:web3    web3
-                         :message {:from        current-public-key
-                                   :message-id  message-id
-                                   :payload     payload}}]
+                         :message {:from       current-public-key
+                                   :message-id message-id
+                                   :payload    payload}}]
             (if group-chat
               (protocol/send-group-message! (assoc options
                                               :group-id chat-id
                                               :keypair {:public  public-key
                                                         :private private-key}))
               (protocol/send-message! (assoc-in options
-                                                [:message :to] chat-id)))
-            (dispatch [:inc-clock chat-id])))))))
+                                                [:message :to] chat-id)))))
+        (dispatch [:inc-clock chat-id])))))
