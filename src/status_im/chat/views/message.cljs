@@ -9,7 +9,8 @@
                                                 image
                                                 icon
                                                 animated-view
-                                                touchable-highlight]]
+                                                touchable-highlight
+                                                get-dimensions]]
             [status-im.components.animation :as anim]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
@@ -33,6 +34,8 @@
             [clojure.string :as str]
             [status-im.chat.handlers.console :as console]
             [taoensso.timbre :as log]))
+
+(def window-width (:width (get-dimensions "window")))
 
 (defn message-content-status [_]
   (let [{:keys [chat-id group-chat name color]} (subscribe [:chat-properties [:chat-id :group-chat :name :color]])
@@ -290,31 +293,38 @@
        [group-message-delivery-status message]
        [message-delivery-status message]))])
 
-(defn message-container-animation-logic [{:keys [top-offset callback]}]
+(defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
-    (anim/start
-      (anim/timing top-offset {:toValue  0
-                               :duration 150})
-      (fn [arg]
-        (when (.-finished arg)
-          (callback))))))
+    (let [to-value @to-value]
+      (when (< 0 to-value)
+        (anim/start
+          (anim/timing val {:toValue  to-value
+                            :duration 250})
+          (fn [arg]
+            (when (.-finished arg)
+              (callback))))))))
 
 (defn message-container [message & children]
   (if (:new? message)
-    (let [top-offset    (anim/create-value 40)
+    (let [layout-height (r/atom 0)
+          anim-value    (anim/create-value 1)
           anim-callback #(dispatch [:set-message-shown message])
-          context       {:top-offset top-offset
-                         :callback   anim-callback}
+          context       {:to-value layout-height
+                         :val      anim-value
+                         :callback anim-callback}
           on-update     (message-container-animation-logic context)]
       (r/create-class
         {:component-did-update
          on-update
-         :component-did-mount
-         on-update
          :reagent-render
          (fn [message & children]
-           [animated-view {:style (st/message-container top-offset)}
-            (into [view] children)])}))
+           @layout-height
+           [animated-view {:style (st/message-animated-container anim-value)}
+            (into [view {:style (st/message-container window-width)
+                         :onLayout (fn [event]
+                                     (let [height (.. event -nativeEvent -layout -height)]
+                                       (reset! layout-height height)))}]
+                  children)])}))
     (into [view] children)))
 
 (defn chat-message [{:keys [outgoing message-id chat-id user-statuses from]}]
