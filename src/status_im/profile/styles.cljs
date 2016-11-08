@@ -138,11 +138,6 @@
 (def profile-input-text-non-editable
   {:color text1-disabled-color})
 
-(def report-user-container
-  {:margin-top    32
-   :margin-bottom 43
-   :align-items   :center})
-
 (def report-user-text
   {:font-size      14
    :line-height    21

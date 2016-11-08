@@ -156,13 +156,7 @@
       :value         (if (and email (not (str/blank? email)))
                        email
                        (label :t/not-specified))
-      :label         (label :t/email)}]
-
-    [view st/report-user-container
-     [touchable-highlight {:on-press (fn []
-                                       ;; TODO not implemented
-                                       )}
-      [view [text {:style st/report-user-text} (label :t/report-user)]]]]]])
+      :label         (label :t/email)}]]])
 
 (defview qr-modal []
   [qr [:get-in [:profile-edit :qr-code]]]
@@ -195,7 +189,8 @@
      [status-image-view {:account account
                          :edit?   edit?}]
 
-     [scroll-view (merge st/profile-properties-container {:keyboardShouldPersistTaps true})
+     [scroll-view (merge st/profile-properties-container {:keyboardShouldPersistTaps true
+                                                          :bounces                   false})
       [view st/profile-property
        [selectable-field {:label (label :t/phone-number)
                           :value (if (and phone (not (str/blank? phone)))

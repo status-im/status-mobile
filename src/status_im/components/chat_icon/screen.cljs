@@ -25,7 +25,7 @@
            :style  (st/image-style size)}]])
 
 (defn dapp-badge [styles]
-  [view st/online-view-wrapper
+  [view (:online-view-wrapper styles)
    [view (:online-view styles)
     [view
      [view (:online-dot-left styles)]
@@ -55,6 +55,7 @@
 (defn chat-icon-view-chat-list [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online
    {:container              st/container-chat-list
+    :online-view-wrapper    st/online-view-wrapper
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
@@ -66,6 +67,7 @@
 (defn chat-icon-view-action [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online
    {:container              st/container
+    :online-view-wrapper    st/online-view-wrapper
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
@@ -77,17 +79,19 @@
 (defn chat-icon-view-menu-item [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online
    {:container              st/container-menu-item
+    :online-view-wrapper    st/online-view-menu-wrapper
     :online-view            st/online-view-menu-item
     :online-dot-left        st/online-dot-left-menu-item
     :online-dot-right       st/online-dot-right-menu-item
     :size                   24
     :chat-icon              st/chat-icon-menu-item
-    :default-chat-icon      (st/default-chat-icon-menu-item color)
+    :default-chat-icon      (st/default-chat-icon-view-action color)
     :default-chat-icon-text st/default-chat-icon-text}])
 
 (defn chat-icon-message-status [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online
    {:container              st/container-message-status
+    :online-view-wrapper    st/online-view-wrapper
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
