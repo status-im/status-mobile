@@ -14,9 +14,9 @@
    :font-size        14})
 
 (def text-container
-  {:padding 0
-   :margin-bottom       18
-   :margin  0})
+  {:padding       0
+   :margin-bottom 18
+   :margin        0})
 
 (def text
   {:font-size           16

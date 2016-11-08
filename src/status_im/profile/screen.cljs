@@ -9,9 +9,11 @@
                                                 text-input
                                                 image
                                                 icon
+                                                modal
                                                 scroll-view
                                                 touchable-highlight
                                                 touchable-opacity
+                                                touchable-without-feedback
                                                 show-image-picker
                                                 dismiss-keyboard!]]
             [status-im.components.icons.custom-icons :refer [oct-icon]]
@@ -27,6 +29,7 @@
             [status-im.profile.validations :as v]
             [status-im.profile.styles :as st]
             [status-im.utils.random :refer [id]]
+            [status-im.components.image-button.view :refer [show-qr-button]]
             [status-im.i18n :refer [label]]))
 
 (defn toolbar [{:keys [account edit?]}]
@@ -161,8 +164,20 @@
                                        )}
       [view [text {:style st/report-user-text} (label :t/report-user)]]]]]])
 
+(defview qr-modal []
+  [qr [:get-in [:profile-edit :qr-code]]]
+  [modal {:transparent   true
+          :visible       (not (nil? qr))
+          :animationType :fade}
+   [touchable-without-feedback {:on-press #(dispatch [:set-in [:profile-edit :qr-code] nil])}
+    [view st/qr-code-container
+     [view st/qr-code
+      [qr-code {:value (str "ethereum:" qr)
+                :size  220}]]]]])
+
 (defview my-profile []
   [edit? [:get-in [:profile-edit :edit?]]
+   qr [:get-in [:profile-edit :qr-code]]
    current-account [:get-current-account]
    changed-account [:get :profile-edit]]
   (let [{:keys [phone
@@ -171,6 +186,7 @@
                                            changed-account
                                            current-account)]
     [scroll-view {:style                     st/profile
+                  :bounces                   false
                   :keyboardShouldPersistTaps true}
      [status-bar]
      [toolbar {:account account
@@ -188,16 +204,20 @@
        [view st/underline-container]]
 
       [view st/profile-property
-       [selectable-field {:label (label :t/address)
-                          :value address}]
+       [view st/profile-property-row
+        [view st/profile-property-field
+         [selectable-field {:label (label :t/address)
+                            :value address}]]
+        [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] address])}]]
        [view st/underline-container]]
 
       [view st/profile-property
-       [selectable-field {:label (label :t/public-key)
-                          :value public-key}]]
+       [view st/profile-property-row
+        [view st/profile-property-field
+         [selectable-field {:label (label :t/public-key)
+                            :value public-key}]]
+        [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] public-key])}]]]
 
       [view st/underline-container]
 
-      [view st/qr-code-container
-       [qr-code {:value (str "ethereum:" public-key)
-                 :size  220}]]]]))
+      [qr-modal]]]))

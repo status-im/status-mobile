@@ -117,6 +117,7 @@
    :contacts-group-people                 "People"
    :contacts-group-new-chat               "Start new chat"
    :no-contacts                           "No contacts yet"
+   :show-qr                               "Show QR"
 
    ;group-settings
    :remove                                "Remove"

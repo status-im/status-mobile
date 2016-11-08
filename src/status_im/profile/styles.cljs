@@ -121,6 +121,14 @@
 (def profile-property
   {:margin-left 16})
 
+(def profile-property-row
+  {:flex           1
+   :flex-direction :row})
+
+(def profile-property-field
+  {:margin-right 90
+   :flex         1})
+
 (def profile-input-wrapper
   {:margin-bottom 16})
 
@@ -143,9 +151,19 @@
    :letter-spacing 0.5})
 
 (def qr-code-container
-  {:flex       1
-   :alignItems :center
-   :margin     32})
+  {:flex             1
+   :alignItems       :center
+   :justify-content  :center
+   :background-color "#000000aa"})
+
+(def qr-code
+  {:width            250
+   :height           250
+   :background-color "white"
+   :border-radius    4
+   :align-items      :center
+   :padding-top      15
+   :elevation        4})
 
 (def hashtag
   {:color "#7099e6"})
