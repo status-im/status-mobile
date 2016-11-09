@@ -30,7 +30,8 @@
             [status-im.profile.styles :as st]
             [status-im.utils.random :refer [id]]
             [status-im.components.image-button.view :refer [show-qr-button]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [taoensso.timbre :as log]))
 
 (defn toolbar [{:keys [account edit?]}]
   (let [profile-edit-data-valid? (s/valid? ::v/profile account)]
@@ -70,42 +71,64 @@
     (str/split status #" ")
     (map get-text)))
 
-(defn status-image-view [{{:keys [name status photo-path]} :account
-                          edit?                            :edit?}]
-  [view st/status-block
-   [view st/user-photo-container
-    (if edit?
-      [touchable-highlight {:on-press (fn []
-                                        (let [list-selection-fn (get platform-specific :list-selection-fn)]
-                                          (dispatch [:open-image-source-selector list-selection-fn])))}
-       [view
-        [my-profile-icon {:account {:photo-path photo-path
-                                    :name       name}
-                          :edit?   edit?}]]]
-      [my-profile-icon {:account {:photo-path photo-path
-                                  :name       name}
-                        :edit?   edit?}])]
-   [text-field
-    {:line-color       :white
-     :focus-line-color :white
-     :editable         edit?
-     :input-style      (st/username-input edit? (s/valid? ::v/name name))
-     :wrapper-style    st/username-wrapper
-     :value            name
-     :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])}]
-   [text-input {:style          st/status-input
-                :maxLength      140
-                :multiline      true
-                :editable       edit?
-                :placeholder    (label :t/profile-no-status)
-                :on-change-text #(dispatch [:set-in [:profile-edit :status] %])
-                :default-value  status}]])
+(defn status-image-view [_]
+  (let [component         (r/current-component)
+        set-status-height #(let [height (-> (.-nativeEvent %)
+                                            (.-contentSize)
+                                            (.-height))]
+                            (r/set-state component {:height height}))]
+    (r/create-class
+      {:reagent-render
+       (fn [{{:keys [name status photo-path]} :account
+             edit?                            :edit?}]
+         [view st/status-block
+          [view st/user-photo-container
+
+           (if edit?
+             [touchable-highlight {:on-press (fn []
+                                               (let [list-selection-fn (get platform-specific :list-selection-fn)]
+                                                 (dispatch [:open-image-source-selector list-selection-fn])))}
+              [view
+               [my-profile-icon {:account {:photo-path photo-path
+                                           :name       name}
+                                 :edit?   edit?}]]]
+             [my-profile-icon {:account {:photo-path photo-path
+                                         :name       name}
+                               :edit?   edit?}])]
+          [text-field
+           {:line-color       :white
+            :focus-line-color :white
+            :editable         edit?
+            :input-style      (st/username-input edit? (s/valid? ::v/name name))
+            :wrapper-style    st/username-wrapper
+            :value            name
+            :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])}]
+          [text-input {:style                  (st/status-input (:height (r/state component)))
+                       :on-change              #(set-status-height %)
+                       :on-content-size-change #(set-status-height %)
+                       :maxLength              140
+                       :multiline              true
+                       :editable               edit?
+                       :placeholder            (label :t/profile-no-status)
+                       :on-change-text         #(dispatch [:set-in [:profile-edit :status] %])
+                       :default-value          status}]])})))
+
+(defview qr-modal []
+  [qr [:get-in [:profile-edit :qr-code]]]
+  [modal {:transparent    true
+          :visible        (not (nil? qr))
+          :animationType  :fade
+          :onRequestClose #(log/debug "Nothing happens")}
+   [touchable-without-feedback {:on-press #(dispatch [:set-in [:profile-edit :qr-code] nil])}
+    [view st/qr-code-container
+     [view st/qr-code
+      [qr-code {:value (str "ethereum:" qr)
+                :size  220}]]]]])
 
 (defview profile []
   [{whisper-identity :whisper-identity
     address          :address
     username         :name
-    email            :email
     photo-path       :photo-path
     phone            :phone
     status           :status
@@ -116,9 +139,10 @@
     [touchable-highlight {:style    st/back-btn-touchable
                           :on-press (fn []
                                       (dispatch [:navigate-back]))}
-     [view st/back-btn-container
+     [view (get-in platform-specific [:component-styles :toolbar-nav-action])
       [icon :back st/back-btn-icon]]]
-    [touchable-highlight {:style    st/actions-btn-touchable
+    ;; TODO not implemented
+    #_[touchable-highlight {:style    st/actions-btn-touchable
                           :on-press (fn []
                                       (.log js/console "Dots pressed!"))}
      [view st/actions-btn-container
@@ -128,46 +152,48 @@
                        :photo-path photo-path
                        :edit?      false}]
 
-   [view st/status-block
-    [view st/btns-container
-     [touchable-highlight {:onPress #(message-user whisper-identity)}
-      [view st/message-btn
-       [text {:style st/message-btn-text} (label :t/message)]]]
-     [touchable-highlight {:onPress (fn []
-                                      ;; TODO not implemented
-                                      )}
-      [view st/more-btn
-       [icon :more_vertical_blue st/more-btn-image]]]]]
+   [scroll-view (merge st/profile-properties-container {:keyboardShouldPersistTaps true
+                                                        :bounces                   false})
 
-   [scroll-view st/profile-properties-container
-    [text-field
-     {:editable      false
-      :input-style   st/profile-input-text
-      :wrapper-style st/profile-input-wrapper
-      :value         (if (and phone (not (str/blank? phone)))
-                       (format-phone-number phone)
-                       (label :t/not-specified))
-      :label         (label :t/phone-number)}]
+    [view st/status-block
+     [view st/btns-container
+      [touchable-highlight {:onPress #(message-user whisper-identity)}
+       [view st/message-btn
+        [text {:style st/message-btn-text} (label :t/message)]]]
+      ;; TODO not implemented
+      #_[touchable-highlight {:onPress #(.log js/console "Not yet implemented")}
+         [view st/more-btn
+          [icon :more_vertical_blue st/more-btn-image]]]]]
 
-    [text-field
-     {:editable      false
-      :input-style   st/profile-input-text
-      :wrapper-style st/profile-input-wrapper
-      :value         (if (and email (not (str/blank? email)))
-                       email
-                       (label :t/not-specified))
-      :label         (label :t/email)}]]])
+    [view st/profile-property-with-top-spacing
+     [selectable-field {:label     (label :t/phone-number)
+                        :editable? false
+                        :value     (if (and phone (not (str/blank? phone)))
+                                     (format-phone-number phone)
+                                     (label :t/not-specified))}]
+     [view st/underline-container]]
 
-(defview qr-modal []
-  [qr [:get-in [:profile-edit :qr-code]]]
-  [modal {:transparent   true
-          :visible       (not (nil? qr))
-          :animationType :fade}
-   [touchable-without-feedback {:on-press #(dispatch [:set-in [:profile-edit :qr-code] nil])}
-    [view st/qr-code-container
-     [view st/qr-code
-      [qr-code {:value (str "ethereum:" qr)
-                :size  220}]]]]])
+    (when address
+      [view st/profile-property
+       [view st/profile-property-row
+        [view st/profile-property-field
+         [selectable-field {:label     (label :t/address)
+                            :editable? false
+                            :value     address}]]
+        [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] address])}]]
+       [view st/underline-container]])
+
+    [view st/profile-property
+     [view st/profile-property-row
+      [view st/profile-property-field
+       [selectable-field {:label     (label :t/public-key)
+                          :editable? false
+                          :value     whisper-identity}]]
+      [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] whisper-identity])}]]]
+
+    [view st/underline-container]
+
+    [qr-modal]]])
 
 (defview my-profile []
   [edit? [:get-in [:profile-edit :edit?]]
@@ -179,9 +205,8 @@
                 public-key] :as account} (if edit?
                                            changed-account
                                            current-account)]
-    [scroll-view {:style                     st/profile
-                  :bounces                   false
-                  :keyboardShouldPersistTaps true}
+    [scroll-view {:style   st/profile
+                  :bounces false}
      [status-bar]
      [toolbar {:account account
                :edit?   edit?}]
@@ -189,28 +214,30 @@
      [status-image-view {:account account
                          :edit?   edit?}]
 
-     [scroll-view (merge st/profile-properties-container {:keyboardShouldPersistTaps true
-                                                          :bounces                   false})
+     [scroll-view (merge st/my-profile-properties-container {:bounces false})
       [view st/profile-property
-       [selectable-field {:label (label :t/phone-number)
-                          :value (if (and phone (not (str/blank? phone)))
-                                   (format-phone-number phone)
-                                   (label :t/not-specified))}]
+       [selectable-field {:label     (label :t/phone-number)
+                          :editable? edit?
+                          :value     (if (and phone (not (str/blank? phone)))
+                                       (format-phone-number phone)
+                                       (label :t/not-specified))}]
        [view st/underline-container]]
 
       [view st/profile-property
        [view st/profile-property-row
         [view st/profile-property-field
-         [selectable-field {:label (label :t/address)
-                            :value address}]]
+         [selectable-field {:label     (label :t/address)
+                            :editable? edit?
+                            :value     address}]]
         [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] address])}]]
        [view st/underline-container]]
 
       [view st/profile-property
        [view st/profile-property-row
         [view st/profile-property-field
-         [selectable-field {:label (label :t/public-key)
-                            :value public-key}]]
+         [selectable-field {:label     (label :t/public-key)
+                            :editable? edit?
+                            :value     public-key}]]
         [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] public-key])}]]]
 
       [view st/underline-container]

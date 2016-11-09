@@ -14,6 +14,8 @@
                                          :bar-style    "light-content"
                                          :translucent? true
                                          :color        styles/color-transparent}}
+   :sized-text            {:margin-top        0
+                           :additional-height 0}
    :chat                  {:new-message {:border-top-color styles/color-transparent
                                          :border-top-width 0.5}}
    :bottom-gradient       {:height 3}

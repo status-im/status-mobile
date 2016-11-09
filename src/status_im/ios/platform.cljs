@@ -15,6 +15,8 @@
                                          :color     styles/color-transparent}}
    :toolbar               {:border-bottom-color styles/color-gray3
                            :border-bottom-width 0.5}
+   :sized-text            {:margin-top        -5
+                           :additional-height 5}
    :actions-list-view     {:border-bottom-color styles/color-gray3
                            :border-bottom-width 0.5}
    :chat                  {:new-message {:border-top-color styles/color-gray3
