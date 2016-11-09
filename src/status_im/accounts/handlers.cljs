@@ -21,7 +21,9 @@
             [status-im.navigation.handlers :as nav]))
 
 
-(defn save-account [{:keys [network]} [_ account]]
+(defn save-account
+  [{:keys [network]}
+   [_ account]]
   (accounts-store/save (assoc account :network network) true))
 
 (register-handler
@@ -60,8 +62,12 @@
         #(account-created % password)))))
 
 (defn save-account!
-  [{:keys [current-account-id accounts]} _]
-  (accounts-store/save (get accounts current-account-id) true))
+  [{:keys [current-account-id accounts network]} _]
+  (let [{acc-network :network :as account}
+        (get accounts current-account-id)
+
+        account' (assoc account :network (or acc-network network))]
+    (accounts-store/save (get accounts current-account-id) true)))
 
 (defn send-account-update
   [{:keys [current-account-id current-public-key web3 accounts]} _]

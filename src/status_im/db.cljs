@@ -1,7 +1,8 @@
 (ns status-im.db
   (:require [status-im.components.react :refer [animated]]
             [status-im.components.animation :as anim]
-            [status-im.constants :refer [console-chat-id]]))
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.utils.platform :as p]))
 
 ;; initial state of app-db
 (def app-db {:identity-password          "replace-me-with-user-entered-password"
@@ -45,8 +46,9 @@
 
              :sync-state                 :done
              :sync-listener              nil
-             :status-module-initialized? js/goog.DEBUG
-             :edit-mode                  {}})
+             :status-module-initialized? (or p/ios? js/goog.DEBUG)
+             :edit-mode                  {}
+             :network                    :testnet})
 
 (defn chat-staged-commands-path [chat-id]
   [:chats chat-id :staged-commands])
