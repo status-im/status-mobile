@@ -8,6 +8,18 @@
 (defn on-press [whisper-identity]
   #(dispatch [:start-chat whisper-identity {} :navigation-replace]))
 
+(defn letter-view [letter]
+  [view st/letter-container
+   (when letter
+     [text {:style st/letter-text} letter])])
+
+(defview contact-view-with-letter [{:keys [whisper-identity letter] :as contact} click-handler action params]
+  [touchable-highlight
+   {:onPress #(click-handler whisper-identity action params)}
+   [view st/contact-container
+    [letter-view letter]
+    [contact-inner-view contact]]])
+
 (defview contact-view [{:keys [whisper-identity] :as contact}]
   [chat [:get-chat whisper-identity]]
   [touchable-highlight

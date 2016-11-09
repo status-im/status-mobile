@@ -117,7 +117,7 @@ function sendTransaction(params, context) {
     }
 }
 
-status.command({
+var send = {
     name: "send",
     icon: "money_white",
     color: "#5fc48d",
@@ -134,4 +134,36 @@ status.command({
     },
     handler: sendTransaction,
     validator: validateBalance
+};
+
+status.command(send);
+status.response(send);
+
+status.command({
+    name: "request",
+    color: "#7099e6",
+    description: "Transaction request",
+    params: [{
+        name: "amount",
+        type: status.types.NUMBER
+    }],
+    preview: function (params) {
+        return status.components.text(
+            {},
+            params.amount + " ETH"
+        );
+    },
+    handler: function (params) {
+        return {
+            event: "request",
+            params: [params.amount]
+            request: {
+                command: "send",
+                params: {
+                    amount: params.amount
+                },
+                content: "Requesting " + params.amount + "ETH"
+            }
+        };
+    },
 });

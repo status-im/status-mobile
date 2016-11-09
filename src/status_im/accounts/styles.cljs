@@ -113,3 +113,56 @@
   {:flex     1
    :color    color-white
    :fontSize 16})
+
+;wallet-qr-code.cljs
+
+(def wallet-qr-code
+  {:flex           1
+   :flex-direction :column})
+
+(def account-toolbar
+  {:background-color "#2f3031"
+   :padding-bottom   45})
+
+(def wallet-account-container
+  {:flex           1
+   :flexDirection  :row
+   :height         69
+   :alignItems     :center
+   :justifyContent :center})
+
+(def qr-code
+  {:align-items      :center
+   :padding-vertical 40})
+
+(def footer
+  {:position         :absolute
+   :left             0
+   :right            0
+   :bottom           0
+   :height           166
+   :background-color "#2f3031"})
+
+(def wallet-info
+  {:align-items    :center
+   :padding-top    42
+   :padding-bottom 20})
+
+(def wallet-name-text
+  {:color          color-white
+   :padding-bottom 5})
+
+(def wallet-address-text
+  {:color "#999999"
+   })
+
+(def done-button
+  {:flex             1
+   :flex-direction   :column
+   :align-items      :center
+   :height           60
+   :padding-top      20
+   :background-color "#7597e4"})
+
+(def done-button-text
+  {:color color-white})

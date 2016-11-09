@@ -104,7 +104,10 @@
        (str params))]))
 
 (defview message-content-command [{:keys [content rendered-preview chat-id to from outgoing] :as message}]
-  [commands [:get-commands-and-responses (if outgoing to from)]
+  [commands [(if (= (:type content) "response")
+               :get-responses
+               :get-commands)
+             (if outgoing to from)]
    current-chat-id [:get-current-chat-id]
    contact-chat [:get-in [:chats (if outgoing to from)]]]
   (let [{:keys [command params]} (parse-command-message-content commands content)
@@ -341,6 +344,7 @@
                                    :message-id message-id}])))
        :reagent-render
        (fn [{:keys [outgoing group-chat] :as message}]
+         (log/debug "I HAVE A MESSAGE: " message)
          [message-container message
           [view
            (let [incoming-group (and group-chat (not outgoing))]

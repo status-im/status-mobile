@@ -9,14 +9,13 @@
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
-            [status-im.utils.platform :as platform]))
-
-(def command-prefix "c ")
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (defn content-by-command
   [{:keys [type]} content]
   (if (and (= :command type) content)
-    (subs content (count command-prefix))
+    (subs content (count cu/command-prefix))
     content))
 
 (defn invoke-suggestions-handler!
@@ -54,7 +53,7 @@
    (after cancel-command!)
    (after #(dispatch [:clear-validation-errors]))]
   (fn [{:keys [current-chat-id] :as db} [_ content]]
-    (let [starts-as-command? (str/starts-with? content command-prefix)
+    (let [starts-as-command? (str/starts-with? content cu/command-prefix)
           command?           (= :command (current-command db :type))
           {:keys [parameter-idx command]} (commands/get-command-input db)
           parameter-name     (-> command :params (get parameter-idx) :name)]
@@ -65,10 +64,10 @@
             (assoc db :canceled-command (and command? (not starts-as-command?)))))))
 
 (defn invoke-command-preview!
-  [{:keys [staged-command] :as db} [_ chat-id]]
+  [{:keys [staged-command] :as db} [_ command-input chat-id]]
   (let [{:keys [command id]} staged-command
         {:keys [name type]} command
-        parameters (:params (commands/get-command-input db))
+        parameters (:params (or command-input (commands/get-command-input db)))
         path       [(if (= :command type) :commands :responses)
                     name
                     :preview]
@@ -88,7 +87,7 @@
 
 (register-handler ::validate!
   (u/side-effect!
-    (fn [_ [_ {:keys [chat-id handler]} {:keys [error result]}]]
+    (fn [_ [_ command-input {:keys [chat-id handler]} {:keys [error result]}]]
       ;; todo handle error
       (when-not error
         (let [{:keys [errors validationHandler parameters]} (:returned result)]
@@ -97,18 +96,20 @@
 
                 validationHandler
                 (dispatch [::validation-handler!
+                           command-input
                            chat-id
                            validationHandler
                            parameters])
 
                 :else (if handler
                         (handler)
-                        (dispatch [::finish-command-staging chat-id]))))))))
+                        (dispatch [::finish-command-staging command-input chat-id]))))))))
 
 (register-handler :stage-command
-  (fn [{:keys [current-chat-id current-account-id] :as db}]
-    (let [command-input (commands/get-command-input db)
-          command       (commands/get-chat-command db)]
+  (fn [{:keys [current-chat-id current-account-id] :as db} [_ command-input command]]
+    (let [command-input (or command-input (commands/get-command-input db))
+          command       (or command (commands/get-chat-command db))]
+      (log/debug "Staging command 1: " command-input command)
       (dispatch [::start-command-validation! {:command-input command-input
                                               :command       command
                                               :chat-id       current-chat-id
@@ -118,9 +119,9 @@
 (register-handler ::finish-command-staging
   [(after #(dispatch [:start-cancel-command]))
    (after invoke-command-preview!)]
-  (fn [db [_ chat-id]]
+  (fn [db [_ command-input chat-id]]
     (let [db           (assoc-in db [:chats chat-id :input-text] nil)
-          {:keys [command content to-message-id params]} (command-input db)
+          {:keys [command content to-message-id params]} (or command-input (command-input db))
           command-info {:command    command
                         :params     params
                         :to-message to-message-id
@@ -140,7 +141,7 @@
   [{:keys [current-chat-id] :as db} [_ command-key type]]
   (-> db
       (commands/set-command-input (or type :commands) command-key)
-      (assoc-in [:chats current-chat-id :command-input :content] command-prefix)
+      (assoc-in [:chats current-chat-id :command-input :content] cu/command-prefix)
       (assoc :disable-input true)))
 
 (register-handler :set-chat-command
@@ -150,6 +151,7 @@
   set-chat-command)
 
 (defn set-response-command [db [_ to-message-id command-key]]
+  (log/debug "set-response-command: " to-message-id command-key)
   (-> db
       (commands/set-command-input :responses to-message-id command-key)
       (assoc :canceled-command false)))
@@ -186,9 +188,9 @@
                 :description (apply i18n/label (wrap-params description))}])))
 
 (def validation-handlers
-  {:phone (fn [chat-id [number]]
+  {:phone (fn [command-input chat-id [number]]
             (if (pn/valid-mobile-number? number)
-              (dispatch [::finish-command-staging chat-id])
+              (dispatch [::finish-command-staging command-input chat-id])
               (dispatch-error! chat-id :t/phone-number :t/invalid-phone)))})
 
 (defn validator [name]
@@ -196,9 +198,9 @@
 
 (register-handler ::validation-handler!
   (u/side-effect!
-    (fn [_ [_ chat-id name params]]
+    (fn [_ [_ command-input chat-id name params]]
       (when-let [handler (validator name)]
-        (handler chat-id params)))))
+        (handler command-input chat-id params)))))
 
 (register-handler ::set-validation-error
   (after #(dispatch [:fix-response-height]))
@@ -251,7 +253,7 @@
         (status/call-jail chat-id
                           path
                           parameters
-                          #(dispatch [::validate! data %]))))))
+                          #(dispatch [::validate! command-input data %]))))))
 
 (register-handler :set-command-parameter
   (fn [db [_ {:keys [value parameter]}]]

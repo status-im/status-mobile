@@ -49,16 +49,17 @@
       (reaction (get-in @db [:command-suggestions @chat-id])))))
 
 (register-sub :get-commands
-  (fn [db _]
-    (reaction (commands/get-commands @db))))
+  (fn [db [_ chat-id]]
+    (let [current-chat (or chat-id (@db :current-chat-id))]
+      (reaction (or (get-in @db [:chats current-chat :commands]) {})))))
 
 (register-sub :get-chat-by-id
   (fn [_ [_ chat-id]]
     (reaction (chats/get-by-id chat-id))))
 
 (register-sub :get-responses
-  (fn [db _]
-    (let [current-chat (@db :current-chat-id)]
+  (fn [db [_ chat-id]]
+    (let [current-chat (or chat-id (@db :current-chat-id))]
       (reaction (or (get-in @db [:chats current-chat :responses]) {})))))
 
 (register-sub :get-commands-and-responses
