@@ -41,7 +41,7 @@
       "By console, today at 14:50"]]]])
 
 (defn suggestion-list-item
-  [[command {:keys [description]
+  [[command {:keys [title description]
              name  :name
              :as   suggestion}]]
   (let [label (str "!" name)]
@@ -51,7 +51,7 @@
      [view st/suggestion-container
       [view st/suggestion-sub-container
        [view st/command-description-container
-        [text {:style st/value-text} label]
+        [text {:style st/value-text} title]
         [text {:style st/description-text} description]]
        [view st/command-label-container
         [view (st/suggestion-background suggestion)

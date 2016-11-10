@@ -100,7 +100,8 @@ function phoneSuggestions(params) {
 var phoneConfig = {
     name: "phone",
     icon: "phone_white",
-    description: "Send phone number",
+    title: "Send Phone Number",
+    description: "Find friends using your number",
     color: "#5bb2a2",
     params: [{
         name: "phone",
@@ -115,7 +116,8 @@ status.command(phoneConfig);
 
 status.command({
     name: "help",
-    description: "Help",
+    title: "Help",
+    description: "Request help from Console",
     color: "#7099e6",
     params: [{
         name: "query",
