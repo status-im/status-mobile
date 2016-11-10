@@ -123,6 +123,13 @@
     (remove-pending-message db message-id)))
 
 (register-handler :transaction-queued
+  (u/side-effect!
+    (fn [_ [_ {:keys [id args] :as transaction}]]
+      (if (:to args)
+        (dispatch [::transaction-queued transaction])
+        (status/discard-transaction id)))))
+
+(register-handler ::transaction-queued
   (after #(dispatch [:navigate-to-modal :confirm]))
   (fn [db [_ {:keys [id message_id args]}]]
     (let [{:keys [from to value]} args

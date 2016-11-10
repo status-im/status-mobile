@@ -24,7 +24,7 @@
       (dispatch [:navigate-to-clean :chat-list])
       (dispatch [:navigate-to :chat console-chat-id]))
     (do
-      (dispatch [:navigate-to-clean :accounts])
+      (dispatch [:navigate-to-clean :chat-list])
       (dispatch [:navigate-to :chat-list]))))
 
 (register-handler
