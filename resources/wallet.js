@@ -1,5 +1,5 @@
 function wallet(params) {
-    var url = 'http://127.0.0.1:3450';
+    var url = 'http://status.im/dapps/wallet';
 
     if (params.url && params.url !== "undefined" && params.url != "") {
         url = params.url;
