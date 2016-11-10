@@ -74,7 +74,7 @@
     (-> db
         (assoc :prev-tab-view-id (:view-id db))
         (assoc :prev-view-id (:view-id db))
-        (replace-view view-id))))
+        (push-view view-id))))
 
 (register-handler :on-navigated-to-tab
   (enrich preload-data!)
