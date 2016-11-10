@@ -22,6 +22,7 @@ Command.prototype.param = function (parameter) {
 
 Command.prototype.create = function (com) {
     this.name = com.name;
+    this.title = com.title;
     this.description = com.description;
     this.handler = com.handler;
     this["has-handler"] = com.handler != null;

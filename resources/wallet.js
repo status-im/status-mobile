@@ -13,7 +13,8 @@ function wallet(params) {
 
 status.command({
     name: "browse",
-    description: "Browse wallet",
+    title: "Browser",
+    description: "Launch the browser",
     color: "#ffa500",
     fullscreen: true,
     suggestionsTrigger: 'on-send',

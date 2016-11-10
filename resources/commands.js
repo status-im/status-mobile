@@ -1,7 +1,8 @@
 status.command({
     name: "location",
     icon: "location",
-    description: "Send location",
+    title: "Location",
+    description: "Share your location",
     color: "#a187d5",
     preview: function (params) {
         var text = status.components.text(
@@ -52,7 +53,8 @@ function browseSuggestions(params) {
 
 status.command({
     name: "browse",
-    description: "browser",
+    title: "Browser",
+    description: "Launch the browser",
     color: "#ffa500",
     fullscreen: true,
     suggestionsTrigger: 'on-send',
@@ -121,7 +123,8 @@ var send = {
     name: "send",
     icon: "money_white",
     color: "#5fc48d",
-    description: "Send transaction",
+    title: "Send ETH",
+    description: "Send a payment",
     params: [{
         name: "amount",
         type: status.types.NUMBER
@@ -141,8 +144,9 @@ status.response(send);
 
 status.command({
     name: "request",
+    title: "Request ETH",
     color: "#7099e6",
-    description: "Transaction request",
+    description: "Request a payment",
     params: [{
         name: "amount",
         type: status.types.NUMBER
