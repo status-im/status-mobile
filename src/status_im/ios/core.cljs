@@ -13,7 +13,6 @@
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
             [status-im.qr-scanner.screen :refer [qr-scanner]]
-            [status-im.discovery.tag :refer [discovery-tag]]
             [status-im.discovery.search-results :refer [discovery-search-results]]
             [status-im.chat.screen :refer [chat]]
             [status-im.accounts.login.screen :refer [login]]
@@ -74,7 +73,6 @@
            (let [current-view (validate-current-view @view-id @signed-up?)]
              (let [component (case current-view
                                :discovery main-tabs
-                               :discovery-tag discovery-tag
                                :discovery-search-results discovery-search-results
                                :add-participants new-participants
                                :remove-participants remove-participants

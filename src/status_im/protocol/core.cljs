@@ -36,9 +36,12 @@
 ;; discoveries
 (def watch-user! discoveries/watch-user!)
 (def contact-request! discoveries/contact-request!)
-(def watch-hashtags! discoveries/watch-hashtags!)
-(def broadcats-profile! discoveries/broadcats-profile!)
-(def broadcats-discoveries! discoveries/broadcats-discoveries!)
+(def broadcast-profile! discoveries/broadcast-profile!)
+(def send-status! discoveries/send-status!)
+(def send-discoveries-request! discoveries/send-discoveries-request!)
+(def send-discoveries-response! discoveries/send-discoveries-response!)
+
+(def message-pending? d/message-pending?)
 
 ;; initialization
 (s/def ::rpc-url string?)
@@ -82,10 +85,6 @@
         {:topics [chat-id]}
         (l/message-listener (assoc listener-options :callback callback
                                                     :keypair keypair))))
-    ;; start listening to discoveries
-    (watch-hashtags! {:web3     web3
-                      :hashtags hashtags
-                      :callback callback})
     ;; start listening to profiles
     (doseq [{:keys [identity keypair]} contacts]
       (watch-user! {:web3     web3

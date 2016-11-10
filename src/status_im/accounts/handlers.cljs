@@ -65,7 +65,7 @@
   [{:keys [current-account-id current-public-key web3 accounts]} _]
   (let [{:keys [name photo-path status]} (get accounts current-account-id)
         {:keys [updates-public-key updates-private-key]} (accounts current-account-id)]
-    (protocol/broadcats-profile!
+    (protocol/broadcast-profile!
       {:web3    web3
        :message {:from       current-public-key
                  :message-id (random/id)

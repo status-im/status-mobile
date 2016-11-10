@@ -205,7 +205,8 @@
         (dispatch [:update-chat! {:chat-id          chat-id
                                   :contact-info     nil
                                   :pending-contact? false}])
-        (dispatch [:watch-contact contact])))))
+        (dispatch [:watch-contact contact])
+        (dispatch [:discoveries-send-portions chat-id])))))
 
 (defn set-contact-identity-from-qr
   [db [_ _ contact-identity]]
@@ -215,21 +216,21 @@
 
 (register-handler :contact-update-received
   (u/side-effect!
-    (fn [{:keys [chats] :as db} [_ {:keys [from payload]}]]
-      (let [{:keys [content timestamp]} payload
-            {:keys [status name profile-image]} (:profile content)
-            prev-last-updated (get-in db [:contacts from :last-updated])]
-        (if (<= prev-last-updated timestamp)
-          (let [contact {:whisper-identity from
-                         :name             name
-                         :photo-path       profile-image
-                         :status           status
-                         :last-updated     timestamp}]
-            (dispatch [:check-status! contact payload])
-            (dispatch [:update-contact! contact])
-            (when (chats from)
-              (dispatch [:update-chat! {:chat-id from
-                                        :name    name}]))))))))
+    (fn [{:keys [chats current-public-key] :as db} [_ {:keys [from payload]}]]
+      (when (not= current-public-key from)
+        (let [{:keys [content timestamp]} payload
+              {:keys [status name profile-image]} (:profile content)
+              prev-last-updated (get-in db [:contacts from :last-updated])]
+          (if (<= prev-last-updated timestamp)
+            (let [contact {:whisper-identity from
+                           :name             name
+                           :photo-path       profile-image
+                           :status           status
+                           :last-updated     timestamp}]
+              (dispatch [:update-contact! contact])
+              (when (chats from)
+                (dispatch [:update-chat! {:chat-id from
+                                          :name    name}])))))))))
 
 (register-handler :contact-online-received
   (u/side-effect!

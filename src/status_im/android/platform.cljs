@@ -18,6 +18,22 @@
                            :additional-height 0}
    :chat                  {:new-message {:border-top-color styles/color-transparent
                                          :border-top-width 0.5}}
+   :discovery             {:subtitle {:color     styles/color-gray2
+                                      :font-size 14}
+                           :popular  {:border-radius 1
+                                      :margin-top    2
+                                      :margin-bottom 4
+                                      :margin-right  2
+                                      :elevation     3}
+                           :tag      {:flex-direction   "column"
+                                      :background-color "#7099e619"
+                                      :border-radius    5
+                                      :padding          4}
+                           :item     {:status-text {:color       styles/color-black
+                                                    :line-height 22
+                                                    :font-size   14}}}
+   :contacts              {:subtitle {:color     styles/color-gray2
+                                      :font-size 14}}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}
@@ -58,4 +74,7 @@
    :chats             {:action-button?       true
                        :new-chat-in-toolbar? false}
    :contacts          {:action-button?          true
-                       :new-contact-in-toolbar? false}})
+                       :new-contact-in-toolbar? false
+                       :uppercase-subtitles?    false
+                       :group-block-shadows?    true}
+   :discovery         {:uppercase-subtitles? false}})

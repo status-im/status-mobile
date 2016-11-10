@@ -39,6 +39,12 @@
           :font  :default}
     name]])
 
+(defn clean-text [s]
+  (-> s
+      (str/replace #"\n" " ")
+      (str/replace #"\r" "")
+      (str/trim)))
+
 (defn drawer-menu []
   (let
     [account         (subscribe [:get-current-account])
@@ -65,7 +71,7 @@
               :value            name
               :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])
               :on-end-editing   #(when (and new-name (not (str/blank? new-name)))
-                                   (dispatch [:account-update {:name new-name}]))}]]
+                                  (dispatch [:account-update {:name (clean-text new-name)}]))}]]
            [view st/status-container
             [text-input {:style               st/status-input
                          :editable            true
@@ -77,8 +83,8 @@
                          :on-change-text      #(dispatch [:set-in [:profile-edit :status] %])
                          :on-blur             (fn []
                                                 (when (and new-status (not (str/blank? new-status)))
-                                                  (dispatch [:check-status-change new-status])
-                                                  (dispatch [:account-update {:status new-status}])))
+                                                  (dispatch [:check-status-change (clean-text new-status)])
+                                                  (dispatch [:account-update {:status (clean-text new-status)}])))
                          :default-value       status}]]
            [view st/menu-items-container
             [menu-item {:name    (label :t/profile)

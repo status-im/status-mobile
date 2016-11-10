@@ -11,14 +11,14 @@
             [status-im.components.toolbar.styles :as st]
             [status-im.utils.platform :refer [platform-specific]]))
 
-(defn toolbar [{title            :title
-                nav-action       :nav-action
-                hide-nav?        :hide-nav?
-                actions          :actions
-                custom-action    :custom-action
-                background-color :background-color
-                custom-content   :custom-content
-                style            :style}]
+(defn toolbar [{title                :title
+                nav-action           :nav-action
+                hide-nav?            :hide-nav?
+                actions              :actions
+                custom-action        :custom-action
+                background-color     :background-color
+                custom-content       :custom-content
+                style                :style}]
   (let [style (merge (st/toolbar-wrapper background-color) style)]
     [view {:style style}
      [view st/toolbar
@@ -38,7 +38,7 @@
            [text {:style st/toolbar-title-text
                   :font  :toolbar-title}
             title]])
-      [view st/toolbar-actions-container
+      [view (st/toolbar-actions-container (count actions) (or custom-content custom-action))
        (if actions
          (for [{action-image   :image
                 action-handler :handler} actions]

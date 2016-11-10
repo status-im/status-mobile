@@ -2,13 +2,17 @@
   (:require [status-im.data-store.realm.discovery :as data-store]))
 
 (defn get-all
-  []
-  (->> (data-store/get-all-as-list)
+  [ordering]
+  (->> (data-store/get-all-as-list ordering)
        (mapv #(update % :tags vals))))
 
 (defn save
   [discovery]
   (data-store/save discovery))
+
+(defn exists?
+  [message-id]
+  (data-store/exists? message-id))
 
 (defn save-all
   [discoveries]

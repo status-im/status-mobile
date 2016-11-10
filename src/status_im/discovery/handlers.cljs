@@ -5,103 +5,117 @@
             [status-im.protocol.core :as protocol]
             [status-im.navigation.handlers :as nav]
             [status-im.data-store.discovery :as discoveries]
-            [status-im.data-store.contacts :as contacts]
             [status-im.utils.handlers :as u]
             [status-im.utils.datetime :as time]
-            [status-im.utils.random :as random]
-            [status-im.data-store.contacts :as contacts]))
+            [status-im.utils.random :as random]))
+
+(def request-discoveries-interval-s 600)
 
 (register-handler :init-discoveries
   (fn [db _]
     (-> db
-        (assoc :discoveries []))))
+        (assoc :tags [])
+        (assoc :discoveries {}))))
 
-(defn calculate-priority [{:keys [chats contacts]} from payload]
-  (let [contact (get contacts from)
-        chat (get chats from)
-        seen-online-recently? (< (- (time/now-ms) (get contact :last-online))
-                                 time/hour)]
-    (+ (time/now-ms)                                        ;; message is newer => priority is higher
-       (if contact time/day 0)                              ;; user exists in contact list => increase priority
-       (if chat time/day 0)                                 ;; chat with this user exists => increase priority
-       (if seen-online-recently? time/hour 0)               ;; the user was online recently => increase priority
-       )))
+(defn identities [contacts]
+  (->> (map second contacts)
+       (remove (fn [{:keys [dapp? pending]}]
+                 (or pending dapp?)))
+       (map :whisper-identity)))
 
 (defmethod nav/preload-data! :discovery
-  [{:keys [discoveries] :as db} _]
+  [db _]
   (-> db
       (assoc :tags (discoveries/get-all-tags))
-      ;; todo add limit
-      ;; todo hash-map with whisper-id as key and sorted by last-update
-      ;; may be more efficient here
-      (assoc :discoveries (discoveries/get-all))))
-
-(register-handler :discovery-response-received
-  (u/side-effect!
-    (fn [db [_ {:keys [from payload]}]]
-      (let [{:keys [discovery-id profile hashtags]} payload
-            {:keys [name profile-image status]} profile
-            discovery {:message-id   discovery-id
-                       :name         name
-                       :photo-path   profile-image
-                       :status       status
-                       :whisper-id   from
-                       :tags         (map #(hash-map :name %) hashtags)
-                       :last-updated (js/Date.)
-                       :priority     (calculate-priority db from payload)}]
-        (dispatch [:add-discovery discovery])))))
-
-(register-handler :check-status!
-  (u/side-effect!
-    (fn [db [_ {:keys [whisper-identity status]} payload]]
-      (let [{old-status :status} (contacts/get-by-id whisper-identity)]
-        (when (not= old-status status)
-          (let [hashtags (get-hashtags status)]
-            (when-not (empty? hashtags)
-              (let [{:keys [message-id content]} payload
-                    {:keys [name profile-image status]} (content :profile)
-                    discovery {:message-id   message-id
-                               :name         name
-                               :photo-path   profile-image
-                               :status       status
-                               :whisper-id   whisper-identity
-                               :tags         (map #(hash-map :name %) hashtags)
-                               :last-updated (js/Date.)
-                               :priority     (calculate-priority db whisper-identity payload)}]
-                (dispatch [:add-discovery discovery])))))))))
+      (assoc :discoveries (->> (discoveries/get-all :desc)
+                               (map (fn [{:keys [message-id] :as discovery}]
+                                      [message-id discovery]))
+                               (into {})))))
 
 (register-handler :broadcast-status
   (u/side-effect!
-    (fn [{:keys [current-public-key web3 current-account-id accounts]}
+    (fn [{:keys [current-public-key web3 current-account-id accounts contacts]}
          [_ status hashtags]]
-      (let [{:keys [name photo-path]} (get accounts current-account-id)]
-        (protocol/broadcats-discoveries!
-          {:web3     web3
-           :hashtags (set hashtags)
-           :message  {:from       current-public-key
-                      :message-id (random/id)
-                      :payload    {:status  status
-                                   :profile {:name          name
-                                             :status        status
-                                             :profile-image photo-path}}}})
-        (protocol/watch-hashtags! {:web3     web3
-                                   :hashtags (set hashtags)
-                                   :callback #(dispatch [:incoming-message %1 %2])})))))
+      (let [{:keys [name photo-path]} (get accounts current-account-id)
+            message-id (random/id)
+            message    {:message-id message-id
+                        :from       current-public-key
+                        :payload    {:message-id message-id
+                                     :status     status
+                                     :hashtags   (vec hashtags)
+                                     :profile    {:name          name
+                                                  :profile-image photo-path}}}]
+        (doseq [id (identities contacts)]
+          (protocol/send-status!
+            {:web3    web3
+             :message (assoc message :to id)}))
+        (dispatch [:status-received message])))))
 
-(register-handler :show-discovery-tag
-  (fn [db [_ tag]]
-    (dispatch [:navigate-to :discovery-tag])
-    (assoc db :current-tag tag)))
+(register-handler :status-received
+  (u/side-effect!
+    (fn [{:keys [discoveries] :as db} [_ {:keys [from payload]}]]
+      (when (and (not (discoveries/exists? (:message-id payload)))
+                 (not (get discoveries (:message-id payload))))
+        (let [{:keys [message-id status hashtags profile]} payload
+              {:keys [name profile-image]} profile
+              discovery {:message-id   message-id
+                         :name         name
+                         :photo-path   profile-image
+                         :status       status
+                         :whisper-id   from
+                         :tags         (map #(hash-map :name %) hashtags)
+                         :created-at   (time/now-ms)}]
+          (dispatch [:add-discovery discovery]))))))
+
+(register-handler :start-requesting-discoveries
+  (fn [{:keys [request-discoveries-timer] :as db}]
+    (when request-discoveries-timer
+      (js/clearInterval request-discoveries-timer))
+    (dispatch [:request-discoveries])
+    (assoc db :request-discoveries-timer
+              (js/setInterval #(dispatch [:request-discoveries])
+                              (* request-discoveries-interval-s 1000)))))
+
+(register-handler :request-discoveries
+  (u/side-effect!
+    (fn [{:keys [current-public-key web3 contacts]}]
+      (doseq [id (identities contacts)]
+        (when-not (protocol/message-pending? web3 :discoveries-request id)
+          (protocol/send-discoveries-request!
+            {:web3    web3
+             :message {:from       current-public-key
+                       :to         id
+                       :message-id (random/id)}}))))))
+
+(register-handler :discoveries-send-portions
+  (u/side-effect!
+    (fn [{:keys [current-public-key contacts web3]} [_ to]]
+      (when (get contacts to)
+        (protocol/send-discoveries-response!
+          {:web3        web3
+           :discoveries (discoveries/get-all :asc)
+           :message     {:from current-public-key
+                         :to   to}})))))
+
+(register-handler :discoveries-request-received
+  (u/side-effect!
+    (fn [_ [_ {:keys [from]}]]
+      (dispatch [:discoveries-send-portions from]))))
+
+(register-handler :discoveries-response-received
+  (u/side-effect!
+    (fn [{:keys [discoveries contacts]} [_ {:keys [payload from]}]]
+      (when (get contacts from)
+        (when-let [data (:data payload)]
+          (doseq [{:keys [message-id] :as discovery} data]
+            (when (and (not (discoveries/exists? message-id))
+                       (not (get discoveries message-id)))
+              (let [discovery (assoc discovery :created-at (time/now-ms))]
+                (dispatch [:add-discovery discovery])))))))))
 
 (defn add-discovery
-  [{db-discoveries :discoveries
-    :as            db} [_ {:keys [message-id] :as discovery}]]
-  (let [updated-discoveries (if-let [i (first-index #(= (:message-id %) message-id) db-discoveries)]
-                              (assoc db-discoveries i discovery)
-                              (conj db-discoveries discovery))]
-    (-> db
-        (assoc :new-discovery discovery)
-        (assoc :discoveries updated-discoveries))))
+  [db [_ discovery]]
+  (assoc db :new-discovery discovery))
 
 (defn save-discovery!
   [{:keys [new-discovery]} _]
@@ -109,7 +123,11 @@
 
 (defn reload-tags!
   [db _]
-  (assoc db :tags (discoveries/get-all-tags)))
+  (assoc db :tags (discoveries/get-all-tags)
+            :discoveries (->> (discoveries/get-all :desc)
+                              (map (fn [{:keys [message-id] :as discovery}]
+                                     [message-id discovery]))
+                              (into {}))))
 
 (register-handler :add-discovery
   (-> add-discovery
@@ -120,4 +138,4 @@
   :remove-old-discoveries!
   (u/side-effect!
     (fn [_ _]
-      (discoveries/delete :priority :asc 1000 200))))
+      (discoveries/delete :created-at :asc 1000 200))))

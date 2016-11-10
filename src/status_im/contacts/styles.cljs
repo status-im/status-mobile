@@ -18,13 +18,13 @@
    :backgroundColor toolbar-background2})
 
 (def contact-groups
-  {:flex            1
-   :backgroundColor toolbar-background2})
+  {:flex             1
+   :background-color toolbar-background2})
 
 (def empty-contact-groups
   (merge contact-groups
-         {:align-items :center
-          :padding-top 150}))
+         {:align-items     :center
+          :justify-content :center}))
 
 (def empty-contacts-icon
   {:height 62
@@ -39,11 +39,11 @@
   {:backgroundColor color-white})
 
 (def contact-group
-  {:flexDirection :column})
+  {:flex-direction :column})
 
 (def contact-group-header
-  {:flexDirection   :column
-   :backgroundColor toolbar-background2})
+  {:flex-direction   :column
+   :background-color toolbar-background2})
 
 (def contact-group-header-inner
   {:flexDirection   :row
@@ -51,16 +51,12 @@
    :height          48
    :backgroundColor toolbar-background2})
 
-(def contact-group-text
+(def contact-group-subtitle
   {:flex       1
-   :marginLeft 16
-   :fontSize   14
-   :color      text5-color})
+   :margin-left 16})
 
-(def contact-group-size-text
-  {:marginRight 14
-   :fontSize    12
-   :color       text2-color})
+(def contact-group-count
+  {:margin-right 14})
 
 (def contact-group-header-gradient-top
   {:flexDirection   :row

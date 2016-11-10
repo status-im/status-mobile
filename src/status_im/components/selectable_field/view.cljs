@@ -5,6 +5,7 @@
             [reagent.core :as r]
             [status-im.components.selectable-field.styles :as st]
             [status-im.i18n :refer [label]]
+            [status-im.utils.platform :as p]
             [taoensso.timbre :as log]))
 
 (defn- on-press
@@ -41,7 +42,7 @@
         [text-input {:style               (st/sized-text full-height)
                      :multiline           true
                      :selectTextOnFocus   true
-                     :editable            editable?
+                     :editable            (if p/android? true editable?)
                      :auto-focus          true
                      :on-selection-change #(on-selection-change % component)
                      :on-focus            #(log/debug "Focused" %)
