@@ -11,11 +11,11 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.constants :refer [console-chat-id]]))
+            [status-im.constants :refer [console-chat-id wallet-chat-id]]))
 
 (defn online-text [contact chat-id]
   (cond
-    (= chat-id console-chat-id) (label :t/available)
+    (#{console-chat-id wallet-chat-id} chat-id) (label :t/available)
     contact (let [last-online      (get contact :last-online)
                   last-online-date (time/to-date last-online)
                   now-date         (t/now)]
