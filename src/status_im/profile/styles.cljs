@@ -23,13 +23,13 @@
   {:position :absolute})
 
 (def back-btn-container
-  {:width  56
-   :height 56})
+  {:width  46
+   :height 56
+   :align-items     :center
+   :justify-content :center})
 
 (def back-btn-icon
-  {:margin-top  21
-   :margin-left 23
-   :width       8
+  {:width       8
    :height      14})
 
 (def actions-btn-touchable
@@ -69,22 +69,22 @@
   {:flex-direction "column"
    :align-items    "center"
    :justifyContent "center"
-   :margin-bottom  38
    :margin-left    55
    :margin-right   55})
 
-(def status-input
+(defn status-input [height]
   {:align-self   "stretch"
-   :margin-left  16
+   :margin-left  (if p/ios? 22 16)
    :margin-right 16
    :margin-top   (if p/ios? 6 1)
    :font-size    14
-   :min-height   60
-   :text-align   :center
+   :height       height
+   :min-height   30
+   :text-align   "center"
    :color        text2-color})
 
 (def btns-container
-  {:margin-top     18
+  {:margin-top     0
    :flex-direction :row})
 
 (def message-btn
@@ -116,10 +116,28 @@
 
 (def profile-properties-container
   {:align-items    :stretch
-   :flex-firection :column})
+   :flex-firection :column
+   :margin-top     16})
+
+(def my-profile-properties-container
+  {:align-items    :stretch
+   :flex-firection :column
+   :margin-top     32})
 
 (def profile-property
   {:margin-left 16})
+
+(def profile-property-with-top-spacing
+  {:margin-top  32
+   :margin-left 16})
+
+(def profile-property-row
+  {:flex           1
+   :flex-direction :row})
+
+(def profile-property-field
+  {:margin-right 96
+   :flex         1})
 
 (def profile-input-wrapper
   {:margin-bottom 16})
@@ -130,11 +148,6 @@
 (def profile-input-text-non-editable
   {:color text1-disabled-color})
 
-(def report-user-container
-  {:margin-top    32
-   :margin-bottom 43
-   :align-items   :center})
-
 (def report-user-text
   {:font-size      14
    :line-height    21
@@ -143,9 +156,19 @@
    :letter-spacing 0.5})
 
 (def qr-code-container
-  {:flex       1
-   :alignItems :center
-   :margin     32})
+  {:flex             1
+   :alignItems       :center
+   :justify-content  :center
+   :background-color "#000000aa"})
+
+(def qr-code
+  {:width            250
+   :height           250
+   :background-color "white"
+   :border-radius    4
+   :align-items      :center
+   :padding-top      15
+   :elevation        4})
 
 (def hashtag
   {:color "#7099e6"})

@@ -28,33 +28,33 @@
                               :measured?    true}))))
 
 (defn- reagent-render
-  [{:keys [label value props] :as data}]
+  [{:keys [label value editable? props] :as data}]
   (let [component (r/current-component)
         {:keys [focused? measured? full-height]} (r/state component)]
     (log/debug "reagent-render: " data focused? measured? full-height)
     [view st/selectable-field-container
      [view st/label-container
       [text {:style st/label
-             :font :medium} (or label "")]]
+             :font  :medium} (or label "")]]
      [view st/text-container
       (if focused?
         [text-input {:style               (st/sized-text full-height)
                      :multiline           true
                      :selectTextOnFocus   true
-                     :editable            true
+                     :editable            editable?
                      :auto-focus          true
                      :on-selection-change #(on-selection-change % component)
                      :on-focus            #(log/debug "Focused" %)
                      :on-blur             #(r/set-state component {:focused? false})
                      :value               value}]
-        [text (merge {:style st/text
-                      :on-press #(on-press % component)
-                      :onLayout #(on-layout-text % component)
-                      :font :default
-                      :ellipsizeMode :middle
+        [text (merge {:style           st/text
+                      :on-press        #(on-press % component)
+                      :onLayout        #(on-layout-text % component)
+                      :font            :default
+                      :ellipsizeMode   :middle
                       :number-of-lines (if measured? 1 0)} (or props {})) (or value "")])]]))
 
-(defn selectable-field [{:keys [label value props]}]
+(defn selectable-field [_]
   (let [component-data {:display-name "selectable-field"
                         :reagent-render reagent-render}]
     (reagent.core/create-class component-data)))

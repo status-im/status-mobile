@@ -14,9 +14,9 @@
    :font-size        14})
 
 (def text-container
-  {:padding 0
-   :margin-bottom       18
-   :margin  0})
+  {:padding       0
+   :margin-bottom 18
+   :margin        0})
 
 (def text
   {:font-size           16
@@ -26,11 +26,13 @@
 
 (defn sized-text
   [height]
-  (merge text {:height         height
-               :margin-bottom  0
-               :margin-top     0
-               :padding-top    0
-               :padding-left   0
-               :margin-left    0
-               :padding-bottom 0}))
+  (let [{:keys [additional-height
+                margin-top]} (get-in platform-specific [:component-styles :sized-text])]
+    (merge text {:height         (+ additional-height height)
+                 :margin-bottom  0
+                 :margin-top     margin-top
+                 :padding-top    0
+                 :padding-left   0
+                 :margin-left    0
+                 :padding-bottom 0})))
 

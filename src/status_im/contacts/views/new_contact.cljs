@@ -20,7 +20,7 @@
                                                  icon-back
                                                  button-input-container
                                                  button-input]]
-            [status-im.qr-scanner.views.scan-button :refer [scan-button]]
+            [status-im.components.image-button.view :refer [scan-button]]
             [status-im.i18n :refer [label]]
             [cljs.spec :as s]
             [status-im.contacts.validations :as v]
@@ -90,10 +90,10 @@
        :on-change-text #(do
                          (dispatch [:set-in [:new-contact-identity] %])
                          (dispatch [:set :new-contact-address-error nil]))}]
-     [scan-button {:showLabel (zero? (count whisper-identity))
-                   :handler   #(dispatch [:scan-qr-code
-                                          {:toolbar-title (label :t/new-contact)}
-                                          :set-contact-identity-from-qr])}]]))
+     [scan-button {:show-label? (zero? (count whisper-identity))
+                   :handler     #(dispatch [:scan-qr-code
+                                            {:toolbar-title (label :t/new-contact)}
+                                            :set-contact-identity-from-qr])}]]))
 
 
 (defview new-contact []
