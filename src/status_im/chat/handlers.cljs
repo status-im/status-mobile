@@ -238,7 +238,7 @@
   (after (fn [_ [_ phone-number]]
            (dispatch [:account-update {:phone phone-number}])))
   (fn [db [_ phone-number message-id]]
-    (let [formatted        (format-phone-number phone-number)]
+    (let [formatted (format-phone-number phone-number)]
       (-> db
           (assoc :user-phone-number formatted)
           sign-up-service/start-listening-confirmation-code-sms
@@ -288,13 +288,13 @@
 (defn initialize-chats
   [{:keys [loaded-chats account-creation? chats] :as db} _]
   (let [chats' (if account-creation?
-                chats
-                (->> loaded-chats
-                     (map (fn [{:keys [chat-id] :as chat}]
-                            (let [last-message (messages/get-last-message db chat-id)]
-                              [chat-id (assoc chat :last-message last-message)])))
-                     (into {})))
-        ids   (set (keys chats'))]
+                 chats
+                 (->> loaded-chats
+                      (map (fn [{:keys [chat-id] :as chat}]
+                             (let [last-message (messages/get-last-message db chat-id)]
+                               [chat-id (assoc chat :last-message last-message)])))
+                      (into {})))
+        ids    (set (keys chats'))]
 
     (-> db
         (assoc :chats chats')
@@ -399,6 +399,12 @@
         (dispatch [::start-chat! contact-id options navigation-type])))))
 
 (register-handler :add-chat
+  (u/side-effect!
+    (fn [{:keys [chats]} [_ chat-id chat]]
+      (when-not (get chats chat-id)
+        (dispatch [::add-chat chat-id chat])))))
+
+(register-handler ::add-chat
   (-> add-new-chat
       ((enrich add-chat))
       ((after save-new-chat!))))

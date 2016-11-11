@@ -139,9 +139,9 @@
    :backgroundColor selected-message-color})
 
 (def typing-text
-  {:marginTop  -2
-   :fontSize   12
-   :color      text2-color})
+  {:marginTop -2
+   :fontSize  12
+   :color     text2-color})
 
 (def overlay-highlight
   {:flex 1})
@@ -155,7 +155,7 @@
    :left             -16
    :right            -16
    :background-color "#00000055"
-   :elevation 8})
+   :elevation        8})
 
 (defn bottom-info-container [height]
   {:backgroundColor toolbar-background1
@@ -194,7 +194,17 @@
 
 (def chat-modal
   {:position :absolute
-   :left 0
-   :top 0
-   :right 0
-   :bottom 0})
+   :left     0
+   :top      0
+   :right    0
+   :bottom   0})
+
+(def add-contact
+  {:height           35
+   :background-color :white
+   :justify-content  :center})
+
+(def add-contact-text
+  {:text-align          :center
+   :text-align-vertical :center
+   :color               :#7099e6})

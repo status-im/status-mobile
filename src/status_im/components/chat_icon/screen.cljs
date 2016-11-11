@@ -16,7 +16,7 @@
    [text {:style (:default-chat-icon-text styles)}
     (first name)]])
 
-(defn chat-icon [photo-path {:keys [size border]}]
+(defn chat-icon [photo-path {:keys [size]}]
   [image {:source {:uri photo-path}
           :style  (merge st/default-image-style
                          (st/image-style size))}])
@@ -39,6 +39,14 @@
               [oct-icon {:name  :pencil
                          :style st/photo-pencil}]])]))
 
+(defview pending-contact-badge
+  [chat-id {:keys [pending-wrapper pending-outer-circle pending-inner-circle]}]
+  [pending-contact? [:get-in [:chats chat-id :pending-contact?]]]
+  (when pending-contact?
+    [view pending-wrapper
+     [view pending-outer-circle
+      [view pending-inner-circle]]]))
+
 (defview chat-icon-view [chat-id group-chat name online styles]
   [photo-path [:chat-photo chat-id]
    dapp? [:get-in [:contacts chat-id :dapp?]]]
@@ -47,7 +55,8 @@
      [chat-icon photo-path styles]
      [default-chat-icon name styles])
    (when dapp?
-     [dapp-badge styles])])
+     [dapp-badge styles])
+   [pending-contact-badge chat-id styles]])
 
 (defn chat-icon-view-chat-list [chat-id group-chat name color online]
   [chat-icon-view chat-id group-chat name online
@@ -56,6 +65,9 @@
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
+    :pending-wrapper        st/pending-wrapper
+    :pending-outer-circle   st/pending-outer-circle
+    :pending-inner-circle   st/pending-inner-circle
     :size                   40
     :chat-icon              st/chat-icon-chat-list
     :default-chat-icon      (st/default-chat-icon-chat-list color)
@@ -68,6 +80,9 @@
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
+    :pending-wrapper        st/pending-wrapper
+    :pending-outer-circle   st/pending-outer-circle
+    :pending-inner-circle   st/pending-inner-circle
     :size                   36
     :chat-icon              st/chat-icon-view-action
     :default-chat-icon      (st/default-chat-icon-view-action color)
@@ -80,6 +95,9 @@
     :online-view            st/online-view-menu-item
     :online-dot-left        st/online-dot-left-menu-item
     :online-dot-right       st/online-dot-right-menu-item
+    :pending-wrapper        st/pending-view-menu-wrapper
+    :pending-outer-circle   st/pending-outer-circle
+    :pending-inner-circle   st/pending-inner-circle
     :size                   24
     :chat-icon              st/chat-icon-menu-item
     :default-chat-icon      (st/default-chat-icon-view-action color)
@@ -92,6 +110,9 @@
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
+    :pending-wrapper        st/pending-wrapper
+    :pending-outer-circle   st/pending-outer-circle
+    :pending-inner-circle   st/pending-inner-circle
     :size                   64
     :chat-icon              st/chat-icon-message-status
     :default-chat-icon      (st/default-chat-icon-message-status color)

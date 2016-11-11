@@ -11,7 +11,8 @@
             [status-im.utils.utils :refer [require]]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.random :as random]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [cljs.reader :refer [read-string]]))
 
 
 (defmethod nav/preload-data! :group-contacts
@@ -55,7 +56,8 @@
 (defn send-contact-request
   [{:keys [current-public-key web3 current-account-id accounts]} [_ contact]]
   (let [{:keys [whisper-identity]} contact
-        {:keys [name photo-path updates-public-key updates-private-key]} (get accounts current-account-id)]
+        {:keys [name photo-path updates-public-key updates-private-key status]}
+        (get accounts current-account-id)]
     (protocol/contact-request!
       {:web3    web3
        :message {:from       current-public-key
@@ -63,7 +65,8 @@
                  :message-id (random/id)
                  :payload    {:contact {:name          name
                                         :profile-image photo-path
-                                        :address       current-account-id}
+                                        :address       current-account-id
+                                        :status        status}
                               :keypair {:public  updates-public-key
                                         :private updates-private-key}}}})))
 
@@ -132,7 +135,7 @@
 
 (defn request-stored-contacts [contacts]
   (let [contacts-by-hash (get-contacts-by-hash contacts)
-        data (or (keys contacts-by-hash) ())]
+        data             (or (keys contacts-by-hash) ())]
     (http-post "get-contacts" {:phone-number-hashes data}
                (fn [{:keys [contacts]}]
                  (let [contacts' (add-identity contacts-by-hash contacts)]
@@ -156,7 +159,7 @@
 
 (defn add-new-contacts
   [{:keys [contacts] :as db} [_ new-contacts]]
-  (let [identities (set (map :whisper-identity contacts))
+  (let [identities    (set (map :whisper-identity contacts))
         new-contacts' (->> new-contacts
                            (map #(update-pending-status contacts %))
                            (remove #(identities (:whisper-identity %)))
@@ -193,22 +196,13 @@
 
 (register-handler :add-pending-contact
   (u/side-effect!
-    (fn [{:keys [current-public-key web3 current-account-id accounts]}
-         [_ {:keys [whisper-identity] :as contact}]]
-      (let [contact (assoc contact :pending false)
-            {:keys [name photo-path updates-public-key updates-private-key]}
-            (accounts current-account-id)]
-        (protocol/contact-request!
-          {:web3    web3
-           :message {:from       current-public-key
-                     :to         whisper-identity
-                     :message-id (random/id)
-                     :payload    {:contact {:name          name
-                                            :profile-image photo-path
-                                            :address       current-account-id}
-                                  :keypair {:public  updates-public-key
-                                            :private updates-private-key}}}})
-        (dispatch [::update-pending-contact contact])))))
+    (fn [{:keys [chats]} [_ chat-id]]
+      (let [contact (read-string (get-in chats [chat-id :contact-info]))]
+        (dispatch [::prepare-contact contact])
+        (dispatch [:update-chat! {:chat-id          chat-id
+                                  :contact-info     nil
+                                  :pending-contact? false}])
+        (dispatch [:watch-contact contact])))))
 
 (defn set-contact-identity-from-qr
   [db [_ _ contact-identity]]

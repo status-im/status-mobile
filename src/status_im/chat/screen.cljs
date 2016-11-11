@@ -98,6 +98,16 @@
          [view st/action
           [chat-icon]]]))))
 
+(defview add-contact-bar []
+  [pending-contact? [:chat :pending-contact?]
+   chat-id [:get :current-chat-id]]
+  (when pending-contact?
+    [touchable-highlight
+     {:on-press #(dispatch [:add-pending-contact chat-id])}
+     [view st/add-contact
+      [text {:style st/add-contact-text}
+       (label :t/add-to-contacts)]]]))
+
 (defview chat-toolbar []
   [show-actions? [:chat-ui-props :show-actions?]
    accounts [:get :accounts]]
@@ -106,8 +116,8 @@
    [toolbar {:hide-nav?      (or (empty? accounts) show-actions?)
              :custom-content [toolbar-content-view]
              :custom-action  [toolbar-action]
-             :style          (get-in platform-specific [:component-styles :toolbar])}]])
-
+             :style          (get-in platform-specific [:component-styles :toolbar])}]
+   [add-contact-bar]])
 (defn get-intro-status-message [all-messages]
   (let [{:keys [timestamp content-type] :as last-message} (last all-messages)]
     (when (not= content-type content-type-status)

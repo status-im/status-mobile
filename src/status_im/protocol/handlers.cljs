@@ -288,17 +288,25 @@
 
 (register-handler :contact-request-received
   (u/side-effect!
-    (fn [_ [_ {:keys [from payload]}]]
+    (fn [{:keys [contacts]} [_ {:keys [from payload]}]]
       (when from
-        (let [{{:keys [name profile-image address]} :contact
-               {:keys [public private]}             :keypair} payload
+        (let [{{:keys [name profile-image address status]} :contact
+               {:keys [public private]}                    :keypair} payload
 
-              contact {:whisper-identity from
-                       :public-key       public
-                       :private-key      private
-                       :address          address
-                       :photo-path       profile-image
-                       :name             name
-                       :pending          true}]
-          (dispatch [:watch-contact contact])
-          (dispatch [:add-contacts [contact]]))))))
+              contact        {:whisper-identity from
+                              :public-key       public
+                              :private-key      private
+                              :address          address
+                              :status           status
+                              :photo-path       profile-image
+                              :name             name}
+              contact-exist? (get contacts from)
+              chat           {:name             name
+                              :chat-id          from
+                              :contact-info     (prn-str contact)
+                              :pending-contact? true}]
+          (if contact-exist?
+            (do
+              (dispatch [:update-contact! contact])
+              (dispatch [:watch-contact contact]))
+            (dispatch [:add-chat from chat])))))))

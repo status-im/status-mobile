@@ -26,10 +26,10 @@
    :background-color "#5fc48d"
    :height           2})
 
-(defn offline-wrapper [top opacity window-width]
+(defn offline-wrapper [top opacity window-width pending?]
   {:opacity          opacity
    :width            window-width
-   :top              (+ 56 top)
+   :top              (+ (+ 56 top) (if pending? 35 0))
    :position         :absolute
    :background-color "#828b92cc"
    :height           35})
