@@ -38,7 +38,7 @@
 
 (def message-datemark
   {:margin-top    10
-   :margin-bottom -4})
+   :height        34})
 
 (def message-empty-spacing
   {:height 16})
@@ -249,9 +249,9 @@
   {:marginTop 20})
 
 (def status-from
-  {:marginTop  20
-   :fontSize   18
-   :color      text1-color})
+  {:marginTop 20
+   :fontSize  18
+   :color     text1-color})
 
 (def status-text
   {:marginTop  10

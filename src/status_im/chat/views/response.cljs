@@ -140,8 +140,7 @@
       :bounces                    false
       :on-navigation-state-change on-navigation-change}]))
 
-(defview placeholder []
-  [suggestions [:get-content-suggestions]]
+(defn placeholder []
   [view st/input-placeholder])
 
 (defview response-suggestions-view []
