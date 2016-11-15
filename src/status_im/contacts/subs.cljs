@@ -60,9 +60,11 @@
 
 (register-sub :contacts-with-letters
   (fn [db _]
-    (let [contacts (reaction (:contacts @db))]
+    (let [contacts (reaction (:contacts @db))
+          pred     (subscribe [:get :contacts-filter])]
       (reaction
-        (let [ordered (sort-contacts @contacts)]
+        (let [ordered (sort-contacts @contacts)
+              ordered (if pred (filter @pred ordered) ordered)]
           (reduce (fn [prev cur]
                     (let [prev-letter (get-contact-letter (last prev))
                           cur-letter  (get-contact-letter cur)]

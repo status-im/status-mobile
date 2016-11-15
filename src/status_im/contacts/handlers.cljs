@@ -16,9 +16,11 @@
 
 (defmethod nav/preload-data! :group-contacts
   [db [_ _ group]]
-  (if group
-    (assoc db :contacts-group group)
-    db))
+  (dissoc
+    (if group
+      (assoc db :contacts-group group)
+      db)
+    :contacts-filter))
 
 (defmethod nav/preload-data! :new-group
   [db _]
@@ -28,7 +30,8 @@
 
 (defmethod nav/preload-data! :contact-list
   [db [_ _ click-handler]]
-  (assoc db :contacts-click-handler click-handler))
+  (assoc db :contacts-click-handler click-handler
+            :contacts-filter nil))
 
 
 (register-handler :remove-contacts-click-handler
@@ -132,7 +135,7 @@
 
 (defn request-stored-contacts [contacts]
   (let [contacts-by-hash (get-contacts-by-hash contacts)
-        data (or (keys contacts-by-hash) ())]
+        data             (or (keys contacts-by-hash) ())]
     (http-post "get-contacts" {:phone-number-hashes data}
                (fn [{:keys [contacts]}]
                  (let [contacts' (add-identity contacts-by-hash contacts)]
@@ -156,7 +159,7 @@
 
 (defn add-new-contacts
   [{:keys [contacts] :as db} [_ new-contacts]]
-  (let [identities (set (map :whisper-identity contacts))
+  (let [identities    (set (map :whisper-identity contacts))
         new-contacts' (->> new-contacts
                            (map #(update-pending-status contacts %))
                            (remove #(identities (:whisper-identity %)))
