@@ -1,8 +1,51 @@
+I18n.translations = {
+  en: {
+    location_title: 'Location',
+    location_description: 'Share your location',
+    location_address: 'Address',
+
+    browse_title: 'Browser',
+    browse_description: 'Launch the browser',
+
+    send_title: 'Send ETH',
+    send_description: 'Send a payment',
+
+    request_title: 'Request ETH',
+    request_description: 'Request a payment',
+    request_requesting: 'Requesting ',
+
+    validation_title: 'Amount',
+    validation_amount_specified: 'Amount must be specified',
+    validation_invalid_number: 'Amount is not valid number',
+    validation_insufficient_amount: 'Not enough ETH on balance ('
+  },
+  ru: {
+    location_title: 'Местоположение',
+    location_description: 'Поделитесь своим местоположением',
+    location_address: 'Адрес',
+
+    browse_title: 'Браузер',
+    browse_description: 'Запуск браузера',
+
+    send_title: 'Отправить ETH',
+    send_description: 'Отправить платеж',
+
+    request_title: 'Запросить ETH',
+    request_description: 'Запросить платеж',
+    request_requesting: 'Запрос ',
+
+    validation_title: 'Сумма',
+    validation_amount_specified: 'Необходимо указать сумму',
+    validation_invalid_number: 'Сумма не является действительным числом',
+    validation_insufficient_amount: 'Недостаточно ETH на балансе ('
+  }
+};
+
 status.command({
     name: "location",
     icon: "location",
-    title: "Location",
-    description: "Share your location",
+    title: I18n.t('location_title'),
+    description: I18n.t('location_description'),
     color: "#a187d5",
     preview: function (params) {
         var text = status.components.text(
@@ -36,7 +79,7 @@ status.command({
 }).param({
     name: "address",
     type: status.types.TEXT,
-    placeholder: "Address"
+    placeholder: I18n.t('location_address')
 });
 
 
@@ -53,8 +96,8 @@ function browseSuggestions(params) {
 
 status.command({
     name: "browse",
-    title: "Browser",
-    description: "Launch the browser",
+    title: I18n.t('browse_title'),
+    description: I18n.t('browse_description'),
     color: "#ffa500",
     fullscreen: true,
     suggestionsTrigger: 'on-send',
@@ -70,8 +113,8 @@ function validateBalance(params, context) {
         return {
             errors: [
                 status.components.validationMessage(
-                    "Amount",
-                    "Amount must be specified"
+                    I18n.t('validation_title'),
+                    I18n.t('validation_amount_specified')
                 )
             ]
         };
@@ -83,8 +126,8 @@ function validateBalance(params, context) {
         return {
             errors: [
                 status.components.validationMessage(
-                    "Amount",
-                    "Amount is not valid number"
+                    I18n.t('validation_title'),
+                    I18n.t('validation_invalid_number')
                 )
             ]
         };
@@ -95,8 +138,8 @@ function validateBalance(params, context) {
         return {
             errors: [
                 status.components.validationMessage(
-                    "Amount",
-                    "Not enough ETH on balance ("
+                    I18n.t('validation_title'),
+                    I18n.t('validation_insufficient_amount')
                     + web3.fromWei(balance, "ether")
                     + " ETH)"
                 )
@@ -123,8 +166,8 @@ var send = {
     name: "send",
     icon: "money_white",
     color: "#5fc48d",
-    title: "Send ETH",
-    description: "Send a payment",
+    title: I18n.t('send_title'),
+    description: I18n.t('send_description'),
     params: [{
         name: "amount",
         type: status.types.NUMBER
@@ -144,9 +187,9 @@ status.response(send);
 
 status.command({
     name: "request",
-    title: "Request ETH",
+    title: I18n.t('request_title'),
     color: "#7099e6",
-    description: "Request a payment",
+    description: I18n.t('request_description'),
     params: [{
         name: "amount",
         type: status.types.NUMBER
@@ -166,7 +209,7 @@ status.command({
                 params: {
                     amount: params.amount
                 },
-                content: "Requesting " + params.amount + "ETH"
+                content: I18n.t('request_requesting') + params.amount + "ETH"
             }
         };
     },

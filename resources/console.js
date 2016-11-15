@@ -1,4 +1,41 @@
-var phones = [
+I18n.translations = {
+  en: {
+    phone_title: 'Send Phone Number',
+    phone_description: 'Find friends using your number',
+    phone_placeholder: 'Phone number',
+
+    confirm_description: 'Confirmation code',
+    confirm_validation_title: 'Confirmation code',
+    confirm_validation_description: 'Wrong format',
+
+    password_description: 'Password',
+    password_placeholder: 'Type your password',
+    password_placeholder2: 'Please re-enter password to confirm',
+    password_error: 'Password should be not less then 6 symbols.',
+    password_error1: 'Password confirmation doesn\'t match password.',
+    password_validation_title: 'Password'
+
+  },
+  ru: {
+    phone_title: 'Отправить номер телефона',
+    phone_description: 'Найти друзей, используя ваш номер',
+    phone_placeholder: 'Номер телефона',
+
+    confirm_description: 'Код подтверждения',
+    confirm_validation_title: 'Код подтверждения',
+    confirm_validation_description: 'Неверный формат',
+
+    password_description: 'Пароль',
+    password_placeholder: 'Введите свой пароль',
+    password_placeholder2: 'Повторно введите пароль для подтверждения',
+    password_error: 'Пароль должен содержать не менее 6 символов',
+    password_error1: 'Подтверждение пароля не совпадает с паролем',
+    password_validation_title: 'Пароль'
+
+  }
+};
+
+var phones = [ // TODO this is supposed to be regionalised
     {
         number: "89171111111",
         description: "Number format 1"
@@ -109,35 +146,35 @@ function phoneSuggestions(params) {
 var phoneConfig = {
     name: "phone",
     icon: "phone_white",
-    title: "Send Phone Number",
-    description: "Find friends using your number",
+    title: I18n.t('phone_title'),
+    description: I18n.t('phone_description'),
     color: "#5bb2a2",
     params: [{
         name: "phone",
         type: status.types.PHONE,
         suggestions: phoneSuggestions,
-        placeholder: "Phone number"
+        placeholder: I18n.t('phone_placeholder')
     }]
 };
 status.response(phoneConfig);
 status.command(phoneConfig);
 
 
-status.command({
-    name: "help",
-    title: "Help",
-    description: "Request help from Console",
-    color: "#7099e6",
-    params: [{
-        name: "query",
-        type: status.types.TEXT
-    }]
-});
+// status.command({
+//     name: "help",
+//     title: "Help",
+//     description: "Request help from Console",
+//     color: "#7099e6",
+//     params: [{
+//         name: "query",
+//         type: status.types.TEXT
+//     }]
+// });
 
 status.response({
     name: "confirmation-code",
     color: "#7099e6",
-    description: "Confirmation code",
+    description: I18n.t('confirm_description'),
     params: [{
         name: "code",
         type: status.types.NUMBER
@@ -145,8 +182,8 @@ status.response({
     validator: function (params) {
         if (!/^[\d]{4}$/.test(params.code)) {
             var error = status.components.validationMessage(
-                "Confirmation code",
-                "Wrong format"
+                I18n.t('confirm_validation_title'),
+                I18n.t('confirm_validation_description')
             );
 
             return {errors: [error]}
@@ -157,16 +194,16 @@ status.response({
 status.response({
     name: "password",
     color: "#7099e6",
-    description: "Password",
+    description: I18n.t('password_description'),
     icon: "lock_white",
     params: [{
         name: "password",
         type: status.types.PASSWORD,
-        placeholder: "Type your password"
+        placeholder: I18n.t('password_placeholder')
     }, {
         name: "password-confirmation",
         type: status.types.PASSWORD,
-        placeholder: "Please re-enter password to confirm"
+        placeholder: I18n.t('password_placeholder2')
     }],
     validator: function (params, context) {
         var errorMessages = [];
@@ -176,12 +213,12 @@ status.response({
             currentParameter == "password" &&
             params.password.length < 6
         ) {
-            errorMessages.push("Password should be not less then 6 symbols.");
+            errorMessages.push(I18n.t('password_error'));
         }
 
         if (currentParameter == "password-confirmation" &&
             params.password != params["password-confirmation"]) {
-            errorMessages.push("Password confirmation doesn't match password.");
+            errorMessages.push(I18n.t('password_error1'));
         }
 
         if (errorMessages.length) {
@@ -189,7 +226,7 @@ status.response({
             for (var idx in errorMessages) {
                 errors.push(
                     status.components.validationMessage(
-                        "Password",
+                        I18n.t('password_validation_title'),
                         errorMessages[idx]
                     )
                 );
