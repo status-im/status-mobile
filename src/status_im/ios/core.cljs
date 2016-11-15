@@ -7,7 +7,8 @@
                                                 modal
                                                 app-registry
                                                 keyboard
-                                                orientation]]
+                                                orientation
+                                                splash-screen]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -65,7 +66,8 @@
          (.addListener keyboard
                        "keyboardWillHide"
                        (when-not (= 0 @keyboard-height)
-                         #(dispatch [:set :keyboard-height 0]))))
+                         #(dispatch [:set :keyboard-height 0])))
+         (.hide splash-screen))
        :render
        (fn []
          (when @view-id

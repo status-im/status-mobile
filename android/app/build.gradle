@@ -133,6 +133,7 @@ android {
 
 dependencies {
     compile project(':instabug-reactnative')
+    compile project(':react-native-splash-screen')
     compile project(':react-native-image-resizer')
     compile project(':react-native-dialogs')
     compile project(':react-native-randombytes')

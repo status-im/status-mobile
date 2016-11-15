@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
+import com.cboy.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -40,6 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.asList(
               new MainReactPackage(),
               new RNInstabugReactnativePackage("b239f82a9cb00464e4c72cc703e6821e",MainApplication.this,"shake"),
+              new SplashScreenReactPackage(),
               new StatusPackage(),
               new RealmReactPackage(),
               new VectorIconsPackage(),
