@@ -1,7 +1,7 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "10.0.2.2",
+  "androidHost": "localhost",
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
@@ -16,6 +16,7 @@
     "react-native-randombytes",
     "dismissKeyboard",
     "react-native-linear-gradient",
+    "react-native-splash-screen",
     "react-native-android-sms-listener",
     "react-native-status",
     "react-native-camera",

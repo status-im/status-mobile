@@ -52,6 +52,7 @@
     "react-native-orientation": "github:youennPennarun/react-native-orientation",
     "react-native-qrcode": "^0.2.2",
     "react-native-randombytes": "^2.1.0",
+    "react-native-splash-screen": "^1.0.9",
     "react-native-tcp": "^2.0.4",
     "react-native-udp": "^1.2.6",
     "react-native-vector-icons": "^2.0.3",
