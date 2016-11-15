@@ -6,6 +6,8 @@
 	<string>We need to access your camera</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need to access your photo storage to give you an ability to select photos</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need to access your microphone</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need to access your contacts</string>
 	<key>CFBundleDevelopmentRegion</key>

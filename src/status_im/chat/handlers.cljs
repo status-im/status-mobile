@@ -232,7 +232,7 @@
   (u/side-effect!
     (fn [{:keys [chats]} [_ mnemonic]]
       (let [messages-count (count (get-in chats [console-chat-id :messages]))]
-        (sign-up-service/passpharse-messages mnemonic messages-count)))))
+        (sign-up-service/passphrase-messages mnemonic messages-count)))))
 
 (register-handler :sign-up
   (after (fn [_ [_ phone-number]]

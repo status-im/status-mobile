@@ -24,6 +24,7 @@
     "homoglyph-finder": "^1.1.1",
     "https-browserify": "0.0.1",
     "identicon.js": "github:status-im/identicon.js",
+    "instabug-reactnative": "git+https://github.com/Instabug/instabug-reactnative.git",
     "os-browserify": "^0.1.2",
     "path-browserify": "0.0.0",
     "process": "^0.11.5",

@@ -13,6 +13,7 @@
    :invite-friends                        "Invite friends"
    :faq                                   "FAQ"
    :switch-users                          "Switch users"
+   :feedback                              "Got Feedback?\nShake your phone!"
 
    ;chat
    :is-typing                             "is typing"
@@ -89,6 +90,7 @@
    :here-is-your-passphrase               "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :written-down                          "Make sure you had securely written it down"
    :phone-number-required                 "Tap here to enter your phone number & I'll find your friends"
+   :shake-your-phone                      "Find a bug or have a suggestion? Just ~shake~ your phone!"
    :intro-status                          "Chat with me to setup your account and change your settings!"
    :intro-message1                        "Welcome to Status\nTap this message to set your password & get started!"
    :account-generation-message            "Gimmie a sec, I gotta do some crazy math to generate your account!"
