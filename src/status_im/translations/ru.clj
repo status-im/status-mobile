@@ -3,7 +3,7 @@
 (def translations
   {
    ;common
-   :members-title                         "Члены"
+   :members-title                         "Участники"
    :not-implemented                       "!не реализовано"
    :chat-name                             "Имя чата"
    :notifications-title                   "Уведомления и звуки"
@@ -37,7 +37,7 @@
 
    ;messages
    :status-sending                        "Отправляется"
-   :status-pending                        "Отправляется"
+   :status-pending                        "в ожидании"
    :status-sent                           "Отправить"
    :status-seen-by-everyone               "Просмотрено всеми"
    :status-seen                           "Просмотрено"

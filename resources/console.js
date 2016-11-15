@@ -32,6 +32,39 @@ I18n.translations = {
     password_error1: 'Подтверждение пароля не совпадает с паролем',
     password_validation_title: 'Пароль'
 
+  },
+  af: {
+    phone_title: 'Stuur telefoonnommer',
+    phone_description: 'Vind vriende deur jou nommer te gebruik',
+    phone_placeholder: 'Telefoonnommer',
+
+    confirm_description: 'Bevestigingskode',
+    confirm_validation_title: 'Bevestigingskode',
+    confirm_validation_description: 'Verkeerde formaat',
+
+    password_description: 'Wagwoord',
+    password_placeholder: 'Tik jou wagwoord in',
+    password_placeholder2: 'Tik asseblief weer jou wagwoord in om te bevestig',
+    password_error: 'Wagwoord mag nie minder as 6 simbole wees nie.',
+    password_error1: 'Wagwoordbevestiging is nie dieselfde as wagwoord nie.',
+    password_validation_title: 'Wagwoord'
+
+  }, ar: {
+    phone_title: 'أرسل رقم الهاتف',
+    phone_description: 'ابحث عن الأصدقاء باستخدام رقمك',
+    phone_placeholder: 'رقم الهاتف',
+
+    confirm_description: 'رمز التأكيد',
+    confirm_validation_title: 'رمز التأكيد',
+    confirm_validation_description: 'صيغة خاطئة',
+
+    password_description: 'كلمة المرور',
+    password_placeholder: 'اكتب كلمة المرور الخاصة بك',
+    password_placeholder2: 'الرجاء إعادة إدخال كلمة المرور للتأكيد',
+    password_error: 'ينبغي أن لا تقل كلمة المرور عن 6 رموز.',
+    password_error1: 'لا يتوافق تأكيد كلمة المرور مع كلمة المرور.',
+    password_validation_title: 'كلمة المرور'
+
   }
 };
 

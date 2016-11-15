@@ -38,6 +38,46 @@ I18n.translations = {
     validation_amount_specified: 'Необходимо указать сумму',
     validation_invalid_number: 'Сумма не является действительным числом',
     validation_insufficient_amount: 'Недостаточно ETH на балансе ('
+  },
+  af: {
+    location_title: 'Ligging',
+    location_description: 'Deel jou ligging',
+    location_address: 'Addres',
+
+    browse_title: 'Webblaaier',
+    browse_description: 'Begin die webblaaier',
+
+    send_title: 'Stuur ETH',
+    send_description: 'Stuur \'n betaling',
+
+    request_title: 'Versoek ETH',
+    request_description: 'Versoek \'n betaling',
+    request_requesting: 'Besig met versoek ',
+
+    validation_title: 'Bedrag',
+    validation_amount_specified: 'Bedrag moet gespesifiseer word',
+    validation_invalid_number: 'Bedrag is nie \'n geldige syfer nie',
+    validation_insufficient_amount: 'Nie genoeg ETH in rekening nie ('
+  },
+  ar: {
+    location_title: 'الموقع',
+    location_description: 'شارك موقعك',
+    location_address: 'العنوان',
+
+    browse_title: 'المتصفح',
+    browse_description: 'تشغيل المتصفح',
+
+    send_title: 'إرسال ETH',
+    send_description: 'إرسال مدفوعات',
+
+    request_title: 'طلب ETH',
+    request_description: 'طلب مدفوعات',
+    request_requesting: 'مُطَالَبَة ',
+
+    validation_title: 'المبلغ',
+    validation_amount_specified: 'يجب تحديد المبلغ',
+    validation_invalid_number: 'المبلغ المحدد غير صحيح',
+    validation_insufficient_amount: 'لا يوجد ETH  كافي بالحساب ('
   }
 };
 
