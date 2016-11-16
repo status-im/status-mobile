@@ -18,7 +18,7 @@
   (->> (keywordize-keys (apply hash-map (split s #"[;=]")))
        (map (fn [[k v]]
               [k (if (= k :params)
-                   (read-string v)
+                   (keywordize-keys (read-string v))
                    v)]))
        (into {})))
 
