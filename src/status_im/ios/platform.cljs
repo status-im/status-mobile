@@ -55,7 +55,8 @@
                            :font-size        14}})
 
 (def fonts
-  {:default       {:font-family "SFUIText-Regular"}
+  {:light         {:font-family "SFUIText-Light"}
+   :default       {:font-family "SFUIText-Regular"}
    :medium        {:font-family "SFUIText-Medium"}
    :bold          {:font-family "SFUIText-Bold"}
 

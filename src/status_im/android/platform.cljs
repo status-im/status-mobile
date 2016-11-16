@@ -47,7 +47,8 @@
                            :font-size        12}})
 
 (def fonts
-  {:default       {:font-family "sans-serif"}
+  {:light         {:font-family "sans-serif-light"}
+   :default       {:font-family "sans-serif"}
    :medium        {:font-family "sans-serif-medium"}
 
    :toolbar-title {:font-family "sans-serif"}})

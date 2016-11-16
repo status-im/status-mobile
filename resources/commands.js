@@ -139,10 +139,63 @@ var send = {
         name: "amount",
         type: status.types.NUMBER
     }],
-    preview: function (params) {
-        return status.components.text(
-            {},
-            params.amount + " ETH"
+    preview: function (params, context) {
+        var amountStyle = {
+            fontSize: 36,
+            color: "#000000"
+        };
+
+        var isIos = context.platform == "ios";
+        if (isIos) {
+            amountStyle.height = 36;
+        } else {
+            amountStyle.lineHeight = 34;
+        }
+
+        var amount = status.components.view(
+            {
+                flexDirection: "row",
+                alignItems: "flex-end"
+            },
+            [status.components.text(
+                {
+                    style: amountStyle,
+                    font: "light"
+                },
+                params.amount
+            )]);
+
+        var currency = status.components.view(
+            {
+                style: {
+                    flexDirection: "column",
+                    justifyContent: "flex-end",
+                    paddingBottom: 0
+                }
+            },
+            [status.components.text(
+                {
+                    style: {
+                        color: "#9199a0",
+                        fontSize: 16,
+                        lineHeight: 18,
+                        marginLeft: 7.5
+                    }
+                },
+                "ETH"
+            )]
+        );
+
+        return status.components.view(
+            {
+                style: {
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginTop: 8,
+                    marginBottom: 8
+                }
+            },
+            [amount, currency]
         );
     },
     handler: sendTransaction,

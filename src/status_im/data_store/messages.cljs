@@ -32,7 +32,8 @@
 (defn- command-type?
   [type]
   (contains?
-    #{c/content-type-command c/content-type-command-request}
+    #{c/content-type-command c/content-type-command-request
+      c/content-type-wallet-request c/content-type-wallet-command}
     type))
 
 (def default-values

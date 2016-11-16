@@ -89,11 +89,15 @@
   {:flexDirection   :column
    :margin-top      16
    :margin-left     16
-   :margin-right    16
+   :margin-right    0
    :padding-bottom  12
    :padding-left    12
    :backgroundColor chat-background
    :borderRadius    14})
+
+(def staged-command-header
+  {:flex-direction :row
+   :justify-content :space-between})
 
 (def staged-command-info-container
   {:flexDirection :row
@@ -115,5 +119,5 @@
    :color            color-black})
 
 (def staged-commands-bottom
-  {:height 16
+  {:height           16
    :background-color "white"})

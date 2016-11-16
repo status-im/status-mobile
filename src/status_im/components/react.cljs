@@ -57,7 +57,7 @@
   ([{:keys [style font uppercase?] :as opts
      :or   {font :default}} t & ts]
    (r/as-element
-     (let [font (get-in platform-specific [:fonts font])
+     (let [font (get-in platform-specific [:fonts (keyword font)])
            ts   (cond->> (conj ts t)
                          uppercase? (map clojure.string/upper-case))]
        (vec (concat
