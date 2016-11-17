@@ -44,13 +44,6 @@
                  :height 19}
    :handler     #(dispatch [:show-profile chat-id])})
 
-(defn item-add-to-contacts [contact]
-  {:title      (label :t/add-to-contacts)
-   :icon       :menu_group
-   :icon-style {:width  20
-                :height 17}
-   :handler    #(dispatch [:add-pending-contact contact])})
-
 (def item-search
   {:title      (label :t/search-chat)
    :subtitle   (label :t/not-implemented)
@@ -83,9 +76,8 @@
    item-notifications
    item-settings])
 
-(defn user-chat-items [chat-id {:keys [pending] :as contact}]
+(defn user-chat-items [chat-id]
   [(item-user chat-id)
-   (if pending (item-add-to-contacts contact) nil)
    item-search
    item-notifications
    item-settings])
@@ -123,12 +115,13 @@
         subtitle])]]])
 
 (defn actions-list-view []
-  (let [{:keys [group-chat chat-id]} (subscribe [:chat-properties [:group-chat :chat-id]])
+  (let [{:keys [group-chat chat-id]}
+        (subscribe [:chat-properties [:group-chat :chat-id]])
         members (subscribe [:current-chat-contacts])
         status-bar-height (get-in platform-specific [:component-styles :status-bar :default :height])]
     (when-let [actions (if @group-chat
                          (group-chat-items @members)
-                         (user-chat-items @chat-id (first @members)))]
+                         (user-chat-items @chat-id))]
       [view (-> (st/actions-wrapper status-bar-height)
                 (merge (get-in platform-specific [:component-styles :actions-list-view])))
        [view st/actions-separator]

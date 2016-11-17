@@ -119,8 +119,8 @@
          {:width         14
           :height        14
           :border-radius 7
-          :bottom 1
-          :right 1}))
+          :bottom        1
+          :right         1}))
 
 (def online-view-profile
   (merge online-view
@@ -201,3 +201,39 @@
     {:width         image-size
      :height        image-size
      :border-radius (/ image-size 2)}))
+
+(def pending-wrapper
+  {:position         :absolute
+   :bottom           4
+   :right            5
+   :width            12
+   :height           12
+   :border-radius    6
+   :background-color :white
+   :align-items      :center
+   :justify-content  :center})
+
+(def pending-view-menu-wrapper
+  {:position         :absolute
+   :bottom           2
+   :right            2
+   :width            12
+   :height           12
+   :border-radius    6
+   :background-color :white
+   :align-items      :center
+   :justify-content  :center})
+
+(def pending-outer-circle
+  {:background-color online-color
+   :width            8
+   :height           8
+   :border-radius    4
+   :align-items      :center
+   :justify-content  :center})
+
+(def pending-inner-circle
+  {:background-color :white
+   :width            4
+   :height           4
+   :border-radius    2})
