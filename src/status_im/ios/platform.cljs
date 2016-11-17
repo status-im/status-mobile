@@ -21,6 +21,27 @@
                            :border-bottom-width 0.5}
    :chat                  {:new-message {:border-top-color styles/color-gray3
                                          :border-top-width 0.5}}
+   :discovery             {:subtitle {:color          styles/color-steel
+                                      :font-size      13
+                                      :letter-spacing 1}
+                           :popular  {:border-radius 3
+                                      :border-width  1
+                                      :border-color  "#D7D7D7"}
+                           :tag      {:flex-direction   "column"
+                                      :background-color "rgb(227, 235, 250)"
+                                      :border-radius    4
+                                      :border-width     1
+                                      :border-color     "rgba(112, 153, 230, 0.31)"
+                                      :padding          6}
+                           :item     {:status-text {:color          styles/color-steel
+                                                    :font-size      14
+                                                    :letter-spacing -0.1}
+                                      :icon        {:padding-top     0
+                                                    :bottom          -4
+                                                    :justify-content :flex-end}}}
+   :contacts              {:subtitle {:color          styles/color-steel
+                                      :font-size      13
+                                      :letter-spacing 1}}
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
@@ -60,5 +81,8 @@
    :chats             {:action-button?       false
                        :new-chat-in-toolbar? true}
    :contacts          {:action-button?          false
-                       :new-contact-in-toolbar? true}})
+                       :new-contact-in-toolbar? true
+                       :uppercase-subtitles?    true
+                       :group-block-shadows?    false}
+   :discovery         {:uppercase-subtitles? true}})
 

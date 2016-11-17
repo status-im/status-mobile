@@ -16,7 +16,12 @@
   (let [{pending-db :pending
          :as        contact-db} (data-store/get-by-id whisper-identity)
         contact (assoc contact :pending (boolean (if contact-db
-                                                   (and pending-db pending)
+                                                   ;; TODO:
+                                                   ;; this is temporary fix for pending users
+                                                   ;; we need to change this (if ...) to (and pending-db pending)
+                                                   (if (nil? pending)
+                                                     pending-db
+                                                     (and pending-db pending))
                                                    pending)))]
     (data-store/save contact (if contact-db true false))))
 

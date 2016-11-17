@@ -393,10 +393,12 @@
 
 (register-handler :start-chat
   (u/side-effect!
-    (fn [{:keys [chats]} [_ contact-id options navigation-type]]
-      (if (chats contact-id)
-        (dispatch [(or navigation-type :navigate-to) :chat contact-id])
-        (dispatch [::start-chat! contact-id options navigation-type])))))
+    (fn [{:keys [chats current-public-key]}
+         [_ contact-id options navigation-type]]
+      (when-not (= current-public-key contact-id)
+        (if (chats contact-id)
+          (dispatch [(or navigation-type :navigate-to) :chat contact-id])
+          (dispatch [::start-chat! contact-id options navigation-type]))))))
 
 (register-handler :add-chat
   (u/side-effect!

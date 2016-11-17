@@ -107,6 +107,7 @@
    :popular-tags                          "Popular tags"
    :recent                                "Recent"
    :no-statuses-discovered                "No statuses discovered"
+   :no-statuses-found                     "No statuses found"
 
    ;settings
    :settings                              "Settings"

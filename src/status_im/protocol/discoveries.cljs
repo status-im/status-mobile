@@ -9,12 +9,8 @@
     [status-im.protocol.validation :refer-macros [valid?]]
     [status-im.utils.random :as random]))
 
-(def discovery-topic "status-discovery")
 (def discovery-topic-prefix "status-discovery-")
 (def discovery-hashtag-prefix "status-hashtag-")
-
-(defn- add-hashtag-prefix [hashtag]
-  (str discovery-hashtag-prefix hashtag))
 
 (defn- make-discovery-topic [identity]
   (str discovery-topic-prefix identity))
@@ -72,34 +68,11 @@
 
 (defonce watched-hashtag-topics (atom nil))
 
-(defn- hashtags->topics
-  "Create topics from hashtags."
-  [hashtags]
-  (->> hashtags
-       (map (fn [tag]
-              [tag [(add-hashtag-prefix tag) discovery-topic]]))
-       (into {})))
-
 (s/def :discoveries/hashtags (s/every string? :kind-of set?))
-
-(defn stop-watching-hashtags!
-  [web3]
-  (doseq [topics @watched-hashtag-topics]
-    (f/remove-filter! web3 topics)))
 
 (s/def ::callback fn?)
 (s/def :watch-hashtags/options
   (s/keys :req-un [:options/web3 :discoveries/hashtags ::callback]))
-
-(defn watch-hashtags!
-  [{:keys [web3 hashtags] :as options}]
-  {:pre [(valid? :watch-hashtags/options options)]}
-  (debug :watch-hashtags hashtags)
-  (stop-watching-hashtags! web3)
-  (let [hashtag-topics (vals (hashtags->topics hashtags))]
-    (reset! watched-hashtag-topics hashtag-topics)
-    (doseq [topics hashtag-topics]
-      (f/add-filter! web3 {:topics topics} (l/message-listener options)))))
 
 (s/def ::status (s/nilable string?))
 (s/def ::profile (s/keys :req-un [::status]))
@@ -111,7 +84,7 @@
 (s/def :broadcast-profile/options
   (s/keys :req-un [:profile/message :options/web3]))
 
-(defn broadcats-profile!
+(defn broadcast-profile!
   [{:keys [web3 message] :as options}]
   {:pre [(valid? :broadcast-profile/options options)]}
   (debug :broadcasting-status)
@@ -132,18 +105,32 @@
 (s/def :broadcast-hasthags/options
   (s/keys :req-un [:discoveries/hashtags :status/message :options/web3]))
 
-(defn broadcats-discoveries!
-  [{:keys [web3 hashtags message] :as options}]
-  {:pre [(valid? :broadcast-hasthags/options options)]}
+(defn send-status!
+  [{:keys [web3 message]}]
   (debug :broadcasting-status)
-  (let [discovery-id (random/id)]
-    (doseq [[tag hashtag-topics] (hashtags->topics hashtags)]
-      (d/add-pending-message!
-        web3
-        (-> message
-            (assoc :type :discovery
-                   :topics hashtag-topics)
-            (assoc-in [:payload :tag] tag)
-            (assoc-in [:payload :hashtags] (vec hashtags))
-            (assoc-in [:payload :discovery-id] discovery-id)
-            (update :message-id str tag))))))
+  (let [message (-> message
+                    (assoc :type :discovery
+                           :topics [(make-discovery-topic (:from message))]))]
+    (d/add-pending-message! web3 message)))
+
+(defn send-discoveries-request!
+  [{:keys [web3 message]}]
+  (debug :sending-discoveries-request)
+  (d/add-pending-message!
+    web3
+    (-> message
+        (assoc :type :discoveries-request
+               :topics [(make-discovery-topic (:from message))]))))
+
+(defn send-discoveries-response!
+  [{:keys [web3 discoveries message]}]
+  (debug :sending-discoveries-response)
+  (doseq [portion (->> (take 100 discoveries)
+                       (partition 10 10 nil))]
+    (d/add-pending-message!
+      web3
+      (-> message
+          (assoc :type :discoveries-response
+                 :topics [(make-discovery-topic (:from message))]
+                 :message-id (random/id)
+                 :payload {:data (into [] portion)})))))

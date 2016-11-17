@@ -1,11 +1,11 @@
-(ns status-im.data-store.realm.schemas.account.v3.core
+(ns status-im.data-store.realm.schemas.account.v5.core
   (:require [taoensso.timbre :as log]
-            [status-im.data-store.realm.schemas.account.v3.chat :as chat]
+            [status-im.data-store.realm.schemas.account.v4.chat :as chat]
             [status-im.data-store.realm.schemas.account.v3.message :as message]
             [status-im.data-store.realm.schemas.account.v2.contact :as contact]
             [status-im.data-store.realm.schemas.account.v1.chat-contact :as chat-contact]
             [status-im.data-store.realm.schemas.account.v1.command :as command]
-            [status-im.data-store.realm.schemas.account.v1.discovery :as discovery]
+            [status-im.data-store.realm.schemas.account.v5.discovery :as discovery]
             [status-im.data-store.realm.schemas.account.v1.kv-store :as kv-store]
             [status-im.data-store.realm.schemas.account.v1.pending-message :as pending-message]
             [status-im.data-store.realm.schemas.account.v1.request :as request]
@@ -25,4 +25,4 @@
              user-status/schema])
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating v3 account database: " old-realm new-realm))
+  (log/debug "migrating v5 account database: " old-realm new-realm))

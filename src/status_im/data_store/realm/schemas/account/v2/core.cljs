@@ -25,5 +25,4 @@
              user-status/schema])
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating v2 account database: " old-realm new-realm)
-  (contact/migration old-realm new-realm))
+  (log/debug "migrating v2 account database: " old-realm new-realm))

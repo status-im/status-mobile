@@ -19,7 +19,7 @@
 
              :new-contact-identity       ""
              :contacts                   {}
-             :discoveries                []
+             :discoveries                {}
              :discovery-search-tags      []
              :tags                       {}
 

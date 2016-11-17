@@ -27,7 +27,9 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific]]))
 
-(defn contact-list-toolbar []
+(def contacts-limit 50)
+
+(defn toolbar-view []
   (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
         actions      (cond->> [{:image   {:source {:uri :icon_search}
                                           :style  icon-search}
@@ -44,35 +46,57 @@
               :style            {:elevation 0}
               :actions          actions}]))
 
-(def contacts-limit 10)
+(defn subtitle-view [subtitle contacts-count]
+  [view st/contact-group-header-inner
+   [text {:style      (merge st/contact-group-subtitle
+                             (get-in platform-specific [:component-styles :contacts :subtitle]))
+          :uppercase? (get-in platform-specific [:contacts :uppercase-subtitles?])
+          :font       :medium}
+    subtitle]
+   [text {:style      (merge st/contact-group-count
+                             (get-in platform-specific [:component-styles :contacts :subtitle]))
+          :uppercase? (get-in platform-specific [:contacts :uppercase-subtitles?])
+          :font       :medium}
+    (str contacts-count)]])
 
-(defn contact-group [contacts contacts-count title group top? click-handler]
-  [view st/contact-group
-   [view st/contact-group-header
-    (when-not top?
-      [linear-gradient {:style  st/contact-group-header-gradient-top
-                        :colors st/contact-group-header-gradient-top-colors}])
-    [view st/contact-group-header-inner
-     [text {:style st/contact-group-text} title]
-     [text {:style st/contact-group-size-text} (str contacts-count)]]
-    [linear-gradient {:style  st/contact-group-header-gradient-bottom
-                      :colors st/contact-group-header-gradient-bottom-colors}]]
-   ;; todo what if there is no contacts, should we show some information
-   ;; about this?
-   [view {:flexDirection :column}
-    (doall
-      ;; TODO not imlemented: contact more button handler
-      (map (fn [contact]
-             (let [whisper-identity (:whisper-identity contact)
-                   click-handler    (or click-handler on-press)]
-               ^{:key contact}
-               [contact-extended-view contact nil (click-handler whisper-identity) nil]))
-           contacts))]
-   (when (<= contacts-limit (count contacts))
-     [view st/show-all
-      [touchable-highlight {:on-press #(dispatch [:navigate-to :group-contacts group])}
-       [view
-        [text {:style st/show-all-text} (label :t/show-all)]]]])])
+(defn group-top-view []
+  [linear-gradient {:style  st/contact-group-header-gradient-bottom
+                    :colors st/contact-group-header-gradient-bottom-colors}])
+
+(defn group-bottom-view []
+  [linear-gradient {:style  st/contact-group-header-gradient-top
+                    :colors st/contact-group-header-gradient-top-colors}])
+
+(defn line-view []
+  [view {:style {:background-color "#D7D7D7"
+                 :height           1}}])
+
+(defn contact-group-view [contacts contacts-count subtitle group click-handler]
+  (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])]
+    [view st/contact-group
+     [view st/contact-group-header
+      [subtitle-view subtitle contacts-count]]
+     (if shadows?
+       [group-top-view]
+       [line-view])
+     [view
+      (doall
+        (map (fn [contact]
+               (let [whisper-identity (:whisper-identity contact)
+                     click-handler    (or click-handler on-press)]
+                 ^{:key contact}
+                 [contact-extended-view contact nil (click-handler whisper-identity) nil]))
+             contacts))]
+     (when (<= contacts-limit (count contacts))
+       [view st/show-all
+        [touchable-highlight {:on-press #(dispatch [:navigate-to :group-contacts group])}
+         [view
+          [text {:style st/show-all-text
+                 :font  :medium}
+           (label :t/show-all)]]]])
+     (if shadows?
+       [group-bottom-view]
+       [line-view])]))
 
 (defn contacts-action-button []
   [view st/buttons-container
@@ -97,7 +121,7 @@
         show-toolbar-shadow? (r/atom false)]
     (fn []
       [view st/contacts-list-container
-       [contact-list-toolbar]
+       [toolbar-view]
        [view {:style st/toolbar-shadow}
         (when @show-toolbar-shadow?
           [linear-gradient {:style  st/contact-group-header-gradient-bottom
@@ -108,18 +132,18 @@
                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
                                      (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
           (when (pos? @dapps-count)
-            [contact-group
+            [contact-group-view
              @dapps
              @dapps-count
              (label :t/contacts-group-dapps)
-             :dapps true
+             :dapps
              @click-handler])
           (when (pos? @people-count)
-            [contact-group
+            [contact-group-view
              @peoples
              @people-count
              (label :t/contacts-group-people)
-             :people false
+             :people
              @click-handler])]
          [view st/empty-contact-groups
           [react/icon :group_big st/empty-contacts-icon]

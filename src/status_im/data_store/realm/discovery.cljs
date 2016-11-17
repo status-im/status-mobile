@@ -1,15 +1,16 @@
 (ns status-im.data-store.realm.discovery
   (:require [status-im.data-store.realm.core :as realm]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log])
+  (:refer-clojure :exclude [exists?]))
 
 (defn get-all
-  []
+  [ordering]
   (-> (realm/get-all @realm/account-realm :discovery)
-      (realm/sorted :priority :desc)))
+      (realm/sorted :created-at ordering)))
 
 (defn get-all-as-list
-  []
-  (-> (get-all)
+  [ordering]
+  (-> (get-all ordering)
       realm/realm-collection->list))
 
 (defn get-tag-by-name [tag]
@@ -38,10 +39,14 @@
 (defn- upsert-discovery [{:keys [message-id tags] :as discovery}]
   (log/debug "Creating/updating discovery with tags: " tags)
   (let [prev-tags (get-tags message-id)]
-    (if prev-tags
+    (when prev-tags
       (update-tags-counter dec prev-tags))
     (realm/create @realm/account-realm :discovery discovery true)
     (update-tags-counter inc tags)))
+
+(defn exists?
+  [message-id]
+  (realm/exists? @realm/account-realm :discovery {:message-id message-id}))
 
 (defn save
   [discovery]

@@ -1,5 +1,7 @@
 (ns status-im.discovery.styles
-  (:require [status-im.components.styles :refer [color-gray2]]))
+  (:require [status-im.components.styles :refer [color-gray2
+                                                 color-white]]
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
 ;; common
 
@@ -8,10 +10,17 @@
    :border-bottom-color "#eff2f3"})
 
 (def row
-  {:flex-direction :row})
+  {:flex-direction :row
+   :margin-bottom 10})
 
 (def column
   {:flex-direction :column})
+
+(def empty-view
+  {:flex             1
+   :background-color color-white
+   :align-items      :center
+   :justify-content  :center})
 
 ;; Toolbar
 
@@ -21,7 +30,7 @@
    :justify-content :center})
 
 (def discovery-toolbar
-  {:background-color "#eef2f5"
+  {:background-color toolbar-background2
    :elevation        0})
 
 (def discovery-search-input
@@ -30,7 +39,7 @@
    :margin-left 18
    :line-height 42
    :font-size   14
-   :color       "#9CBFC0"})
+   :color       "#7099e6"})
 
 (def discovery-title
   {:color       "#000000de"
@@ -38,25 +47,19 @@
    :text-align  :center
    :font-size   16})
 
-(def discovery-subtitle
-  {:color     color-gray2
-   :font-size 14})
-
 (def section-spacing
   {:padding 16})
 
 (def scroll-view-container
-  {})
+  {:bounces false})
 
 ;; Popular
 
+(def popular-container
+  {:background-color toolbar-background2})
+
 (def carousel-page-style
-  {:borderRadius  1
-   :shadowColor   "black"
-   :shadowRadius  1
-   :shadowOpacity 0.8
-   :elevation     2
-   :marginBottom  10})
+  {})
 
 (def tag-name
   {:color           "#7099e6"
@@ -66,16 +69,10 @@
    :align-items     :center
    :justify-content :center})
 
-(def tag-name-container
-  {:flex-direction   "column"
-   :background-color "#eef2f5"
-   :border-radius    5
-   :padding          4})
-
 (def tag-count
   {:color           "#838c93"
    :font-size       12
-   :padding-right   5
+   :padding-right   6
    :padding-bottom  2
    :align-items     :center
    :justify-content :center})
@@ -84,52 +81,47 @@
   {:flex           0.2
    :flex-direction "column"
    :align-items    "flex-end"
-   :padding-top    10
+   :padding-top    6
    :padding-right  9})
+
+(def separator
+  {:background-color "rgb(200, 199, 204)"
+   :height           0.5})
+
+;; Popular list item
 
 (def popular-list-container
   {:flex             1
    :background-color :white
-   :padding-left     10
-   :padding-top      16})
-
-(def popular-list
-  {:background-color :white
-   :padding-top      13})
-
-;; Popular list item
+   :margin-left      16
+   :padding-left     16
+   :padding-top      18})
 
 (def popular-list-item
   {:flex-direction :row
-   :padding-top    10
-   :padding-bottom 10})
-
-(def popular-list-item-status
-  {:color       "black"
-   :line-height 22
-   :font-size   14})
+   :padding-bottom 16
+   :top 1})
 
 (def popular-list-item-name
-  {:color       "black"
-   :font-size   14
-   :line-height 24})
+  {:color          "black"
+   :font-size      15
+   :padding-bottom 4})
 
 (def popular-list-item-name-container
   {:flex           0.8
-   :flex-direction "column"})
+   :flex-direction "column"
+   :padding-top    16})
 
 (def popular-list-item-avatar-container
   {:flex           0.2
    :flex-direction "column"
    :align-items    :center
-   :padding-top    5})
-
-(def popular-list-item-avatar
-  {:border-radius 18
-   :width         36
-   :height        36})
+   :padding-top    16})
 
 ;; discovery_recent
+
+(def recent-container
+  {:background-color toolbar-background2})
 
 (def recent-list
   {:background-color :white
@@ -137,9 +129,18 @@
 
 ;; Discovery tag
 
+(def discovery-tag-toolbar
+  {:border-bottom-color "#D7D7D7"
+   :border-bottom-width 1})
+
 (def discovery-tag-container
   {:flex            1
    :backgroundColor "#eef2f5"})
+
+(def tag-title-scroll
+  {:flex           1
+   :alignItems     "center"
+   :justifyContent "center"})
 
 (def tag-title-container
   {:flex           1
@@ -153,14 +154,6 @@
    :padding-right  5
    :padding-bottom 2})
 
-(def tag-container
-  {:backgroundColor "#eef2f5"
-   :flexWrap        :wrap
-   :borderRadius    5
-   :padding         4
-   :margin-left     2
-   :margin-right    2})
-
 (def icon-back
   {:width  8
    :height 14})
@@ -171,7 +164,7 @@
 
 (def discovery-container
   {:flex            1
-   :backgroundColor :#eef2f5})
+   :backgroundColor color-white})
 
 (def hamburger-icon
   {:width  16

@@ -1,7 +1,8 @@
 (ns status-im.contacts.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
-            [status-im.utils.identicon :refer [identicon]]))
+            [status-im.utils.identicon :refer [identicon]]
+            [taoensso.timbre :as log]))
 
 (register-sub :get-contacts
   (fn [db _]
@@ -19,7 +20,7 @@
 (register-sub :all-added-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
-      (->> (remove :pending @contacts)
+      (->> (remove #(true? (:pending (second %))) @contacts)
            (sort-contacts)
            (reaction)))))
 

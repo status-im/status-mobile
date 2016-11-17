@@ -22,7 +22,7 @@
    :height         toolbar-height})
 
 (defn toolbar-nav-actions-container [actions]
-  {:width          (if (and actions (> (count actions) 0))
+  {:width          (when (and actions (> (count actions) 0))
                      (-> (+ toolbar-icon-width toolbar-icon-spacing)
                          (* (count actions))
                          (+ toolbar-icon-spacing)))
@@ -45,9 +45,12 @@
    :color      text1-color
    :font-size  16})
 
-(def toolbar-actions-container
-  {:flex-direction "row"
-   :margin-left    8})
+(defn toolbar-actions-container [actions-count custom]
+  (merge {:flex-direction "row"
+          :margin-left    toolbar-icon-spacing}
+         (when (and (= actions-count 0)
+                    (not custom))
+           {:width (+ toolbar-icon-width toolbar-icon-spacing)})))
 
 (def toolbar-action
   {:width           toolbar-icon-width

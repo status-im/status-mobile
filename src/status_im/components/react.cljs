@@ -54,16 +54,18 @@
 (defn text
   ([t]
    (r/as-element [text-class t]))
-  ([{:keys [style font] :as opts
-     :or   {font :default}} t & other]
+  ([{:keys [style font uppercase?] :as opts
+     :or   {font :default}} t & ts]
    (r/as-element
-     (let [font (get-in platform-specific [:fonts font])]
+     (let [font (get-in platform-specific [:fonts font])
+           ts   (cond->> (conj ts t)
+                         uppercase? (map clojure.string/upper-case))]
        (vec (concat
               [text-class
                (-> opts
                    (dissoc :font)
                    (assoc :style (merge style font)))]
-              (conj other t)))))))
+              ts))))))
 
 (defn text-input [props text]
   [text-input-class (merge

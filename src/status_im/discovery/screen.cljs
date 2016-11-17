@@ -16,7 +16,8 @@
     [status-im.components.carousel.carousel :refer [carousel]]
     [status-im.discovery.views.popular-list :refer [discovery-popular-list]]
     [status-im.discovery.views.discovery-list-item :refer [discovery-list-item]]
-    [status-im.contacts.styles :as contacts-styles]))
+    [status-im.contacts.styles :as contacts-styles]
+    [status-im.utils.platform :refer [platform-specific]]))
 
 (defn get-hashtags [status]
   (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
@@ -35,7 +36,7 @@
                                        (dispatch [:navigate-to :discovery-search-results])))}]
      [view
       [text {:style st/discovery-title
-             :font  :default}
+             :font  :toolbar-title}
        (label :t/discovery)]])])
 
 (defn toogle-search [current-value]
@@ -52,46 +53,51 @@
                                 :style  st/search-icon}
                       :handler #(toogle-search show-search?)}]}])
 
-(defn title [label-kw]
+(defn title [label-kw spacing?]
   [view st/section-spacing
-   [text {:style st/discovery-subtitle
-          :font  :medium}
+   [text {:style      (merge (get-in platform-specific [:component-styles :discovery :subtitle])
+                             (when spacing? {:margin-top 16}))
+          :uppercase? (get-in platform-specific [:discovery :uppercase-subtitles?])
+          :font       :medium}
     (label label-kw)]])
 
 (defview discovery-popular [{:keys [contacts]}]
   [popular-tags [:get-popular-tags 10]]
-  (if (seq popular-tags)
-    [view
-     [title :t/popular-tags]
-     (if (pos? (count popular-tags))
-       [carousel {:pageStyle st/carousel-page-style}
-        (for [{:keys [name count]} popular-tags]
-          [discovery-popular-list {:tag      name
-                                   :count    count
-                                   :contacts contacts}])]
-       [text (label :t/none)])]
-    [view contacts-styles/empty-contact-groups
-     ;; todo change icon
-     [icon :group_big contacts-styles/empty-contacts-icon]
-     [text {:style contacts-styles/empty-contacts-text}
-      (label :t/no-statuses-discovered)]]))
+  [view st/popular-container
+   [title :t/popular-tags false]
+   (if (pos? (count popular-tags))
+     [carousel {:pageStyle st/carousel-page-style
+                :gap       0
+                :sneak     (if (> (count popular-tags) 1) 16 8)}
+      (for [{:keys [name]} popular-tags]
+        [discovery-popular-list {:tag      name
+                                 :contacts contacts}])]
+     [text (label :t/none)])])
 
 (defview discovery-recent [{:keys [contacts]}]
-  [discoveries [:get :discoveries]]
+  [discoveries [:get-recent-discoveries]]
   (when (seq discoveries)
-    [view
-     [title :t/recent]
+    [view st/recent-container
+     [title :t/recent true]
      [view st/recent-list
-      (for [{:keys [message-id] :as discovery} discoveries]
-        ^{:key (str "message-" message-id)}
-        [discovery-list-item discovery])]]))
+      (let [discoveries (map-indexed vector discoveries)]
+        (for [[i {:keys [message-id] :as discovery}] discoveries]
+          ^{:key (str "message-" message-id)}
+          [discovery-list-item discovery (not= (inc i) (count discoveries))]))]]))
 
 (defview discovery []
   [show-search? [:get ::show-search?]
-   contacts [:get :contacts]]
+   contacts [:get :contacts]
+   discoveries [:get-recent-discoveries]]
   [view st/discovery-container
    [discovery-toolbar show-search?]
-   [scroll-view st/scroll-view-container
-    [discovery-popular {:contacts contacts}]
-    [discovery-recent {:contacts contacts}]]
+   (if discoveries
+     [scroll-view st/scroll-view-container
+      [discovery-popular {:contacts contacts}]
+      [discovery-recent {:contacts contacts}]]
+     [view contacts-styles/empty-contact-groups
+      ;; todo change icon
+      [icon :group_big contacts-styles/empty-contacts-icon]
+      [text {:style contacts-styles/empty-contacts-text}
+       (label :t/no-statuses-discovered)]])
    [bottom-gradient]])

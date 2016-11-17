@@ -129,7 +129,7 @@
 (defn delivery-callback
   [web3 {:keys [id requires-ack? to]}]
   (fn [error _]
-    (when error (log/error :shh-post-error error))
+    (when error (log/warn :shh-post-error error))
     (when-not error
       (debug :delivery-callback)
       (message-was-sent! web3 id to)
@@ -159,7 +159,7 @@
     ;; todo add some notification about network issues
     (<= attempts (* 5 max-attempts-number))
     (and
-      ;; if message was not send lees then max-attempts-number times
+      ;; if message was not send less then max-attempts-number times
       ;; continue attempts
       (<= attempts max-attempts-number)
       ;; check retransmition interval
@@ -168,6 +168,15 @@
 (defn- check-ttl
   [message message-type ttl-config default-ttl]
   (update message :ttl #(or % ((keyword message-type) ttl-config) default-ttl)))
+
+(defn message-pending?
+  [web3 required-type required-to]
+  (some (fn [[_ messages]]
+          (some (fn [[_ {:keys [type to]}]]
+                  (and (= type required-type)
+                       (= to required-to)))
+                messages))
+        (@messages web3)))
 
 (defn run-delivery-loop!
   [web3 {:keys [delivery-loop-ms-interval default-ttl ttl-config
