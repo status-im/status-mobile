@@ -5,7 +5,7 @@
             [status-im.contacts.styles :as st]
             [status-im.contacts.views.contact-inner :refer [contact-inner-view]]))
 
-(defn on-press [whisper-identity]
+(defn on-press [{:keys [whisper-identity]}]
   #(dispatch [:start-chat whisper-identity {} :navigation-replace]))
 
 (defn letter-view [letter]
@@ -15,7 +15,7 @@
 
 (defview contact-view-with-letter [{:keys [whisper-identity letter] :as contact} click-handler action params]
   [touchable-highlight
-   {:onPress #(click-handler whisper-identity action params)}
+   {:onPress #(click-handler contact action params)}
    [view st/contact-container
     [letter-view letter]
     [contact-inner-view contact]]])
@@ -23,7 +23,7 @@
 (defview contact-view [{:keys [whisper-identity] :as contact}]
   [chat [:get-chat whisper-identity]]
   [touchable-highlight
-   {:onPress (on-press whisper-identity)}
+   {:onPress (on-press contact)}
    [view st/contact-container
     [contact-inner-view contact]]])
 

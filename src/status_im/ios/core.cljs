@@ -28,7 +28,7 @@
             status-im.data-store.core
             [taoensso.timbre :as log]
             [status-im.chat.styles.screen :as st]
-            [status-im.accounts.views.wallet-qr-code :refer [wallet-qr-code]]))
+            [status-im.accounts.views.qr-code :refer [qr-code-view]]))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
@@ -101,7 +101,7 @@
                            :on-request-close #(dispatch [:navigate-back])}
                     (let [component (case @modal-view
                                       :qr-scanner qr-scanner
-                                      :wallet-qr-code wallet-qr-code
+                                      :qr-code-view qr-code-view
                                       :confirm confirm
                                       :contact-list-modal contact-list)]
                       [component])]])]))))})))

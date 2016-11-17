@@ -49,6 +49,11 @@
    :alignItems     :center
    :justifyContent :center})
 
+(def qr-photo-container
+  (merge photo-container
+         {:margin-left  8
+          :margin-right 4}))
+
 (def photo-image
   {:width         36
    :height        36
@@ -121,8 +126,7 @@
    :flex-direction :column})
 
 (def account-toolbar
-  {:background-color "#2f3031"
-   :padding-bottom   45})
+  {:background-color "#2f3031"})
 
 (def wallet-account-container
   {:flex           1
@@ -132,21 +136,18 @@
    :justifyContent :center})
 
 (def qr-code
-  {:align-items      :center
-   :padding-vertical 40})
+  {:background-color "#2f3031"
+   :flex             1
+   :align-items      :center
+   :justify-content  :center})
 
 (def footer
-  {:position         :absolute
-   :left             0
-   :right            0
-   :bottom           0
-   :height           166
-   :background-color "#2f3031"})
+  {:background-color "#2f3031"})
 
 (def wallet-info
   {:align-items    :center
-   :padding-top    42
-   :padding-bottom 20})
+   :padding-bottom 20
+   :padding-top    20})
 
 (def wallet-name-text
   {:color          color-white
@@ -160,8 +161,8 @@
   {:flex             1
    :flex-direction   :column
    :align-items      :center
-   :height           60
-   :padding-top      20
+   :justify-content  :center
+   :height           51
    :background-color "#7597e4"})
 
 (def done-button-text
