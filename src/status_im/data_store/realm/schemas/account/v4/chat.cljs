@@ -34,5 +34,5 @@
 
 (defn migration [_ new-realm]
   (let [new-objs (.objects new-realm "chat")]
-    (dotimes [i (range (.-length new-objs))]
+    (dotimes [i (.-length new-objs)]
       (aset (aget new-objs i) "pending-contact?" false))))

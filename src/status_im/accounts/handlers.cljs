@@ -21,14 +21,15 @@
             [status-im.navigation.handlers :as nav]))
 
 
-(defn save-account [_ [_ account]]
-  (accounts-store/save account true))
+(defn save-account [{:keys [network]} [_ account]]
+  (accounts-store/save (assoc account :network network) true))
 
 (register-handler
   :add-account
   ((after save-account)
-    (fn [db [_ {:keys [address] :as account}]]
-      (update db :accounts assoc address account))))
+    (fn [{:keys [network] :as db} [_ {:keys [address] :as account}]]
+      (let [account' (assoc account :network network)]
+        (update db :accounts assoc address account')))))
 
 (defn account-created [result password]
   (let [data       (json->clj result)

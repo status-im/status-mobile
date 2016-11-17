@@ -11,7 +11,8 @@
                                          blocks-per-hour]]
             [status-im.i18n :refer [label]]
             [status-im.utils.random :as random]
-            [taoensso.timbre :as log :refer-macros [debug]]))
+            [taoensso.timbre :as log :refer-macros [debug]]
+            [status-im.constants :as c]))
 
 (register-handler :initialize-protocol
   (fn [db [_ current-account-id]]
@@ -20,7 +21,7 @@
           (get-in db [:accounts current-account-id])]
       (let [groups (chats/get-active-group-chats)
             w3     (protocol/init-whisper!
-                     {:rpc-url                     "http://localhost:8545"
+                     {:rpc-url                     c/ethereum-rpc-url
                       :identity                    public-key
                       :groups                      groups
                       :callback                    #(dispatch [:incoming-message %1 %2])
