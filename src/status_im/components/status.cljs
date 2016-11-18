@@ -6,7 +6,8 @@
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
             [cljs.core.async :refer [<! timeout]]
-            [status-im.utils.js-resources :as js-res]))
+            [status-im.utils.js-resources :as js-res]
+            [status-im.i18n :as i]))
 
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
@@ -92,14 +93,17 @@
   (when status
     (call-module
       #(do
-        (log/debug :chat-id chat-id)
-        (log/debug :path path)
-        (log/debug :params params)
-        (let [cb (fn [r]
-                   (let [r' (t/json->clj r)]
-                     (log/debug r')
-                     (callback r')))]
-          (.callJail status chat-id (cljs->json path) (cljs->json params) cb))))))
+         (log/debug :chat-id chat-id)
+         (log/debug :path path)
+         (log/debug :params params)
+         (let [params' (update params :context assoc
+                               :debug js/goog.DEBUG
+                               :locale i/i18n.locale)
+               cb      (fn [r]
+                         (let [r' (t/json->clj r)]
+                           (log/debug r')
+                           (callback r')))]
+           (.callJail status chat-id (cljs->json path) (cljs->json params') cb))))))
 
 (defn set-soft-input-mode [mode]
   (when status
