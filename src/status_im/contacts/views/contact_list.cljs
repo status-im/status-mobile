@@ -53,7 +53,9 @@
      [view st/info-container
       [text {:style           st/name-text
              :number-of-lines 1}
-       (label :t/scan-qr)]]]]])
+       (label (if (= :request action)
+                :t/show-qr
+                :t/scan-qr))]]]]])
 
 (defview contact-list-toolbar []
   [group [:get :contacts-group]
