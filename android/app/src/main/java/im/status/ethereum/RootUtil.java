@@ -1,4 +1,4 @@
-package com.statusim;
+package im.status.ethereum;
 
 import java.io.File;
 import java.io.BufferedReader;

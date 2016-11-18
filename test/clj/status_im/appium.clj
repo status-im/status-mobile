@@ -16,7 +16,7 @@
                        (.setCapability "deviceName" "device")
                        (.setCapability "platformVersion" "6.0.0")
                        (.setCapability "app" (.getAbsolutePath app))
-                       (.setCapability "appPackage" "com.statusim")
+                       (.setCapability "appPackage" "im.status.ethereum")
                        (.setCapability "appActivity" ".MainActivity"))
         driver       (AndroidDriver. (URL. "http://127.0.0.1:4723/wd/hub") capabilities)]
     (-> driver
