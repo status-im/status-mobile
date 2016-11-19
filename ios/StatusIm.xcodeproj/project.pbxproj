@@ -45,6 +45,7 @@
 		82E689BAF9FB43C8AC6FF1CA /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CEB0E2659D1A4F5FA842057A /* EvilIcons.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8E55E6877F950B81C8D711C5 /* libPods-StatusIm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 101A4045637A2ADF57D28EF5 /* libPods-StatusIm.a */; };
+		9E0B01A11DDC5DA7002B0359 /* SF-UI-Text-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9E0B01A01DDC5DA7002B0359 /* SF-UI-Text-Light.otf */; };
 		9E3AB6D01D87DB2B008846B4 /* libReact-Native-Webview-Bridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3AB6C61D87DA2B008846B4 /* libReact-Native-Webview-Bridge.a */; };
 		9ED2F45E1D9D535A00B36508 /* SF-UI-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED2F45D1D9D52DD00B36508 /* SF-UI-Text-Regular.otf */; };
 		9ED2F45F1D9D535A00B36508 /* SF-UI-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED2F45C1D9D52C100B36508 /* SF-UI-Text-Medium.otf */; };
@@ -444,6 +445,7 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8AE71EE8751F4652B13BFE83 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		8B9A886A2CB448B1ABA0EB62 /* libc++.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		9E0B01A01DDC5DA7002B0359 /* SF-UI-Text-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Light.otf"; sourceTree = "<group>"; };
 		9E3AB6B21D87DA2A008846B4 /* React-Native-Webview-Bridge.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Native-Webview-Bridge.xcodeproj"; path = "../node_modules/react-native-webview-bridge/ios/React-Native-Webview-Bridge.xcodeproj"; sourceTree = "<group>"; };
 		9ED2F45C1D9D52C100B36508 /* SF-UI-Text-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Medium.otf"; sourceTree = "<group>"; };
 		9ED2F45D1D9D52DD00B36508 /* SF-UI-Text-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Regular.otf"; sourceTree = "<group>"; };
@@ -659,6 +661,7 @@
 			isa = PBXGroup;
 			children = (
 				9ED2F4601D9D577B00B36508 /* SF-UI-Text-Bold.otf */,
+				9E0B01A01DDC5DA7002B0359 /* SF-UI-Text-Light.otf */,
 				9ED2F45D1D9D52DD00B36508 /* SF-UI-Text-Regular.otf */,
 				9ED2F45C1D9D52C100B36508 /* SF-UI-Text-Medium.otf */,
 				2028DFF51D4275B600227DCD /* SF-UI-Display-Medium.otf */,
@@ -1380,6 +1383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9ED2F4611D9D579900B36508 /* SF-UI-Text-Bold.otf in Resources */,
+				9E0B01A11DDC5DA7002B0359 /* SF-UI-Text-Light.otf in Resources */,
 				9ED2F45E1D9D535A00B36508 /* SF-UI-Text-Regular.otf in Resources */,
 				9ED2F45F1D9D535A00B36508 /* SF-UI-Text-Medium.otf in Resources */,
 				2028DFFA1D4275B600227DCD /* SF-UI-Display-Regular.otf in Resources */,

@@ -25,7 +25,7 @@
                                          text-content-type
                                          content-type-status
                                          content-type-command
-                                         content-type-command-request]]
+                                         content-type-command-request] :as c]
             [status-im.components.chat-icon.screen :refer [chat-icon-message-status]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
@@ -77,9 +77,7 @@
            :font  :default}
      "03:39"]]])
 
-(defmulti command-preview (fn [{:keys [command]}] command))
-
-(defmethod command-preview "send"
+(defn wallet-command-preview
   [{{:keys [name]} :contact-chat
     :keys          [contact-address params outgoing? current-chat-id]}]
   (let [amount (if (= 1 (count params))
@@ -93,21 +91,30 @@
                            :chat-name (or name contact-address)}))
        (label :t/chat-send-eth {:amount amount}))]))
 
-(defmethod command-preview :default
-  [{:keys [params preview]}]
-  (if preview
-    preview
+(defn wallet-command? [content-type]
+  (#{c/content-type-wallet-command c/content-type-wallet-request} content-type))
+
+(defn command-preview
+  [{:keys [params preview content-type] :as message}]
+  (cond
+    (wallet-command? content-type)
+    (wallet-command-preview message)
+
+    preview preview
+
+    :else
     [text {:style st/command-text
            :font  :default}
      (if (= 1 (count params))
        (first (vals params))
        (str params))]))
 
-(defview message-content-command [{:keys [content rendered-preview chat-id to from outgoing] :as message}]
+(defview message-content-command
+  [{:keys [content content-type rendered-preview chat-id to from outgoing] :as message}]
   [commands [(if (= (:type content) "response")
                :get-responses
                :get-commands)
-             (if outgoing to from)]
+             chat-id]
    current-chat-id [:get-current-chat-id]
    contact-chat [:get-in [:chats (if outgoing to from)]]]
   (let [{:keys [command params]} (parse-command-message-content commands content)
@@ -123,6 +130,7 @@
        [view st/command-image-view
         [icon icon-path st/command-image]])
      [command-preview {:command         (:name command)
+                       :content-type    content-type
                        :params          params
                        :outgoing?       outgoing
                        :preview         rendered-preview
@@ -145,6 +153,10 @@
   [wrapper message]
   [wrapper message [message-content-command-request message]])
 
+(defmethod message-content c/content-type-wallet-request
+  [wrapper message]
+  [wrapper message [message-content-command-request message]])
+
 (def replacements
   {"\\*[^*]+\\*" {:font-weight :bold}
    "~[^~]+~"     {:font-style :italic}})
@@ -164,22 +176,22 @@
 ;; todo rewrite this, naive implementation
 (defn- parse-text [string]
   (if (string? string)
-    (let [general-text (s/split string regx)
+    (let [general-text  (s/split string regx)
           general-text' (if (zero? (count general-text))
                           [nil]
                           general-text)
-          styled-text  (vec (map-indexed
-                              (fn [idx string]
-                                (let [style (get-style string)]
-                                  [text
-                                   {:key   (str idx "_" string)
-                                    :style style}
-                                   (subs string 1 (- (count string) 1))]))
-                              (re-seq regx string)))
-          styled-text' (if (> (count general-text)
-                              (count styled-text))
-                         (conj styled-text nil)
-                         styled-text)]
+          styled-text   (vec (map-indexed
+                               (fn [idx string]
+                                 (let [style (get-style string)]
+                                   [text
+                                    {:key   (str idx "_" string)
+                                     :style style}
+                                    (subs string 1 (- (count string) 1))]))
+                               (re-seq regx string)))
+          styled-text'  (if (> (count general-text)
+                               (count styled-text))
+                          (conj styled-text nil)
+                          styled-text)]
       (mapcat vector general-text' styled-text'))
     (str string)))
 
@@ -199,6 +211,11 @@
   [message-content-status message])
 
 (defmethod message-content content-type-command
+  [wrapper message]
+  [wrapper message
+   [message-view message [message-content-command message]]])
+
+(defmethod message-content c/content-type-wallet-command
   [wrapper message]
   [wrapper message
    [message-view message [message-content-command message]]])

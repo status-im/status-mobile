@@ -23,7 +23,7 @@
   (let [{:keys [type name]} command]
     [view st/staged-command-container
      [view st/staged-command-background
-      [view {:flex-direction :row}
+      [view st/staged-command-header
        [view st/staged-command-info-container
         [view (pill-st/pill command)
          [text {:style pill-st/pill-text}
@@ -34,12 +34,13 @@
                              :onPress #(cancel-command-input staged-command)}
         [view [icon :close_small_gray
           st/staged-command-cancel-icon]]]]
-      (if-let [preview (:preview staged-command)]
-        preview
-        [text {:style st/staged-command-content}
-         (if (= 1 (count params))
-           (first (vals params))
-           (str params))])]]))
+      [view {:padding-right 12}
+       (if-let [preview (:preview staged-command)]
+         preview
+         [text {:style st/staged-command-content}
+          (if (= 1 (count params))
+            (first (vals params))
+            (str params))])]]]))
 
 (defn staged-command-view [stage-command]
   [simple-command-staged-view stage-command])

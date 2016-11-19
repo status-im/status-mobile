@@ -9,6 +9,8 @@
 (def text-content-type "text/plain")
 (def content-type-command "command")
 (def content-type-command-request "command-request")
+(def content-type-wallet-command "wallet-command")
+(def content-type-wallet-request "wallet-request")
 (def content-type-status "status")
 
 (def max-chat-name-length 20)

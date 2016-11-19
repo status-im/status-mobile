@@ -5,7 +5,6 @@
 (defn pill [command]
   {:backgroundColor   (:color command)
    :height            24
-   :min-width         120
    :borderRadius      50
    :padding-top       (if p/ios? 4 3)
    :paddingHorizontal 12
