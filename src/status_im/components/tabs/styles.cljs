@@ -52,14 +52,13 @@
    :alignItems     :center
    :top            (if active? 0 8)})
 
-(defn tab-view-container [offset-x]
-  {:position       :absolute
-   :top            0
-   :left           0
-   :right          0
-   :bottom         0
-   :padding-bottom 60
-   :transform      [{:translateX offset-x}]})
-
 (defn animated-offset [value]
   {:top value})
+
+(def main-swiper
+  {:position         :absolute
+   :top              0
+   :left             0
+   :right            0
+   :bottom           83
+   :shows-pagination false})

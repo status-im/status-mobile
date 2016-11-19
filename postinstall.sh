@@ -3,6 +3,7 @@
 # rn-nodeify
 # temporary hack due to https://github.com/facebook/react-native/issues/4968
 ./node_modules/.bin/rn-nodeify --install --hack;
+npm install --save react@15.3.1;
 npm install --save react-native-tcp@2.0.4;
 
 # symlink for re-natal
