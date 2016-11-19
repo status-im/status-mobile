@@ -21,7 +21,6 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.selectable-field.view :refer [selectable-field]]
-            [status-im.components.qr-code :refer [qr-code]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.utils.platform :refer [platform-specific]]
@@ -113,18 +112,6 @@
                        :on-change-text         #(dispatch [:set-in [:profile-edit :status] %])
                        :default-value          status}]])})))
 
-(defview qr-modal []
-  [qr [:get-in [:profile-edit :qr-code]]]
-  [modal {:transparent    true
-          :visible        (not (nil? qr))
-          :animationType  :fade
-          :onRequestClose #(log/debug "Nothing happens")}
-   [touchable-without-feedback {:on-press #(dispatch [:set-in [:profile-edit :qr-code] nil])}
-    [view st/qr-code-container
-     [view st/qr-code
-      [qr-code {:value (str "ethereum:" qr)
-                :size  220}]]]]])
-
 (defview profile []
   [{whisper-identity :whisper-identity
     address          :address
@@ -180,7 +167,8 @@
          [selectable-field {:label     (label :t/address)
                             :editable? false
                             :value     address}]]
-        [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] address])}]]
+        [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
+                                                                                :qr-source :whisper-identity}])}]]
        [view st/underline-container]])
 
     [view st/profile-property
@@ -189,11 +177,10 @@
        [selectable-field {:label     (label :t/public-key)
                           :editable? false
                           :value     whisper-identity}]]
-      [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] whisper-identity])}]]]
+      [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
+                                                                              :qr-source :public-key}])}]]]
 
-    [view st/underline-container]
-
-    [qr-modal]]])
+    [view st/underline-container]]])
 
 (defview my-profile []
   [edit? [:get-in [:profile-edit :edit?]]
@@ -229,7 +216,8 @@
          [selectable-field {:label     (label :t/address)
                             :editable? edit?
                             :value     address}]]
-        [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] address])}]]
+        [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   account
+                                                                                :qr-source :address}])}]]
        [view st/underline-container]]
 
       [view st/profile-property
@@ -238,8 +226,7 @@
          [selectable-field {:label     (label :t/public-key)
                             :editable? edit?
                             :value     public-key}]]
-        [show-qr-button {:handler #(dispatch [:set-in [:profile-edit :qr-code] public-key])}]]]
+        [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   account
+                                                                                :qr-source :public-key}])}]]]
 
-      [view st/underline-container]
-
-      [qr-modal]]]))
+      [view st/underline-container]]]))

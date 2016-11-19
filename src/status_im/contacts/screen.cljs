@@ -82,10 +82,9 @@
      [view
       (doall
         (map (fn [contact]
-               (let [whisper-identity (:whisper-identity contact)
-                     click-handler    (or click-handler on-press)]
+               (let [click-handler (or click-handler on-press)]
                  ^{:key contact}
-                 [contact-extended-view contact nil (click-handler whisper-identity) nil]))
+                 [contact-extended-view contact nil (click-handler contact) nil]))
              contacts))]
      (when (<= contacts-limit (count contacts))
        [view st/show-all

@@ -17,7 +17,8 @@
             [status-im.accounts.statuses :as statuses]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id]]
-            [status-im.utils.scheduler :as s]))
+            [status-im.utils.scheduler :as s]
+            [status-im.navigation.handlers :as nav]))
 
 
 (defn save-account [_ [_ account]]
@@ -140,3 +141,10 @@
     db))
 
 (register-handler :console-create-account console-create-account)
+
+(defmethod nav/preload-data! :qr-code-view
+  [{:keys [current-account-id] :as db} [_ _ {:keys [contact qr-source amount?]}]]
+  (assoc db :qr-modal {:contact   (or contact
+                                      (get-in db [:accounts current-account-id]))
+                       :qr-source qr-source
+                       :amount?   amount?}))
