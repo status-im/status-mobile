@@ -1661,7 +1661,7 @@
 					"-lc++",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.statusim;
+				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
 				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
@@ -1713,7 +1713,7 @@
 					"-lc++",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.statusim;
+				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = StatusIm;
 				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};

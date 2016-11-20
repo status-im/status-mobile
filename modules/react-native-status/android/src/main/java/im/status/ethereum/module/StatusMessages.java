@@ -1,4 +1,4 @@
-package com.statusim.module;
+package im.status.ethereum.module;
 
 
 public class StatusMessages {

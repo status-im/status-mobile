@@ -1,4 +1,4 @@
-package com.statusim;
+package im.status.ethereum;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
