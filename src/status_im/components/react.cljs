@@ -113,4 +113,4 @@
         (.openPicker (clj->js {:multiple false}))
         (.then images-fn))))
 
-
+(def swiper (adapt-class (js/require "react-native-swiper")))

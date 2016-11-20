@@ -9,7 +9,8 @@
                                                 text
                                                 image
                                                 touchable-highlight
-                                                get-dimensions]]
+                                                get-dimensions
+                                                swiper]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.components.animation :as anim]
@@ -44,8 +45,8 @@
   (fn [_]
     (when-let [offsets @offsets]
       (let [from-value (:from offsets)
-            to-value (:to offsets)
-            to-tab-id @to-tab-id]
+            to-value   (:to offsets)
+            to-tab-id  @to-tab-id]
         (anim/set-value val from-value)
         (when to-value
           (anim/start
@@ -56,61 +57,55 @@
                 (when (.-finished arg)
                   (dispatch [:on-navigated-to-tab]))))))))))
 
-(defn get-tab-index-by-id [id]
-  (:index (first (filter #(= id (:view-id %)) tab-list))))
+(def tab->index {:chat-list    0
+                 :discovery    1
+                 :contact-list 2})
 
-(defn get-offsets [tab-id from-id to-id]
-  (let [tab (get-tab-index-by-id tab-id)
-        from (get-tab-index-by-id from-id)
-        to (get-tab-index-by-id to-id)]
-    (if (or (= tab from) (= tab to))
-      (cond
-        (or (nil? from) (= from to)) {:from 0}
-        (< from to) (if (= tab to)
-                      {:from window-width, :to 0}
-                      {:from 0, :to (- window-width)})
-        (< to from) (if (= tab to)
-                      {:from (- window-width), :to 0}
-                      {:from 0, :to window-width}))
-      {:from (- window-width)})))
+(def index->tab (clojure.set/map-invert tab->index))
 
-(defn tab-view-container [tab-id content]
-  (let [cur-tab-id (subscribe [:get :view-id])
-        prev-tab-id (subscribe [:get :prev-tab-view-id])
-        offsets (reaction (get-offsets tab-id @prev-tab-id @cur-tab-id))
-        anim-value (anim/create-value (- window-width))
-        context {:offsets   offsets
-                 :val       anim-value
-                 :tab-id    tab-id
-                 :to-tab-id cur-tab-id}
-        on-update (animation-logic context)]
+(defn get-tab-index [view-id]
+  (get tab->index view-id 0))
+
+(defn scroll-to [prev-view-id view-id]
+  (let [p (get-tab-index prev-view-id)
+        n (get-tab-index view-id)]
+    (- n p)))
+
+(defn on-scroll-end [swiped?]
+  (fn [_ state]
+    (let [{:strs [index]} (js->clj state)]
+      (reset! swiped? true)
+      (dispatch [:navigate-to-tab (index->tab index)]))))
+
+(defn main-tabs []
+  (let [view-id      (subscribe [:get :view-id])
+        prev-view-id (subscribe [:get :prev-view-id])
+        main-swiper  (atom nil)
+        swiped?      (atom false)]
     (r/create-class
-      {:component-did-mount
-       on-update
-       :component-did-update
-       on-update
+      {:component-will-update
+       (fn []
+         (if @swiped?
+           (reset! swiped? false)
+           (when @main-swiper
+             (let [to (scroll-to @prev-view-id @view-id)]
+               (.scrollBy @main-swiper to)))))
        :reagent-render
-       (fn [tab-id content]
-         @offsets
-         [animated-view {:style (st/tab-view-container anim-value)}
-          content])})))
-
-(defn tab-view [{:keys [view-id screen]}]
-  ^{:key view-id}
-  [tab-view-container view-id
-   [screen]])
-
-(defview main-tabs []
-  [view-id [:get :view-id]
-   prev-view-id [:get :prev-view-id]
-   tab-animation? [:get :prev-tab-view-id]]
-  [view common-st/flex
-   [status-bar {:type :main}]
-   [view common-st/flex
-    [drawer-view
-     [view {:style         common-st/flex
-            :pointerEvents (if tab-animation? :none :auto)}
-      (doall (map #(tab-view %) tab-list))
-      [tabs {:selected-view-id view-id
-             :prev-view-id     prev-view-id
-             :tab-list         tab-list}]]]]])
+       (fn []
+         [view common-st/flex
+          [status-bar {:type :main}]
+          [view common-st/flex
+           [drawer-view
+            [view {:style common-st/flex}
+             [swiper (merge
+                       st/main-swiper
+                       {:index                  (get-tab-index @view-id)
+                        :loop                   false
+                        :ref                    #(reset! main-swiper %)
+                        :on-momentum-scroll-end (on-scroll-end swiped?)})
+              [chats-list]
+              [discovery]
+              [contact-list]]
+             [tabs {:selected-view-id @view-id
+                    :prev-view-id     @prev-view-id
+                    :tab-list         tab-list}]]]]])})))
