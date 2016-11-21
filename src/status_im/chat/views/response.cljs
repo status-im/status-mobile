@@ -38,6 +38,15 @@
    (when icon-path
      [icon icon-path (st/command-icon color)])])
 
+(defn request-info-text [name chat-id added]
+  (let [name' (shortened-name (or name chat-id) 20)]
+    (str "By " name' ", "
+         (dt/format-date "MMM" added)
+         " "
+         (dt/get-ordinal-date added)
+         " at "
+         (dt/format-date "HH:mm" added))))
+
 (defview info-container
   [command]
   [{:keys [name chat-id]} [:get-current-chat]
@@ -46,14 +55,7 @@
    [text {:style st/command-name}
     (str (:description command) " " (label :t/request))]
    (when added
-     (let [name' (shortened-name (or name chat-id) 20)]
-       [text {:style st/message-info}
-        (str "By " name' ", "
-             (dt/format-date "MMM" added)
-             " "
-             (dt/get-ordinal-date added)
-             " at "
-             (dt/format-date "HH:mm" added))]))])
+     [text {:style st/message-info} (request-info-text name chat-id added)])])
 
 (defn request-info [response-height]
   (let [layout-height (subscribe [:max-layout-height :default])

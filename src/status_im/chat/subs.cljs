@@ -187,6 +187,11 @@
                      (map #(vector (:message-id %) %))
                      (into {}))))))
 
+(register-sub :get-request
+  (fn [_ [_ message-id]]
+    (let [requests (subscribe [:get-requests-map])]
+      (reaction (get @requests message-id)))))
+
 (register-sub :get-current-request
   (fn []
     (let [requests   (subscribe [:get-requests-map])
