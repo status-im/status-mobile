@@ -65,7 +65,7 @@
           pred     (subscribe [:get :contacts-filter])]
       (reaction
         (let [ordered (sort-contacts @contacts)
-              ordered (if pred (filter @pred ordered) ordered)]
+              ordered (if @pred (filter @pred ordered) ordered)]
           (reduce (fn [prev cur]
                     (let [prev-letter (get-contact-letter (last prev))
                           cur-letter  (get-contact-letter cur)]
