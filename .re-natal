@@ -32,7 +32,8 @@
     "homoglyph-finder",
     "web3",
     "eccjs",
-    "chance"
+    "chance",
+    "react-native-swiper"
   ],
   "imageDirs": [
     "images"
