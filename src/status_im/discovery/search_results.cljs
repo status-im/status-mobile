@@ -37,7 +37,8 @@
 
 (defview discovery-search-results []
   [discoveries [:get-popular-discoveries 250]
-   tags [:get :discovery-search-tags]]
+   tags [:get :discovery-search-tags]
+   current-account [:get-current-account]]
   (let [discoveries (:discoveries discoveries)
         datasource (to-datasource discoveries)]
     [view st/discovery-tag-container
@@ -55,6 +56,7 @@
          (label :t/no-statuses-found)]]
        [list-view {:dataSource      datasource
                    :renderRow       (fn [row _ _]
-                                      (list-item [discovery-list-item row]))
+                                      (list-item [discovery-list-item {:message         row
+                                                                       :current-account current-account}]))
                    :renderSeparator render-separator
                    :style           st/recent-list}])]))

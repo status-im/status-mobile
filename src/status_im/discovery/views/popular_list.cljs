@@ -12,7 +12,7 @@
     [status-im.discovery.views.discovery-list-item :refer [discovery-list-item]]
     [status-im.utils.platform :refer [platform-specific]]))
 
-(defview discovery-popular-list [{:keys [tag contacts]}]
+(defview discovery-popular-list [{:keys [tag contacts current-account]}]
   [discoveries [:get-popular-discoveries 3 [tag]]]
   [view (merge st/popular-list-container
                (get-in platform-specific [:component-styles :discovery :popular]))
@@ -31,4 +31,6 @@
    (let [discoveries (map-indexed vector (:discoveries discoveries))]
      (for [[i {:keys [message-id] :as discovery}] discoveries]
        ^{:key (str "message-" message-id)}
-       [discovery-list-item discovery (not= (inc i) (count discoveries))]))])
+       [discovery-list-item {:message         discovery
+                             :show-separator? (not= (inc i) (count discoveries))
+                             :current-account current-account}]))])
