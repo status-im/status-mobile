@@ -6,6 +6,7 @@
             [status-im.commands.utils :refer [generate-hiccup]]
             [status-im.utils.random :as random]
             [status-im.constants :refer [wallet-chat-id
+                                         content-type-command
                                          content-type-command-request]
              :as c]
             [cljs.reader :refer [read-string]]
@@ -61,8 +62,10 @@
         (when (= (:content-type message') content-type-command-request)
           (dispatch [:add-request chat-id' message']))
         (dispatch [:add-unviewed-message chat-id' message-id]))
-      (if (and (not= chat-id wallet-chat-id)
-               (= "send" (get-in message [:content :command])))
+      (if (and
+            (= (:content-type message) content-type-command)
+            (not= chat-id wallet-chat-id)
+            (= "send" (get-in message [:content :command])))
         (add-message-to-wallet db message)))))
 
 (defn add-message-to-wallet [db {:keys [content-type] :as message}]
