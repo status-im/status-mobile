@@ -45,7 +45,8 @@
 
              :sync-state                 :done
              :sync-listener              nil
-             :status-module-initialized? js/goog.DEBUG})
+             :status-module-initialized? js/goog.DEBUG
+             :edit-mode                  {}})
 
 (defn chat-staged-commands-path [chat-id]
   [:chats chat-id :staged-commands])
