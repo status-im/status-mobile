@@ -27,7 +27,7 @@
                                       :margin-top    2
                                       :margin-bottom 4
                                       :margin-right  2
-                                      :elevation     3}
+                                      :elevation     2}
                            :tag      {:flex-direction   "column"
                                       :background-color "#7099e619"
                                       :border-radius    5

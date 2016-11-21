@@ -5,7 +5,6 @@
             [reagent.core :as r]
             [status-im.components.react :refer [view
                                                 animated-view
-                                                text-input
                                                 text
                                                 image
                                                 touchable-highlight

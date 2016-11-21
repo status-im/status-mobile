@@ -43,19 +43,29 @@
    :text-align :center})
 
 (def status-container
-  {:margin-left  16
-   :margin-right 16
-   :margin-top   (if p/ios? 5 5)
-   :align-items  :center})
+  {:margin-left      16
+   :margin-right     16
+   :flex-direction   "row"
+   :margin-top       (if p/ios? 5 5)
+   :justify-content  :center})
 
-(def status-input
-  {:align-self          "stretch"
-   :height              56
+(def status-view
+  {:height              56
+   :width               200
    :font-size           14
-   :padding-left        4
    :text-align          :center
    :text-align-vertical :top
    :color               text2-color})
+
+(def status-input
+  (merge status-view
+         {:padding-left 4
+          :padding-top  (if p/ios? 0 5)}))
+
+(def status-text
+  (merge status-view
+         {:padding-left 0
+          :padding-top  5}))
 
 (def menu-items-container
   {:flex           1

@@ -3,7 +3,6 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
                                                 text
-                                                text-input
                                                 image
                                                 linear-gradient
                                                 touchable-highlight]]

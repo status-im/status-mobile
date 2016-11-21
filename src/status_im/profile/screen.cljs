@@ -21,6 +21,7 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.selectable-field.view :refer [selectable-field]]
+            [status-im.components.status-view.view :refer [status-view]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.utils.platform :refer [platform-specific]]
@@ -28,9 +29,9 @@
             [status-im.profile.validations :as v]
             [status-im.profile.styles :as st]
             [status-im.utils.random :refer [id]]
+            [status-im.utils.utils :refer [clean-text]]
             [status-im.components.image-button.view :refer [show-qr-button]]
-            [status-im.i18n :refer [label]]
-            [taoensso.timbre :as log]))
+            [status-im.i18n :refer [label]]))
 
 (defn toolbar [{:keys [account edit?]}]
   (let [profile-edit-data-valid? (s/valid? ::v/profile account)]
@@ -56,22 +57,10 @@
                     :style (st/ok-btn-icon profile-edit-data-valid?)}]
          [icon :dots st/edit-btn-icon])]]]))
 
-(defn- get-text
-  [word]
-  (let [props (merge {:key (id)}
-                     (if (str/starts-with? word "#")
-                       {:style st/hashtag}
-                       {}))]
-    [text props (str word " ")]))
-
-(defn- highlight-tags
-  [status]
-  (->>
-    (str/split status #" ")
-    (map get-text)))
-
 (defn status-image-view [_]
   (let [component         (r/current-component)
+        just-opened?      (r/atom true)
+        input-ref         (r/atom nil)
         set-status-height #(let [height (-> (.-nativeEvent %)
                                             (.-contentSize)
                                             (.-height))]
@@ -102,15 +91,23 @@
             :wrapper-style    st/username-wrapper
             :value            name
             :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])}]
-          [text-input {:style                  (st/status-input (:height (r/state component)))
-                       :on-change              #(set-status-height %)
-                       :on-content-size-change #(set-status-height %)
-                       :maxLength              140
-                       :multiline              true
-                       :editable               edit?
-                       :placeholder            (label :t/profile-no-status)
-                       :on-change-text         #(dispatch [:set-in [:profile-edit :status] %])
-                       :default-value          status}]])})))
+          (if (or edit? @just-opened?)
+            [text-input {:ref                    #(reset! input-ref %)
+                         :style                  (st/status-input (:height (r/state component)))
+                         :multiline              true
+                         :editable               true
+                         :blur-on-submit         true
+                         :on-content-size-change #(do (set-status-height %)
+                                                      (reset! just-opened? false))
+                         :max-length             140
+                         :placeholder            (label :t/profile-no-status)
+                         :on-change-text         (fn [t]
+                                                   (dispatch [:set-in [:profile-edit :status] (clean-text t)]))
+                         :on-submit-editing      (fn []
+                                                   (.blur @input-ref))
+                         :default-value          status}]
+            [status-view {:style  (st/status-text (:height (r/state component)))
+                          :status status}])])})))
 
 (defview profile []
   [{whisper-identity :whisper-identity
@@ -189,9 +186,10 @@
    changed-account [:get :profile-edit]]
   (let [{:keys [phone
                 address
-                public-key] :as account} (if edit?
-                                           changed-account
-                                           current-account)]
+                public-key]
+         :as account} (if edit?
+                        changed-account
+                        current-account)]
     [scroll-view {:style   st/profile
                   :bounces false}
      [status-bar]
