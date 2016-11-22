@@ -101,7 +101,7 @@
    :new-group-chat                        "New group chat"
 
    ;discover
-   :discovery                             "Discovery"
+   :discovery                             "Discover"
    :none                                  "None"
    :search-tags                           "Type your search tags here"
    :popular-tags                          "Popular tags"

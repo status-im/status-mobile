@@ -17,7 +17,8 @@
     [status-im.discovery.views.popular-list :refer [discovery-popular-list]]
     [status-im.discovery.views.discovery-list-item :refer [discovery-list-item]]
     [status-im.contacts.styles :as contacts-styles]
-    [status-im.utils.platform :refer [platform-specific]]))
+    [status-im.utils.platform :refer [platform-specific]]
+    [reagent.core :as r]))
 
 (defn get-hashtags [status]
   (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
@@ -26,21 +27,23 @@
 (defn title-content [show-search?]
   [view st/discovery-toolbar-content
    (if show-search?
-     [text-input {:style           st/discovery-search-input
-                  :autoFocus       true
-                  :placeholder     (label :t/search-tags)
-                  :onSubmitEditing (fn [e]
-                                     (let [search   (aget e "nativeEvent" "text")
-                                           hashtags (get-hashtags search)]
-                                       (dispatch [:set :discovery-search-tags hashtags])
-                                       (dispatch [:navigate-to :discovery-search-results])))}]
+     [text-input {:style             st/discovery-search-input
+                  :auto-focus        true
+                  :placeholder       (label :t/search-tags)
+                  :on-blur           (fn [e]
+                                       (dispatch [:set :discovery-show-search? false]))
+                  :on-submit-editing (fn [e]
+                                       (let [search (aget e "nativeEvent" "text")
+                                             hashtags (get-hashtags search)]
+                                         (dispatch [:set :discovery-search-tags hashtags])
+                                         (dispatch [:navigate-to :discovery-search-results])))}]
      [view
       [text {:style st/discovery-title
              :font  :toolbar-title}
        (label :t/discovery)]])])
 
 (defn toogle-search [current-value]
-  (dispatch [:set ::show-search? (not current-value)]))
+  (dispatch [:set :discovery-show-search? (not current-value)]))
 
 (defn discovery-toolbar [show-search?]
   [toolbar
@@ -83,18 +86,18 @@
      [view st/recent-list
       (let [discoveries (map-indexed vector discoveries)]
         (for [[i {:keys [message-id] :as message}] discoveries]
-          ^{:key (str "message-" message-id)}
+          ^{:key (str "message-recent-" message-id)}
           [discovery-list-item {:message         message
                                 :show-separator? (not= (inc i) (count discoveries))
                                 :current-account current-account}]))]]))
 
-(defview discovery []
-  [show-search? [:get ::show-search?]
+(defview discovery [current-view?]
+  [show-search? [:get :discovery-show-search?]
    contacts [:get :contacts]
    current-account [:get-current-account]
    discoveries [:get-recent-discoveries]]
   [view st/discovery-container
-   [discovery-toolbar show-search?]
+   [discovery-toolbar (and current-view? show-search?)]
    (if discoveries
      [scroll-view st/scroll-view-container
       [discovery-popular {:contacts        contacts
