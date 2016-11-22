@@ -12,7 +12,7 @@
    ;drawer
    :invite-friends                        "Invită prieteni"
    :faq                                   "Întrebări frecvente"
-   :switch-users                          "Comută utilizatori"
+   :switch-users                          "Schimbă utilizatori"
 
    ;chat
    :is-typing                             "tastează"
@@ -20,24 +20,24 @@
    :search-chat                           "Caută în chat"
    :members                               {:one   "1 membru"
                                            :other "{{count}} membri"
-                                           :zero  "niciun membru"}
+                                           :zero  "nici un membru"}
    :members-active                        {:one   "1 membru, 1 activ"
                                            :other "{{count}} membri, {{count}} activi"
-                                           :zero  "niciun membru"}
+                                           :zero  "nici un membru"}
    :active-online                         "Online"
    :active-unknown                        "Necunoscut"
    :available                             "Disponibil"
-   :no-messages                           "Niciun mesaj"
+   :no-messages                           "Nici un mesaj"
    :suggestions-requests                  "Solicitări"
    :suggestions-commands                  "Comenzi"
 
    ;sync
    :sync-in-progress                      "Se sincronizează…"
-   :sync-synced                           "În curs de sincronizare"
+   :sync-synced                           "Sincronizat"
 
    ;messages
    :status-sending                        "Se trimite"
-   :status-pending                        "In asteptarea"
+   :status-pending                        "În așteptare"
    :status-sent                           "Trimis"
    :status-seen-by-everyone               "Văzut de toată lumea"
    :status-seen                           "Văzut"
@@ -67,7 +67,7 @@
    :public-key                            "Cheie publică"
    :phone-number                          "Număr de telefon"
    :email                                 "E-mail"
-   :profile-no-status                     "Niciun status"
+   :profile-no-status                     "Nici un status"
    :add-to-contacts                       "Adaugă la contacte"
    :error-incorrect-name                  "Te rugăm să alegi un alt nume"
    :error-incorrect-email                 "E-mail greșit"
@@ -104,7 +104,7 @@
    :search-tags                           "Tastează aici etichetele de căutat"
    :popular-tags                          "Etichete populare"
    :recent                                "Recente"
-   :no-statuses-discovered                "Niciun status găsit"
+   :no-statuses-discovered                "Nici un status găsit"
 
    ;settings
    :settings                              "Setări"
@@ -116,7 +116,7 @@
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Oameni"
    :contacts-group-new-chat               "Începe discuție nouă"
-   :no-contacts                           "Niciun contact deocamdată"
+   :no-contacts                           "Nici un contact deocamdată"
    :show-qr                               "Afișează QR"
 
    ;group-settings
@@ -156,7 +156,7 @@
    ;new-group
    :group-chat-name                       "Nume chat"
    :empty-group-chat-name                 "Te rugăm să introduci un nume"
-   :illegal-group-chat-name               "Te rugăm să selected un alt nume"
+   :illegal-group-chat-name               "Te rugăm să selectezi un alt nume"
 
    ;participants
    :add-participants                      "Adaugă participanți"
@@ -175,7 +175,7 @@
    :import-qr                             "Importă"
    :scan-qr                               "Scanează QR"
    :name                                  "Nume"
-   :whisper-identity                      "Șoptește identitatea"
+   :whisper-identity                      "Identitatea"
    :address-explication                   "Poate că aici ar trebui să fie un text care să explice ce este o adresă și unde să o cauți"
    :enter-valid-address                   "Te rugăm să introduci o adresă validă sau să scanezi un cod QR"
    :contact-already-added                 "Contactul a fost adăugat deja"
@@ -191,8 +191,8 @@
    :wrong-password                        "Parola greșită"
 
    ;recover
-   :recover-from-passphrase               "Recuperează din fraza de acces"
-   :recover-explain                       "Te rugăm să introduci fraza de acces pentru ca parola ta să redobândească accesul"
+   :recover-from-passphrase               "Recuperează folosind fraza de acces"
+   :recover-explain                       "Te rugăm să introduci fraza de acces si parola ta pentru a redobandi accesul"
    :passphrase                            "Fraza de acces"
    :recover                               "Recuperează"
    :enter-valid-passphrase                "Te rugăm să introduci o frază de acces"
