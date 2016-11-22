@@ -26,8 +26,15 @@
        ^{:key (str "item-" message-id "-" i)}
        (str status " ")))])
 
-(defview discovery-list-item [{:keys [name photo-path whisper-id] :as message}
-                              show-separator?]
+(defview discovery-list-item [{{:keys [name
+                                       photo-path
+                                       whisper-id]
+                                :as   message}                   :message
+                               show-separator?                   :show-separator?
+                               {account-photo-path :photo-path
+                                account-address    :public-key
+                                account-name       :name
+                                :as                current-account} :current-account}]
   [{contact-name       :name
     contact-photo-path :photo-path} [:get-in [:contacts whisper-id]]]
   (let [item-style (get-in platform-specific [:component-styles :discovery :item])]
@@ -38,6 +45,7 @@
               :font            :medium
               :number-of-lines 1}
         (cond
+          (= account-address whisper-id) account-name
           (not (str/blank? contact-name)) contact-name
           (not (str/blank? name)) name
           :else (generate-gfy))]
@@ -47,6 +55,7 @@
        [touchable-highlight {:on-press #(dispatch [:start-chat whisper-id])}
         [view
          [ci/chat-icon (cond
+                         (= account-address whisper-id) account-photo-path
                          (not (str/blank? contact-photo-path)) contact-photo-path
                          (not (str/blank? photo-path)) photo-path
                          :else (identicon whisper-id))
