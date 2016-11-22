@@ -99,6 +99,7 @@ public class StatusService extends Service {
 
     private boolean handleMessage(Message message) {
         Log.d(TAG, "Received service message." + message.toString());
+        doStartNode();
         switch (message.what) {
 
             case StatusMessages.MSG_START_NODE:
@@ -148,9 +149,7 @@ public class StatusService extends Service {
         return true;
     }
 
-    private void startNode(Message message) {
-
-        applicationMessenger = message.replyTo;
+    public void doStartNode() {
         if (!isNodeInitialized) {
 
             File extStore = Environment.getExternalStorageDirectory();
@@ -176,6 +175,11 @@ public class StatusService extends Service {
             Statusgo.AddPeer("enode://3b020a1fd6ab980a5670975e8a7361af1732fa3fa1819b751a94b6a4265e8c52b02c608c0de1347784b834b298280b018bcf6547f47bbba63612cba0e4707ec1@139.59.212.114:30303");
             isNodeInitialized = true;
         }
+    }
+
+    private void startNode(Message message) {
+        applicationMessenger = message.replyTo;
+        doStartNode();
         createAndSendReply(message, StatusMessages.MSG_START_NODE, null);
     }
 
