@@ -14,7 +14,7 @@
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.components.animation :as anim]
             [status-im.chats-list.screen :refer [chats-list]]
-            [status-im.discovery.screen :refer [discovery]]
+            [status-im.discover.screen :refer [discover]]
             [status-im.contacts.screen :refer [contact-list]]
             [status-im.components.tabs.tabs :refer [tabs]]
             [status-im.components.tabs.styles :as st]
@@ -28,10 +28,10 @@
     :screen  chats-list
     :icon    :icon_tab_chats
     :index   0}
-   {:view-id :discovery
-    :title   (label :t/discovery)
-    :screen  discovery
-    :icon    :icon_tab_discovery
+   {:view-id :discover
+    :title   (label :t/discover)
+    :screen  discover
+    :icon    :icon_tab_discover
     :index   1}
    {:view-id :contact-list
     :title   (label :t/contacts)
@@ -56,7 +56,7 @@
                   (dispatch [:on-navigated-to-tab]))))))))))
 
 (def tab->index {:chat-list    0
-                 :discovery    1
+                 :discover    1
                  :contact-list 2})
 
 (def index->tab (clojure.set/map-invert tab->index))
@@ -106,7 +106,7 @@
                         :onScrollBeginDrag      #(reset! dragging? true)
                         :on-momentum-scroll-end (on-scroll-end swiped? dragging?)})
               [chats-list]
-              [discovery (= @view-id :discovery)]
+              [discover  (= @view-id :discover)]
               [contact-list]]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id

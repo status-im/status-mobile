@@ -99,7 +99,7 @@
    :new-group-chat                        "Cuộc trò chuyện theo nhóm mới"
 
    ;discover
-   :discovery                             "Khám phá"
+   :discover                             "Khám phá"
    :none                                  "Không"
    :search-tags                           "Gõ các thẻ tìm kiếm của bạn tại đây"
    :popular-tags                          "Các thẻ phổ biến"

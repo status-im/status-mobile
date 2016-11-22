@@ -1,4 +1,4 @@
-(ns status-im.discovery.search-results
+(ns status-im.discover.search-results
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.utils.listview :refer [to-datasource]]
@@ -11,8 +11,8 @@
                                                 scroll-view]]
             [status-im.i18n :refer [label]]
             [status-im.components.toolbar.view :refer [toolbar]]
-            [status-im.discovery.views.discovery-list-item :refer [discovery-list-item]]
-            [status-im.discovery.styles :as st]
+            [status-im.discover.views.discover-list-item :refer [discover-list-item]]
+            [status-im.discover.styles :as st]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.contacts.styles :as contacts-styles]
             [taoensso.timbre :as log]))
@@ -29,25 +29,25 @@
    [view st/tag-title-container
     (for [tag (take 3 tags)]
       ^{:key (str "tag-" tag)}
-      [view (merge (get-in platform-specific [:component-styles :discovery :tag])
+      [view (merge (get-in platform-specific [:component-styles :discover :tag])
                    {:margin-left 2 :margin-right 2})
        [text {:style st/tag-title
               :font  :default}
         (str " #" tag)]])]])
 
-(defview discovery-search-results []
+(defview discover-search-results []
   [discoveries [:get-popular-discoveries 250]
-   tags [:get :discovery-search-tags]
+   tags [:get :discover-search-tags]
    current-account [:get-current-account]]
   (let [discoveries (:discoveries discoveries)
         datasource (to-datasource discoveries)]
-    [view st/discovery-tag-container
+    [view st/discover-tag-container
      [status-bar]
      [toolbar {:nav-action     {:image   {:source {:uri :icon_back}
                                           :style  st/icon-back}
                                 :handler #(dispatch [:navigate-back])}
                :custom-content (title-content tags)
-               :style          st/discovery-tag-toolbar}]
+               :style          st/discover-tag-toolbar}]
      (if (empty? discoveries)
        [view st/empty-view
         ;; todo change icon
@@ -56,7 +56,7 @@
          (label :t/no-statuses-found)]]
        [list-view {:dataSource      datasource
                    :renderRow       (fn [row _ _]
-                                      (list-item [discovery-list-item {:message         row
+                                      (list-item [discover-list-item {:message         row
                                                                        :current-account current-account}]))
                    :renderSeparator render-separator
                    :style           st/recent-list}])]))

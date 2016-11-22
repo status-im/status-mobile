@@ -5,7 +5,7 @@
             [status-im.data-store.realm.schemas.account.v2.contact :as contact]
             [status-im.data-store.realm.schemas.account.v1.chat-contact :as chat-contact]
             [status-im.data-store.realm.schemas.account.v1.command :as command]
-            [status-im.data-store.realm.schemas.account.v5.discovery :as discovery]
+            [status-im.data-store.realm.schemas.account.v5.discover :as discover]
             [status-im.data-store.realm.schemas.account.v1.kv-store :as kv-store]
             [status-im.data-store.realm.schemas.account.v1.pending-message :as pending-message]
             [status-im.data-store.realm.schemas.account.v1.request :as request]
@@ -16,7 +16,7 @@
              chat-contact/schema
              command/schema
              contact/schema
-             discovery/schema
+             discover/schema
              kv-store/schema
              message/schema
              pending-message/schema

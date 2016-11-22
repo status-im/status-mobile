@@ -99,7 +99,7 @@
    :new-group-chat                        "Nieuwe groepchat"
 
    ;discover
-   :discovery                             "Ontdekking"
+   :discover                             "Ontdekking"
    :none                                  "Geen"
    :search-tags                           "Typ hier jouw zoektags"
    :popular-tags                          "Populaire tags"

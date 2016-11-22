@@ -99,7 +99,7 @@
    :new-group-chat                        "Grup nou de chat"
 
    ;discover
-   :discovery                             "Descoperire"
+   :discover                             "Descoperire"
    :none                                  "Niciuna"
    :search-tags                           "Tastează aici etichetele de căutat"
    :popular-tags                          "Etichete populare"

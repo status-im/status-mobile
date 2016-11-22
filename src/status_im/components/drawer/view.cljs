@@ -99,8 +99,8 @@
                         :handler (fn []
                                    ;; TODO not implemented
                                    )}]
-            [menu-item {:name    (label :t/discovery)
-                        :handler #(dispatch [:navigate-to :discovery])}]
+            [menu-item {:name    (label :t/discover)
+                        :handler #(dispatch [:navigate-to :discover])}]
             [menu-item {:name    (label :t/contacts)
                         :handler #(dispatch [:navigate-to :contact-list])}]]
            (when (zero? @keyboard-height)

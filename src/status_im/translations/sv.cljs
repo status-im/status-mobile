@@ -99,7 +99,7 @@
    :new-group-chat                        "Ny gruppchatt"
 
    ;discover
-   :discovery                             "Upptäckt"
+   :discover                             "Upptäckt"
    :none                                  "Inga"
    :search-tags                           "Skriv dina söktaggar här"
    :popular-tags                          "Populära taggar"

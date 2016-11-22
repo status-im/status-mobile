@@ -99,7 +99,7 @@
    :new-group-chat                        "新增群聊"
 
    ;discover
-   :discovery                             "新發現"
+   :discover                             "新發現"
    :none                                  "不存在"
    :search-tags                           "請輸入你的搜索標籤"
    :popular-tags                          "熱門標籤"

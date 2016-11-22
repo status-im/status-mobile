@@ -1,4 +1,4 @@
-(ns status-im.discovery.subs
+(ns status-im.discover.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub]]
             [status-im.utils.datetime :as time]))
@@ -27,7 +27,7 @@
   (fn [db [_ limit tags]]
     (let [discoveries (reaction (:discoveries @db))
           current-tag (reaction (:current-tag @db))
-          search-tags (reaction (:discovery-search-tags @db))
+          search-tags (reaction (:discover-search-tags @db))
           discoveries (->> (get-discoveries-by-tags @discoveries @current-tag (or tags @search-tags))
                            (map #(assoc % :priority (calculate-priority db %)))
                            (sort-by :priority >))]
@@ -45,10 +45,10 @@
     (-> (take limit (:tags @db))
         (reaction))))
 
-(register-sub :get-discovery-search-results
+(register-sub :get-discover-search-results
   (fn [db _]
     (let [discoveries (reaction (:discoveries @db))
           current-tag (reaction (:current-tag @db))
-          tags        (reaction (:discovery-search-tags @db))]
+          tags        (reaction (:discover-search-tags @db))]
       (-> (get-discoveries-by-tags @discoveries @current-tag @tags)
           (reaction)))))

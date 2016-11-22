@@ -86,7 +86,7 @@
         :add-group-identity (dispatch [:participant-invited-to-group message])
         :leave-group (dispatch [:participant-left-group message])
         :contact-request (dispatch [:contact-request-received message])
-        :discovery (dispatch [:status-received message])
+        :discover (dispatch [:status-received message])
         :discoveries-request (dispatch [:discoveries-request-received message])
         :discoveries-response (dispatch [:discoveries-response-received message])
         :profile (dispatch [:contact-update-received message])

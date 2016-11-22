@@ -99,7 +99,7 @@
    :new-group-chat                        "Yeni grup sohbeti"
 
    ;discover
-   :discovery                             "Keşfet"
+   :discover                             "Keşfet"
    :none                                  "Hiçbiri"
    :search-tags                           "Arama etiketlerinizi buraya girin"
    :popular-tags                          "Popüler etiketler"

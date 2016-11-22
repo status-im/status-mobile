@@ -104,7 +104,7 @@
    :new-group-chat                        "Nuevo chat de grupo"
 
    ;discover
-   :discovery                             "Descubrimiento"
+   :discover                             "Descubrimiento"
    :none                                  "Ninguno"
    :search-tags                           "Ingresa aquí tus etiquetas de búsqueda"
    :popular-tags                          "Etiquetas populares"
