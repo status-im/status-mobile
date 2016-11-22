@@ -38,7 +38,7 @@
 
    ;messages
    :status-sending                        "Sending"
-   :status-pending                        "Sending"
+   :status-pending                        "Pending"
    :status-sent                           "Sent"
    :status-seen-by-everyone               "Seen by everyone"
    :status-seen                           "Seen"
@@ -116,7 +116,7 @@
    :contacts                              "Contacts"
    :new-contact                           "New Contact"
    :show-all                              "SHOW ALL"
-   :contacts-group-dapps                  "Dapps"
+   :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "People"
    :contacts-group-new-chat               "Start new chat"
    :no-contacts                           "No contacts yet"
