@@ -2,33 +2,19 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
-            [status-im.components.react :refer [view text image touchable-highlight]]
+            [status-im.components.react :refer [view text touchable-highlight]]
             [status-im.discovery.styles :as st]
+            [status-im.components.status-view.view :refer [status-view]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.identicon :refer [identicon]]
-            [status-im.i18n :refer [label]]
             [status-im.components.chat-icon.screen :as ci]
-            [status-im.utils.platform :refer [platform-specific]]
-            [taoensso.timbre :as log]))
-
-(defn tag-view [tag]
-  [text {:style {:color "#7099e6"}
-         :font :medium}
-   (str tag " ")])
-
-(defn status-view [item-style {:keys [message-id status]}]
-  [text {:style (:status-text item-style)
-         :font  :default}
-   (for [[i status] (map-indexed vector (str/split status #" "))]
-     (if (.startsWith status "#")
-       ^{:key (str "item-" message-id "-" i)}
-       [tag-view status]
-       ^{:key (str "item-" message-id "-" i)}
-       (str status " ")))])
+            [status-im.utils.platform :refer [platform-specific]]))
 
 (defview discovery-list-item [{{:keys [name
                                        photo-path
-                                       whisper-id]
+                                       whisper-id
+                                       message-id
+                                       status]
                                 :as   message}                   :message
                                show-separator?                   :show-separator?
                                {account-photo-path :photo-path
@@ -49,7 +35,9 @@
           (not (str/blank? contact-name)) contact-name
           (not (str/blank? name)) name
           :else (generate-gfy))]
-       [status-view item-style message]]
+       [status-view {:id     message-id
+                     :style  (:status-text item-style)
+                     :status status}]]
       [view (merge st/popular-list-item-avatar-container
                    (:icon item-style))
        [touchable-highlight {:on-press #(dispatch [:start-chat whisper-id])}

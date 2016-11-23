@@ -4,7 +4,6 @@
             [clojure.string :as str]
             [status-im.components.react :refer [view
                                                 text
-                                                text-input
                                                 image
                                                 linear-gradient
                                                 touchable-highlight]]

@@ -72,16 +72,26 @@
    :margin-left    55
    :margin-right   55})
 
+(defn status-view [height]
+  {:align-self "stretch"
+   :font-size  14
+   :height     height
+   :min-height 30
+   :text-align "center"
+   :color      text2-color})
+
 (defn status-input [height]
-  {:align-self   "stretch"
-   :margin-left  (if p/ios? 22 16)
-   :margin-right 16
-   :margin-top   (if p/ios? 6 1)
-   :font-size    14
-   :height       height
-   :min-height   30
-   :text-align   "center"
-   :color        text2-color})
+  (merge (status-view height)
+         {:margin-left  (if p/ios? 21 16)
+          :margin-right 16
+          :margin-top   (if p/ios? 6 1)}))
+
+(defn status-text [height]
+  (merge (status-view (- height (if p/ios? 5 10)))
+         {:margin-left   18
+          :margin-right  18
+          :margin-top    11
+          :margin-bottom 0}))
 
 (def btns-container
   {:margin-top     0
