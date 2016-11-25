@@ -406,9 +406,8 @@
 
 (register-handler :add-chat
   (u/side-effect!
-    (fn [{:keys [chats]} [_ chat-id chat]]
-      (when-not (get chats chat-id)
-        (dispatch [::add-chat chat-id chat])))))
+    (fn [_ [_ chat-id chat]]
+      (dispatch [::add-chat chat-id chat]))))
 
 (register-handler ::add-chat
   (-> add-new-chat
@@ -572,3 +571,29 @@
       (let [chat (-> (chats/get-by-id chat-id)
                      (update :clock-value inc))]
         (dispatch [:update-chat! chat])))))
+
+(register-handler :update-group-message
+  (u/side-effect!
+    (fn [{:keys [current-public-key web3 chats]}
+         [_ {:keys                                [from]
+             {:keys [group-id keypair timestamp]} :payload}]]
+      (let [{:keys [private public]} keypair]
+        (let [{:keys [updated-at removed-at]} (chats/get-by-id group-id)
+              is-active (chats/is-active? group-id)
+              chat      {:chat-id     group-id
+                         :public-key  public
+                         :private-key private
+                         :updated-at  timestamp}]
+          (when (and (= from (get-in chats [group-id :group-admin]))
+                     (or (not (chats/exists? group-id))
+                         is-active
+                         (> timestamp removed-at)
+                         (> timestamp updated-at)))
+            (dispatch [:update-chat! chat])
+            (when is-active
+              (protocol/start-watching-group!
+                {:web3     web3
+                 :group-id group-id
+                 :identity current-public-key
+                 :keypair  keypair
+                 :callback #(dispatch [:incoming-message %1 %2])}))))))))

@@ -10,6 +10,8 @@
                                              :default default-chat-color}
                           :group-chat       {:type    :bool
                                              :indexed true}
+                          :group-admin      {:type     :string
+                                             :optional true}
                           :is-active        :bool
                           :timestamp        :int
                           :contacts         {:type       :list
@@ -19,6 +21,12 @@
                           :dapp-hash        {:type     :int
                                              :optional true}
                           :removed-at       {:type     :int
+                                             :optional true}
+                          :removed-from-at  {:type     :int
+                                             :optional true}
+                          :added-to-at      {:type     :int
+                                             :optional true}
+                          :updated-at       {:type     :int
                                              :optional true}
                           :last-message-id  :string
                           :public-key       {:type     :string

@@ -63,21 +63,15 @@
 
 (defn init-whisper!
   [{:keys [rpc-url identity groups callback
-           hashtags contacts profile-keypair pending-messages]
+           contacts profile-keypair pending-messages]
     :as   options}]
   {:pre [(valid? ::options options)]}
   (debug :init-whisper)
   (stop-watching-all!)
   (d/reset-all-pending-messages!)
-  (let [web3 (u/make-web3 rpc-url)
+  (let [web3             (u/make-web3 rpc-url)
         listener-options {:web3     web3
                           :identity identity}]
-    ;; start listening to user's inbox
-    (f/add-filter!
-      web3
-      {:to     identity
-       :topics [f/status-topic]}
-      (l/message-listener (assoc listener-options :callback callback)))
     ;; start listening to groups
     (doseq [{:keys [chat-id keypair]} groups]
       (f/add-filter!
@@ -85,6 +79,12 @@
         {:topics [chat-id]}
         (l/message-listener (assoc listener-options :callback callback
                                                     :keypair keypair))))
+    ;; start listening to user's inbox
+    (f/add-filter!
+      web3
+      {:to     identity
+       :topics [f/status-topic]}
+      (l/message-listener (assoc listener-options :callback callback)))
     ;; start listening to profiles
     (doseq [{:keys [identity keypair]} contacts]
       (watch-user! {:web3     web3

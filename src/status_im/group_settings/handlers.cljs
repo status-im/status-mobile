@@ -80,10 +80,45 @@
   (chats/remove-contacts current-chat-id selected-participants))
 
 (defn notify-about-removing!
-  [{:keys [current-chat-id selected-participants]} _]
-  (doseq [participant selected-participants]
-    ;;todo implement
-    ))
+  [{:keys [web3 current-chat-id selected-participants chats current-public-key]} _]
+  (let [{:keys [private public] :as new-keypair} (protocol/new-keypair!)
+        {:keys [name private-key public-key]
+         :as   chat} (get chats current-chat-id)
+        old-keypair {:private private-key
+                     :public  public-key}
+        contacts    (get chat :contacts)
+        identities  (-> (map :identity contacts)
+                        set
+                        (clojure.set/difference selected-participants))]
+    (dispatch [:update-chat! {:chat-id     current-chat-id
+                              :private-key private
+                              :public-key  public}])
+    (doseq [participant selected-participants]
+      (let [id (random/id)]
+        (doseq [keypair [old-keypair new-keypair]]
+          (protocol/remove-from-group!
+            {:web3     web3
+             :group-id current-chat-id
+             :identity participant
+             :keypair  keypair
+             :message  {:from       current-public-key
+                        :message-id id}}))))
+    (protocol/start-watching-group!
+      {:web3     web3
+       :group-id current-chat-id
+       :identity current-public-key
+       :keypair  new-keypair
+       :callback #(dispatch [:incoming-message %1 %2])})
+    (protocol/update-group!
+      {:web3       web3
+       :group      {:id       current-chat-id
+                    :name     name
+                    :contacts (conj identities current-public-key)
+                    :admin    current-public-key
+                    :keypair  new-keypair}
+       :identities identities
+       :message    {:from       current-public-key
+                    :message-id (random/id)}})))
 
 (defn system-message [message-id content]
   {:from         "system"
@@ -113,7 +148,7 @@
       ;; about the api call that removes participants from the group?
       ((after remove-members-from-chat!))
       ;; todo uncomment
-      ;((after notify-about-removing!))
+      ((after notify-about-removing!))
       ((after create-removing-messages!))
       ((enrich deselect-members))
       debug))
@@ -130,25 +165,40 @@
 (defn notify-about-new-members!
   [{:keys [current-chat-id selected-participants
            current-public-key chats web3]} _]
-  (let [{:keys [public-key private-key name contacts]} (chats current-chat-id)
-        identities (map :identity contacts)
-        keypair {:public  public-key
-                 :private private-key}]
+  (let [{:keys [name contacts]} (chats current-chat-id)
+        identities    (map :identity contacts)
+
+        {:keys [public private]
+         :as   new-keypair} (protocol/new-keypair!)
+
+        group-message {:web3    web3
+                       :group   {:id       current-chat-id
+                                 :name     name
+                                 :contacts (conj identities current-public-key)
+                                 :admin    current-public-key}
+                       :message {:from       current-public-key
+                                 :message-id (random/id)}}]
+    (dispatch [:update-chat! {:chat-id     current-chat-id
+                              :public-key  public
+                              :private-key private}])
+    (protocol/start-watching-group! {:web3     web3
+                                     :group-id current-chat-id
+                                     :identity current-public-key
+                                     :keypair  new-keypair
+                                     :callback #(dispatch [:incoming-message %1 %2])})
     (protocol/invite-to-group!
-      {:web3       web3
-       :group      {:id       current-chat-id
-                    :name     name
-                    :contacts (conj identities current-public-key)
-                    :admin    current-public-key
-                    :keypair  keypair}
-       :identities selected-participants
-       :message    {:from       current-public-key
-                    :message-id (random/id)}})
+      (-> group-message
+          (assoc-in [:group :keypair] new-keypair)
+          (assoc :identities selected-participants)))
+    (protocol/update-group!
+      (-> group-message
+          (assoc-in [:group :keypair] new-keypair)
+          (assoc :identities identities)))
     (doseq [identity selected-participants]
       (protocol/add-to-group! {:web3     web3
                                :group-id current-chat-id
                                :identity identity
-                               :keypair  keypair
+                               :keypair  new-keypair
                                :message  {:from       current-public-key
                                           :message-id (random/id)}}))))
 
