@@ -22,6 +22,7 @@
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.selectable-field.view :refer [selectable-field]]
             [status-im.components.status-view.view :refer [status-view]]
+            [status-im.components.share :as share]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.utils.platform :refer [platform-specific]]
@@ -31,7 +32,12 @@
             [status-im.utils.random :refer [id]]
             [status-im.utils.utils :refer [clean-text]]
             [status-im.components.image-button.view :refer [show-qr-button]]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [taoensso.timbre :as log]))
+
+(defn share [text dialog-title]
+  (let [list-selection-fn (:list-selection-fn platform-specific)]
+    (dispatch [:open-sharing list-selection-fn text dialog-title])))
 
 (defn toolbar [{:keys [account edit?]}]
   (let [profile-edit-data-valid? (s/valid? ::v/profile account)]
@@ -74,7 +80,7 @@
 
            (if edit?
              [touchable-highlight {:on-press (fn []
-                                               (let [list-selection-fn (get platform-specific :list-selection-fn)]
+                                               (let [list-selection-fn (:list-selection-fn platform-specific)]
                                                  (dispatch [:open-image-source-selector list-selection-fn])))}
               [view
                [my-profile-icon {:account {:photo-path photo-path
@@ -163,7 +169,8 @@
         [view st/profile-property-field
          [selectable-field {:label     (label :t/address)
                             :editable? false
-                            :value     address}]]
+                            :value     address
+                            :on-press  #(share address (label :t/address))}]]
         [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
                                                                                 :qr-source :whisper-identity}])}]]
        [view st/underline-container]])
@@ -173,7 +180,8 @@
       [view st/profile-property-field
        [selectable-field {:label     (label :t/public-key)
                           :editable? false
-                          :value     whisper-identity}]]
+                          :value     whisper-identity
+                          :on-press  #(share whisper-identity (label :t/public-key))}]]
       [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
                                                                               :qr-source :public-key}])}]]]
 
@@ -213,7 +221,8 @@
         [view st/profile-property-field
          [selectable-field {:label     (label :t/address)
                             :editable? edit?
-                            :value     address}]]
+                            :value     address
+                            :on-press  #(share address (label :t/address))}]]
         [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   account
                                                                                 :qr-source :address}])}]]
        [view st/underline-container]]
@@ -223,7 +232,8 @@
         [view st/profile-property-field
          [selectable-field {:label     (label :t/public-key)
                             :editable? edit?
-                            :value     public-key}]]
+                            :value     public-key
+                            :on-press  #(share public-key (label :t/public-key))}]]
         [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   account
                                                                                 :qr-source :public-key}])}]]]
 

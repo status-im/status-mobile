@@ -78,6 +78,11 @@
    :image-source-gallery                  "Вибрати з галереї"
    :image-source-cancel                   "Відміна"
 
+   ;;sharing
+   :sharing-copy-to-clipboard             "Скопіювати"
+   :sharing-share                         "Поділитися..."
+   :sharing-cancel                        "Відміна"
+
    ;sign-up
    :contacts-syncronized                  "Ваші контактні дані було синхронізовано"
    :confirmation-code                     (str "Дякуємо! Ми відправили вам текстове повідомлення з кодом "

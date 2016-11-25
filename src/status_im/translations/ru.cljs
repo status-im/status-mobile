@@ -78,6 +78,11 @@
    :image-source-gallery                  "Выбрать из галереи"
    :image-source-cancel                   "Отмена"
 
+   ;;sharing
+   :sharing-copy-to-clipboard             "Скопировать"
+   :sharing-share                         "Поделиться..."
+   :sharing-cancel                        "Отмена"
+
    ;sign-up
    :contacts-syncronized                  "Ваши контакты синхронизированы"
    :confirmation-code                     (str "Спасибо! Мы отправили вам СМС с кодом подтверждения."

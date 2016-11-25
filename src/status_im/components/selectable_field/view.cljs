@@ -8,7 +8,7 @@
             [status-im.utils.platform :as p]
             [taoensso.timbre :as log]))
 
-(defn- on-press
+(defn- on-press-default
   [event component]
   (log/debug "Pressed " event component)
   (r/set-state component {:focused? true}))
@@ -29,7 +29,7 @@
                               :measured?    true}))))
 
 (defn- reagent-render
-  [{:keys [label value editable? props] :as data}]
+  [{:keys [label value editable? props on-press] :as data}]
   (let [component (r/current-component)
         {:keys [focused? measured? full-height]} (r/state component)]
     (log/debug "reagent-render: " data focused? measured? full-height)
@@ -49,7 +49,8 @@
                      :on-blur             #(r/set-state component {:focused? false})
                      :value               value}]
         [text (merge {:style           st/text
-                      :on-press        #(on-press % component)
+                      :on-press        (or on-press
+                                           #(on-press-default % component))
                       :onLayout        #(on-layout-text % component)
                       :font            :default
                       :ellipsizeMode   :middle
