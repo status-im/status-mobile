@@ -4,16 +4,15 @@
 (def tabs-height 60)
 (def tab-height 58)
 
-(defn tabs-container [hidden? animation? offset-y]
+(defn tabs-container [hidden?]
   {:position        :absolute
    :bottom          0
    :left            0
    :right           0
    :height          tabs-height
    :backgroundColor color-white
-   :marginBottom    (if (or hidden? animation?)
-                      (- tabs-height) 0)
-   :transform       [{:translateY (if animation? offset-y 1)}]})
+   :marginBottom    (if hidden? (- tabs-height) 0)
+   :transform       [{:translateY 1}]})
 
 (def bottom-gradient
   {:position :absolute

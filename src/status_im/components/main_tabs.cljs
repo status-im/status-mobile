@@ -19,9 +19,8 @@
             [status-im.components.tabs.tabs :refer [tabs]]
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
-            [status-im.i18n :refer [label]]))
-
-(def window-width (:width (get-dimensions "window")))
+            [status-im.i18n :refer [label]]
+            [taoensso.timbre :as log]))
 
 (def tab-list
   [{:view-id :chat-list
@@ -70,17 +69,20 @@
         n (get-tab-index view-id)]
     (- n p)))
 
-(defn on-scroll-end [swiped?]
+(defn on-scroll-end [swiped? dragging?]
   (fn [_ state]
-    (let [{:strs [index]} (js->clj state)]
-      (reset! swiped? true)
-      (dispatch [:navigate-to-tab (index->tab index)]))))
+    (when @dragging?
+      (reset! dragging? false)
+      (let [{:strs [index]} (js->clj state)]
+        (reset! swiped? true)
+        (dispatch [:navigate-to-tab (index->tab index)])))))
 
 (defn main-tabs []
   (let [view-id      (subscribe [:get :view-id])
         prev-view-id (subscribe [:get :prev-view-id])
-        main-swiper  (atom nil)
-        swiped?      (atom false)]
+        main-swiper  (r/atom nil)
+        swiped?      (r/atom false)
+        dragging?    (r/atom false)]
     (r/create-class
       {:component-will-update
        (fn []
@@ -101,7 +103,8 @@
                        {:index                  (get-tab-index @view-id)
                         :loop                   false
                         :ref                    #(reset! main-swiper %)
-                        :on-momentum-scroll-end (on-scroll-end swiped?)})
+                        :onScrollBeginDrag      #(reset! dragging? true)
+                        :on-momentum-scroll-end (on-scroll-end swiped? dragging?)})
               [chats-list]
               [discovery (= @view-id :discovery)]
               [contact-list]]

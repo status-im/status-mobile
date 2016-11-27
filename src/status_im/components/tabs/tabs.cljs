@@ -28,15 +28,10 @@
           (swap! was-hidden? not)
           (anim/start
             (anim/timing val {:toValue  to-value
-                              :duration 300})
-            (fn [e]
-              ;; if to-value was changed, then new animation has started
-              (when (= to-value (if @hidden? 0 (- st/tabs-height)))
-                (dispatch [:set-animation :tabs-bar-animation? false])))))))))
+                              :duration 300})))))))
 
 (defn tabs-container [& children]
   (let [chats-scrolled? (subscribe [:get :chats-scrolled?])
-        animation? (subscribe [:animations :tabs-bar-animation?])
         tabs-bar-value (subscribe [:animations :tabs-bar-value])
         context {:hidden?    chats-scrolled?
                  :val        @tabs-bar-value}
@@ -50,11 +45,11 @@
        :reagent-render
        (fn [& children]
          @chats-scrolled?
-         (into [animated-view {:style         (st/tabs-container @chats-scrolled? @animation? @tabs-bar-value)
+         (into [animated-view {:style         (st/tabs-container @chats-scrolled?)
                                :pointerEvents (if @chats-scrolled? :none :auto)}]
                children))})))
 
-(defn tabs [{:keys [tab-list selected-view-id prev-view-id]}]
+(defn tabs [{:keys [tab-list selected-view-id prev-view-id swiper]}]
   [tabs-container
    [view st/tabs-inner-container
     (doall (map-indexed #(create-tab %1 %2 selected-view-id prev-view-id) tab-list))]])
