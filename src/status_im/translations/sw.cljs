@@ -78,6 +78,11 @@
    :image-source-gallery                  "Chagua kutoka nyumba ya sanaa"
    :image-source-cancel                   "Ghairi"
 
+   ;;sharing
+   :sharing-copy-to-clipboard             "Kopiera"
+   :sharing-share                         "Dela..."
+   :sharing-cancel                        "Ghairi"
+
    ;sign-up
    :contacts-syncronized                  "Mawasiliano yako yamelandanishwa"
    :confirmation-code                     (str "Asante! Tumekutumia ujumbe mfupi na uthibitisho "

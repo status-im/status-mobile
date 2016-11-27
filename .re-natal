@@ -33,7 +33,8 @@
     "web3",
     "eccjs",
     "chance",
-    "react-native-swiper"
+    "react-native-swiper",
+    "react-native-share"
   ],
   "imageDirs": [
     "images"

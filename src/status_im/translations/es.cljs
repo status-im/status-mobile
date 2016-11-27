@@ -78,6 +78,11 @@
    :image-source-gallery                  "Seleccionar de la galería"
    :image-source-cancel                   "Cancelar"
 
+   ;;sharing
+   :sharing-copy-to-clipboard             "Copiar"
+   :sharing-share                         "Compartir..."
+   :sharing-cancel                        "Cancelar"
+
    ;sign-up
    :contacts-syncronized                  "Se han sincronizado tus contactos"
    :confirmation-code                     (str "¡Gracias! Te hemos enviado un mensaje de texto con un código"

@@ -79,6 +79,11 @@
    :image-source-gallery                  "Select from gallery"
    :image-source-cancel                   "Cancel"
 
+   ;;sharing
+   :sharing-copy-to-clipboard             "Copy to clipboard"
+   :sharing-share                         "Share..."
+   :sharing-cancel                        "Cancel"
+
    ;sign-up
    :contacts-syncronized                  "Your contacts have been synchronized"
    :confirmation-code                     (str "Thanks! We've sent you a text message with a confirmation "

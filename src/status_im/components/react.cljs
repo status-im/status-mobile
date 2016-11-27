@@ -118,3 +118,8 @@
         (.then images-fn))))
 
 (def swiper (adapt-class (js/require "react-native-swiper")))
+
+;; Clipboard
+
+(defn copy-to-clipboard [text]
+  (.setString (.-Clipboard react-native) text))
