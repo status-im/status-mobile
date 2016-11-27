@@ -34,12 +34,11 @@
    :elevation        0})
 
 (def discovery-search-input
-  {:flex        1
-   :align-self  "stretch"
-   :margin-left 18
-   :line-height 42
-   :font-size   14
-   :color       "#7099e6"})
+  {:flex            1
+   :align-self      "stretch"
+   :margin-left     18
+   :font-size       14
+   :color           "#7099e6"})
 
 (def discovery-title
   {:color       "#000000de"

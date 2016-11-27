@@ -30,7 +30,7 @@
       (:total discoveries)]]]
    (let [discoveries (map-indexed vector (:discoveries discoveries))]
      (for [[i {:keys [message-id] :as discovery}] discoveries]
-       ^{:key (str "message-" message-id)}
+       ^{:key (str "message-popular-" message-id)}
        [discovery-list-item {:message         discovery
                              :show-separator? (not= (inc i) (count discoveries))
                              :current-account current-account}]))])

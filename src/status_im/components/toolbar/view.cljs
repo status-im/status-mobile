@@ -37,7 +37,7 @@
            [text {:style st/toolbar-title-text
                   :font  :toolbar-title}
             title]])
-      [view (st/toolbar-actions-container (count actions) (or custom-content custom-action))
+      [view (st/toolbar-actions-container (count actions) custom-action)
        (if actions
          (for [{action-image   :image
                 action-handler :handler} actions]

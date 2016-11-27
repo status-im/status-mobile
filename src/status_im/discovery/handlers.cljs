@@ -25,6 +25,7 @@
 
 (defmethod nav/preload-data! :discovery
   [db _]
+  (dispatch [:set :discovery-show-search? false])
   (-> db
       (assoc :tags (discoveries/get-all-tags))
       (assoc :discoveries (->> (discoveries/get-all :desc)

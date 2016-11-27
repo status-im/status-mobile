@@ -103,7 +103,7 @@
                         :ref                    #(reset! main-swiper %)
                         :on-momentum-scroll-end (on-scroll-end swiped?)})
               [chats-list]
-              [discovery]
+              [discovery (= @view-id :discovery)]
               [contact-list]]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
