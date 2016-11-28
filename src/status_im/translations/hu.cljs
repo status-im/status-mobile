@@ -99,7 +99,7 @@
    :new-group-chat                        "Új csoportos csevegés"
 
    ;discover
-   :discovery                             "Felfedezés"
+   :discover                             "Felfedezés"
    :none                                  "Semmi"
    :search-tags                           "Add meg keresési címkéidet itt"
    :popular-tags                          "Népszerű címkék"

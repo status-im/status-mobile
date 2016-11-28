@@ -3,7 +3,7 @@
   (:require [re-frame.core :refer [register-sub subscribe]]
             status-im.chat.subs
             status-im.group-settings.subs
-            status-im.discovery.subs
+            status-im.discover.subs
             status-im.contacts.subs
             status-im.new-group.subs
             status-im.participants.subs

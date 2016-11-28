@@ -103,7 +103,7 @@
 (register-handler :received-message-when-commands-loaded
   (u/side-effect!
     (fn [db [_ chat-id message]]
-      (if (commands-loaded? db chat-id)
+      (if true #_(commands-loaded? db chat-id)
         (dispatch [:received-message message])
         (s/execute-later
           #(dispatch [:received-message-when-commands-loaded chat-id message])

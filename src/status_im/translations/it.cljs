@@ -99,7 +99,7 @@
    :new-group-chat                        "Nuova chat di gruppo"
 
    ;discover
-   :discovery                             "Scopri"
+   :discover                             "Scopri"
    :none                                  "Nessuno"
    :search-tags                           "Digita qui le tue etichette di ricerca"
    :popular-tags                          "Tag popolari"

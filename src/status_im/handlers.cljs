@@ -11,7 +11,7 @@
     status-im.group-settings.handlers
     status-im.navigation.handlers
     status-im.contacts.handlers
-    status-im.discovery.handlers
+    status-im.discover.handlers
     status-im.new-group.handlers
     status-im.participants.handlers
     status-im.profile.handlers

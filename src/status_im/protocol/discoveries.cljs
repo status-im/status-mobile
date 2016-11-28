@@ -9,11 +9,11 @@
     [status-im.protocol.validation :refer-macros [valid?]]
     [status-im.utils.random :as random]))
 
-(def discovery-topic-prefix "status-discovery-")
-(def discovery-hashtag-prefix "status-hashtag-")
+(def discover-topic-prefix "status-discover-")
+(def discover-hashtag-prefix "status-hashtag-")
 
-(defn- make-discovery-topic [identity]
-  (str discovery-topic-prefix identity))
+(defn- make-discover-topic [identity]
+  (str discover-topic-prefix identity))
 
 (s/def :send-online/message
   (s/merge :protocol/message
@@ -30,7 +30,7 @@
                    {:requires-ack? false
                     :type          :online
                     :payload       {:timestamp (u/timestamp)}
-                    :topics        [(make-discovery-topic (:from message))]})]
+                    :topics        [(make-discover-topic (:from message))]})]
     (d/add-pending-message! web3 message')))
 
 (s/def ::identity :message/from)
@@ -43,7 +43,7 @@
   (f/add-filter!
     web3
     {:from   identity
-     :topics [(make-discovery-topic identity)]}
+     :topics [(make-discover-topic identity)]}
     (l/message-listener (dissoc options :identity))))
 
 (s/def :contact-request/contact map?)
@@ -92,7 +92,7 @@
     web3
     (-> message
         (assoc :type :profile
-               :topics [(make-discovery-topic (:from message))])
+               :topics [(make-discover-topic (:from message))])
         (assoc-in [:payload :timestamp] (u/timestamp))
         (assoc-in [:payload :content :profile]
                   (get-in message [:payload :profile]))
@@ -109,8 +109,8 @@
   [{:keys [web3 message]}]
   (debug :broadcasting-status)
   (let [message (-> message
-                    (assoc :type :discovery
-                           :topics [(make-discovery-topic (:from message))]))]
+                    (assoc :type :discover
+                           :topics [(make-discover-topic (:from message))]))]
     (d/add-pending-message! web3 message)))
 
 (defn send-discoveries-request!
@@ -120,7 +120,7 @@
     web3
     (-> message
         (assoc :type :discoveries-request
-               :topics [(make-discovery-topic (:from message))]))))
+               :topics [(make-discover-topic (:from message))]))))
 
 (defn send-discoveries-response!
   [{:keys [web3 discoveries message]}]
@@ -131,6 +131,6 @@
       web3
       (-> message
           (assoc :type :discoveries-response
-                 :topics [(make-discovery-topic (:from message))]
+                 :topics [(make-discover-topic (:from message))]
                  :message-id (random/id)
                  :payload {:data (into [] portion)})))))

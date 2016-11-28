@@ -104,7 +104,7 @@
    :new-group-chat                        "Gumzo mpya ya kikundi"
 
    ;discover
-   :discovery                             "Ugunduzi"
+   :discover                             "Ugunduzi"
    :none                                  "Hakuna"
    :search-tags                           "Andika vitambulisho vyako vya kutafuta hapa"
    :popular-tags                          "Vitambulisho maarufu"

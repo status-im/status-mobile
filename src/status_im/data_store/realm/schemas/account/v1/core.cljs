@@ -3,7 +3,7 @@
             [status-im.data-store.realm.schemas.account.v1.chat-contact :as chat-contact]
             [status-im.data-store.realm.schemas.account.v1.command :as command]
             [status-im.data-store.realm.schemas.account.v1.contact :as contact]
-            [status-im.data-store.realm.schemas.account.v1.discovery :as discovery]
+            [status-im.data-store.realm.schemas.account.v1.discover :as discover]
             [status-im.data-store.realm.schemas.account.v1.kv-store :as kv-store]
             [status-im.data-store.realm.schemas.account.v1.message :as message]
             [status-im.data-store.realm.schemas.account.v1.pending-message :as pending-message]
@@ -16,7 +16,7 @@
              chat-contact/schema
              command/schema
              contact/schema
-             discovery/schema
+             discover/schema
              kv-store/schema
              message/schema
              pending-message/schema
@@ -30,7 +30,7 @@
   (chat-contact/migration old-realm new-realm)
   (command/migration old-realm new-realm)
   (contact/migration old-realm new-realm)
-  (discovery/migration old-realm new-realm)
+  (discover/migration old-realm new-realm)
   (kv-store/migration old-realm new-realm)
   (message/migration old-realm new-realm)
   (pending-message/migration old-realm new-realm)

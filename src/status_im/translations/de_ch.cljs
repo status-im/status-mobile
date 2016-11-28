@@ -99,7 +99,7 @@
    :new-group-chat                        "Neuer Gruppenchat"
 
    ;discover
-   :discovery                             "Entdeckung"
+   :discover                             "Entdeckung"
    :none                                  "Keine"
    :search-tags                           "Gebe hier deine Suchbegriffe ein"
    :popular-tags                          "Beliebte Suchbegriffe"

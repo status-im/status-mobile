@@ -99,7 +99,7 @@
    :new-group-chat                        "Nov skupinski klepet"
 
    ;discover
-   :discovery                             "Odkrivanje"
+   :discover                             "Odkrivanje"
    :none                                  "Brez"
    :search-tags                           "Sem vnesi svoje priljubljene oznake"
    :popular-tags                          "Priljubljene oznake"

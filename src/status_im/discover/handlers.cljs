@@ -1,10 +1,10 @@
-(ns status-im.discovery.handlers
+(ns status-im.discover.handlers
   (:require [re-frame.core :refer [after dispatch enrich]]
             [status-im.utils.utils :refer [first-index]]
             [status-im.utils.handlers :refer [register-handler get-hashtags]]
             [status-im.protocol.core :as protocol]
             [status-im.navigation.handlers :as nav]
-            [status-im.data-store.discovery :as discoveries]
+            [status-im.data-store.discover :as discoveries]
             [status-im.utils.handlers :as u]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]))
@@ -23,14 +23,14 @@
                  (or pending dapp?)))
        (map :whisper-identity)))
 
-(defmethod nav/preload-data! :discovery
+(defmethod nav/preload-data! :discover
   [db _]
-  (dispatch [:set :discovery-show-search? false])
+  (dispatch [:set :discover-show-search? false])
   (-> db
       (assoc :tags (discoveries/get-all-tags))
       (assoc :discoveries (->> (discoveries/get-all :desc)
-                               (map (fn [{:keys [message-id] :as discovery}]
-                                      [message-id discovery]))
+                               (map (fn [{:keys [message-id] :as discover}]
+                                      [message-id discover]))
                                (into {})))))
 
 (register-handler :broadcast-status
@@ -59,14 +59,14 @@
                  (not (get discoveries (:message-id payload))))
         (let [{:keys [message-id status hashtags profile]} payload
               {:keys [name profile-image]} profile
-              discovery {:message-id   message-id
+              discover {:message-id   message-id
                          :name         name
                          :photo-path   profile-image
                          :status       status
                          :whisper-id   from
                          :tags         (map #(hash-map :name %) hashtags)
                          :created-at   (time/now-ms)}]
-          (dispatch [:add-discovery discovery]))))))
+          (dispatch [:add-discover discover]))))))
 
 (register-handler :start-requesting-discoveries
   (fn [{:keys [request-discoveries-timer] :as db}]
@@ -108,31 +108,31 @@
     (fn [{:keys [discoveries contacts]} [_ {:keys [payload from]}]]
       (when (get contacts from)
         (when-let [data (:data payload)]
-          (doseq [{:keys [message-id] :as discovery} data]
+          (doseq [{:keys [message-id] :as discover} data]
             (when (and (not (discoveries/exists? message-id))
                        (not (get discoveries message-id)))
-              (let [discovery (assoc discovery :created-at (time/now-ms))]
-                (dispatch [:add-discovery discovery])))))))))
+              (let [discover (assoc discover :created-at (time/now-ms))]
+                (dispatch [:add-discover discover])))))))))
 
-(defn add-discovery
-  [db [_ discovery]]
-  (assoc db :new-discovery discovery))
+(defn add-discover
+  [db [_ discover]]
+  (assoc db :new-discover discover))
 
-(defn save-discovery!
-  [{:keys [new-discovery]} _]
-  (discoveries/save new-discovery))
+(defn save-discover!
+  [{:keys [new-discover]} _]
+  (discoveries/save new-discover))
 
 (defn reload-tags!
   [db _]
   (assoc db :tags (discoveries/get-all-tags)
             :discoveries (->> (discoveries/get-all :desc)
-                              (map (fn [{:keys [message-id] :as discovery}]
-                                     [message-id discovery]))
+                              (map (fn [{:keys [message-id] :as discover}]
+                                     [message-id discover]))
                               (into {}))))
 
-(register-handler :add-discovery
-  (-> add-discovery
-      ((after save-discovery!))
+(register-handler :add-discover
+  (-> add-discover
+      ((after save-discover!))
       ((enrich reload-tags!))))
 
 (register-handler
