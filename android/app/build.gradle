@@ -93,6 +93,9 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+    dexOptions {
+        jumboMode true
+    }
     signingConfigs {
         release {
             storeFile file(STATUS_RELEASE_STORE_FILE)
