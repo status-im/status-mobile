@@ -170,9 +170,8 @@ public class StatusService extends Service {
             Log.d(TAG, "Geth node started");
             Log.w(TAG, "adding peer");
 
-            Statusgo.AddPeer("enode://fc3065bb80bfced98a01441718e2b70a0353f023b9da3d57beb8f96a827402d23702b3a461e1c1b6c7a208cb09cc0aea9b7c42bf953bb8f732529c198b158db4@95.85.40.211:30303");
-            Statusgo.AddPeer("enode://5ffa3a39f95614d881e07d24e265865218c45fe73b3a5f5d05868190e385cbf60d03ac8beaa4c31b7ee84a0ec947f22c969e2dd1783041a4d7381f7774c74526@188.166.229.119:30303");
-            Statusgo.AddPeer("enode://3b020a1fd6ab980a5670975e8a7361af1732fa3fa1819b751a94b6a4265e8c52b02c608c0de1347784b834b298280b018bcf6547f47bbba63612cba0e4707ec1@139.59.212.114:30303");
+            Statusgo.AddPeer("enode://e19d89e6faf2772e2f250e9625478ee7f313fcc0bb5e9310d5d407371496d9d7d73ccecd9f226cc2a8be34484525f72ba9db9d26f0222f4efc3c6d9d995ee224@198.199.105.122:30303");
+            Statusgo.AddPeer("enode://1ad53266faaa9258ae71eef4d162022ba0d39498e1a3488e6c65fd86e0fb528e2aa68ad0e199da69fd39f4a3a38e9e8e95ac53ba5cc7676dfeaacf5fd6c0ad27@139.59.212.114:30303");
             isNodeInitialized = true;
         }
     }
