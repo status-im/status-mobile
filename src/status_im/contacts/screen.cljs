@@ -22,7 +22,6 @@
                                                  hamburger-icon
                                                  icon-search
                                                  create-icon]]
-            [status-im.components.tabs.bottom-gradient :refer [bottom-gradient]]
             [status-im.contacts.styles :as st]
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific]]))
@@ -148,5 +147,4 @@
           [react/icon :group_big st/empty-contacts-icon]
           [text {:style st/empty-contacts-text} (label :t/no-contacts)]])
        (when (get-in platform-specific [:contacts :action-button?])
-         [contacts-action-button])
-       [bottom-gradient]])))
+         [contacts-action-button])])))

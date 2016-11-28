@@ -66,25 +66,25 @@
                                    :handler (if show-back? #(dispatch [:navigate-back]) nil)}
                 :custom-content   [toolbar-title]
                 :actions          [{:image   {:style icon-search}
-                                    :handler #()}]}]
-      [list-view {:dataSource            (lw/to-datasource accounts)
-                  :enableEmptySections   true
-                  :renderRow             render-row
-                  :style                 st/account-list
-                  :contentContainerStyle (st/account-list-content (count accounts))}]
-      [view st/bottom-actions-container
-       [view st/recover-button-container
-        [touchable-highlight
-         {:on-press #(dispatch [:navigate-to :recover])}
-         [view st/recover-button
-          [text {:style st/recover-button-text}
-           (label :t/recover-access)]]]]
-       [view st/add-account-button-container
-        [touchable-highlight {:on-press            create-account
-                              :accessibility-label :create-account}
-         [view st/add-account-button
-          [image {:source {:uri :icon_add_white}
-                  :style  st/icon-plus}]
-          [text {:style st/add-account-text
-                 :font  :default}
-           (label :t/add-account)]]]]]]]))
+                                    :handler #()}]}]]
+     [list-view {:dataSource            (lw/to-datasource accounts)
+                 :enableEmptySections   true
+                 :renderRow             render-row
+                 :style                 st/account-list
+                 :contentContainerStyle (st/account-list-content (count accounts))}]
+     [view st/bottom-actions-container
+      [view st/recover-button-container
+       [touchable-highlight
+        {:on-press #(dispatch [:navigate-to :recover])}
+        [view st/recover-button
+         [text {:style st/recover-button-text}
+          (label :t/recover-access)]]]]
+      [view st/add-account-button-container
+       [touchable-highlight {:on-press            create-account
+                             :accessibility-label :create-account}
+        [view st/add-account-button
+         [image {:source {:uri :icon_add_white}
+                 :style  st/icon-plus}]
+         [text {:style st/add-account-text
+                :font  :default}
+          (label :t/add-account)]]]]]]))
