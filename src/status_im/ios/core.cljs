@@ -16,6 +16,7 @@
             [status-im.discover.search-results :refer [discover-search-results]]
             [status-im.chat.screen :refer [chat]]
             [status-im.accounts.login.screen :refer [login]]
+            [status-im.accounts.recover.screen :refer [recover]]
             [status-im.accounts.screen :refer [accounts]]
             [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
@@ -88,6 +89,7 @@
                                :profile-photo-capture profile-photo-capture
                                :accounts accounts
                                :login login
+                               :recover recover
                                :confirm confirm
                                :my-profile my-profile)]
                [view
