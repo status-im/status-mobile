@@ -6,7 +6,7 @@
   {:position       :relative
    :height         72
    :padding-top    30
-   :padding-bottom 7})
+   :padding-bottom 34})
 
 (def text-input
   {:font-size           16

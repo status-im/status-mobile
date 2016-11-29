@@ -53,6 +53,6 @@
                                                         :else 0))}
             [text {:style st/tab-title}
              (if (or (= selected-view-id view-id)
-                       (= prev-view-id view-id))
+                     (= prev-view-id view-id))
                title
                " ")]]]])})))

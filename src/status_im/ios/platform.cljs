@@ -82,6 +82,7 @@
   {:component-styles  component-styles
    :fonts             fonts
    :list-selection-fn show-action-sheet
+   :tabs              {:tab-shadows? false}
    :chats             {:action-button?       false
                        :new-chat-in-toolbar? true}
    :contacts          {:action-button?          false

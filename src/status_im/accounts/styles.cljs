@@ -19,7 +19,7 @@
   (merge {:justifyContent :center}
          ;; todo this will not work with landscape and looks bad
          (when (< (* 69 (+ 2 cnt)) (:height (r/get-dimensions "window")))
-           {:flex 1})))
+           {:flex-grow 1})))
 
 (def account-list
   {:margin-bottom 20})
@@ -122,14 +122,14 @@
 ;wallet-qr-code.cljs
 
 (def wallet-qr-code
-  {:flex           1
+  {:flex-grow      1
    :flex-direction :column})
 
 (def account-toolbar
   {:background-color "#2f3031"})
 
 (def wallet-account-container
-  {:flex           1
+  {:flex-grow      1
    :flexDirection  :row
    :height         69
    :alignItems     :center
@@ -137,7 +137,7 @@
 
 (def qr-code
   {:background-color "#2f3031"
-   :flex             1
+   :flex-grow        1
    :align-items      :center
    :justify-content  :center})
 
@@ -158,7 +158,7 @@
    })
 
 (def done-button
-  {:flex             1
+  {:flex-grow        1
    :flex-direction   :column
    :align-items      :center
    :justify-content  :center

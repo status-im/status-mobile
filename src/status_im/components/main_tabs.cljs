@@ -13,6 +13,7 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.components.animation :as anim]
+            [status-im.components.tabs.bottom-shadow :refer [bottom-shadow-view]]
             [status-im.chats-list.screen :refer [chats-list]]
             [status-im.discover.screen :refer [discover]]
             [status-im.contacts.screen :refer [contact-list]]
@@ -110,4 +111,5 @@
               [contact-list]]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
-                    :tab-list         tab-list}]]]]])})))
+                    :tab-list         tab-list}]
+             [bottom-shadow-view]]]]])})))

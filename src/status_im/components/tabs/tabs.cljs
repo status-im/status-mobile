@@ -11,7 +11,8 @@
             [reagent.core :as r]
             [status-im.components.tabs.styles :as st]
             [status-im.components.tabs.tab :refer [tab]]
-            [status-im.components.animation :as anim]))
+            [status-im.components.animation :as anim]
+            [status-im.utils.platform :refer [platform-specific]]))
 
 (defn create-tab [index data selected-view-id prev-view-id]
   (let [data (merge data {:key              index
@@ -32,10 +33,11 @@
 
 (defn tabs-container [& children]
   (let [chats-scrolled? (subscribe [:get :chats-scrolled?])
-        tabs-bar-value (subscribe [:animations :tabs-bar-value])
-        context {:hidden?    chats-scrolled?
-                 :val        @tabs-bar-value}
-        on-update (animation-logic context)]
+        tabs-bar-value  (subscribe [:animations :tabs-bar-value])
+        shadows?        (get-in platform-specific [:tabs :tab-shadows?])
+        context         {:hidden? chats-scrolled?
+                         :val     @tabs-bar-value}
+        on-update       (animation-logic context)]
     (anim/set-value @tabs-bar-value 0)
     (r/create-class
       {:component-did-mount
@@ -45,7 +47,8 @@
        :reagent-render
        (fn [& children]
          @chats-scrolled?
-         (into [animated-view {:style         (st/tabs-container @chats-scrolled?)
+         (into [animated-view {:style         (merge (st/tabs-container @chats-scrolled?)
+                                                     (if-not shadows? st/tabs-container-line))
                                :pointerEvents (if @chats-scrolled? :none :auto)}]
                children))})))
 
