@@ -35,7 +35,8 @@
                              (let [data (-> (.-data code)
                                             (str/replace #"ethereum:" ""))]
                                (dispatch [:set-qr-code identifier data])))
-            :barCodeTypes  [:qr]
+            ;:barCodeTypes  [:qr]
+            :captureAudio  false
             :style         st/barcode-scanner}]
    [view st/rectangle-container
     [view st/rectangle

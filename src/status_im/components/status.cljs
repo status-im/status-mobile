@@ -7,12 +7,13 @@
             [taoensso.timbre :as log]
             [cljs.core.async :refer [<! timeout]]
             [status-im.utils.js-resources :as js-res]
-            [status-im.i18n :as i]))
+            [status-im.i18n :as i]
+            [status-im.utils.platform :as p]))
 
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
 ;; this flag helps to handle this
-(defonce module-initialized? (atom js/goog.DEBUG))
+(defonce module-initialized? (atom (or p/ios? js/goog.DEBUG)))
 
 ;; array of calls to StatusModule
 (defonce calls (atom []))
