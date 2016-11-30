@@ -54,7 +54,7 @@
                                                             :optimizations :none
                                                             :target        :nodejs}}]}
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
-                                   :timeout          120000}}
+                                   :timeout          240000}}
              :prod {:cljsbuild {:builds [{:id           "ios"
                                           :source-paths ["src" "env/prod"]
                                           :compiler     {:output-to          "index.ios.js"
