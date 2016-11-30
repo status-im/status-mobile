@@ -1613,7 +1613,7 @@ function suggestionsContainerStyle(suggestionsCount) {
         height: Math.min(150, (56 * suggestionsCount)),
         backgroundColor: "white",
         borderRadius: 5,
-        flex: 1
+        flexGrow: 1
     };
 }
 
