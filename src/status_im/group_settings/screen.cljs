@@ -37,8 +37,9 @@
       [view st/modal-inner-container
        [text {:style st/modal-member-name} name]
        [touchable-highlight {:on-press remove-member}
-        [text {:style st/modal-remove-text}
-         (label :t/remove)]]]]]))
+        [view
+         [text {:style st/modal-remove-text}
+          (label :t/remove)]]]]]]))
 
 (defview chat-members []
   [members [:current-chat-contacts]]
@@ -145,19 +146,26 @@
    (when (pos? (count validation-messages))
      [text {:style st/chat-name-validation-message} (first validation-messages)])])
 
+(defview members []
+  [current-pk [:get :current-public-key]
+   group-admin [:chat :group-admin]]
+  (when (= current-pk group-admin)
+    [view
+     [text {:style st/members-text} (label :t/members-title)]
+     [touchable-highlight {:on-press #(dispatch [:navigate-to :add-participants])}
+      ;; TODO add participants view is not in design
+      [view st/add-members-container
+       [icon :add_gray st/add-members-icon]
+       [text {:style st/add-members-text}
+        (label :t/add-members)]]]
+     [chat-members]]))
+
 (defn group-settings []
   [view st/group-settings
    [new-group-toolbar]
    [scroll-view st/body
     [chat-name]
-    [text {:style st/members-text} (label :t/members-title)]
-    [touchable-highlight {:on-press #(dispatch [:navigate-to :add-participants])}
-     ;; TODO add participants view is not in design
-     [view st/add-members-container
-      [icon :add_gray st/add-members-icon]
-      [text {:style st/add-members-text}
-       (label :t/add-members)]]]
-    [chat-members]
+    [members]
     [text {:style st/settings-text}
      (label :t/settings)]
     [settings-view]]

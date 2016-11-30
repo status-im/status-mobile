@@ -12,10 +12,10 @@
 
 (defn- decrypt [key content]
   (try
-    (r/read-string (e/decrypt key content))
+    {:content (r/read-string (e/decrypt key content))}
     (catch :default err
-      (log/warn :decrypt-error err)
-      nil)))
+      (debug :decrypt-error err)
+      {:error err})))
 
 (defn- parse-content [key {:keys [content]} was-encrypted?]
   (debug :parse-content
@@ -23,7 +23,7 @@
          "Content exists:" (not (nil? content)))
   (if (and (not was-encrypted?) key content)
     (decrypt key content)
-    content))
+    {:content content}))
 
 (defn message-listener
   [{:keys [web3 identity callback keypair]}]
@@ -42,9 +42,12 @@
                         (i/normalize-hex from))
                   ;; allow user to receive his own discoveries
                   (= type :discover))
-          (let [content   (parse-content (:private keypair) payload' (not= "0x0" to))
-                payload'' (assoc payload' :content content)
-
-                message'  (assoc message :payload payload'')]
-            (callback (if ack? :ack type) message')
-            (ack/check-ack! web3 from payload'' identity)))))))
+          (let [{:keys [content error]} (parse-content (:private keypair)
+                                                       payload'
+                                                       (not= "0x0" to))]
+            (if error
+              (debug :failed-to-handle-message error)
+              (let [payload'' (assoc payload' :content content)
+                    message'  (assoc message :payload payload'')]
+                (callback (if ack? :ack type) message')
+                (ack/check-ack! web3 from payload'' identity)))))))))

@@ -30,8 +30,8 @@
        (s/join ", ")))
 
 (defn prepare-chat
-  [{:keys [selected-contacts] :as db} [_ group-name]]
-  (let [contacts (mapv #(hash-map :identity %) selected-contacts)
+  [{:keys [selected-contacts current-public-key] :as db} [_ group-name]]
+  (let [contacts  (mapv #(hash-map :identity %) selected-contacts)
         chat-name (if-not (s/blank? group-name)
                     group-name
                     (group-name-from-contacts db))
@@ -42,6 +42,7 @@
                          :name        chat-name
                          :color       default-chat-color
                          :group-chat  true
+                         :group-admin current-public-key
                          :is-active   true
                          :timestamp   (.getTime (js/Date.))
                          :contacts    contacts})))
@@ -92,28 +93,31 @@
 
 (register-handler :group-chat-invite-received
   (u/side-effect!
-    (fn [{:keys [current-public-key web3] :as db}
-         [_ {{:keys [group-id group-name contacts keypair timestamp] :as payload} :payload}]]
+    (fn [{:keys [current-public-key web3]}
+         [_ {:keys                                                    [from]
+             {:keys [group-id group-name contacts keypair timestamp]} :payload}]]
       (let [{:keys [private public]} keypair]
         (let [removed-at (chats/removed-at group-id)
-              is-active (chats/is-active? group-id)
-              contacts' (keep (fn [ident]
-                                (when (not= ident current-public-key)
-                                  {:identity ident})) contacts)
-              chat {:name        group-name
-                    :group-chat  true
-                    :public-key  public
-                    :private-key private
-                    :contacts    contacts'}]
-          (when (or (not (chats/exists? group-id))
-                    is-active
-                    (> timestamp removed-at))
-            (dispatch [:add-chat group-id (assoc chat :is-active true
-                                                      :timestamp timestamp)])
-            (when-not is-active
-              (protocol/start-watching-group!
-                {:web3     web3
-                 :group-id group-id
-                 :identity current-public-key
-                 :keypair  keypair
-                 :callback #(dispatch [:incoming-message %1 %2])}))))))))
+              contacts'  (keep (fn [ident]
+                                 (when (not= ident current-public-key)
+                                   {:identity ident})) contacts)
+              chat       {:name        group-name
+                          :group-chat  true
+                          :group-admin from
+                          :public-key  public
+                          :private-key private
+                          :contacts    contacts'
+                          :added-to-at timestamp
+                          :timestamp   timestamp
+                          :is-active   true}
+              {:keys [removed-from-at] :as chat-from-db} (chats/get-by-id group-id)]
+          (when (or (not chat-from-db)
+                    (and (> timestamp removed-at)
+                         (> timestamp removed-from-at)))
+            (dispatch [:add-chat group-id chat])
+            (protocol/start-watching-group!
+              {:web3     web3
+               :group-id group-id
+               :identity current-public-key
+               :keypair  keypair
+               :callback #(dispatch [:incoming-message %1 %2])})))))))

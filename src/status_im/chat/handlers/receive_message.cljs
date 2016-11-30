@@ -58,13 +58,13 @@
         (dispatch [:upsert-chat! {:chat-id     chat-id'
                                   :group-chat  group-chat?
                                   :clock-value clock-value}])
-        (dispatch [::add-message chat-id message'])
+        (dispatch [::add-message chat-id' message'])
         (when (= (:content-type message') content-type-command-request)
           (dispatch [:add-request chat-id' message']))
         (dispatch [:add-unviewed-message chat-id' message-id]))
       (if (and
             (= (:content-type message) content-type-command)
-            (not= chat-id wallet-chat-id)
+            (not= chat-id' wallet-chat-id)
             (= "send" (get-in message [:content :command])))
         (add-message-to-wallet db message)))))
 

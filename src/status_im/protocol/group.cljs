@@ -66,9 +66,11 @@
 
 (s/def :group/name string?)
 (s/def :group/id string?)
+(s/def :group/admin string?)
 (s/def :group/contacts (s/* string?))
 (s/def ::group
-  (s/keys :req-un [:group/name :group/id :group/contacts :message/keypair]))
+  (s/keys :req-un
+          [:group/name :group/id :group/contacts :message/keypair :group/admin]))
 (s/def :invite/options
   (s/keys :req-un [:options/web3 :protocol/message ::group ::identities]))
 
