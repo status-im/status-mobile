@@ -21,11 +21,10 @@
 
 (defn- container-animation-logic [{:keys [to-value val]}]
   (fn [_]
-    (let [to-value @to-value]
-      (anim/start
-        (anim/spring val {:toValue  to-value
-                          :friction 6
-                          :tension  40})))))
+    (anim/start
+      (anim/spring val {:toValue  to-value
+                        :friction 6
+                        :tension  40}))))
 
 (defn overlay [{:keys [on-click-outside]} items]
   [view {:style st/bottom-info-overlay}
@@ -34,23 +33,18 @@
     [view nil]]
    items])
 
-(defn container [& _]
-  (let [layout-height (r/atom 0)
-        anim-value    (anim/create-value 1)
-        context       {:to-value layout-height
+(defn container [height & _]
+  (let [anim-value    (anim/create-value 1)
+        context       {:to-value height
                        :val      anim-value}
         on-update     (container-animation-logic context)]
     (r/create-class
       {:component-did-update
        on-update
        :reagent-render
-       (fn [& children]
-         @layout-height
-         [animated-view {:style (st/bottom-info-container anim-value)}
-          (into [view {:onLayout (fn [event]
-                                   (let [height (.. event -nativeEvent -layout -height)]
-                                     (reset! layout-height height)))}]
-                children)])})))
+       (fn [height & children]
+         [animated-view {:style (st/bottom-info-container height)}
+          (into [view] children)])})))
 
 (defn message-status-row [{:keys [photo-path name]} {:keys [whisper-identity status]}]
   [view st/bottom-info-row
@@ -82,12 +76,11 @@
                                  (map (fn [{:keys [identity]}]
                                         [identity {:whisper-identity identity
                                                    :status           message-status}]))
-                                 (into {}))]
+                                 (into {}))
+               statuses     (vals (merge participants user-statuses))]
            [overlay {:on-click-outside #(dispatch [:set-chat-ui-props :show-bottom-info? false])}
-            [container
-             [list-view {:dataSource            (-> (merge participants user-statuses)
-                                                    (vals)
-                                                    (lw/to-datasource))
+            [container (* st/item-height (count statuses))
+             [list-view {:dataSource            (lw/to-datasource statuses)
                          :enableEmptySections   true
                          :renderRow             (render-row @contacts)
                          :contentContainerStyle st/bottom-info-list-container}]]]))})))

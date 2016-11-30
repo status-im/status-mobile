@@ -172,6 +172,8 @@
    :padding-top    8
    :padding-bottom 8})
 
+(def item-height 60)
+
 (def bottom-info-row
   {:flex-direction "row"
    :padding-top    4
