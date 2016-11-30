@@ -77,14 +77,14 @@
   [view st/chats-container
    [chats-list-toolbar]
    [list-view {:dataSource      (to-datasource chats)
-               :renderRow       (fn [row _ _]
-                                  (list-item [chat-list-item row]))
+               :renderRow       (fn [[id :as row] _ _]
+                                  (list-item ^{:key id} [chat-list-item row]))
                :renderFooter    #(list-item [chat-shadow-item])
                :renderSeparator #(list-item
-                                  (when (< %2 (- (count chats) 1))
-                                    ^{:key (str "separator-" %2)}
-                                    [view st/chat-separator-wrapper
-                                     [view st/chat-separator-item]]))
+                                   (when (< %2 (- (count chats) 1))
+                                     ^{:key (str "separator-" %2)}
+                                     [view st/chat-separator-wrapper
+                                      [view st/chat-separator-item]]))
                :style           st/list-container}]
    (when (get-in platform-specific [:chats :action-button?])
      [chats-action-button])
