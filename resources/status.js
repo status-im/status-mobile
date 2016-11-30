@@ -80,17 +80,21 @@ function call(pathStr, paramsStr) {
         return null;
     }
 
+    context.messages = [];
+
     callResult = fn(params.parameters, params.context);
     result = {
         returned: callResult,
-        context: context[message_id]
+        context: context[message_id],
+        messages: context.messages
     };
 
     return JSON.stringify(result);
 }
 
 function text(options, s) {
-    return ['text', options, s];
+    s = Array.isArray(s) ? s : [s];
+    return ['text', options].concat(s);
 }
 
 function view(options, elements) {

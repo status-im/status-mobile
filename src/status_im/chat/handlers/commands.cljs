@@ -3,6 +3,7 @@
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.components.status :as status]
             [status-im.models.commands :as commands]
+            [status-im.chat.utils :refer [console? not-console?]]
             [clojure.string :as str]
             [status-im.commands.utils :as cu]
             [status-im.utils.phone-number :as pn]
@@ -21,13 +22,15 @@
   [{:keys [current-chat-id canceled-command] :as db} _]
   (when-not canceled-command
     (let [{:keys [command content params]} (get-in db [:chats current-chat-id :command-input])
+          data   (get-in db [:local-storage current-chat-id])
           {:keys [name type]} command
           path   [(if (= :command type) :commands :responses)
                   name
                   :params
                   0
                   :suggestions]
-          params {:parameters (or params {})}]
+          params {:parameters (or params {})
+                  :context {:data data}}]
       (status/call-jail current-chat-id
                         path
                         params
@@ -62,6 +65,16 @@
             (assoc-in db [:chats current-chat-id :input-text] nil)
             (assoc db :canceled-command (and command? (not starts-as-command?)))))))
 
+(register-handler :fill-chat-command-content
+  (u/side-effect!
+    (fn [db [_ content]]
+      (let [command? (= :command (current-command db :type))]
+        (dispatch
+          [:set-chat-command-content
+           (if command?
+             (str cu/command-prefix content)
+             content)])))))
+
 (defn invoke-command-preview!
   [{:keys [staged-command] :as db} [_ command-input chat-id]]
   (let [{:keys [command id]} staged-command
@@ -72,10 +85,12 @@
                     :preview]
         params     {:parameters parameters
                     :context    {:platform platform/platform}}]
-    (status/call-jail chat-id
-                      path
-                      params
-                      #(dispatch [:command-preview chat-id id %]))))
+    (if (and (console? chat-id) (= name "js"))
+      (dispatch [:send-chat-message])
+      (status/call-jail chat-id
+                        path
+                        params
+                        #(dispatch [:command-preview chat-id id %])))))
 
 (defn command-input
   ([{:keys [current-chat-id] :as db}]
@@ -270,3 +285,4 @@
         (if (= :on-send suggestions-trigger)
           (dispatch [:invoke-commands-suggestions!])
           (dispatch [:stage-command]))))))
+

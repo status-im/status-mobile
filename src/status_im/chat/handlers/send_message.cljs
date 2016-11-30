@@ -103,7 +103,8 @@
         (log/debug "Handler data: " request handler-data (dissoc params :commands :staged-command))
         (dispatch [:clear-command chat-id (:id staged-command)])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command')])
-
+        (when (cu/console? chat-id)
+          (dispatch [:console-respond-command params]))
         (when (and (= "send" (get-in staged-command [:command :name]))
                    (not= add-to-chat-id wallet-chat-id))
           (let [ct              (if request

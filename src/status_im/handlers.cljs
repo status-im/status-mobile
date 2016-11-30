@@ -121,6 +121,7 @@
           "transaction.failed" (dispatch [:transaction-failed event])
           "node.started" (log/debug "Event *node.started* received")
           "module.initialized" (dispatch [:status-module-initialized!])
+          "local_storage.set" (dispatch [:set-local-storage event])
           (log/debug "Event " type " not handled"))))))
 
 (register-handler :status-module-initialized!
