@@ -43,9 +43,10 @@
     (assoc-in db [:animations k] v)))
 
 (register-handler :initialize-db
-  (fn [{:keys [status-module-initialized? network]} _]
+  (fn [{:keys [status-module-initialized? network-status network]} _]
     (data-store/init)
-    (cond-> (assoc app-db :current-account-id nil)
+    (cond-> (assoc app-db :current-account-id nil
+                          :network-status network-status)
 
             status-module-initialized?
             (assoc :status-module-initialized? true)
