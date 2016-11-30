@@ -70,6 +70,7 @@
      [list-view {:dataSource            (lw/to-datasource accounts)
                  :enableEmptySections   true
                  :renderRow             render-row
+                 :bounces               false
                  :style                 st/account-list
                  :contentContainerStyle (st/account-list-content (count accounts))}]
      [view st/bottom-actions-container
