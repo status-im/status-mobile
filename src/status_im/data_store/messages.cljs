@@ -84,9 +84,10 @@
   [{:keys [chats] :as db} chat-id]
   (if-let [message (first (get-in db [:chats chat-id :messages]))]
     message
-    (let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
-      (when (and message (command-type? content-type))
-        (clojure.core/update message :content str-to-map)))))
+    (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
+      (if (command-type? content-type)
+        (clojure.core/update message :content str-to-map)
+        message))))
 
 (defn get-unviewed
   []

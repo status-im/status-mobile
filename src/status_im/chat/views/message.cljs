@@ -376,8 +376,7 @@
                                    :from       from
                                    :message-id message-id}])))
        :reagent-render
-       (fn [{:keys [outgoing group-chat] :as message}]
-         (log/debug "I HAVE A MESSAGE: " message)
+       (fn [{:keys [outgoing group-chat clock-value] :as message}]
          [message-container message
           [view
            (let [incoming-group (and group-chat (not outgoing))]
