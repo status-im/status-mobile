@@ -32,8 +32,7 @@
             [status-im.utils.random :refer [id]]
             [status-im.utils.utils :refer [clean-text]]
             [status-im.components.image-button.view :refer [show-qr-button]]
-            [status-im.i18n :refer [label]]
-            [taoensso.timbre :as log]))
+            [status-im.i18n :refer [label]]))
 
 (defn share [text dialog-title]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
@@ -102,15 +101,14 @@
                          :style                  (st/status-input (:height (r/state component)))
                          :multiline              true
                          :editable               true
-                         :blur-on-submit         true
                          :on-content-size-change #(do (set-status-height %)
                                                       (reset! just-opened? false))
                          :max-length             140
                          :placeholder            (label :t/profile-no-status)
-                         :on-change-text         (fn [t]
-                                                   (dispatch [:set-in [:profile-edit :status] (clean-text t)]))
-                         :on-submit-editing      (fn []
-                                                   (.blur @input-ref))
+                         :on-change-text         #(let [status (clean-text %)]
+                                                    (if (str/includes? % "\n")
+                                                      (.blur @input-ref)
+                                                      (dispatch [:set-in [:profile-edit :status] status])))
                          :default-value          status}]
             [status-view {:style  (st/status-text (:height (r/state component)))
                           :status status}])])})))

@@ -22,7 +22,8 @@
             [status-im.components.react :refer [dismiss-keyboard!]]
             [clojure.string :as str]
             [cljs.spec :as s]
-            [status-im.components.chat-icon.screen :as ci]))
+            [status-im.components.chat-icon.screen :as ci]
+            [taoensso.timbre :as log]))
 
 (defonce drawer-atom (atom))
 
@@ -41,16 +42,24 @@
           :font  :default}
     name]])
 
+(defn- update-status [new-status]
+  (when-not (str/blank? new-status)
+    (dispatch [:check-status-change new-status])
+    (dispatch [:account-update {:status new-status}])
+    (dispatch [:set-in [:profile-edit :status] new-status])))
+
 (defn drawer-menu []
   (let
     [account         (subscribe [:get-current-account])
      profile         (subscribe [:get :profile-edit])
      keyboard-height (subscribe [:get :keyboard-height])
      placeholder     (generate-gfy)
-     status-edit?    (r/atom false)]
+     status-edit?    (r/atom false)
+     status-text     (r/atom nil)]
     (fn []
       (let [{:keys [name photo-path status]} @account
-            {new-name :name new-status :status} @profile]
+            {new-name   :name
+             new-status :status} @profile]
         [view st/drawer-menu
          [touchable-without-feedback {:on-press #(dismiss-keyboard!)}
           [view st/drawer-menu
@@ -75,19 +84,21 @@
                            :editable            true
                            :multiline           true
                            :auto-focus          true
-                           :blur-on-submit      true
                            :focus               status-edit?
-                           :maxLength           140
+                           :max-length          140
                            :accessibility-label :input
                            :placeholder         (label :t/profile-no-status)
-                           :on-change-text      (fn [t]
-                                                  (dispatch [:set-in [:profile-edit :status] (clean-text t)]))
-                           :on-submit-editing   (fn []
-                                                  (reset! status-edit? false)
-                                                  (when (and new-status (not (str/blank? new-status)))
-                                                    (dispatch [:check-status-change (clean-text new-status)])
-                                                    (dispatch [:account-update {:status (clean-text new-status)}])))
-                           :default-value       status}]
+                           :default-value       status
+                           :on-blur             #(do
+                                                   (reset! status-edit? false)
+                                                   (update-status @status-text))
+                           :on-change-text      #(let [status (clean-text %)]
+                                                   (reset! status-text status)
+                                                   (if (str/includes? % "\n")
+                                                     (do
+                                                       (reset! status-edit? false)
+                                                       (update-status status))
+                                                     (dispatch [:set-in [:profile-edit :status] status])))}]
               [status-view {:style           st/status-text
                             :on-press        #(reset! status-edit? true)
                             :number-of-lines 3
