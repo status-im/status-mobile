@@ -26,32 +26,34 @@
 (def min-scale 1)
 (def max-scale 1.3)
 
-(defn button-animation [val to-value loop? answered?]
+(defn button-animation [val to-value loop? answered? staged?]
   (anim/anim-sequence
     [(anim/anim-delay
-       (if (and @loop? (not @answered?))
+       (if (and @loop? (or @staged? (not @answered?)))
          request-message-icon-scale-delay
          0))
      (anim/spring val {:toValue to-value})]))
 
 (defn request-button-animation-logic
-  [{:keys [to-value val loop? answered?] :as context}]
+  [{:keys [to-value val loop? answered? staged?] :as context}]
   (anim/start
-    (button-animation val to-value loop? answered?)
-    #(if (and @loop? (not @answered?))
-      (let [new-value (if (= to-value min-scale) max-scale min-scale)
-            context'  (assoc context :to-value new-value)]
-        (request-button-animation-logic context'))
-      (anim/start
-        (button-animation val min-scale loop? answered?)))))
+    (button-animation val to-value loop? answered? staged?)
+    #(if (and @loop? (or @staged? (not @answered?)))
+       (let [new-value (if (= to-value min-scale) max-scale min-scale)
+             context'  (assoc context :to-value new-value)]
+         (request-button-animation-logic context'))
+       (anim/start
+         (button-animation val min-scale loop? answered? staged?)))))
 
 (defn request-button [message-id command status-initialized? top-offset?]
   (let [scale-anim-val (anim/create-value min-scale)
         answered?      (subscribe [:is-request-answered? message-id])
+        staged?        (subscribe [:staged-response? message-id])
         loop?          (r/atom true)
         context        {:to-value  max-scale
                         :val       scale-anim-val
                         :answered? answered?
+                        :staged?   staged?
                         :loop?     loop?}]
     (r/create-class
       {:component-did-mount
@@ -78,11 +80,11 @@
         status-initialized? (subscribe [:get :status-module-initialized?])]
     (fn [{:keys [message-id content from incoming-group]}]
       (let [commands @commands-atom
-            params (:params content)
+            params   (:params content)
             {:keys [command content]} (parse-command-request commands content)
-            command (if (and params command)
-                      (merge command {:set-params params})
-                      command)]
+            command  (if (and params command)
+                       (merge command {:set-params params})
+                       command)]
         [view st/comand-request-view
          [touchable-highlight
           {:on-press (when (and (not @answered?) @status-initialized?)
@@ -92,13 +94,13 @@
              [text {:style st/command-request-from-text
                     :font  :default}
               from])
-           [text {:style st/style-message-text
+           [text {:style     st/style-message-text
                   :on-layout #(reset! top-offset {:specified? true
                                                   :value      (-> (.-nativeEvent %)
                                                                   (.-layout)
-                                                                  (.-height) 
+                                                                  (.-height)  
                                                                   (> 25))})
-                  :font  :default}
+                  :font      :default}
             content]]]
          (when (:request-text command)
            [view st/command-request-text-view

@@ -81,6 +81,19 @@
          vals
          (reaction))))
 
+(register-sub :get-chat-staged-commands-ids
+  (fn [db _]
+    (->> [:chats (:current-chat-id @db) :staged-commands]
+         (get-in @db)
+         vals
+         (keep :to-message)
+         (reaction))))
+
+(register-sub :staged-response?
+  (fn [_ [_ id]]
+    (let [commands (subscribe [:get-chat-staged-commands])]
+      (reaction (some #(= id (:to-message %)) @commands)))))
+
 (register-sub :get-chat-staged-commands-scroll-height
   (fn [db _]
     (let [{:keys [staged-commands
@@ -177,8 +190,12 @@
 
 (register-sub :get-requests
   (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:chats @chat-id :requests])))))
+    (let [chat-id    (subscribe [:get-current-chat-id])
+          staged-ids (subscribe [:get-chat-staged-commands-ids])]
+      (reaction
+        (let [ids      (set @staged-ids)
+              requests (get-in @db [:chats @chat-id :requests])]
+          (remove #(ids (:message-id %)) requests))))))
 
 (register-sub :get-requests-map
   (fn [db]
