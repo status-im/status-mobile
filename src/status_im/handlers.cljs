@@ -56,8 +56,12 @@
 
 (register-handler :initialize-account-db
   (fn [db _]
-    (assoc db :current-chat-id console-chat-id
-              :edit-mode nil)))
+    (-> db
+        (assoc :current-chat-id console-chat-id)
+        (dissoc :edit-mode
+                :transactions
+                :transactions-queue
+                :new-contact-identity))))
 
 (register-handler :initialize-account
   (u/side-effect!

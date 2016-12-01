@@ -273,7 +273,9 @@
 (defn init-chat
   ([db] (init-chat db nil))
   ([{:keys [messages current-chat-id] :as db} _]
-   (assoc-in db [:chats current-chat-id :messages] messages)))
+   (-> db
+       (assoc-in [:chats current-chat-id :messages] messages)
+       (dissoc :messages))))
 
 (defn load-commands!
   [{:keys [current-chat-id]}]
