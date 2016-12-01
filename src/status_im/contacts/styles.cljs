@@ -142,12 +142,13 @@
   {:flex            1
    :flexDirection   :row
    :height          56
+   :margin-right    16
    :backgroundColor color-white})
 
 (def info-container
   {:flex           1
    :flexDirection  :column
-   :marginLeft     12
+   :margin-left    12
    :justifyContent :center})
 
 (def name-text
@@ -185,7 +186,7 @@
 
 (def form-container
   {:margin-left 16
-   :margin-top  16
+   :margin-top  8
    :height      72})
 
 (def address-explication-container
@@ -208,7 +209,16 @@
 (def qr-input
   {:margin-right 42})
 
+(def enter-address-icon
+  {:margin-left   21
+   :margin-right  21
+   :margin-top    19
+   :width         20
+   :height        18})
+
 (def scan-qr-icon
-  {:margin        18
-   :width         25
-   :height        19})
+  {:margin-left   21
+   :margin-right  20
+   :margin-top    18
+   :width         20
+   :height        20})
