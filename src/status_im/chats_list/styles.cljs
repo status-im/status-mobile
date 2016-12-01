@@ -6,7 +6,8 @@
                                                  text1-color
                                                  text2-color
                                                  new-messages-count-color]]
-            [status-im.components.tabs.styles :refer [tabs-height]]))
+            [status-im.components.tabs.styles :refer [tabs-height]]
+            [status-im.utils.platform :as p]))
 
 (def gradient-top-bottom-shadow
   ["rgba(24, 52, 76, 0.165)"
@@ -115,7 +116,7 @@
 
 (def list-container
   {:background-color color-light-gray
-   :margin-bottom    72})
+   :margin-bottom    (when p/ios? 72)})
 
 (def create-icon
   {:fontSize 20
