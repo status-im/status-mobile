@@ -91,7 +91,7 @@
   [hash password callback]
   (log/debug :complete-transaction (boolean status) hash password)
   (when status
-    (call-module #(.completeTransaction status hash password callback))))
+    (call-module #(.completeTransaction status (str hash) password callback))))
 
 (defn discard-transaction
   [id]
