@@ -57,7 +57,7 @@
 
 (defn clean-text [s]
   (-> s
-      (str/replace #"\n" " ")
+      (str/replace #"\n" "")
       (str/replace #"\r" "")
       (str/trim)))
 
