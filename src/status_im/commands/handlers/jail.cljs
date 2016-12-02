@@ -7,6 +7,7 @@
             [status-im.commands.utils :refer [generate-hiccup reg-handler]]
             [clojure.string :as s]
             [status-im.components.react :as r]
+            [status-im.models.commands :as cm]
             [status-im.constants :refer [console-chat-id]]
             [taoensso.timbre :as log]))
 
@@ -50,11 +51,17 @@
         (assoc-in [:has-suggestions? chat-id] (or hiccup webViewUrl)))))
 
 (defn suggestions-events-handler!
-  [db [[n data]]]
+  [{:keys [current-chat-id] :as db} [[n data]]]
+  (log/debug "Suggestion event: " data)
+  (let [{:keys [dapp?] :as contact} (get-in db [:contacts current-chat-id])
+        command? (= :command (:type (cm/get-chat-command db)))]
   (case (keyword n)
-    :set-value (dispatch [:fill-chat-command-content data])
+    :set-value (if command?
+                 (dispatch [:fill-chat-command-content data])
+                 (when dapp?
+                   (dispatch [:set-chat-input-text data])))
     ;; todo show error?
-    nil))
+    nil)))
 
 (defn command-preview
   [db [chat-id command-id {:keys [result]}]]
