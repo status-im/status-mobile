@@ -71,3 +71,13 @@
 (defn set-active
   [chat-id active?]
   (save-property chat-id :is-active active?))
+
+(defn new-update?
+  [timestamp chat-id]
+  (let
+    [{:keys [added-to-at removed-at removed-from-at added-at]}
+     (get-by-id chat-id)]
+    (and (> timestamp added-to-at)
+         (> timestamp removed-at)
+         (> timestamp removed-from-at)
+         (> timestamp added-at))))
