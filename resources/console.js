@@ -1440,6 +1440,15 @@ function getJsSuggestions(code, context) {
         if (code.startsWith("c ")) {
             code = code.substring(2);
         }
+        if (context.data != null &&
+            (typeof context.data === 'string' || context.data instanceof String) &&
+            context.data.startsWith(code)) {
+            suggestions.unshift({
+                title: 'Last command used:',
+                desc: context.data,
+                pressValue: context.data
+            });
+        }
         var originalCode = code;
         code = cleanCode(code);
         var levelCode = getLastLevel(code);
@@ -1452,7 +1461,6 @@ function getJsSuggestions(code, context) {
         console.log("Level code: " + levelCode);
         suggestions = suggestions.concat(getPartialSuggestions(doc, originalCode, code));
     }
-    console.log(suggestions);
     return suggestions;
 }
 
@@ -1808,3 +1816,10 @@ status.response({
     }
 });
 
+status.registerFunction("message-suggestions", function(params, context) {
+    return jsSuggestions({code: params.message}, context);
+});
+
+status.registerFunction("message-handler", function(params, context) {
+    return jsHandler({code: params.message}, context);
+});

@@ -8,14 +8,16 @@
             [re-frame.core :refer [enrich after dispatch path]]
             [status-im.chat.utils :as cu]
             [status-im.commands.utils :as commands-utils]
-            [status-im.constants :refer [text-content-type
+            [status-im.constants :refer [console-chat-id
+                                         wallet-chat-id
+                                         text-content-type
                                          content-type-command
                                          content-type-command-request
                                          default-number-of-messages] :as c]
+            [status-im.chat.constants :refer [input-height]]
             [status-im.utils.datetime :as datetime]
             [status-im.protocol.core :as protocol]
             [taoensso.timbre :refer-macros [debug] :as log]
-            [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [status-im.chat.handlers.console :as console]))
 
 (defn prepare-command
@@ -207,25 +209,78 @@
     (fn [_ [_ {:keys [chat-id message]}]]
       (messages/save chat-id message))))
 
+(register-handler :clear-response-suggestions
+  (fn [db [_ chat-id]]
+    (-> db
+        (update-in [:suggestions] dissoc chat-id)
+        (update-in [:has-suggestions?] dissoc chat-id)
+        (assoc-in  [:animations :to-response-height chat-id] input-height))))
+
+(register-handler ::send-dapp-message
+  (u/side-effect!
+    (fn [db [_ chat-id {:keys [content] :as message}]]
+      (let [data   (get-in db [:local-storage chat-id])
+            path   [:functions
+                    :message-handler]
+            params {:parameters {:message content}
+                    :context    {:data data}}]
+        (dispatch [:clear-response-suggestions chat-id])
+        (status/call-jail chat-id
+                          path
+                          params
+                          (fn [{:keys [result]}]
+                            (log/debug "Message handler result: " result)
+                            (dispatch [::received-dapp-message chat-id result])))))))
+
+(register-handler ::received-dapp-message
+  (u/side-effect!
+    (fn [{:keys [current-chat-id] :as db} [_ chat-id {:keys [returned] :as message}]]
+      (let [{:keys [data messages err]} returned
+            content (if err
+                      err
+                      data)]
+        (doseq [message messages]
+          (let [{:keys [message type]} message]
+            (dispatch [:received-message
+                       {:message-id   (random/id)
+                        :content      (str type ": " message)
+                        :content-type text-content-type
+                        :outgoing     false
+                        :chat-id      chat-id
+                        :from         chat-id
+                        :to           "me"}])))
+        (when content
+          (dispatch [:received-message
+                     {:message-id   (random/id)
+                      :content      (str content)
+                      :content-type text-content-type
+                      :outgoing     false
+                      :chat-id      chat-id
+                      :from         chat-id
+                      :to           "me"}]))))))
+
 (register-handler ::send-message!
   (u/side-effect!
-    (fn [{:keys [web3 chats]} [_ {{:keys [message-type]
-                                   :as   message} :message
-                                  chat-id         :chat-id}]]
-      (when (and message (cu/not-console? chat-id))
-        (let [message' (select-keys message [:from :message-id])
-              payload  (select-keys message [:timestamp :content :content-type :clock-value])
-              options  {:web3    web3
-                        :message (assoc message' :payload payload)}]
-          (if (= message-type :group-user-message)
-            (let [{:keys [public-key private-key]} (chats chat-id)]
-              (protocol/send-group-message! (assoc options
-                                              :group-id chat-id
-                                              :keypair {:public  public-key
-                                                        :private private-key})))
-            (protocol/send-message! (assoc-in options
-                                              [:message :to] (:to message))))))
-      (dispatch [:inc-clock chat-id]))))
+    (fn [{:keys [web3 chats] :as db} [_ {{:keys [message-type]
+                                          :as   message} :message
+                                         chat-id         :chat-id}]]
+      (let [{:keys [dapp?] :as contact} (get-in db [:contacts chat-id])]
+        (if dapp?
+          (dispatch [::send-dapp-message chat-id message])
+          (when message
+            (let [message' (select-keys message [:from :message-id])
+                  payload  (select-keys message [:timestamp :content :content-type :clock-value])
+                  options  {:web3    web3
+                            :message (assoc message' :payload payload)}]
+              (if (= message-type :group-user-message)
+                (let [{:keys [public-key private-key]} (chats chat-id)]
+                  (protocol/send-group-message! (assoc options
+                                                  :group-id chat-id
+                                                  :keypair {:public  public-key
+                                                            :private private-key})))
+                (protocol/send-message! (assoc-in options
+                                                  [:message :to] (:to message)))))))
+        (dispatch [:inc-clock chat-id])))))
 
 (register-handler ::send-command-protocol!
   (u/side-effect!
