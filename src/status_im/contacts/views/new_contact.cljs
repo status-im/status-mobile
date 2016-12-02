@@ -45,7 +45,7 @@
                                   :photo-path       (identicon whisper-identity)
                                   :whisper-identity whisper-identity}]
                      (dispatch [:add-new-contact contact]))
-                   (dispatch [:set :new-contact-address-error (label :t/unknown-address)]))))
+                   (dispatch [:set :new-contact-public-key-error (label :t/unknown-address)]))))
     (dispatch [:add-new-contact {:name             (generate-gfy)
                                  :photo-path       (identicon id)
                                  :whisper-identity id}])))
@@ -61,7 +61,7 @@
     (label :t/contact-already-added)
 
     (not (s/valid? ::v/whisper-identity whisper-identity))
-    (label :t/enter-valid-address)
+    (label :t/enter-valid-public-key)
 
     :else error))
 
@@ -85,10 +85,10 @@
        :input-style    st/qr-input
        :value          whisper-identity
        :wrapper-style  button-input
-       :label          (label :t/address)
+       :label          (label :t/public-key)
        :on-change-text #(do
-                         (dispatch [:set-in [:new-contact-identity] %])
-                         (dispatch [:set :new-contact-address-error nil]))}]
+                          (dispatch [:set-in [:new-contact-identity] %])
+                          (dispatch [:set :new-contact-public-key-error nil]))}]
      [scan-button {:show-label? (zero? (count whisper-identity))
                    :handler     #(dispatch [:scan-qr-code
                                             {:toolbar-title (label :t/new-contact)}
@@ -97,7 +97,7 @@
 
 (defview new-contact []
   [new-contact-identity [:get :new-contact-identity]
-   error [:get :new-contact-address-error]
+   error [:get :new-contact-public-key-error]
    account [:get-current-account]]
   [view st/contact-form-container
    [status-bar]
