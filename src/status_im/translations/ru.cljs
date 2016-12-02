@@ -125,6 +125,7 @@
    :contacts-group-new-chat               "Начать новый час"
    :no-contacts                           "Пока нет контактов"
    :show-qr                               "Показать QR"
+   :enter-address                         "Ввести адрес"
 
    ;group-settings
    :remove                                "Удалить"
