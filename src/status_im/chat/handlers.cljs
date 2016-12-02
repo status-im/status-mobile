@@ -201,8 +201,7 @@
     (set-message-shown db chat-id message-id)))
 
 (defn init-console-chat
-  ([existing-account?] (init-console-chat {} existing-account?))
-  ([{:keys [chats] :as db} existing-account?]
+  ([{:keys [chats current-account-id] :as db} existing-account?]
    (let [new-chat sign-up-service/console-chat]
      (if (chats console-chat-id)
        db
@@ -210,7 +209,8 @@
          (dispatch [:add-contacts [sign-up-service/console-contact]])
          (chats/save new-chat)
          (contacts/save-all [sign-up-service/console-contact])
-         (sign-up-service/intro)
+         (when-not current-account-id
+           (sign-up-service/intro))
          (when existing-account?
            (sign-up-service/start-signup))
          (-> db

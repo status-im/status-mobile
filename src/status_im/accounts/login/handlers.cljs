@@ -5,8 +5,12 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.data-store.core :as data-store]
             [status-im.components.status :as status]
-            [status-im.constants :refer [console-chat-id]]))
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.navigation.handlers :as nav]))
 
+(defmethod nav/preload-data! :login
+  [db]
+  (update db :login dissoc :error :password))
 
 (defn set-login-from-qr
   [{:keys [login] :as db} [_ _ login-info]]
