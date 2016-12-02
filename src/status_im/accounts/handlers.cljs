@@ -67,7 +67,7 @@
         (get accounts current-account-id)
 
         account' (assoc account :network (or acc-network network))]
-    (accounts-store/save (get accounts current-account-id) true)))
+    (accounts-store/save account' true)))
 
 (defn send-account-update
   [{:keys [current-account-id current-public-key web3 accounts]} _]
