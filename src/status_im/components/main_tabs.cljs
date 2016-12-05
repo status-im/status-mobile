@@ -107,8 +107,8 @@
                         :onScrollBeginDrag      #(reset! dragging? true)
                         :on-momentum-scroll-end (on-scroll-end swiped? dragging?)})
               [chats-list]
-              [discover  (= @view-id :discover)]
-              [contact-list]]
+              [discover (= @view-id :discover)]
+              [contact-list (= @view-id :contact-list)]]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
                     :tab-list         tab-list}]

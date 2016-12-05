@@ -5,12 +5,15 @@
             [status-im.data-store.contacts :as contacts]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.pending-messages :as pending-messages]
+            [status-im.data-store.processed-messages :as processed-messages]
             [status-im.data-store.chats :as chats]
             [status-im.protocol.core :as protocol]
             [status-im.constants :refer [text-content-type
                                          blocks-per-hour]]
             [status-im.i18n :refer [label]]
             [status-im.utils.random :as random]
+            [status-im.protocol.message-cache :as cache]
+            [status-im.utils.datetime :as dt]
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.constants :as c]
             [status-im.components.status :as status]))
@@ -77,33 +80,41 @@
 
 (register-handler :incoming-message
   (u/side-effect!
-    (fn [_ [_ type {:keys [payload] :as message}]]
-      (debug :incoming-message type)
-      (case type
-        :message (dispatch [:received-protocol-message! message])
-        :group-message (dispatch [:received-protocol-message! message])
-        :ack (if (#{:message :group-message} (:type payload))
-               (dispatch [:message-delivered message])
-               (dispatch [:pending-message-remove message]))
-        :seen (dispatch [:message-seen message])
-        :group-invitation (dispatch [:group-chat-invite-received message])
-        :update-group (dispatch [:update-group-message message])
-        :add-group-identity (dispatch [:participant-invited-to-group message])
-        :remove-group-identity (dispatch [:participant-removed-from-group message])
-        :leave-group (dispatch [:participant-left-group message])
-        :contact-request (dispatch [:contact-request-received message])
-        :discover (dispatch [:status-received message])
-        :discoveries-request (dispatch [:discoveries-request-received message])
-        :discoveries-response (dispatch [:discoveries-response-received message])
-        :profile (dispatch [:contact-update-received message])
-        :online (dispatch [:contact-online-received message])
-        :pending (dispatch [:pending-message-upsert message])
-        :sent (let [{:keys [to id group-id]} message
-                    message' {:from    to
-                              :payload {:message-id id
-                                        :group-id   group-id}}]
-                (dispatch [:message-sent message']))
-        (debug "Unknown message type" type)))))
+    (fn [_ [_ type {:keys [payload ttl id] :as message}]]
+      (let [message-id (or id (:message-id payload))]
+        (when-not (cache/exists? message-id type)
+          (let [ttl-s             (* 1000 (or ttl 120))
+                processed-message {:id         (random/id)
+                                   :message-id message-id
+                                   :type       type
+                                   :ttl        (+ (dt/now-ms) ttl-s)}]
+            (cache/add! processed-message)
+            (processed-messages/save processed-message))
+          (case type
+            :message (dispatch [:received-protocol-message! message])
+            :group-message (dispatch [:received-protocol-message! message])
+            :ack (if (#{:message :group-message} (:type payload))
+                   (dispatch [:message-delivered message])
+                   (dispatch [:pending-message-remove message]))
+            :seen (dispatch [:message-seen message])
+            :group-invitation (dispatch [:group-chat-invite-received message])
+            :update-group (dispatch [:update-group-message message])
+            :add-group-identity (dispatch [:participant-invited-to-group message])
+            :remove-group-identity (dispatch [:participant-removed-from-group message])
+            :leave-group (dispatch [:participant-left-group message])
+            :contact-request (dispatch [:contact-request-received message])
+            :discover (dispatch [:status-received message])
+            :discoveries-request (dispatch [:discoveries-request-received message])
+            :discoveries-response (dispatch [:discoveries-response-received message])
+            :profile (dispatch [:contact-update-received message])
+            :online (dispatch [:contact-online-received message])
+            :pending (dispatch [:pending-message-upsert message])
+            :sent (let [{:keys [to id group-id]} message
+                        message' {:from    to
+                                  :payload {:message-id id
+                                            :group-id   group-id}}]
+                    (dispatch [:message-sent message']))
+            (debug "Unknown message type" type)))))))
 
 (defn system-message
   ([message-id timestamp content]

@@ -7,7 +7,15 @@
                                                  text2-color
                                                  new-messages-count-color]]
             [status-im.components.tabs.styles :refer [tabs-height]]
+            [status-im.components.toolbar.styles :refer [toolbar-background1
+                                                         toolbar-background2]]
             [status-im.utils.platform :as p]))
+
+(defn toolbar [chats-scrolled?]
+  (merge {:background-color (if chats-scrolled?
+                              toolbar-background1
+                              toolbar-background2)}
+         (get-in p/platform-specific [:component-styles :toolbar])))
 
 (def gradient-top-bottom-shadow
   ["rgba(24, 52, 76, 0.165)"
@@ -102,14 +110,6 @@
    :fontSize  10
    :color     color-blue
    :textAlign :center})
-
-(def hamburger-icon
-  {:width  16
-   :height 12})
-
-(def toolbar-icon
-  {:width  17
-   :height 17})
 
 (def chats-container
   {:flex 1})

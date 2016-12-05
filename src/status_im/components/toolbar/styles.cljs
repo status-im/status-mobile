@@ -41,7 +41,7 @@
    :justifyContent :center})
 
 (def toolbar-title-text
-  {:margin-top -2.5
+  {:margin-top 0
    :color      text1-color
    :font-size  16})
 
@@ -58,3 +58,45 @@
    :margin-right    toolbar-icon-spacing
    :align-items     :center
    :justify-content :center})
+
+(def toolbar-with-search
+  {:background-color toolbar-background2
+   :elevation        0})
+
+(def toolbar-with-search-content
+  {:flex            1
+   :align-items     :center
+   :justify-content :center})
+
+(def toolbar-search-input
+  {:flex        1
+   :align-self  :stretch
+   :margin-left 18
+   :margin-top  2
+   :font-size   14
+   :color       "#7099e6"})
+
+(def toolbar-with-search-title
+  {:color       "#000000de"
+   :align-self  :center
+   :text-align  :center
+   :font-size   16})
+
+
+;; Specific actions
+
+(def action-hamburger
+  {:width  16
+   :height 12})
+
+(def action-add
+  {:width  17
+   :height 17})
+
+(def action-search
+  {:width  17
+   :height 17})
+
+(def action-back
+  {:width  8
+   :height 14})

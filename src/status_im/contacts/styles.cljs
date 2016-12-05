@@ -10,16 +10,18 @@
                                                  color-gray2]]
             [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
-(def contacts-list-container
-  {:flex 1})
+;; Contacts list
 
 (def toolbar-shadow
-  {:height          2
-   :backgroundColor toolbar-background2})
+  {:height           2
+   :background-color toolbar-background2})
 
 (def contact-groups
   {:flex             1
    :background-color toolbar-background2})
+
+(def contacts-list-container
+  {:flex 1})
 
 (def empty-contact-groups
   (merge contact-groups
@@ -170,7 +172,7 @@
   {:width  4
    :height 16})
 
-; new contact
+; New contact
 
 (def contact-form-container
   {:flex            1
@@ -222,3 +224,17 @@
    :margin-top    18
    :width         20
    :height        20})
+
+;; Contacts search
+
+(def search-container
+  {:flex             1
+   :background-color color-white})
+
+(def search-empty-view
+  {:flex             1
+   :background-color color-white
+   :align-items      :center
+   :justify-content  :center})
+
+

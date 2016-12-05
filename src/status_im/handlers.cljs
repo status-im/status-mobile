@@ -68,6 +68,7 @@
   (u/side-effect!
     (fn [_ [_ address]]
       (dispatch [:initialize-account-db])
+      (dispatch [:load-processed-messages])
       (dispatch [:initialize-protocol address])
       (dispatch [:initialize-sync-listener])
       (dispatch [:initialize-chats])

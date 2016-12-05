@@ -25,8 +25,8 @@
 
 (defmethod nav/preload-data! :discover
   [db _]
-  (dispatch [:set :discover-show-search? false])
   (-> db
+      (assoc-in [:toolbar-search :show] nil)
       (assoc :tags (discoveries/get-all-tags))
       (assoc :discoveries (->> (discoveries/get-all :desc)
                                (map (fn [{:keys [message-id] :as discover}]

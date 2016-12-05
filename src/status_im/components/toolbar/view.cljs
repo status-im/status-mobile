@@ -3,10 +3,13 @@
             [status-im.components.react :refer [view
                                                 icon
                                                 text
+                                                text-input
                                                 image
                                                 touchable-highlight]]
             [status-im.components.sync-state.gradient :refer [sync-state-gradient-view]]
-            [status-im.components.styles :refer [icon-back]]
+            [status-im.components.styles :refer [icon-back
+                                                 icon-search]]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :as st]
             [status-im.utils.platform :refer [platform-specific]]))
 
@@ -48,3 +51,43 @@
          custom-action)]]
      [sync-state-gradient-view]]))
 
+(defn- toolbar-search-submit [on-search-submit]
+  (let [text @(subscribe [:get-in [:toolbar-search :text]])]
+    (on-search-submit text)
+    (dispatch [:set-in [:toolbar-search :text] nil])))
+
+(defn- toolbar-with-search-content [{:keys [show-search?
+                                            search-key
+                                            search-placeholder
+                                            title
+                                            on-search-submit]}]
+  [view st/toolbar-with-search-content
+   (if show-search?
+     [text-input
+      {:style             st/toolbar-search-input
+       :auto-focus        true
+       :placeholder       search-placeholder
+       :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])
+       :on-submit-editing #(toolbar-search-submit on-search-submit)}]
+     [view
+      [text {:style st/toolbar-with-search-title
+             :font  :toolbar-title}
+       title]])])
+
+(defn toolbar-with-search [{:keys [show-search?
+                                   search-key
+                                   nav-action
+                                   actions
+                                   style
+                                   on-search-submit]
+                            :as   opts}]
+  (let [toggle-search-fn #(dispatch [:set-in [:toolbar-search :show] %])
+        actions          (if show-search?
+                           [(act/search #(toolbar-search-submit on-search-submit))]
+                           (into actions [(act/search #(toggle-search-fn search-key))]))]
+    [toolbar {:style          (merge st/toolbar-with-search style)
+              :nav-action     (if show-search?
+                                (act/back #(toggle-search-fn nil))
+                                nav-action)
+              :custom-content [toolbar-with-search-content opts]
+              :actions        actions}]))

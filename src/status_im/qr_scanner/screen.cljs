@@ -8,6 +8,7 @@
                                                  icon-back]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-background1]]
             [status-im.qr-scanner.styles :as st]
             [status-im.utils.types :refer [json->clj]]
@@ -20,12 +21,7 @@
    [toolbar {:title            title
              :background-color toolbar-background1
              :nav-action       (when modal
-                                 {:handler #(dispatch [:navigate-back])
-                                  :image   {:source {:uri :icon_back}
-                                            :style  icon-back}})
-             :actions          [{:image   {:source {:uri :icon_lock_white}
-                                           :style  icon-search}
-                                 :handler #()}]}]])
+                                 (act/back #(dispatch [:navigate-back])))}]])
 
 (defview qr-scanner []
   [identifier [:get :current-qr-context]]
