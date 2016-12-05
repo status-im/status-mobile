@@ -112,10 +112,11 @@
               :from         console-chat-id
               :to           "me"}]))
 
+(def crazy-math-message "crazy-math-message")
 ;; -- Saving password ----------------------------------------
 (defn account-generation-message []
   (dispatch [:received-message
-             {:message-id   (random/id)
+             {:message-id   crazy-math-message
               :content      (label :t/account-generation-message)
               :content-type text-content-type
               :outgoing     false
@@ -123,10 +124,12 @@
               :from         console-chat-id
               :to           "me"}]))
 
-(defn passphrase-messages [mnemonic messages-count]
+(def passphraze-message-id "passphraze-message")
+
+(defn passphrase-messages [mnemonic crazy-math-message?]
   (dispatch [:received-message
-             {:message-id   (random/id)
-              :content      (if (> messages-count 3)
+             {:message-id   passphraze-message-id
+              :content      (if crazy-math-message?
                               (label :t/phew-here-is-your-passphrase)
                               (label :t/here-is-your-passphrase))
               :content-type text-content-type

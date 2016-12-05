@@ -257,15 +257,15 @@
 
 (register-handler :account-generation-message
   (u/side-effect!
-    (fn [{:keys [chats]}]
-      (when (> 4 (count (get-in chats [console-chat-id :messages])))
+    (fn [_]
+      (when (not (messages/get-by-id sign-up-service/passphraze-message-id))
         (sign-up-service/account-generation-message)))))
 
 (register-handler :show-mnemonic
   (u/side-effect!
-    (fn [{:keys [chats]} [_ mnemonic]]
-      (let [messages-count (count (get-in chats [console-chat-id :messages]))]
-        (sign-up-service/passphrase-messages mnemonic messages-count)))))
+    (fn [_ [_ mnemonic]]
+      (let [crazy-math-message? (messages/get-by-id sign-up-service/crazy-math-message)]
+        (sign-up-service/passphrase-messages mnemonic crazy-math-message?)))))
 
 (register-handler :sign-up
   (after (fn [_ [_ phone-number]]

@@ -69,7 +69,7 @@
 (defn create-account [password on-result]
   (when status
     (let [callback (fn [data]
-                     (reset! account-creation? true)
+                     (reset! account-creation? false)
                      (on-result data))]
       (swap! account-creation?
              (fn [creation?]
