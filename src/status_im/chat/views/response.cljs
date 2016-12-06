@@ -129,7 +129,8 @@
      [text (label :t/web-view-error)]]))
 
 (defview suggestions-web-view []
-  [url [:web-view-url]]
+  [url [:web-view-url]
+   extra-js [:web-view-extra-js]]
   (when url
     [webview-bridge
      {:ref                        #(dispatch [:set-webview-bridge %])
@@ -137,7 +138,7 @@
       :source                     {:uri url}
       :render-error               web-view-error
       :java-script-enabled        true
-      :injected-java-script       js-res/webview-js
+      :injected-java-script       (str js-res/webview-js extra-js)
       :bounces                    false
       :on-navigation-state-change on-navigation-change}]))
 

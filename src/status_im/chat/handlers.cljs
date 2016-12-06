@@ -34,6 +34,7 @@
             status-im.chat.handlers.unviewed-messages
             status-im.chat.handlers.send-message
             status-im.chat.handlers.receive-message
+            status-im.chat.handlers.faucet
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
             status-im.chat.handlers.wallet-chat
@@ -583,6 +584,10 @@
 (register-handler :set-web-view-url
   (fn [{:keys [current-chat-id] :as db} [_ url]]
     (assoc-in db [:web-view-url current-chat-id] url)))
+
+(register-handler :set-web-view-extra-js
+  (fn [{:keys [current-chat-id] :as db} [_ extra-js]]
+    (assoc-in db [:web-view-extra-js current-chat-id] extra-js)))
 
 (register-handler :set-soft-input-mode
   (after

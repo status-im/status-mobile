@@ -260,6 +260,11 @@
     (let [chat-id (subscribe [:get-current-chat-id])]
       (reaction (get-in @db [:web-view-url @chat-id])))))
 
+(register-sub :web-view-extra-js
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:web-view-extra-js @chat-id])))))
+
 (register-sub :animate?
   (fn [db]
     (let [chat-id (subscribe [:get-current-chat-id])]

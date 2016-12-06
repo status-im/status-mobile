@@ -13,8 +13,10 @@ I18n.translations = {
         password_placeholder2: 'Please re-enter password to confirm',
         password_error: 'Password should be not less then 6 symbols.',
         password_error1: 'Password confirmation doesn\'t match password.',
-        password_validation_title: 'Password'
+        password_validation_title: 'Password',
 
+        faucet_incorrect_title: 'Incorrect faucet',
+        faucet_incorrect_description: 'Please, select a one from the list'
     },
     ru: {
         phone_title: 'Отправить номер телефона',
@@ -1594,7 +1596,6 @@ status.command({
     handler: jsHandler
 });
 
-
 var phones = [ // TODO this is supposed to be regionalised
     {
         number: "89171111111",
@@ -1718,6 +1719,111 @@ var phoneConfig = {
 };
 status.response(phoneConfig);
 status.command(phoneConfig);
+
+var faucets = [
+    {
+        name: "Ethereum Robsten Faucet",
+        url: "http://faucet.ropsten.be:3001"
+    },
+    {
+        name: "Status Testnet Faucet",
+        url: "http://46.101.129.137:3001",
+    },
+    {
+        name: "Zerogox Faucet",
+        url: "https://zerogox.com/ethereum/wei_faucet"
+    }
+];
+
+function faucetSuggestions(params) {
+    var suggestions = faucets.map(function(entry) {
+        return status.components.touchable(
+            {onPress: [status.events.SET_VALUE, entry.url]},
+            status.components.view(
+                suggestionContainerStyle,
+                [status.components.view(
+                    suggestionSubContainerStyle,
+                    [
+                        status.components.text(
+                            {style: valueStyle},
+                            entry.name
+                        ),
+                        status.components.text(
+                            {style: descriptionStyle},
+                            entry.url
+                        )
+                    ]
+                )]
+            )
+        );
+    });
+
+    var view = status.components.scrollView(
+        suggestionsContainerStyle(faucets.length),
+        suggestions
+    );
+
+    return {markup: view};
+}
+
+status.command({
+    name: "faucet",
+    title: "Faucet",
+    description: "Get some ETH",
+    color: "#7099e6",
+    registeredOnly: true,
+    params: [{
+        name: "url",
+        type: status.types.TEXT,
+        suggestions: faucetSuggestions,
+        placeholder: "Faucet URL"
+    }],
+    preview: function (params) {
+        return status.components.text(
+            {},
+            params.url
+        );
+    },
+    validator: function (params, context) {
+        var f = faucets.map(function (entry) {
+            return entry.url;
+        });
+
+        if (f.indexOf(params.url) == -1) {
+            var error = status.components.validationMessage(
+                I18n.t('faucet_incorrect_title'),
+                I18n.t('faucet_incorrect_description')
+            );
+
+            return {errors: [error]};
+        }
+    }
+});
+
+
+function browseSuggestions(params) {
+    if (params.url && params.url !== "undefined" && params.url != "") {
+        var url = params.url;
+        if (!/^[a-zA-Z-_]+:/.test(url)) {
+            url = 'http://' + url;
+        }
+
+        return {webViewUrl: url};
+    }
+}
+
+status.command({
+    name: "browse",
+    color: "#ffa500",
+    hidden: true,
+    fullscreen: true,
+    suggestionsTrigger: 'on-send',
+    params: [{
+        name: "url",
+        suggestions: browseSuggestions,
+        type: status.types.TEXT
+    }]
+});
 
 
 // status.command({
