@@ -10,6 +10,7 @@
                           :last-updated     {:type "int" :default 0}
                           :last-online      {:type "int" :default 0}
                           :pending          {:type "bool" :default false}
+                          :status           {:type "string" :optional true}
                           :public-key       {:type     :string
                                              :optional true}
                           :private-key      {:type     :string
