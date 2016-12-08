@@ -79,6 +79,26 @@ def enableSeparateBuildPerCPUArchitecture = false
  */
 def enableProguardInReleaseBuilds = false
 
+def getVersionCode = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        exec {
+            commandLine "git", "rev-list", "--count", "HEAD"
+            standardOutput = stdOut
+        }
+        return stdOut.toString().toInteger()
+    }
+}
+
+def getVersionName = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        exec {
+            commandLine "git", "describe", "--tags", "--always", "--dirty=+"
+            standardOutput = stdOut
+        }
+        return stdOut.toString().replaceAll("\\s","")
+    }
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
@@ -87,8 +107,8 @@ android {
         applicationId "im.status.ethereum"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode getVersionCode()
+        versionName getVersionName()
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -113,6 +133,9 @@ android {
         }
     }
     buildTypes {
+        debug {
+            versionNameSuffix "-SNAPSHOT"
+        }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
