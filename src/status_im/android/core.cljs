@@ -123,6 +123,7 @@
                       [component])]])]))))})))
 
 (defn init [& [env]]
+  (status/call-module status/init-jail)
   (dispatch-sync [:reset-app])
   (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root))
   (dispatch [:listen-to-network-status!])
