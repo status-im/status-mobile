@@ -619,17 +619,14 @@
          [_ {:keys                                [from]
              {:keys [group-id keypair timestamp]} :payload}]]
       (let [{:keys [private public]} keypair]
-        (let [{:keys [updated-at removed-at]} (chats/get-by-id group-id)
-              is-active (chats/is-active? group-id)
+        (let [is-active (chats/is-active? group-id)
               chat      {:chat-id     group-id
                          :public-key  public
                          :private-key private
                          :updated-at  timestamp}]
           (when (and (= from (get-in chats [group-id :group-admin]))
                      (or (not (chats/exists? group-id))
-                         is-active
-                         (> timestamp removed-at)
-                         (> timestamp updated-at)))
+                         (chats/new-update? timestamp group-id)))
             (dispatch [:update-chat! chat])
             (when is-active
               (protocol/start-watching-group!

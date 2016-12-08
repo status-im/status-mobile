@@ -97,24 +97,25 @@
          [_ {:keys                                                    [from]
              {:keys [group-id group-name contacts keypair timestamp]} :payload}]]
       (let [{:keys [private public]} keypair]
-        (let [removed-at (chats/removed-at group-id)
-              contacts'  (keep (fn [ident]
-                                 (when (not= ident current-public-key)
-                                   {:identity ident})) contacts)
-              chat       {:name        group-name
-                          :group-chat  true
-                          :group-admin from
-                          :public-key  public
-                          :private-key private
-                          :contacts    contacts'
-                          :added-to-at timestamp
-                          :timestamp   timestamp
-                          :is-active   true}
-              {:keys [removed-from-at] :as chat-from-db} (chats/get-by-id group-id)]
-          (when (or (not chat-from-db)
-                    (and (> timestamp removed-at)
-                         (> timestamp removed-from-at)))
-            (dispatch [:add-chat group-id chat])
+        (let [contacts' (keep (fn [ident]
+                                (when (not= ident current-public-key)
+                                  {:identity ident})) contacts)
+              chat      {:chat-id     group-id
+                         :name        group-name
+                         :group-chat  true
+                         :group-admin from
+                         :public-key  public
+                         :private-key private
+                         :contacts    contacts'
+                         :added-to-at timestamp
+                         :timestamp   timestamp
+                         :is-active   true}
+
+              exists?   (chats/exists? group-id)]
+          (when (or (not exists?) (chats/new-update? timestamp group-id))
+            (if exists?
+              (dispatch [:update-chat! chat])
+              (dispatch [:add-chat group-id chat]))
             (protocol/start-watching-group!
               {:web3     web3
                :group-id group-id
