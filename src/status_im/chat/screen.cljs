@@ -167,53 +167,45 @@
   (fn [_]
     (anim/start (anim/spring val {:toValue @offset}))))
 
-(defn messages-container [messages]
-  (let [offset          (subscribe [:messages-offset])
-        messages-offset (anim/create-value 0)
-        context         {:offset offset
+(defview messages-container [messages]
+  [offset               [:messages-offset]
+   staged-scroll-height [:get-chat-staged-commands-scroll-height]
+   messages-offset      (anim/create-value 0)
+   context              {:offset offset
                          :val    messages-offset}
-        on-update       (messages-container-animation-logic context)]
-    (r/create-class
-      {:component-did-mount
-       on-update
-       :component-did-update
-       on-update
-       :reagent-render
-       (fn [messages]
-         @offset
-         (let [staged-scroll-height (subscribe [:get-chat-staged-commands-scroll-height])]
-           [animated-view {:style (st/messages-container @staged-scroll-height messages-offset)}
-            messages]))})))
+   on-update            (messages-container-animation-logic context)]
+  {:component-did-mount  on-update
+   :component-did-update on-update}
+  [animated-view
+   {:style (st/messages-container staged-scroll-height messages-offset)}
+   messages])
 
-(defn chat []
-  (let [group-chat        (subscribe [:chat :group-chat])
-        show-actions?     (subscribe [:chat-ui-props :show-actions?])
-        show-bottom-info? (subscribe [:chat-ui-props :show-bottom-info?])
-        command?          (subscribe [:command?])
-        staged-commands   (subscribe [:get-chat-staged-commands])
-        layout-height     (subscribe [:get :layout-height])]
-    (r/create-class
-      {:component-did-mount #(dispatch [:check-autorun])
-       :reagent-render
-       (fn []
-         [view {:style    st/chat-view
-                :onLayout (fn [event]
-                            (let [height (.. event -nativeEvent -layout -height)]
-                              (when (not= height @layout-height)
-                                (dispatch [:set-layout-height height]))))}
-          [chat-toolbar]
-          [messages-container
-           [messages-view @group-chat]]
-          ;; todo uncomment this
-          #_(when @group-chat [typing-all])
-          (when (seq @staged-commands)
-            [staged-commands-view @staged-commands])
-          (when-not @command?
-            [suggestion-container])
-          [response-view]
-          [chat-message-input-view]
-          (when @show-actions?
-            [actions-view])
-          (when @show-bottom-info?
-            [bottom-info-view])
-          [offline-view {:top (get-in platform-specific [:component-styles :status-bar :default :height])}]])})))
+(defview chat []
+  [group-chat        [:chat :group-chat]
+   show-actions?     [:chat-ui-props :show-actions?]
+   show-bottom-info? [:chat-ui-props :show-bottom-info?]
+   command?          [:command?]
+   staged-commands   [:get-chat-staged-commands]
+   layout-height     [:get :layout-height]]
+  {:component-did-mount #(dispatch [:check-autorun])}
+  [view {:style    st/chat-view
+         :onLayout (fn [event]
+                     (let [height (.. event -nativeEvent -layout -height)]
+                       (when (not= height layout-height)
+                         (dispatch [:set-layout-height height]))))}
+   [chat-toolbar]
+   [messages-container
+    [messages-view group-chat]]
+   ;; todo uncomment this
+   #_(when @group-chat [typing-all])
+   (when (seq staged-commands)
+     [staged-commands-view staged-commands])
+   (when-not command?
+     [suggestion-container])
+   [response-view]
+   [chat-message-input-view]
+   (when show-actions?
+     [actions-view])
+   (when show-bottom-info?
+     [bottom-info-view])
+   [offline-view {:top (get-in platform-specific [:component-styles :status-bar :default :height])}]])
