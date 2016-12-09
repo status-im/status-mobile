@@ -16,7 +16,7 @@
   (let [hiccup (generate-hiccup markup)]
     (assoc-in db [:rendered-commands chat-id message-id] hiccup)))
 
-(defn command-hadler!
+(defn command-handler!
   [_ [chat-id
       {:keys [staged-command] :as parameters}
       {:keys [result error]}]]
@@ -46,7 +46,7 @@
   (let [{:keys [markup webViewUrl]} (:returned result)
         hiccup (generate-hiccup markup)]
     (-> db
-        (assoc-in [:suggestions chat-id] (generate-hiccup markup))
+        (assoc-in [:suggestions chat-id] hiccup)
         (assoc-in [:web-view-url chat-id] webViewUrl)
         (assoc-in [:has-suggestions? chat-id] (or hiccup webViewUrl)))))
 
@@ -83,7 +83,7 @@
 
 (reg-handler :command-handler!
   (after (print-error-message! "Error on command handling"))
-  (u/side-effect! command-hadler!))
+  (u/side-effect! command-handler!))
 
 (reg-handler :suggestions-handler
   [(after #(dispatch [:animate-show-response]))

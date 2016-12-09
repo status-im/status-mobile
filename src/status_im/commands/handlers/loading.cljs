@@ -10,7 +10,8 @@
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [taoensso.timbre :as log]
             [status-im.utils.homoglyph :as h]
-            [status-im.utils.js-resources :as js-res]))
+            [status-im.utils.js-resources :as js-res]
+            [clojure.string :as str]))
 
 (def commands-js "commands.js")
 
@@ -79,8 +80,11 @@
        (map (fn [[k v]] [k (assoc v :type as)]))
        (into {})))
 
-(defn filter-forbidden-names [id commands]
+(defn filter-forbidden-names [account id commands]
   (->> commands
+       (remove (fn [[_ {:keys [registered-only]}]]
+                 (and (not (:address account))
+                      registered-only)))
        (remove (fn [[n]]
                  (and
                    (not (= console-chat-id id))
@@ -89,8 +93,9 @@
 
 (defn add-commands
   [db [id _ {:keys [commands responses autorun]}]]
-  (let [commands'  (filter-forbidden-names id commands)
-        responses' (filter-forbidden-names id responses)]
+  (let [account    @(subscribe [:get-current-account])
+        commands'  (filter-forbidden-names account id commands)
+        responses' (filter-forbidden-names account id responses)]
     (-> db
         (assoc-in [id :commands] (mark-as :command commands'))
         (assoc-in [id :responses] (mark-as :response responses'))

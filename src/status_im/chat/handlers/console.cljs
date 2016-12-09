@@ -18,12 +18,16 @@
 
    :confirmation-code
    (fn [params id]
-     (dispatch [:sign-up-confirm (params "code") id]))})
+     (dispatch [:sign-up-confirm (params "code") id]))
+
+   :faucet
+   (fn [params id]
+     (dispatch [:open-faucet (params "url") id]))})
 
 (def commands-names (set (keys console-commands)))
 
 (def commands-with-delivery-status
-  (disj commands-names :password))
+  (disj commands-names :password :faucet))
 
 (register-handler :invoke-console-command-handler!
   (u/side-effect!

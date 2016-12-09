@@ -31,6 +31,8 @@
    :no-messages                           "No messages"
    :suggestions-requests                  "Requests"
    :suggestions-commands                  "Commands"
+   :faucet-success                        "Faucet request has been received"
+   :faucet-error                          "Faucet request error"
 
    ;sync
    :sync-in-progress                      "Syncing..."
@@ -162,6 +164,7 @@
    :command-text-browse                   "Browsing webpage: {{webpage}}"
    :command-text-send                     "Transaction: {{amount}} ETH"
    :command-text-help                     "Help"
+   :command-text-faucet                   "Faucet: {{url}}"
 
    ;new-group
    :group-chat-name                       "Chat name"
