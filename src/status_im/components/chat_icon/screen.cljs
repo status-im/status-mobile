@@ -90,6 +90,7 @@
     :default-chat-icon-text st/default-chat-icon-text}])
 
 (defn chat-icon-view-menu-item [chat-id group-chat name color online]
+  ^{:key chat-id}
   [chat-icon-view chat-id group-chat name online
    {:container              st/container-menu-item
     :online-view-wrapper    st/online-view-menu-wrapper
@@ -105,6 +106,7 @@
     :default-chat-icon-text st/default-chat-icon-text}])
 
 (defn chat-icon-message-status [chat-id group-chat name color online]
+  ^{:key chat-id}
   [chat-icon-view chat-id group-chat name online
    {:container              st/container-message-status
     :online-view-wrapper    st/online-view-wrapper

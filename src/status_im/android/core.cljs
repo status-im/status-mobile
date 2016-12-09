@@ -104,7 +104,6 @@
                                :accounts accounts
                                :login login
                                :recover recover
-                               :confirm confirm
                                :my-profile my-profile)]
                [view
                 {:flex 1}
