@@ -74,6 +74,7 @@
     :default-chat-icon-text st/default-chat-icon-text}])
 
 (defn chat-icon-view-action [chat-id group-chat name color online]
+  ^{:key chat-id}
   [chat-icon-view chat-id group-chat name online
    {:container              st/container
     :online-view-wrapper    st/online-view-wrapper
