@@ -1722,7 +1722,7 @@ status.command(phoneConfig);
 
 var faucets = [
     {
-        name: "Ethereum Robsten Faucet",
+        name: "Ethereum Ropsten Faucet",
         url: "http://faucet.ropsten.be:3001"
     },
     {
