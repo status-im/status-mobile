@@ -127,9 +127,12 @@
                        :last-attempt (u/timestamp)))))
 
 (defn delivery-callback
-  [web3 {:keys [id requires-ack? to]}]
+  [web3 post-error-callback {:keys [id requires-ack? to]}]
   (fn [error _]
-    (when error (log/warn :shh-post-error error))
+    (when error
+      (log/warn :shh-post-error error)
+      (when post-error-callback
+        (post-error-callback error)))
     (when-not error
       (debug :delivery-callback)
       (message-was-sent! web3 id to)
@@ -143,10 +146,12 @@
 (s/def ::default-ttl ::pos-int)
 (s/def ::send-online-s-interval ::pos-int)
 (s/def ::online-message fn?)
+(s/def ::post-error-callback fn?)
 
 (s/def ::delivery-options
   (s/keys :req-un [::delivery-loop-ms-interval ::ack-not-received-s-interval
-                   ::max-attempts-number ::default-ttl ::send-online-s-interval]
+                   ::max-attempts-number ::default-ttl ::send-online-s-interval
+                   ::post-error-callback]
           :opt-un [::online-message]))
 
 (defn should-be-retransmitted?
@@ -180,7 +185,7 @@
 
 (defn run-delivery-loop!
   [web3 {:keys [delivery-loop-ms-interval default-ttl ttl-config
-                send-online-s-interval online-message]
+                send-online-s-interval online-message post-error-callback]
          :as   options}]
   {:pre [(valid? ::delivery-options options)]}
   (debug :run-delivery-loop!)
@@ -201,7 +206,7 @@
             (when (should-be-retransmitted? options data)
               (try
                 (let [message' (check-ttl message type ttl-config default-ttl)
-                      callback (delivery-callback web3 data)]
+                      callback (delivery-callback web3 post-error-callback data)]
                   (t/post-message! web3 message' callback))
                 (catch :default err
                   (log/error :post-message-error err))

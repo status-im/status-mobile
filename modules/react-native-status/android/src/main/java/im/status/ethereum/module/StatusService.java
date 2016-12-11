@@ -143,6 +143,14 @@ public class StatusService extends Service {
                 callJail(message);
                 break;
 
+            case StatusMessages.MSG_START_RPC:
+                startRPC();
+                break;
+
+            case StatusMessages.MSG_STOP_RPC:
+                stopRPC();
+                break;
+
             default:
                 return false;
         }
@@ -186,6 +194,14 @@ public class StatusService extends Service {
         // TODO: stop node
 
         createAndSendReply(message, StatusMessages.MSG_STOP_NODE, null);
+    }
+
+    private void startRPC() {
+        Statusgo.StartNodeRPCServer();
+    }
+
+    private void stopRPC() {
+        Statusgo.StopNodeRPCServer();
     }
 
     private void createAccount(Message message) {

@@ -145,6 +145,28 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void startNodeRPCServer() {
+        Log.d(TAG, "startNodeRPCServer");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        status.startRPC();
+    }
+
+    @ReactMethod
+    public void stopNodeRPCServer() {
+        Log.d(TAG, "stopNodeRPCServer");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        status.stopRPC();
+    }
+
+    @ReactMethod
     public void login(String address, String password, Callback callback) {
         Log.d(TAG, "login");
         if (!checkAvailability()) {

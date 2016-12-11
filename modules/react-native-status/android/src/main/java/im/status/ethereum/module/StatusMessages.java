@@ -59,4 +59,14 @@ public class StatusMessages {
      */
     public static final int  MSG_DISCARD_TRANSACTION = 11;
 
+    /**
+     * Start RPC server
+     */
+    static final int MSG_START_RPC = 12;
+
+    /**
+     * Stop RPC server
+     */
+    static final int MSG_STOP_RPC = 13;
+
 }

@@ -59,6 +59,68 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
     });
 }
 
+
+const int STATE_ACTIVE = 0;
+const int STATE_LOCKED_WITH_ACTIVE_APP = 1;
+const int STATE_BACKGROUND = 2;
+const int STATE_LOCKED_WITH_INACTIVE_APP = 3;
+int wozniakConstant = STATE_ACTIVE;
+
+
+static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+{
+    // the "com.apple.springboard.lockcomplete" notification will always come after the "com.apple.springboard.lockstate" notification
+    CFStringRef nameCFString = (CFStringRef)name;
+    NSString *lockState = (__bridge NSString*)nameCFString;
+    NSLog(@"Darwin notification NAME = %@",name);
+    
+    NSString* sm = [NSString stringWithFormat:@"%i", wozniakConstant];
+    NSString *s1 = [NSString stringWithFormat:@"%@ %@", @"LOCK MAGIC", sm];
+    NSLog(s1);
+    if([lockState isEqualToString:@"com.apple.springboard.lockcomplete"])
+    {
+        NSLog(@"DEVICE LOCKED");
+        // User locks phone when application is active
+        if(wozniakConstant == STATE_ACTIVE){
+            wozniakConstant = STATE_LOCKED_WITH_ACTIVE_APP;
+            StopNodeRPCServer();
+        }
+        
+        // Here lockcomplete event comes when app is unlocked
+        // because it couldn't come when locking happened
+        // as application was not active (it could not handle callback)
+        if (wozniakConstant == STATE_LOCKED_WITH_INACTIVE_APP) {
+            wozniakConstant = STATE_ACTIVE;
+            StopNodeRPCServer();
+            StartNodeRPCServer();
+        }
+    }
+    else
+    {
+        NSLog(@"LOCK STATUS CHANGED");
+        NSString *s = [NSString stringWithFormat:@"%@ %@", @"LOCK", lockState];
+        NSLog(s);
+        
+        // if lockstate happens before lockcomplete it means
+        // that phone was locked when application was not active
+        if(wozniakConstant == STATE_ACTIVE){
+            wozniakConstant = STATE_LOCKED_WITH_INACTIVE_APP;
+        }
+        
+        if(wozniakConstant == STATE_BACKGROUND){
+            wozniakConstant = STATE_ACTIVE;
+            StartNodeRPCServer();
+        }
+        
+        // one more lockstate event comes along with lockcomplete
+        // when phone is locked with active application
+        if(wozniakConstant == STATE_LOCKED_WITH_ACTIVE_APP){
+            wozniakConstant = STATE_BACKGROUND;
+        }
+        
+    }
+}
+
 ////////////////////////////////////////////////////////////////////
 #pragma mark - startNode
 //////////////////////////////////////////////////////////////////// startNode
@@ -83,21 +145,55 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
         }else
             NSLog(@"folderName: %@", folderName);
 
-        NSString *peer1 = @"enode://5f23bf4913dd005ce945648cb12d3ef970069818d8563a3fe054e5e1dc3898b9cb83e0af1f51b2dce75eaffc76e93f996caf538e21c5b64db5fa324958d59630@95.85.40.211:30303";
-        NSString *peer2 = @"enode://b9de2532421f15ac55da9d9a7cddc0dc08b0d646d631fd7ab2a170bd2163fb86b095dd8bde66b857592812f7cd9539f2919b6c64bc1a784a1d1c6ec8137681ed@188.166.229.119:30303";
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                        ^(void) {
             StartNode((char *) [folderName.path UTF8String]);
         });
+        NSString *peer1 = @"enode://5f23bf4913dd005ce945648cb12d3ef970069818d8563a3fe054e5e1dc3898b9cb83e0af1f51b2dce75eaffc76e93f996caf538e21c5b64db5fa324958d59630@95.85.40.211:30303";
+        NSString *peer2 = @"enode://b9de2532421f15ac55da9d9a7cddc0dc08b0d646d631fd7ab2a170bd2163fb86b095dd8bde66b857592812f7cd9539f2919b6c64bc1a784a1d1c6ec8137681ed@188.166.229.119:30303";
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)),
                        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                        ^(void) {
                            AddPeer((char *) [peer1 UTF8String]);
                            AddPeer((char *) [peer2 UTF8String]);
-        });
+                       });
         onResultCallback(@[[NSNull null]]);
+        //Screen lock notifications
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+                                        NULL, // observer
+                                        displayStatusChanged, // callback
+                                        CFSTR("com.apple.springboard.lockcomplete"), // event name
+                                        NULL, // object
+                                        CFNotificationSuspensionBehaviorDeliverImmediately);
+        
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+                                        NULL, // observer
+                                        displayStatusChanged, // callback
+                                        CFSTR("com.apple.springboard.lockstate"), // event name
+                                        NULL, // object
+                                        CFNotificationSuspensionBehaviorDeliverImmediately);
         return;
     }
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - StartNodeRPCServer method
+//////////////////////////////////////////////////////////////////// createAccount
+RCT_EXPORT_METHOD(startNodeRPCServer) {
+#if DEBUG
+    NSLog(@"StartNodeRPCServer() method called");
+#endif
+    StartNodeRPCServer();
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - StopNodeRPCServer method
+//////////////////////////////////////////////////////////////////// createAccount
+RCT_EXPORT_METHOD(stopNodeRPCServer) {
+#if DEBUG
+    NSLog(@"StopNodeRPCServer() method called");
+#endif
+    StopNodeRPCServer();
 }
 
 RCT_EXPORT_METHOD(stopNode:(RCTResponseSenderBlock)callback) {

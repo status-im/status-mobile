@@ -24,7 +24,8 @@
     status-im.network.handlers
     [status-im.utils.types :as t]
     [status-im.constants :refer [console-chat-id]]
-    [status-im.utils.ethereum-network :as enet]))
+    [status-im.utils.ethereum-network :as enet]
+    [status-im.protocol.core :as protocol]))
 
 ;; -- Common --------------------------------------------------------------
 

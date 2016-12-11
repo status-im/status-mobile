@@ -25,7 +25,7 @@
 
 (defn handle-qr-request
   [db [_ context data]]
-  (let [handler (get-in db [:qr-codes context])]
+  (when-let [handler (get-in db [:qr-codes context])]
     (dispatch [handler context data])))
 
 (defn clear-qr-request [db [_ context]]

@@ -60,6 +60,7 @@
     ::d/delivery-options))
 
 (def stop-watching-all! f/remove-all-filters!)
+(def reset-all-pending-messages! d/reset-all-pending-messages!)
 
 (defn init-whisper!
   [{:keys [rpc-url identity groups callback
