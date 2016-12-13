@@ -469,11 +469,10 @@
       ((after update-chat!))))
 
 (register-handler :upsert-chat!
-  (fn [db [_ {:keys [chat-id clock-value] :as opts}]]
+  (fn [db [_ {:keys [chat-id] :as opts}]]
     (let [chat (if (chats/exists? chat-id)
-                 (let [{old-clock-value :clock-value :as chat} (chats/get-by-id chat-id)]
-                   (assoc chat :clock-value (max old-clock-value clock-value)
-                               :timestamp (random/timestamp)))
+                 (let [chat (chats/get-by-id chat-id)]
+                   (assoc chat :timestamp (random/timestamp)))
                  (prepare-chat db chat-id opts))]
       (chats/save chat)
       (update-in db [:chats chat-id] merge chat))))
@@ -582,6 +581,38 @@
             (dispatch [:remove-unviewed-messages chat-id])))]
   (u/side-effect! send-seen!))
 
+(defn send-clock-value-request!
+  [{:keys [web3 current-public-key]} [_ {:keys [message-id from] :as message}]]
+  (protocol/send-clock-value-request! {:web3 web3
+                                       :message {:from       current-public-key
+                                                 :to         from
+                                                 :message-id message-id}}))
+
+(register-handler :send-clock-value-request! (u/side-effect! send-clock-value-request!))
+
+(defn send-clock-value!
+  [{:keys [web3 current-public-key]} to message-id clock-value]
+  (when current-public-key
+    (protocol/send-clock-value! {:web3    web3
+                                 :message {:from        current-public-key
+                                           :to          to
+                                           :message-id  message-id
+                                           :clock-value clock-value}})))
+
+(register-handler :update-clock-value!
+  (after (fn [db [_ to i {:keys [message-id] :as message} last-clock-value]]
+           (let [clock-value (+ last-clock-value i 1)]
+             (messages/update (assoc message :clock-value clock-value))
+             (send-clock-value! db to message-id clock-value))))
+  (fn [db [_ _ i {:keys [message-id] :as message} last-clock-value]]
+    (assoc-in db [:message-extras message-id :clock-value] (+ last-clock-value i 1))))
+
+(register-handler :send-clock-value!
+  (u/side-effect!
+   (fn [db [_ to message-id]]
+     (let [{:keys [clock-value]} (messages/get-by-id message-id)]
+       (send-clock-value! db to message-id clock-value)))))
+
 (register-handler :set-web-view-url
   (fn [{:keys [current-chat-id] :as db} [_ url]]
     (assoc-in db [:web-view-url current-chat-id] url)))
@@ -611,14 +642,6 @@
             (dispatch [:set-chat-command (keyword autorun)])
             (dispatch [:animate-command-suggestions])))))))
 
-(register-handler :inc-clock
-  (u/side-effect!
-    (fn [_ [_ chat-id]]
-      (let [chat (-> (chats/get-by-id chat-id)
-                     (update :clock-value inc)
-                     (assoc :timestamp (random/timestamp)))]
-        (dispatch [:update-chat! chat])))))
-
 (register-handler :update-group-message
   (u/side-effect!
     (fn [{:keys [current-public-key web3 chats]}
@@ -641,3 +664,10 @@
                  :identity current-public-key
                  :keypair  keypair
                  :callback #(dispatch [:incoming-message %1 %2])}))))))))
+
+(register-handler :update-message-overhead!
+  (u/side-effect!
+   (fn [_ [_ chat-id network-status]]
+     (if (= network-status :offline)
+       (chats/inc-message-overhead chat-id)
+       (chats/reset-message-overhead chat-id)))))

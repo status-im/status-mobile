@@ -29,12 +29,12 @@
                           :updated-at       {:type     :int
                                              :optional true}
                           :last-message-id  :string
+                          :message-overhead {:type    :int
+                                             :default 0}
                           :public-key       {:type     :string
                                              :optional true}
                           :private-key      {:type     :string
                                              :optional true}
-                          :clock-value      {:type    :int
-                                             :default 0}
                           :pending-contact? {:type    :bool
                                              :default false}
                           :contact-info     {:type     :string

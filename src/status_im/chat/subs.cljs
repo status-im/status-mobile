@@ -31,11 +31,6 @@
         (get-in [:chats (:current-chat-id @db) k])
         (reaction))))
 
-(register-sub :get-chat-messages
-  (fn [db _]
-    (let [chat-id (:current-chat-id @db)]
-      (reaction (get-in @db [:chats chat-id :messages])))))
-
 (register-sub :get-current-chat-id
   (fn [db _]
     (reaction (:current-chat-id @db))))
