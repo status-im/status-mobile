@@ -32,6 +32,18 @@ public class StatusConnector extends ServiceConnector {
         }
     }
 
+    public void startRPC() {
+        if (checkBound()) {
+            sendMessage(null, StatusMessages.MSG_START_RPC, null);
+        }
+    }
+
+    public void stopRPC() {
+        if (checkBound()) {
+            sendMessage(null, StatusMessages.MSG_STOP_RPC, null);
+        }
+    }
+
     public void login(String callbackIdentifier, String address, String password) {
 
         if (checkBound()) {

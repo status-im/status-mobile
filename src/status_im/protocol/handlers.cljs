@@ -12,38 +12,42 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.random :as random]
             [taoensso.timbre :as log :refer-macros [debug]]
-            [status-im.constants :as c]))
+            [status-im.constants :as c]
+            [status-im.components.status :as status]))
 
 (register-handler :initialize-protocol
   (fn [db [_ current-account-id]]
     (let [{:keys [public-key status updates-public-key
                   updates-private-key]}
           (get-in db [:accounts current-account-id])]
-      (let [groups (chats/get-active-group-chats)
-            w3     (protocol/init-whisper!
-                     {:rpc-url                     c/ethereum-rpc-url
-                      :identity                    public-key
-                      :groups                      groups
-                      :callback                    #(dispatch [:incoming-message %1 %2])
-                      :ack-not-received-s-interval 125
-                      :default-ttl                 120
-                      :send-online-s-interval      180
-                      :ttl                         {}
-                      :max-attempts-number         3
-                      :delivery-loop-ms-interval   500
-                      :profile-keypair             {:public  updates-public-key
-                                                    :private updates-private-key}
-                      :hashtags                    (u/get-hashtags status)
-                      :pending-messages            (pending-messages/get-all)
-                      :contacts                    (keep (fn [{:keys [whisper-identity
-                                                                      public-key
-                                                                      private-key]}]
-                                                           (when (and public-key private-key)
-                                                             {:identity whisper-identity
-                                                              :keypair  {:public  public-key
-                                                                         :private private-key}}))
-                                                         (contacts/get-all))})]
-        (assoc db :web3 w3)))))
+      (if public-key
+        (let [groups (chats/get-active-group-chats)
+              w3     (protocol/init-whisper!
+                       {:rpc-url                     c/ethereum-rpc-url
+                        :identity                    public-key
+                        :groups                      groups
+                        :callback                    #(dispatch [:incoming-message %1 %2])
+                        :ack-not-received-s-interval 125
+                        :default-ttl                 120
+                        :send-online-s-interval      180
+                        :ttl                         {}
+                        :max-attempts-number         3
+                        :delivery-loop-ms-interval   500
+                        :profile-keypair             {:public  updates-public-key
+                                                      :private updates-private-key}
+                        :hashtags                    (u/get-hashtags status)
+                        :pending-messages            (pending-messages/get-all)
+                        :contacts                    (keep (fn [{:keys [whisper-identity
+                                                                        public-key
+                                                                        private-key]}]
+                                                             (when (and public-key private-key)
+                                                               {:identity whisper-identity
+                                                                :keypair  {:public  public-key
+                                                                           :private private-key}}))
+                                                           (contacts/get-all))
+                        :post-error-callback         #(dispatch [::post-error %])})]
+          (assoc db :web3 w3))
+        db))))
 
 (register-handler :update-sync-state
   (u/side-effect!
@@ -175,7 +179,7 @@
 (register-handler ::you-removed-from-group
   (u/side-effect!
     (fn [{:keys [web3]}
-         [_ {:keys                                     [from]
+         [_ {:keys                                    [from]
              {:keys [group-id timestamp] :as payload} :payload}]]
       (when (chats/new-update? timestamp group-id)
         (let [message
@@ -191,7 +195,7 @@
 (register-handler :participant-left-group
   (u/side-effect!
     (fn [{:keys [current-public-key]}
-         [_ {:keys                          [from]
+         [_ {:keys                                    [from]
              {:keys [group-id timestamp] :as payload} :payload}]]
       (when (and (not= current-public-key from)
                  (chats/is-active? group-id)
@@ -344,3 +348,10 @@
               (dispatch [:update-contact! contact])
               (dispatch [:watch-contact contact]))
             (dispatch [:add-chat from chat])))))))
+
+(register-handler ::post-error
+  (u/side-effect!
+    (fn [_ [_ error]]
+      (.log js/console error)
+      (when (re-find (re-pattern "Could not connect to the server.") (.-message error))
+        (status/restart-rpc)))))

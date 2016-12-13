@@ -67,7 +67,7 @@
          (.addListener keyboard
                        "keyboardWillHide"
                        #(when-not (= 0 @keyboard-height)
-                         (dispatch [:set :keyboard-height 0])))
+                          (dispatch [:set :keyboard-height 0])))
          (.hide splash-screen))
        :render
        (fn []
