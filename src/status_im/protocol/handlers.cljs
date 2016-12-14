@@ -51,8 +51,9 @@
 
 (register-handler :update-sync-state
   (u/side-effect!
-    (fn [{:keys [sync-state]} [_ error sync]]
-      (let [{:keys [highestBlock currentBlock]} (js->clj sync :keywordize-keys true)
+    (fn [{:keys [sync-state sync-data]} [_ error sync]]
+      (let [{:keys [highestBlock currentBlock] :as state}
+            (js->clj sync :keywordize-keys true)
             syncing?  (> (- highestBlock currentBlock) blocks-per-hour)
             new-state (cond
                         error :offline
@@ -63,6 +64,8 @@
                                       (= sync-state :pending))
                                 :done
                                 :synced))]
+        (when (and (not= sync-data state) (= :in-progress new-state))
+          (dispatch [:set :sync-data state]))
         (when (not= sync-state new-state)
           (dispatch [:set :sync-state new-state]))))))
 
