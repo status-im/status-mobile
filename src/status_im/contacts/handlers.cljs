@@ -11,6 +11,7 @@
             [status-im.utils.utils :refer [require]]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.random :as random]
+            [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]))
 
@@ -31,9 +32,10 @@
 
 (defmethod nav/preload-data! :contact-list
   [db [_ _ click-handler]]
-  (assoc db :contacts-click-handler click-handler
-            :contacts-filter nil))
-
+  (-> db
+      (assoc-in [:toolbar-search :show] nil)
+      (assoc :contacts-click-handler click-handler
+             :contacts-filter nil)))
 
 (register-handler :remove-contacts-click-handler
   (fn [db]
@@ -55,6 +57,13 @@
                            :callback #(dispatch [:incoming-message %1 %2])})))
 
 (register-handler :watch-contact (u/side-effect! watch-contact))
+
+(defn stop-watching-contact
+  [{:keys [web3]} [_ {:keys [whisper-identity]}]]
+  (protocol/stop-watching-user! {:web3     web3
+                                 :identity whisper-identity}))
+
+(register-handler :stop-watching-contact (u/side-effect! stop-watching-contact))
 
 (defn send-contact-request
   [{:keys [current-public-key web3 current-account-id accounts]} [_ contact]]
@@ -199,11 +208,13 @@
 
 (register-handler :add-pending-contact
   (u/side-effect!
-    (fn [{:keys [chats]} [_ chat-id]]
-      (let [contact (read-string (get-in chats [chat-id :contact-info]))]
+    (fn [{:keys [chats contacts]} [_ chat-id]]
+      (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
+                      (read-string contact-info)
+                      (-> (get contacts chat-id)
+                          (assoc :pending false)))]
         (dispatch [::prepare-contact contact])
         (dispatch [:update-chat! {:chat-id          chat-id
-                                  :contact-info     nil
                                   :pending-contact? false}])
         (dispatch [:watch-contact contact])
         (dispatch [:discoveries-send-portions chat-id])))))
@@ -241,4 +252,23 @@
           (protocol/reset-pending-messages! from)
           (dispatch [:update-contact! {:whisper-identity from
                                        :last-online      timestamp}]))))))
+
+(register-handler :remove-contact
+  (-> (u/side-effect!
+       (fn [_ [_ {:keys [whisper-identity] :as contact}]]
+         (dispatch [:update-chat! {:chat-id          whisper-identity
+                                   :pending-contact? true}])
+         (dispatch [:update-contact! (assoc contact :pending true)])))
+      ((after stop-watching-contact))))
+
+(register-handler :open-contact-menu
+  (u/side-effect!
+    (fn [_ [_ list-selection-fn {:keys [name] :as contact}]]
+      (list-selection-fn {:title name
+                          :options [(label :t/remove-contact)]
+                          :callback (fn [index]
+                                      (case index
+                                        0 (dispatch [:remove-contact contact])
+                                        :default))
+                          :cancel-text (label :t/cancel)}))))
 

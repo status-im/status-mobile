@@ -35,6 +35,7 @@
 
 ;; discoveries
 (def watch-user! discoveries/watch-user!)
+(def stop-watching-user! discoveries/stop-watching-user!)
 (def contact-request! discoveries/contact-request!)
 (def broadcast-profile! discoveries/broadcast-profile!)
 (def send-status! discoveries/send-status!)

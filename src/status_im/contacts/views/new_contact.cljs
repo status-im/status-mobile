@@ -11,6 +11,7 @@
             [status-im.utils.identicon :refer [identicon]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-title-container
                                                          toolbar-title-text
                                                          toolbar-background1]]
@@ -24,6 +25,7 @@
             [cljs.spec :as s]
             [status-im.contacts.validations :as v]
             [status-im.contacts.styles :as st]
+            [status-im.data-store.contacts :as contacts]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.hex :refer [normalize-hex]]
             [status-im.utils.platform :refer [platform-specific]]))
@@ -44,11 +46,15 @@
                                   :address          id
                                   :photo-path       (identicon whisper-identity)
                                   :whisper-identity whisper-identity}]
-                     (dispatch [:add-new-contact contact]))
+                     (if (contacts/exists? whisper-identity)
+                       (dispatch [:add-pending-contact whisper-identity])
+                       (dispatch [:add-new-contact contact])))
                    (dispatch [:set :new-contact-public-key-error (label :t/unknown-address)]))))
-    (dispatch [:add-new-contact {:name             (generate-gfy)
-                                 :photo-path       (identicon id)
-                                 :whisper-identity id}])))
+    (if (contacts/exists? id)
+      (dispatch [:add-pending-contact id])
+      (dispatch [:add-new-contact {:name             (generate-gfy)
+                                   :photo-path       (identicon id)
+                                   :whisper-identity id}]))))
 
 (defn- validation-error-message
   [whisper-identity {:keys [address public-key]} error]
@@ -57,7 +63,7 @@
       (normalize-hex whisper-identity))
     (label :t/can-not-add-yourself)
 
-    (not (s/valid? ::v/unique-identity whisper-identity))
+    (not (s/valid? ::v/contact-can-be-added whisper-identity))
     (label :t/contact-already-added)
 
     (not (s/valid? ::v/whisper-identity whisper-identity))
@@ -103,9 +109,7 @@
    [status-bar]
    [toolbar {:background-color toolbar-background1
              :style            (get-in platform-specific [:component-styles :toolbar])
-             :nav-action       {:image   {:source {:uri :icon_back}
-                                          :style  icon-back}
-                                :handler #(dispatch [:navigate-back])}
+             :nav-action       (act/back #(dispatch [:navigate-back]))
              :title            (label :t/add-new-contact)
              :actions          (toolbar-actions new-contact-identity account error)}]
    [view st/form-container

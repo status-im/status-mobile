@@ -28,7 +28,8 @@
                      (assoc :content content')
                      prn-str
                      u/from-utf8)]
-    (-> message (select-keys [:from :to :topics :ttl])
+    (-> message
+        (select-keys [:from :to :topics :ttl])
         (assoc :payload payload'))))
 
 (s/def :shh/pending-message
@@ -110,7 +111,7 @@
                            (let [message (get-in messages [id to])
                                  message' (when message
                                             (assoc message :was-sent? true
-                                                           :attemps 1))]
+                                                           :attempts 1))]
                              (if message'
                                (assoc-in messages [id to] message')
                                messages))))]

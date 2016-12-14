@@ -9,13 +9,12 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-gradient
                                                          toolbar-title-container
                                                          toolbar-title-text]]
             [status-im.components.styles :refer [color-purple
                                                  color-white
-                                                 icon-back
-                                                 icon-search
                                                  button-input]]
             [status-im.components.react :refer [linear-gradient]]
             [status-im.i18n :refer [label]]
@@ -78,12 +77,8 @@
   [view st/screen-container
    [status-bar {:type :transparent}]
    [toolbar {:background-color :transparent
-             :nav-action       {:image   {:source {:uri :icon_back}
-                                          :style  icon-back}
-                                :handler #(dispatch [:navigate-back])}
-             :custom-content   [toolbar-title]
-             :actions          [{:image   {:style icon-search}
-                                 :handler #()}]}]
+             :nav-action       (act/back #(dispatch [:navigate-back]))
+             :custom-content   [toolbar-title]}]
    [linear-gradient {:locations [0 0.6 1]
                      :colors    gradient-colors
                      :style     toolbar-gradient}]

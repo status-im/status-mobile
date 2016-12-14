@@ -46,6 +46,13 @@
      :topics [(make-discover-topic identity)]}
     (l/message-listener (dissoc options :identity))))
 
+(defn stop-watching-user!
+  [{:keys [web3 identity] :as options}]
+  (f/remove-filter!
+    web3
+    {:from   identity
+     :topics [(make-discover-topic identity)]}))
+
 (s/def :contact-request/contact map?)
 
 (s/def :contact-request/payload

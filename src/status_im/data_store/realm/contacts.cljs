@@ -14,11 +14,20 @@
 
 (defn get-by-id
   [whisper-identity]
-  (realm/get-one-by-field-clj @realm/account-realm :contact :whisper-identity whisper-identity))
+  (realm/get-one-by-field @realm/account-realm :contact :whisper-identity whisper-identity))
+
+(defn get-by-id-cljs
+  [whisper-identity]
+  (some-> (get-by-id whisper-identity)
+          (js->clj :keywordize-keys true)))
 
 (defn save
   [contact update?]
   (realm/save @realm/account-realm :contact contact update?))
+
+(defn delete
+  [{:keys [whisper-identity]}]
+  (realm/delete @realm/account-realm (get-by-id whisper-identity)))
 
 (defn exists?
   [whisper-identity]

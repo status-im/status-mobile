@@ -1,7 +1,8 @@
 (ns status-im.contacts.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [reagent.core :as r]
+  (:require [reagent.core :as r]
+            [clojure.string :as str]
+            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view
                                                 text
                                                 image
@@ -12,38 +13,40 @@
                                                 list-item] :as react]
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
-            [status-im.contacts.views.contact :refer [contact-extended-view on-press]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar]]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]
+            [status-im.components.toolbar.view :refer [toolbar-with-search]]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
-            [status-im.components.styles :refer [color-blue
-                                                 hamburger-icon
-                                                 icon-search
-                                                 create-icon]]
-            [status-im.contacts.styles :as st]
+            [status-im.contacts.views.contact :refer [contact-view]]
+            [status-im.utils.platform :refer [platform-specific]]
             [status-im.i18n :refer [label]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.contacts.styles :as st]
+            [status-im.components.styles :refer [color-blue
+                                                 create-icon
+                                                 icon-search]]))
 
 (def contacts-limit 50)
 
-(defn toolbar-view []
+(defn toolbar-view [show-search?]
   (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
-        actions      (cond->> [{:image   {:source {:uri :icon_search}
-                                          :style  icon-search}
-                                :handler (fn [])}]
-                              new-contact?
-                              (into [{:image   {:source {:uri :icon_add}
-                                                :style  icon-search}
-                                      :handler #(dispatch [:navigate-to :new-contact])}]))]
-    [toolbar {:nav-action       {:image   {:source {:uri :icon_hamburger}
-                                           :style  hamburger-icon}
-                                 :handler open-drawer}
-              :title            (label :t/contacts)
-              :background-color toolbar-background2
-              :style            {:elevation 0}
-              :actions          actions}]))
+        actions      (if new-contact?
+                       [(act/add #(dispatch [:navigate-to :new-contact]))])]
+    (toolbar-with-search
+     {:show-search?       show-search?
+      :search-key         :contact-list
+      :title              (label :t/contacts)
+      :search-placeholder (label :t/search-for)
+      :nav-action         (act/hamburger open-drawer)
+      :actions            actions
+      :on-search-submit   (fn [text]
+                            (when-not (str/blank? text)
+                              (dispatch [:set :contacts-filter #(let [name (-> (or (:name %) "")
+                                                                               (str/lower-case))
+                                                                      text (str/lower-case text)]
+                                                                  (not= (.indexOf name text) -1))])
+                              (dispatch [:set :contact-list-search-text text])
+                              (dispatch [:navigate-to :contact-list-search-results])))})))
 
 (defn subtitle-view [subtitle contacts-count]
   [view st/contact-group-header-inner
@@ -81,9 +84,11 @@
      [view
       (doall
         (map (fn [contact]
-               (let [click-handler (or click-handler on-press)]
-                 ^{:key contact}
-                 [contact-extended-view contact nil (click-handler contact) nil]))
+               ^{:key contact}
+               [contact-view {:contact       contact
+                              :extended?     true
+                              :on-click      click-handler
+                              :more-on-click nil}])
              contacts))]
      (when (<= contacts-limit (count contacts))
        [view st/show-all
@@ -110,16 +115,18 @@
      [ion-icon {:name  :md-create
                 :style create-icon}]]]])
 
-(defn contact-list []
+(defn contact-list [_]
   (let [peoples              (subscribe [:get-added-people-with-limit contacts-limit])
         dapps                (subscribe [:get-added-dapps-with-limit contacts-limit])
         people-count         (subscribe [:added-people-count])
         dapps-count          (subscribe [:added-dapps-count])
         click-handler        (subscribe [:get :contacts-click-handler])
+        show-search          (subscribe [:get-in [:toolbar-search :show]])
         show-toolbar-shadow? (r/atom false)]
-    (fn []
+    (fn [current-view?]
       [view st/contacts-list-container
-       [toolbar-view]
+       [toolbar-view (and current-view?
+                          (= @show-search :contact-list))]
        [view {:style st/toolbar-shadow}
         (when @show-toolbar-shadow?
           [linear-gradient {:style  st/contact-group-header-gradient-bottom
@@ -128,7 +135,8 @@
          [scroll-view {:style    st/contact-groups
                        :onScroll (fn [e]
                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
-                                     (reset! show-toolbar-shadow? (<= st/contact-group-header-height offset))))}
+                                     (reset! show-toolbar-shadow?
+                                             (<= st/contact-group-header-height offset))))}
           (when (pos? @dapps-count)
             [contact-group-view
              @dapps

@@ -9,6 +9,7 @@
                                                 get-dimensions]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-title-container
                                                          toolbar-title-text]]
             [status-im.components.text-field.view :refer [text-field]]
@@ -66,9 +67,7 @@
                      :style     st/gradient-background}]
    [status-bar {:type :transparent}]
    [toolbar {:background-color :transparent
-             :nav-action       {:image   {:source {:uri :icon_back_white}
-                                          :style  icon-back}
-                                :handler #(dispatch [:navigate-back])}
+             :nav-action       (act/back-white #(dispatch [:navigate-back]))
              :custom-content   [toolbar-title]
              :actions          [{:image   {:style icon-search}
                                  :handler #()}]}]

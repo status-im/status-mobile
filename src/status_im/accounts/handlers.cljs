@@ -1,5 +1,6 @@
 (ns status-im.accounts.handlers
   (:require [status-im.data-store.accounts :as accounts-store]
+            [status-im.data-store.processed-messages :as processed-messages]
             [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
             [taoensso.timbre :as log]
             [status-im.protocol.core :as protocol]
@@ -18,6 +19,7 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.utils.scheduler :as s]
+            [status-im.protocol.message-cache :as cache]
             [status-im.navigation.handlers :as nav]))
 
 
@@ -148,6 +150,15 @@
     db))
 
 (register-handler :console-create-account console-create-account)
+
+(register-handler
+  :load-processed-messages
+  (u/side-effect!
+    (fn [_]
+      (let [now      (time/now-ms)
+            messages (processed-messages/get-filtered (str "ttl > " now))]
+        (cache/init! messages)
+        (processed-messages/delete (str "ttl <=" now))))))
 
 (defmethod nav/preload-data! :qr-code-view
   [{:keys [current-account-id] :as db} [_ _ {:keys [contact qr-source amount?]}]]

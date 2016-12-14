@@ -3,37 +3,31 @@
   (:require [status-im.components.react :refer [view text icon touchable-highlight]]
             [re-frame.core :refer [dispatch]]
             [status-im.contacts.styles :as st]
-            [status-im.contacts.views.contact-inner :refer [contact-inner-view]]))
+            [status-im.contacts.views.contact-inner :refer [contact-inner-view]]
+            [status-im.utils.platform :refer [platform-specific]]))
 
-(defn on-press [{:keys [whisper-identity]}]
-  #(dispatch [:start-chat whisper-identity {} :navigation-replace]))
+(defn- on-press [{:keys [whisper-identity]}]
+  (dispatch [:start-chat whisper-identity {} :navigation-replace]))
+
+(defn- more-on-press [contact]
+  (dispatch [:open-contact-menu (:list-selection-fn platform-specific) contact]))
 
 (defn letter-view [letter]
   [view st/letter-container
    (when letter
      [text {:style st/letter-text} letter])])
 
-(defview contact-view-with-letter [{:keys [whisper-identity letter] :as contact} click-handler action params]
-  [touchable-highlight
-   {:onPress #(click-handler contact action params)}
-   [view st/contact-container
-    [letter-view letter]
-    [contact-inner-view contact]]])
-
-(defview contact-view [{:keys [whisper-identity] :as contact}]
+(defview contact-view [{{:keys [whisper-identity letter dapp?] :as contact} :contact
+                        :keys [extended? letter? on-click more-on-click info]}]
   [chat [:get-chat whisper-identity]]
   [touchable-highlight
-   {:onPress (on-press contact)}
+   {:on-press #((or on-click on-press) contact)}
    [view st/contact-container
-    [contact-inner-view contact]]])
-
-(defview contact-extended-view [{:keys [whisper-identity] :as contact} info click-handler more-click-handler]
-  [chat [:get-chat whisper-identity]]
-  [touchable-highlight
-   {:onPress click-handler}
-   [view st/contact-container
+    (when letter?
+      [letter-view letter])
     [contact-inner-view contact info]
-    [touchable-highlight
-     {:on-press more-click-handler}
-     [view st/more-btn
-      [icon :more_vertical st/more-btn-icon]]]]])
+    (when (and extended? (not dapp?))
+      [touchable-highlight
+       {:on-press #((or more-on-click more-on-press) contact)}
+       [view st/more-btn
+        [icon :more_vertical st/more-btn-icon]]])]])
