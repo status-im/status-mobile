@@ -283,11 +283,15 @@ RCT_EXPORT_METHOD(setSoftInputMode: (NSInteger) i) {
 #endif
 }
 
-+ (void)signalEvent:(char *) signal
++ (void)signalEvent:(const char *) signal
 {
     if(!signal){
+#if DEBUG
+    NSLog(@"SignalEvent nil");
+#endif
         return;
     }
+    
     NSString *sig = [NSString stringWithUTF8String:signal];
 #if DEBUG
     NSLog(@"SignalEvent");
@@ -295,6 +299,8 @@ RCT_EXPORT_METHOD(setSoftInputMode: (NSInteger) i) {
 #endif
     [bridge.eventDispatcher sendAppEventWithName:@"gethEvent"
                                             body:@{@"jsonEvent": sig}];
+    
+    return;
 }
 
 @end
