@@ -805,20 +805,14 @@ var send = {
     preview: function (params, context) {
         var amountStyle = {
             fontSize: 36,
-            color: "#000000"
+            color: "#000000",
+            height: 40
         };
-
-        var isIos = context.platform == "ios";
-        if (isIos) {
-            amountStyle.height = 36;
-        } else {
-            amountStyle.lineHeight = 34;
-        }
 
         var amount = status.components.view(
             {
-                flexDirection: "row",
-                alignItems: "flex-end"
+                flexDirection: "column",
+                alignItems: "flex-end",
             },
             [status.components.text(
                 {
