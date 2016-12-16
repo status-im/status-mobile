@@ -6,7 +6,8 @@
                                                 animated-view
                                                 icon
                                                 text
-                                                touchable-highlight]]
+                                                touchable-highlight
+                                                dismiss-keyboard!]]
             [status-im.components.animation :as anim]
             [status-im.chat.styles.plain-message :as st]
             [status-im.constants :refer [response-input-hiding-duration]]))
@@ -56,7 +57,8 @@
        on-update
        :reagent-render
        (fn [height on-press]
-         [touchable-highlight {:on-press #(do (dispatch [:switch-command-suggestions!])
+         [touchable-highlight {:on-press #(do (dispatch [:set-chat-ui-props :show-emoji? false])
+                                              (dispatch [:switch-command-suggestions!])
                                               (on-press))
                                :disabled @command?}
           [animated-view {:style (st/message-input-button-touchable container-width height)}
@@ -97,9 +99,8 @@
        on-update
        :reagent-render
        (fn []
-         [touchable-highlight {:on-press (fn []
-                                           ;; TODO emoticons: not implemented
-                                           )
+         [touchable-highlight {:on-press #(do (dispatch [:toggle-chat-ui-props :show-emoji?])
+                                              (dismiss-keyboard!))
                                :disabled @command?}
           [animated-view {:style (st/message-input-button-touchable container-width height)}
            [animated-view {:style (st/message-input-button buttons-scale 16)}
