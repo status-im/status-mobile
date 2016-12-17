@@ -133,14 +133,15 @@
    extra-js [:web-view-extra-js]]
   (when url
     [webview-bridge
-     {:ref                        #(dispatch [:set-webview-bridge %])
-      :on-bridge-message          #(dispatch [:webview-bridge-message %])
-      :source                     {:uri url}
-      :render-error               web-view-error
-      :java-script-enabled        true
-      :injected-java-script       (str js-res/webview-js extra-js)
-      :bounces                    false
-      :on-navigation-state-change on-navigation-change}]))
+     {:ref                                   #(dispatch [:set-webview-bridge %])
+      :on-bridge-message                     #(dispatch [:webview-bridge-message %])
+      :source                                {:uri url}
+      :render-error                          web-view-error
+      :java-script-enabled                   true
+      :injected-on-start-loading-java-script (str js-res/web3 js-res/web3-init)
+      :injected-java-script                  (str js-res/webview-js extra-js)
+      :bounces                               false
+      :on-navigation-state-change            on-navigation-change}]))
 
 (defn placeholder []
   [view st/input-placeholder])
