@@ -147,7 +147,7 @@
             {:keys [message-id]} (transactions id)]
         (log/debug :parsed-response parsed-response)
         (when-not (and error (string? error) (not (s/blank? error)))
-          (if message-id
+          (if (and message-id (not (s/blank? message-id)))
             (do (dispatch [::add-transactions-hash {:id         id
                                                     :hash       hash
                                                     :message-id message-id}])
