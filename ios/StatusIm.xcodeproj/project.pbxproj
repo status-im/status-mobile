@@ -47,7 +47,6 @@
 		9E3AB6D01D87DB2B008846B4 /* libReact-Native-Webview-Bridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3AB6C61D87DA2B008846B4 /* libReact-Native-Webview-Bridge.a */; };
 		9E7C64731E03FDDE004C7042 /* libRCTCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20B7D1151D3F74CD00B70F14 /* libRCTCamera.a */; };
 		9E7C64991E03FDE5004C7042 /* libRCTContacts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20B7D10A1D3F74CD00B70F14 /* libRCTContacts.a */; };
-		9EC013881E06FB3000155B5C /* libRCTWKWebView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EC013791E06FB1900155B5C /* libRCTWKWebView.a */; };
 		9ED2F45E1D9D535A00B36508 /* SF-UI-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED2F45D1D9D52DD00B36508 /* SF-UI-Text-Regular.otf */; };
 		9ED2F45F1D9D535A00B36508 /* SF-UI-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED2F45C1D9D52C100B36508 /* SF-UI-Text-Medium.otf */; };
 		9ED2F4611D9D579900B36508 /* SF-UI-Text-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED2F4601D9D577B00B36508 /* SF-UI-Text-Bold.otf */; };
@@ -467,7 +466,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9EE89E271E03FCB7007D3C25 /* libSplashScreen.a in Frameworks */,
-				9EC013881E06FB3000155B5C /* libRCTWKWebView.a in Frameworks */,
 				B2A5F45C1DEC36BB00174F4D /* libRCTAnimation.a in Frameworks */,
 				B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */,
 				B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */,
