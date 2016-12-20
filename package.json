@@ -61,7 +61,6 @@
     "react-native-udp": "^1.2.6",
     "react-native-vector-icons": "^2.0.3",
     "react-native-webview-bridge": "github:status-im/react-native-webview-bridge#master",
-    "react-native-wkwebview-reborn": "0.3.0",
     "readable-stream": "^1.0.33",
     "realm": "^0.14.3",
     "stream-browserify": "^1.0.0",

@@ -4,10 +4,7 @@
             [status-im.utils.platform :as p]))
 
 (def webview-bridge-class
-  (r/adapt-react-class (js/require "react-native-webview-bridge"))
-  #_(if p/ios?
-    (r/adapt-react-class (.-default (js/require "react-native-wkwebview-reborn")))
-    (r/adapt-react-class (js/require "react-native-webview-bridge"))))
+  (r/adapt-react-class (.-default (js/require "react-native-webview-bridge"))))
 
 (defn webview-bridge [opts]
   [webview-bridge-class opts])
