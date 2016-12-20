@@ -57,7 +57,7 @@ Currently the fastest way to get your hands on a binary is to join our Early Acc
 // TODO mugshots
 
 - Jarrad ([@jarradh](https://github.com/jarradh)) - Cofounder and Thought Leader.
-- Carl ([@carlbennetts](https://github.com/carlbennetts)) - Cofounder and Communitcations & Marketing.
+- Carl ([@carlbennetts](https://github.com/carlbennetts)) - Cofounder and Communications & Marketing.
 - Roman ([@rasom](https://github.com/rasom)) - Clojure and project lead.
 - Alexander ([@alwx](https://github.com/alwx)) - Clojure ninja!
 - Victor ([@farazdagi](https://github.com/farazdagi)) - Golang one-man-army.
