@@ -7,7 +7,7 @@ Join us in creating a browser, messenger, and gateway to a decentralised world. 
 
 ## Why?
 
-We believe in a medium of pure free trade, economies with fair access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
+We believe in a medium of pure free trade, economies with fair, permissionless access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
 
 We want to take responsibilty for our data, the way we conduct ourselves privately and promote this way of life to a mass audience.
 
@@ -56,8 +56,8 @@ Currently the fastest way to get your hands on a binary is to join our Early Acc
 ## Core Contributors
 // TODO mugshots
 
-- Jarrad ([@jarradh](https://github.com/jarradh)) - Co-founder and Thought Leader.
-- Carl ([@carlbennetts](https://github.com/carlbennetts)) Cofounder and Communitcations & Marketing.
+- Jarrad ([@jarradh](https://github.com/jarradh)) - Cofounder and Thought Leader.
+- Carl ([@carlbennetts](https://github.com/carlbennetts)) - Cofounder and Communitcations & Marketing.
 - Roman ([@rasom](https://github.com/rasom)) - Clojure and project lead.
 - Alexander ([@alwx](https://github.com/alwx)) - Clojure ninja!
 - Victor ([@farazdagi](https://github.com/farazdagi)) - Golang one-man-army.
