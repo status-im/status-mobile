@@ -32,16 +32,18 @@
 (declare add-message-to-wallet)
 
 (defn add-message
-  [db {:keys [from group-id chat-id message-id timestamp clock-value] :as message :or {clock-value 0}}]
+  [db {:keys [from group-id chat-id
+              message-id timestamp clock-value show?]
+       :as   message
+       :or   {clock-value 0}}]
   (let [same-message     (messages/get-by-id message-id)
         current-identity (get-current-identity db)
         chat-id'         (or group-id chat-id from)
         exists?          (chats/exists? chat-id')
         active?          (chats/is-active? chat-id')
+        chat-clock-value (messages/get-last-clock-value chat-id')
         clock-value      (if (= clock-value 0)
-                           (-> (chats/get-by-id chat-id')
-                               (get :clock-value)
-                               (inc))
+                           (inc chat-clock-value)
                            clock-value)]
     (when (and (not same-message)
                (not= from current-identity)
@@ -55,13 +57,14 @@
                                :timestamp (or timestamp (random/timestamp))
                                :clock-value clock-value)]
         (store-message message')
-        (dispatch [:upsert-chat! {:chat-id     chat-id'
-                                  :group-chat  group-chat?
-                                  :clock-value clock-value}])
+        (dispatch [:upsert-chat! {:chat-id    chat-id'
+                                  :group-chat group-chat?}])
         (dispatch [::add-message chat-id' message'])
         (when (= (:content-type message') content-type-command-request)
           (dispatch [:add-request chat-id' message']))
-        (dispatch [:add-unviewed-message chat-id' message-id]))
+        (dispatch [:add-unviewed-message chat-id' message-id])
+        (when-not show?
+          (dispatch [:send-clock-value-request! message])))
       (if (and
             (= (:content-type message) content-type-command)
             (not= chat-id' wallet-chat-id)
@@ -108,3 +111,4 @@
         (s/execute-later
           #(dispatch [:received-message-when-commands-loaded chat-id message])
           timeout)))))
+

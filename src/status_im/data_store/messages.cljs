@@ -63,6 +63,10 @@
                               (generate-hiccup (read-string preview)))))
                  message)))))
 
+(defn get-count-by-chat-id
+  [chat-id]
+  (data-store/get-count-by-chat-id chat-id))
+
 (defn get-by-chat-id
   ([chat-id]
    (get-by-chat-id chat-id 0))
@@ -81,13 +85,24 @@
                   message))))))
 
 (defn get-last-message
-  [{:keys [chats] :as db} chat-id]
-  (if-let [message (first (get-in db [:chats chat-id :messages]))]
-    message
-    (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
-      (if (command-type? content-type)
-        (clojure.core/update message :content str-to-map)
-        message))))
+  [db chat-id]
+  (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
+    (if (command-type? content-type)
+      (clojure.core/update message :content str-to-map)
+      message)))
+
+(defn get-last-outgoing
+  [chat-id number-of-messages]
+  (data-store/get-by-fields {:chat-id  chat-id
+                             :outgoing true}
+                            0
+                            number-of-messages))
+
+(defn get-last-clock-value
+  [chat-id]
+  (if-let [message (data-store/get-last-message chat-id)]
+    (:clock-value message)
+    0))
 
 (defn get-unviewed
   []

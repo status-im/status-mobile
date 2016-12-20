@@ -27,6 +27,11 @@
        (realm/page from (+ from number-of-messages))
        (realm/realm-collection->list))))
 
+(defn get-count-by-chat-id
+  [chat-id]
+  (-> (get-by-chat-id chat-id)
+      (realm/get-count)))
+
 (defn get-by-fields
   [fields from number-of-messages]
   (-> (realm/get-by-fields @realm/account-realm :message :and fields)

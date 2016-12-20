@@ -64,6 +64,10 @@
   [chat-id]
   (get-property chat-id :removed-at))
 
+(defn get-message-overhead
+  [chat-id]
+  (get-property chat-id :message-overhead))
+
 (defn get-active-group-chats
   []
   (data-store/get-active-group-chats))
@@ -71,6 +75,14 @@
 (defn set-active
   [chat-id active?]
   (save-property chat-id :is-active active?))
+
+(defn inc-message-overhead
+  [chat-id]
+  (save-property chat-id :message-overhead (inc (get-message-overhead chat-id))))
+
+(defn reset-message-overhead
+  [chat-id]
+  (save-property chat-id :message-overhead 0))
 
 (defn new-update?
   [timestamp chat-id]
