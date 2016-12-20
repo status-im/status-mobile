@@ -1,4 +1,5 @@
 (ns status-im.chat.views.toolbar-content
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
             [cljs-time.core :as t]
@@ -25,12 +26,24 @@
                 (label :t/active-unknown)))
     :else (label :t/active-unknown)))
 
-(defn last-activity [{:keys [online-text sync-state]}]
+(defn in-progress-text [{:keys [highestBlock currentBlock startBlock]}]
+  (let [total      (- highestBlock startBlock)
+        ready      (- currentBlock startBlock)
+        percentage (if (zero? ready)
+                     0
+                     (->> (/ ready total)
+                          (* 100)
+                          (.round js/Math)))]
+
+    (str (label :t/sync-in-progress) " " percentage "% " currentBlock)))
+
+(defview last-activity [{:keys [online-text sync-state]}]
+  [state [:get :sync-data]]
   [refreshable-text {:style      st/last-activity
                      :text-style (get-in platform-specific [:component-styles :toolbar-last-activity])
                      :font       :default
                      :value      (case sync-state
-                                   :in-progress (label :t/sync-in-progress)
+                                   :in-progress (in-progress-text state)
                                    :synced (label :t/sync-synced)
                                    online-text)}])
 
