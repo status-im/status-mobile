@@ -1,4 +1,5 @@
 // TODO header
+// TODO badges
 
 # Status - a Mobile Ethereum Operating System
 
@@ -51,6 +52,19 @@ Help us spread the word! Tell a friend *right now*, infact tell **everyone** - y
 Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://github.com/status-im/status-react/wiki/Developers'-Guide).
 
 // TODO GPlay, TestFlight Instructions & FDroid
+
+## Core Contributors
+// TODO mugshots
+
+- Jarrad ([@jarradh](https://github.com/jarradh)) - Co-founder and Thought Leader.
+- Carl ([@carlbennetts](https://github.com/carlbennetts)) Cofounder and Communitcations & Marketing.
+- Roman ([@rasom](https://github.com/rasom)) - Clojure and project lead.
+- Alexander ([@alwx](https://github.com/alwx)) - Clojure ninja!
+- Victor ([@farazdagi](https://github.com/farazdagi)) - Golang one-man-army.
+- Andrei ([@andmironov](https://github.com/andmironov)) - Visual design and user experience conjurer.
+
+Special thanks to [@adrian-tiberius](https://github.com/adrian-tiberius).
+Without the dedication of these fine gentleman, Status would not exist.
 
 ## Contact us
 
