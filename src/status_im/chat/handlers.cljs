@@ -438,11 +438,6 @@
           (dispatch [::start-chat! contact-id options navigation-type]))))))
 
 (register-handler :add-chat
-  (u/side-effect!
-    (fn [_ [_ chat-id chat]]
-      (dispatch [::add-chat chat-id chat]))))
-
-(register-handler ::add-chat
   (-> add-new-chat
       ((enrich add-chat))
       ((after save-new-chat!))))

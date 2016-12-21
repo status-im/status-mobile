@@ -385,19 +385,19 @@
         (let [{{:keys [name profile-image address status]} :contact
                {:keys [public private]}                    :keypair} payload
 
-              contact        {:whisper-identity from
-                              :public-key       public
-                              :private-key      private
-                              :address          address
-                              :status           status
-                              :photo-path       profile-image
-                              :name             name}
-              contact-exist? (get contacts from)
-              chat           {:name             name
-                              :chat-id          from
-                              :contact-info     (prn-str contact)
-                              :pending-contact? true}]
-          (if contact-exist?
+              contact         {:whisper-identity from
+                               :public-key       public
+                               :private-key      private
+                               :address          address
+                               :status           status
+                               :photo-path       profile-image
+                               :name             name}
+              contact-exists? (get contacts from)
+              chat            {:name             name
+                               :chat-id          from
+                               :contact-info     (prn-str contact)
+                               :pending-contact? true}]
+          (if contact-exists?
             (do
               (dispatch [:update-contact! contact])
               (dispatch [:watch-contact contact]))
