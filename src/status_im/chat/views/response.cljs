@@ -94,7 +94,6 @@
         input-margin       (subscribe [:input-margin])
         changed            (subscribe [:animations :response-height-changed])
         animate?           (subscribe [:animate?])
-        staged-commands    (subscribe [:get-chat-staged-commands])
         context            {:to-value to-response-height
                             :val      response-height
                             :animate? animate?}
@@ -109,8 +108,7 @@
          @to-response-height @changed
          (into [animated-view {:style (st/response-view
                                         response-height
-                                        @input-margin
-                                        @staged-commands)}]
+                                        @input-margin)}]
                children))})))
 
 (defn on-navigation-change

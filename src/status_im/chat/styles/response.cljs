@@ -49,10 +49,10 @@
    :opacity   0.69
    :color     color-white})
 
-(defn response-view [height input-margin staged-commands]
+(defn response-view [height input-margin]
   {:flexDirection   :column
    :position        :absolute
-   :elevation       (if (seq staged-commands) 5 4)
+   :elevation       4
    :left            0
    :right           0
    :bottom          input-margin

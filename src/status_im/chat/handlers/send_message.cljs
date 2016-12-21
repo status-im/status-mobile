@@ -182,7 +182,7 @@
 
 (register-handler ::prepare-message
   (u/side-effect!
-    (fn [{:keys [network-status]} [_ {:keys [chat-id identity message] :as params}]]
+    (fn [{:keys [network-status] :as db} [_ {:keys [chat-id identity message] :as params}]]
       (let [{:keys [group-chat]} (get-in db [:chats chat-id])
             clock-value (messages/get-last-clock-value chat-id)
             message'    (cu/check-author-direction

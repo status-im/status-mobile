@@ -5,7 +5,6 @@
     [status-im.components.react :refer [view
                                         scroll-view]]
     [status-im.chat.views.message-input :refer [plain-message-input-view]]
-    [status-im.chat.views.staged-commands :refer [simple-command-staged-view]]
     [status-im.chat.constants :refer [input-height]]
     [status-im.utils.platform :refer [platform-specific]]
     [status-im.chat.styles.message :as st]
@@ -34,13 +33,11 @@
    parameter [:get-command-parameter]
    type [:command-type]
    suggestions [:get-suggestions]
-   staged-commands [:get-chat-staged-commands]
    message-input-height [:get-message-input-view-height]]
   (let [on-top? (or (and (not (empty? suggestions))
                          (not command?))
                     (not= response-height input-height))
-        style   (when-not (seq staged-commands)
-                  (get-in platform-specific [:component-styles :chat :new-message]))]
+        style   (get-in platform-specific [:component-styles :chat :new-message])]
     [view {:style     (merge (st/new-message-container margin on-top?) style)
            :on-layout (fn [event]
                         (let [height (get-height event)]

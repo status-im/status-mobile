@@ -109,7 +109,6 @@
         input-margin       (subscribe [:input-margin])
         changed            (subscribe [:animations :commands-height-changed])
         animate?           (subscribe [:animate?])
-        staged-commands    (subscribe [:get-chat-staged-commands])
         context            {:to-value to-response-height
                             :val      h
                             :animate? animate?}
@@ -122,9 +121,9 @@
        :reagent-render
        (fn [h & elements]
          @to-response-height @changed
-         (into [animated-view {:style (st/container h @input-margin @staged-commands)}] elements))})))
+         (into [animated-view {:style (st/container h @input-margin)}] elements))})))
 
-(defview suggestion-container [any-staged-commands?]
+(defview suggestion-container []
   (let [h (anim/create-value c/input-height)]
     [container h
      [header h]

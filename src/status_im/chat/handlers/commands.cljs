@@ -90,7 +90,8 @@
       (status/call-jail chat-id
                         path
                         params
-                        #(dispatch [:command-preview chat-id id %])))))
+                        #(do (dispatch [:command-preview chat-id id %])
+                             (dispatch [:send-chat-message]))))))
 
 (defn command-input
   ([{:keys [current-chat-id] :as db}]

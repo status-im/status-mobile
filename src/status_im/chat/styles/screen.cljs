@@ -16,10 +16,10 @@
 (def toolbar-container
   {})
 
-(defn messages-container [staged-height bottom]
+(defn messages-container [bottom]
   {:flex           1
    :padding-bottom bottom
-   :margin-bottom  staged-height})
+   :margin-bottom  0})
 
 (def toolbar-view
   {:flexDirection   :row
