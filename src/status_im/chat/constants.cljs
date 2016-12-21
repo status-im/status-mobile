@@ -12,3 +12,5 @@
 (def suggestions-header-height 22)
 (def minimum-command-suggestions-height
   (+ input-height suggestions-header-height))
+
+(def emoji-container-height 250)

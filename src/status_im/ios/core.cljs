@@ -64,7 +64,8 @@
                        (fn [e]
                          (let [h (.. e -endCoordinates -height)]
                            (when-not (= h @keyboard-height)
-                             (dispatch [:set :keyboard-height h])))))
+                             (dispatch [:set :keyboard-height h])
+                             (dispatch [:set :keyboard-max-height h])))))
          (.addListener keyboard
                        "keyboardWillHide"
                        #(when-not (= 0 @keyboard-height)
