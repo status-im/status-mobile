@@ -1,5 +1,6 @@
 (ns status-im.data-store.discover
-  (:require [status-im.data-store.realm.discover :as data-store]))
+  (:require [status-im.data-store.realm.discover :as data-store])
+  (:refer-clojure :exclude [exists?]))
 
 (defn get-all
   [ordering]

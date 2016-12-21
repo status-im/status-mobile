@@ -67,7 +67,7 @@
    :fontSize   12
    :color      text2-color})
 
-(defn container [height input-margin staged-commands]
+(defn container [height input-margin]
   {:flexDirection   :column
    :position        :absolute
    :left            0
@@ -75,7 +75,7 @@
    :bottom          input-margin
    :height          height
    :backgroundColor color-white
-   :elevation       (if (seq staged-commands) 5 4)})
+   :elevation       4})
 
 (def request-container
   {:height         56

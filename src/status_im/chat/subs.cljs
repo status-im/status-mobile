@@ -89,13 +89,6 @@
     (let [commands (subscribe [:get-chat-staged-commands])]
       (reaction (some #(= id (:to-message %)) @commands)))))
 
-(register-sub :get-chat-staged-commands-scroll-height
-  (fn [db _]
-    (let [{:keys [staged-commands
-                  staged-scroll-height]} (get-in @db [:chats (:current-chat-id @db)])]
-      (reaction
-        (if (seq staged-commands) staged-scroll-height 0)))))
-
 (register-sub :get-message-input-view-height
   (fn [db _]
     (reaction (get-in @db [:chats (:current-chat-id @db) :message-input-height]))))
