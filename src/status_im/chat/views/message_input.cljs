@@ -24,9 +24,7 @@
 
 (defn plain-input-options [disable?]
   {:style             st-message/message-input
-   :on-change-text    (when-not disable? plain-message/set-input-message)
-   :editable          (not disable?)
-   :on-submit-editing plain-message/send})
+   :editable          (not disable?)})
 
 (defn on-press-commands-handler
   [{:keys [suggestions-trigger]}]
@@ -40,23 +38,36 @@
 (defview message-input [input-options set-layout-size]
   [input-message [:get-chat-input-text]
    disable? [:get :disable-input]
-   active? [:chat :is-active]]
+   active? [:chat :is-active]
+   input-ref (r/atom nil)
+   change-content-size? (r/atom true)]
   [text-input (merge
                 (plain-input-options (or disable? (not active?)))
                 {:placeholder-text-color :#c0c5c9
                  :auto-focus             false
-                 :blur-on-submit         true
                  :multiline              true
+                 :ref                    #(reset! input-ref %)
                  :on-content-size-change #(let [size (-> (.-nativeEvent %)
                                                          (.-contentSize)
                                                          (.-height))]
-                                            (set-layout-size size))
+                                            (when @change-content-size?
+                                              (set-layout-size size)))
                  :accessibility-label    :input
                  :on-focus               #(do (dispatch [:set :focused true])
                                               (dispatch [:set-chat-ui-props :show-emoji? false]))
                  :on-blur                #(do (dispatch [:set :focused false])
                                               (set-layout-size 0))
-                 :default-value          (or input-message "")}
+                 :default-value          (or input-message "")
+                 :on-key-press           #(when (= "Enter" (.-key (.-nativeEvent %)))
+                                            (reset! change-content-size? false))
+                 :on-change-text         #(when-not disable?
+                                            (if (str/includes? % "\n")
+                                              (do
+                                                (.clear @input-ref)
+                                                (plain-message/set-input-message "")
+                                                (plain-message/send)
+                                                (reset! change-content-size? true))
+                                              (plain-message/set-input-message %)))}
                 input-options)])
 
 (defview command-input [input-options {:keys [fullscreen] :as command}]
