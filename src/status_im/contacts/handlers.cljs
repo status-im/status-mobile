@@ -83,9 +83,12 @@
                                         :private updates-private-key}}}})))
 
 (register-handler :update-contact!
-  (-> (fn [db [_ {:keys [whisper-identity] :as contact}]]
+  (fn [db [_ {:keys [whisper-identity] :as contact}]]
+    (if (contacts/exists? whisper-identity)
+      (do
+        (contacts/save contact)
         (update-in db [:contacts whisper-identity] merge contact))
-      ((after save-contact))))
+      db)))
 
 (defn load-contacts! [db _]
   (let [contacts (->> (contacts/get-all)
