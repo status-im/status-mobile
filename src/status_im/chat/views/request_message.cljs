@@ -26,34 +26,32 @@
 (def min-scale 1)
 (def max-scale 1.3)
 
-(defn button-animation [val to-value loop? answered? staged?]
+(defn button-animation [val to-value loop? answered?]
   (anim/anim-sequence
     [(anim/anim-delay
-       (if (and @loop? (or @staged? (not @answered?)))
+       (if (and @loop? (not @answered?))
          request-message-icon-scale-delay
          0))
      (anim/spring val {:toValue to-value})]))
 
 (defn request-button-animation-logic
-  [{:keys [to-value val loop? answered? staged?] :as context}]
+  [{:keys [to-value val loop? answered?] :as context}]
   (anim/start
-    (button-animation val to-value loop? answered? staged?)
-    #(if (and @loop? (or @staged? (not @answered?)))
+    (button-animation val to-value loop? answered?)
+    #(if (and @loop? (not @answered?))
        (let [new-value (if (= to-value min-scale) max-scale min-scale)
              context'  (assoc context :to-value new-value)]
          (request-button-animation-logic context'))
        (anim/start
-         (button-animation val min-scale loop? answered? staged?)))))
+         (button-animation val min-scale loop? answered?)))))
 
 (defn request-button [message-id command status-initialized? top-offset?]
   (let [scale-anim-val (anim/create-value min-scale)
         answered?      (subscribe [:is-request-answered? message-id])
-        staged?        (subscribe [:staged-response? message-id])
         loop?          (r/atom true)
         context        {:to-value  max-scale
                         :val       scale-anim-val
                         :answered? answered?
-                        :staged?   staged?
                         :loop?     loop?}]
     (r/create-class
       {:component-did-mount

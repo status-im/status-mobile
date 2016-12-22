@@ -74,23 +74,6 @@
   [{:keys [current-chat-id] :as db}]
   (get-in db (db/chat-command-to-message-id-path current-chat-id)))
 
-(defn compare-commands
-  [{created-at-1 :created-at} {created-at-2 :created-at}]
-  (compare created-at-1 created-at-2))
-
-(defn stage-command
-  [{:keys [current-chat-id] :as db} {:keys [id] :as command-info}]
-  (let [path             (db/chat-staged-commands-path current-chat-id)
-        staged-commands  (get-in db path)
-        staged-coomands' (if (seq staged-commands)
-                           staged-commands
-                           (priority-map-by compare-commands))]
-    (assoc-in db path (assoc staged-coomands' id command-info))))
-
-(defn unstage-command [db {:keys [id]}]
-  (update-in db (db/chat-staged-commands-path (:current-chat-id db))
-             dissoc id))
-
 (defn get-chat-command-request
   [{:keys [current-chat-id] :as db}]
   (get-in db (db/chat-command-request-path current-chat-id

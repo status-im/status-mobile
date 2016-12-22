@@ -168,15 +168,14 @@
 
 (register-handler :set-chat-input-text
   (u/side-effect!
-    (fn [{:keys [current-chat-id] :as db} [_ text]]
-      (let [{:keys [dapp?] :as contact} (get-in db [:contacts current-chat-id])]
-        (if (console? current-chat-id)
-          (dispatch [::check-input-for-commands text])
-          (dispatch [::check-suggestions current-chat-id text]))))))
+    (fn [{:keys [current-chat-id]} [_ text]]
+      (if (console? current-chat-id)
+        (dispatch [::check-input-for-commands text])
+        (dispatch [::check-suggestions current-chat-id text])))))
 
 (register-handler :add-to-chat-input-text
   (u/side-effect!
-    (fn [{:keys [chats current-chat-id] :as db} [_ text-to-add]]
+    (fn [{:keys [chats current-chat-id]} [_ text-to-add]]
       (let [input-text (get-in chats [current-chat-id :input-text])]
         (dispatch [:set-chat-input-text (str input-text text-to-add)])))))
 
@@ -194,10 +193,10 @@
         (let [text' (if (= :commands type)
                       (str command-prefix text)
                       text)]
-          (dispatch [::stage-command-with-content command text']))
+          (dispatch [::set-command-with-content command text']))
         (dispatch [::check-suggestions console-chat-id text])))))
 
-(register-handler ::stage-command-with-content
+(register-handler ::set-command-with-content
   (u/side-effect!
     (fn [_ [_ [command type] text]]
       (dispatch [:set-chat-command command type])

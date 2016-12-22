@@ -50,15 +50,11 @@
              :edit-mode                  {}
              :network                    :testnet})
 
-(defn chat-staged-commands-path [chat-id]
-  [:chats chat-id :staged-commands])
 (defn chat-command-path [chat-id]
   [:chats chat-id :command-input :command])
 (defn chat-command-to-message-id-path [chat-id]
   [:chats chat-id :command-input :to-message-id])
 (defn chat-command-content-path [chat-id]
   [:chats chat-id :command-input :content])
-(defn chat-command-requests-path [chat-id]
-  [:chats chat-id :command-requests])
 (defn chat-command-request-path [chat-id message-id]
   [:chats chat-id :command-requests message-id])

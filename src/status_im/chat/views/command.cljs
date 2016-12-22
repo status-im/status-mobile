@@ -7,14 +7,8 @@
                                                 touchable-highlight]]
             [status-im.chat.styles.input :as st]))
 
-(defn cancel-command-input []
-  (dispatch [:start-cancel-command]))
-
 (defn set-input-message [message]
   (dispatch [:set-chat-command-content message]))
-
-(defn send-command []
-  (dispatch [:stage-command]))
 
 (defn valid? [message validator]
   (if validator
@@ -30,9 +24,3 @@
                         (when (not= icon-width width)
                           (dispatch [:set :command-icon-width width]))))}
     [text {:style st/command-text} (str "!" (:name command))]]])
-
-(defn cancel-button []
-  [touchable-highlight {:on-press cancel-command-input}
-   [view st/cancel-container
-    [icon :close_gray st/cancel-icon]]])
-
