@@ -37,7 +37,6 @@
             status-im.chat.handlers.faucet
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
-            status-im.chat.handlers.wallet-chat
             status-im.chat.handlers.console
             [taoensso.timbre :as log]
             [tailrecursion.priority-map :refer [priority-map-by]]))
@@ -343,7 +342,7 @@
 ;TODO: check if its new account / signup status / create console chat
 (register-handler :initialize-chats
   [(after #(dispatch [:load-unviewed-messages!]))
-   (after #(dispatch [:init-wallet-chat]))]
+   (after #(dispatch [:load-default-contacts!]))]
   ((enrich initialize-chats) load-chats!))
 
 (defmethod nav/preload-data! :chat
@@ -399,9 +398,7 @@
             :group-chat false
             :is-active  true
             :timestamp  (.getTime (js/Date.))
-            :contacts   [{:identity chat-id}]
-            :dapp-url   nil
-            :dapp-hash  nil}
+            :contacts   [{:identity chat-id}]}
            chat)))
 
 (defn add-new-chat

@@ -5,9 +5,11 @@
                                                 text
                                                 image
                                                 icon]]
+            [taoensso.timbre :as log]
             [status-im.components.icons.custom-icons :refer [oct-icon]]
             [status-im.components.chat-icon.styles :as st]
             [status-im.components.styles :refer [default-chat-color]]
+            [status-im.resources :as resources]
             [status-im.constants :refer [console-chat-id]]
             [clojure.string :as s]))
 
@@ -17,9 +19,14 @@
     (first name)]])
 
 (defn chat-icon [photo-path {:keys [size]}]
-  [image {:source {:uri photo-path}
-          :style  (merge st/default-image-style
-                         (st/image-style size))}])
+  (let [photo (if (s/starts-with? photo-path "contacts://")
+                (->> (s/replace photo-path #"contacts://" "")
+                     (keyword)
+                     (get resources/contacts))
+                {:uri photo-path})]
+    [image {:source photo
+            :style  (merge st/default-image-style
+                           (st/image-style size))}]))
 
 (defn dapp-badge [styles]
   [view (:online-view-wrapper styles)

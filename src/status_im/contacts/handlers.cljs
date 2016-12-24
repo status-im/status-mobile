@@ -274,4 +274,3 @@
                                         0 (dispatch [:remove-contact contact])
                                         :default))
                           :cancel-text (label :t/cancel)}))))
-

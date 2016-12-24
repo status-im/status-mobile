@@ -16,26 +16,32 @@
 (def commands-js "commands.js")
 
 (defn load-commands!
-  [{:keys [current-chat-id]} [identity]]
-  (dispatch [::fetch-commands! (or identity current-chat-id)])
+  [{:keys [current-chat-id contacts]} [identity]]
+  (let [identity (or identity current-chat-id)
+        contact  (or (get contacts identity)
+                     {:whisper-identity identity})]
+    (dispatch [::fetch-commands! contact]))
   ;; todo uncomment
   #_(if-let [{:keys [file]} (commands/get-by-chat-id identity)]
       (dispatch [::parse-commands! identity file])
       (dispatch [::fetch-commands! identity])))
 
 (defn fetch-commands!
-  [db [identity]]
+  [db [{:keys [whisper-identity dapp? dapp-url]}]]
   (when true
     ;-let [url (get-in db [:chats identity :dapp-url])]
     (cond
-      (= console-chat-id identity)
-      (dispatch [::validate-hash identity js-res/console-js])
+      (= console-chat-id whisper-identity)
+      (dispatch [::validate-hash whisper-identity js-res/console-js])
 
-      (= wallet-chat-id identity)
-      (dispatch [::validate-hash identity js-res/wallet-js])
+      (= wallet-chat-id whisper-identity)
+      (dispatch [::validate-hash whisper-identity js-res/wallet-js])
+
+      (and dapp? dapp-url)
+      (dispatch [::validate-hash whisper-identity js-res/dapp-js])
 
       :else
-      (dispatch [::validate-hash identity js-res/commands-js])
+      (dispatch [::validate-hash whisper-identity js-res/commands-js])
       #_(http-get (s/join "/" [url commands-js])
 
                   #(dispatch [::validate-hash identity %])
@@ -49,7 +55,7 @@
 
 (defn get-hash-by-identity
   [db identity]
-  (get-in db [:chats identity :dapp-hash]))
+  (get-in db [:contacts identity :dapp-hash]))
 
 (defn get-hash-by-file
   [file]
@@ -157,3 +163,20 @@
 (reg-handler ::clear-commands-callbacks
   (fn [db [chat-id]]
     (assoc-in db [::commands-callbacks chat-id] nil)))
+
+(reg-handler :load-default-contacts!
+  (u/side-effect!
+    (fn [{:keys [chats]}]
+      (let [contacts (json->clj js-res/default-contacts-js)]
+        (doseq [{:keys [id name photo-path public-key add-chat?
+                        dapp? dapp-url dapp-hash] :as contact} contacts]
+          (when-not (chats id)
+            (when add-chat?
+              (dispatch [:add-chat id {:name name}]))
+            (dispatch [:add-contacts [{:whisper-identity id
+                                       :name             name
+                                       :photo-path       photo-path
+                                       :public-key       public-key
+                                       :dapp?            dapp?
+                                       :dapp-url         dapp-url
+                                       :dapp-hash        dapp-hash}]])))))))

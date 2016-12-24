@@ -16,10 +16,6 @@
                           :timestamp        :int
                           :contacts         {:type       :list
                                              :objectType :chat-contact}
-                          :dapp-url         {:type     :string
-                                             :optional true}
-                          :dapp-hash        {:type     :int
-                                             :optional true}
                           :removed-at       {:type     :int
                                              :optional true}
                           :removed-from-at  {:type     :int

@@ -173,9 +173,6 @@
 (def console-chat
   {:chat-id    console-chat-id
    :name       (s/capitalize console-chat-id)
-   ; todo remove/change dapp config fot console
-   :dapp-url   "http://localhost:8185/resources"
-   :dapp-hash  858845357
    :color      default-chat-color
    :group-chat false
    :is-active  true
@@ -189,4 +186,7 @@
   {:whisper-identity console-chat-id
    :name             (s/capitalize console-chat-id)
    :photo-path       console-chat-id
-   :dapp?            true})
+   :dapp?            true
+   ; todo remove/change dapp config fot console
+   :dapp-url         "http://localhost:8185/resources"
+   :dapp-hash        858845357})
