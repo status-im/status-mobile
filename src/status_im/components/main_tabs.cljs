@@ -1,6 +1,7 @@
 (ns status-im.components.main-tabs
   (:require-macros [reagent.ratom :refer [reaction]]
-                   [status-im.utils.views :refer [defview]])
+                   [status-im.utils.views :refer [defview]]
+                   [cljs.core.async.macros :as am])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
             [status-im.components.react :refer [view
@@ -21,7 +22,7 @@
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
             [status-im.i18n :refer [label]]
-            [taoensso.timbre :as log]))
+            [cljs.core.async :as a]))
 
 (def tab-list
   [{:view-id :chat-list
@@ -57,7 +58,7 @@
                   (dispatch [:on-navigated-to-tab]))))))))))
 
 (def tab->index {:chat-list    0
-                 :discover    1
+                 :discover     1
                  :contact-list 2})
 
 (def index->tab (clojure.set/map-invert tab->index))
@@ -70,28 +71,43 @@
         n (get-tab-index view-id)]
     (- n p)))
 
-(defn on-scroll-end [swiped? dragging?]
+(defn on-scroll-end [swiped? dragging? scroll-ended]
   (fn [_ state]
+    (a/put! scroll-ended true)
     (when @dragging?
       (reset! dragging? false)
       (let [{:strs [index]} (js->clj state)]
         (reset! swiped? true)
         (dispatch [:navigate-to-tab (index->tab index)])))))
 
+(defn start-scrolling-loop
+  "Loop that synchronizes tabs scrolling to avoid an inconsistent state."
+  [scroll-start scroll-ended]
+  (am/go-loop [[swiper to] (a/<! scroll-start)]
+    ;; start scrolling
+    (.scrollBy swiper to)
+    ;; lock loop until scroll ends
+    (a/<! scroll-ended)
+    (recur (a/<! scroll-start))))
+
 (defn main-tabs []
   (let [view-id      (subscribe [:get :view-id])
         prev-view-id (subscribe [:get :prev-view-id])
         main-swiper  (r/atom nil)
         swiped?      (r/atom false)
-        dragging?    (r/atom false)]
+        dragging?    (r/atom false)
+        scroll-start (a/chan 10)
+        scroll-ended (a/chan 10)]
     (r/create-class
-      {:component-will-update
+      {:component-did-mount
+       #(start-scrolling-loop scroll-start scroll-ended)
+       :component-will-update
        (fn []
          (if @swiped?
            (reset! swiped? false)
            (when @main-swiper
              (let [to (scroll-to @prev-view-id @view-id)]
-               (.scrollBy @main-swiper to)))))
+               (a/put! scroll-start [@main-swiper to])))))
        :reagent-render
        (fn []
          [view common-st/flex
@@ -105,7 +121,7 @@
                         :loop                   false
                         :ref                    #(reset! main-swiper %)
                         :onScrollBeginDrag      #(reset! dragging? true)
-                        :on-momentum-scroll-end (on-scroll-end swiped? dragging?)})
+                        :on-momentum-scroll-end (on-scroll-end swiped? dragging? scroll-ended)})
               [chats-list]
               [discover (= @view-id :discover)]
               [contact-list (= @view-id :contact-list)]]
