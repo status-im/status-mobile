@@ -51,8 +51,9 @@
    [title :t/popular-tags false]
    (if (pos? (count popular-tags))
      [carousel {:pageStyle st/carousel-page-style
-                :gap       0
-                :sneak     (if (> (count popular-tags) 1) 16 8)}
+                :gap       8
+                :sneak     16
+                :count     (count popular-tags)}
       (for [{:keys [name]} popular-tags]
         [discover-popular-list {:tag             name
                                 :contacts        contacts

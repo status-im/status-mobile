@@ -42,8 +42,8 @@
                        :handler #(dispatch [:accept-transactions password])}]}]
    [view st/carousel-container
     [carousel {:pageStyle st/carousel-page-style
-               :gap       16
-               :sneak     20
+               :gap       8
+               :sneak     16
                :count     (count transactions)}
      (when transactions
        (for [transaction transactions]

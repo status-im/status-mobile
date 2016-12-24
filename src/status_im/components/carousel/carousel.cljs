@@ -1,5 +1,6 @@
 (ns status-im.components.carousel.carousel
-  (:require [status-im.components.react :refer [view
+  (:require [reagent.impl.component :as rc]
+            [status-im.components.react :refer [view
                                                 scroll-view
                                                 touchable-without-feedback
                                                 text]]
@@ -19,13 +20,16 @@
 (defn get-active-page [data]
   (get data :activePage 0))
 
-(defn get-sneak [{:keys [sneak count] }]
+(defn get-sneak [{:keys [sneak gap count]}]
   (if (> (or count 2) 1)
     (or sneak (:sneak defaults))
-    0))
+    gap))
 
 (defn get-gap [data]
   (get data :gap (:gap defaults)))
+
+(defn get-count [data]
+  (get data :count))
 
 (defn compute-page-width
   ([gap sneak]
@@ -47,11 +51,16 @@
   (let [sneak (get-sneak props)
         page-width (get-page-width props)
         style (get-page-style props)
-        gap (quot (- (- (window-page-width) (* 2 sneak)) page-width) 2)]
+        gap (quot (- (window-page-width)
+                     (* 2 sneak)
+                     page-width)
+                  2)
+        count (get-count props)]
     (reagent.core/set-state component {:sneak sneak
                                        :pageWidth page-width
                                        :pageStyle style
-                                       :gap gap})))
+                                       :gap gap
+                                       :count count})))
 
 (defn scroll-to [component x y]
   (.scrollTo (.-scrollView component) (clj->js {:y y
@@ -60,14 +69,29 @@
 (defn get-current-position [event]
   (.-x (.-contentOffset (.-nativeEvent event))))
 
+(defn get-page-position [state page]
+  (let [page-width (get-page-width state)
+        gap (get-gap state)
+        sneak (get-sneak state)
+        count (get-count state)
+        addition (condp = page
+                   0 gap
+                   (dec count) (- (* 3 gap) (* sneak 2))
+                   (- sneak (* gap 2)))]
+    (+ (* page page-width)
+       (* (dec page) gap)
+       addition)))
+
 (defn go-to-page [component page]
   (let [props (reagent.core/props component)
         state (reagent.core/state component)
         page-width (get-page-width state)
         gap (get-gap state)
-        page-position (+ (* page page-width) (* (- page 1) gap))]
+        page-position (get-page-position state page)]
     (log/debug "go-to-page: props-page-width=" page-width "; gap=" gap
-               "; page-position=" page-position)
+               "; page-position=" page-position "; page: " page)
+    (reagent.core/set-state component {:scrolling? true})
+    (js/setTimeout #(reagent.core/set-state component {:scrolling? false}) 200)
     (scroll-to component page-position 0)
     (reagent.core/set-state component {:activePage page})
     (when (:onPageChange props)
@@ -79,22 +103,23 @@
         scroll-threshold (get-scroll-threshold props)
         current-page (get-active-page state)
         current-position (get-current-position event)
+        page-count (get-count state)
         direction (cond
                     (> current-position (+ starting-position scroll-threshold)) 1
                     (< current-position (- starting-position scroll-threshold)) -1
                     :else 0)
-        new-page (+ current-page direction)
-        ]
+        new-page (+ current-page direction)]
     (log/debug state "on-scroll-end: starting position=" starting-position
                "; current-position=" current-position "; direction=" direction
                "; current-page=" current-page "; new-page=" new-page)
-    (if (not= current-page new-page)
+    (if (and (not= current-page new-page)
+             (< -1 new-page page-count))
       (go-to-page component new-page)
       (scroll-to component starting-position 0))))
 
 (defn component-will-mount [component new-args]
   (let [props (reagent.core/props component)]
-    (log/debug "component-will-mount: new-args="new-args)
+    (log/debug "component-will-mount: new-args=" new-args)
     (apply-props component props)))
 
 (defn component-did-mount [component]
@@ -111,15 +136,18 @@
   (log/debug "component-did-update"))
 
 (defn component-will-receive-props [component new-argv]
-  (log/debug "component-will-receive-props: new-argv=" new-argv)
-  (apply-props component new-argv))
+  (let [props (rc/extract-props new-argv)]
+    (log/debug "component-will-receive-props: props=" props)
+    (apply-props component props)))
 
 (defn get-event-width [event]
   (.-width (.-layout (.-nativeEvent event))))
 
 (defn on-layout-change [event component]
   (let [state (reagent.core/state component)
-        page-width (compute-page-width (get-event-width event) (get-gap state) (get-sneak state))
+        page-width (compute-page-width (get-event-width event)
+                                       (get-gap state)
+                                       (get-sneak state))
         state-page-width (get-page-width state)
         active-page (get-active-page state)
         gap (get-gap state)
@@ -128,21 +156,21 @@
     (if (not= page-width state-page-width)
       (do
         (reagent.core/set-state component {:pageWidth page-width})
-        (.setState component {:layout (.-layout (.-nativeEvent event))})
-        )
+        (.setState component {:layout (.-layout (.-nativeEvent event))}))
       (scroll-to component page-position 0))))
 
 (defn get-pages [component data children]
   (let [page-width (get-page-width data)
         page-style (get-page-style data)
         gap (get-gap data)
-        margin (quot gap 2)]
+        sneak (get-sneak data)
+        count (get-count data)]
     (doall (map-indexed (fn [index child]
                    (let [page-index index
                          touchable-data {:key index
                                          :onPress #(go-to-page component page-index)}]
                      [touchable-without-feedback touchable-data
-                      [view {:style [(st/page page-width margin)
+                      [view {:style [(st/page index count page-width gap)
                                      page-style]
                              :onLayout #(log/debug "view onLayout" %)}
 
@@ -162,6 +190,7 @@
                    :decelerationRate 0.9
                    :horizontal true
                    :onLayout #(on-layout-change % component)
+                   :scrollEnabled (not (get state :scrolling?))
                    :onScrollBeginDrag #(reset! starting-position (get-current-position %))
                    :onScrollEndDrag #(on-scroll-end % component @starting-position)
                    :showsHorizontalScrollIndicator false
