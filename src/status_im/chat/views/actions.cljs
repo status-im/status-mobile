@@ -79,8 +79,7 @@
 (defn user-chat-items [chat-id]
   [(item-user chat-id)
    item-search
-   item-notifications
-   item-settings])
+   item-notifications])
 
 (defn overlay [{:keys [on-click-outside]} items]
   [view st/actions-overlay
