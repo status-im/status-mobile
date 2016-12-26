@@ -1,4 +1,4 @@
-// TODO header
+![Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum](https://status.im/img/status-github-banner@2x.png?v=1.1 "Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum")
 // TODO badges
 
 # Status - a Mobile Ethereum Operating System
