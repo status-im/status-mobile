@@ -43,14 +43,14 @@
    :text-align :center})
 
 (def status-container
-  {:margin-left      16
-   :margin-right     16
-   :flex-direction   "row"
-   :margin-top       (if p/ios? 5 5)
-   :justify-content  :center})
+  {:margin-left     16
+   :margin-right    16
+   :flex-direction  :row
+   :margin-top      5
+   :justify-content :center})
 
 (def status-view
-  {:height              56
+  {:min-height          56
    :width               200
    :font-size           14
    :text-align          :center
@@ -96,4 +96,4 @@
    :line-height 21
    :color       text3-color})
 
-(def feedback {:text-align     :center})
+(def feedback {:text-align :center})
