@@ -1,6 +1,4 @@
-(ns status-im.utils.fs
-  (:require [clojure.string :as s]
-            [status-im.utils.utils :as u]))
+(ns status-im.utils.fs)
 
 (def fs (js/require "react-native-fs"))
 

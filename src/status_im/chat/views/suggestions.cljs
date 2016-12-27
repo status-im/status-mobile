@@ -1,6 +1,5 @@
 (ns status-im.chat.views.suggestions
-  (:require-macros [status-im.utils.views :refer [defview]]
-                   [clojure.string :as str])
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
                                                 scroll-view

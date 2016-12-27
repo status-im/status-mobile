@@ -1,6 +1,5 @@
 (ns status-im.chat.styles.command-validation
-  (:require [status-im.components.styles :as st]
-            [status-im.chat.constants :as constants]))
+  (:require [status-im.chat.constants :as constants]))
 
 (def messages-container
   {:background-color :#d50000

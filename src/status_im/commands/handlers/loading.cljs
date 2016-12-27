@@ -10,8 +10,7 @@
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [taoensso.timbre :as log]
             [status-im.utils.homoglyph :as h]
-            [status-im.utils.js-resources :as js-res]
-            [clojure.string :as str]))
+            [status-im.utils.js-resources :as js-res]))
 
 (def commands-js "commands.js")
 

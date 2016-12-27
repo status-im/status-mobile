@@ -1,6 +1,5 @@
 (ns status-im.chat.suggestions
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [status-im.db :as db]
             [status-im.chat.constants :as chat-consts]
             [status-im.models.commands :refer [get-commands
                                                get-chat-command-request

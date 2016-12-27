@@ -4,8 +4,7 @@
                                                 text
                                                 image
                                                 touchable-highlight]]
-            [status-im.chats-list.views.inner-item :refer [chat-list-item-inner-view]]
-            [taoensso.timbre :as log]))
+            [status-im.chats-list.views.inner-item :refer [chat-list-item-inner-view]]))
 
 (defn chat-list-item [[chat-id chat]]
   [touchable-highlight {:on-press #(dispatch [:navigate-to :chat chat-id])}

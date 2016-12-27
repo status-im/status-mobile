@@ -1,6 +1,5 @@
 (ns status-im.data-store.pending-messages
   (:require [status-im.data-store.realm.pending-messages :as data-store]
-            [clojure.string :as str]
             [status-im.utils.hex :as i]))
 
 (defn- get-id

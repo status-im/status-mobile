@@ -6,7 +6,6 @@
             [status-im.constants :refer [console-chat-id
                                          text-content-type]]
             [status-im.i18n :refer [label]]
-            [taoensso.timbre :as log]
             [goog.string :as gstring]
             goog.string.format))
 

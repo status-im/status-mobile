@@ -1,6 +1,5 @@
 (ns status-im.utils.platform
-  (:require [status-im.utils.utils :as u]
-            [status-im.android.platform :as android]
+  (:require [status-im.android.platform :as android]
             [status-im.ios.platform :as ios]))
 
 (def react-native (js/require "react-native"))

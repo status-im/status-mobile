@@ -3,7 +3,7 @@
             [status-im.protocol.ack :as ack]
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
-            [taoensso.timbre :refer-macros [debug] :as log]
+            [taoensso.timbre :refer-macros [debug]]
             [status-im.utils.hex :as i]))
 
 (defn- parse-payload [payload]

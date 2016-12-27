@@ -7,8 +7,7 @@
     [status-im.chat.views.message-input :refer [plain-message-input-view]]
     [status-im.chat.constants :refer [input-height]]
     [status-im.utils.platform :refer [platform-specific]]
-    [status-im.chat.styles.message :as st]
-    [taoensso.timbre :as log]))
+    [status-im.chat.styles.message :as st]))
 
 (defn get-height [event]
   (.-height (.-layout (.-nativeEvent event))))

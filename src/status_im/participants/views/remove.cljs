@@ -15,8 +15,7 @@
              :refer [participant-contact]]
             [reagent.core :as r]
             [status-im.participants.styles :as st]
-            [status-im.i18n :refer [label]]
-            [status-im.components.styles :as cst]))
+            [status-im.i18n :refer [label]]))
 
 (defn remove-participants-toolbar []
   [view

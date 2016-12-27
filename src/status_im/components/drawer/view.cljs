@@ -15,15 +15,13 @@
             [status-im.components.status-view.view :refer [status-view]]
             [status-im.components.drawer.styles :as st]
             [status-im.profile.validations :as v]
-            [status-im.resources :as res]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.utils :refer [clean-text]]
             [status-im.i18n :refer [label]]
             [status-im.components.react :refer [dismiss-keyboard!]]
             [clojure.string :as str]
             [cljs.spec :as s]
-            [status-im.components.chat-icon.screen :as ci]
-            [taoensso.timbre :as log]))
+            [status-im.components.chat-icon.screen :as ci]))
 
 (defonce drawer-atom (atom))
 

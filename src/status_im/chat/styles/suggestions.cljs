@@ -10,8 +10,7 @@
                                                  separator-color
                                                  text1-color
                                                  text2-color
-                                                 text3-color]]
-            [taoensso.timbre :as log]))
+                                                 text3-color]]))
 
 (def suggestion-height 60)
 

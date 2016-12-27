@@ -7,9 +7,6 @@
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
             [status-im.utils.handlers :as u :refer [get-hashtags]]
-            [clojure.string :as str]
-            [status-im.profile.validations :as v]
-            [cljs.spec :as s]
             [taoensso.timbre :as log]))
 
 (defn message-user [identity]

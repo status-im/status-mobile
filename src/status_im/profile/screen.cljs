@@ -22,7 +22,6 @@
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.selectable-field.view :refer [selectable-field]]
             [status-im.components.status-view.view :refer [status-view]]
-            [status-im.components.share :as share]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.utils.platform :refer [platform-specific]]

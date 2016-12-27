@@ -1,5 +1,4 @@
-(ns status-im.utils.phone-number
-  (:require [status-im.utils.utils :as u]))
+(ns status-im.utils.phone-number)
 
 (def i18n (js/require "react-native-i18n"))
 (def locale (or (.-locale i18n) "___en"))

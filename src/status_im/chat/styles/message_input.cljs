@@ -4,8 +4,7 @@
             [status-im.chat.constants :refer [max-input-height
                                               min-input-height
                                               input-spacing-top
-                                              input-spacing-bottom]]
-            [status-im.utils.platform :as p]))
+                                              input-spacing-bottom]]))
 
 (def input-container
   {:flex-direction :column})

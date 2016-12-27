@@ -5,7 +5,6 @@
                                                 text
                                                 image
                                                 icon]]
-            [taoensso.timbre :as log]
             [status-im.components.icons.custom-icons :refer [oct-icon]]
             [status-im.components.chat-icon.styles :as st]
             [status-im.components.styles :refer [default-chat-color]]

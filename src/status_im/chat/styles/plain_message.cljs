@@ -1,8 +1,7 @@
 (ns status-im.chat.styles.plain-message
   (:require [status-im.components.styles :refer [text1-color]]
             [status-im.chat.constants :refer [max-input-height
-                                              min-input-height]]
-            [status-im.utils.platform :as p]))
+                                              min-input-height]]))
 
 (defn message-input-button-touchable [width content-height]
   {:width width

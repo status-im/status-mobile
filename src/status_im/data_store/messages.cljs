@@ -5,8 +5,7 @@
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [status-im.commands.utils :refer [generate-hiccup]]
             [cljs.reader :refer [read-string]]
-            [status-im.constants :as c]
-            [taoensso.timbre :as log])
+            [status-im.constants :as c])
   (:refer-clojure :exclude [update]))
 
 (defn- map-to-str

@@ -20,7 +20,6 @@
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
-            [status-im.utils.datetime :as time]
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
                                          text-content-type
@@ -34,8 +33,7 @@
                                     get-contact-translated]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]
-            [status-im.chat.handlers.console :as console]
-            [taoensso.timbre :as log]))
+            [status-im.chat.handlers.console :as console]))
 
 (def window-width (:width (get-dimensions "window")))
 

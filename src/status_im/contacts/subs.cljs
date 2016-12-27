@@ -1,9 +1,7 @@
 (ns status-im.contacts.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
-            [clojure.string :as str]
-            [status-im.utils.identicon :refer [identicon]]
-            [taoensso.timbre :as log]))
+            [status-im.utils.identicon :refer [identicon]]))
 
 (register-sub :get-contacts
   (fn [db _]

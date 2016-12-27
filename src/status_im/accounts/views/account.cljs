@@ -1,7 +1,6 @@
 (ns status-im.accounts.views.account
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [clojure.string :as s]
-            [status-im.resources :as res]
             [status-im.components.react :refer [view
                                                 text
                                                 image

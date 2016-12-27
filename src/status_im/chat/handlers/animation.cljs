@@ -6,8 +6,7 @@
                                               minimum-command-suggestions-height
                                               response-height-normal minimum-suggestion-height]]
             [status-im.utils.platform :refer [platform-specific]]
-            [status-im.constants :refer [response-input-hiding-duration]]
-            [taoensso.timbre :as log]))
+            [status-im.constants :refer [response-input-hiding-duration]]))
 
 ;; todo magic value
 (def middle-height 270)

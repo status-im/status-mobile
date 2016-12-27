@@ -1,6 +1,5 @@
 (ns status-im.data-store.processed-messages
-  (:require [status-im.data-store.realm.processed-messages :as data-store]
-            [taoensso.timbre :as log])
+  (:require [status-im.data-store.realm.processed-messages :as data-store])
   (:refer-clojure :exclude [exists?]))
 
 (defn get-filtered

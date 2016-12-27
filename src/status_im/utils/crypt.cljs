@@ -1,7 +1,6 @@
 (ns status-im.utils.crypt
   (:require [goog.crypt :refer [byteArrayToHex]]
-            [clojure.string :as s]
-            [status-im.utils.utils :as u])
+            [clojure.string :as s])
   (:import goog.crypt.Sha256))
 
 (def random-bytes (js/require "react-native-randombytes"))

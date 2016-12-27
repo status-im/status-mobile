@@ -2,8 +2,7 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.utils.utils :refer [http-post]]
             [taoensso.timbre :as log]
-            [status-im.utils.scheduler :as sch]
-            [status-im.data-store.messages :as messages]))
+            [status-im.utils.scheduler :as sch]))
 
 (defn sign-up
   [db phone-number message-id handler]

@@ -1,6 +1,5 @@
 (ns status-im.utils.image-processing
-  (:require [reagent.core :as r]
-            [status-im.utils.fs :refer [read-file]]
+  (:require [status-im.utils.fs :refer [read-file]]
             [taoensso.timbre :as log]
             [clojure.string :as str]))
 

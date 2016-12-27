@@ -7,10 +7,8 @@
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.participants.views.contact :refer [participant-contact]]
-            [reagent.core :as r]
             [status-im.participants.styles :as st]
-            [status-im.i18n :refer [label]]
-            [status-im.components.styles :as cst]))
+            [status-im.i18n :refer [label]]))
 
 (defn new-participants-toolbar []
   [view

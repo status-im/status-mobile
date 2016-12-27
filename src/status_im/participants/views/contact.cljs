@@ -4,7 +4,6 @@
             [status-im.components.react :refer [view]]
             [status-im.contacts.views.contact-inner :refer [contact-inner-view]]
             [status-im.components.item-checkbox :refer [item-checkbox]]
-            [reagent.core :as r]
             [status-im.participants.styles :as st]))
 
 ;; todo duplication

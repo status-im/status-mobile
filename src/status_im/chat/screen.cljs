@@ -31,8 +31,7 @@
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [status-im.components.sync-state.offline :refer [offline-view]]
-            [status-im.constants :refer [content-type-status]]
-            [reagent.core :as r]))
+            [status-im.constants :refer [content-type-status]]))
 
 (defn contacts-by-identity [contacts]
   (->> contacts

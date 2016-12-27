@@ -1,7 +1,6 @@
 (ns status-im.chat.styles.emoji
   (:require [status-im.components.styles :refer [color-white]]
-            [status-im.chat.constants :refer [emoji-container-height]]
-            [taoensso.timbre :as log]))
+            [status-im.chat.constants :refer [emoji-container-height]]))
 
 (def container-height emoji-container-height)
 

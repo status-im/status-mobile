@@ -22,9 +22,7 @@
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific]]
-            [status-im.contacts.views.contact-inner :refer [contact-inner-view]]
-            [reagent.core :as r]
-            [clojure.string :as str]))
+            [status-im.contacts.views.contact-inner :refer [contact-inner-view]]))
 
 (defn new-group-chat-view []
   [touchable-highlight

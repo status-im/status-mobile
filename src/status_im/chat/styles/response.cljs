@@ -7,8 +7,7 @@
                                                  color-black]]
             [status-im.chat.constants :refer [input-height
                                               request-info-height
-                                              response-height-normal]]
-            [status-im.utils.platform :as p]))
+                                              response-height-normal]]))
 
 (def drag-container
   {:height         16

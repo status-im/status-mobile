@@ -22,7 +22,6 @@
             [status-im.components.webview-bridge :refer [webview-bridge]]
             [status-im.i18n :refer [label]]
             [status-im.utils.datetime :as dt]
-            [taoensso.timbre :as log]
             [status-im.utils.name :refer [shortened-name]]
             [status-im.utils.js-resources :as js-res]
             [status-im.commands.utils :as cu]))

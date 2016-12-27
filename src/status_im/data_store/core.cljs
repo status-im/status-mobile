@@ -1,6 +1,5 @@
 (ns status-im.data-store.core
-  (:require [taoensso.timbre :as log]
-            [status-im.data-store.realm.core :as data-source]))
+  (:require [status-im.data-store.realm.core :as data-source]))
 
 
 (defn init []

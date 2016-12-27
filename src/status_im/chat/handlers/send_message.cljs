@@ -1,14 +1,12 @@
 (ns status-im.chat.handlers.send-message
   (:require [status-im.utils.handlers :refer [register-handler] :as u]
             [clojure.string :as s]
-            [status-im.data-store.chats :as chats]
             [status-im.data-store.messages :as messages]
             [status-im.components.status :as status]
             [status-im.utils.random :as random]
             [status-im.utils.datetime :as time]
             [re-frame.core :refer [enrich after dispatch path]]
             [status-im.chat.utils :as cu]
-            [status-im.commands.utils :as commands-utils]
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
                                          text-content-type

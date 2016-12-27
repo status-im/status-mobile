@@ -11,8 +11,7 @@
             [re-frame.core :refer [dispatch subscribe]]
             [status-im.accounts.styles :as st]
             [status-im.i18n :refer [label]]
-            [clojure.string :as s]
-            [reagent.core :as r]))
+            [clojure.string :as s]))
 
 (defview qr-code-view []
   [{:keys [photo-path address name] :as contact} [:get-in [:qr-modal :contact]]

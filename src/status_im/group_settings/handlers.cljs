@@ -8,7 +8,6 @@
             [status-im.data-store.messages :as messages]
             [status-im.data-store.chats :as chats]
             [status-im.constants :refer [text-content-type]]
-            [status-im.utils.handlers :as u]
             [status-im.navigation.handlers :as nav]))
 
 (defmethod nav/preload-data! :group-settings

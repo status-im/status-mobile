@@ -11,7 +11,6 @@
              :as c]
             [cljs.reader :refer [read-string]]
             [status-im.data-store.chats :as chats]
-            [taoensso.timbre :as log]
             [status-im.utils.scheduler :as s]))
 
 (defn check-preview [{:keys [content] :as message}]

@@ -2,8 +2,7 @@
   (:require [re-frame.core :refer [dispatch debug enrich after]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.utils.handlers :as u]
-            [status-im.network.net-info :as ni]
-            [clojure.string :as s]))
+            [status-im.network.net-info :as ni]))
 
 (register-handler :listen-to-network-status!
   (u/side-effect!

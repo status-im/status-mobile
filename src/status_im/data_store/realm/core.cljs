@@ -1,6 +1,5 @@
 (ns status-im.data-store.realm.core
-  (:require [status-im.utils.utils :as u]
-            [status-im.utils.types :refer [to-string]]
+  (:require [status-im.utils.types :refer [to-string]]
             [status-im.data-store.realm.schemas.account.core :as account]
             [status-im.data-store.realm.schemas.base.core :as base]
             [taoensso.timbre :as log]
