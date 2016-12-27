@@ -57,7 +57,7 @@
                            :parameter-idx 0
                            :params        {"amount" (:amount params)}
                            :to-message-id nil}]
-        (dispatch [:stage-command command-input command])))))
+        (dispatch [:validate-command command-input command])))))
 
 
 (defn chat-with-command

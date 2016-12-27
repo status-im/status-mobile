@@ -30,7 +30,7 @@
                   0
                   :suggestions]
           params {:parameters (or params {})
-                  :context {:data data}}]
+                  :context    {:data data}}]
       (status/call-jail current-chat-id
                         path
                         params
@@ -76,8 +76,8 @@
              content)])))))
 
 (defn invoke-command-preview!
-  [{:keys [staged-command] :as db} [_ command-input chat-id]]
-  (let [{:keys [command id]} staged-command
+  [db command-message [_ command-input chat-id]]
+  (let [{:keys [command]} command-message
         {:keys [name type]} command
         parameters (:params (or command-input (commands/get-command-input db)))
         path       [(if (= :command type) :commands :responses)
@@ -86,12 +86,11 @@
         params     {:parameters parameters
                     :context    {:platform platform/platform}}]
     (if (and (console? chat-id) (= name "js"))
-      (dispatch [:send-chat-message])
+      (dispatch [:send-chat-message command-message])
       (status/call-jail chat-id
                         path
                         params
-                        #(do (dispatch [:command-preview chat-id id %])
-                             (dispatch [:send-chat-message]))))))
+                        #(dispatch [:command-preview command-message %])))))
 
 (defn command-input
   ([{:keys [current-chat-id] :as db}]
@@ -120,36 +119,30 @@
                         (handler)
                         (dispatch [::finish-command-staging command-input chat-id]))))))))
 
-(register-handler :stage-command
-  (fn [{:keys [current-chat-id current-account-id] :as db} [_ command-input command]]
-    (let [command-input (or command-input (commands/get-command-input db))
-          command       (or command (commands/get-chat-command db))]
-      (dispatch [::start-command-validation! {:command-input command-input
-                                              :command       command
-                                              :chat-id       current-chat-id
-                                              :address       current-account-id}])
-      (assoc-in db [:disable-staging current-chat-id] true))))
+(register-handler :validate-command
+  (u/side-effect!
+    (fn [{:keys [current-chat-id current-account-id] :as db} [_ command-input command]]
+      (let [command-input (or command-input (commands/get-command-input db))
+            command       (or command (commands/get-chat-command db))]
+        (dispatch [::start-command-validation! {:command-input command-input
+                                                :command       command
+                                                :chat-id       current-chat-id
+                                                :address       current-account-id}])))))
 
 (register-handler ::finish-command-staging
-  [(after #(dispatch [:start-cancel-command]))
-   (after invoke-command-preview!)]
-  (fn [db [_ command-input chat-id]]
-    (let [db           (assoc-in db [:chats chat-id :input-text] nil)
-          {:keys [command content to-message-id params]} (or command-input (command-input db))
-          command-info {:command    command
-                        :params     params
-                        :to-message to-message-id
-                        :created-at (time/now-ms)
-                        :id         (random/id)}]
-      (-> db
-          (commands/stage-command command-info)
-          (assoc-in [:command->chat (:id command-info)] chat-id)
-          (assoc :staged-command command-info)
-          (assoc-in [:disable-staging chat-id] true)))))
-
-(register-handler :unstage-command
-  (fn [db [_ staged-command]]
-    (commands/unstage-command db staged-command)))
+  [(after #(dispatch [:start-cancel-command]))]
+  (u/side-effect!
+    (fn [db [_ command-input chat-id :as parameters]]
+      (let [db           (assoc-in db [:chats chat-id :input-text] nil)
+            {:keys [command to-message-id params]} (or command-input (command-input db))
+            command-info {:command    command
+                          :params     params
+                          :to-message to-message-id
+                          :created-at (time/now-ms)
+                          :id         (random/id)
+                          :chat-id    chat-id}]
+        (dispatch [:set-in [:command->chat (:id command-info)] chat-id])
+        (invoke-command-preview! db command-info parameters)))))
 
 (defn set-chat-command
   [{:keys [current-chat-id] :as db} [_ command-key type]]
@@ -285,5 +278,4 @@
       (let [suggestions-trigger (keyword (:suggestions-trigger command))]
         (if (= :on-send suggestions-trigger)
           (dispatch [:invoke-commands-suggestions!])
-          (dispatch [:stage-command]))))))
-
+          (dispatch [:validate-command]))))))

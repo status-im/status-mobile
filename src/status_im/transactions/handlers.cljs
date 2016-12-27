@@ -87,30 +87,18 @@
         (update :transactions dissoc hash)
         (update :transactions-queue dissoc hash))))
 
-(defn mark-command-as-pending [db chat-id id]
-  (let [path [:chats chat-id :staged-commands id]]
-    (if (get-in db path)
-      (update-in db path assoc :pending true)
-      db)))
-
 (register-handler :wait-for-transaction
   (after (fn [_ [_ message-id]]
            (dispatch [::check-completed-transaction!
                       {:message-id message-id}])))
-  (fn [db [_ message-id {:keys [chat-id command] :as params}]]
-    (let [id (:id command)]
-      (-> db
-          (mark-command-as-pending chat-id id)
-          (assoc-in [:transaction-subscribers message-id] params)))))
+  (fn [db [_ message-id params]]
+    (assoc-in db [:transaction-subscribers message-id] params)))
 
 (defn remove-pending-message
   [{:keys [command->chat] :as db} message-id]
-  (let [chat-id (get command->chat message-id)
-        path    [:chats chat-id :staged-commands]]
+  (let [chat-id (get command->chat message-id)]
     (if chat-id
-      (-> db
-          (update :transaction-subscribers dissoc message-id)
-          (update-in path dissoc message-id))
+      (update db :transaction-subscribers dissoc message-id)
       db)))
 
 (register-handler ::remove-pending-messages

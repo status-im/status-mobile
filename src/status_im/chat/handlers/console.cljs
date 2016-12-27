@@ -31,8 +31,8 @@
 
 (register-handler :invoke-console-command-handler!
   (u/side-effect!
-    (fn [_ [_ {:keys [chat-id staged-command] :as parameters}]]
-      (let [{:keys [id command params]} staged-command
+    (fn [_ [_ {:keys [chat-id command-message] :as parameters}]]
+      (let [{:keys [id command params]} command-message
             {:keys [name]} command]
         (dispatch [:prepare-command! chat-id parameters])
         ((console-commands (keyword name)) params id)))))

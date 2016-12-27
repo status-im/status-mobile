@@ -49,17 +49,17 @@
 
 (register-handler :send-chat-message
   (u/side-effect!
-    (fn [{:keys [current-chat-id current-public-key current-account-id] :as db}]
-      (let [staged-commands (vals (get-in db [:chats current-chat-id :staged-commands]))
-            text            (get-in db [:chats current-chat-id :input-text])
-            data            {:commands staged-commands
-                             :message  text
-                             :chat-id  current-chat-id
-                             :identity current-public-key
-                             :address  current-account-id}]
+    (fn [{:keys [current-chat-id current-public-key current-account-id] :as db}
+         [_ {:keys [chat-id] :as command-message}]]
+      (let [text (get-in db [:chats current-chat-id :input-text])
+            data {:command  command-message
+                  :message  text
+                  :chat-id  (or chat-id current-chat-id)
+                  :identity current-public-key
+                  :address  current-account-id}]
         (dispatch [:clear-input current-chat-id])
         (cond
-          (seq staged-commands)
+          command-message
           (dispatch [::check-commands-handlers! data])
           (not (s/blank? text))
           (dispatch [::prepare-message data]))))))
@@ -70,9 +70,9 @@
 
 (register-handler ::check-commands-handlers!
   (u/side-effect!
-    (fn [_ [_ {:keys [commands message chat-id] :as params}]]
-      (doseq [{:keys [command] :as message} commands]
-        (let [params'      (assoc params :staged-command message)
+    (fn [_ [_ {:keys [command message chat-id] :as params}]]
+      (let [{:keys [command] :as message} command]
+        (let [params'      (assoc params :command-message message)
               command-name (:name (:command message))]
           (if (:sent-to-jail? message)
             ;; todo there could be other reasons for "long-running"
@@ -98,33 +98,26 @@
 (register-handler :prepare-command!
   (u/side-effect!
     (fn [{:keys [current-public-key network-status] :as db}
-         [_ add-to-chat-id {:keys [chat-id staged-command command handler-data] :as params}]]
+         [_ add-to-chat-id {:keys [chat-id command-message command handler-data] :as params}]]
       (let [clock-value (messages/get-last-clock-value chat-id)
             request     (:request (:handler-data command))
-            command'    (->> (assoc staged-command :handler-data handler-data)
+            command'    (->> (assoc command-message :handler-data handler-data)
                              (prepare-command current-public-key chat-id clock-value request)
                              (cu/check-author-direction db chat-id))]
-        (log/debug "Handler data: " request handler-data (dissoc params :commands :staged-command))
+        (log/debug "Handler data: " request handler-data (dissoc params :commands :command-message))
         (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [:clear-command chat-id (:id staged-command)])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command')])
         (when (cu/console? chat-id)
-          (dispatch [:console-respond-command params]))
-        (when (and (= "send" (get-in staged-command [:command :name]))
+          (dispatch `[:console-respond-command params]))
+        (when (and (= "send" (get-in command-message [:command :name]))
                    (not= add-to-chat-id wallet-chat-id))
-          (let [ct              (if request
-                                  c/content-type-wallet-request
-                                  c/content-type-wallet-command)
-                staged-command' (assoc staged-command :id (random/id)
-                                                      :content-type ct)
-                params'         (assoc params :staged-command staged-command')]
+          (let [ct               (if request
+                                   c/content-type-wallet-request
+                                   c/content-type-wallet-command)
+                command-message' (assoc command-message :id (random/id)
+                                                        :content-type ct)
+                params'          (assoc params :command-message command-message')]
             (dispatch [:prepare-command! wallet-chat-id params'])))))))
-
-(register-handler :clear-command
-  (fn [db [_ chat-id id]]
-    (if chat-id
-      (update-in db [:chats chat-id :staged-commands] dissoc id)
-      db)))
 
 (register-handler ::send-command!
   (u/side-effect!
@@ -157,9 +150,9 @@
 
 (register-handler ::invoke-command-handlers!
   (u/side-effect!
-    (fn [db [_ {:keys [chat-id address staged-command]
+    (fn [db [_ {:keys [chat-id address command-message]
                 :as   parameters}]]
-      (let [{:keys [id command params]} staged-command
+      (let [{:keys [id command params]} command-message
             {:keys [type name]} command
             path   [(if (= :command type) :commands :responses)
                     name
@@ -169,16 +162,11 @@
                     :context    {:from       address
                                  :to         to
                                  :message-id id}}]
-        (dispatch [::command-in-processing chat-id id])
         (status/call-jail
           chat-id
           path
           params
           #(dispatch [:command-handler! chat-id parameters %]))))))
-
-(register-handler ::command-in-processing
-  (fn [db [_ chat-id id]]
-    (assoc-in db [:chats chat-id :staged-commands id :sent-to-jail?] true)))
 
 (register-handler ::prepare-message
   (u/side-effect!
@@ -186,16 +174,16 @@
       (let [{:keys [group-chat]} (get-in db [:chats chat-id])
             clock-value (messages/get-last-clock-value chat-id)
             message'    (cu/check-author-direction
-                         db chat-id
-                         {:message-id   (random/id)
-                          :chat-id      chat-id
-                          :content      message
-                          :from         identity
-                          :content-type text-content-type
-                          :outgoing     true
-                          :timestamp    (time/now-ms)
-                          :clock-value  (inc clock-value)
-                          :show?        true})
+                          db chat-id
+                          {:message-id   (random/id)
+                           :chat-id      chat-id
+                           :content      message
+                           :from         identity
+                           :content-type text-content-type
+                           :outgoing     true
+                           :timestamp    (time/now-ms)
+                           :clock-value  (inc clock-value)
+                           :show?        true})
             message''   (if group-chat
                           (assoc message' :group-id chat-id :message-type :group-user-message)
                           (assoc message' :to chat-id :message-type :user-message))
@@ -220,7 +208,7 @@
     (-> db
         (update-in [:suggestions] dissoc chat-id)
         (update-in [:has-suggestions?] dissoc chat-id)
-        (assoc-in  [:animations :to-response-height chat-id] input-height))))
+        (assoc-in [:animations :to-response-height chat-id] input-height))))
 
 (register-handler ::send-dapp-message
   (u/side-effect!
@@ -267,10 +255,10 @@
 
 (register-handler ::send-message!
   (u/side-effect!
-   (fn [{:keys [web3 chats network-status]
-         :as db} [_ {{:keys [message-type]
-                      :as   message} :message
-                     chat-id         :chat-id}]]
+    (fn [{:keys [web3 chats network-status]
+          :as   db} [_ {{:keys [message-type]
+                         :as   message} :message
+                        chat-id         :chat-id}]]
       (let [{:keys [dapp?] :as contact} (get-in db [:contacts chat-id])]
         (if dapp?
           (dispatch [::send-dapp-message chat-id message])
