@@ -69,9 +69,8 @@
 (def popular-list-container
   {:flex             1
    :background-color :white
-   :margin-left      16
-   :padding-left     16
-   :padding-top      18})
+   :padding-top      18
+   :padding-left     16})
 
 (def popular-list-item
   {:flex-direction :row
