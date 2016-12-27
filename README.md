@@ -17,23 +17,23 @@ If this interests you, **help us make Status a reality** - anyone can contribute
 
 ## How to Contribute?
 
-Go straight to the [wiki](https://github.com/status-im/status-react/wiki) or [join our Slack](http://slack.status.im) or choose what interests you:
+Go straight to the [wiki](https://wiki.status.im) or [join our Slack](http://slack.status.im) or choose what interests you:
 
 - **Developer**  
 Developers are the heart of software and to keep Status beating we need all the help we can get! If you're looking to code in ClojureScript or Golang then Status is the project for you! We use React Native and there is even some Java/Objective-C too!  
-Want to learn more about it? Check out our [Developers' Guide](https://github.com/status-im/status-react/wiki/Developers'-Guide) for more details on configuring your environment, managing project dependencies, coding guidelines and testing procedures.  
+Want to learn more about it? Start by [Building Status](https://wiki.status.im/contributing/development/building-status/) for more details on configuring your environment, managing project dependencies, coding guidelines and testing procedures.  
 
 - **Community Management**  
-Metcalfe's law states that the value of a network is proportional to the square of the number of connected users of the system - without community Status is meaningless. We're looking to create a positive, fun environment to explore new ideas, experiment and grow the Status community. Building a community takes alot of work but the people you'll meet and long lasting relationships you form will be well worth it, check out our [Community Development Guide](https://github.com/status-im/status-react/wiki/Community-Development-Guide)
+Metcalfe's law states that the value of a network is proportional to the square of the number of connected users of the system - without community Status is meaningless. We're looking to create a positive, fun environment to explore new ideas, experiment and grow the Status community. Building a community takes alot of work but the people you'll meet and long lasting relationships you form will be well worth it, check out our [Community Development Guide](https://wiki.status.im/community/development/)
 
 - **Specification / Documentation**  
-John Dewey once said "Education is not preparation for life; education is life *itself* ". Developers & Designers need guidance and it all starts from documentation and specifications. Our software is only as good as its documentation, head over to our [wiki](https://github.com/status-im/status-react/wiki) and see how you can improve what we have.
+John Dewey once said "Education is not preparation for life; education is life *itself* ". Developers & Designers need guidance and it all starts from documentation and specifications. Our software is only as good as its documentation, head over to our [wiki](https://wiki.status.im) and see how you can improve what we have.
 
 - **Blog Writing**  
 Content is King, keeping our blog up to date and informing the community of news helps keep everyone on the same page. [Jump on our Slack](http://slack.status.im) and discuss with Carl how you can contribute.
 
 - **Marketing**  
-In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user aquisition, public relations or hype building, check out our [Marketers' Guide](https://github.com/status-im/status-react/wiki/Marketers'-Guide) to see how you can spread the word.
+In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user aquisition, public relations or hype building, check out our [Marketers' Guide](https://wiki.status.im/contributing/marketing/) to see how you can spread the word.
 
 - **Testers**  
 It's bug hunting season! Status is currently in Alpha and there are sure to be a bunch of education, [grab your fresh copy of Status](http://TODO) and shake your phone to submit bug reports, or start browsing our [Github Issues](http://github.com/status-im/status-react/issues). Every bug you find brings Status closer to stable, usable software for everyone to enjoy!
@@ -49,7 +49,7 @@ Help us spread the word! Tell a friend *right now*, infact tell **everyone** - y
 
 ## Give me Binaries!
 
-Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://github.com/status-im/status-react/wiki/Developers'-Guide).
+Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://wiki.status.im/contributing/development/building-status/).
 
 // TODO GPlay, TestFlight Instructions & FDroid
 
