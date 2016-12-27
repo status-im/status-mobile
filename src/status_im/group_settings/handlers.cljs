@@ -31,14 +31,13 @@
       (assoc-in db [:chats current-chat-id property-name] property))))
 
 (defn prepare-chat-settings
-  [{:keys [current-chat-id] :as db} _]
+  [{:keys [current-chat-id] :as db}]
   (let [{:keys [name color]} (-> db
                                  (get-in [:chats current-chat-id])
                                  (select-keys [:name :color]))]
-    (-> db
-        (assoc :new-chat-name name
-               :new-chat-color color
-               :group-settings {}))))
+    (assoc db :new-chat-name name
+              :new-chat-color color
+              :group-settings {})))
 
 (register-handler :show-group-settings
   (after (fn [_ _] (dispatch [:navigate-to :group-settings])))

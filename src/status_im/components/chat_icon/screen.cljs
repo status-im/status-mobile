@@ -158,17 +158,10 @@
                 :default-chat-icon      (st/default-chat-icon-profile color)
                 :default-chat-icon-text st/default-chat-icon-text}]
     [view (:container styles)
-     (if (and photo-path (not (empty? photo-path)))
+     (if (and photo-path (seq photo-path))
        [chat-icon photo-path styles]
        [default-chat-icon name styles])
      [contact-badge badge-type styles]]))
-
-(defview profile-icon []
-  [contact [:contact]]
-  (let [;; TODO: stub
-        type  :online
-        color default-chat-color]
-    [profile-icon-view (:photo-path @contact) (:name @contact) color type]))
 
 (defn my-profile-icon [{{:keys [photo-path name]} :account
                         edit?                     :edit?}]

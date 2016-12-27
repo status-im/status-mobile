@@ -9,8 +9,7 @@
 
 (defn contact-can-be-added? [identity]
   (if (contacts/exists? identity)
-    (-> (contacts/get-by-id identity)
-        (get :pending))
+    (:pending (contacts/get-by-id identity))
     true))
 
 (defn valid-length? [identity]

@@ -9,8 +9,7 @@
 
 (defn get-all
   []
-  (-> (data-store/get-all-active)
-      normalize-contacts))
+  (normalize-contacts (data-store/get-all-active)))
 
 (defn get-by-id
   [id]

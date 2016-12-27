@@ -9,12 +9,12 @@
       (reaction @contacts))))
 
 (defn sort-contacts [contacts]
-  (->> (vals contacts)
-       (sort (fn [c1 c2]
-               (let [name1 (or (:name c1) (:address c1) (:whisper-identity c1))
-                     name2 (or (:name c2) (:address c2) (:whisper-identity c2))]
-                 (compare (clojure.string/lower-case name1)
-                          (clojure.string/lower-case name2)))))))
+  (sort (fn [c1 c2]
+          (let [name1 (or (:name c1) (:address c1) (:whisper-identity c1))
+                name2 (or (:name c2) (:address c2) (:whisper-identity c2))]
+            (compare (clojure.string/lower-case name1)
+                     (clojure.string/lower-case name2))))
+        (vals contacts)))
 
 (register-sub :all-added-contacts
   (fn [db _]
@@ -112,16 +112,13 @@
           chat     (reaction (get-in @db [:chats chat-id]))
           contacts (contacts-by-chat filter db chat-id)]
       (reaction
-        (when @chat
-          (if (:group-chat @chat)
-            ;; TODO return group chat icon
-            nil
-            (cond
-              (:photo-path @chat)
-              (:photo-path @chat)
+        (when (and @chat (not (:group-chat @chat)))
+          (cond
+            (:photo-path @chat)
+            (:photo-path @chat)
 
-              (pos? (count @contacts))
-              (:photo-path (first @contacts))
+            (pos? (count @contacts))
+            (:photo-path (first @contacts))
 
-              :else
-              (identicon chat-id))))))))
+            :else
+            (identicon chat-id)))))))

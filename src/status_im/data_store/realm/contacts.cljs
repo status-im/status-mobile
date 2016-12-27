@@ -4,13 +4,13 @@
 
 (defn get-all
   []
-  (-> (realm/get-all @realm/account-realm :contact)
+  (-> @realm/account-realm
+      (realm/get-all :contact)
       (realm/sorted :name :asc)))
 
 (defn get-all-as-list
   []
-  (-> (get-all)
-      realm/realm-collection->list))
+  (realm/realm-collection->list (get-all)))
 
 (defn get-by-id
   [whisper-identity]

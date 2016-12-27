@@ -115,9 +115,8 @@
 (defn send-status!
   [{:keys [web3 message]}]
   (debug :broadcasting-status)
-  (let [message (-> message
-                    (assoc :type :discover
-                           :topics [(make-discover-topic (:from message))]))]
+  (let [message (assoc message :type :discover
+                               :topics [(make-discover-topic (:from message))])]
     (d/add-pending-message! web3 message)))
 
 (defn send-discoveries-request!
@@ -125,19 +124,18 @@
   (debug :sending-discoveries-request)
   (d/add-pending-message!
     web3
-    (-> message
-        (assoc :type :discoveries-request
-               :topics [(make-discover-topic (:from message))]))))
+    (assoc message :type :discoveries-request
+                   :topics [(make-discover-topic (:from message))])))
 
 (defn send-discoveries-response!
   [{:keys [web3 discoveries message]}]
   (debug :sending-discoveries-response)
-  (doseq [portion (->> (take 100 discoveries)
+  (doseq [portion (->> discoveries
+                       (take 100)
                        (partition 10 10 nil))]
     (d/add-pending-message!
       web3
-      (-> message
-          (assoc :type :discoveries-response
-                 :topics [(make-discover-topic (:from message))]
-                 :message-id (random/id)
-                 :payload {:data (into [] portion)})))))
+      (assoc message :type :discoveries-response
+                     :topics [(make-discover-topic (:from message))]
+                     :message-id (random/id)
+                     :payload {:data (into [] portion)}))))

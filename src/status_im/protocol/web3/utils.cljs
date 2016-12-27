@@ -4,8 +4,6 @@
 
 (def web3 (js/require "web3"))
 
-(def status-app-topic "status-app")
-
 (defn from-utf8 [s]
   (.fromUtf8 web3.prototype s))
 
@@ -16,8 +14,9 @@
   (.-shh web3))
 
 (defn make-web3 [rpc-url]
-  (->> (web3.providers.HttpProvider. rpc-url)
-       (web3.)))
+  (->> rpc-url
+       web3.providers.HttpProvider.
+       web3.))
 
 (defn timestamp []
   (to-long (now)))

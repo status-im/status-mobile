@@ -5,8 +5,7 @@
 
 (defn- pick-random
   [vector]
-  (-> (rand-nth vector)
-      str/capitalize))
+  (str/capitalize (rand-nth vector)))
 
 (defn generate-gfy
   []

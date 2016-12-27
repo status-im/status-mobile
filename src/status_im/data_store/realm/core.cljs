@@ -35,7 +35,6 @@
   (open-realm (last schemas) file-name))
 
 (def new-account-filename "new-account")
-(def new-accout-realm-file (str new-account-filename ".realm"))
 
 (def base-realm (open-migrated-realm (.-defaultPath realm-class) base/schemas))
 
@@ -122,7 +121,8 @@
   (.filtered results filter-query))
 
 (defn realm-collection->list [collection]
-  (-> (.map collection (fn [object _ _] object))
+  (-> collection
+      (.map (fn [object _ _] object))
       (js->clj :keywordize-keys true)))
 
 (defn list->array [record list-field]
@@ -136,7 +136,8 @@
           (js->clj :keywordize-keys true)))
 
 (defn get-by-filter [realm schema-name filter]
-  (-> (.objects realm (name schema-name))
+  (-> realm
+      (.objects (name schema-name))
       (.filtered filter)))
 
 (defn- get-schema-by-name [opts]

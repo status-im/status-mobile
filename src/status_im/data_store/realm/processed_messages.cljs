@@ -4,7 +4,8 @@
 
 (defn get-all
   []
-  (-> (realm/get-all @realm/account-realm :processed-message)
+  (-> @realm/account-realm
+      (realm/get-all :processed-message)
       (realm/sorted :ttl :asc)))
 
 (defn get-filtered
@@ -13,8 +14,7 @@
 
 (defn get-filtered-as-list
   [condition]
-  (-> (get-filtered condition)
-      realm/realm-collection->list))
+  (realm/realm-collection->list (get-filtered condition)))
 
 (defn save
   [processed-message]

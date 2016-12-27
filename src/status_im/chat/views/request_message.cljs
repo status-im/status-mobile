@@ -20,7 +20,8 @@
 
 (defn label [command]
   (when command
-    (->> (name (:name command))
+    (->> (:name command)
+         name
          (str "request-"))))
 
 (def min-scale 1)

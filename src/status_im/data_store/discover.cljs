@@ -4,8 +4,8 @@
 
 (defn get-all
   [ordering]
-  (->> (data-store/get-all-as-list ordering)
-       (mapv #(update % :tags vals))))
+  (mapv #(update % :tags vals)
+        (data-store/get-all-as-list ordering)))
 
 (defn save
   [discover]

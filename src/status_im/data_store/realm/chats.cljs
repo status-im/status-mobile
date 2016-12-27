@@ -5,13 +5,13 @@
 
 (defn get-all
   []
-  (-> (realm/get-all @realm/account-realm :chat)
+  (-> @realm/account-realm
+      (realm/get-all :chat)
       (realm/sorted :timestamp :desc)))
 
 (defn get-all-as-list
   []
-  (-> (get-all)
-      realm/realm-collection->list))
+  (realm/realm-collection->list (get-all)))
 
 (defn get-all-active
   []
@@ -36,7 +36,8 @@
 
 (defn get-by-id
   [chat-id]
-  (-> (realm/get-one-by-field-clj @realm/account-realm :chat :chat-id chat-id)
+  (-> @realm/account-realm
+      (realm/get-one-by-field-clj :chat :chat-id chat-id)
       (realm/list->array :contacts)))
 
 (defn save
@@ -58,7 +59,8 @@
 
 (defn get-contacts
   [chat-id]
-  (-> (realm/get-one-by-field @realm/account-realm :chat :chat-id chat-id)
+  (-> @realm/account-realm
+      (realm/get-one-by-field :chat :chat-id chat-id)
       (aget "contacts")))
 
 (defn has-contact?
@@ -102,7 +104,8 @@
   [chat-id property-name value]
   (realm/write @realm/account-realm
                (fn []
-                 (-> (realm/get-one-by-field @realm/account-realm :chat :chat-id chat-id)
+                 (-> @realm/account-realm
+                     (realm/get-one-by-field :chat :chat-id chat-id)
                      (aset (name property-name) value)))))
 
 (defn get-property

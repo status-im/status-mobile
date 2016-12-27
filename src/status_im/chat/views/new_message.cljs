@@ -33,8 +33,7 @@
    type [:command-type]
    suggestions [:get-suggestions]
    message-input-height [:get-message-input-view-height]]
-  (let [on-top? (or (and (not (empty? suggestions))
-                         (not command?))
+  (let [on-top? (or (and (seq suggestions) (not command?))
                     (not= response-height input-height))
         style   (get-in platform-specific [:component-styles :chat :new-message])]
     [view {:style     (merge (st/new-message-container margin on-top?) style)

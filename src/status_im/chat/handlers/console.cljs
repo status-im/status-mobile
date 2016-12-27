@@ -53,9 +53,7 @@
           (let [{:keys [name]} command]
             (case name
               "js" (let [{:keys [err data messages]} handler-data
-                         content (if err
-                                   err
-                                   data)]
+                         content (or err data)]
                      (doseq [message messages]
                        (let [{:keys [message type]} message]
                          (dispatch [:received-message

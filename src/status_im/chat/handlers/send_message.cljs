@@ -228,9 +228,7 @@
   (u/side-effect!
     (fn [_ [_ chat-id {:keys [returned]}]]
       (let [{:keys [data messages err]} returned
-            content (if err
-                      err
-                      data)]
+            content (or err data)]
         (doseq [message messages]
           (let [{:keys [message type]} message]
             (dispatch [:received-message

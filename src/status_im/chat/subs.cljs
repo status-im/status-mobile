@@ -184,7 +184,7 @@
 (register-sub :is-request-answered?
   (fn [_ [_ message-id]]
     (let [requests (subscribe [:get-requests])]
-      (reaction (not (some #(= message-id (:message-id %)) @requests))))))
+      (reaction (not-any? #(= message-id (:message-id %)) @requests)))))
 
 (register-sub :validation-errors
   (fn [db]
@@ -211,7 +211,7 @@
     (let [chat-id (subscribe [:get-current-chat-id])]
       (reaction
         (min (get-in @db [:animations :to-response-height @chat-id])
-             (if (> (:layout-height @db) 0)
+             (if (pos? (:layout-height @db))
                (- (:layout-height @db)
                   (get-in platform-specific [:component-styles :status-bar status-bar :height]))
                0))))))

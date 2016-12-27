@@ -185,7 +185,7 @@
                                    [text
                                     {:key   (str idx "_" string)
                                      :style style}
-                                    (subs string 1 (- (count string) 1))]))
+                                    (subs string 1 (dec (count string)))]))
                                (re-seq regx string)))
           styled-text'  (if (> (count general-text)
                                (count styled-text))
@@ -331,7 +331,7 @@
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
     (let [to-value @to-value]
-      (when (< 0 to-value)
+      (when (pos? to-value)
         (anim/start
           (anim/timing val {:toValue  to-value
                             :duration 250})

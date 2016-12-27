@@ -2,7 +2,7 @@
   (:require [status-im.components.styles :refer [color-white]]))
 
 (def tabs-height 56)
-(def tab-height (- tabs-height 1))
+(def tab-height (dec tabs-height))
 
 (def bottom-gradient
   {:position :absolute

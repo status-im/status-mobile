@@ -6,7 +6,7 @@
 
 (defn init!
   [messages]
-  (reset! messages-set (into #{} messages))
+  (reset! messages-set (set messages))
   (reset! messages-map (->> messages
                             (map (fn [{:keys [message-id type] :as message}]
                                    [[message-id type] message]))

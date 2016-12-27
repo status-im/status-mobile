@@ -7,8 +7,7 @@
 
 (defn get-all-as-list
   []
-  (-> (get-all)
-      realm/realm-collection->list))
+  (realm/realm-collection->list (get-all)))
 
 (defn get-open-by-chat-id
   [chat-id]
@@ -27,8 +26,9 @@
 
 (defn- get-by-message-id
   [chat-id message-id]
-  (-> (realm/get-by-fields @realm/account-realm :request :and [[:chat-id chat-id]
-                                                               [:message-id message-id]])
+  (-> @realm/account-realm
+      (realm/get-by-fields :request :and [[:chat-id chat-id]
+                                          [:message-id message-id]])
       (realm/single)))
 
 (defn mark-as-answered

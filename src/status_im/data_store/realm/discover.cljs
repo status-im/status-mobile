@@ -5,13 +5,13 @@
 
 (defn get-all
   [ordering]
-  (-> (realm/get-all @realm/account-realm :discover)
+  (-> @realm/account-realm
+      (realm/get-all :discover)
       (realm/sorted :created-at ordering)))
 
 (defn get-all-as-list
   [ordering]
-  (-> (get-all ordering)
-      realm/realm-collection->list))
+  (realm/realm-collection->list (get-all ordering)))
 
 (defn get-tag-by-name [tag]
   (log/debug "Getting tag: " tag)
@@ -65,7 +65,8 @@
   (let [discoveries  (realm/get-all @realm/account-realm :discover)
         count (realm/get-count discoveries)]
     (if (> count critical-count)
-      (let [to-delete (-> (realm/sorted discoveries by ordering)
+      (let [to-delete (-> discoveries
+                          (realm/sorted by ordering)
                           (realm/page 0 to-delete-count))]
         (realm/write @realm/account-realm
                      (fn []

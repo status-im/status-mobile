@@ -41,7 +41,7 @@
         exists?          (chats/exists? chat-id')
         active?          (chats/is-active? chat-id')
         chat-clock-value (messages/get-last-clock-value chat-id')
-        clock-value      (if (= clock-value 0)
+        clock-value      (if (zero? clock-value)
                            (inc chat-clock-value)
                            clock-value)]
     (when (and (not same-message)

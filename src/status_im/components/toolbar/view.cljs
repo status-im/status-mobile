@@ -25,7 +25,7 @@
     [view {:style style}
      [view st/toolbar
       [view (st/toolbar-nav-actions-container actions)
-       (when (not hide-nav?)
+       (when-not hide-nav?
          (if nav-action
            [touchable-highlight {:on-press (:handler nav-action)}
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
