@@ -1,0 +1,13 @@
+[
+    {"id": "wallet",
+     "name": "Wallet",
+     "photo-path": "icon_wallet_avatar",
+     "add-chat?": true,
+     "dapp?": true},
+
+    {"id": "dapp-auction-house",
+     "name": "Auction House",
+     "photo-path": "contacts://auction-house",
+     "dapp?": true,
+     "dapp-url": "http://auctionhouse.dappbench.com"}
+]
