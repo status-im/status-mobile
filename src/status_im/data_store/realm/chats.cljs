@@ -64,14 +64,14 @@
 (defn has-contact?
   [chat-id identity]
   (let [contacts (get-contacts chat-id)
-        contact (.find contacts (fn [object index collection]
+        contact (.find contacts (fn [object _ _]
                                   (= identity (aget object "identity"))))]
     (if contact true false)))
 
 (defn- save-contacts
   [identities contacts added-at]
   (doseq [contact-identity identities]
-    (if-let [contact (.find contacts (fn [object index collection]
+    (if-let [contact (.find contacts (fn [object _ _]
                                        (= contact-identity (aget object "identity"))))]
       (doto contact
         (aset "is-in-chat" true)
@@ -89,7 +89,7 @@
 (defn- delete-contacts
   [identities contacts]
   (doseq [contact-identity identities]
-     (when-let [contact (.find contacts (fn [object index collection]
+     (when-let [contact (.find contacts (fn [object _ _]
                                         (= contact-identity (aget object "identity"))))]
        (realm/delete @realm/account-realm contact))))
 

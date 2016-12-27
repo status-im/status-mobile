@@ -6,5 +6,5 @@
              :properties {:key   "string"
                           :value "string"}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating kv-store schema"))

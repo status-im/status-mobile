@@ -119,7 +119,7 @@
    [add-contact-bar]])
 
 (defn get-intro-status-message [all-messages]
-  (let [{:keys [timestamp content-type] :as last-message} (last all-messages)]
+  (let [{:keys [timestamp content-type]} (last all-messages)]
     (when (not= content-type content-type-status)
       {:message-id   "intro-status"
        :content-type content-type-status

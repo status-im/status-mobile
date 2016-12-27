@@ -31,7 +31,7 @@
             (anim/timing val {:toValue  to-value
                               :duration 300})))))))
 
-(defn tabs-container [& children]
+(defn tabs-container [& _]
   (let [chats-scrolled? (subscribe [:get :chats-scrolled?])
         tabs-bar-value  (subscribe [:animations :tabs-bar-value])
         shadows?        (get-in platform-specific [:tabs :tab-shadows?])
@@ -52,7 +52,7 @@
                                :pointerEvents (if @chats-scrolled? :none :auto)}]
                children))})))
 
-(defn tabs [{:keys [tab-list selected-view-id prev-view-id swiper]}]
+(defn tabs [{:keys [tab-list selected-view-id prev-view-id]}]
   [tabs-container
    [view st/tabs-inner-container
     (doall (map-indexed #(create-tab %1 %2 selected-view-id prev-view-id) tab-list))]])

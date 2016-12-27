@@ -57,7 +57,6 @@
     (dispatch [:set-in [:toolbar-search :text] nil])))
 
 (defn- toolbar-with-search-content [{:keys [show-search?
-                                            search-key
                                             search-placeholder
                                             title
                                             on-search-submit]}]

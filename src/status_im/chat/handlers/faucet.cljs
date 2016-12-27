@@ -35,7 +35,7 @@
 (defmulti open-faucet (fn [_ _ {:keys [type]}] type))
 
 (defmethod open-faucet :api
-  [faucet-name current-address {:keys [api-url]}]
+  [_ current-address {:keys [api-url]}]
   (let [api-url (gstring/format api-url current-address)]
     (http-get api-url
               #(received-message (label :t/faucet-success))

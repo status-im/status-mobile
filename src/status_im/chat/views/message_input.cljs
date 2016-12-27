@@ -28,14 +28,10 @@
    :editable          (not disable?)
    :on-submit-editing plain-message/send})
 
-(defn on-press-commands-handler
-  [{:keys [suggestions-trigger]}]
-  #(dispatch [:send-command!]))
-
-(defn command-input-options [command icon-width disable?]
+(defn command-input-options [icon-width disable?]
   {:style             (st-response/command-input icon-width disable?)
    :on-change-text    (when-not disable? command/set-input-message)
-   :on-submit-editing (on-press-commands-handler command)})
+   :on-submit-editing #(dispatch [:send-command!])})
 
 (defview message-input [input-options set-layout-size]
   [input-message [:get-chat-input-text]
@@ -59,12 +55,12 @@
                  :default-value          (or input-message "")}
                 input-options)])
 
-(defview command-input [input-options {:keys [fullscreen] :as command}]
+(defview command-input [input-options {:keys [fullscreen]}]
   [input-command [:get-chat-command-content]
    icon-width [:command-icon-width]
    disable? [:get :disable-input]]
   [text-input (merge
-                (command-input-options command icon-width disable?)
+                (command-input-options icon-width disable?)
                 {:auto-focus          (not fullscreen)
                  :blur-on-submit      false
                  :accessibility-label :input
@@ -106,7 +102,7 @@
              (when (or (and @command? (not (str/blank? @input-command)))
                        @valid-plain-message?)
                (let [on-press (if @command?
-                                (on-press-commands-handler @command)
+                                #(dispatch [:send-command!])
                                 plain-message/send)]
                  [send-button {:on-press #(do (dispatch [:set-chat-ui-props :show-emoji? false])
                                               (on-press %))}]))

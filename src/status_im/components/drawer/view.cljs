@@ -56,8 +56,7 @@
      status-text     (r/atom nil)]
     (fn []
       (let [{:keys [name photo-path status]} @account
-            {new-name   :name
-             new-status :status} @profile]
+            {new-name   :name} @profile]
         [view st/drawer-menu
          [touchable-without-feedback {:on-press #(dismiss-keyboard!)}
           [view st/drawer-menu

@@ -210,7 +210,7 @@
 
 (register-handler ::send-dapp-message
   (u/side-effect!
-    (fn [db [_ chat-id {:keys [content] :as message}]]
+    (fn [db [_ chat-id {:keys [content]}]]
       (let [data   (get-in db [:local-storage chat-id])
             path   [:functions
                     :message-handler]
@@ -226,7 +226,7 @@
 
 (register-handler ::received-dapp-message
   (u/side-effect!
-    (fn [{:keys [current-chat-id] :as db} [_ chat-id {:keys [returned] :as message}]]
+    (fn [_ [_ chat-id {:keys [returned]}]]
       (let [{:keys [data messages err]} returned
             content (if err
                       err
@@ -257,7 +257,7 @@
           :as   db} [_ {{:keys [message-type]
                          :as   message} :message
                         chat-id         :chat-id}]]
-      (let [{:keys [dapp?] :as contact} (get-in db [:contacts chat-id])]
+      (let [{:keys [dapp?]} (get-in db [:contacts chat-id])]
         (if dapp?
           (dispatch [::send-dapp-message chat-id message])
           (when message

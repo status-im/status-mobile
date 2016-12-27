@@ -41,9 +41,7 @@
   (let [{:keys [chat-id group-chat name color]} (subscribe [:chat-properties [:chat-id :group-chat :name :color]])
         members (subscribe [:current-chat-contacts])]
     (fn [{:keys [messages-count content datemark]}]
-      (let [{:keys [photo-path
-                    status
-                    last-online]} (if @group-chat
+      (let [{:keys [status]} (if @group-chat
                                     {:photo-path  nil
                                      :status      nil
                                      :last-online 0}
@@ -354,7 +352,7 @@
         {:component-did-update
          on-update
          :reagent-render
-         (fn [message & children]
+         (fn [_ & children]
            @layout-height
            [animated-view {:style (st/message-animated-container anim-value)}
             (into [view {:style    (st/message-container window-width)
@@ -377,7 +375,7 @@
                                    :from       from
                                    :message-id message-id}])))
        :reagent-render
-       (fn [{:keys [outgoing group-chat clock-value] :as message}]
+       (fn [{:keys [outgoing group-chat] :as message}]
          [message-container message
           [view
            (let [incoming-group (and group-chat (not outgoing))]

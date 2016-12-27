@@ -4,7 +4,7 @@
 (defn get-by-chat-id
   [chat-id]
   (realm/get-one-by-field-clj @realm/account-realm :command
-                          :chat-id identity))
+                              :chat-id chat-id))
 
 (defn save
   [command]

@@ -101,7 +101,7 @@
           (anim/start (anim/spring val {:toValue to-value}))
           (anim/set-value val to-value))))))
 
-(defn container [h & elements]
+(defn container [h & _]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:command-suggestions-height])

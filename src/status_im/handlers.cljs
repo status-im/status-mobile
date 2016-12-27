@@ -106,7 +106,7 @@
                                         (.addEntropy (.. ecc -sjcl -random)))
                                    (dispatch [:crypt-initialized]))))))))
 
-(defn node-started [db result]
+(defn node-started [_ _]
   (log/debug "Started Node")
   (enet/get-network #(dispatch [:set :network %])))
 
@@ -131,7 +131,7 @@
 
 (register-handler :status-module-initialized!
   (after (u/side-effect!
-           (fn [db]
+           (fn [_]
              (status/module-initialized!))))
   (fn [db]
     (assoc db :status-module-initialized? true)))

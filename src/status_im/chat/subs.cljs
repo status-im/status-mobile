@@ -1,7 +1,6 @@
 (ns status-im.chat.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub dispatch subscribe path]]
-            [status-im.utils.platform :refer [ios?]]
             [status-im.models.commands :as commands]
             [status-im.data-store.chats :as chats]
             [status-im.constants :refer [response-suggesstion-resize-duration]]
@@ -9,7 +8,7 @@
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]
             [status-im.constants :refer [content-type-status]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.utils.platform :refer [platform-specific ios?]]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]
@@ -251,7 +250,7 @@
              :else 0)))))
 
 (register-sub :max-layout-height
-  (fn [db [_ status-bar]]
+  (fn [_ [_ status-bar]]
     (let [layout-height     (subscribe [:get :layout-height])
           input-margin      (subscribe [:input-margin])
           status-bar-height (get-in platform-specific [:component-styles :status-bar status-bar :height])]

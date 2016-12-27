@@ -61,7 +61,7 @@
                                           layout-height
                                           :fix-response-height)
         command       (subscribe [:get-chat-command])]
-    (fn [response-height]
+    (fn [_]
       (if (= :response (:type @command))
         [view (merge (drag/pan-handlers pan-responder)
                      {:style (st/request-info (:color @command))})
@@ -86,7 +86,7 @@
                                         :duration 300}))
           (anim/set-value val to-value))))))
 
-(defn container [response-height & children]
+(defn container [response-height & _]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:response-height :default])

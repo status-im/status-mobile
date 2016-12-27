@@ -3,7 +3,7 @@
             [status-im.chat.constants :refer [max-input-height
                                               min-input-height]]))
 
-(defn message-input-button-touchable [width content-height]
+(defn message-input-button-touchable [width]
   {:width width
    :flex  1})
 

@@ -75,7 +75,7 @@
              remove-identities selected-participants))
 
 (defn remove-members-from-chat!
-  [{:keys [current-chat-id selected-participants] :as db} _]
+  [{:keys [current-chat-id selected-participants]} _]
   (chats/remove-contacts current-chat-id selected-participants))
 
 (defn notify-about-removing!

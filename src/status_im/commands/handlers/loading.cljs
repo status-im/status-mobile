@@ -27,7 +27,7 @@
       (dispatch [::fetch-commands! identity])))
 
 (defn fetch-commands!
-  [db [{:keys [whisper-identity dapp? dapp-url]}]]
+  [_ [{:keys [whisper-identity dapp? dapp-url]}]]
   (when true
     ;-let [url (get-in db [:chats identity :dapp-url])]
     (cond
@@ -168,12 +168,12 @@
   (u/side-effect!
     (fn [{:keys [chats]}]
       (doseq [[id {:keys [name photo-path public-key add-chat?
-                          dapp? dapp-url dapp-hash] :as contact}] js-res/default-contacts]
-        (let [id (clojure.core/name id)]
-          (when-not (chats id)
+                          dapp? dapp-url dapp-hash]}] js-res/default-contacts]
+        (let [id' (clojure.core/name id)]
+          (when-not (chats id')
             (when add-chat?
-              (dispatch [:add-chat id {:name (:en name)}]))
-            (dispatch [:add-contacts [{:whisper-identity id
+              (dispatch [:add-chat id' {:name (:en name)}]))
+            (dispatch [:add-contacts [{:whisper-identity id'
                                        :name             (:en name)
                                        :photo-path       photo-path
                                        :public-key       public-key

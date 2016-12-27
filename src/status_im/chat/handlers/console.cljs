@@ -47,7 +47,7 @@
 
 (register-handler :console-respond-command
   (u/side-effect!
-    (fn [_ [_ {:keys [command] :as parameters}]]
+    (fn [_ [_ {:keys [command]}]]
       (let [{:keys [command handler-data]} command]
         (when command
           (let [{:keys [name]} command]

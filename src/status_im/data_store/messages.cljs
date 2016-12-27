@@ -84,7 +84,7 @@
                   message))))))
 
 (defn get-last-message
-  [db chat-id]
+  [chat-id]
   (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
     (if (command-type? content-type)
       (clojure.core/update message :content str-to-map)

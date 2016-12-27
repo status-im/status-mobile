@@ -6,7 +6,7 @@
             [taoensso.timbre :as log]))
 
 (defn store-request!
-  [{:keys [new-request] :as db}]
+  [{:keys [new-request]}]
   (requests/save new-request))
 
 (defn add-request

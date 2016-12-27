@@ -281,9 +281,8 @@
             (messages/update message)))))))
 
 (defn save-message-clock-value!
-  [{:keys [message-extras] :as db}
-   [_ {:keys [from]
-       {:keys [message-id clock-value]} :payload}]]
+  [{:keys [message-extras]}
+   [_ {{:keys [message-id clock-value]} :payload}]]
   (when-let [{old-clock-value :clock-value
               :as             message} (merge (messages/get-by-id message-id)
                                               (get message-extras message-id))]
@@ -330,7 +329,7 @@
 
 (register-handler :message-clock-value-request
   (u/side-effect!
-   (fn [db [_ {:keys [from] {:keys [message-id]} :payload}]]
+   (fn [_ [_ {:keys [from] {:keys [message-id]} :payload}]]
      (let [{:keys [chat-id]} (messages/get-by-id message-id)
            message-overhead (chats/get-message-overhead chat-id)
            last-clock-value (messages/get-last-clock-value chat-id)]
@@ -346,11 +345,9 @@
 (register-handler :message-clock-value
   (after save-message-clock-value!)
   (fn [{:keys [message-extras] :as db}
-       [_ {:keys [from]
-           {:keys [message-id clock-value]} :payload}]]
-    (if-let [{old-clock-value :clock-value
-              :as             message} (merge (messages/get-by-id message-id)
-                                              (get message-extras message-id))]
+       [_ {{:keys [message-id clock-value]} :payload}]]
+    (if-let [{old-clock-value :clock-value} (merge (messages/get-by-id message-id)
+                                                   (get message-extras message-id))]
       (if (> clock-value old-clock-value)
         (assoc-in db [:message-extras message-id] {:clock-value clock-value
                                                    :show?       true})

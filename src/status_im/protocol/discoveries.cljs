@@ -47,7 +47,7 @@
     (l/message-listener (dissoc options :identity))))
 
 (defn stop-watching-user!
-  [{:keys [web3 identity] :as options}]
+  [{:keys [web3 identity]}]
   (f/remove-filter!
     web3
     {:from   identity

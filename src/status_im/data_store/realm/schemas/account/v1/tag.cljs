@@ -6,5 +6,5 @@
              :properties {:name  "string"
                           :count {:type "int" :optional true :default 0}}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating tag schema"))

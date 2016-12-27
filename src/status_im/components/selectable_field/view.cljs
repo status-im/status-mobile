@@ -14,7 +14,7 @@
   (r/set-state component {:focused? true}))
 
 (defn- on-selection-change
-  [event component]
+  [event _]
   (let [selection (.-selection (.-nativeEvent event))
         start (.-start selection)
         end (.-end selection)]

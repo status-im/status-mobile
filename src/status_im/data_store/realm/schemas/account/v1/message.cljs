@@ -32,5 +32,5 @@
                           :show?          {:type    :bool
                                            :default true}}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating message schema"))
