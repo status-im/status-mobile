@@ -7,7 +7,7 @@
             [status-im.models.commands :refer [parse-command-message-content]]
             [status-im.chats-list.styles :as st]
             [status-im.utils.utils :refer [truncate-str]]
-            [status-im.i18n :refer [label label-pluralize]]
+            [status-im.i18n :refer [get-contact-translated label label-pluralize]]
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id
@@ -80,7 +80,8 @@
                                          online group-chat contacts] :as chat}]
   (let [last-message (or (first (sort-by :clock-value > (:messages chat)))
                          last-message)
-        name         (or name (generate-gfy))]
+        name         (or (get-contact-translated chat-id :name name)
+                         (generate-gfy))]
     [view st/chat-container
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
