@@ -60,12 +60,12 @@
         (let [{:keys [message-id status hashtags profile]} payload
               {:keys [name profile-image]} profile
               discover {:message-id   message-id
-                         :name         name
-                         :photo-path   profile-image
-                         :status       status
-                         :whisper-id   from
-                         :tags         (map #(hash-map :name %) hashtags)
-                         :created-at   (time/now-ms)}]
+                        :name         name
+                        :photo-path   profile-image
+                        :status       status
+                        :whisper-id   from
+                        :tags         (map #(hash-map :name %) hashtags)
+                        :created-at   (time/now-ms)}]
           (dispatch [:add-discover discover]))))))
 
 (register-handler :start-requesting-discoveries

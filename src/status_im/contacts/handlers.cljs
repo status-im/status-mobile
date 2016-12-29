@@ -65,22 +65,37 @@
 
 (register-handler :stop-watching-contact (u/side-effect! stop-watching-contact))
 
-(defn send-contact-request
-  [{:keys [current-public-key web3 current-account-id accounts]} [_ contact]]
+(defn send-contact
+  [{:keys [current-public-key web3 current-account-id accounts]} [_ contact recovering?]]
   (let [{:keys [whisper-identity]} contact
         {:keys [name photo-path updates-public-key updates-private-key status]}
         (get accounts current-account-id)]
-    (protocol/contact-request!
+    (protocol/send-contact!
       {:web3    web3
        :message {:from       current-public-key
                  :to         whisper-identity
                  :message-id (random/id)
-                 :payload    {:contact {:name          name
-                                        :profile-image photo-path
-                                        :address       current-account-id
-                                        :status        status}
-                              :keypair {:public  updates-public-key
-                                        :private updates-private-key}}}})))
+                 :payload    {:contact     {:name          name
+                                            :profile-image photo-path
+                                            :address       current-account-id
+                                            :status        status}
+                              :keypair     {:public  updates-public-key
+                                            :private updates-private-key}}}})))
+
+(register-handler :send-contact send-contact)
+
+(defn send-updates-keys
+  [{:keys [current-public-key web3 current-account-id accounts]} [_ to]]
+  (let [{:keys [updates-public-key updates-private-key]} (get accounts current-account-id)] 
+    (protocol/send-updates-keys!
+     {:web3    web3
+      :message {:from       current-public-key
+                :to         to
+                :message-id (random/id)
+                :payload    {:keypair {:public  updates-public-key
+                                       :private updates-private-key}}}})))
+
+(register-handler :send-updates-keys send-updates-keys)
 
 (register-handler :update-contact!
   (fn [db [_ {:keys [whisper-identity] :as contact}]]
@@ -203,7 +218,7 @@
 (register-handler ::prepare-contact
   (-> add-new-contact
       ((after save-contact))
-      ((after send-contact-request))))
+      ((after send-contact))))
 
 (register-handler ::update-pending-contact
   (-> add-new-contact
