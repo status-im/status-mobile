@@ -62,7 +62,8 @@
                                                          :output-dir         "target/ios-prod"
                                                          :static-fns         true
                                                          :optimize-constants true
-                                                         :optimizations      :simple
+                                                         :optimizations      :advanced
+                                                         :externs            ["externs/externs.js"]
                                                          :closure-defines    {"goog.DEBUG" false}}}
                                          {:id           "android"
                                           :source-paths ["src" "env/prod"]
