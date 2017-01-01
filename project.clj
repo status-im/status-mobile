@@ -71,5 +71,6 @@
                                                          :output-dir         "target/android-prod"
                                                          :static-fns         true
                                                          :optimize-constants true
-                                                         :optimizations      :simple
+                                                         :optimizations      :advanced
+                                                         :externs            ["externs/externs.js"]
                                                          :closure-defines    {"goog.DEBUG" false}}}]}}})

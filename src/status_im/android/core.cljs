@@ -1,6 +1,4 @@
 (ns status-im.android.core
-  (:require-macros
-    [natal-shell.back-android :refer [add-event-listener remove-event-listener]])
   (:require [reagent.core :as r :refer [atom]]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
@@ -8,6 +6,7 @@
             [status-im.components.react :refer [app-registry
                                                 keyboard
                                                 orientation
+                                                back-android
                                                 view
                                                 modal
                                                 splash-screen]]
@@ -44,7 +43,7 @@
                          (when (< 1 (count @stack))
                            (dispatch [:navigate-back])
                            true)))]
-    (add-event-listener "hardwareBackPress" new-listener)))
+    (.addEventListener back-android "hardwareBackPress" new-listener)))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))

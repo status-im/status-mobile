@@ -12,6 +12,7 @@
 (def linear-gradient-module (js/require "react-native-linear-gradient"))
 (def dismiss-keyboard! (js/require "dismissKeyboard"))
 (def orientation (js/require "react-native-orientation"))
+(def back-android (get-react-property "BackAndroid"))
 (def drawer (js/require "react-native-drawer-layout"))
 
 (def splash-screen (.-SplashScreen native-modules))
