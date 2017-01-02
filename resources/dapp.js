@@ -15,7 +15,15 @@ status.command({
     params: [{
         name: "url",
         suggestions: function(params, context) {
-            return {webViewUrl: "dapp-url"};
+            var url = "dapp-url";
+
+            if (params.url && params.url !== "undefined" && params.url != "") {
+                url = params.url;
+                if (!/^[a-zA-Z-_]+:/.test(url)) {
+                    url = 'http://' + url;
+                }
+            }
+            return {webViewUrl: url};
         },
         type: status.types.TEXT
     }]
