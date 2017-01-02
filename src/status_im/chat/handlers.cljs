@@ -168,9 +168,12 @@
 (register-handler :set-chat-input-text
   (u/side-effect!
     (fn [{:keys [current-chat-id]} [_ text]]
-      (if (console? current-chat-id)
-        (dispatch [::check-input-for-commands text])
-        (dispatch [::check-suggestions current-chat-id text])))))
+      ;; fixes https://github.com/status-im/status-react/issues/594
+      ;; todo: revisit with more clever solution
+      (let [text' (if (= text "! ") "!" text)]
+        (if (console? current-chat-id)
+          (dispatch [::check-input-for-commands text'])
+          (dispatch [::check-suggestions current-chat-id text']))))))
 
 (register-handler :add-to-chat-input-text
   (u/side-effect!
