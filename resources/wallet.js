@@ -7,10 +7,10 @@ I18n.translations = {
 };
 
 function wallet(params, context) {
-    var url = 'http://status.im/dapps/wallet';
+    var url = 'https://status.im/dapps/wallet';
 
     if (context.debug) {
-        url = 'http://127.0.0.1:3450'
+        url = 'http://127.0.0.1:3450';
     }
 
     if (params.url && params.url !== "undefined" && params.url != "") {
