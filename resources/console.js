@@ -1559,43 +1559,6 @@ function jsHandler(params, context) {
     return result;
 }
 
-status.command({
-    name: "js",
-    title: "Javascript",
-    description: "Evaluate Javascript",
-    color: "#7099e6",
-    params: [{
-        name: "code",
-        type: status.types.TEXT,
-        suggestions: jsSuggestions,
-        placeholder: "Code"
-    }],
-    preview: function (params) {
-        return status.components.text(
-            {},
-            params.code
-        );
-    },
-    validator: function (params) {
-        var error = null;
-        lastMessage = params.code;
-        try {
-            eval(params.code);
-        } catch(e) {
-            error = e;
-        }
-        if (error) {
-            var error = status.components.validationMessage(
-                "Invalid js",
-                error
-            );
-
-            return {errors: [error]};
-        }
-    },
-    handler: jsHandler
-});
-
 var phones = [ // TODO this is supposed to be regionalised
     {
         number: "89171111111",
