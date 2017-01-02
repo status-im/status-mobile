@@ -33,7 +33,8 @@
     [status-im.translations.zh-hant :as zh-hant]
     [status-im.translations.zh-wuu :as zh-wuu]
     [status-im.translations.zh-yue :as zh-yue]
-    [status-im.utils.utils :as u]))
+    [status-im.utils.utils :as u]
+    [status-im.utils.js-resources :refer [default-contacts]]))
 
 (def i18n (js/require "react-native-i18n"))
 (set! (.-fallbacks i18n) true)
@@ -91,3 +92,12 @@
        (str "t/status-")
        (keyword)
        (label)))
+
+(def locale
+  (.-locale i18n))
+
+(defn get-contact-translated [contact-id key fallback]
+  (let [translation #(get-in default-contacts [(keyword contact-id) key (keyword %)])]
+    (or (translation locale)
+        (translation (subs locale 0 2))
+        fallback)))

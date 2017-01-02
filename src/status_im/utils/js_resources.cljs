@@ -1,7 +1,9 @@
 (ns ^:figwheel-always status-im.utils.js-resources
-  (:require-macros [status-im.utils.slurp :refer [slurp]]))
+  (:require-macros [status-im.utils.slurp :refer [slurp]])
+  (:require [status-im.utils.types :refer [json->clj]]))
 
-(def default-contacts-js (slurp "resources/default_contacts.json"))
+(def default-contacts (-> (slurp "resources/default_contacts.json")
+                          (json->clj)))
 
 (def commands-js (slurp "resources/commands.js"))
 (def console-js (slurp "resources/console.js"))

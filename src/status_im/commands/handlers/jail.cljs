@@ -9,6 +9,7 @@
             [status-im.components.react :as r]
             [status-im.models.commands :as cm]
             [status-im.constants :refer [console-chat-id]]
+            [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log]))
 
 (defn render-command
@@ -47,7 +48,7 @@
         {:keys [dapp? dapp-url]} (get contacts chat-id)
         hiccup       (generate-hiccup markup)
         web-view-url (if (and (= webViewUrl "dapp-url") dapp? dapp-url)
-                       dapp-url
+                       (get-contact-translated chat-id :dapp-url dapp-url)
                        webViewUrl)]
     (-> db
         (assoc-in [:suggestions chat-id] hiccup)

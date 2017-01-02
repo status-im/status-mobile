@@ -6,7 +6,9 @@
             [status-im.components.react :refer [view
                                                 text
                                                 icon]]
-            [status-im.i18n :refer [label label-pluralize]]
+            [status-im.i18n :refer [get-contact-translated
+                                    label
+                                    label-pluralize]]
             [status-im.chat.styles.screen :as st]
             [status-im.components.refreshable-text.view :refer [refreshable-text]]
             [status-im.utils.datetime :as time]
@@ -75,7 +77,8 @@
               :font            :toolbar-title}
         (if (str/blank? @name)
           (generate-gfy)
-          (or @name (label :t/chat-name)))]
+          (or (get-contact-translated @chat-id :name @name)
+              (label :t/chat-name)))]
        (if @group-chat
          [group-last-activity {:contacts   @contacts
                                :sync-state @sync-state}]
