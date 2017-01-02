@@ -16,10 +16,7 @@
     :api-url "http://faucet.ropsten.be:3001/donate/0x%s"}
    {:name    "http://46.101.129.137:3001"
     :type    :api
-    :api-url "http://46.101.129.137:3001/donate/0x%s"}
-   {:name       "https://zerogox.com/ethereum/wei_faucet"
-    :type       :prefill
-    :prefill-js "document.getElementById('edit-ethereum-address').value='%s';"}])
+    :api-url "http://46.101.129.137:3001/donate/0x%s"}])
 
 (defn faucet-by-name [faucet-name]
   (->> faucets
