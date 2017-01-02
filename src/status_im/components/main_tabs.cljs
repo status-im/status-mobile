@@ -71,23 +71,28 @@
         n (get-tab-index view-id)]
     (- n p)))
 
-(defn on-scroll-end [swiped? dragging? scroll-ended]
+(defonce scrolling? (atom false))
+
+(defn on-scroll-end [swiped? scroll-ended view-id]
   (fn [_ state]
-    (a/put! scroll-ended true)
-    (when @dragging?
-      (reset! dragging? false)
-      (let [{:strs [index]} (js->clj state)]
+    (when @scrolling?
+      (a/put! scroll-ended true))
+    (let [{:strs [index]} (js->clj state)
+          new-view-id (index->tab index)]
+      (when-not (= view-id new-view-id)
         (reset! swiped? true)
-        (dispatch [:navigate-to-tab (index->tab index)])))))
+        (dispatch [:navigate-to-tab new-view-id])))))
 
 (defn start-scrolling-loop
   "Loop that synchronizes tabs scrolling to avoid an inconsistent state."
   [scroll-start scroll-ended]
   (am/go-loop [[swiper to] (a/<! scroll-start)]
     ;; start scrolling
+    (reset! scrolling? true)
     (.scrollBy swiper to)
     ;; lock loop until scroll ends
-    (a/<! scroll-ended)
+    (a/alts! [scroll-ended (a/timeout 2000)])
+    (reset! scrolling? false)
     (recur (a/<! scroll-start))))
 
 (defn main-tabs []
@@ -95,7 +100,6 @@
         prev-view-id (subscribe [:get :prev-view-id])
         main-swiper  (r/atom nil)
         swiped?      (r/atom false)
-        dragging?    (r/atom false)
         scroll-start (a/chan 10)
         scroll-ended (a/chan 10)]
     (r/create-class
@@ -120,8 +124,7 @@
                        {:index                  (get-tab-index @view-id)
                         :loop                   false
                         :ref                    #(reset! main-swiper %)
-                        :onScrollBeginDrag      #(reset! dragging? true)
-                        :on-momentum-scroll-end (on-scroll-end swiped? dragging? scroll-ended)})
+                        :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)})
               [chats-list]
               [discover (= @view-id :discover)]
               [contact-list (= @view-id :contact-list)]]
