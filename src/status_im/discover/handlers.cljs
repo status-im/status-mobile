@@ -17,12 +17,6 @@
         (assoc :tags [])
         (assoc :discoveries {}))))
 
-(defn identities [contacts]
-  (->> (map second contacts)
-       (remove (fn [{:keys [dapp? pending]}]
-                 (or pending dapp?)))
-       (map :whisper-identity)))
-
 (defmethod nav/preload-data! :discover
   [db _]
   (-> db
@@ -46,7 +40,7 @@
                                      :hashtags   (vec hashtags)
                                      :profile    {:name          name
                                                   :profile-image photo-path}}}]
-        (doseq [id (identities contacts)]
+        (doseq [id (u/identities contacts)]
           (protocol/send-status!
             {:web3    web3
              :message (assoc message :to id)}))
@@ -80,7 +74,7 @@
 (register-handler :request-discoveries
   (u/side-effect!
     (fn [{:keys [current-public-key web3 contacts]}]
-      (doseq [id (identities contacts)]
+      (doseq [id (u/identities contacts)]
         (when-not (protocol/message-pending? web3 :discoveries-request id)
           (protocol/send-discoveries-request!
             {:web3    web3

@@ -231,14 +231,15 @@
 
 (register-handler :set-contact-identity-from-qr set-contact-identity-from-qr)
 
-(register-handler :contact-update-received
+(register-handler
+  :contact-update-received
   (u/side-effect!
     (fn [{:keys [chats current-public-key] :as db} [_ {:keys [from payload]}]]
       (when (not= current-public-key from)
         (let [{:keys [content timestamp]} payload
               {:keys [status name profile-image]} (:profile content)
               prev-last-updated (get-in db [:contacts from :last-updated])]
-          (if (<= prev-last-updated timestamp)
+          (when (<= prev-last-updated timestamp)
             (let [contact {:whisper-identity from
                            :name             name
                            :photo-path       profile-image
@@ -249,12 +250,27 @@
                 (dispatch [:update-chat! {:chat-id from
                                           :name    name}])))))))))
 
-(register-handler :contact-online-received
+(register-handler
+  :update-keys-received
+  (u/side-effect!
+   (fn [db [_ {:keys [from payload]}]]
+     (let [{{:keys [public private]} :keypair
+            timestamp              :timestamp} payload
+           prev-last-updated (get-in db [:contacts from :keys-last-updated])]
+       (when (<= prev-last-updated timestamp)
+         (let [contact {:whisper-identity  from
+                        :public-key        public
+                        :private-key       private
+                        :keys-last-updated timestamp}]
+           (dispatch [:update-contact! contact])))))))
+
+(register-handler
+  :contact-online-received
   (u/side-effect!
     (fn [db [_ {:keys               [from]
-                {:keys [timestamp]} :payload}]]
+                {{:keys [timestamp]} :content} :payload}]]
       (let [prev-last-online (get-in db [:contacts from :last-online])]
-        (when (< prev-last-online timestamp)
+        (when (and timestamp (< prev-last-online timestamp))
           (protocol/reset-pending-messages! from)
           (dispatch [:update-contact! {:whisper-identity from
                                        :last-online      timestamp}]))))))
@@ -265,9 +281,11 @@
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
       (dispatch [:update-chat! {:chat-id          whisper-identity
                                 :pending-contact? true}])
-      (dispatch [:update-contact! (assoc contact :pending true)]))))
+      (dispatch [:update-contact! (assoc contact :pending true)])
+      (dispatch [:account-update-keys]))))
 
-(register-handler :open-contact-menu
+(register-handler
+  :open-contact-menu
   (u/side-effect!
     (fn [_ [_ list-selection-fn {:keys [name] :as contact}]]
       (list-selection-fn {:title name
