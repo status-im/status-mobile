@@ -407,5 +407,7 @@
   (u/side-effect!
     (fn [_ [_ error]]
       (.log js/console error)
-      (when (re-find (re-pattern "Could not connect to the server.") (.-message error))
-        (status/restart-rpc)))))
+      (let [message (.-message error)]
+        (when (or (re-find (re-pattern "Could not connect to the server.") message)
+                  (re-find (re-pattern "Failed to connect") message))
+          (status/restart-rpc))))))
