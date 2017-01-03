@@ -55,6 +55,13 @@
          {:margin-left  8
           :margin-right 4}))
 
+(defn qr-code-container [dimensions]
+  {:background-color "white"
+   :width            (:width dimensions)
+   :align-items      :center
+   :justify-content  :center
+   :padding          40})
+
 (def photo-image
   {:width         36
    :height        36
@@ -77,6 +84,13 @@
    :flexDirection  :column
    :alignItems     :center
    :justifyContent :center})
+
+(def online-image-container
+  {:width           40
+   :height          40
+   :margin-right    4
+   :align-items     :center
+   :justify-content :center})
 
 (def bottom-actions-container
   {:position :absolute

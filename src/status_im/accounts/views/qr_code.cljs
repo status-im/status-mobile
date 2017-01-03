@@ -32,19 +32,16 @@
              :number-of-lines 1} name]]
      [view st/online-container
       [touchable-highlight {:onPress #(dispatch [:navigate-back])}
-       [image {:source {:uri :icon_close_white}
-               :style  icon-close}]]]]]
+       [view st/online-image-container
+        [image {:source {:uri :icon_close_white}
+                :style  icon-close}]]]]]]
 
    [view {:style     st/qr-code
           :on-layout #(let [layout (.. % -nativeEvent -layout)]
                        (dispatch [:set-in [:qr-modal :dimensions] {:width  (.-width layout)
                                                                    :height (.-height layout)}]))}
     (when (:width dimensions)
-      [view {:style {:background-color "white"
-                     :width            (:width dimensions)
-                     :align-items      :center
-                     :justify-content  :center
-                     :padding          40}}
+      [view {:style (st/qr-code-container dimensions)}
        [qr-code {:value (if amount?
                           (prn-str {:address (get contact qr-source)
                                     :amount  amount})
