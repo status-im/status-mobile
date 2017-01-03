@@ -2,11 +2,11 @@ PODS:
   - Instabug (6.0.4)
 
 DEPENDENCIES:
-  - Instabug
+  - Instabug (~> 6.0.0)
 
 SPEC CHECKSUMS:
   Instabug: 7431c30f6e8883b2e6a9ce4b922ed51cbb25ad19
 
-PODFILE CHECKSUM: 392b4ab0b282276a6abcfc179a215dda2de3962e
+PODFILE CHECKSUM: da0b8d375a7fe107abe5b59bce9340e2fd528084
 
 COCOAPODS: 1.1.1
