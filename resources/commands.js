@@ -17,7 +17,7 @@ I18n.translations = {
         validation_title: 'Amount',
         validation_amount_specified: 'Amount must be specified',
         validation_invalid_number: 'Amount is not valid number',
-        validation_insufficient_amount: 'Not enough ETH on balance ('
+        validation_insufficient_amount: 'Insufficient funds for gas * price + value (balance '
     },
     ru: {
         location_title: 'Местоположение',
@@ -764,7 +764,12 @@ function validateSend(params, context) {
     }
 
     var balance = web3.eth.getBalance(context.from);
-    if (bn(val).greaterThan(bn(balance))) {
+    var estimatedGas = web3.eth.estimateGas({
+        from: context.from,
+        to: context.to,
+        value: val
+    });
+    if (bn(val).plus(bn(estimatedGas)).greaterThan(bn(balance))) {
         return {
             errors: [
                 status.components.validationMessage(
