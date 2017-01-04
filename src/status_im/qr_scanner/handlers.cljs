@@ -36,4 +36,6 @@
 (register-handler :set-qr-code
   (-> (u/side-effect! handle-qr-request)
       ((enrich clear-qr-request))
-      ((after #(dispatch [:navigate-back])))))
+      ((after (fn [{:keys [view-id]}]
+                (when (= :qr-scanner view-id)
+                  (dispatch [:navigate-back])))))))
