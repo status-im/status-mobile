@@ -82,6 +82,8 @@
                               :keypair {:public  updates-public-key
                                         :private updates-private-key}}}})))
 
+(register-handler :send-contact-request! (u/side-effect! send-contact-request))
+
 (register-handler :update-contact!
   (fn [db [_ {:keys [whisper-identity] :as contact}]]
     (if (contacts/exists? whisper-identity)
