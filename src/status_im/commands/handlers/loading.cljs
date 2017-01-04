@@ -20,7 +20,8 @@
   (let [identity (or identity current-chat-id)
         contact  (or (get contacts identity)
                      {:whisper-identity identity})]
-    (dispatch [::fetch-commands! contact]))
+    (when identity
+      (dispatch [::fetch-commands! contact])))
   ;; todo uncomment
   #_(if-let [{:keys [file]} (commands/get-by-chat-id identity)]
       (dispatch [::parse-commands! identity file])

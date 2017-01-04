@@ -410,4 +410,5 @@
       (let [message (.-message error)]
         (when (or (re-find (re-pattern "Could not connect to the server.") message)
                   (re-find (re-pattern "Failed to connect") message))
-          (status/restart-rpc))))))
+          (status/restart-rpc)
+          (dispatch [:load-commands!]))))))
