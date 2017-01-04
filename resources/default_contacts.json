@@ -13,6 +13,17 @@
         "dapp?": true
     },
 
+    "0x0428c9d6c1aaaa8369a7c63819684f30e34396dc0907d49afeac85a0a774ccb919b3482097d992e66bcc538e7a0c6acf874c77748f396f53c0a102e10d1a37765b":
+    {
+        "name":
+        {
+            "en": "Jarrad"
+        },
+        "photo-path": "contacts://jarrad",
+        "add-chat?": false,
+        "dapp?": false
+    },
+
     "auction-house":
     {
         "name":
@@ -24,6 +35,48 @@
         "dapp-url":
         {
             "en": "http://auctionhouse.dappbench.com"
+        }
+    },
+
+    "flight-delays-suck":
+    {
+        "name":
+        {
+            "en": "Flight Delays Suck"
+        },
+        "photo-path": "contacts://flight-delays-suck",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://fdd.etherisc.com"
+        }
+    },
+
+    "mkr-market":
+    {
+        "name":
+        {
+            "en": "Maker Market"
+        },
+        "photo-path": "contacts://mkr-market",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://mkr.market"
+        }
+    },
+
+    "oaken-water-meter":
+    {
+        "name":
+        {
+            "en": "Oaken Water Meter"
+        },
+        "photo-path": "contacts://oaken-water-meter",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://waterflowdapp.projectoaken.com"
         }
     }
 }
