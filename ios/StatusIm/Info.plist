@@ -46,6 +46,8 @@
 			</dict>
 		</dict>
 	</dict>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Need microphone access for Instabug and Audio Messages</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need to access your camera</string>
 	<key>NSContactsUsageDescription</key>
