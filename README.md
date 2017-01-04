@@ -5,6 +5,9 @@
 
 Join us in creating a browser, messenger, and gateway to a decentralised world. Status is a free and open source mobile client targeting Android & iOS built entirely on [Ethereum](https://ethereum.org/) technologies. That's right, no middle men and `go-ethereum` running directly on your device.
 
+[![Getting started with Status](https://i.imgur.com/C0aZZEL.jpg)](https://www.youtube.com/watch?v=oDCSEmS9c3o "Getting started with Status")
+
+
 ## Why?
 
 We believe in a medium of pure free trade, economies with fair, permissionless access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
