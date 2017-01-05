@@ -9,7 +9,7 @@ import com.android.build.OutputFile
  * cycle. By default, bundleDebugJsAndAssets is skipped, as in debug/dev mode we prefer to load the
  * bundle directly from the development server. Below you can see all the possible configurations
  * and their defaults. If you decide to add a configuration block, make sure to add it before the
- * `apply from: "react.gradle"` line.
+ * `apply from: "../../node_modules/react-native/react.gradle"` line.
  *
  * project.ext.react = [
  *   // the name of the generated asset file containing your JS bundle
@@ -26,7 +26,9 @@ import com.android.build.OutputFile
  *
  *   // whether to bundle JS and assets in another build variant (if configured).
  *   // See http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Build-Variants
- *   // The configuration property is in the format 'bundleIn${productFlavor}${buildType}'
+ *   // The configuration property can be in the following formats
+ *   //         'bundleIn${productFlavor}${buildType}'
+ *   //         'bundleIn${buildType}'
  *   // bundleInFreeDebug: true,
  *   // bundleInPaidRelease: true,
  *   // bundleInBeta: true,
@@ -56,12 +58,14 @@ import com.android.build.OutputFile
  *   inputExcludes: ["android/**", "ios/**"]
  * ]
  */
+project.ext.react = [
+        nodeExecutableAndArgs: ["node", "--max-old-space-size=4096"]
+]
 
-apply from: "react.gradle"
+apply from: "../../node_modules/react-native/react.gradle"
 
 /**
- * Set this to true to create three separate APKs instead of one:
- *   - A universal APK that works on all devices
+ * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
  *   - An APK that only works on x86 devices
  * The advantage is the size of the APK is reduced by about 4MB.
@@ -75,32 +79,67 @@ def enableSeparateBuildPerCPUArchitecture = false
  */
 def enableProguardInReleaseBuilds = false
 
+def getVersionCode = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        exec {
+            commandLine "git", "rev-list", "--count", "HEAD"
+            standardOutput = stdOut
+        }
+        return stdOut.toString().toInteger()
+    }
+}
+
+def getVersionName = { ->
+    new ByteArrayOutputStream().withStream { stdOut ->
+        exec {
+            commandLine "git", "describe", "--tags", "--always", "--dirty=+"
+            standardOutput = stdOut
+        }
+        return stdOut.toString().replaceAll("\\s","")
+    }
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.syngim"
-        minSdkVersion 16
+        applicationId "im.status.ethereum"
+        minSdkVersion 18
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode getVersionCode()
+        versionName getVersionName()
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+    dexOptions {
+        jumboMode true
+    }
+    signingConfigs {
+        release {
+            storeFile file(STATUS_RELEASE_STORE_FILE)
+            storePassword STATUS_RELEASE_STORE_PASSWORD
+            keyAlias STATUS_RELEASE_KEY_ALIAS
+            keyPassword STATUS_RELEASE_KEY_PASSWORD
+        }
+    }
     splits {
         abi {
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk false
             reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
             include "armeabi-v7a", "x86"
         }
     }
     buildTypes {
+        debug {
+            versionNameSuffix "-SNAPSHOT"
+        }
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
@@ -119,7 +158,12 @@ android {
 }
 
 dependencies {
-    compile project(':randombytes')
+    compile project(':instabug-reactnative')
+    compile project(':react-native-splash-screen')
+    compile project(':react-native-image-resizer')
+    compile project(':react-native-dialogs')
+    compile project(':react-native-randombytes')
+    compile project(':react-native-android-sms-listener')
     compile project(':realm')
     compile project(':react-native-vector-icons')
     compile fileTree(dir: "libs", include: ["*.jar"])
@@ -127,8 +171,21 @@ dependencies {
     compile "com.facebook.react:react-native:+"  // From node_modules
     compile project(':react-native-contacts')
     compile project(':react-native-i18n')
-//    compile(name:'geth', ext:'aar')
-    compile(group: 'syng-im', name: 'android-geth', version: '1.4.0-201603131817-92d65cf', ext: 'aar')
+    compile project(':react-native-linear-gradient')
+    compile project(':react-native-camera')
+    compile project(':react-native-status')
+    compile project(':react-native-orientation')
+    compile project(':react-native-fs')
+    compile project(':react-native-image-crop-picker')
+    compile project(':react-native-webview-bridge')
+    compile project(':react-native-share')
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
+// Run this once to be able to run the application with BUCK
+// puts all compile dependencies into folder libs for BUCK to use
+task copyDownloadableDepsToLibs(type: Copy) {
+  from configurations.compile
+  into 'libs'
+}
+

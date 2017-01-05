@@ -5,6 +5,7 @@
  */
 
 var CLOSURE_UNCOMPILED_DEFINES = null;
+var debugEnabled = false;
 
 var config = {
     basePath: "target/",
@@ -12,14 +13,26 @@ var config = {
     serverPort: 8081
 };
 
-var React = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
+var WebSocket = require('WebSocket');
 var self;
 var scriptQueue = [];
 var serverHost = null; // will be set dynamically
 var fileBasePath = null; // will be set dynamically
 var evaluate = eval; // This is needed, direct calls to eval does not work (RN packager???)
 var externalModules = {};
-var evalListeners = []; // functions to be called when a script is evaluated
+var evalListeners = [ // Functions to be called after each js file is loaded and evaluated
+    function (url) {
+        if (url.indexOf('jsloader') > -1) {
+            shimJsLoader();
+        }
+    },
+    function (url) {
+        if (url.indexOf('/figwheel/client/socket') > -1) {
+            setCorrectWebSocketImpl();
+        }
+    }];
 
 var figwheelApp = function (platform, devHost) {
     return React.createClass({
@@ -30,9 +43,9 @@ var figwheelApp = function (platform, devHost) {
             if (!this.state.loaded) {
                 var plainStyle = {flex: 1, alignItems: 'center', justifyContent: 'center'};
                 return (
-                    <React.View style={plainStyle}>
-                        <React.Text>Waiting for Figwheel to load files.</React.Text>
-                    </React.View>
+                    <ReactNative.View style={plainStyle}>
+                        <ReactNative.Text>Waiting for Figwheel to load files.</ReactNative.Text>
+                    </ReactNative.View>
                 );
             }
             return this.state.root;
@@ -40,7 +53,7 @@ var figwheelApp = function (platform, devHost) {
         componentDidMount: function () {
             var app = this;
             if (typeof goog === "undefined") {
-                loadApp(platform, devHost, function(appRoot) {
+                loadApp(platform, devHost, function (appRoot) {
                     app.setState({root: appRoot, loaded: true})
                 });
             }
@@ -48,20 +61,25 @@ var figwheelApp = function (platform, devHost) {
     })
 };
 
+function logDebug(msg) {
+    if (debugEnabled) {
+        console.log(msg);
+    }
+}
+
 // evaluates js code ensuring proper ordering
 function customEval(url, javascript, success, error) {
     if (scriptQueue.length > 0) {
         if (scriptQueue[0] === url) {
             try {
                 evaluate(javascript);
-                console.info('Evaluated: ' + url);
+                logDebug('Evaluated: ' + url);
                 scriptQueue.shift();
                 evalListeners.forEach(function (listener) {
                     listener(url)
                 });
                 success();
             } catch (e) {
-                console.error('Evaluation error in: ' + url);
                 console.error(e);
                 error();
             }
@@ -81,7 +99,7 @@ var isChrome = function () {
 };
 
 function asyncImportScripts(url, success, error) {
-    console.info('(asyncImportScripts) Importing: ' + url);
+    logDebug('(asyncImportScripts) Importing: ' + url);
     scriptQueue.push(url);
     fetch(url)
         .then(function (response) {
@@ -91,7 +109,6 @@ function asyncImportScripts(url, success, error) {
             return customEval(url, responseText, success, error);
         })
         .catch(function (error) {
-            console.error('Error loading script, please check your config setup.');
             console.error(error);
             return error();
         });
@@ -100,12 +117,13 @@ function asyncImportScripts(url, success, error) {
 function syncImportScripts(url, success, error) {
     try {
         importScripts(url);
-        console.info('Evaluated: ' + url);
+        logDebug('Evaluated: ' + url);
         evalListeners.forEach(function (listener) {
             listener(url)
         });
         success();
     } catch (e) {
+        console.error(e);
         error()
     }
 }
@@ -123,7 +141,7 @@ function importJs(src, success, error) {
 
     var file = fileBasePath + '/' + src;
 
-    console.info('(importJs) Importing: ' + file);
+    logDebug('(importJs) Importing: ' + file);
     if (isChrome()) {
         syncImportScripts(serverBaseUrl("localhost") + '/' + file, success, error);
     } else {
@@ -143,55 +161,73 @@ function interceptRequire() {
     };
 }
 
-// do not show debug messages in yellow box
-function debugToLog() {
-    console.debug = console.log;
+function compileWarningsToYellowBox() {
+    var log = window.console.log;
+    var compileWarningRx = /Figwheel: Compile/;
+    var compileExceptionRx = /Figwheel: Compile Exception/;
+    var errorInFileRx = /Error on file/;
+    var isBuffering = false;
+    var compileExceptionBuffer = "";
+    window.console.log = function (msg) {
+        log.apply(window.console, arguments);
+        if (compileExceptionRx.test(msg)) { // enter buffering mode to get all the messages for exception
+            isBuffering = true;
+            compileExceptionBuffer = msg + "\n";
+        } else if (errorInFileRx.test(msg) && isBuffering) { // exit buffering mode and log buffered messages to YellowBox
+            isBuffering = false;
+            console.warn(compileExceptionBuffer + msg);
+            compileExceptionBuffer = "";
+        } else if (isBuffering) { //log messages buffering mode
+            compileExceptionBuffer += msg + "\n";
+        } else if (compileWarningRx.test(msg)) {
+            console.warn(msg);
+        }
+    };
 }
 
 function serverBaseUrl(host) {
     return "http://" + host + ":" + config.serverPort
 }
 
+function setCorrectWebSocketImpl() {
+    figwheel.client.socket.get_websocket_imp = function () {
+        return WebSocket;
+    };
+}
+
 function loadApp(platform, devHost, onLoadCb) {
     serverHost = devHost;
     fileBasePath = config.basePath + platform;
-
-    evalListeners.push(function (url) {
-        if (url.indexOf('jsloader') > -1) {
-            shimJsLoader();
-        }
-    });
 
     // callback when app is ready to get the reloadable component
     var mainJs = '/env/' + platform + '/main.js';
     evalListeners.push(function (url) {
         if (url.indexOf(mainJs) > -1) {
             onLoadCb(env[platform].main.root_el);
-            console.log('Done loading Clojure app');
+            console.info('Done loading Clojure app');
         }
     });
 
     if (typeof goog === "undefined") {
-        console.log('Loading Closure base.');
+        console.info('Loading Closure base.');
         interceptRequire();
+        compileWarningsToYellowBox();
         importJs('goog/base.js', function () {
             shimBaseGoog();
-            fakeLocalStorageAndDocument();
             importJs('cljs_deps.js');
             importJs('goog/deps.js', function () {
-                debugToLog();
                 // This is needed because of RN packager
                 // seriously React packager? why.
                 var googreq = goog.require;
 
-                googreq('figwheel.connect');
+                googreq('figwheel.connect.' + platform);
             });
         });
     }
 }
 
 function startApp(appName, platform, devHost) {
-    React.AppRegistry.registerComponent(
+    ReactNative.AppRegistry.registerComponent(
         appName, () => figwheelApp(platform, devHost));
 }
 
@@ -208,39 +244,6 @@ function shimBaseGoog() {
     goog.writeScriptTag_ = function (src, optSourceText) {
         importJs(src);
         return true;
-    };
-    goog.inHtmlDocument_ = function () {
-        return true;
-    };
-}
-
-function fakeLocalStorageAndDocument() {
-    window.localStorage = {};
-    window.localStorage.getItem = function () {
-        return 'true';
-    };
-    window.localStorage.setItem = function () {
-    };
-
-    window.document = {};
-    window.document.body = {};
-    window.document.body.dispatchEvent = function () {
-    };
-    window.document.createElement = function () {
-    };
-
-    if (typeof window.location === 'undefined') {
-        window.location = {};
-    }
-    console.debug = console.warn;
-    window.addEventListener = function () {
-    };
-    // make figwheel think that heads-up-display divs are there
-    window.document.querySelector = function (selector) {
-        return {};
-    };
-    window.document.getElementById = function (id) {
-        return {style:{}};
     };
 }
 

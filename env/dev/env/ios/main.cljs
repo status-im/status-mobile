@@ -1,9 +1,10 @@
  (ns ^:figwheel-no-load env.ios.main
   (:require [reagent.core :as r]
-            [syng-im.ios.core :as core]
-            [figwheel.client :as figwheel :include-macros true]))
+            [status-im.ios.core :as core]
+            [figwheel.client :as figwheel :include-macros true]
+            [cljs.pprint]))
 
- (enable-console-print!)
+(enable-console-print!)
 
 (def cnt (r/atom 0))
 (defn reloader [] @cnt [core/app-root])
@@ -11,7 +12,7 @@
 
 (figwheel/watch-and-reload
  :websocket-url "ws://localhost:3449/figwheel-ws"
- :heads-up-display true
+ :heads-up-display false
  :jsload-callback #(swap! cnt inc))
 
 (core/init)

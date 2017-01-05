@@ -1,5 +1,5 @@
 {
-  "name": "SyngIm",
+  "name": "StatusIm",
   "interface": "reagent",
   "androidHost": "10.0.3.2",
   "modules": [
@@ -7,15 +7,42 @@
     "react-native-invertible-scroll-view",
     "awesome-phonenumber",
     "realm",
-    "react-native-loading-spinner-overlay",
     "react-native-i18n",
     "realm/react-native",
     "react-native-action-button",
     "react-native-vector-icons/Ionicons",
+    "react-native-vector-icons/Octicons",
     "react-native-circle-checkbox",
-    "react-native-randombytes"
+    "react-native-randombytes",
+    "dismissKeyboard",
+    "react-native-linear-gradient",
+    "react-native-splash-screen",
+    "react-native-android-sms-listener",
+    "react-native-status",
+    "react-native-camera",
+    "react-native-qrcode",
+    "react-native-orientation",
+    "identicon.js",
+    "react-native-fs",
+    "react-native-dialogs",
+    "react-native-image-resizer",
+    "react-native-image-crop-picker",
+    "react-native-webview-bridge",
+    "react-native-drawer-layout",
+    "homoglyph-finder",
+    "web3",
+    "eccjs",
+    "chance",
+    "react-native-swiper",
+    "react-native-share",
+    "react-native-emoji-picker"
   ],
   "imageDirs": [
     "images"
-  ]
+  ],
+  "iosHost": "localhost",
+  "envRoots": {
+    "dev": "env/dev",
+    "prod": "env/prod"
+  }
 }
