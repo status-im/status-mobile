@@ -118,7 +118,7 @@ I18n.translations = {
         validation_amount_specified: '必须指定金额',
         validation_invalid_number: '金额不是有效数字',
         validation_insufficient_amount: 'ETH余额不足 ('
-    }, 
+    },
     'zh-yue': {
         location_title: '所在位置',
         location_description: '分享所在位置',
@@ -138,7 +138,7 @@ I18n.translations = {
         validation_amount_specified: '必須指定金額',
         validation_invalid_number: '指定金額並非有效數字',
         validation_insufficient_amount: '沒有足夠ETH餘額 ('
-    }, 
+    },
     'zh-wuu': {
         location_title: '位置',
         location_description: '分享您的位置',
@@ -178,6 +178,26 @@ I18n.translations = {
         validation_amount_specified: 'Bedrag moet worden opgegeven',
         validation_invalid_number: 'Bedrag is geen geldig nummer',
         validation_insufficient_amount: 'Niet genoeg ETH op saldo ('
+    },
+    fi: {
+        location_title: 'Sijainti',
+        location_description: 'Jaa sijaintisi',
+        location_address: 'Osoite',
+
+        browse_title: 'Selain',
+        browse_description: 'Avaa selain',
+
+        send_title: 'Lähetä ETH',
+        send_description: 'Lähetä maksu',
+
+        request_title: 'Pyydä ETH',
+        request_description: 'Pyydä maksua',
+        request_requesting: 'Pyydetään ',
+
+        validation_title: 'Määrä',
+        validation_amount_specified: 'Anna määrä',
+        validation_invalid_number: 'Annettu määrä ei ole numero',
+        validation_insufficient_amount: 'Ei tarpeeksi ETH katetta ('
     },
     fr: {
         location_title: 'Emplacement',
