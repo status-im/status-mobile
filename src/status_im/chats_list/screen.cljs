@@ -69,16 +69,19 @@
   [chats [:get :chats]]
   [view st/chats-container
    [toolbar-view]
-   [list-view {:dataSource      (to-datasource chats)
-               :renderRow       (fn [[id :as row] _ _]
-                                  (list-item ^{:key id} [chat-list-item row]))
-               :renderFooter    #(list-item [chat-shadow-item])
-               :renderSeparator #(list-item
-                                   (when (< %2 (- (count chats) 1))
-                                     ^{:key (str "separator-" %2)}
-                                     [view st/chat-separator-wrapper
-                                      [view st/chat-separator-item]]))
-               :style           st/list-container}]
+   (let [sorted-chats (sort-by (comp :timestamp :last-message last)
+                               >
+                               chats)]
+     [list-view {:dataSource      (to-datasource sorted-chats)
+                 :renderRow       (fn [[id :as row] _ _]
+                                    (list-item ^{:key id} [chat-list-item row]))
+                 :renderFooter    #(list-item [chat-shadow-item])
+                 :renderSeparator #(list-item
+                                    (when (< %2 (- (count chats) 1))
+                                      ^{:key (str "separator-" %2)}
+                                      [view st/chat-separator-wrapper
+                                       [view st/chat-separator-item]]))
+                 :style           st/list-container}])
    (when (get-in platform-specific [:chats :action-button?])
      [chats-action-button])
    [offline-view]])
