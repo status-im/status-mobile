@@ -5,6 +5,7 @@
             [clojure.string :as string]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.chat.suggestions :as suggestions]
+            [status-im.chat.constants :as chat-consts]
             [status-im.protocol.core :as protocol]
             [status-im.data-store.chats :as chats]
             [status-im.data-store.contacts :as contacts]
@@ -170,7 +171,7 @@
     (fn [{:keys [current-chat-id]} [_ text]]
       ;; fixes https://github.com/status-im/status-react/issues/594
       ;; todo: revisit with more clever solution
-      (let [text' (if (= text "! ") "!" text)]
+      (let [text' (if (= text (str chat-consts/command-char " ")) chat-consts/command-char text)]
         (if (console? current-chat-id)
           (dispatch [::check-input-for-commands text'])
           (dispatch [::check-suggestions current-chat-id text']))))))
@@ -468,7 +469,7 @@
 (register-handler :switch-command-suggestions!
   (u/side-effect!
     (fn [db]
-      (let [text (if (suggestions/typing-command? db) "" "!")]
+      (let [text (if (suggestions/typing-command? db) "" chat-consts/command-char)]
         (dispatch [:set-chat-input-text text])))))
 
 (defn remove-chat

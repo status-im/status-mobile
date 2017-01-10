@@ -12,6 +12,7 @@
                                                 touchable-highlight
                                                 get-dimensions]]
             [status-im.components.animation :as anim]
+            [status-im.chat.constants :as chat-consts]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
             [status-im.chat.styles.command-pill :as pill-st]
@@ -127,7 +128,7 @@
       [view (pill-st/pill command)
        [text {:style pill-st/pill-text
               :font  :default}
-        (str (if (= :command type) "!" "?") name)]]]
+        (str (if (= :command type) chat-consts/command-char "?") name)]]]
      (when icon-path
        [view st/command-image-view
         [icon icon-path st/command-image]])
