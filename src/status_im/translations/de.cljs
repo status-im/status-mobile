@@ -85,12 +85,13 @@
    :incorrect-code                        (str "Tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
    :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren"
                                                "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können")
-   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren!*Sie benötigen dies, um Ihren Account wiederherzustellen."
+   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren!* Sie benötigen dies, um Ihren Account wiederherzustellen."
    :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!*Sie benötigen dies, um Ihren Account wiederherzustellen."
    :written-down                          "Stellen Sie sicher, dass Sie es sicher aufgeschrieben haben"
    :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden"
+   :shake-your-phone                      "Bug gefunden oder Verbesserungsvorschlag? Einfach das Telefon ~schütteln~!"
    :intro-status                          "Chatten Sie mit mir, um Ihren Account einzurichten und Ihre Einstellungen zu ändern!"
-   :intro-message1                        "Willkommen beim Status\nTippen Sie auf diese nachricht, um Ihr Passwort einzurichten und loszulegen!"
+   :intro-message1                        "Willkommen bei Status\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
    :account-generation-message            "Eine Sekunde, ich muss wahnsinnig schwere Mathematik machen, um Ihr Konto zu generieren!"
 
    ;chats
