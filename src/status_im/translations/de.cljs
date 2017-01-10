@@ -37,7 +37,7 @@
 
    ;messages
    :status-sending                        "Absenden"
-   :status-pending                        "Anhängig"
+   :status-pending                        "In Bearbeitung"
    :status-sent                           "Verschickt"
    :status-seen-by-everyone               "Von allen gesehen"
    :status-seen                           "Gesehen"
@@ -68,27 +68,27 @@
    :phone-number                          "Telefonnumer"
    :email                                 "E-Mail"
    :profile-no-status                     "Kein Status"
-   :add-to-contacts                       "Zu Kontakten hinzufügen"
+   :add-to-contacts                       "Zu Kontakte hinzufügen"
    :error-incorrect-name                  "Bitte wählen Sie einen anderen Namen"
    :error-incorrect-email                 "Inkorrekte E-Mail"
 
    ;;make_photo
    :image-source-title                    "Profilfoto"
    :image-source-make-photo               "Fotografieren"
-   :image-source-gallery                  "Aus Galarie auswählen"
+   :image-source-gallery                  "Aus Galerie auswählen"
    :image-source-cancel                   "Abbrechen"
 
    ;sign-up
    :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
    :confirmation-code                     (str "Danke! Wir haben Ihnen eine Textnachricht mit einem Bestätigungscode "
                                                "geschickt. Bitte geben Sie den Code ein, damit wir Ihre Telefonnummer verifizieren können.")
-   :incorrect-code                        (str "Tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
-   :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren"
-                                               "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können")
-   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen dies, um Ihren Account wiederherzustellen."
-   :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!*Sie benötigen dies, um Ihren Account wiederherzustellen."
-   :written-down                          "Stellen Sie sicher, dass Sie es sicher aufgeschrieben haben"
-   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden"
+   :incorrect-code                        (str "Tut uns leid, der Code war nicht korrekt, bitte erneut eingeben.")
+   :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren "
+                                               "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können.")
+   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen diese, um Ihren Account wiederherzustellen."
+   :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!* Sie benötigen diese, um Ihren Account wiederherzustellen."
+   :written-down                          "Stellen Sie sicher, dass Sie sie sicher aufgeschrieben haben."
+   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden."
    :intro-status                          "Chatten Sie mit mir, um Ihren Account einzurichten und Ihre Einstellungen zu ändern!"
    :intro-message1                        "Willkommen beim Status.\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
    :account-generation-message            "Eine Sekunde, ich muss wahnsinnig schwierige Berechnungen durchführen, um Ihr Konto zu generieren!"
@@ -117,7 +117,7 @@
    :contacts-group-people                 "Leute"
    :contacts-group-new-chat               "Neuen Chat beginnen"
    :no-contacts                           "Noch keine Kontakte"
-   :show-qr                               "QR anzeigen"
+   :show-qr                               "QR-Code anzeigen"
 
    ;group-settings
    :remove                                "Entfernen"
@@ -175,7 +175,7 @@
    :import-qr                             "Import"
    :scan-qr                               "QR-Code scannen"
    :name                                  "Name"
-   :whisper-identity                      "Identität Flüstern"
+   :whisper-identity                      "Identität flüstern"
    :address-explication                   "Vielleicht sollte hier ein Text stehen, der erklärt, was eine Adresse ist und wo man danach sucht"
    :enter-valid-address                   "Bitte geben Sie eine gültige Adresse ein oder scannen Sie einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
@@ -191,8 +191,8 @@
    :wrong-password                        "Falsches Passwort"
 
    ;recover
-   :recover-from-passphrase               "Via Passphrase wiederherstellen"
-   :recover-explain                       "Bitte geben Sie den Passphrase für Ihr Passwort ein, um den Zugriff wiederherzustellen"
+   :recover-from-passphrase               "Mittels Passphrase wiederherstellen"
+   :recover-explain                       "Bitte geben Sie die Passphrase für Ihr Passwort ein, um den Zugriff wiederherzustellen"
    :passphrase                            "Passphrase"
    :recover                               "Wiederherstellen"
    :enter-valid-passphrase                "Bitte geben Sie einen Passphrase ein"
@@ -216,7 +216,7 @@
                                            :other "{{count}} Transaktionen bestätigen"
                                            :zero  "Keine Transaktionen"}
    :status                                "Status"
-   :pending-confirmation                  "Bestätigung ausstehend"
+   :pending-confirmation                  "Bestätigung in Bearbeitung"
    :recipient                             "Empfänger"
    :one-more-item                         "Noch ein Objekt"
    :fee                                   "Gebühr"
