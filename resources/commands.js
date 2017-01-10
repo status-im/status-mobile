@@ -752,6 +752,7 @@ function validateSend(params, context) {
 
     try {
         var val = web3.toWei(params.amount, "ether");
+        if (val <= 0) { throw new Error(); }
     } catch (err) {
         return {
             errors: [
@@ -895,4 +896,19 @@ status.command({
             }
         };
     },
+    validator: function(params) {
+        try {
+            var val = web3.toWei(params.amount, "ether");
+            if (val <= 0) { throw new Error(); }
+        } catch (err) {
+            return {
+                errors: [
+                    status.components.validationMessage(
+                        I18n.t('validation_title'),
+                        I18n.t('validation_invalid_number')
+                    )
+                ]
+            };
+        }
+    }
 });
