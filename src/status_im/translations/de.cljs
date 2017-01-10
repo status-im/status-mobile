@@ -82,13 +82,13 @@
    :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
    :confirmation-code                     (str "Danke! Wir haben Ihnen eine Textnachricht mit einem Bestätigungscode "
                                                "geschickt. Bitte geben Sie den Code ein, damit wir Ihre Telefonnummer verifizieren können.")
-   :incorrect-code                        (str "Tut uns leid, der Code war nicht korrekt, bitte erneut eingeben.")
-   :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren "
-                                               "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können.")
-   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen diese, um Ihren Account wiederherzustellen."
-   :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!* Sie benötigen diese, um Ihren Account wiederherzustellen."
-   :written-down                          "Stellen Sie sicher, dass Sie sie sicher aufgeschrieben haben."
-   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden."
+   :incorrect-code                        (str "Tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
+   :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren"
+                                               "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können")
+   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen dies, um Ihren Account wiederherzustellen."
+   :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!*Sie benötigen dies, um Ihren Account wiederherzustellen."
+   :written-down                          "Stellen Sie sicher, dass Sie es sicher aufgeschrieben haben"
+   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden"
    :intro-status                          "Chatten Sie mit mir, um Ihren Account einzurichten und Ihre Einstellungen zu ändern!"
    :intro-message1                        "Willkommen beim Status.\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
    :account-generation-message            "Eine Sekunde, ich muss wahnsinnig schwierige Berechnungen durchführen, um Ihr Konto zu generieren!"
