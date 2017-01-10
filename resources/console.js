@@ -51,7 +51,7 @@ I18n.translations = {
         password_error1: 'Wagwoordbevestiging is nie dieselfde as wagwoord nie.',
         password_validation_title: 'Wagwoord'
 
-    }, 
+    },
     ar: {
         phone_title: 'أرسل رقم الهاتف',
         phone_description: 'ابحث عن الأصدقاء باستخدام رقمك',
@@ -100,7 +100,7 @@ I18n.translations = {
         password_placeholder2: '请重新输入密码以确认',
         password_error: '密码应不少于6个字符。',
         password_error1: '密码确认信息与密码不匹配。',
-        password_validation_title: '密码' 
+        password_validation_title: '密码'
 
     },
     'zh-yue': {
@@ -170,6 +170,25 @@ I18n.translations = {
         password_error1: 'Le mot de passe de confirmation ne correspond pas au mot de passe.',
         password_validation_title: 'Mot de passe'
 
+    },
+    fi: {
+        phone_title: 'Lähetä puhelinnumero',
+        phone_description: 'Löydä ystäväsi puhelinnumerosi avulla',
+        phone_placeholder: 'Puhelinnumero',
+
+        confirm_description: 'Vahvistuskoodi',
+        confirm_validation_title: 'Anna vahvistuskoodi',
+        confirm_validation_description: 'Virheellinen vahvistuskoodi',
+
+        password_description: 'Salasana',
+        password_placeholder: 'Anna salasana',
+        password_placeholder2: 'Kirjoita salasana uudestaan',
+        password_error: 'Salasanan pitää olla vähintään 6 merkkiä pitkä.',
+        password_error1: 'Annetut salasanat ovat erilaiset.',
+        password_validation_title: 'Salasana',
+
+        faucet_incorrect_title: 'Virheellinen faucet',
+        faucet_incorrect_description: 'Valitse listasta'
     },
     de: {
         phone_title: 'Telefonnummer absenden',
@@ -261,7 +280,7 @@ I18n.translations = {
         phone_description: '내 번호를 사용하여 친구 찾기',
         phone_placeholder: '전화번호',
 
-        confirm_description: '확인 코드', 
+        confirm_description: '확인 코드',
         confirm_validation_title: '확인 코드',
         confirm_validation_description: '잘못된 형식',
 
@@ -407,7 +426,7 @@ I18n.translations = {
         password_error: 'Nenosiri lisiwe chini ya alama 6.',
         password_error1: 'Uthibitisho wa nenosiri haulingani na nenosiri.',
         password_validation_title: 'Nenosiri'
-    
+
     },
     sv: {
         phone_title: 'Skicka telefonnummer',
