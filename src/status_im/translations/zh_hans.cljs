@@ -12,7 +12,7 @@
    ;drawer
    :invite-friends                        "邀请朋友"
    :faq                                   "常问问题解答"
-   :switch-users                          "S切换用户"
+   :switch-users                          "切换用户"
 
    ;chat
    :is-typing                             "正在打字"
@@ -33,14 +33,14 @@
 
    ;sync
    :sync-in-progress                      "正在同步…"
-   :sync-synced                           "同步中"
+   :sync-synced                           "已同步"
 
    ;messages
    :status-sending                        "正在发送"
-   :status-pending                        "发送中"
+   :status-pending                        "等待中"
    :status-sent                           "已发送"
    :status-seen-by-everyone               "所有人可见"
-   :status-seen                           "看到"
+   :status-seen                           "可见"
    :status-delivered                      "已交付"
    :status-failed                         "失败"
 
@@ -90,7 +90,7 @@
    :written-down                          "确保你把它安全地写下来"
    :phone-number-required                 "点击此处输入你的电话号码，我会找到你的朋友"
    :intro-status                          "跟我聊天，以设置你的帐户并更改你的设置！"
-   :intro-message1                        "欢迎来到状态\n点击该消息，以设置你的密码并开始！"
+   :intro-message1                        "欢迎来到Status\n点击该消息，以设置你的密码并开始！"
    :account-generation-message            "给我一点时间，我得疯狂地计算一下，以生成你的帐户！"
 
    ;chats
@@ -117,7 +117,7 @@
    :contacts-group-people                 "联系人"
    :contacts-group-new-chat               "开始新的聊天"
    :no-contacts                           "还没有联系人"
-   :show-qr                               "显示QR"
+   :show-qr                               "显示二维码"
 
    ;group-settings
    :remove                                "删除"
@@ -173,11 +173,11 @@
    ;new-contact
    :add-new-contact                       "添加新的联系人"
    :import-qr                             "导入"
-   :scan-qr                               "扫描QR"
+   :scan-qr                               "扫描二维码"
    :name                                  "名称"
    :whisper-identity                      "Whisper身份"
    :address-explication                   "也许这里应该有一些文本来解释什么是地址，以及在哪里查找它"
-   :enter-valid-address                   "请输入有效地址或扫描QR码"
+   :enter-valid-address                   "请输入有效地址或扫描二维码"
    :contact-already-added                 "已添加该联系人"
    :can-not-add-yourself                  "不能添加自己"
    :unknown-address                       "未知地址"
