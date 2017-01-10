@@ -37,7 +37,7 @@
 
    ;messages
    :status-sending                        "Absenden"
-   :status-pending                        "Anhängig"
+   :status-pending                        "In Bearbeitung"
    :status-sent                           "Verschickt"
    :status-seen-by-everyone               "Von allen gesehen"
    :status-seen                           "Gesehen"
@@ -68,14 +68,14 @@
    :phone-number                          "Telefonnumer"
    :email                                 "E-Mail"
    :profile-no-status                     "Kein Status"
-   :add-to-contacts                       "Zu Kontakten hinzufügen"
+   :add-to-contacts                       "Zu Kontakte hinzufügen"
    :error-incorrect-name                  "Bitte wählen Sie einen anderen Namen"
    :error-incorrect-email                 "Inkorrekte E-Mail"
 
    ;;make_photo
    :image-source-title                    "Profilfoto"
    :image-source-make-photo               "Fotografieren"
-   :image-source-gallery                  "Aus Galarie auswählen"
+   :image-source-gallery                  "Aus Galerie auswählen"
    :image-source-cancel                   "Abbrechen"
 
    ;sign-up
@@ -99,7 +99,7 @@
    :new-group-chat                        "Neuer Gruppenchat"
 
    ;discover
-   :discover                             "Entdeckung"
+   :discover                             "Entdecken"
    :none                                  "Nichts"
    :search-tags                           "Geben Sie Ihre Suchbegriffe hier ein"
    :popular-tags                          "Beliebte Begriffe"
@@ -117,7 +117,7 @@
    :contacts-group-people                 "Leute"
    :contacts-group-new-chat               "Neuen Chat beginnen"
    :no-contacts                           "Noch keine Kontakte"
-   :show-qr                               "QR anzeigen"
+   :show-qr                               "QR-Code anzeigen"
 
    ;group-settings
    :remove                                "Entfernen"
@@ -175,7 +175,7 @@
    :import-qr                             "Import"
    :scan-qr                               "QR-Code scannen"
    :name                                  "Name"
-   :whisper-identity                      "Identität Flüstern"
+   :whisper-identity                      "Identität flüstern"
    :address-explication                   "Vielleicht sollte hier ein Text stehen, der erklärt, was eine Adresse ist und wo man danach sucht"
    :enter-valid-address                   "Bitte geben Sie eine gültige Adresse ein oder scannen Sie einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
@@ -191,8 +191,8 @@
    :wrong-password                        "Falsches Passwort"
 
    ;recover
-   :recover-from-passphrase               "Via Passphrase wiederherstellen"
-   :recover-explain                       "Bitte geben Sie den Passphrase für Ihr Passwort ein, um den Zugriff wiederherzustellen"
+   :recover-from-passphrase               "Mittels Passphrase wiederherstellen"
+   :recover-explain                       "Bitte geben Sie die Passphrase für Ihr Passwort ein, um den Zugriff wiederherzustellen"
    :passphrase                            "Passphrase"
    :recover                               "Wiederherstellen"
    :enter-valid-passphrase                "Bitte geben Sie einen Passphrase ein"
@@ -216,7 +216,7 @@
                                            :other "{{count}} Transaktionen bestätigen"
                                            :zero  "Keine Transaktionen"}
    :status                                "Status"
-   :pending-confirmation                  "Bestätigung ausstehend"
+   :pending-confirmation                  "Bestätigung in Bearbeitung"
    :recipient                             "Empfänger"
    :one-more-item                         "Noch ein Objekt"
    :fee                                   "Gebühr"
