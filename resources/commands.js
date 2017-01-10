@@ -118,7 +118,7 @@ I18n.translations = {
         validation_amount_specified: '必须指定金额',
         validation_invalid_number: '金额不是有效数字',
         validation_insufficient_amount: 'ETH余额不足 ('
-    }, 
+    },
     'zh-yue': {
         location_title: '所在位置',
         location_description: '分享所在位置',
@@ -138,7 +138,7 @@ I18n.translations = {
         validation_amount_specified: '必須指定金額',
         validation_invalid_number: '指定金額並非有效數字',
         validation_insufficient_amount: '沒有足夠ETH餘額 ('
-    }, 
+    },
     'zh-wuu': {
         location_title: '位置',
         location_description: '分享您的位置',
@@ -885,7 +885,7 @@ status.command({
     handler: function (params) {
         return {
             event: "request",
-            params: [params.amount]
+            params: [params.amount],
             request: {
                 command: "send",
                 params: {
