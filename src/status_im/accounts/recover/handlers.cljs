@@ -5,6 +5,7 @@
             [status-im.utils.identicon :refer [identicon]]
             [taoensso.timbre :as log]
             [clojure.string :as str]
+            [status-im.accounts.statuses :as statuses]
             [status-im.utils.handlers :as u]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.protocol.core :as protocol]))
@@ -18,6 +19,7 @@
         account    {:public-key          public-key
                     :address             address
                     :name                (generate-gfy)
+                    :status              (rand-nth statuses/data)
                     :photo-path          (identicon public-key)
                     :updates-public-key  public
                     :updates-private-key private
