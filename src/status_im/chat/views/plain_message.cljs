@@ -10,6 +10,7 @@
                                                 dismiss-keyboard!]]
             [status-im.components.animation :as anim]
             [status-im.chat.styles.plain-message :as st]
+            [status-im.chat.constants :as chat-consts]
             [status-im.constants :refer [response-input-hiding-duration]]))
 
 (defn set-input-message [message]
@@ -20,7 +21,7 @@
 
 (defn message-valid? [ message]
   (and (pos? (count message))
-       (not= "!" message)))
+       (not= chat-consts/command-char message)))
 
 (defn button-animation-logic [{:keys [command? val]}]
   (fn [_]

@@ -1,5 +1,7 @@
 (ns status-im.chat.constants)
 
+(def command-char "/")
+
 (def input-height 56)
 (def max-input-height 66)
 (def min-input-height 22)

@@ -5,6 +5,7 @@
                                                 icon
                                                 text
                                                 touchable-highlight]]
+            [status-im.chat.constants :as chat-consts]
             [status-im.chat.styles.input :as st]))
 
 (defn set-input-message [message]
@@ -23,4 +24,4 @@
                       (let [width (.. event -nativeEvent -layout -width)]
                         (when (not= icon-width width)
                           (dispatch [:set :command-icon-width width]))))}
-    [text {:style st/command-text} (str "!" (:name command))]]])
+    [text {:style st/command-text} (str chat-consts/command-char (:name command))]]])

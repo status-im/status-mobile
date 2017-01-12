@@ -1,6 +1,7 @@
 (ns status-im.chat.suggestions
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.db :as db]
+            [status-im.chat.constants :as chat-consts]
             [status-im.models.commands :refer [get-commands
                                                get-chat-command-request
                                                get-chat-command-to-message-id]]
@@ -8,11 +9,11 @@
             [clojure.string :as s]))
 
 (defn suggestion? [text]
-  (= (get text 0) "!"))
+  (= (get text 0) chat-consts/command-char))
 
 (defn can-be-suggested? [text]
   (fn [{:keys [name]}]
-    (.startsWith (str "!" name) text)))
+    (.startsWith (str chat-consts/command-char name) text)))
 
 (defn get-suggestions
   [{:keys [current-chat-id] :as db} text]
@@ -43,7 +44,7 @@
                                (re-matches #"^![^\s]+\s" message))]
     (let [suggestion-text' (s/trim suggestion-text)]
       (->> (get-commands db)
-           (filter #(= suggestion-text' (->> % second :name (str "!"))))
+           (filter #(= suggestion-text' (->> % second :name (str chat-consts/command-char))))
            first))))
 
 (defn typing-command? [db]

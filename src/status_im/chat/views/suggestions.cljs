@@ -19,7 +19,7 @@
             [status-im.components.drag-drop :as drag]
             [status-im.utils.platform :refer [ios?]]
             [status-im.chat.suggestions-responder :as resp]
-            [status-im.chat.constants :as c]
+            [status-im.chat.constants :as chat-consts]
             [status-im.i18n :refer [label]]
             [status-im.chat.views.response :as response]))
 
@@ -49,7 +49,7 @@
   [[command {:keys [title description]
              name  :name
              :as   suggestion}]]
-  (let [label (str "!" name)]
+  (let [label (str chat-consts/command-char name)]
     [touchable-highlight
      {:onPress #(set-command-input command)
       :style   st/suggestion-highlight}
@@ -124,8 +124,8 @@
          (into [animated-view {:style (st/container h @input-margin)}] elements))})))
 
 (defview suggestion-container []
-  (let [h (anim/create-value c/input-height)]
+  (let [h (anim/create-value chat-consts/input-height)]
     [container h
      [header h]
      [suggestions-view]
-     [view {:height c/input-height}]]))
+     [view {:height chat-consts/input-height}]]))
