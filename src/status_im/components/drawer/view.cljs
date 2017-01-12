@@ -71,9 +71,9 @@
               :editable         true
               :input-style      (st/name-input-text (s/valid? ::v/name (or new-name name)))
               :wrapper-style    st/name-input-wrapper
-              :value            name
+              :value            (or new-name name)
               :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])
-              :on-end-editing   #(when (and new-name (not (str/blank? new-name)))
+              :on-end-editing   #(when (s/valid? ::v/name new-name)
                                   (dispatch [:account-update {:name (clean-text new-name)}]))}]]
            [view st/status-container
             (if @status-edit?
