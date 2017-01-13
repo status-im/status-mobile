@@ -24,7 +24,7 @@ Go straight to the [wiki](https://wiki.status.im) or [join our Slack](http://sla
 
 - **Developer**  
 Developers are the heart of software and to keep Status beating we need all the help we can get! If you're looking to code in ClojureScript or Golang then Status is the project for you! We use React Native and there is even some Java/Objective-C too!  
-Want to learn more about it? Start by [Building Status](https://wiki.status.im/contributing/development/building-status/) for more details on configuring your environment, managing project dependencies, coding guidelines and testing procedures.  
+Want to learn more about it? Start by reading our [Developer Introduction](http://wiki.status.im/contributing/development/introduction/) which guides you through the technology stack and and start browsing [beginner issues](https://github.com/status-im/status-react/issues?q=is%3Aopen+is%3Aissue+label%3Abeginner). Then you can read how to [Build Status](http://wiki.status.im/contributing/development/building-status/), which talks about managing project dependencies, coding guidelines and testing procedures.  
 
 - **Community Management**  
 Metcalfe's law states that the value of a network is proportional to the square of the number of connected users of the system - without community Status is meaningless. We're looking to create a positive, fun environment to explore new ideas, experiment and grow the Status community. Building a community takes alot of work but the people you'll meet and long lasting relationships you form will be well worth it, check out our [Community Development Guide](https://wiki.status.im/community/development/)
