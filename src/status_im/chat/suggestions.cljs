@@ -41,7 +41,7 @@
 
 (defn check-suggestion [db message]
   (when-let [suggestion-text (when (string? message)
-                               (re-matches #"^![^\s]+\s" message))]
+                               (re-matches (re-pattern (str "^" chat-consts/command-char "[^\\s]+\\s")) message))]
     (let [suggestion-text' (s/trim suggestion-text)]
       (->> (get-commands db)
            (filter #(= suggestion-text' (->> % second :name (str chat-consts/command-char))))
