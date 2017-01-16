@@ -1,5 +1,4 @@
-(ns status-im.components.share
-  (:require [status-im.utils.platform :as p]))
+(ns status-im.components.share)
 
 (def class (js/require "react-native-share"))
 

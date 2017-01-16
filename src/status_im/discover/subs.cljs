@@ -18,7 +18,8 @@
 
 (defn- get-discoveries-by-tags [discoveries current-tag tags]
   (let [tags' (or tags [current-tag])]
-    (filter #(every? (->> (map :name (:tags %))
+    (filter #(every? (->> (:tags %)
+                          (map :name)
                           (into (hash-set)))
                      tags')
             (vals discoveries))))
@@ -42,13 +43,11 @@
 
 (register-sub :get-popular-tags
   (fn [db [_ limit]]
-    (-> (take limit (:tags @db))
-        (reaction))))
+    (reaction (take limit (:tags @db)))))
 
 (register-sub :get-discover-search-results
   (fn [db _]
     (let [discoveries (reaction (:discoveries @db))
           current-tag (reaction (:current-tag @db))
           tags        (reaction (:discover-search-tags @db))]
-      (-> (get-discoveries-by-tags @discoveries @current-tag @tags)
-          (reaction)))))
+      (reaction (get-discoveries-by-tags @discoveries @current-tag @tags)))))

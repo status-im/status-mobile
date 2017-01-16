@@ -1,6 +1,5 @@
 (ns status-im.android.platform
   (:require [status-im.components.styles :as styles]
-            [status-im.utils.utils :as u]
             [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
 (def component-styles

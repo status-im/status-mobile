@@ -1,7 +1,6 @@
 (ns status-im.transactions.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
-            [clojure.string :as s]
             [status-im.utils.hex :as i]))
 
 (register-sub :transactions

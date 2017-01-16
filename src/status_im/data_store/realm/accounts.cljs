@@ -5,8 +5,7 @@
   (realm/get-all realm/base-realm :account))
 
 (defn get-all-as-list []
-  (-> (get-all)
-      realm/realm-collection->list))
+  (realm/realm-collection->list (get-all)))
 
 (defn get-by-address [address]
   (realm/get-one-by-field-clj realm/base-realm :account :address address))

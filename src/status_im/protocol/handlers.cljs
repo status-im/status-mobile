@@ -16,7 +16,8 @@
             [status-im.utils.datetime :as dt]
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.constants :as c]
-            [status-im.components.status :as status]))
+            [status-im.components.status :as status]
+            [clojure.string :refer [join]]))
 
 (register-handler :initialize-protocol
   (fn [db [_ current-account-id]]
@@ -75,10 +76,11 @@
 (register-handler :initialize-sync-listener
   (fn [{:keys [web3 sync-listener] :as db} _]
     (if-not sync-listener
-      (->> (.isSyncing (.-eth web3)
-                       (fn [error sync]
-                         (dispatch [:update-sync-state error sync])))
-           (assoc db :sync-listener))
+      (let [sync-listener (.isSyncing
+                            (.-eth web3)
+                            (fn [error sync]
+                              (dispatch [:update-sync-state error sync])))]
+        (assoc db :sync-listener sync-listener))
       db)))
 
 (register-handler :incoming-message
@@ -152,13 +154,15 @@
   [identity from {:keys [message-id timestamp]}]
   (let [remover-name (:name (contacts/get-by-id from))
         removed-name (:name (contacts/get-by-id identity))]
-    (->> (str (or remover-name from) " " (label :t/removed) " " (or removed-name identity))
+    (->> [(or remover-name from) (label :t/removed) (or removed-name identity)]
+         (join " ")
          (system-message message-id timestamp))))
 
 (defn you-removed-from-group-message
   [from {:keys [message-id timestamp]}]
   (let [remover-name (:name (contacts/get-by-id from))]
-    (->> (str (or remover-name from) " " (label :t/removed-from-chat))
+    (->> [(or remover-name from) (label :t/removed-from-chat)]
+         (join " ")
          (system-message message-id timestamp))))
 
 (defn participant-left-group-message
@@ -198,10 +202,9 @@
          [_ {:keys                                    [from]
              {:keys [group-id timestamp] :as payload} :payload}]]
       (when (chats/new-update? timestamp group-id)
-        (let [message
-              (-> (you-removed-from-group-message from payload)
-                  (assoc :group-id group-id))]
-          (dispatch [:received-message message]))
+        (let [message  (you-removed-from-group-message from payload)
+              message' (assoc message :group-id group-id)]
+          (dispatch [:received-message message']))
         (protocol/stop-watching-group! {:web3     web3
                                         :group-id group-id})
         (dispatch [:update-chat! {:chat-id         group-id
@@ -281,9 +284,8 @@
             (messages/update message)))))))
 
 (defn save-message-clock-value!
-  [{:keys [message-extras] :as db}
-   [_ {:keys [from]
-       {:keys [message-id clock-value]} :payload}]]
+  [{:keys [message-extras]}
+   [_ {{:keys [message-id clock-value]} :payload}]]
   (when-let [{old-clock-value :clock-value
               :as             message} (merge (messages/get-by-id message-id)
                                               (get message-extras message-id))]
@@ -330,27 +332,25 @@
 
 (register-handler :message-clock-value-request
   (u/side-effect!
-   (fn [db [_ {:keys [from] {:keys [message-id]} :payload}]]
-     (let [{:keys [chat-id]} (messages/get-by-id message-id)
-           message-overhead (chats/get-message-overhead chat-id)
-           last-clock-value (messages/get-last-clock-value chat-id)]
-       (if (> message-overhead 0)
-         (let [last-outgoing (->> (messages/get-last-outgoing chat-id message-overhead)
-                                  (reverse)
-                                  (map-indexed vector))]
-           (chats/reset-message-overhead chat-id)
-           (doseq [[i message] last-outgoing]
-             (dispatch [:update-clock-value! from i message (+ last-clock-value 100)])))
-         (dispatch [:send-clock-value! from message-id]))))))
+    (fn [_ [_ {:keys [from] {:keys [message-id]} :payload}]]
+      (let [{:keys [chat-id]} (messages/get-by-id message-id)
+            message-overhead (chats/get-message-overhead chat-id)
+            last-clock-value (messages/get-last-clock-value chat-id)]
+        (if (pos? message-overhead)
+          (let [last-outgoing (->> (messages/get-last-outgoing chat-id message-overhead)
+                                   (reverse)
+                                   (map-indexed vector))]
+            (chats/reset-message-overhead chat-id)
+            (doseq [[i message] last-outgoing]
+              (dispatch [:update-clock-value! from i message (+ last-clock-value 100)])))
+          (dispatch [:send-clock-value! from message-id]))))))
 
 (register-handler :message-clock-value
   (after save-message-clock-value!)
   (fn [{:keys [message-extras] :as db}
-       [_ {:keys [from]
-           {:keys [message-id clock-value]} :payload}]]
-    (if-let [{old-clock-value :clock-value
-              :as             message} (merge (messages/get-by-id message-id)
-                                              (get message-extras message-id))]
+       [_ {{:keys [message-id clock-value]} :payload}]]
+    (if-let [{old-clock-value :clock-value} (merge (messages/get-by-id message-id)
+                                                   (get message-extras message-id))]
       (if (> clock-value old-clock-value)
         (assoc-in db [:message-extras message-id] {:clock-value clock-value
                                                    :show?       true})

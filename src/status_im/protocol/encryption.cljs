@@ -8,7 +8,8 @@
   "Returns {:private \"private key\" :public \"public key\""
   []
   (let [{:keys [enc dec]}
-        (-> (.generate ecc (.-ENC_DEC ecc) default-curve)
+        (-> ecc
+            (.generate (.-ENC_DEC ecc) default-curve)
             (js->clj :keywordize-keys true))]
     {:private dec
      :public  enc}))

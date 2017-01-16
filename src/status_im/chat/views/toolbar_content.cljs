@@ -22,7 +22,7 @@
     contact (let [last-online      (get contact :last-online)
                   last-online-date (time/to-date last-online)
                   now-date         (t/now)]
-              (if (and (> last-online 0)
+              (if (and (pos? last-online)
                        (<= last-online-date now-date))
                 (time/time-ago last-online-date)
                 (label :t/active-unknown)))

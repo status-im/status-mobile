@@ -48,8 +48,7 @@
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction "row"
           :margin-left    toolbar-icon-spacing}
-         (when (and (= actions-count 0)
-                    (not custom))
+         (when (and (zero? actions-count) (not custom))
            {:width (+ toolbar-icon-width toolbar-icon-spacing)})))
 
 (def toolbar-action

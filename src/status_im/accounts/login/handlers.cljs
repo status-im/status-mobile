@@ -34,7 +34,7 @@
 (register-handler
   :change-account
   (u/side-effect!
-    (fn [db [_ address new-account? callback]]
+    (fn [_ [_ address new-account? callback]]
       (data-store/change-account address new-account?
                                  #(callback % address new-account?)))))
 

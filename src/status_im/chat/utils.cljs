@@ -1,7 +1,6 @@
 (ns status-im.chat.utils
   (:require [status-im.constants :refer [console-chat-id
-                                         wallet-chat-id]]
-            [taoensso.timbre :as log]))
+                                         wallet-chat-id]]))
 
 (defn console? [s]
   (= console-chat-id s))

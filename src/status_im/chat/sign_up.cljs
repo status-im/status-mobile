@@ -47,7 +47,7 @@
     (dispatch [:sign-up-confirm (second matches)])))
 
 (defn start-listening-confirmation-code-sms [db]
-  (if (not (:confirmation-code-sms-listener db))
+  (if-not (:confirmation-code-sms-listener db)
     (assoc db :confirmation-code-sms-listener (add-sms-listener handle-sms))
     db))
 
@@ -83,11 +83,10 @@
               :to           "me"}])
   (let [status (keyword (:status body))]
     (when (= :confirmed status)
-      (do
-        (dispatch [:stop-listening-confirmation-code-sms])
-        (sync-contacts)
-        ;; TODO should be called after sync-contacts?
-        (dispatch [:set-signed-up true])))
+      (dispatch [:stop-listening-confirmation-code-sms])
+      (sync-contacts)
+      ;; TODO should be called after sync-contacts?
+      (dispatch [:set-signed-up true]))
     (when (= :failed status)
       (on-sign-up-response (label :t/incorrect-code)))))
 

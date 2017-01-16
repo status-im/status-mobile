@@ -50,7 +50,7 @@
 
 ; Invoked once before the component is mounted. The return value will be used
 ; as the initial value of this.state.
-(defn get-initial-state [component]
+(defn get-initial-state [_]
   {:has-focus       false
    :float-label?    false
    :label-top       0
@@ -62,7 +62,7 @@
 ; rendering occurs. If you call setState within this method, render() will see
 ; the updated state and will be executed only once despite the state change.
 (defn component-will-mount [component]
-  (let [{:keys [value] :as props} (r/props component)
+  (let [{:keys [value]} (r/props component)
         data {:label-top       (anim/create-value (if (s/blank? value)
                                                     (:label-bottom config)
                                                     (:label-top config)))
@@ -72,50 +72,6 @@
               :float-label?    (if (s/blank? value) false true)}]
     ;(log/debug "component-will-mount")
     (r/set-state component data)))
-
-; Invoked once, only on the client (not on the server), immediately after the
-; initial rendering occurs. At this point in the lifecycle, you can access any
-; refs to your children (e.g., to access the underlying DOM representation).
-; The componentDidMount() method of child components is invoked before that of
-; parent components.
-(defn component-did-mount [component]
-  (let [props (r/props component)]
-    ;(log/debug "component-did-mount:")
-    ))
-
-; Invoked when a component is receiving new props. This method is not called for
-; the initial render. Use this as an opportunity to react to a prop transition
-; before render() is called by updating the state using this.setState().
-; The old props can be accessed via this.props. Calling this.setState() within
-; this function will not trigger an additional render.
-(defn component-will-receive-props [component new-props]
-  ;(log/debug "component-will-receive-props: new-props=" new-props)
-  )
-
-; Invoked before rendering when new props or state are being received. This method
-; is not called for the initial render or when forceUpdate is used. Use this as
-; an opportunity to return false when you're certain that the transition to the
-; new props and state will not require a component update.
-; If shouldComponentUpdate returns false, then render() will be completely skipped
-; until the next state change. In addition, componentWillUpdate and
-; componentDidUpdate will not be called.
-(defn should-component-update [component next-props next-state]
-  ;(log/debug "should-component-update: " next-props next-state)
-  true)
-
-; Invoked immediately before rendering when new props or state are being received.
-; This method is not called for the initial render. Use this as an opportunity
-; to perform preparation before an update occurs.
-(defn component-will-update [component next-props next-state]
-  ;(log/debug "component-will-update: " next-props next-state)
-  )
-
-; Invoked immediately after the component's updates are flushed to the DOM.
-; This method is not called for the initial render. Use this as an opportunity
-; to operate on the DOM when the component has been updated.
-(defn component-did-update [component prev-props prev-state]
-  ;(log/debug "component-did-update: " prev-props prev-state)
-  )
 
 (defn on-input-focus [{:keys [component animation onFocus]}]
   (do
@@ -136,10 +92,9 @@
 (defn get-width [event]
   (.-width (.-layout (.-nativeEvent event))))
 
-(defn reagent-render [data children]
+(defn reagent-render [_ _]
   (let [component        (r/current-component)
-        {:keys [has-focus
-                float-label?
+        {:keys [float-label?
                 label-top
                 label-font-size
                 line-width
@@ -189,14 +144,9 @@
       [animated-view {:style (st/underline focus-line-color line-width)}]]
      [text {:style (st/error-text error-color)} error]]))
 
-(defn text-field [data children]
+(defn text-field [_ _]
   (let [component-data {:get-initial-state            get-initial-state
                         :component-will-mount         component-will-mount
-                        :component-did-mount          component-did-mount
-                        :component-will-receive-props component-will-receive-props
-                        :should-component-update      should-component-update
-                        :component-will-update        component-will-update
-                        :component-did-update         component-did-update
                         :display-name                 "text-field"
                         :reagent-render               reagent-render}]
     ;(log/debug "Creating text-field component: " data)

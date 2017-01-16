@@ -1,6 +1,5 @@
 (ns status-im.protocol.group
   (:require
-    [status-im.protocol.message :as m]
     [status-im.protocol.web3.delivery :as d]
     [status-im.protocol.web3.utils :as u]
     [cljs.spec :as s]

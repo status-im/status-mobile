@@ -42,13 +42,13 @@
   ([db type message-id command-key]
    (set-command-input db type message-id command-key nil))
   ([{:keys [current-chat-id] :as db} type message-id command-key params]
-   (let [command (-> (get-response-or-command type db command-key)
-                     (add-params params))
-         first-parameter (get (:params command) 0)
-         value (:value first-parameter)]
+   (let [command         (get-response-or-command type db command-key)
+         command'        (add-params command params)
+         first-parameter (get (:params command') 0)
+         value           (:value first-parameter)]
      (update-in db [:chats current-chat-id :command-input] merge
                 {:content       value
-                 :command       command
+                 :command       command'
                  :parameter-idx 0
                  :params        params
                  :to-message-id message-id}))))

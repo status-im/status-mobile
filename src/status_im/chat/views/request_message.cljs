@@ -20,7 +20,8 @@
 
 (defn label [command]
   (when command
-    (->> (name (:name command))
+    (->> (:name command)
+         name
          (str "request-"))))
 
 (def min-scale 1)
@@ -45,7 +46,7 @@
        (anim/start
          (button-animation val min-scale loop? answered?)))))
 
-(defn request-button [message-id command status-initialized? top-offset?]
+(defn request-button [message-id _ _ top-offset?]
   (let [scale-anim-val (anim/create-value min-scale)
         answered?      (subscribe [:is-request-answered? message-id])
         loop?          (r/atom true)
@@ -71,7 +72,7 @@
                [icon command-icon st/command-request-image])]]))})))
 
 (defn message-content-command-request
-  [{:keys [message-id content from incoming-group]}]
+  [{:keys [message-id _ _ _]}]
   (let [top-offset          (r/atom {:specified? false})
         commands-atom       (subscribe [:get-responses])
         answered?           (subscribe [:is-request-answered? message-id])

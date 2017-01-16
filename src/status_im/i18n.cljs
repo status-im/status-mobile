@@ -33,7 +33,6 @@
     [status-im.translations.zh-hant :as zh-hant]
     [status-im.translations.zh-wuu :as zh-wuu]
     [status-im.translations.zh-yue :as zh-yue]
-    [status-im.utils.utils :as u]
     [status-im.utils.js-resources :refer [default-contacts]]))
 
 (def i18n (js/require "react-native-i18n"))

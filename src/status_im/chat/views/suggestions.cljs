@@ -1,6 +1,5 @@
 (ns status-im.chat.views.suggestions
-  (:require-macros [status-im.utils.views :refer [defview]]
-                   [clojure.string :as str])
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
                                                 scroll-view
@@ -102,7 +101,7 @@
           (anim/start (anim/spring val {:toValue to-value}))
           (anim/set-value val to-value))))))
 
-(defn container [h & elements]
+(defn container [h & _]
   (let [;; todo to-response-height, cur-response-height must be specific
         ;; for each chat
         to-response-height (subscribe [:command-suggestions-height])

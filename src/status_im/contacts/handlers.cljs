@@ -208,15 +208,16 @@
       ((after send-contact-request))))
 
 (register-handler ::update-pending-contact
-  (-> add-new-contact
-      ((after save-contact))))
+  (after save-contact)
+  add-new-contact)
 
 (register-handler :add-pending-contact
   (u/side-effect!
     (fn [{:keys [chats contacts]} [_ chat-id]]
       (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
                       (read-string contact-info)
-                      (-> (get contacts chat-id)
+                      (-> contacts
+                          (get chat-id)
                           (assoc :pending false)))]
         (dispatch [::prepare-contact contact])
         (dispatch [:update-chat! {:chat-id          chat-id
@@ -259,12 +260,12 @@
                                        :last-online      timestamp}]))))))
 
 (register-handler :remove-contact
-  (-> (u/side-effect!
-       (fn [_ [_ {:keys [whisper-identity] :as contact}]]
-         (dispatch [:update-chat! {:chat-id          whisper-identity
-                                   :pending-contact? true}])
-         (dispatch [:update-contact! (assoc contact :pending true)])))
-      ((after stop-watching-contact))))
+  (after stop-watching-contact)
+  (u/side-effect!
+    (fn [_ [_ {:keys [whisper-identity] :as contact}]]
+      (dispatch [:update-chat! {:chat-id          whisper-identity
+                                :pending-contact? true}])
+      (dispatch [:update-contact! (assoc contact :pending true)]))))
 
 (register-handler :open-contact-menu
   (u/side-effect!

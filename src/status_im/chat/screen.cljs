@@ -31,8 +31,7 @@
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [status-im.components.sync-state.offline :refer [offline-view]]
-            [status-im.constants :refer [content-type-status]]
-            [reagent.core :as r]))
+            [status-im.constants :refer [content-type-status]]))
 
 (defn contacts-by-identity [contacts]
   (->> contacts
@@ -120,7 +119,7 @@
    [add-contact-bar]])
 
 (defn get-intro-status-message [all-messages]
-  (let [{:keys [timestamp content-type] :as last-message} (last all-messages)]
+  (let [{:keys [timestamp content-type]} (last all-messages)]
     (when (not= content-type content-type-status)
       {:message-id   "intro-status"
        :content-type content-type-status

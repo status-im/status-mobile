@@ -69,7 +69,7 @@
 
 (register-handler ::discard-transaction
   (u/side-effect!
-    (fn [db [_ id]]
+    (fn [_ [_ id]]
       (status/discard-transaction id))))
 
 (register-handler ::remove-transactions

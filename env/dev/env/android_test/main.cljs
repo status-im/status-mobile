@@ -17,5 +17,5 @@
   :heads-up-display false
   :jsload-callback #(swap! cnt inc))
 
-(core/init :test)
+(core/init)
 ;(init-stubs)

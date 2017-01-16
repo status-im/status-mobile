@@ -5,8 +5,7 @@
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [status-im.commands.utils :refer [generate-hiccup]]
             [cljs.reader :refer [read-string]]
-            [status-im.constants :as c]
-            [taoensso.timbre :as log])
+            [status-im.constants :as c])
   (:refer-clojure :exclude [update]))
 
 (defn- map-to-str
@@ -85,7 +84,7 @@
                   message))))))
 
 (defn get-last-message
-  [db chat-id]
+  [chat-id]
   (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
     (if (command-type? content-type)
       (clojure.core/update message :content str-to-map)

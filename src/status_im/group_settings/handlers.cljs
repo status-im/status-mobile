@@ -8,7 +8,6 @@
             [status-im.data-store.messages :as messages]
             [status-im.data-store.chats :as chats]
             [status-im.constants :refer [text-content-type]]
-            [status-im.utils.handlers :as u]
             [status-im.navigation.handlers :as nav]))
 
 (defmethod nav/preload-data! :group-settings
@@ -32,14 +31,13 @@
       (assoc-in db [:chats current-chat-id property-name] property))))
 
 (defn prepare-chat-settings
-  [{:keys [current-chat-id] :as db} _]
+  [{:keys [current-chat-id] :as db}]
   (let [{:keys [name color]} (-> db
                                  (get-in [:chats current-chat-id])
                                  (select-keys [:name :color]))]
-    (-> db
-        (assoc :new-chat-name name
-               :new-chat-color color
-               :group-settings {}))))
+    (assoc db :new-chat-name name
+              :new-chat-color color
+              :group-settings {})))
 
 (register-handler :show-group-settings
   (after (fn [_ _] (dispatch [:navigate-to :group-settings])))
@@ -76,7 +74,7 @@
              remove-identities selected-participants))
 
 (defn remove-members-from-chat!
-  [{:keys [current-chat-id selected-participants] :as db} _]
+  [{:keys [current-chat-id selected-participants]} _]
   (chats/remove-contacts current-chat-id selected-participants))
 
 (defn notify-about-removing!

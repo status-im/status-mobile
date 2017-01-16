@@ -1,7 +1,6 @@
 (ns status-im.discover.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require
-    [reagent.core :as r]
     [re-frame.core :refer [dispatch subscribe]]
     [clojure.string :as str]
     [status-im.components.react :refer [view

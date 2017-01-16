@@ -7,7 +7,6 @@
                                                  online-color
                                                  text1-color
                                                  text2-color]]
-            [status-im.utils.platform :as p]
             [status-im.constants :refer [text-content-type
                                          content-type-command]]))
 

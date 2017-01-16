@@ -11,7 +11,6 @@
              :as c]
             [cljs.reader :refer [read-string]]
             [status-im.data-store.chats :as chats]
-            [taoensso.timbre :as log]
             [status-im.utils.scheduler :as s]))
 
 (defn check-preview [{:keys [content] :as message}]
@@ -42,14 +41,14 @@
         exists?          (chats/exists? chat-id')
         active?          (chats/is-active? chat-id')
         chat-clock-value (messages/get-last-clock-value chat-id')
-        clock-value      (if (= clock-value 0)
+        clock-value      (if (zero? clock-value)
                            (inc chat-clock-value)
                            clock-value)]
     (when (and (not same-message)
                (not= from current-identity)
                (or (not exists?) active?))
       (let [group-chat?      (not (nil? group-id))
-            previous-message (messages/get-last-message db chat-id')
+            previous-message (messages/get-last-message chat-id')
             message'         (assoc (->> message
                                          (cu/check-author-direction previous-message)
                                          (check-preview))

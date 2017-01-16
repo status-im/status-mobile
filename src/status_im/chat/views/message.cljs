@@ -20,7 +20,6 @@
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
-            [status-im.utils.datetime :as time]
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
                                          text-content-type
@@ -34,8 +33,7 @@
                                     get-contact-translated]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]
-            [status-im.chat.handlers.console :as console]
-            [taoensso.timbre :as log]))
+            [status-im.chat.handlers.console :as console]))
 
 (def window-width (:width (get-dimensions "window")))
 
@@ -43,9 +41,7 @@
   (let [{:keys [chat-id group-chat name color]} (subscribe [:chat-properties [:chat-id :group-chat :name :color]])
         members (subscribe [:current-chat-contacts])]
     (fn [{:keys [messages-count content datemark]}]
-      (let [{:keys [photo-path
-                    status
-                    last-online]} (if @group-chat
+      (let [{:keys [status]} (if @group-chat
                                     {:photo-path  nil
                                      :status      nil
                                      :last-online 0}
@@ -189,7 +185,7 @@
                                    [text
                                     {:key   (str idx "_" string)
                                      :style style}
-                                    (subs string 1 (- (count string) 1))]))
+                                    (subs string 1 (dec (count string)))]))
                                (re-seq regx string)))
           styled-text'  (if (> (count general-text)
                                (count styled-text))
@@ -335,7 +331,7 @@
 (defn message-container-animation-logic [{:keys [to-value val callback]}]
   (fn [_]
     (let [to-value @to-value]
-      (when (< 0 to-value)
+      (when (pos? to-value)
         (anim/start
           (anim/timing val {:toValue  to-value
                             :duration 250})
@@ -356,7 +352,7 @@
         {:component-did-update
          on-update
          :reagent-render
-         (fn [message & children]
+         (fn [_ & children]
            @layout-height
            [animated-view {:style (st/message-animated-container anim-value)}
             (into [view {:style    (st/message-container window-width)
@@ -379,7 +375,7 @@
                                    :from       from
                                    :message-id message-id}])))
        :reagent-render
-       (fn [{:keys [outgoing group-chat clock-value] :as message}]
+       (fn [{:keys [outgoing group-chat] :as message}]
          [message-container message
           [view
            (let [incoming-group (and group-chat (not outgoing))]

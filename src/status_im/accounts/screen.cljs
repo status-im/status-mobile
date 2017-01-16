@@ -37,11 +37,7 @@
 (defn render-row [row _ _]
   (list-item [account-view row]))
 
-(defn render-separator [_ row-id _]
-  (list-item [view {:style st/row-separator
-                    :key   row-id}]))
-
-(defn create-account [event]
+(defn create-account [_]
   (dispatch-sync [:reset-app])
   ; add accounts screen to history ( maybe there is a better way ? )
   (dispatch [:navigate-to-clean :accounts])

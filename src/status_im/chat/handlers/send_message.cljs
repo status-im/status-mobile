@@ -1,14 +1,12 @@
 (ns status-im.chat.handlers.send-message
   (:require [status-im.utils.handlers :refer [register-handler] :as u]
             [clojure.string :as s]
-            [status-im.data-store.chats :as chats]
             [status-im.data-store.messages :as messages]
             [status-im.components.status :as status]
             [status-im.utils.random :as random]
             [status-im.utils.datetime :as time]
             [re-frame.core :refer [enrich after dispatch path]]
             [status-im.chat.utils :as cu]
-            [status-im.commands.utils :as commands-utils]
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
                                          text-content-type
@@ -212,7 +210,7 @@
 
 (register-handler ::send-dapp-message
   (u/side-effect!
-    (fn [db [_ chat-id {:keys [content] :as message}]]
+    (fn [db [_ chat-id {:keys [content]}]]
       (let [data   (get-in db [:local-storage chat-id])
             path   [:functions
                     :message-handler]
@@ -228,11 +226,9 @@
 
 (register-handler ::received-dapp-message
   (u/side-effect!
-    (fn [{:keys [current-chat-id] :as db} [_ chat-id {:keys [returned] :as message}]]
+    (fn [_ [_ chat-id {:keys [returned]}]]
       (let [{:keys [data messages err]} returned
-            content (if err
-                      err
-                      data)]
+            content (or err data)]
         (doseq [message messages]
           (let [{:keys [message type]} message]
             (dispatch [:received-message
@@ -259,7 +255,7 @@
           :as   db} [_ {{:keys [message-type]
                          :as   message} :message
                         chat-id         :chat-id}]]
-      (let [{:keys [dapp?] :as contact} (get-in db [:contacts chat-id])]
+      (let [{:keys [dapp?]} (get-in db [:contacts chat-id])]
         (if dapp?
           (dispatch [::send-dapp-message chat-id message])
           (when message

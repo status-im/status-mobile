@@ -1,6 +1,4 @@
-(ns status-im.utils.identicon
-  (:require [clojure.string :as s]
-            [status-im.utils.utils :as u]))
+(ns status-im.utils.identicon)
 
 (def default-size 40)
 

@@ -1,7 +1,6 @@
 (ns status-im.chat.suggestions-responder
   (:require [status-im.components.drag-drop :as drag]
             [status-im.components.animation :as anim]
-            [status-im.components.react :as react]
             [re-frame.core :refer [dispatch]]))
 
 ;; todo bad name. Ideas?

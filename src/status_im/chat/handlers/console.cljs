@@ -47,15 +47,13 @@
 
 (register-handler :console-respond-command
   (u/side-effect!
-    (fn [_ [_ {:keys [command] :as parameters}]]
+    (fn [_ [_ {:keys [command]}]]
       (let [{:keys [command handler-data]} command]
         (when command
           (let [{:keys [name]} command]
             (case name
               "js" (let [{:keys [err data messages]} handler-data
-                         content (if err
-                                   err
-                                   data)]
+                         content (or err data)]
                      (doseq [message messages]
                        (let [{:keys [message type]} message]
                          (dispatch [:received-message

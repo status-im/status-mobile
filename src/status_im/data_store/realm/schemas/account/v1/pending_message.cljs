@@ -18,5 +18,5 @@
                           :attempts      :int
                           :was-sent?     :bool}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating pending-message schema"))

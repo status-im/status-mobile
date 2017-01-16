@@ -22,5 +22,5 @@
                           :dapp-hash        {:type     :int
                                              :optional true}}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating contact schema"))

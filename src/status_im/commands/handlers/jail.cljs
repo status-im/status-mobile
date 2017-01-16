@@ -2,7 +2,6 @@
   (:require [re-frame.core :refer [after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [http-get show-popup]]
-            [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup reg-handler]]
             [clojure.string :as s]
@@ -58,7 +57,7 @@
 (defn suggestions-events-handler!
   [{:keys [current-chat-id] :as db} [[n data]]]
   (log/debug "Suggestion event: " data)
-  (let [{:keys [dapp?] :as contact} (get-in db [:contacts current-chat-id])
+  (let [{:keys [dapp?]} (get-in db [:contacts current-chat-id])
         command? (= :command (:type (cm/get-chat-command db)))]
   (case (keyword n)
     :set-value (if command?

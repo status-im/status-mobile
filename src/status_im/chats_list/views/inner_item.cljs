@@ -12,10 +12,9 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id
                                          content-type-command
-                                         content-type-command-request] :as c]
-            [taoensso.timbre :as log]))
+                                         content-type-command-request] :as c]))
 
-(defmulti message-content (fn [{:keys [content-type] :as message}] content-type))
+(defmulti message-content (fn [{:keys [content-type]}] content-type))
 
 (defn command-content
   [{{:keys [command params]} :content}]

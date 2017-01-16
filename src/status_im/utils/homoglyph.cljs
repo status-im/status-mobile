@@ -1,5 +1,4 @@
-(ns status-im.utils.homoglyph
-  (:require [status-im.utils.utils :as u]))
+(ns status-im.utils.homoglyph)
 
 (def homoglyph-finder (js/require "homoglyph-finder"))
 

@@ -35,7 +35,7 @@
        :else (today-format-fn local)))))
 
 (defn day-relative [ms]
-  (when (> ms 0)
+  (when (pos? ms)
     (to-short-str ms #(label :t/datetime-today))))
 
 (defn format-time-ago [diff unit]

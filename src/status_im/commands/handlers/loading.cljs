@@ -10,8 +10,7 @@
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [taoensso.timbre :as log]
             [status-im.utils.homoglyph :as h]
-            [status-im.utils.js-resources :as js-res]
-            [clojure.string :as str]))
+            [status-im.utils.js-resources :as js-res]))
 
 (def commands-js "commands.js")
 
@@ -28,7 +27,7 @@
       (dispatch [::fetch-commands! identity])))
 
 (defn fetch-commands!
-  [db [{:keys [whisper-identity dapp? dapp-url]}]]
+  [_ [{:keys [whisper-identity dapp? dapp-url]}]]
   (when true
     ;-let [url (get-in db [:chats identity :dapp-url])]
     (cond
@@ -94,7 +93,7 @@
                       registered-only)))
        (remove (fn [[n]]
                  (and
-                   (not (= console-chat-id id))
+                   (not= console-chat-id id)
                    (h/matches (name n) "password"))))
        (into {})))
 
@@ -169,12 +168,12 @@
   (u/side-effect!
     (fn [{:keys [chats]}]
       (doseq [[id {:keys [name photo-path public-key add-chat?
-                          dapp? dapp-url dapp-hash] :as contact}] js-res/default-contacts]
-        (let [id (clojure.core/name id)]
-          (when-not (chats id)
+                          dapp? dapp-url dapp-hash]}] js-res/default-contacts]
+        (let [id' (clojure.core/name id)]
+          (when-not (chats id')
             (when add-chat?
-              (dispatch [:add-chat id {:name (:en name)}]))
-            (dispatch [:add-contacts [{:whisper-identity id
+              (dispatch [:add-chat id' {:name (:en name)}]))
+            (dispatch [:add-contacts [{:whisper-identity id'
                                        :name             (:en name)
                                        :photo-path       photo-path
                                        :public-key       public-key

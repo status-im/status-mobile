@@ -6,7 +6,6 @@
             [status-im.constants :refer [console-chat-id
                                          text-content-type]]
             [status-im.i18n :refer [label]]
-            [taoensso.timbre :as log]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -36,7 +35,7 @@
 (defmulti open-faucet (fn [_ _ {:keys [type]}] type))
 
 (defmethod open-faucet :api
-  [faucet-name current-address {:keys [api-url]}]
+  [_ current-address {:keys [api-url]}]
   (let [api-url (gstring/format api-url current-address)]
     (http-get api-url
               #(received-message (label :t/faucet-success))

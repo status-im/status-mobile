@@ -54,7 +54,7 @@
 
 (register-handler :status-received
   (u/side-effect!
-    (fn [{:keys [discoveries] :as db} [_ {:keys [from payload]}]]
+    (fn [{:keys [discoveries]} [_ {:keys [from payload]}]]
       (when (and (not (discoveries/exists? (:message-id payload)))
                  (not (get discoveries (:message-id payload))))
         (let [{:keys [message-id status hashtags profile]} payload

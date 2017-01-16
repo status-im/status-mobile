@@ -23,7 +23,7 @@
   [chat-icon-view-menu-item chat-id group-chat name color true])
 
 (defn- members-text [members]
-  (str (s/join ", " (map #(:name %) members))
+  (str (s/join ", " (map :name members))
        " "
        (label :t/and-you)))
 
@@ -121,8 +121,9 @@
     (when-let [actions (if @group-chat
                          (group-chat-items @members)
                          (user-chat-items @chat-id))]
-      [view (-> (st/actions-wrapper status-bar-height)
-                (merge (get-in platform-specific [:component-styles :actions-list-view])))
+      [view (merge
+              (st/actions-wrapper status-bar-height)
+              (get-in platform-specific [:component-styles :actions-list-view]))
        [view st/actions-separator]
        [view st/actions-view
         (for [action actions]

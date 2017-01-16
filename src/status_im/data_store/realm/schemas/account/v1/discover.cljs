@@ -12,5 +12,5 @@
                                        :objectType "tag"}
                           :created-at {:type "int" :default 0}}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating discover schema"))

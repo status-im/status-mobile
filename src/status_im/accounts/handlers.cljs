@@ -89,12 +89,12 @@
   :check-status-change
   (u/side-effect!
     (fn [{:keys [current-account-id accounts]} [_ status]]
-      (let [{old-status :status :as account} (get accounts current-account-id)
+      (let [{old-status :status} (get accounts current-account-id)
             status-updated? (and (not= status nil)
                                  (not= status old-status))]
         (when status-updated?
           (let [hashtags (get-hashtags status)]
-            (when-not (empty? hashtags)
+            (when (seq hashtags)
               (dispatch [:broadcast-status status hashtags]))))))))
 
 (register-handler

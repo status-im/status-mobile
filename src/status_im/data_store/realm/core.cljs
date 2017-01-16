@@ -1,6 +1,5 @@
 (ns status-im.data-store.realm.core
-  (:require [status-im.utils.utils :as u]
-            [status-im.utils.types :refer [to-string]]
+  (:require [status-im.utils.types :refer [to-string]]
             [status-im.data-store.realm.schemas.account.core :as account]
             [status-im.data-store.realm.schemas.base.core :as base]
             [taoensso.timbre :as log]
@@ -36,7 +35,6 @@
   (open-realm (last schemas) file-name))
 
 (def new-account-filename "new-account")
-(def new-accout-realm-file (str new-account-filename ".realm"))
 
 (def base-realm (open-migrated-realm (.-defaultPath realm-class) base/schemas))
 
@@ -123,7 +121,8 @@
   (.filtered results filter-query))
 
 (defn realm-collection->list [collection]
-  (-> (.map collection (fn [object _ _] object))
+  (-> collection
+      (.map (fn [object _ _] object))
       (js->clj :keywordize-keys true)))
 
 (defn list->array [record list-field]
@@ -137,7 +136,8 @@
           (js->clj :keywordize-keys true)))
 
 (defn get-by-filter [realm schema-name filter]
-  (-> (.objects realm (name schema-name))
+  (-> realm
+      (.objects (name schema-name))
       (.filtered filter)))
 
 (defn- get-schema-by-name [opts]
@@ -153,10 +153,9 @@
       (:type field-def)
       field-def)))
 
-(defmulti to-query (fn [realm schema-name operator field value]
-                     operator))
+(defmulti to-query (fn [_ _ operator _ _] operator))
 
-(defmethod to-query :eq [schema schema-name operator field value]
+(defmethod to-query :eq [schema schema-name _ field value]
   (let [value         (to-string value)
         field-type    (field-type schema schema-name field)
         escaped-value (when value (str/replace (str value) #"\"" "\\\""))

@@ -36,5 +36,5 @@
                           :contact-info     {:type     :string
                                              :optional true}}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating chat schema"))

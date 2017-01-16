@@ -9,8 +9,7 @@
 
 (defn get-all-as-list
   []
-  (-> (get-all)
-      realm/realm-collection->list))
+  (realm/realm-collection->list (get-all)))
 
 (defn get-by-id
   [message-id]
@@ -29,8 +28,7 @@
 
 (defn get-count-by-chat-id
   [chat-id]
-  (-> (get-by-chat-id chat-id)
-      (realm/get-count)))
+  (realm/get-count (get-by-chat-id chat-id)))
 
 (defn get-by-fields
   [fields from number-of-messages]
@@ -47,8 +45,9 @@
 
 (defn get-unviewed
   []
-  (-> (realm/get-by-fields @realm/account-realm :message :and {:outgoing       false
-                                                               :message-status nil})
+  (-> @realm/account-realm
+      (realm/get-by-fields :message :and {:outgoing       false
+                                          :message-status nil})
       (realm/realm-collection->list)))
 
 (defn exists?

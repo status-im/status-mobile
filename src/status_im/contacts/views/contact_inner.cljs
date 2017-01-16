@@ -1,6 +1,5 @@
 (ns status-im.contacts.views.contact-inner
-  (:require [clojure.string :as s]
-            [status-im.components.react :refer [view image text]]
+  (:require [status-im.components.react :refer [view image text]]
             [status-im.components.chat-icon.screen :refer [contact-icon-contacts-tab]]
             [status-im.contacts.styles :as st]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
