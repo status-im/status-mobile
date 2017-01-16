@@ -199,6 +199,8 @@
            (dispatch [::send-message! params])))
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id message]}]]
+      (dispatch [:upsert-chat! {:chat-id   chat-id
+                                :timestamp (time/now-ms)}])
       (messages/save chat-id message))))
 
 (register-handler :clear-response-suggestions
