@@ -22,6 +22,7 @@
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.selectable-field.view :refer [selectable-field]]
             [status-im.components.status-view.view :refer [status-view]]
+            [status-im.components.share :refer [share]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.utils.platform :refer [platform-specific]]
@@ -33,10 +34,6 @@
             [status-im.components.image-button.view :refer [show-qr-button]]
             [status-im.i18n :refer [label
                                     get-contact-translated]]))
-
-(defn share [text dialog-title]
-  (let [list-selection-fn (:list-selection-fn platform-specific)]
-    (dispatch [:open-sharing list-selection-fn text dialog-title])))
 
 (defn toolbar [{:keys [account edit?]}]
   (let [profile-edit-data-valid? (s/valid? ::v/profile account)]

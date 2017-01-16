@@ -1,9 +1,7 @@
 (ns status-im.profile.handlers
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.components.react :refer [show-image-picker
-                                                copy-to-clipboard]]
-            [status-im.components.share :refer [open]]
+            [status-im.components.react :refer [show-image-picker]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
             [status-im.utils.handlers :as u :refer [get-hashtags]]
@@ -37,15 +35,3 @@
                                            1 (dispatch [:open-image-picker])
                                            :default))
                           :cancel-text (label :t/image-source-cancel)}))))
-
-(register-handler :open-sharing
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn text dialog-title]]
-      (list-selection-fn {:title       dialog-title
-                          :options     [(label :t/sharing-copy-to-clipboard) (label :t/sharing-share)]
-                          :callback    (fn [index]
-                                         (case index
-                                           0 (copy-to-clipboard text)
-                                           1 (open {:message text})
-                                           :default))
-                          :cancel-text (label :t/sharing-cancel)}))))

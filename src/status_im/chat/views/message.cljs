@@ -13,6 +13,7 @@
                                                 get-dimensions]]
             [status-im.components.animation :as anim]
             [status-im.chat.constants :as chat-consts]
+            [status-im.components.share :refer [share]]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
             [status-im.chat.styles.command-pill :as pill-st]
@@ -198,7 +199,8 @@
   [{:keys [content] :as message}]
   [message-view message
    [text {:style (st/text-message message)
-          :font  :default}
+          :font  :default
+          :on-long-press  #(share content (label :t/message))}
     (parse-text content)]])
 
 (defmethod message-content text-content-type
