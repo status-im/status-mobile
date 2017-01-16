@@ -65,7 +65,21 @@
             "en": "https://mkr.market"
         }
     },
-
+    
+    "FirstBlood":
+    {
+        "name":
+        {
+            "en": "FirstBlood"
+        },
+        "photo-path": "contacts://firstblood",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://app.firstblood.io"
+        }
+    },
+    
     "oaken-water-meter":
     {
         "name":
