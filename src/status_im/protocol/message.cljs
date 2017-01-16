@@ -22,7 +22,7 @@
   #{:group-message :group-invitation :add-group-identity
     :remove-group-identity :leave-group :update-group})
 
-(s/def :discover-message/type #{:online :status :discover :contact-request})
+(s/def :discover-message/type #{:online :status :discover :contact-request :update-keys})
 
 (s/def :message/type
   (s/or :group :group-message/type

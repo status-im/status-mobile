@@ -29,7 +29,7 @@
                    message
                    {:requires-ack? false
                     :type          :online
-                    :payload       {:timestamp (u/timestamp)}
+                    :payload       {:content {:timestamp (u/timestamp)}}
                     :topics        [(make-discover-topic (:from message))]})]
     (d/add-pending-message! web3 message')))
 
@@ -104,6 +104,26 @@
         (assoc-in [:payload :content :profile]
                   (get-in message [:payload :profile]))
         (update :payload dissoc :profile))))
+
+(s/def ::public string?)
+(s/def ::private string?)
+(s/def ::keypair (s/keys :req-un [::public ::private]))
+(s/def :update-keys/payload
+  (s/keys :req-un [::keypair]))
+(s/def :update-keys/message
+  (s/merge :protocol/message (s/keys :req-un [:update-keys/payload])))
+(s/def :update-keys/options
+  (s/keys :req-un [:update-keys/message :options/web3]))
+
+(defn update-keys!
+  [{:keys [web3 message] :as options}]
+  {:pre [(valid? :update-keys/options options)]}
+  (let [message (-> message
+                    (assoc :type :update-keys
+                           :requires-ack? false
+                           :topics [(make-discover-topic (:from message))])
+                    (assoc-in [:payload :timestamp] (u/timestamp)))]
+    (d/add-pending-message! web3 message)))
 
 (s/def :status/payload
   (s/merge :message/payload (s/keys :req-un [::status])))

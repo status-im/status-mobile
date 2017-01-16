@@ -71,7 +71,7 @@
         account' (assoc account :network (or acc-network network))]
     (accounts-store/save account' true)))
 
-(defn send-account-update
+(defn broadcast-account-update
   [{:keys [current-account-id current-public-key web3 accounts]} _]
   (let [{:keys [name photo-path status]} (get accounts current-account-id)
         {:keys [updates-public-key updates-private-key]} (accounts current-account-id)]
@@ -85,6 +85,19 @@
                                         :status        status
                                         :profile-image photo-path}}}})))
 
+(defn send-keys-update
+  [{:keys [current-account-id current-public-key web3 accounts contacts]} _]
+  (let [{:keys [name photo-path status]} (get accounts current-account-id)
+        {:keys [updates-public-key updates-private-key]} (accounts current-account-id)]
+    (doseq [id (u/identities contacts)]
+      (protocol/update-keys!
+       {:web3    web3
+        :message {:from       current-public-key
+                  :to         id
+                  :message-id (random/id)
+                  :payload    {:keypair {:public  updates-public-key
+                                         :private updates-private-key}}}}))))
+
 (register-handler
   :check-status-change
   (u/side-effect!
@@ -97,14 +110,27 @@
             (when (seq hashtags)
               (dispatch [:broadcast-status status hashtags]))))))))
 
+(defn account-update
+  [{:keys [current-account-id accounts] :as db} data]
+  (let [data    (assoc data :last-updated (time/now-ms))
+        account (merge (get accounts current-account-id) data)]
+    (assoc-in db [:accounts current-account-id] account)))
+
 (register-handler
-  :account-update
-  (-> (fn [{:keys [current-account-id accounts] :as db} [_ data]]
-        (let [data    (assoc data :last-updated (time/now-ms))
-              account (merge (get accounts current-account-id) data)]
-          (assoc-in db [:accounts current-account-id] account)))
-      ((after save-account!))
-      ((after send-account-update))))
+ :account-update
+ (-> (fn [db [_ data]]
+       (account-update db data))
+     ((after save-account!))
+     ((after broadcast-account-update))))
+
+(register-handler
+ :account-update-keys
+ (-> (fn [db]
+       (let [{:keys [public private]} (protocol/new-keypair!)]
+         (account-update db {:updates-public-key  public
+                             :updates-private-key private})))
+     ((after save-account!))
+     ((after send-keys-update))))
 
 (register-handler
   :send-account-update-if-needed

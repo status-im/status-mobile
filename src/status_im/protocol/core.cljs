@@ -43,6 +43,7 @@
 (def send-status! discoveries/send-status!)
 (def send-discoveries-request! discoveries/send-discoveries-request!)
 (def send-discoveries-response! discoveries/send-discoveries-response!)
+(def update-keys! discoveries/update-keys!)
 
 (def message-pending? d/message-pending?)
 
