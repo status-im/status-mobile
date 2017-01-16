@@ -109,7 +109,9 @@
             :add-group-identity (dispatch [:participant-invited-to-group message])
             :remove-group-identity (dispatch [:participant-removed-from-group message])
             :leave-group (dispatch [:participant-left-group message])
-            :contact-request (dispatch [:contact-request-received message])
+            :contact (dispatch [:contact-received message])
+            :recover-contact-request (dispatch [:recover-contact-request-received message])
+            :updates-keys (dispatch [:updates-keys-received message])
             :discover (dispatch [:status-received message])
             :discoveries-request (dispatch [:discoveries-request-received message])
             :discoveries-response (dispatch [:discoveries-response-received message])
@@ -378,30 +380,56 @@
     (fn [_ [_ message]]
       (pending-messages/delete message))))
 
-(register-handler :contact-request-received
+(register-handler :contact-received
   (u/side-effect!
     (fn [{:keys [contacts]} [_ {:keys [from payload]}]]
       (when from
-        (let [{{:keys [name profile-image address status]} :contact
-               {:keys [public private]}                    :keypair} payload
-
-              contact         {:whisper-identity from
-                               :public-key       public
-                               :private-key      private
-                               :address          address
-                               :status           status
-                               :photo-path       profile-image
-                               :name             name}
-              contact-exists? (get contacts from)
-              chat            {:name             name
-                               :chat-id          from
-                               :contact-info     (prn-str contact)
-                               :pending-contact? true}]
+        (let [{{:keys [name profile-image
+                       address status]} :contact
+               {:keys [public private]} :keypair
+               recovering-contact?      :recovering?} payload
+              contact             {:whisper-identity from
+                                   :public-key       public
+                                   :private-key      private
+                                   :address          address
+                                   :status           status
+                                   :photo-path       profile-image
+                                   :name             name}
+              contact-exists?     (get contacts from)
+              chat                {:name             name
+                                   :chat-id          from
+                                   :contact-info     (prn-str contact)
+                                   :pending-contact? (not recovering-contact?)}]
           (if contact-exists?
             (do
               (dispatch [:update-contact! contact])
               (dispatch [:watch-contact contact]))
-            (dispatch [:add-chat from chat])))))))
+            (dispatch [:add-chat from chat]))
+          (when recovering-contact?
+            (dispatch [:add-pending-contact from])
+            (dispatch [:send-updates-keys from])))))))
+
+(register-handler :recover-contact-request-received
+  (u/side-effect!
+    (fn [{:keys [contacts]} [_ {:keys [from payload]}]]
+      (let [{:keys [last-online]} (get contacts from)]
+        (when (> last-online 0)
+          (dispatch [:send-contact {:whisper-identity from} true]))))))
+
+(register-handler :updates-keys-received
+  (u/side-effect!
+    (fn [{:keys [contacts]} [_ {:keys [from payload]}]]
+      (when from
+        (let [{{:keys [public private]} :keypair} payload
+              contact     {:whisper-identity from
+                           :public-key       public
+                           :private-key      private}
+              old-contact (get contacts from)]
+          (when old-contact
+            (let [contact (merge old-contact contact)]
+              (dispatch [:update-contact! contact])
+              (dispatch [:stop-watching-contact contact])
+              (dispatch [:watch-contact contact]))))))))
 
 (register-handler ::post-error
   (u/side-effect!

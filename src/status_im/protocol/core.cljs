@@ -38,11 +38,13 @@
 ;; discoveries
 (def watch-user! discoveries/watch-user!)
 (def stop-watching-user! discoveries/stop-watching-user!)
-(def contact-request! discoveries/contact-request!)
+(def send-contact! discoveries/send-contact!)
+(def send-updates-keys! discoveries/send-updates-keys!)
 (def broadcast-profile! discoveries/broadcast-profile!)
 (def send-status! discoveries/send-status!)
 (def send-discoveries-request! discoveries/send-discoveries-request!)
 (def send-discoveries-response! discoveries/send-discoveries-response!)
+(def broadcast-contacts-request! discoveries/broadcast-contacts-request!)
 
 (def message-pending? d/message-pending?)
 

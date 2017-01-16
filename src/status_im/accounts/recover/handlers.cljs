@@ -5,9 +5,21 @@
             [status-im.utils.identicon :refer [identicon]]
             [taoensso.timbre :as log]
             [clojure.string :as str]
+            [status-im.utils.random :as random]
             [status-im.utils.handlers :as u]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.protocol.core :as protocol]))
+
+(register-handler :send-contacts-request-if-needed
+  (u/side-effect!
+    (fn [{:keys [current-account-id current-public-key web3 accounts]}]
+      (let [{:keys [needs-contacts?]} (get accounts current-account-id)]
+        (when needs-contacts?
+          (dispatch [:account-update {:needs-contacts? false}])
+          (protocol/broadcast-contacts-request!
+           {:web3    web3
+            :message {:from       current-public-key
+                      :message-id (random/id)}}))))))
 
 (defn account-recovered [result]
   (let [_          (log/debug result)
@@ -21,7 +33,8 @@
                     :photo-path          (identicon public-key)
                     :updates-public-key  public
                     :updates-private-key private
-                    :signed-up?          true}]
+                    :signed-up?          true
+                    :needs-contacts?     true}]
     (log/debug "account-recovered")
     (when-not (str/blank? public-key)
       (dispatch [:set-in [:recover :passphrase] ""])

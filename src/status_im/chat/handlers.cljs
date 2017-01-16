@@ -317,8 +317,8 @@
       ((after load-commands!))))
 
 (defn compare-chats
-  [{timesatmp1 :timestamp} {timestamp2 :timestamp}]
-  (compare timestamp2 timesatmp1))
+  [{timestamp1 :timestamp} {timestamp2 :timestamp}]
+  (compare timestamp2 timestamp1))
 
 (defn initialize-chats
   [{:keys [loaded-chats account-creation? chats] :as db} _]

@@ -17,6 +17,8 @@
                           :last-updated        {:type :int :default 0}
                           :signed-up?          {:type    :bool
                                                 :default false}
+                          :needs-contacts?     {:type    :bool
+                                                :default false}
                           :network             :string}})
 
 (defn migration [_ _]

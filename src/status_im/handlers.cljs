@@ -90,6 +90,7 @@
       (dispatch [:init-chat])
       (dispatch [:init-discoveries])
       (dispatch [:send-account-update-if-needed])
+      (dispatch [:send-contacts-request-if-needed])
       (dispatch [:start-requesting-discoveries])
       (dispatch [:remove-old-discoveries!]))))
 

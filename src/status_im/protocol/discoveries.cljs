@@ -53,25 +53,33 @@
     {:from   identity
      :topics [(make-discover-topic identity)]}))
 
-(s/def :contact-request/contact map?)
+(s/def :send-contact/contact map?)
 
-(s/def :contact-request/payload
+(s/def :send-contact/payload
   (s/merge :message/payload
-           (s/keys :req-un [:contact-request/contact :message/keypair])))
+           (s/keys :req-un [:send-contact/contact :message/keypair])))
 
-(s/def :contact-request/message
+(s/def :send-contact/message
   (s/merge :protocol/message
-           (s/keys :req-un [:message/to :contact-request/payload])))
+           (s/keys :req-un [:message/to :send-contact/payload])))
 
-(defn contact-request!
+(defn send-contact!
   [{:keys [web3 message]}]
-  {:pre [(valid? :contact-request/message message)]}
-  (debug :send-command-request!)
+  (debug :send-contact!)
   (d/add-pending-message!
     web3
-    (assoc message :type :contact-request
+    (assoc message :type :contact
                    :requires-ack? true
                    :topics [f/status-topic])))
+
+(defn send-updates-keys!
+  [{:keys [web3 message]}]
+  (debug :send-updates-keys!)
+  (d/add-pending-message!
+   web3
+   (assoc message :type :updates-keys
+                  :requires-ack? true
+                  :topics [f/status-topic])))
 
 (defonce watched-hashtag-topics (atom nil))
 
@@ -104,6 +112,15 @@
         (assoc-in [:payload :content :profile]
                   (get-in message [:payload :profile]))
         (update :payload dissoc :profile))))
+
+(defn broadcast-contacts-request!
+  [{:keys [web3 message] :as options}]
+  (debug :broadcasting-contacts-request options)
+  (d/add-pending-message!
+   web3
+   (-> message
+       (assoc :type :recover-contact-request
+              :topics [(make-discover-topic (:from message))]))))
 
 (s/def :status/payload
   (s/merge :message/payload (s/keys :req-un [::status])))
