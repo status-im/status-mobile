@@ -47,7 +47,7 @@
 
 (defview pending-contact-badge
   [chat-id {:keys [pending-wrapper pending-outer-circle pending-inner-circle]}]
-  [pending-contact? [:get-in [:chats chat-id :pending-contact?]]]
+  [pending-contact? [:get-in [:contacts chat-id :pending?]]]
   (when pending-contact?
     [view pending-wrapper
      [view pending-outer-circle

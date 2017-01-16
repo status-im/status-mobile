@@ -25,7 +25,7 @@
                            (anim/set-value offline-opacity 0)
                            (when (or (= @network-status :offline) (= @sync-state :offline))
                              (start-offline-animation offline-opacity)))
-        pending-contact? (subscribe [:chat :pending-contact?])
+        pending-contact? (subscribe [:current-contact :pending?])
         view-id          (subscribe [:get :view-id])]
     (r/create-class
       {:component-did-mount

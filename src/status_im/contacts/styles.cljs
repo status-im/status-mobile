@@ -8,7 +8,8 @@
                                                  color-light-gray
                                                  color-separator
                                                  color-gray2]]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]
+            [status-im.utils.platform :as p]))
 
 ;; Contacts list
 
@@ -21,7 +22,8 @@
    :background-color toolbar-background2})
 
 (def contacts-list-container
-  {:flex 1})
+  {:flex          1
+   :margin-bottom (when p/ios? 72)})
 
 (def empty-contact-groups
   (merge contact-groups

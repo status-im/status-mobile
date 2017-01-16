@@ -11,13 +11,13 @@
   (data-store/get-by-id-cljs whisper-identity))
 
 (defn save
-  [{:keys [whisper-identity pending] :as contact}]
-  (let [{pending-db :pending
-         :as        contact-db} (data-store/get-by-id whisper-identity)
-        contact (assoc contact :pending
+  [{:keys [whisper-identity pending?] :as contact}]
+  (let [{pending-db? :pending?
+         :as         contact-db} (data-store/get-by-id whisper-identity)
+        contact (assoc contact :pending?
                        (boolean (if contact-db
-                                  (if (nil? pending) pending-db pending)
-                                  pending)))]
+                                  (if (nil? pending?) pending-db? pending?)
+                                  pending?)))]
     (data-store/save contact (if contact-db true false))))
 
 (defn save-all
