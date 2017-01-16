@@ -2,12 +2,17 @@ package im.status.ethereum.module;
 
 import android.app.Activity;
 import android.view.WindowManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.RemoteException;
+import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebStorage;
+
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -329,5 +334,42 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 activity.getWindow().setSoftInputMode(mode);
             }
         });
+    }
+
+    @SuppressWarnings("deprecation")
+    @ReactMethod
+    public void clearCookies() {
+        Log.d(TAG, "clearCookies");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        } else {
+            CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(activity);
+            cookieSyncManager.startSync();
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+            cookieManager.removeSessionCookie();
+            cookieSyncManager.stopSync();
+            cookieSyncManager.sync();
+        }
+    }
+
+    @ReactMethod
+    public void clearStorageAPIs() {
+        Log.d(TAG, "clearStorageAPIs");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        WebStorage storage = WebStorage.getInstance();
+        if (storage != null) {
+            storage.deleteAllData();
+        }
     }
 }

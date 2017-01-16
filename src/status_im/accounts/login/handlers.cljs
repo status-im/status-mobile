@@ -35,6 +35,7 @@
   :change-account
   (u/side-effect!
     (fn [_ [_ address new-account? callback]]
+      (status/clear-web-data)
       (data-store/change-account address new-account?
                                  #(callback % address new-account?)))))
 
