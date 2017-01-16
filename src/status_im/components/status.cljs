@@ -151,5 +151,10 @@
   (when status
     (call-module #(.setSoftInputMode status mode))))
 
+(defn clear-web-data []
+  (when status
+    (call-module #(.clearCookies status))
+    (call-module #(.clearStorageAPIs status))))
+
 (def adjust-resize 16)
 (def adjust-pan 32)
