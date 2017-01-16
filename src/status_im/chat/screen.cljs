@@ -98,8 +98,8 @@
           [chat-icon]]]))))
 
 (defview add-contact-bar []
-  [pending-contact? [:chat :pending-contact?]
-   chat-id [:get :current-chat-id]]
+  [chat-id [:get :current-chat-id]
+   pending-contact? [:current-contact :pending?]]
   (when pending-contact?
     [touchable-highlight
      {:on-press #(dispatch [:add-pending-contact chat-id])}

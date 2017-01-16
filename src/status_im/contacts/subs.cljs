@@ -3,6 +3,12 @@
   (:require [re-frame.core :refer [register-sub subscribe]]
             [status-im.utils.identicon :refer [identicon]]))
 
+(register-sub :current-contact
+  (fn [db [_ k]]
+    (-> @db
+        (get-in [:contacts (:current-chat-id @db) k])
+        (reaction))))
+
 (register-sub :get-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
@@ -19,7 +25,7 @@
 (register-sub :all-added-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
-      (->> (remove #(true? (:pending (second %))) @contacts)
+      (->> (remove #(true? (:pending? (second %))) @contacts)
            (sort-contacts)
            (reaction)))))
 

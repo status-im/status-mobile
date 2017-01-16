@@ -35,6 +35,6 @@
 
 (defn identities [contacts]
   (->> (map second contacts)
-       (remove (fn [{:keys [dapp? pending]}]
-                 (or pending dapp?)))
+       (remove (fn [{:keys [dapp? pending?]}]
+                 (or pending? dapp?)))
        (map :whisper-identity)))

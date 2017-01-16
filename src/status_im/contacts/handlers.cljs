@@ -15,7 +15,6 @@
             [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]))
 
-
 (defmethod nav/preload-data! :group-contacts
   [db [_ _ group]]
   (dissoc
@@ -216,12 +215,9 @@
     (fn [{:keys [chats contacts]} [_ chat-id]]
       (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
                       (read-string contact-info)
-                      (-> contacts
-                          (get chat-id)
+                      (-> (get contacts chat-id)
                           (assoc :pending false)))]
         (dispatch [::prepare-contact contact])
-        (dispatch [:update-chat! {:chat-id          chat-id
-                                  :pending-contact? false}])
         (dispatch [:watch-contact contact])
         (dispatch [:discoveries-send-portions chat-id])))))
 
@@ -279,8 +275,6 @@
   (after stop-watching-contact)
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
-      (dispatch [:update-chat! {:chat-id          whisper-identity
-                                :pending-contact? true}])
       (dispatch [:update-contact! (assoc contact :pending true)])
       (dispatch [:account-update-keys]))))
 

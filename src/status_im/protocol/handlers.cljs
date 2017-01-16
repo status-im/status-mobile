@@ -385,24 +385,24 @@
       (when from
         (let [{{:keys [name profile-image address status]} :contact
                {:keys [public private]}                    :keypair} payload
-
-              contact         {:whisper-identity from
-                               :public-key       public
-                               :private-key      private
-                               :address          address
-                               :status           status
-                               :photo-path       profile-image
-                               :name             name}
-              contact-exists? (get contacts from)
-              chat            {:name             name
-                               :chat-id          from
-                               :contact-info     (prn-str contact)
-                               :pending-contact? true}]
-          (if contact-exists?
-            (do
+              existing-contact (get contacts from)
+              contact          {:whisper-identity from
+                                :public-key       public
+                                :private-key      private
+                                :address          address
+                                :status           status
+                                :photo-path       profile-image
+                                :name             name}
+              chat             {:name         name
+                                :chat-id      from
+                                :contact-info (prn-str contact)}]
+          (if-not existing-contact
+            (let [contact (assoc contact :pending? true)]
+              (dispatch [:add-contacts [contact]])
+              (dispatch [:add-chat from chat]))
+            (when-not (:pending? existing-contact)
               (dispatch [:update-contact! contact])
-              (dispatch [:watch-contact contact]))
-            (dispatch [:add-chat from chat])))))))
+              (dispatch [:watch-contact contact]))))))))
 
 (register-handler ::post-error
   (u/side-effect!
