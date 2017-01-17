@@ -5,7 +5,6 @@
             [status-im.utils.random :as random]
             [status-im.utils.sms-listener :refer [add-sms-listener
                                                   remove-sms-listener]]
-            [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.constants :refer [console-chat-id
                                          text-content-type
                                          content-type-command

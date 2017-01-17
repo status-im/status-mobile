@@ -18,6 +18,12 @@
     (subs content (count cu/command-prefix))
     content))
 
+(defn command-dependent-context-params
+  [{:keys [name] :as command}]
+  (case name
+    "phone" {:suggestions (pn/get-examples)}
+    {}))
+
 (defn invoke-suggestions-handler!
   [{:keys [current-chat-id canceled-command] :as db} _]
   (when-not canceled-command
@@ -30,7 +36,8 @@
                   0
                   :suggestions]
           params {:parameters (or params {})
-                  :context    {:data data}}]
+                  :context    (merge {:data data}
+                                     (command-dependent-context-params command))}]
       (status/call-jail current-chat-id
                         path
                         params
