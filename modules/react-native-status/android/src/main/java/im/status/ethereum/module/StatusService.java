@@ -84,7 +84,7 @@ public class StatusService extends Service {
         }
         //TODO: stop geth
         stopNode(null);
-        //isNodeInitialized = false;
+        isNodeInitialized = false;
         Log.d(TAG, "Status Service stopped !");
     }
 
