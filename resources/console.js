@@ -1621,12 +1621,12 @@ function startsWith(str1, str2) {
     return str1.lastIndexOf(str2, 0) == 0 && str1 != str2;
 }
 
-function phoneSuggestions(params) {
+function phoneSuggestions(params, context) {
     var ph, suggestions;
     if (!params.phone || params.phone == "") {
-        ph = phones;
+        ph = context.suggestions;
     } else {
-        ph = phones.filter(function (phone) {
+        ph = context.suggestions.filter(function (phone) {
             return startsWith(phone.number, params.phone);
         });
     }

@@ -1,4 +1,5 @@
-(ns status-im.utils.phone-number)
+(ns status-im.utils.phone-number
+  (:require [status-im.i18n :refer [label]]))
 
 (def i18n (js/require "react-native-i18n"))
 (def locale (or (.-locale i18n) "___en"))
@@ -7,12 +8,21 @@
 
 ;; todo check wrong numbers, .getNumber returns empty string
 (defn format-phone-number [number]
-  (str (.getNumber (awesome-phonenumber. number country-code "international"))))
+  (str (.getNumber (awesome-phonenumber. number country-code) "international")))
+
+(defn get-examples []
+  (when-let [example (.getExample awesome-phonenumber country-code "mobile")]
+    [{:number      (.getNumber example)
+      :description (label :t/phone-e164)}
+     {:number      (.getNumber example "international")
+      :description (label :t/phone-international)}
+     {:number      (.getNumber example "national")
+      :description (label :t/phone-national)}
+     {:number      (.getNumber example "significant")
+      :description (label :t/phone-significant)}]))
 
 (defn valid-mobile-number? [number]
   (when (string? number)
-    (let [pattern    #"^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{2})[-. ]*(\d{2})\s*$"
-          number-obj (awesome-phonenumber. number country-code "international")]
-      (and (re-matches pattern number)
-           (.isValid number-obj)
+    (let [number-obj (awesome-phonenumber. number country-code)]
+      (and (.isValid number-obj)
            (.isMobile number-obj)))))

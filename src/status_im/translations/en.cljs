@@ -104,6 +104,12 @@
    :intro-message1                        "Welcome to Status\nTap this message to set your password & get started!"
    :account-generation-message            "Gimmie a sec, I gotta do some crazy math to generate your account!"
 
+   ;phone types
+   :phone-e164                            "International 1"
+   :phone-international                   "International 2"
+   :phone-national                        "National"
+   :phone-significant                     "Significant"
+
    ;chats
    :chats                                 "Chats"
    :new-chat                              "New chat"
