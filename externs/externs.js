@@ -113,6 +113,8 @@ var TopLevel = {
 "parse" : function () {},
 "parseInt" : function () {},
 "parseJail" : function () {},
+"clearCookies": function () {},
+"clearStorageAPIs": function () {},
 "path" : function () {},
 "Platform" : function () {},
 "post" : function () {},
