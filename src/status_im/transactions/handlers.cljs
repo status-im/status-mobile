@@ -27,7 +27,7 @@
       (assoc :transactions transactions-queue
              :wrong-password-counter 0
              :wrong-password? false)
-      (assoc-in [:confirm-transactions :password] 0)))
+      (assoc-in [:confirm-transactions :password] "")))
 
 (defn on-unlock
   [ids password]

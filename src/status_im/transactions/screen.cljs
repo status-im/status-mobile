@@ -39,7 +39,8 @@
                                                  :icon_ok
                                                  :icon_ok_disabled_inversed)}
                                  :style  icon-ok}
-                       :handler #(dispatch [:accept-transactions password])}]}]
+                       :handler (when-not (s/blank? password)
+                                  #(dispatch [:accept-transactions password]))}]}]
    [view st/carousel-container
     [carousel {:pageStyle st/carousel-page-style
                :gap       8
