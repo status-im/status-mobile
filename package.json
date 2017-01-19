@@ -44,6 +44,7 @@
     "react-native": "^0.38.0",
     "react-native-action-button": "2.0.13",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
+    "react-native-autolink": "^0.10.0",
     "react-native-camera": "git+https://github.com/alwx/react-native-camera.git",
     "react-native-circle-checkbox": "github:paramoshkinandrew/ReactNativeCircleCheckbox",
     "react-native-contacts": "^0.2.4",
