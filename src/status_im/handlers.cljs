@@ -27,7 +27,8 @@
     [status-im.utils.types :as t]
     [status-im.i18n :refer [label]]
     [status-im.constants :refer [console-chat-id]]
-    [status-im.utils.ethereum-network :as enet]))
+    [status-im.utils.ethereum-network :as enet]
+    [status-im.utils.instabug :as inst]))
 
 ;; -- Common --------------------------------------------------------------
 
@@ -135,6 +136,7 @@
   (u/side-effect!
     (fn [_ [_ event-str]]
       (log/debug :event-str event-str)
+      (inst/log (str "Signal event: " event-str))
       (let [{:keys [type event]} (t/json->clj event-str)]
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])

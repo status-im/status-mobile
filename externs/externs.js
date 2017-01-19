@@ -195,5 +195,6 @@ var TopLevel = {
 "y" : function () {},
 "_value" : function () {},
 "ListView": function() {},
-"DataSource": function() {}
+"DataSource": function() {},
+"IBGLog": function() {}
 };
