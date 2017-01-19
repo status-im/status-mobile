@@ -751,7 +751,7 @@ function validateSend(params, context) {
     }
 
     try {
-        var val = web3.toWei(params.amount, "ether");
+        var val = web3.toWei(params.amount.replace(",", "."), "ether");
         if (val <= 0) { throw new Error(); }
     } catch (err) {
         return {
@@ -788,7 +788,7 @@ function sendTransaction(params, context) {
     var data = {
         from: context.from,
         to: context.to,
-        value: web3.toWei(params.amount, "ether")
+        value: web3.toWei(params.amount.replace(",", "."), "ether")
     };
 
     try {
