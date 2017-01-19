@@ -9,7 +9,9 @@
                                                 image
                                                 icon
                                                 animated-view
+                                                touchable-without-feedback
                                                 touchable-highlight
+                                                autolink
                                                 get-dimensions]]
             [status-im.components.animation :as anim]
             [status-im.chat.constants :as chat-consts]
@@ -198,10 +200,15 @@
 (defn text-message
   [{:keys [content] :as message}]
   [message-view message
-   [text {:style (st/text-message message)
-          :font  :default
-          :on-long-press  #(share content (label :t/message))}
-    (parse-text content)]])
+   (let [parsed-text (parse-text content)
+         simple-text? (= (count parsed-text) 2)]
+     (if simple-text?
+       [autolink {:style (st/text-message message)
+                  :font  :default
+                  :text  (apply str parsed-text)}]
+       [text {:style (st/text-message message)
+              :font  :default}
+        (parse-text content)]))])
 
 (defmethod message-content text-content-type
   [wrapper message]
@@ -377,12 +384,14 @@
                                    :from       from
                                    :message-id message-id}])))
        :reagent-render
-       (fn [{:keys [outgoing group-chat] :as message}]
+       (fn [{:keys [outgoing group-chat content-type content] :as message}]
          [message-container message
-          [view
-           (let [incoming-group (and group-chat (not outgoing))]
-             [message-content
-              (if incoming-group
-                incoming-group-message-body
-                message-body)
-              (merge message {:incoming-group incoming-group})])]])})))
+          [touchable-highlight {:on-long-press (when (= content-type text-content-type)
+                                                        #(share content (label :t/message)))}
+           [view
+            (let [incoming-group (and group-chat (not outgoing))]
+              [message-content
+               (if incoming-group
+                 incoming-group-message-body
+                 message-body)
+               (merge message {:incoming-group incoming-group})])]]])})))

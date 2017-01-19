@@ -52,20 +52,23 @@
 
 ;; Accessor methods for React Components
 
+(defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
+  (let [font (get-in platform-specific [:fonts (keyword font)])
+        style (get opts style-key)]
+    (-> opts
+        (dissoc :font)
+        (assoc style-key (merge style font)))))
+
 (defn text
   ([t]
    (r/as-element [text-class t]))
-  ([{:keys [style font uppercase?] :as opts
+  ([{:keys [uppercase?] :as opts
      :or   {font :default}} t & ts]
    (r/as-element
-     (let [font (get-in platform-specific [:fonts (keyword font)])
-           ts   (cond->> (conj ts t)
-                         uppercase? (map clojure.string/upper-case))]
+     (let [ts (cond->> (conj ts t)
+                       uppercase? (map clojure.string/upper-case))]
        (vec (concat
-              [text-class
-               (-> opts
-                   (dissoc :font)
-                   (assoc :style (merge style font)))]
+              [text-class (add-font-style :style opts)]
               ts))))))
 
 (defn text-input [{:keys [font style] :as opts
@@ -133,3 +136,11 @@
 (def emoji-picker
   (let [emoji-picker (.-default emoji-picker-class)]
     (r/adapt-react-class emoji-picker)))
+
+;; Autolink
+
+(def autolink-class (r/adapt-react-class (.-default (js/require "react-native-autolink"))))
+
+(defn autolink [opts]
+  (r/as-element
+    [autolink-class (add-font-style :style opts)]))
