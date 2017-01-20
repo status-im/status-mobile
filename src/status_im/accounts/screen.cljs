@@ -39,8 +39,6 @@
 
 (defn create-account [_]
   (dispatch-sync [:reset-app])
-  ; add accounts screen to history ( maybe there is a better way ? )
-  (dispatch [:navigate-to-clean :accounts])
   (dispatch [:navigate-to :chat console-chat-id]))
 
 (defview accounts []

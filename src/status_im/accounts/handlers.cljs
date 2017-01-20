@@ -155,11 +155,13 @@
   (let [accounts (->> (accounts-store/get-all)
                       (map (fn [{:keys [address] :as account}]
                              [address account]))
-                      (into {}))]
+                      (into {}))
+        view (if (empty? accounts)
+               :chat
+               :accounts)]
     (assoc db :accounts accounts
-              :view-id (if (empty? accounts)
-                         :chat
-                         :accounts))))
+              :view-id view
+              :navigation-stack (list view))))
 
 (register-handler :load-accounts load-accounts!)
 
