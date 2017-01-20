@@ -67,6 +67,7 @@ var TopLevel = {
 "getInitialOrientation" : function () {},
 "getLayout" : function () {},
 "getNumber" : function () {},
+"getExample" : function () {},
 "getTime" : function () {},
 "getTimezoneOffset" : function () {},
 "goog" : function () {},
