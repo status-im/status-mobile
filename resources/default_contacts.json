@@ -65,7 +65,7 @@
             "en": "https://mkr.market"
         }
     },
-    
+
     "FirstBlood":
     {
         "name":
@@ -79,7 +79,7 @@
             "en": "https://app.firstblood.io"
         }
     },
-    
+
     "oaken-water-meter":
     {
         "name":
@@ -91,6 +91,20 @@
         "dapp-url":
         {
             "en": "http://waterflowdapp.projectoaken.com"
+        }
+    },
+
+    "gnosis":
+    {
+        "name":
+        {
+            "en": "Gnosis"
+        },
+        "photo-path": "contacts://gnosis",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://beta.gnosis.pm"
         }
     }
 }

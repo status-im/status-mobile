@@ -24,4 +24,5 @@
    :oaken-water-meter (js/require "./images/contacts/oaken-water-meter.png")
    :flight-delays-suck (js/require "./images/contacts/flight-delays-suck.png")
    :jarrad (js/require "./images/contacts/jarrad.png")
-   :firstblood (js/require "./images/contacts/FirstBlood.png")})
+   :firstblood (js/require "./images/contacts/FirstBlood.png")
+   :gnosis (js/require "./images/contacts/gnosis.png")})
