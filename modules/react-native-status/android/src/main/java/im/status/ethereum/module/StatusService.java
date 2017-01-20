@@ -19,7 +19,7 @@ public class StatusService extends Service {
 
     private static final String TAG = "StatusService";
 
-    private static boolean isNodeInitialized = false;
+    private boolean isNodeInitialized = false;
     private final Handler handler = new Handler();
 
     private ExecutorService executor = null;
@@ -341,7 +341,7 @@ public class StatusService extends Service {
 
     }
 
-    public static boolean isNodeInitialized() {
+    public boolean isNodeInitialized() {
         return isNodeInitialized;
     }
 
