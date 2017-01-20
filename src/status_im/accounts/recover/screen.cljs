@@ -56,14 +56,15 @@
                 (label :t/enter-valid-password))]
     [view
      [text-field
-      {:value          password
-       :error          error
-       :error-color    "#7099e6"
-       :label          (label :t/password)
-       :label-color    "#838c93de"
-       :line-color     "#0000001f"
-       :input-style    st/input-style
-       :on-change-text #(dispatch [:set-in [:recover :password] %])}]]))
+      {:value             password
+       :secure-text-entry true
+       :error             error
+       :error-color       "#7099e6"
+       :label             (label :t/password)
+       :label-color       "#838c93de"
+       :line-color        "#0000001f"
+       :input-style       st/input-style
+       :on-change-text    #(dispatch [:set-in [:recover :password] %])}]]))
 
 (defview recover []
   [{:keys [passphrase password passphrase-error password-error]} [:get :recover]]
