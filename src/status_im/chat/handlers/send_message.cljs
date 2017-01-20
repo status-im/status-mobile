@@ -97,14 +97,17 @@
   (u/side-effect!
     (fn [{:keys [current-public-key network-status] :as db}
          [_ add-to-chat-id {:keys [chat-id command-message command handler-data] :as params}]]
-      (let [clock-value (messages/get-last-clock-value chat-id)
-            request     (:request (:handler-data command))
-            command'    (->> (assoc command-message :handler-data handler-data)
-                             (prepare-command current-public-key chat-id clock-value request)
-                             (cu/check-author-direction db chat-id))]
+      (let [clock-value   (messages/get-last-clock-value chat-id)
+            request       (:request (:handler-data command))
+            hidden-params (->> (:params (:command command))
+                               (filter #(= (:hidden %) true))
+                               (map #(:name %)))
+            command'      (->> (assoc command-message :handler-data handler-data)
+                               (prepare-command current-public-key chat-id clock-value request)
+                               (cu/check-author-direction db chat-id))]
         (log/debug "Handler data: " request handler-data (dissoc params :commands :command-message))
         (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [::send-command! add-to-chat-id (assoc params :command command')])
+        (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
         (when (cu/console? chat-id)
           (dispatch `[:console-respond-command params]))
         (when (and (= "send" (get-in command-message [:command :name]))
@@ -119,9 +122,9 @@
 
 (register-handler ::send-command!
   (u/side-effect!
-    (fn [_ [_ add-to-chat-id params]]
+    (fn [_ [_ add-to-chat-id params hidden-params]]
       (dispatch [::add-command add-to-chat-id params])
-      (dispatch [::save-command! add-to-chat-id params])
+      (dispatch [::save-command! add-to-chat-id params hidden-params])
       (when (not= add-to-chat-id wallet-chat-id)
         (dispatch [::dispatch-responded-requests! params])
         (dispatch [::send-command-protocol! params])))))
@@ -134,10 +137,11 @@
 
 (register-handler ::save-command!
   (u/side-effect!
-    (fn [_ [_ chat-id {:keys [command]}]]
-      (messages/save
-        chat-id
-        (dissoc command :rendered-preview :to-message :has-handler)))))
+    (fn [_ [_ chat-id {:keys [command]} hidden-params]]
+      (let [command (-> command
+                        (update-in [:content :params] #(apply dissoc % hidden-params))
+                        (dissoc :rendered-preview :to-message :has-handler))]
+        (messages/save chat-id command)))))
 
 (register-handler ::dispatch-responded-requests!
   (u/side-effect!
