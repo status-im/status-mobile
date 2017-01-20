@@ -1832,11 +1832,13 @@ status.response({
     params: [{
         name: "password",
         type: status.types.PASSWORD,
-        placeholder: I18n.t('password_placeholder')
+        placeholder: I18n.t('password_placeholder'),
+        hidden: true
     }, {
         name: "password-confirmation",
         type: status.types.PASSWORD,
-        placeholder: I18n.t('password_placeholder2')
+        placeholder: I18n.t('password_placeholder2'),
+        hidden: true
     }],
     validator: function (params, context) {
         var errorMessages = [];
