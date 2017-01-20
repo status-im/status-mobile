@@ -9,7 +9,7 @@
 
 (defn message-user [identity]
   (when identity
-    (dispatch [:navigate-to :chat identity])))
+    (dispatch [:navigation-replace :chat identity])))
 
 (register-handler :open-image-picker
    (u/side-effect!

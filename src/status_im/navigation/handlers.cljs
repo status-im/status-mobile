@@ -82,9 +82,8 @@
 
 (defn show-profile
   [db [_ identity]]
-  (-> db
-      (assoc :contact-identity identity)
-      (push-view :profile)))
+  (dispatch [:navigate-forget :profile])
+  (assoc db :contact-identity identity))
 
 (register-handler :show-profile show-profile)
 
