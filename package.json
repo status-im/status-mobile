@@ -20,6 +20,7 @@
     "babel-plugin-transform-flow-strip-types": "6.18.0",
     "babel-plugin-transform-regenerator": "6.20.0",
     "babel-preset-react-native": "1.9.0",
+    "babel-register": "6.18.0",
     "browserify-zlib": "^0.1.4",
     "buffer": "^3.6.0",
     "chance": "1.0.4",
