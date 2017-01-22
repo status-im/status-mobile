@@ -87,7 +87,6 @@
       (dispatch [:load-accounts])
       (dispatch [:init-console-chat])
       (dispatch [:load-default-contacts!])
-      (dispatch [:load-commands! console-chat-id])
       (dispatch [:load-commands!]))))
 
 (def ecc (js/require "eccjs"))

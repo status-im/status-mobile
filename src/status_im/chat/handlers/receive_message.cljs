@@ -100,7 +100,7 @@
 (defn commands-loaded? [db chat-id]
   (get-in db [:chats chat-id :commands-loaded]))
 
-(def timeout 50)
+(def timeout 400)
 
 (register-handler :received-message-when-commands-loaded
   (u/side-effect!

@@ -84,6 +84,7 @@ var TopLevel = {
 "isMatches" : function () {},
 "isMobile" : function () {},
 "isSyncing" : function () {},
+"getSyncing" : function () {},
 "isValid" : function () {},
 "Item" : function () {},
 "JSON" : function () {},

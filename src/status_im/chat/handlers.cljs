@@ -363,8 +363,8 @@
       (dispatch [:cancel-command]))
     (dispatch [:load-requests! chat-id])
     ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
-    (dispatch [:load-commands! chat-id])
-    #_(if-not commands-loaded?
+    #_(dispatch [:load-commands! chat-id])
+    (if-not commands-loaded?
       (dispatch [:load-commands! chat-id])
       (dispatch [:invoke-chat-loaded-callbacks chat-id]))
     (if (and (seq messages)
