@@ -21,7 +21,7 @@
              :new-contact-identity       ""
              :contacts                   {}
              :discoveries                {}
-             :discover-search-tags      []
+             :discover-search-tags       []
              :tags                       {}
 
              :chats                      {}
@@ -45,7 +45,7 @@
              :loading-allowed            true
 
              :sync-state                 :done
-             :sync-listener              nil
+             :sync-listening-started     nil
              :status-module-initialized? (or p/ios? js/goog.DEBUG)
              :edit-mode                  {}
              :network                    :testnet})
