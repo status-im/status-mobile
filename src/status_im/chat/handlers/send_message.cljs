@@ -85,6 +85,7 @@
 
               :else
               (dispatch [:prepare-command! chat-id params'])))))
+      (dispatch [:set-chat-ui-props :sending-disabled? false])
       (when-not (s/blank? message)
         (dispatch [::prepare-message params])))))
 
@@ -107,6 +108,7 @@
                                (cu/check-author-direction db chat-id))]
         (log/debug "Handler data: " request handler-data (dissoc params :commands :command-message))
         (dispatch [:update-message-overhead! chat-id network-status])
+        (dispatch [:set-chat-ui-props :sending-disabled? false])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
         (when (cu/console? chat-id)
           (dispatch `[:console-respond-command params]))
@@ -191,6 +193,7 @@
                           (assoc message' :to chat-id :message-type :user-message))
             params'     (assoc params :message message'')]
         (dispatch [:update-message-overhead! chat-id network-status])
+        (dispatch [:set-chat-ui-props :sending-disabled? false])
         (dispatch [::add-message params'])
         (dispatch [::save-message! params'])))))
 
