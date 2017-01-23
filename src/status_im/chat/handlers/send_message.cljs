@@ -29,16 +29,14 @@
      :from             identity
      :to               chat-id
      :timestamp        (time/now-ms)
-     :content          (assoc content :preview preview-string
-                                      :handler-data handler-data
-                                      :type (name (:type command)))
+     :content          (assoc content :handler-data handler-data
+                                      :type (name (:type command))
+                                      :content-command (:name command))
      :content-type     (or content-type
                            (if request
                              content-type-command-request
                              content-type-command))
      :outgoing         true
-     :preview          preview-string
-     :rendered-preview preview
      :to-message       to-message
      :type             (:type command)
      :has-handler      (:has-handler command)
@@ -142,7 +140,7 @@
     (fn [_ [_ chat-id {:keys [command]} hidden-params]]
       (let [command (-> command
                         (update-in [:content :params] #(apply dissoc % hidden-params))
-                        (dissoc :rendered-preview :to-message :has-handler))]
+                        (dissoc :to-message :has-handler))]
         (messages/save chat-id command)))))
 
 (register-handler ::dispatch-responded-requests!
@@ -288,7 +286,7 @@
 (register-handler ::send-command-protocol!
   (u/side-effect!
     (fn [{:keys [web3 current-public-key chats network-status] :as db}
-         [_ {:keys [chat-id command]}]]
+         [_ {:keys [chat-id command command-message]}]]
       (log/debug "sending command: " command)
       (when (cu/not-console? chat-id)
         (let [{:keys [public-key private-key]} (chats chat-id)

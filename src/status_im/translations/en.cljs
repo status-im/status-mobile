@@ -178,6 +178,7 @@
    :command-text-send                     "Transaction: {{amount}} ETH"
    :command-text-help                     "Help"
    :command-text-faucet                   "Faucet: {{url}}"
+   :command-text-request                  "Request: {{amount}} ETH"
 
    ;new-group
    :group-chat-name                       "Chat name"

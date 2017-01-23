@@ -10,7 +10,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (defn content-by-command
   [{:keys [type]} content]
@@ -82,29 +83,11 @@
              (str cu/command-prefix content)
              content)])))))
 
-(defn invoke-command-preview!
-  [db command-message [_ command-input chat-id]]
-  (let [{:keys [command]} command-message
-        {:keys [name type]} command
-        parameters (:params (or command-input (commands/get-command-input db)))
-        path       [(if (= :command type) :commands :responses)
-                    name
-                    :preview]
-        params     {:parameters parameters
-                    :context    {:platform platform/platform}}]
-    (if (and (console? chat-id) (= name "js"))
-      (dispatch [:send-chat-message command-message])
-      (status/call-jail chat-id
-                        path
-                        params
-                        #(dispatch [:command-preview command-message %])))))
-
 (defn command-input
   ([{:keys [current-chat-id] :as db}]
    (command-input db current-chat-id))
   ([db chat-id]
    (get-in db [:chats chat-id :command-input])))
-
 
 (register-handler ::validate!
   (u/side-effect!
@@ -146,14 +129,21 @@
     (fn [db [_ command-input chat-id :as parameters]]
       (let [db           (assoc-in db [:chats chat-id :input-text] nil)
             {:keys [command to-message-id params]} (or command-input (command-input db))
+            message-id   (random/id)
             command-info {:command    command
                           :params     params
                           :to-message to-message-id
                           :created-at (time/now-ms)
-                          :id         (random/id)
-                          :chat-id    chat-id}]
+                          :id         message-id
+                          :chat-id    chat-id}
+            request-data {:message-id   message-id
+                          :chat-id      chat-id
+                          :content      {:command (:name command)
+                                         :params  params
+                                         :type    (:type command)}
+                          :on-requested #(dispatch [:send-chat-message command-info])}]
         (dispatch [:set-in [:command->chat (:id command-info)] chat-id])
-        (invoke-command-preview! db command-info parameters)))))
+        (dispatch [:request-command-preview request-data])))))
 
 (defn set-chat-command
   [{:keys [current-chat-id] :as db} [_ command-key type]]
@@ -274,6 +264,23 @@
                           parameters
                           #(dispatch [::validate! command-input data %]))))))
 
+(register-handler :request-command-preview
+  (u/side-effect!
+    (fn [_ [_ {{:keys [command params content-command type]} :content
+               :keys [message-id chat-id on-requested] :as message}]]
+      (let [path     [(if (= :response (keyword type)) :responses :commands)
+                      (if content-command content-command command)
+                      :preview]
+            params   {:parameters params
+                      :context    (merge {:platform platform/platform} i18n/delimeters)}
+            callback #(do (when-let [result (get-in % [:result :returned])]
+                            (dispatch [:set-in [:message-data :preview message-id]
+                                       (if (string? result)
+                                         result
+                                         (cu/generate-hiccup result))]))
+                          (when on-requested (on-requested %)))]
+        (status/call-jail chat-id path params callback)))))
+
 (register-handler :set-command-parameter
   (fn [db [_ {:keys [value parameter]}]]
     (let [name (:name parameter)]
@@ -292,3 +299,7 @@
           (do
             (dispatch [:set-chat-ui-props :sending-disabled? true])
             (dispatch [:validate-command])))))))
+
+(defn fib-lazy
+  ([] (fib-lazy 0 1))
+  ([x1 x2] (cons x1 (lazy-seq (fib-lazy x2 (+ x1 x2))))))

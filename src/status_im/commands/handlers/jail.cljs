@@ -67,16 +67,6 @@
     ;; todo show error?
     nil)))
 
-(defn command-preview
-  [_ [command-message {:keys [result]}]]
-  (let [result' (:returned result)]
-    (dispatch [:send-chat-message
-               (if result'
-                 (assoc command-message
-                   :preview (generate-hiccup result')
-                   :preview-string (str result'))
-                 command-message)])))
-
 (defn print-error-message! [message]
   (fn [_ params]
     (when (:error (last params))
@@ -99,10 +89,6 @@
               (r/dismiss-keyboard!))))]
   suggestions-handler!)
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
-
-(reg-handler :command-preview
-  (after (print-error-message! "Error on command preview"))
-  (u/side-effect! command-preview))
 
 (reg-handler :set-local-storage
   (fn [{:keys [current-chat-id] :as db} [{:keys [data] :as event}]]

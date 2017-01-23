@@ -131,9 +131,9 @@
   (when status
     (call-module
       #(do
-         (log/debug :chat-id chat-id)
-         (log/debug :path path)
-         (log/debug :params params)
+         (log/debug :call-jail :chat-id chat-id)
+         (log/debug :call-jail :path path)
+         (log/debug :call-jail :params params)
          (let [params' (update params :context assoc
                                :debug js/goog.DEBUG
                                :locale i/i18n.locale)

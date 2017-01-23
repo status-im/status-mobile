@@ -167,6 +167,11 @@ var status = {
     autorun: function (commandName) {
         _status_catalog.autorun = commandName;
     },
+    localizeNumber: function (num, del, sep) {
+        return I18n.toNumber(
+            num.replace(",", "."),
+            {precision: 10, strip_insignificant_zeros: true, delimiter: del, separator: sep});
+    },
     types: {
         TEXT: 'text',
         NUMBER: 'number',

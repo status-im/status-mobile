@@ -297,7 +297,12 @@
 (defn load-messages!
   ([db] (load-messages! db nil))
   ([{:keys [current-chat-id] :as db} _]
-   (assoc db :messages (messages/get-by-chat-id current-chat-id))))
+   (let [messages (messages/get-by-chat-id current-chat-id)]
+     (doseq [{:keys [content] :as message} messages]
+       (when (and (:command content)
+                  (not (:content content)))
+         (dispatch [:request-command-preview (assoc message :chat-id current-chat-id)])))
+     (assoc db :messages messages))))
 
 (defn init-chat
   ([db] (init-chat db nil))

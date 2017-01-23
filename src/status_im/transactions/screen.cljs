@@ -20,7 +20,6 @@
             [status-im.i18n :refer [label label-pluralize]]
             [clojure.string :as s]))
 
-
 (defview confirm []
   [transactions [:transactions]
    {:keys [password]} [:get :confirm-transactions]

@@ -33,7 +33,9 @@
     [status-im.translations.zh-hant :as zh-hant]
     [status-im.translations.zh-wuu :as zh-wuu]
     [status-im.translations.zh-yue :as zh-yue]
-    [status-im.utils.js-resources :refer [default-contacts]]))
+    [status-im.utils.js-resources :refer [default-contacts]]
+    [taoensso.timbre :as log]
+    [clojure.string :as str]))
 
 (def i18n (js/require "react-native-i18n"))
 (set! (.-fallbacks i18n) true)
@@ -73,11 +75,29 @@
                                       :zh-wuu  zh-wuu/translations
                                       :zh-yue  zh-yue/translations}))
 
+(def delimeters
+  "This function is a hack: mobile Safari doesn't support toLocaleString(), so we need to pass
+  this map to WKWebView to make number formatting work."
+  (let [n (.toLocaleString (js/Number 1000.1))]
+    {:delimiter (subs n 1 2)
+     :separator (subs n 5 6)}))
+
+(defn label-number [number]
+  (when number
+    (let [{:keys [delimiter separator]} delimeters]
+      (.toNumber i18n
+                 (str/replace number #"," ".")
+                 (clj->js {:precision                 10
+                           :strip_insignificant_zeros true
+                           :delimiter                 delimiter
+                           :separator                 separator})))))
+
 (defn label
   ([path] (label path {}))
   ([path options]
    (if (exists? i18n.t)
-     (.t i18n (name path) (clj->js options))
+     (let [options (update options :amount label-number)]
+       (.t i18n (name path) (clj->js options)))
      (name path))))
 
 (defn label-pluralize [count path & options]

@@ -36,7 +36,8 @@
                                     get-contact-translated]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]
-            [status-im.chat.handlers.console :as console]))
+            [status-im.chat.handlers.console :as console]
+            [taoensso.timbre :as log]))
 
 (def window-width (:width (get-dimensions "window")))
 
@@ -112,13 +113,14 @@
        (str params))]))
 
 (defview message-content-command
-  [{:keys [content content-type rendered-preview chat-id to from outgoing] :as message}]
+  [{:keys [message-id content content-type chat-id to from outgoing] :as message}]
   [commands [(if (= (:type content) "response")
                :get-responses
                :get-commands)
              chat-id]
    current-chat-id [:get-current-chat-id]
-   contact-chat [:get-in [:chats (if outgoing to from)]]]
+   contact-chat [:get-in [:chats (if outgoing to from)]]
+   preview [:get-in [:message-data :preview message-id]]]
   (let [{:keys [command params]} (parse-command-message-content commands content)
         {:keys     [name type]
          icon-path :icon} command]
@@ -135,7 +137,7 @@
                        :content-type    content-type
                        :params          params
                        :outgoing?       outgoing
-                       :preview         rendered-preview
+                       :preview         preview
                        :contact-chat    contact-chat
                        :contact-address (if outgoing to from)
                        :current-chat-id current-chat-id}]]))
@@ -237,8 +239,8 @@
                             :content-type content-type}]]])
 
 (defview group-message-delivery-status [{:keys [message-id group-id message-status user-statuses] :as msg}]
-  [app-db-message-user-statuses [:get-in [:message-user-statuses message-id]]
-   app-db-message-status-value [:get-in [:message-statuses message-id :status]]
+  [app-db-message-user-statuses [:get-in [:message-data :user-statuses message-id]]
+   app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]
    chat [:get-chat-by-id group-id]
    contacts [:get-contacts]]
   (let [status            (or message-status app-db-message-status-value :sending)
@@ -281,7 +283,7 @@
 
 (defview message-delivery-status
   [{:keys [message-id chat-id message-status user-statuses content]}]
-  [app-db-message-status-value [:get-in [:message-statuses message-id :status]]]
+  [app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]]
   (let [delivery-status (get-in user-statuses [chat-id :status])
         command-name    (keyword (:command content))
         status          (cond (and (not (console/commands-with-delivery-status command-name))
@@ -372,11 +374,18 @@
                   children)])}))
     (into [view] children)))
 
-(defn chat-message [{:keys [outgoing message-id chat-id user-statuses from]}]
-  (let [my-identity (subscribe [:get :current-public-key])
-        status      (subscribe [:get-in [:message-user-statuses message-id my-identity]])]
+(defn chat-message [{:keys [outgoing message-id chat-id user-statuses from content] :as message}]
+  (let [my-identity     (subscribe [:get :current-public-key])
+        status          (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
+        preview         (subscribe [:get-in [:message-data :preview message-id]])]
     (r/create-class
-      {:component-did-mount
+      {:component-will-mount
+       (fn []
+         (when (and (get-in message [:content :command])
+                    (not @preview))
+           (dispatch [:request-command-preview message])))
+
+       :component-did-mount
        (fn []
          (when (and (not outgoing)
                     (not= :seen (keyword @status))
@@ -388,7 +397,7 @@
        (fn [{:keys [outgoing group-chat content-type content] :as message}]
          [message-container message
           [touchable-highlight {:on-long-press (when (= content-type text-content-type)
-                                                        #(share content (label :t/message)))}
+                                                 #(share content (label :t/message)))}
            [view
             (let [incoming-group (and group-chat (not outgoing))]
               [message-content
