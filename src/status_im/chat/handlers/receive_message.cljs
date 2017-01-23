@@ -13,16 +13,8 @@
             [status-im.data-store.chats :as chats]
             [status-im.utils.scheduler :as s]))
 
-(defn check-preview [{:keys [content] :as message}]
-  (if-let [preview (:preview content)]
-    (let [rendered-preview (generate-hiccup (read-string preview))]
-      (assoc message
-        :preview preview
-        :rendered-preview rendered-preview))
-    message))
-
 (defn store-message [{chat-id :chat-id :as message}]
-  (messages/save chat-id (dissoc message :rendered-preview :new?)))
+  (messages/save chat-id (dissoc message :new?)))
 
 (defn get-current-identity
   [{:keys [current-account-id accounts]}]
@@ -49,15 +41,15 @@
                (or (not exists?) active?))
       (let [group-chat?      (not (nil? group-id))
             previous-message (messages/get-last-message chat-id')
-            message'         (assoc (->> message
-                                         (cu/check-author-direction previous-message)
-                                         (check-preview))
+            message'         (assoc (cu/check-author-direction previous-message message)
                                :chat-id chat-id'
                                :timestamp (or timestamp (random/timestamp))
                                :clock-value clock-value)]
         (store-message message')
         (dispatch [:upsert-chat! {:chat-id    chat-id'
                                   :group-chat group-chat?}])
+        (when (get-in message [:content :command])
+          (dispatch [:request-command-preview message]))
         (dispatch [::add-message chat-id' message'])
         (when (= (:content-type message') content-type-command-request)
           (dispatch [:add-request chat-id' message']))

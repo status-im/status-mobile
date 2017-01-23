@@ -12,13 +12,14 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id
                                          content-type-command
-                                         content-type-command-request] :as c]))
+                                         content-type-command-request] :as c]
+            [taoensso.timbre :as log]))
 
 (defmulti message-content (fn [{:keys [content-type]}] content-type))
 
 (defn command-content
-  [{{:keys [command params]} :content}]
-  (let [kw (keyword (str "t/command-text-" (name command)))]
+  [{{:keys [command content-command params]} :content}]
+  (let [kw (keyword (str "t/command-text-" (name (or content-command command))))]
     (label kw params)))
 
 (defmethod message-content content-type-command
@@ -30,8 +31,8 @@
   (command-content message))
 
 (defmethod message-content content-type-command-request
-  [{{:keys [content]} :content}]
-  content)
+  [message]
+  (command-content message))
 
 (defmethod message-content :default
   [{:keys [content]}]
@@ -48,7 +49,7 @@
 
 (defview message-status [{:keys [chat-id contacts]}
                          {:keys [message-id message-status user-statuses message-type outgoing] :as msg}]
-  [app-db-message-status-value [:get-in [:message-statuses message-id :status]]]
+  [app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]]
   (let [delivery-status (get-in user-statuses [chat-id :status])]
     (when (and outgoing
                (or (some #(= (keyword %) :seen) [delivery-status

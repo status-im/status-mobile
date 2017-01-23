@@ -310,8 +310,8 @@
       (let [message-id' (or ack-of-message message-id)
             group?      (boolean group-id)
             status-path (if (and group? (not= status :sent))
-                          [:message-user-statuses message-id' from]
-                          [:message-statuses message-id'])
+                          [:message-data :user-statuses message-id' from]
+                          [:message-data :statuses message-id'])
             {current-status :status} (get-in db status-path)]
         (if-not (= :seen current-status)
           (assoc-in db status-path {:whisper-identity from

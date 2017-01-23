@@ -53,13 +53,9 @@
        (mapv #(clojure.core/update % :user-statuses user-statuses-to-map))
        (into '())
        reverse
-       (keep (fn [{:keys [content-type preview] :as message}]
+       (keep (fn [{:keys [content-type] :as message}]
                (if (command-type? content-type)
-                 (-> message
-                     (clojure.core/update :content str-to-map)
-                     (assoc :rendered-preview
-                            (when preview
-                              (generate-hiccup (read-string preview)))))
+                 (clojure.core/update message :content str-to-map)
                  message)))))
 
 (defn get-count-by-chat-id
@@ -76,11 +72,7 @@
         reverse
         (keep (fn [{:keys [content-type preview] :as message}]
                 (if (command-type? content-type)
-                  (-> message
-                      (clojure.core/update :content str-to-map)
-                      (assoc :rendered-preview
-                             (when preview
-                               (generate-hiccup (read-string preview)))))
+                  (clojure.core/update message :content str-to-map)
                   message))))))
 
 (defn get-last-message

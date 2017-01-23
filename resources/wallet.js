@@ -1,11 +1,3 @@
-
-I18n.translations = {
-  en: {
-    browse_title: 'Browser',
-    browse_description: 'Launch the browser'
-  }
-};
-
 function wallet(params, context) {
     var url = 'https://status.im/dapps/wallet';
 

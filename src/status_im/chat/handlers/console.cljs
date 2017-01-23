@@ -43,7 +43,7 @@
       (messages/update {:message-id     message-id
                         :message-status status})))
   (fn [db [_ message-id status]]
-    (assoc-in db [:message-statuses message-id] {:status status})))
+    (assoc-in db [:message-data :statuses message-id] {:status status})))
 
 (register-handler :console-respond-command
   (u/side-effect!

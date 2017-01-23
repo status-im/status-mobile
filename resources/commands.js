@@ -825,7 +825,7 @@ var send = {
                     style: amountStyle,
                     font: "light"
                 },
-                params.amount
+                status.localizeNumber(params.amount, context.delimiter, context.separator)
             )]);
 
         var currency = status.components.view(
@@ -877,12 +877,6 @@ status.command({
         name: "amount",
         type: status.types.NUMBER
     }],
-    preview: function (params) {
-        return status.components.text(
-            {},
-            params.amount + " ETH"
-        );
-    },
     handler: function (params) {
         return {
             event: "request",
@@ -891,10 +885,14 @@ status.command({
                 command: "send",
                 params: {
                     amount: params.amount
-                },
-                content: I18n.t('request_requesting') + params.amount + "ETH"
+                }
             }
         };
+    },
+    preview: function (params, context) {
+        return I18n.t('request_requesting')
+            + status.localizeNumber(params.amount, context.delimiter, context.separator)
+            + " ETH";
     },
     validator: function(params) {
         try {
