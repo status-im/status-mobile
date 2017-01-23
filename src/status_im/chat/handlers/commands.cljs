@@ -113,14 +113,18 @@
       (when-not error
         (let [{:keys [errors validationHandler parameters]} (:returned result)]
           (cond errors
-                (dispatch [::add-validation-errors chat-id errors])
+                (do
+                  (dispatch [:set-chat-ui-props :sending-disabled? false])
+                  (dispatch [::add-validation-errors chat-id errors]))
 
                 validationHandler
-                (dispatch [::validation-handler!
-                           command-input
-                           chat-id
-                           validationHandler
-                           parameters])
+                (do
+                  (dispatch [:set-chat-ui-props :sending-disabled? false])
+                  (dispatch [::validation-handler!
+                             command-input
+                             chat-id
+                             validationHandler
+                             parameters]))
 
                 :else (if handler
                         (handler)
@@ -285,4 +289,6 @@
       (let [suggestions-trigger (keyword (:suggestions-trigger command))]
         (if (= :on-send suggestions-trigger)
           (dispatch [:invoke-commands-suggestions!])
-          (dispatch [:validate-command]))))))
+          (do
+            (dispatch [:set-chat-ui-props :sending-disabled? true])
+            (dispatch [:validate-command])))))))
