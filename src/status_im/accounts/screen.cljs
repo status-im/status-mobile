@@ -12,11 +12,8 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.toolbar.actions :as act]
-            [status-im.components.styles :refer [color-purple
-                                                 color-white
+            [status-im.components.styles :refer [color-white
                                                  icon-search
-                                                 icon-back
-                                                 icon-qr
                                                  icon-plus
                                                  white-form-text-input]]
             [status-im.components.toolbar.styles :refer [toolbar-title-container

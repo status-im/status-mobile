@@ -3,10 +3,11 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
             [status-im.components.react :refer [view text]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.components.styles :refer [color-blue]]))
 
 (defn tag-view [tag]
-  [text {:style {:color "#7099e6"}
+  [text {:style {:color color-blue}
          :font :medium}
    (str tag " ")])
 

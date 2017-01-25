@@ -1,5 +1,6 @@
 (ns status-im.chat.styles.plain-message
-  (:require [status-im.components.styles :refer [text1-color]]
+  (:require [status-im.components.styles :refer [text1-color
+                                                 color-blue]]
             [status-im.chat.constants :refer [max-input-height
                                               min-input-height]]))
 
@@ -34,7 +35,7 @@
    :position         :absolute})
 
 (def requests-icon
-  {:background-color :#7099e6
+  {:background-color color-blue
    :margin           2
    :width            8
    :height           8

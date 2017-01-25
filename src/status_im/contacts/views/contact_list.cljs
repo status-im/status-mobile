@@ -13,10 +13,6 @@
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-background1]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
-            [status-im.components.styles :refer [icon-search
-                                                 icon-back
-                                                 button-input-container
-                                                 button-input]]
             [status-im.components.image-button.view :refer [scan-button]]
             [status-im.contacts.styles :as st]
             [status-im.utils.listview :as lw]

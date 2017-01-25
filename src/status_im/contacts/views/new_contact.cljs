@@ -17,9 +17,9 @@
                                                          toolbar-background1]]
             [status-im.utils.utils :refer [log http-post]]
             [status-im.components.styles :refer [icon-ok
-                                                 icon-back
                                                  button-input-container
-                                                 button-input]]
+                                                 button-input
+                                                 color-blue]]
             [status-im.components.image-button.view :refer [scan-button]]
             [status-im.i18n :refer [label]]
             [cljs.spec :as s]
@@ -87,7 +87,7 @@
     [view button-input-container
      [text-field
       {:error          error
-       :error-color    "#7099e6"
+       :error-color    color-blue
        :input-style    st/qr-input
        :value          whisper-identity
        :wrapper-style  button-input

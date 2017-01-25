@@ -8,8 +8,7 @@
                                                 scroll-view
                                                 touchable-highlight
                                                 touchable-opacity]]
-            [status-im.components.styles :refer [icon-ok
-                                                 icon-close]]
+            [status-im.components.styles :refer [icon-close]]
             [status-im.transactions.styles :as st]
             [status-im.i18n :refer [label label-pluralize]]))
 

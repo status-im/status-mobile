@@ -13,11 +13,8 @@
             [status-im.components.toolbar.styles :refer [toolbar-title-container
                                                          toolbar-title-text]]
             [status-im.components.text-field.view :refer [text-field]]
-            [status-im.components.styles :refer [color-purple
-                                                 color-white
+            [status-im.components.styles :refer [color-white
                                                  icon-search
-                                                 icon-back
-                                                 icon-qr
                                                  button-input]]
             [status-im.i18n :refer [label]]
             [status-im.accounts.login.styles :as st]))

@@ -1,12 +1,5 @@
 (ns status-im.components.drawer.styles
-  (:require [status-im.components.styles :refer [color-light-blue-transparent
-                                                 color-white
-                                                 color-black
-                                                 color-blue
-                                                 color-blue-transparent
-                                                 selected-message-color
-                                                 online-color
-                                                 separator-color
+  (:require [status-im.components.styles :refer [color-white
                                                  text1-color
                                                  text2-color
                                                  text3-color

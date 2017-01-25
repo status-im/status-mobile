@@ -1,8 +1,5 @@
 (ns status-im.chat.styles.screen
-  (:require [status-im.components.styles :refer [color-white
-                                                 color-black
-                                                 chat-background
-                                                 online-color
+  (:require [status-im.components.styles :refer [chat-background
                                                  selected-message-color
                                                  separator-color
                                                  text1-color

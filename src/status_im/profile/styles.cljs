@@ -1,17 +1,14 @@
 (ns status-im.profile.styles
-  (:require [status-im.components.styles :refer [color-light-blue-transparent
-                                                 color-white
+  (:require [status-im.components.styles :refer [color-white
                                                  color-gray
                                                  color-black
                                                  color-blue
                                                  color-blue-transparent
-                                                 selected-message-color
-                                                 online-color
-                                                 separator-color
                                                  text1-color
                                                  text1-disabled-color
                                                  text2-color
-                                                 color-red]]
+                                                 color-red
+                                                 separator-color]]
             [status-im.utils.platform :as p]))
 
 (def profile
@@ -165,7 +162,7 @@
    :elevation        4})
 
 (def underline-container
-  {:background-color "#0000001f"
+  {:background-color separator-color
    :margin-bottom    18
    :height           1
    :align-items      :center})

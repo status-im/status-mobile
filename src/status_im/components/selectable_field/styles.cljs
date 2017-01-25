@@ -1,5 +1,6 @@
 (ns status-im.components.selectable-field.styles
-  (:require [status-im.utils.platform :refer [platform-specific]]))
+  (:require [status-im.utils.platform :refer [platform-specific]]
+            [status-im.components.styles :refer [text1-disabled-color]]))
 
 
 (def selectable-field-container
@@ -20,7 +21,7 @@
 
 (def text
   {:font-size           16
-   :color               "#555555"
+   :color               text1-disabled-color
    :margin-right        16
    :text-align-vertical :top})
 
@@ -35,4 +36,3 @@
                  :padding-left   0
                  :margin-left    0
                  :padding-bottom 0})))
-

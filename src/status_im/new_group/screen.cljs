@@ -10,7 +10,8 @@
                                                 list-view
                                                 list-item]]
             [status-im.components.text-field.view :refer [text-field]]
-            [status-im.components.styles :refer [color-purple]]
+            [status-im.components.styles :refer [color-blue
+                                                 separator-color]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
@@ -42,8 +43,8 @@
                        (not (s/valid? ::v/not-illegal-name new-chat-name))
                        (label :t/illegal-group-chat-name))
      :wrapper-style  st/group-chat-name-wrapper
-     :error-color    "#7099e6"
-     :line-color     "#0000001f"
+     :error-color    color-blue
+     :line-color     separator-color
      :label-hidden?  true
      :input-style    st/group-chat-name-input
      :auto-focus     true

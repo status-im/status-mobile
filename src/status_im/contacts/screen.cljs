@@ -23,8 +23,7 @@
             [status-im.i18n :refer [label]]
             [status-im.contacts.styles :as st]
             [status-im.components.styles :refer [color-blue
-                                                 create-icon
-                                                 icon-search]]))
+                                                 create-icon]]))
 
 (def contacts-limit 50)
 

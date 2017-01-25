@@ -19,7 +19,7 @@
 
 (defn- parse-content [key {:keys [content]} was-encrypted?]
   (debug :parse-content
-         "Key exitsts:" (not (nil? key))
+         "Key exists:" (not (nil? key))
          "Content exists:" (not (nil? content)))
   (if (and (not was-encrypted?) key content)
     (decrypt key content)

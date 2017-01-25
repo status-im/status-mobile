@@ -12,7 +12,8 @@
             [status-im.components.text-field.styles :as st]
             [status-im.i18n :refer [label]]
             [status-im.components.animation :as anim]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.components.styles :refer [separator-color]]))
 
 
 (def config {:label-top                16
@@ -26,8 +27,8 @@
                     :line-style        {}
                     :editable          true
                     :label-color       "#838c93"
-                    :line-color        "#0000001f"
-                    :focus-line-color  "#0000001f"
+                    :line-color        separator-color
+                    :focus-line-color  separator-color
                     :error-color       "#d50000"
                     :secure-text-entry false
                     :on-focus          #()
