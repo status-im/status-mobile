@@ -18,7 +18,7 @@
                   :password {:input-options {:secure-text-entry true}}
                   :number {:input-options {:keyboard-type "numeric"}}
                   ;; todo maybe nil is fine for now :)
-                  nil #_(throw (js/Error. "Uknown command type")))]
+                  nil #_(throw (js/Error. "Unknown command type")))]
     (if (= :response command-type)
       (if placeholder
         (assoc-in options [:input-options :placeholder] placeholder)

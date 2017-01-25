@@ -1,15 +1,8 @@
 (ns status-im.chat.styles.content-suggestions
-  (:require [status-im.components.styles :refer [color-light-blue-transparent
-                                                 color-white
-                                                 color-black
-                                                 color-blue
-                                                 color-blue-transparent
-                                                 selected-message-color
-                                                 online-color
+  (:require [status-im.components.styles :refer [color-white
                                                  separator-color
                                                  text1-color
-                                                 text2-color
-                                                 text3-color]]))
+                                                 text2-color]]))
 
 (def suggestion-height 56)
 

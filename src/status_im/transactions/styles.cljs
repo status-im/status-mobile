@@ -1,4 +1,6 @@
-(ns status-im.transactions.styles)
+(ns status-im.transactions.styles
+  (:require [status-im.components.styles :refer [color-gray
+                                                 color-black]]))
 
 (def transactions-screen
   {:flex 1
@@ -83,12 +85,12 @@
 
 (def transaction-info-title
   {:textAlign :right
-   :color "#838c93de"
+   :color color-gray
    :fontSize 14
    :lineHeight 20})
 
 (def transaction-info-value
-  {:color "#000000de"
+  {:color color-black
    :fontSize 14
    :lineHeight 20
 })

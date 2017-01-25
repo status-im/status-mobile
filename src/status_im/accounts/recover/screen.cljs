@@ -13,8 +13,9 @@
             [status-im.components.toolbar.styles :refer [toolbar-gradient
                                                          toolbar-title-container
                                                          toolbar-title-text]]
-            [status-im.components.styles :refer [color-purple
-                                                 color-white
+            [status-im.components.styles :refer [color-blue
+                                                 color-gray
+                                                 separator-color
                                                  button-input]]
             [status-im.components.react :refer [linear-gradient]]
             [status-im.i18n :refer [label]]
@@ -40,10 +41,10 @@
      [text-field
       {:value          passphrase
        :error          error
-       :error-color    "#7099e6"
+       :error-color    color-blue
        :label          (label :t/passphrase)
-       :label-color    "#838c93de"
-       :line-color     "#0000001f"
+       :label-color    color-gray
+       :line-color     separator-color
        :input-style    st/input-style
        :wrapper-style  (merge button-input st/address-input-wrapper)
        :on-change-text #(dispatch [:set-in [:recover :passphrase] %])}]]))
@@ -59,10 +60,10 @@
       {:value             password
        :secure-text-entry true
        :error             error
-       :error-color       "#7099e6"
+       :error-color       color-blue
        :label             (label :t/password)
-       :label-color       "#838c93de"
-       :line-color        "#0000001f"
+       :label-color       color-gray
+       :line-color        separator-color
        :input-style       st/input-style
        :on-change-text    #(dispatch [:set-in [:recover :password] %])}]]))
 

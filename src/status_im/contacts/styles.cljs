@@ -2,12 +2,10 @@
   (:require [status-im.components.styles :refer [text1-color
                                                  text2-color
                                                  text3-color
-                                                 text5-color
                                                  color-white
-                                                 color-black
-                                                 color-light-gray
                                                  color-separator
-                                                 color-gray2]]
+                                                 color-gray2
+                                                 color-gray]]
             [status-im.components.toolbar.styles :refer [toolbar-background2]]
             [status-im.utils.platform :as p]))
 
@@ -201,7 +199,7 @@
 
 (def address-explication
   {:textAlign :center
-   :color     "#838c93de"})
+   :color     color-gray})
 
 (def buttons-container
   {:position :absolute
@@ -238,5 +236,3 @@
    :background-color color-white
    :align-items      :center
    :justify-content  :center})
-
-

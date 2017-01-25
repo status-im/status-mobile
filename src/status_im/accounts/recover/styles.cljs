@@ -1,5 +1,7 @@
 (ns status-im.accounts.recover.styles
-  (:require [status-im.components.styles :refer [color-white]]))
+  (:require [status-im.components.styles :refer [color-white
+                                                 color-gray
+                                                 color-blue]]))
 
 
 (def screen-container
@@ -20,7 +22,7 @@
    :justify-content    :center})
 
 (def recover-explain-text
-  {:color       "#838c93de"
+  {:color       color-gray
    :font-size   16
    :line-height 20
    :text-align  :center})
@@ -45,7 +47,7 @@
   {:flex 1})
 
 (defn recover-button [valid-form?]
-  {:backgroundColor   (if valid-form? "#7099e6" :gray)
+  {:backgroundColor   (if valid-form? color-blue :gray)
    :color             :white
    :flex              1
    :alignItems        :center

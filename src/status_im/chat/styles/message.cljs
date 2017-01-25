@@ -1,10 +1,8 @@
 (ns status-im.chat.styles.message
-  (:require [status-im.components.styles :refer [color-light-blue-transparent
-                                                 color-white
+  (:require [status-im.components.styles :refer [color-white
                                                  color-black
                                                  color-blue
                                                  selected-message-color
-                                                 online-color
                                                  text1-color
                                                  text2-color]]
             [status-im.constants :refer [text-content-type

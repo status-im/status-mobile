@@ -1,4 +1,5 @@
-(ns status-im.components.image-button.styles)
+(ns status-im.components.image-button.styles
+  (:require [status-im.components.styles :refer [color-blue]]))
 
 (def image-button
   {:position   :absolute
@@ -22,7 +23,7 @@
    :margin-left   8})
 
 (def scan-button-text
-  (merge image-button-text {:color "#7099e6"}))
+  (merge image-button-text {:color color-blue}))
 
 (def show-qr-button-text
   (merge image-button-text {:color "#838c93"}))

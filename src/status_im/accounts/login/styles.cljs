@@ -1,5 +1,6 @@
 (ns status-im.accounts.login.styles
-  (:require [status-im.components.styles :refer [color-white]]))
+  (:require [status-im.components.styles :refer [color-white
+                                                 color-blue]]))
 
 
 (defn screen-container [height]
@@ -40,7 +41,7 @@
    :paddingHorizontal 28})
 
 (def connect-button-text
-  {:color    "#7099e6"
+  {:color    color-blue
    :fontSize 16})
 
 (def input-style

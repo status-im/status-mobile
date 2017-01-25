@@ -21,7 +21,7 @@
              :new-contact-identity       ""
              :contacts                   {}
              :discoveries                {}
-             :discover-search-tags      []
+             :discover-search-tags       []
              :tags                       {}
 
              :chats                      {}

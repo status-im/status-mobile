@@ -1,10 +1,6 @@
 (ns status-im.chat.styles.response
   (:require [status-im.components.styles :refer [color-white
-                                                 color-blue
-                                                 text1-color
-                                                 text2-color
-                                                 chat-background
-                                                 color-black]]
+                                                 text1-color]]
             [status-im.chat.constants :refer [input-height
                                               request-info-height
                                               response-height-normal]]))

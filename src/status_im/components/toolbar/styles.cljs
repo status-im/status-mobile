@@ -1,7 +1,9 @@
 (ns status-im.components.toolbar.styles
   (:require [status-im.components.styles :refer [text1-color
                                                  color-white
-                                                 color-light-gray]]))
+                                                 color-light-gray
+                                                 color-blue
+                                                 color-black]]))
 
 (def toolbar-background1 color-white)
 (def toolbar-background2 color-light-gray)
@@ -73,10 +75,10 @@
    :margin-left 18
    :margin-top  2
    :font-size   14
-   :color       "#7099e6"})
+   :color       color-blue})
 
 (def toolbar-with-search-title
-  {:color       "#000000de"
+  {:color       color-black
    :align-self  :center
    :text-align  :center
    :font-size   16})

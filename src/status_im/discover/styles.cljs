@@ -1,7 +1,7 @@
 (ns status-im.discover.styles
-  (:require [status-im.components.styles :refer [color-gray2
-                                                 color-white
-                                                 color-light-gray]]
+  (:require [status-im.components.styles :refer [color-white
+                                                 color-light-gray
+                                                 color-blue]]
             [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
 ;; Common
@@ -38,7 +38,7 @@
   {})
 
 (def tag-name
-  {:color           "#7099e6"
+  {:color           color-blue
    :font-size       14
    :padding-right   5
    :padding-bottom  2
@@ -124,7 +124,7 @@
    :flex-direction "row"})
 
 (def tag-title
-  {:color         "#7099e6"
+  {:color          color-blue
    :font-size      14
    :padding-right  5
    :padding-bottom 2})
