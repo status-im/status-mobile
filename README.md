@@ -36,7 +36,7 @@ John Dewey once said "Education is not preparation for life; education is life *
 Content is King, keeping our blog up to date and informing the community of news helps keep everyone on the same page. [Jump on our Slack](http://slack.status.im) and discuss with Carl how you can contribute.
 
 - **Marketing**  
-In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user aquisition, public relations or hype building, check out our [Marketers' Guide](https://wiki.status.im/contributing/marketing/) to see how you can spread the word.
+In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user aquisition, public relations or hype building, check out our [Community Outreach and Marketing Guide](http://wiki.status.im/contributing/outreach/) to see how you can spread the word.
 
 - **Testers**  
 It's bug hunting season! Status is currently in Alpha and there are sure to be a bunch of education, [grab your fresh copy of Status](http://TODO) and shake your phone to submit bug reports, or start browsing our [Github Issues](http://github.com/status-im/status-react/issues). Every bug you find brings Status closer to stable, usable software for everyone to enjoy!
