@@ -188,7 +188,8 @@
    show-emoji?       [:chat-ui-props :show-emoji?]
    command?          [:command?]
    layout-height     [:get :layout-height]]
-  {:component-did-mount #(dispatch [:check-autorun])}
+  {:component-did-mount #(dispatch [:check-autorun])
+   :component-will-unmount #(dispatch [:set-chat-ui-props :show-emoji? false])}
   [view {:style    st/chat-view
          :onLayout (fn [event]
                      (let [height (.. event -nativeEvent -layout -height)]
