@@ -49,6 +49,7 @@
 
 (def dimensions (.-Dimensions js/ReactNative))
 (def keyboard (.-Keyboard react-native))
+(def linking (.-Linking js/ReactNative))
 
 ;; Accessor methods for React Components
 
