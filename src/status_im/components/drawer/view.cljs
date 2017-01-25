@@ -53,7 +53,8 @@
      keyboard-height (subscribe [:get :keyboard-height])
      placeholder     (generate-gfy)
      status-edit?    (r/atom false)
-     status-text     (r/atom nil)]
+     status-text     (r/atom nil)
+     input-ref       (r/atom nil)]
     (fn []
       (let [{:keys [name photo-path status]} @account
             {new-name   :name} @profile]
@@ -78,6 +79,7 @@
            [view st/status-container
             (if @status-edit?
               [text-input {:style               st/status-input
+                           :ref                 #(reset! input-ref %)
                            :editable            true
                            :multiline           true
                            :auto-focus          true
@@ -93,6 +95,7 @@
                                                    (reset! status-text status)
                                                    (if (str/includes? % "\n")
                                                      (do
+                                                       (.clear @input-ref)
                                                        (reset! status-edit? false)
                                                        (update-status status))
                                                      (dispatch [:set-in [:profile-edit :status] status])))}]
