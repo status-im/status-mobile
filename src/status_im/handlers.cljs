@@ -6,8 +6,6 @@
     [taoensso.timbre :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.components.status :as status]
-    [status-im.components.share :refer [open]]
-    [status-im.components.react :refer [copy-to-clipboard]]
     [status-im.utils.handlers :refer [register-handler] :as u]
     status-im.chat.handlers
     status-im.group-settings.handlers
@@ -45,18 +43,6 @@
 (register-handler :set-animation
   (fn [db [_ k v]]
     (assoc-in db [:animations k] v)))
-
-(register-handler :open-sharing
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn text dialog-title]]
-      (list-selection-fn {:title       dialog-title
-                          :options     [(label :t/sharing-copy-to-clipboard) (label :t/sharing-share)]
-                          :callback    (fn [index]
-                                         (case index
-                                           0 (copy-to-clipboard text)
-                                           1 (open {:message text})
-                                           :default))
-                          :cancel-text (label :t/sharing-cancel)}))))
 
 (register-handler :initialize-db
   (fn [{:keys [status-module-initialized? network-status network]} _]

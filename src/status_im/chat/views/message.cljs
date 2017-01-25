@@ -15,7 +15,7 @@
                                                 get-dimensions]]
             [status-im.components.animation :as anim]
             [status-im.chat.constants :as chat-consts]
-            [status-im.components.share :refer [share]]
+            [status-im.components.list-selection :refer [share browse]]
             [status-im.chat.views.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message :as st]
             [status-im.chat.styles.command-pill :as pill-st]
@@ -203,9 +203,10 @@
    (let [parsed-text (parse-text content)
          simple-text? (= (count parsed-text) 2)]
      (if simple-text?
-       [autolink {:style (st/text-message message)
-                  :font  :default
-                  :text  (apply str parsed-text)}]
+       [autolink {:style   (st/text-message message)
+                  :font    :default
+                  :text    (apply str parsed-text)
+                  :onPress #(browse %)}]
        [text {:style (st/text-message message)
               :font  :default}
         (parse-text content)]))])

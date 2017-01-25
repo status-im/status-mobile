@@ -88,6 +88,11 @@
    :sharing-share                         "Share..."
    :sharing-cancel                        "Cancel"
 
+   :browsing-title                        "Browse"
+   :browsing-browse                       "/browse"
+   :browsing-open-in-web-browser          "Open in web browser"
+   :browsing-cancel                       "Cancel"
+
    ;sign-up
    :contacts-syncronized                  "Your contacts have been synchronized"
    :confirmation-code                     (str "Thanks! We've sent you a text message with a confirmation "
