@@ -1,7 +1,7 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "localhost",
+  "androidHost": "10.0.3.2",
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
@@ -37,7 +37,8 @@
     "react-native-share",
     "react-native-emoji-picker",
     "react-native-autolink",
-    "instabug-reactnative"
+    "instabug-reactnative",
+    "nfc-react-native"
   ],
   "imageDirs": [
     "images"

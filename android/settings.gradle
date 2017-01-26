@@ -1,6 +1,8 @@
 rootProject.name = 'StatusIm'
 
 include ':app'
+include ':nfc-react-native'
+project(':nfc-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/nfc-react-native/android')
 include ':instabug-reactnative'
 project(':instabug-reactnative').projectDir = new File(rootProject.projectDir, '../node_modules/instabug-reactnative/android')
 include ':react-native-splash-screen'
