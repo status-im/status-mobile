@@ -106,5 +106,19 @@
         {
             "en": "https://beta.gnosis.pm"
         }
+    },
+
+    "rouleth":
+    {
+        "name":
+        {
+            "en": "Rouleth"
+        },
+        "photo-path": "contacts://rouleth",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://rouleth.com/"
+        }
     }
 }
