@@ -198,5 +198,8 @@ var TopLevel = {
 "_value" : function () {},
 "ListView": function() {},
 "DataSource": function() {},
-"IBGLog": function() {}
+"IBGLog": function() {},
+"getCardId": function() {},
+"readTag": function() {},
+"writeTag": function() {}
 };

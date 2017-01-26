@@ -20,7 +20,6 @@
             [status-im.i18n :refer [label]]
             [status-im.components.react :refer [dismiss-keyboard!]]
             [clojure.string :as str]
-            [cljs.spec :as s]
             [status-im.components.chat-icon.screen :as ci]))
 
 (defonce drawer-atom (atom))

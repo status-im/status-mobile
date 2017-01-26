@@ -3,6 +3,7 @@ package im.status.ethereum;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import es.tiarg.nfcreactnative.NfcReactNativePackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.cboy.rn.splashscreen.SplashScreenReactPackage;
 import com.facebook.react.ReactNativeHost;
@@ -41,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.asList(
               new MainReactPackage(),
+              new NfcReactNativePackage(),
               new RNInstabugReactnativePackage("b239f82a9cb00464e4c72cc703e6821e",MainApplication.this,"shake"),
               new SplashScreenReactPackage(),
               new StatusPackage(),

@@ -8,6 +8,7 @@
             [status-im.models.commands :as commands]
             [status-im.commands.utils :as cu]
             [status-im.components.status :as s]
+            [status-im.components.nfc :as nfc]
             [status-im.constants :as c]
             [cljs.reader :refer [read-string]]
             [status-im.navigation.handlers :as nav]))
@@ -92,6 +93,7 @@
                       :params  params}])
           :webview-scan-qr (dispatch [:show-scan-qr :webview-address-from-qr])
           :webview-send-eth (dispatch [:webview-send-eth! params])
+          :nfc (dispatch [:webview-nfc params])
           (log/error (str "Unknown event: " event')))))))
 
 (defmethod nav/preload-data! :contact-list-modal
@@ -127,3 +129,21 @@
                      parameters
                      (fn [data]
                        (log/debug :webview-send-eth-callback data)))))))
+
+(register-handler :webview-nfc
+  (u/side-effect!
+    (fn [_ [_ {:keys [event params]}]]
+      (let [callback #(dispatch [:send-to-webview-bridge {:params % :event "nfc"}])]
+        (case (keyword event)
+          :get-card-id (nfc/get-card-id #(callback {:event :get-card-id :card %})
+                                        #(callback {:event :get-card-id :error %}))
+          :read-tag    (let [{:keys [sectors]} params]
+                         (nfc/read-tag sectors
+                                       #(callback {:event :read-tag :card %})
+                                       #(callback {:event :read-tag :error %})))
+          :write-tag   (let [{:keys [sectors id]} params]
+                         (nfc/write-tag sectors
+                                        id
+                                        #(callback {:event :write-tag :card %})
+                                        #(callback {:event :write-tag :error %})))
+          :default)))))
