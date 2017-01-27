@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha13"]
-                 [org.clojure/clojurescript "1.9.229"]
+                 [org.clojure/clojurescript "1.9.456"]
                  [reagent "0.6.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server]]
                  [re-frame "0.7.0"]
                  [natal-shell "0.3.0"]
@@ -39,12 +39,6 @@
                                              :compiler     {:output-to     "target/android/not-used.js"
                                                             :main          "env.android.main"
                                                             :output-dir    "target/android"
-                                                            :optimizations :none}}
-                                            {:id           :android-test
-                                             :source-paths ["src" "env/dev"]
-                                             :compiler     {:output-to     "target/android/not-used.js"
-                                                            :main          "env.android-test.main"
-                                                            :output-dir    "target/android-test"
                                                             :optimizations :none}}
                                             {:id           :test
                                              :source-paths ["src" "test/cljs"]

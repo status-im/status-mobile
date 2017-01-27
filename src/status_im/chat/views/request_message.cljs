@@ -8,6 +8,7 @@
                                                 icon
                                                 touchable-highlight]]
             [status-im.chat.styles.message :as st]
+            [status-im.accessibility-ids :as id]
             [status-im.models.commands :refer [parse-command-request]]
             [status-im.components.animation :as anim]))
 
@@ -17,12 +18,6 @@
   (let [command-key (keyword (:name command))
         params      (:set-params command)]
     (dispatch [:set-response-chat-command message-id command-key params])))
-
-(defn label [command]
-  (when command
-    (->> (:name command)
-         name
-         (str "request-"))))
 
 (def min-scale 1)
 (def max-scale 1.3)
@@ -66,7 +61,7 @@
             {:on-press            (when (and (not @answered?) status-initialized?)
                                     #(set-chat-command message-id command))
              :style               (st/command-request-image-touchable top-offset?)
-             :accessibility-label (label command)}
+             :accessibility-label (id/chat-request-message-button (:name command))}
             [animated-view {:style (st/command-request-image-view command scale-anim-val)}
              (when command-icon
                [icon command-icon st/command-request-image])]]))})))

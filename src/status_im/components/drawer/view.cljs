@@ -18,6 +18,7 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.utils :refer [clean-text]]
             [status-im.i18n :refer [label]]
+            [status-im.accessibility-ids :as id]
             [status-im.components.react :refer [dismiss-keyboard!]]
             [clojure.string :as str]
             [status-im.components.chat-icon.screen :as ci]))
@@ -82,7 +83,7 @@
                            :auto-focus          true
                            :focus               status-edit?
                            :max-length          140
-                           :accessibility-label :input
+                           :accessibility-label id/drawer-status-input
                            :placeholder         (label :t/profile-no-status)
                            :default-value       status
                            :on-blur             #(do

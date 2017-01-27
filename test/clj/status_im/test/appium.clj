@@ -1,4 +1,4 @@
-(ns status-im.appium
+(ns status-im.test.appium
   (:require [clojure.java.io :as io]
             [clojure.test :refer :all])
   (:import (org.openqa.selenium.remote DesiredCapabilities)
@@ -14,7 +14,6 @@
         app          (io/file dir "app-debug.apk")
         capabilities (doto (DesiredCapabilities.)
                        (.setCapability "deviceName" "device")
-                       (.setCapability "platformVersion" "6.0.0")
                        (.setCapability "app" (.getAbsolutePath app))
                        (.setCapability "appPackage" "im.status.ethereum")
                        (.setCapability "appActivity" ".MainActivity"))
@@ -49,7 +48,7 @@
   (.getText (by-xpath driver xpath)))
 
 (defn xpath-by-text [text]
-  (str ".//*[@text='" text "']"))
+  (str ".//*[@text=\"" text "\"]"))
 
 (defn click-by-text [driver text]
   (let [elements (->> (xpath-by-text text)
@@ -70,7 +69,9 @@
 (defmacro appium-test
   "Defines test which will create new appium session and will pass that
   session as first argument to each command inside it's body. After execution
-  of all commands session will be closed.
+  of all commands, the session will be closed.
+  Also, at the start of every test, the 'Continue' button from the 'Your phone
+  appears to be ROOTED' message will be pressed.
 
   For instance,
 

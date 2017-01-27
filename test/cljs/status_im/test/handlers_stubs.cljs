@@ -7,9 +7,10 @@
 
 (defn init-stubs []
   (register-handler :sign-up
-    (fn []
-      ;; todo save phone number to db
-      (sign-up-service/on-sign-up-response)))
+    (u/side-effect!
+      (fn []
+        ;; todo save phone number to db
+        (sign-up-service/on-sign-up-response))))
 
   (register-handler :sign-up-confirm
     (u/side-effect!
