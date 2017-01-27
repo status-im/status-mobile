@@ -12,6 +12,7 @@
             [status-im.chat.styles.message-input :as st]
             [status-im.chat.styles.plain-message :as st-message]
             [status-im.chat.styles.response :as st-response]
+            [status-im.accessibility-ids :as id]
             [reagent.core :as r]
             [clojure.string :as str]))
 
@@ -49,7 +50,7 @@
                                                          (.-contentSize)
                                                          (.-height))]
                                             (set-layout-size size))
-                 :accessibility-label    :input
+                 :accessibility-label    id/chat-message-input
                  :on-focus               #(do (dispatch [:set :focused true])
                                               (dispatch [:set-chat-ui-props :show-emoji? false]))
                  :on-blur                #(do (dispatch [:set :focused false])
@@ -65,7 +66,7 @@
                 (command-input-options icon-width disable? sending-disabled?)
                 {:auto-focus          (not fullscreen)
                  :blur-on-submit      false
-                 :accessibility-label :input
+                 :accessibility-label id/chat-message-input
                  :on-focus            #(dispatch [:set :focused true])
                  :on-blur             #(dispatch [:set :focused false])
                  :default-value       (or input-command "")}
@@ -110,7 +111,7 @@
                  [send-button {:on-press (fn [e]
                                            (when-not @sending-disabled?
                                              (dispatch [:set-chat-ui-props :show-emoji? false])
-                                             (on-press e)))}]))
+                                             (on-press e)))
+                               :accessibility-label id/chat-send-button}]))
              (when (and @command? (= :command (:type @command)))
                [command/command-icon @command])]]))})))
-
