@@ -33,7 +33,8 @@
             [status-im.utils.utils :refer [clean-text]]
             [status-im.components.image-button.view :refer [show-qr-button]]
             [status-im.i18n :refer [label
-                                    get-contact-translated]]))
+                                    get-contact-translated]]
+            [status-im.constants :refer [console-chat-id wallet-chat-id]]))
 
 (defn toolbar [{:keys [account edit?]}]
   (let [profile-edit-data-valid? (s/valid? ::v/profile account)]
@@ -113,6 +114,13 @@
             [status-view {:style  (st/status-text (:height (r/state component)))
                           :status status}])])})))
 
+(defn- navigate-to-phone-change
+  "Switch user to the console issuing the !phone command automatically to let him change his phone number."
+  []
+  (dispatch [:navigate-to :chat console-chat-id])
+  (dispatch [:set-chat-command :phone])
+  )
+
 (defview profile []
   [{whisper-identity :whisper-identity
     address          :address
@@ -155,10 +163,13 @@
 
     [view st/profile-property-with-top-spacing
      [selectable-field {:label     (label :t/phone-number)
+
                         :editable? false
                         :value     (if (and phone (not (str/blank? phone)))
                                      (format-phone-number phone)
-                                     (label :t/not-specified))}]
+                                     (label :t/not-specified))
+                        ;; TODO: should this be changed?
+                        :on-press  navigate-to-phone-change}]
      [view st/underline-container]]
 
     (when address
@@ -211,7 +222,8 @@
                           :editable? edit?
                           :value     (if (and phone (not (str/blank? phone)))
                                        (format-phone-number phone)
-                                       (label :t/not-specified))}]
+                                       (label :t/not-specified))
+                          :on-press  navigate-to-phone-change}]
        [view st/underline-container]]
 
       [view st/profile-property
