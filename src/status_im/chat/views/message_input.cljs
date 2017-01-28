@@ -45,7 +45,7 @@
                  :auto-focus             false
                  :blur-on-submit         true
                  :multiline              true
-                 :on-content-size-change #(let [size (-> (.-nativeEvent %)
+                 :on-change #(let [size (-> (.-nativeEvent %)
                                                          (.-contentSize)
                                                          (.-height))]
                                             (set-layout-size size))
