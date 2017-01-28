@@ -114,13 +114,6 @@
             [status-view {:style  (st/status-text (:height (r/state component)))
                           :status status}])])})))
 
-(defn- navigate-to-phone-change
-  "Switch user to the console issuing the !phone command automatically to let him change his phone number."
-  []
-  (dispatch [:navigate-to :chat console-chat-id])
-  (dispatch [:set-chat-command :phone])
-  )
-
 (defview profile []
   [{whisper-identity :whisper-identity
     address          :address
@@ -163,13 +156,10 @@
 
     [view st/profile-property-with-top-spacing
      [selectable-field {:label     (label :t/phone-number)
-
                         :editable? false
                         :value     (if (and phone (not (str/blank? phone)))
                                      (format-phone-number phone)
-                                     (label :t/not-specified))
-                        ;; TODO: should this be changed?
-                        :on-press  navigate-to-phone-change}]
+                                     (label :t/not-specified))}]
      [view st/underline-container]]
 
     (when address
@@ -223,7 +213,7 @@
                           :value     (if (and phone (not (str/blank? phone)))
                                        (format-phone-number phone)
                                        (label :t/not-specified))
-                          :on-press  navigate-to-phone-change}]
+                          :on-press  #(dispatch [:phone-number-change-requested])}]
        [view st/underline-container]]
 
       [view st/profile-property

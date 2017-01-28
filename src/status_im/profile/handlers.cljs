@@ -5,7 +5,8 @@
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
             [status-im.utils.handlers :as u :refer [get-hashtags]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.constants :refer [console-chat-id]]))
 
 (defn message-user [identity]
   (when identity
@@ -35,3 +36,11 @@
                                            1 (dispatch [:open-image-picker])
                                            :default))
                           :cancel-text (label :t/image-source-cancel)}))))
+
+(register-handler :phone-number-change-requested
+  ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
+  ;; We allow to change phone number only from console because this requires entering SMS verification code.
+  (u/side-effect!
+    (fn [db _]
+      (dispatch [:navigate-to :chat console-chat-id])
+      (dispatch [:set-chat-command :phone]))))
