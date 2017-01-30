@@ -127,12 +127,3 @@
   {:fontSize 20
    :height   22
    :color    color-white})
-
-(defn action-buttons-container [animation? offset-y]
-  ;; todo fix overlaying of parent view
-  {:position  :absolute
-   :right     0
-   :height    230
-   :width     230
-   :bottom    24
-   :transform [{:translateY (if animation? offset-y 1)}]})

@@ -40,25 +40,23 @@
       :style              (st/toolbar chats-scrolled?)}]))
 
 (defn chats-action-button []
-  [view {:style         (st/action-buttons-container false 0)
-         :pointerEvents :box-none}
-   [action-button {:button-color color-blue
-                   :offset-x     16
-                   :offset-y     -2
-                   :hide-shadow  true
-                   :spacing      13}
-    [action-button-item
-     {:title       (label :t/new-chat)
-      :buttonColor :#9b59b6
-      :onPress     #(dispatch [:navigate-to :group-contacts :people])}
-     [ion-icon {:name  :md-create
-                :style st/create-icon}]]
-    [action-button-item
-     {:title       (label :t/new-group-chat)
-      :buttonColor :#1abc9c
-      :onPress     #(dispatch [:navigate-to :new-group])}
-     [ion-icon {:name  :md-person
-                :style st/person-stalker-icon}]]]])
+  [action-button {:button-color color-blue
+                  :offset-x     16
+                  :offset-y     22
+                  :hide-shadow  true
+                  :spacing      13}
+   [action-button-item
+    {:title       (label :t/new-chat)
+     :buttonColor :#9b59b6
+     :onPress     #(dispatch [:navigate-to :group-contacts :people])}
+    [ion-icon {:name  :md-create
+               :style st/create-icon}]]
+   [action-button-item
+    {:title       (label :t/new-group-chat)
+     :buttonColor :#1abc9c
+     :onPress     #(dispatch [:navigate-to :new-group])}
+    [ion-icon {:name  :md-person
+               :style st/person-stalker-icon}]]])
 
 (defn chat-shadow-item []
   [view {:height 3}
