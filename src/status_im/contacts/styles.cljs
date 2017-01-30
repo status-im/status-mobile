@@ -201,13 +201,6 @@
   {:textAlign :center
    :color     color-gray})
 
-(def buttons-container
-  {:position :absolute
-   :bottom   24
-   :right    0
-   :width    220
-   :height   170})
-
 (def qr-input
   {:margin-right 42})
 

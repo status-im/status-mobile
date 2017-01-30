@@ -122,7 +122,7 @@
    :show-all                              "ПОКАЗАТЬ ВСЕ"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Люди"
-   :contacts-group-new-chat               "Начать новый час"
+   :contacts-group-new-chat               "Начать новый чат"
    :no-contacts                           "Пока нет контактов"
    :show-qr                               "Показать QR"
    :enter-address                         "Ввести адрес"

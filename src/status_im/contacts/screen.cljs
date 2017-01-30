@@ -101,18 +101,17 @@
        [line-view])]))
 
 (defn contacts-action-button []
-  [view st/buttons-container
-   [action-button {:button-color color-blue
-                   :offset-x     16
-                   :offset-y     -2
-                   :hide-shadow  true
-                   :spacing      13}
-    [action-button-item
-     {:title       (label :t/new-contact)
-      :buttonColor :#9b59b6
-      :onPress     #(dispatch [:navigate-to :new-contact])}
-     [ion-icon {:name  :md-create
-                :style create-icon}]]]])
+  [action-button {:button-color color-blue
+                  :offset-x     16
+                  :offset-y     22
+                  :hide-shadow  true
+                  :spacing      13}
+   [action-button-item
+    {:title       (label :t/new-contact)
+     :buttonColor :#9b59b6
+     :onPress     #(dispatch [:navigate-to :new-contact])}
+    [ion-icon {:name  :md-create
+               :style create-icon}]]])
 
 (defn contact-list [_]
   (let [peoples              (subscribe [:get-added-people-with-limit contacts-limit])
