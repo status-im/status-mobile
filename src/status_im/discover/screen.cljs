@@ -81,7 +81,7 @@
    [toolbar-view (and current-view?
                       (= show-search :discover))]
    (if discoveries
-     [scroll-view st/scroll-view-container
+     [scroll-view {:style (get-in platform-specific [:component-styles :main-tab-list])}
       [discover-popular {:contacts        contacts
                          :current-account current-account}]
       [discover-recent {:current-account current-account}]]

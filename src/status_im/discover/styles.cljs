@@ -26,9 +26,6 @@
 (def section-spacing
   {:padding 16})
 
-(def scroll-view-container
-  {:bounces false})
-
 ;; Popular
 
 (def popular-container

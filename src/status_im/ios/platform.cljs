@@ -47,6 +47,7 @@
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
+   :main-tab-list         {:margin-bottom 72}
    :toolbar-nav-action    {:width           46
                            :height          56
                            :align-items     :center
