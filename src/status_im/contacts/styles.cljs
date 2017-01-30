@@ -20,8 +20,8 @@
    :background-color toolbar-background2})
 
 (def contacts-list-container
-  {:flex          1
-   :margin-bottom (when p/ios? 72)})
+  (merge (get-in p/platform-specific [:component-styles :main-tab-list])
+         {:flex 1}))
 
 (def empty-contact-groups
   (merge contact-groups

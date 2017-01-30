@@ -115,8 +115,9 @@
   {:flex 1})
 
 (def list-container
-  {:background-color color-light-gray
-   :margin-bottom    (when p/ios? 72)})
+  (merge (get-in p/platform-specific [:component-styles :main-tab-list])
+         {:background-color color-light-gray}))
+
 
 (def create-icon
   {:fontSize 20
