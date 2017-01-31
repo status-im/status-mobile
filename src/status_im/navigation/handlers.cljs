@@ -8,9 +8,9 @@
       (assoc :view-id view-id)))
 
 (defn replace-top-element [stack view-id]
-  (let [stack' (if (pos? (count stack))
-                 (pop stack)
-                 stack)]
+  (let [stack' (if (> 2 (count stack))
+                 (list :chat-list)
+                 (pop stack))]
     (conj stack' view-id)))
 
 (defn replace-view [db view-id]
