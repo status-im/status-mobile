@@ -189,6 +189,14 @@
   (after save-contacts!)
   add-new-contacts)
 
+(defn public-key->address [public-key]
+  (let [length (count public-key)
+        normalized-key (case length
+                         132 (subs public-key 4)
+                         130 (subs public-key 2)
+                         128 public-key)]
+    (subs (.sha3 js/Web3.prototype normalized-key #js {:encoding "hex"}) 26)))
+
 (defn add-new-contact [db [_ {:keys [whisper-identity] :as contact}]]
   (-> db
       (update :contacts assoc whisper-identity contact)
@@ -198,7 +206,8 @@
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
       (when-not (contacts/get-by-id whisper-identity)
-        (dispatch [::prepare-contact contact])
+        (let [contact (assoc contact :address (public-key->address whisper-identity))]
+          (dispatch [::prepare-contact contact]))
         (dispatch [:start-chat whisper-identity {} :navigation-replace])))))
 
 (register-handler ::prepare-contact
@@ -216,9 +225,10 @@
       (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
                       (read-string contact-info)
                       (-> (get contacts chat-id)
-                          (assoc :pending false)))]
-        (dispatch [::prepare-contact contact])
-        (dispatch [:watch-contact contact])
+                          (assoc :pending false)))
+            contact' (assoc contact :address (public-key->address chat-id))]
+        (dispatch [::prepare-contact contact'])
+        (dispatch [:watch-contact contact'])
         (dispatch [:discoveries-send-portions chat-id])))))
 
 (defn set-contact-identity-from-qr

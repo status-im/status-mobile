@@ -151,6 +151,7 @@ var TopLevel = {
 "setTimeout" : function () {},
 "setValue" : function () {},
 "Sha256" : function () {},
+"sha3" : function () {},
 "shh" : function () {},
 "show" : function () {},
 "showActionSheetWithOptions" : function () {},
