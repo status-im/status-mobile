@@ -5,16 +5,15 @@ function httpCallback(id, data) {
     var result = data;
     var error = null;
 
-    console.log(data);
-
     try {
         result = JSON.parse(data);
-    } catch(e) {
+    } catch (e) {
         error = {message: "InvalidResponse"};
     }
 
-
-    callbacks[id](error, result);
+    if (callbacks[id]) {
+        callbacks[id](error, result);
+    }
 }
 
 var StatusHttpProvider = function (host, timeout) {
@@ -23,14 +22,54 @@ var StatusHttpProvider = function (host, timeout) {
 };
 
 StatusHttpProvider.prototype.send = function (payload) {
-    throw new Error('You tried to send "'+ payload.method +'" synchronously. Synchronous requests are not supported, sorry.');
+    if (typeof StatusBridge == "undefined") {
+        if (window.location.protocol == "https:") {
+            throw new Error('You tried to send "' + payload.method + '" synchronously. Synchronous requests are not supported, sorry.');
+        }
+
+        var request = this.prepareRequest(false);
+
+        try {
+            request.send(JSON.stringify(payload));
+        } catch (error) {
+            throw errors.InvalidConnection(this.host);
+        }
+
+        var result = request.responseText;
+
+        try {
+            result = JSON.parse(result);
+        } catch (e) {
+            throw errors.InvalidResponse(request.responseText);
+        }
+
+        return result;
+    } else {
+        result = StatusBridge.sendRequestSync(JSON.stringify(payload));
+
+        try {
+            result = JSON.parse(result);
+        } catch (e) {
+            throw new Error("InvalidResponse: " + result);
+        }
+
+        return result;
+    }
 };
 
-StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
+StatusHttpProvider.prototype.prepareRequest = function () {
+    var request = new XMLHttpRequest();
+
+    request.open('POST', "http://localhost:8545", false);
+    request.setRequestHeader('Content-Type', 'application/json');
+    return request;
+};
+
+function sendAsync(payload, callback) {
 
     var messageId = callbackId++;
     callbacks[messageId] = callback;
-    if(typeof StatusBridge == "undefined") {
+    if (typeof StatusBridge == "undefined") {
         var data = {
             payload: JSON.stringify(payload),
             callbackId: JSON.stringify(messageId)
@@ -42,22 +81,25 @@ StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
     }
 };
 
+StatusHttpProvider.prototype.sendAsync = sendAsync;
+
 /**
  * Synchronously tries to make Http request
  *
  * @method isConnected
  * @return {Boolean} returns true if request haven't failed. Otherwise false
  */
-StatusHttpProvider.prototype.isConnected = function() {
+StatusHttpProvider.prototype.isConnected = function () {
     try {
         this.sendAsync({
             id: 9999999999,
             jsonrpc: '2.0',
             method: 'net_listening',
             params: []
-        }, function(){});
+        }, function () {
+        });
         return true;
-    } catch(e) {
+    } catch (e) {
         return false;
     }
 };
