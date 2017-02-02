@@ -118,8 +118,10 @@
 (defn contact-list [_]
   (let [peoples              (subscribe [:get-added-people-with-limit contacts-limit])
         dapps                (subscribe [:get-added-dapps-with-limit contacts-limit])
+        state-of-the-dapps   (subscribe [:get-added-state-of-the-dapps-with-limit contacts-limit])
         people-count         (subscribe [:added-people-count])
         dapps-count          (subscribe [:added-dapps-count])
+        state-of-the-dapps-count (subscribe [:added-state-of-the-dapps-count])
         click-handler        (subscribe [:get :contacts-click-handler])
         show-search          (subscribe [:get-in [:toolbar-search :show]])
         show-toolbar-shadow? (r/atom false)]
@@ -131,7 +133,7 @@
         (when @show-toolbar-shadow?
           [linear-gradient {:style  st/contact-group-header-gradient-bottom
                             :colors st/contact-group-header-gradient-bottom-colors}])]
-       (if (pos? (+ @dapps-count @people-count))
+       (if (pos? (+ @dapps-count @state-of-the-dapps-count @people-count))
          [scroll-view {:style    st/contact-groups
                        :onScroll (fn [e]
                                    (let [offset (.. e -nativeEvent -contentOffset -y)]
@@ -143,6 +145,13 @@
              @dapps-count
              (label :t/contacts-group-dapps)
              :dapps
+             @click-handler])
+          (when (pos? @state-of-the-dapps-count)
+            [contact-group-view
+             @state-of-the-dapps
+             @state-of-the-dapps-count
+             (label :t/contacts-group-state-of-the-dapps)
+             :state-of-the-dapps
              @click-handler])
           (when (pos? @people-count)
             [contact-group-view

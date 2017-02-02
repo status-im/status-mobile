@@ -24,34 +24,6 @@
         "dapp?": false
     },
 
-    "auction-house":
-    {
-        "name":
-        {
-            "en": "Auction House"
-        },
-        "photo-path": "contacts://auction-house",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://auctionhouse.dappbench.com"
-        }
-    },
-
-    "flight-delays-suck":
-    {
-        "name":
-        {
-            "en": "Flight Delays Suck"
-        },
-        "photo-path": "contacts://flight-delays-suck",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://fdd.etherisc.com"
-        }
-    },
-
     "mkr-market":
     {
         "name":
@@ -63,20 +35,6 @@
         "dapp-url":
         {
             "en": "https://mkr.market"
-        }
-    },
-
-    "FirstBlood":
-    {
-        "name":
-        {
-            "en": "FirstBlood"
-        },
-        "photo-path": "contacts://firstblood",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://app.firstblood.io"
         }
     },
 
