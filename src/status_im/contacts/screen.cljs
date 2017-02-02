@@ -116,15 +116,15 @@
                 :style create-icon}]]]])
 
 (defn contact-list [_]
-  (let [peoples              (subscribe [:get-added-people-with-limit contacts-limit])
-        dapps                (subscribe [:get-added-dapps-with-limit contacts-limit])
-        state-of-the-dapps   (subscribe [:get-added-state-of-the-dapps-with-limit contacts-limit])
-        people-count         (subscribe [:added-people-count])
-        dapps-count          (subscribe [:added-dapps-count])
+  (let [peoples                  (subscribe [:get-added-people-with-limit contacts-limit])
+        dapps                    (subscribe [:get-added-dapps-with-limit contacts-limit])
+        state-of-the-dapps       (subscribe [:get-added-state-of-the-dapps-with-limit contacts-limit])
+        people-count             (subscribe [:added-people-count])
+        dapps-count              (subscribe [:added-dapps-count])
         state-of-the-dapps-count (subscribe [:added-state-of-the-dapps-count])
-        click-handler        (subscribe [:get :contacts-click-handler])
-        show-search          (subscribe [:get-in [:toolbar-search :show]])
-        show-toolbar-shadow? (r/atom false)]
+        click-handler            (subscribe [:get :contacts-click-handler])
+        show-search              (subscribe [:get-in [:toolbar-search :show]])
+        show-toolbar-shadow?     (r/atom false)]
     (fn [current-view?]
       [view st/contacts-list-container
        [toolbar-view (and current-view?

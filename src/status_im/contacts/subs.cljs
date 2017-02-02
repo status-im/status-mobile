@@ -32,12 +32,12 @@
 (register-sub :all-added-people
   (fn []
     (let [contacts (subscribe [:all-added-contacts])]
-      (reaction (remove #(some % [:dapp? :state-of-the-dapp?]) @contacts)))))
+      (reaction (remove :dapp? @contacts)))))
 
 (register-sub :all-added-dapps
   (fn []
     (let [contacts (subscribe [:all-added-contacts])]
-      (reaction (filter :dapp? @contacts)))))
+      (reaction (filter #(and (:dapp? %) (not (:state-of-the-dapp? %))) @contacts)))))
 
 (register-sub :all-added-state-of-the-dapps
   (fn []

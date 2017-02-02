@@ -168,16 +168,18 @@
   (u/side-effect!
     (fn [{:keys [chats]}]
       (doseq [[id {:keys [name photo-path public-key add-chat?
-                          dapp? state-of-the-dapp? dapp-url dapp-hash] :or {dapp? false state-of-the-dapp? false add-chat? false} :as data}] (concat js-res/default-contacts js-res/state-of-the-dapps)]
+                          dapp? state-of-the-dapp? dapp-url dapp-hash]
+                   :or {dapp? false state-of-the-dapp? false add-chat? false}}]
+              (concat js-res/default-contacts js-res/state-of-the-dapps)]
         (let [id' (clojure.core/name id)]
           (when-not (chats id')
             (when add-chat?
               (dispatch [:add-chat id' {:name (:en name)}]))
             (dispatch [:add-contacts [{:whisper-identity id'
-                                       :name             (:en name)
-                                       :photo-path       photo-path
-                                       :public-key       public-key
-                                       :dapp?            dapp?
+                                       :name               (:en name)
+                                       :photo-path         photo-path
+                                       :public-key         public-key
+                                       :dapp?              dapp?
                                        :state-of-the-dapp? state-of-the-dapp?
-                                       :dapp-url         (:en dapp-url)
-                                       :dapp-hash        dapp-hash}]])))))))
+                                       :dapp-url           (:en dapp-url)
+                                       :dapp-hash          dapp-hash}]])))))))
