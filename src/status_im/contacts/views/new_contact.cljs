@@ -63,11 +63,11 @@
       (normalize-hex whisper-identity))
     (label :t/can-not-add-yourself)
 
-    (not (s/valid? ::v/contact-can-be-added whisper-identity))
-    (label :t/contact-already-added)
-
     (not (s/valid? ::v/whisper-identity whisper-identity))
     (label :t/enter-valid-public-key)
+
+    (not (s/valid? ::v/contact-can-be-added whisper-identity))
+    (label :t/contact-already-added)
 
     :else error))
 
