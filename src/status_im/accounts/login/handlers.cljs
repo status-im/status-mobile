@@ -21,6 +21,7 @@
 (defn initialize-account
   [address new-account?]
   (dispatch [:set :login {}])
+  (dispatch [:debug-server-stop])
   (dispatch [:set-current-account address])
   (dispatch [:initialize-account address])
   (if new-account?

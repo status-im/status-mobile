@@ -22,6 +22,7 @@
     status-im.protocol.handlers
     status-im.transactions.handlers
     status-im.network.handlers
+    status-im.debug.handlers
     [status-im.utils.types :as t]
     [status-im.i18n :refer [label]]
     [status-im.constants :refer [console-chat-id]]
@@ -76,6 +77,7 @@
       (dispatch [:load-contacts])
       (dispatch [:init-chat])
       (dispatch [:init-discoveries])
+      (dispatch [:init-debug-mode address])
       (dispatch [:send-account-update-if-needed])
       (dispatch [:start-requesting-discoveries])
       (dispatch [:remove-old-discoveries!]))))

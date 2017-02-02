@@ -38,7 +38,8 @@
     "react-native-emoji-picker",
     "react-native-autolink",
     "instabug-reactnative",
-    "nfc-react-native"
+    "nfc-react-native",
+    "react-native-http-bridge"
   ],
   "imageDirs": [
     "images"

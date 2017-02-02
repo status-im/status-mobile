@@ -10,5 +10,12 @@ npm install --save react-native-tcp@2.0.4;
 if ! [ -f re-natal ]; then 
   ln -s ./node_modules/re-natal/index.js re-natal; 
 else
-  echo "exists"
+  echo "re-natal exists"
+fi
+
+# symlink for status-dev-cli
+if ! [ -f status-dev-cli ]; then
+  ln -s ./node_modules/status-dev-cli/index.js status-dev-cli;
+else
+  echo "status-dev-cli exists"
 fi

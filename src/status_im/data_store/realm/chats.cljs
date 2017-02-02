@@ -1,6 +1,7 @@
 (ns status-im.data-store.realm.chats
   (:require [status-im.data-store.realm.core :as realm]
-            [status-im.utils.random :refer [timestamp]])
+            [status-im.utils.random :refer [timestamp]]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [exists?]))
 
 (defn get-all
@@ -49,6 +50,11 @@
   (realm/exists? @realm/account-realm :chat {:chat-id chat-id}))
 
 (defn delete
+  [chat-id]
+  (when-let [chat (realm/get-by-field @realm/account-realm :chat :chat-id chat-id)]
+    (realm/delete @realm/account-realm chat)))
+
+(defn set-inactive
   [chat-id]
   (when-let [chat (get-by-id chat-id)]
     (realm/write @realm/account-realm

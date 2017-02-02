@@ -158,6 +158,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-http-bridge')
     compile project(':nfc-react-native')
     compile project(':instabug-reactnative')
     compile project(':react-native-splash-screen')
