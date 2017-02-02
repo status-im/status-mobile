@@ -78,9 +78,13 @@
 (def delimeters
   "This function is a hack: mobile Safari doesn't support toLocaleString(), so we need to pass
   this map to WKWebView to make number formatting work."
-  (let [n (.toLocaleString (js/Number 1000.1))]
-    {:delimiter (subs n 1 2)
-     :separator (subs n 5 6)}))
+  (let [n          (.toLocaleString (js/Number 1000.1))
+        delimiter? (= (count n) 7)]
+    (if delimiter?
+      {:delimiter (subs n 1 2)
+       :separator (subs n 5 6)}
+      {:delimiter ""
+       :separator (subs n 4 5)})))
 
 (defn label-number [number]
   (when number
