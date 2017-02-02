@@ -144,4 +144,9 @@
 
 (defn autolink [opts]
   (r/as-element
-    [autolink-class (add-font-style :style opts)]))
+   [autolink-class (add-font-style :style opts)]))
+
+;; HTTP Bridge
+
+(def http-bridge
+  (js/require "react-native-http-bridge"))

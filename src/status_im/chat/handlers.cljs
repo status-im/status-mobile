@@ -497,7 +497,10 @@
 
 (defn delete-chat!
   [_ [_ chat-id]]
-  (chats/delete chat-id))
+  (let [{:keys [debug?]} (chats/get-by-id chat-id)]
+    (if debug?
+      (chats/delete chat-id)
+      (chats/set-inactive chat-id))))
 
 (defn remove-pending-messages!
   [_ [_ chat-id]]
@@ -519,9 +522,9 @@
                       :private private-key}
            :message  {:from       current-public-key
                       :message-id (random/id)}}))
-      (dispatch [::remove-chat current-chat-id]))))
+      (dispatch [:remove-chat current-chat-id]))))
 
-(register-handler ::remove-chat
+(register-handler :remove-chat
   (-> remove-chat
       ;((after leaving-message!))
       ((after delete-messages!))

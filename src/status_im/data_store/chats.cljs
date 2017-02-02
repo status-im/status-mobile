@@ -28,6 +28,10 @@
   [chat-id]
   (data-store/delete chat-id))
 
+(defn set-inactive
+  [chat-id]
+  (data-store/set-inactive chat-id))
+
 (defn get-contacts
   [chat-id]
   (data-store/get-contacts chat-id))
