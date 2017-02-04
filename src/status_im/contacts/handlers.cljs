@@ -224,8 +224,7 @@
     (fn [{:keys [chats contacts]} [_ chat-id]]
       (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
                       (read-string contact-info)
-                      (-> (get contacts chat-id)
-                          (assoc :pending false)))
+                      (assoc (get contacts chat-id) :pending false))]
             contact' (assoc contact :address (public-key->address chat-id))]
         (dispatch [::prepare-contact contact'])
         (dispatch [:watch-contact contact'])

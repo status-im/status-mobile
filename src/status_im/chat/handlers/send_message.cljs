@@ -100,7 +100,7 @@
             request       (:request (:handler-data command))
             hidden-params (->> (:params (:command command))
                                (filter #(= (:hidden %) true))
-                               (map #(:name %)))
+                               (map :name))
             command'      (->> (assoc command-message :handler-data handler-data)
                                (prepare-command current-public-key chat-id clock-value request)
                                (cu/check-author-direction db chat-id))]
