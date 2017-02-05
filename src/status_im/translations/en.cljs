@@ -10,6 +10,7 @@
    :offline                               "Offline"
    :search-for                            "Search for..."
    :cancel                                "Cancel"
+   :next                                  "Next"
 
    ;drawer
    :invite-friends                        "Invite friends"
@@ -134,8 +135,9 @@
 
    ;contacts
    :contacts                              "Contacts"
-   :new-contact                           "New Contact"
+   :new-contact                           "New contact"
    :remove-contact                        "Remove contact"
+   :edit-contacts                         "Edit contacts"
    :show-all                              "SHOW ALL"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "People"
@@ -143,6 +145,7 @@
    :no-contacts                           "No contacts yet"
    :show-qr                               "Show QR"
    :enter-address                         "Enter address"
+   :more                                  "more"
 
    ;group-settings
    :remove                                "Remove"
@@ -184,6 +187,9 @@
    :group-chat-name                       "Chat name"
    :empty-group-chat-name                 "Please enter a name"
    :illegal-group-chat-name               "Please select another name"
+   :new-group                             "New Group"
+   :reorder-groups                        "Reorder Group"
+   :group-name                            "Group name"
 
    ;participants
    :add-participants                      "Add Participants"

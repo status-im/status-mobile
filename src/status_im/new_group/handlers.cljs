@@ -4,6 +4,7 @@
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.data-store.chats :as chats]
+            [status-im.data-store.groups :as groups]
             [clojure.string :as s]
             [status-im.utils.handlers :as u]
             [status-im.utils.random :as random]
@@ -28,6 +29,28 @@
        (map :name)
        (cons username)
        (s/join ", ")))
+
+(defn prepare-group
+  [{:keys [selected-contacts] :as db} [_ group-name]]
+  (let [contacts (mapv #(hash-map :identity %) selected-contacts)]
+    (assoc db :new-group {:group-id    (random/id)
+                          :name        group-name
+                          :timestamp   (.getTime (js/Date.))
+                          :contacts    contacts})))
+
+(defn add-group
+  [{:keys [new-group] :as db} _]
+  (-> db
+      (update :groups conj new-group)
+      (assoc :selected-contacts #{})))
+
+(defn create-group!
+  [{:keys [new-group]} _]
+  (groups/save new-group))
+
+(defn show-contact-list!
+  [_ _]
+  (dispatch [:navigate-to-clean :contact-list]))
 
 (defn prepare-chat
   [{:keys [selected-contacts current-public-key] :as db} [_ group-name]]
@@ -84,12 +107,18 @@
                   :private private-key}
        :callback #(dispatch [:incoming-message %1 %2])})))
 
-(register-handler :create-new-group
+(register-handler :create-new-group-chat
   (-> prepare-chat
       ((enrich add-chat))
       ((after create-chat!))
       ((after show-chat!))
       ((after start-listen-group!))))
+
+(register-handler :create-new-group
+  (-> prepare-group
+      ((enrich add-group))
+      ((after create-group!))
+      ((after show-contact-list!))))
 
 (register-handler :group-chat-invite-received
   (u/side-effect!
@@ -122,3 +151,8 @@
                :identity current-public-key
                :keypair  keypair
                :callback #(dispatch [:incoming-message %1 %2])})))))))
+
+(defn load-groups! [db _]
+    (assoc db :groups (groups/get-all)))
+
+(register-handler :load-groups load-groups!)

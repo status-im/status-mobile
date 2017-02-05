@@ -84,7 +84,7 @@
                             :as   opts}]
   (let [toggle-search-fn #(dispatch [:set-in [:toolbar-search :show] %])
         actions          (if-not show-search?
-                           (into actions [(act/search #(toggle-search-fn search-key))]))]
+                           (into [(act/search #(toggle-search-fn search-key))] actions))]
     [toolbar {:style          (merge st/toolbar-with-search style)
               :nav-action     (if show-search?
                                 (act/back #(toggle-search-fn nil))

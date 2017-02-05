@@ -15,6 +15,11 @@
              :style  st/action-add}
    :handler handler})
 
+(defn opts [handler]
+  {:image   {:source {:uri :icon_dots_horizontal_dark}
+             :style  st/action-opts}
+   :handler handler})
+
 (defn search [handler]
   {:image   {:source {:uri :icon_search}
              :style  st/action-search}

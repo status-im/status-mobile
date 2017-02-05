@@ -6,7 +6,7 @@
                                                  color-separator
                                                  color-gray2
                                                  color-gray]]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]
+            [status-im.components.toolbar.styles :refer [toolbar-background1 toolbar-background2]]
             [status-im.utils.platform :as p]))
 
 ;; Contacts list
@@ -14,6 +14,11 @@
 (def toolbar-shadow
   {:height           2
    :background-color toolbar-background2})
+
+(def toolbar-line
+  {:height           1
+   :background-color "#c0c6ca"
+   :opacity 0.4})
 
 (def contact-groups
   {:flex             1
@@ -45,13 +50,13 @@
 
 (def contact-group-header
   {:flex-direction   :column
-   :background-color toolbar-background2})
+   :margin-top 24})
 
 (def contact-group-header-inner
   {:flexDirection   :row
    :alignItems      :center
-   :height          48
-   :backgroundColor toolbar-background2})
+   :height          53
+   :backgroundColor toolbar-background1})
 
 (def contact-group-subtitle
   {:flex       1
@@ -94,6 +99,15 @@
    :color         text3-color
    ;; ios only:
    :letterSpacing 0.5})
+
+(def contact-line-container
+  {:background-color color-white})
+
+(def contact-line
+  {:margin-left 68
+   :height 1
+   :background-color "#d9dae1"
+   :opacity 0.4})
 
 (def contact-container
   {:flex-direction   :row
@@ -143,7 +157,7 @@
 (def contact-inner-container
   {:flex            1
    :flexDirection   :row
-   :height          56
+   :height          64
    :margin-right    16
    :backgroundColor color-white})
 
@@ -171,6 +185,10 @@
 (def more-btn-icon
   {:width  4
    :height 16})
+
+(def dots-horizontal-icon
+  {:width  24
+   :height 24})
 
 ; New contact
 

@@ -29,34 +29,26 @@
            (sort-contacts)
            (reaction)))))
 
-(register-sub :all-added-people
-  (fn []
-    (let [contacts (subscribe [:all-added-contacts])]
-      (reaction (remove :dapp? @contacts)))))
+(register-sub :all-added-group-contacts
+  (fn [_ [_ group]]
+    (let [contacts (subscribe [:all-added-contacts])
+          group-contacts (into #{} (map #(:identity %) (:contacts group)))]
+      ;;TODO subscribe on contacts
+      (reaction (filter #(group-contacts (:whisper-identity %)) @contacts)))))
 
-(register-sub :all-added-dapps
-  (fn []
-    (let [contacts (subscribe [:all-added-contacts])]
-      (reaction (filter :dapp? @contacts)))))
-
-(register-sub :get-added-people-with-limit
-  (fn [_ [_ limit]]
-    (let [contacts (subscribe [:all-added-people])]
-      (reaction (take limit @contacts)))))
-
-(register-sub :get-added-dapps-with-limit
-  (fn [_ [_ limit]]
-    (let [contacts (subscribe [:all-added-dapps])]
-      (reaction (take limit @contacts)))))
-
-(register-sub :added-people-count
-  (fn [_ _]
-    (let [contacts (subscribe [:all-added-people])]
+(register-sub :all-added-group-contacts-count
+  (fn [_ [_ group]]
+    (let [contacts (subscribe [:all-added-group-contacts group])]
       (reaction (count @contacts)))))
 
-(register-sub :added-dapps-count
+(register-sub :get-added-contacts-with-limit
+  (fn [_ [_ limit]]
+    (let [contacts (subscribe [:all-added-contacts])]
+      (reaction (take limit @contacts)))))
+
+(register-sub :added-contacts-count
   (fn [_ _]
-    (let [contacts (subscribe [:all-added-dapps])]
+    (let [contacts (subscribe [:all-added-contacts])]
       (reaction (count @contacts)))))
 
 (defn get-contact-letter [contact]

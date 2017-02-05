@@ -78,3 +78,16 @@
 (def button-input
   {:flex          1
    :flexDirection :column})
+
+(def confirm-button
+  {:flex-direction :row
+   :height 52
+   :justify-content :center
+   :align-items :center
+   :background-color "#628fe3"})
+
+(def confirm-button-label
+  {:color         color-white
+   :font-size     17
+   :line-height   20
+   :letter-spacing -0.2})

@@ -41,9 +41,9 @@
                                       :icon        {:padding-top     0
                                                     :bottom          -4
                                                     :justify-content :flex-end}}}
-   :contacts              {:subtitle {:color          styles/color-steel
-                                      :font-size      13
-                                      :letter-spacing 1}}
+   :contacts              {:subtitle {:color          styles/color-black
+                                      :font-size      16
+                                      :letter-spacing -0.2}}
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}

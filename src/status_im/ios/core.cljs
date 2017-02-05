@@ -21,7 +21,8 @@
             [status-im.accounts.screen :refer [accounts]]
             [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
-            [status-im.new-group.screen :refer [new-group]]
+            [status-im.new-group.screen :refer [new-group new-contacts-group]];; TODO: confusion with names
+            [status-im.new-group.views.contact-list :refer [new-group-contact-list]]
             [status-im.participants.views.add :refer [new-participants]]
             [status-im.participants.views.remove :refer [remove-participants]]
             [status-im.group-settings.screen :refer [group-settings]]
@@ -86,6 +87,8 @@
                                :contact-list main-tabs
                                :contact-list-search-results contacts-search-results
                                :group-contacts contact-list
+                               :new-contacts-group new-contacts-group
+                               :new-group-contact-list new-group-contact-list
                                :new-contact new-contact
                                :qr-scanner qr-scanner
                                :chat chat

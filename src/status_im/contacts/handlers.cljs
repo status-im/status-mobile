@@ -299,3 +299,21 @@
                                         0 (dispatch [:remove-contact contact])
                                         :default))
                           :cancel-text (label :t/cancel)}))))
+
+(register-handler
+  :open-contacts-menu
+  (u/side-effect!
+    (fn [_ [_ list-selection-fn new-contact?]]
+      (let [d (if new-contact? 0 1)]
+        (list-selection-fn {:options  (into []
+                                        (concat
+                                          (when new-contact? [(label :t/new-contact)])
+                                          [(label :t/new-group)
+                                           (label :t/edit)]))
+                            :callback (fn [index]
+                                        (case (+ d index)
+                                          0 (dispatch [:navigate-to :new-contact])
+                                          1 (dispatch [:navigate-to :new-group-contact-list])
+                                          2 (dispatch [:set-in [:contacts-ui-props :edit?] true])
+                                          :default))
+                            :cancel-text (label :t/cancel)})))))

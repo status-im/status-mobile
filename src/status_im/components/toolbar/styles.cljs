@@ -61,7 +61,7 @@
    :justify-content :center})
 
 (def toolbar-with-search
-  {:background-color toolbar-background2
+  {:background-color toolbar-background1
    :elevation        0})
 
 (def toolbar-with-search-content
@@ -93,6 +93,10 @@
 (def action-add
   {:width  17
    :height 17})
+
+(def action-opts
+  {:width  24
+   :height 24})
 
 (def action-search
   {:width  17
