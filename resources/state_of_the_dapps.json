@@ -1,0 +1,40 @@
+{
+    "auction-house":
+    {
+        "name":
+        {
+            "en": "Auction House"
+        },
+        "photo-path": "contacts://auction-house",
+        "dapp-url":
+        {
+            "en": "http://auctionhouse.dappbench.com"
+        }
+    },
+
+    "flight-delays-suck":
+    {
+        "name":
+        {
+            "en": "Flight Delays Suck"
+        },
+        "photo-path": "contacts://flight-delays-suck",
+        "dapp-url":
+        {
+            "en": "https://fdd.etherisc.com"
+        }
+    },
+
+    "FirstBlood":
+    {
+        "name":
+        {
+            "en": "FirstBlood"
+        },
+        "photo-path": "contacts://firstblood",
+        "dapp-url":
+        {
+            "en": "https://app.firstblood.io"
+        }
+    }
+}

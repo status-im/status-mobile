@@ -37,7 +37,12 @@
 (register-sub :all-added-dapps
   (fn []
     (let [contacts (subscribe [:all-added-contacts])]
-      (reaction (filter :dapp? @contacts)))))
+      (reaction (filter #(and (:dapp? %) (not (:state-of-the-dapp? %))) @contacts)))))
+
+(register-sub :all-added-state-of-the-dapps
+  (fn []
+    (let [contacts (subscribe [:all-added-contacts])]
+      (reaction (filter :state-of-the-dapp? @contacts)))))
 
 (register-sub :get-added-people-with-limit
   (fn [_ [_ limit]]
@@ -49,6 +54,11 @@
     (let [contacts (subscribe [:all-added-dapps])]
       (reaction (take limit @contacts)))))
 
+(register-sub :get-added-state-of-the-dapps-with-limit
+  (fn [_ [_ limit]]
+    (let [contacts (subscribe [:all-added-state-of-the-dapps])]
+      (reaction (take limit @contacts)))))
+
 (register-sub :added-people-count
   (fn [_ _]
     (let [contacts (subscribe [:all-added-people])]
@@ -57,6 +67,11 @@
 (register-sub :added-dapps-count
   (fn [_ _]
     (let [contacts (subscribe [:all-added-dapps])]
+      (reaction (count @contacts)))))
+
+(register-sub :added-state-of-the-dapps-count
+  (fn [_ _]
+    (let [contacts (subscribe [:all-added-state-of-the-dapps])]
       (reaction (count @contacts)))))
 
 (defn get-contact-letter [contact]

@@ -138,6 +138,7 @@
    :remove-contact                        "Remove contact"
    :show-all                              "SHOW ALL"
    :contacts-group-dapps                  "ÐApps"
+   :contacts-group-state-of-the-dapps     "State of the ÐApps"
    :contacts-group-people                 "People"
    :contacts-group-new-chat               "Start new chat"
    :no-contacts                           "No contacts yet"

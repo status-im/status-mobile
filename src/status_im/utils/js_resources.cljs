@@ -4,7 +4,10 @@
 
 (def default-contacts (-> (slurp "resources/default_contacts.json")
                           (json->clj)))
-
+(def state-of-the-dapps (->> (slurp "resources/state_of_the_dapps.json")
+                             (json->clj)
+                             (map (fn [[k v]] [k (assoc v :dapp? true :state-of-the-dapp? true)]))
+                             (into {})))
 (def commands-js (slurp "resources/commands.js"))
 (def console-js (slurp "resources/console.js"))
 (def status-js (slurp "resources/status.js"))
