@@ -55,7 +55,7 @@
             :title          (label :t/edit-contacts)}])
 
 (defn subtitle-view [subtitle contacts-count edit?]
-  [view st/contact-group-header-inner
+  [view (get-in platform-specific [:component-styles :contacts :group-header])
    [text {:style      (merge st/contact-group-subtitle
                              (get-in platform-specific [:component-styles :contacts :subtitle]))
           :uppercase? (get-in platform-specific [:contacts :uppercase-subtitles?])
@@ -83,10 +83,11 @@
 (defn line-view []
   [view {:style {:background-color "#D7D7D7"
                  :height           1}}])
-#_(defn on-scroll-animation [e]
-    (let [offset (.. e -nativeEvent -contentOffset -y)]
-      (reset! show-toolbar-shadow?
-              (<= st/contact-group-header-height offset))))
+
+(defn on-scroll-animation [e show-toolbar-shadow?]
+  (let [offset (.. e -nativeEvent -contentOffset -y)]
+    (reset! show-toolbar-shadow?
+            (> offset 0))))
 
 (defn contact-group-view [contacts contacts-count subtitle group edit? click-handler]
   (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])]
@@ -139,20 +140,20 @@
    click-handler        [:get :contacts-click-handler]
    show-search          [:get-in [:toolbar-search :show]]
    edit?                [:get-in [:contacts-ui-props :edit?]]
-   groups               [:get :groups]]
-   ;show-toolbar-shadow? (r/atom false)]
+   groups               [:get :groups]
+   show-toolbar-shadow? (r/atom false)]
   [view st/contacts-list-container
    (if edit?
      [toolbar-edit]
      [toolbar-view (and current-view?
                       (= show-search :contact-list))])
-   [view {:style st/toolbar-line}
-    #_(when @show-toolbar-shadow?
-        [linear-gradient {:style  st/contact-group-header-gradient-bottom
-                          :colors st/contact-group-header-gradient-bottom-colors}])]
+   [view {:style st/toolbar-line}]
+   (when @show-toolbar-shadow?
+     [linear-gradient {:style  st/contact-group-header-gradient-bottom
+                       :colors st/contact-group-header-gradient-bottom-colors}])
    (if (pos? (+ (count groups) contacts-count)) ;;TODO: make subscription for groups count
-     [scroll-view {:style    st/contact-groups}
-                   ;:onScroll on-scroll-animation}
+     [scroll-view {:style    st/contact-groups
+                   :onScroll #(on-scroll-animation % show-toolbar-shadow?)}
       (when (pos? contacts-count)
         [contact-group-view
          contacts

@@ -33,7 +33,6 @@
   (fn [_ [_ group]]
     (let [contacts (subscribe [:all-added-contacts])
           group-contacts (into #{} (map #(:identity %) (:contacts group)))]
-      ;;TODO subscribe on contacts
       (reaction (filter #(group-contacts (:whisper-identity %)) @contacts)))))
 
 (register-sub :all-added-group-contacts-count

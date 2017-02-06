@@ -52,18 +52,12 @@
   {:flex-direction   :column
    :margin-top 24})
 
-(def contact-group-header-inner
-  {:flexDirection   :row
-   :alignItems      :center
-   :height          53
-   :backgroundColor toolbar-background1})
-
 (def contact-group-subtitle
-  {:flex       1
-   :margin-left 16})
+  {:margin-left 16})
 
 (def contact-group-count
-  {:margin-right 14})
+  {:flex 1
+   :margin-left 14})
 
 (def contact-group-header-gradient-top
   {:flexDirection   :row
@@ -100,14 +94,8 @@
    ;; ios only:
    :letterSpacing 0.5})
 
-(def contact-line-container
+(def contact-separator-container
   {:background-color color-white})
-
-(def contact-line
-  {:margin-left 68
-   :height 1
-   :background-color "#d9dae1"
-   :opacity 0.4})
 
 (def contact-container
   {:flex-direction   :row

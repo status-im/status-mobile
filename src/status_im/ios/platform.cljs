@@ -23,7 +23,7 @@
                            :border-bottom-width 0.5}
    :chat                  {:new-message {:border-top-color styles/color-gray3
                                          :border-top-width 0.5}}
-   :discover             {:subtitle {:color          styles/color-steel
+   :discover             {:subtitle  {:color          styles/color-steel
                                       :font-size      13
                                       :letter-spacing 1}
                            :popular  {:border-radius 3
@@ -41,9 +41,17 @@
                                       :icon        {:padding-top     0
                                                     :bottom          -4
                                                     :justify-content :flex-end}}}
-   :contacts              {:subtitle {:color          styles/color-black
-                                      :font-size      16
-                                      :letter-spacing -0.2}}
+   :contacts              {:subtitle  {:color          styles/color-black
+                                       :font-size      16
+                                       :letter-spacing -0.2}
+                           :separator {:margin-left 68
+                                       :height 1
+                                       :background-color "#d9dae1"
+                                       :opacity 0.4}
+                           :group-header {:flexDirection   :row
+                                          :alignItems      :center
+                                          :height          53
+                                          :backgroundColor styles/color-white}}
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}

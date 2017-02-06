@@ -34,8 +34,13 @@
                            :item     {:status-text {:color       styles/color-black
                                                     :line-height 22
                                                     :font-size   14}}}
-   :contacts              {:subtitle {:color     styles/color-gray2
-                                      :font-size 14}}
+   :contacts              {:subtitle     {:color     styles/color-gray2
+                                          :font-size 14}
+                           :separator    {:height 0}
+                           :group-header {:flexDirection   :row
+                                          :alignItems      :center
+                                          :height          56
+                                          :backgroundColor styles/color-light-gray}}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}
@@ -55,7 +60,6 @@
    :medium        {:font-family "sans-serif-medium"}
 
    :toolbar-title {:font-family "sans-serif"}})
-
 
 ;; Dialogs
 
@@ -82,4 +86,4 @@
                        :new-contact-in-toolbar? false
                        :uppercase-subtitles?    false
                        :group-block-shadows?    true}
-   :discover         {:uppercase-subtitles? false}})
+   :discover          {:uppercase-subtitles? false}})

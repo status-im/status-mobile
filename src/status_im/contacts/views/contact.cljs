@@ -21,7 +21,7 @@
 (defview contact-view [{{:keys [whisper-identity letter dapp?] :as contact} :contact
                         :keys [extended? letter? on-click more-on-click info]}]
   [chat [:get-chat whisper-identity]]
-  [view st/contact-line-container
+  [view st/contact-separator-container
    [touchable-highlight
     {:on-press #((or on-click on-press) contact)}
     [view st/contact-container
@@ -33,4 +33,4 @@
         {:on-press #((or more-on-click more-on-press) contact)}
         [view st/more-btn
          [icon :dots_horizontal_dark st/dots-horizontal-icon]]])]]
-   [view st/contact-line]])
+   [view (get-in platform-specific [:component-styles :contacts :separator])]])
