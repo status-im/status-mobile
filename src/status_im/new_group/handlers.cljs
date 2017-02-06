@@ -114,12 +114,6 @@
       ((after show-chat!))
       ((after start-listen-group!))))
 
-(register-handler :create-new-group
-  (-> prepare-group
-      ((enrich add-group))
-      ((after create-group!))
-      ((after show-contact-list!))))
-
 (register-handler :group-chat-invite-received
   (u/side-effect!
     (fn [{:keys [current-public-key web3]}
@@ -152,7 +146,26 @@
                :keypair  keypair
                :callback #(dispatch [:incoming-message %1 %2])})))))))
 
+(register-handler :create-new-group
+                  (-> prepare-group
+                      ((enrich add-group))
+                      ((after create-group!))
+                      ((after show-contact-list!))))
+
+(defn save-groups! [{:keys [new-groups]} _]
+  (groups/save-all new-groups))
+
+(defn add-new-groups
+  [db [_ new-groups]]
+  (-> db
+      (update :groups concat new-groups)
+      (assoc :new-groups new-groups)))
+
+(register-handler :add-groups
+  (after save-groups!)
+  add-new-groups)
+
 (defn load-groups! [db _]
-    (assoc db :groups (groups/get-all)))
+  (update db :groups concat (groups/get-all)))
 
 (register-handler :load-groups load-groups!)

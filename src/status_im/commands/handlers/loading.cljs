@@ -9,6 +9,7 @@
             [status-im.commands.utils :refer [reg-handler]]
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [taoensso.timbre :as log]
+            [status-im.i18n :refer [label]]
             [status-im.utils.homoglyph :as h]
             [status-im.utils.js-resources :as js-res]))
 
@@ -167,16 +168,25 @@
 (reg-handler :load-default-contacts!
   (u/side-effect!
     (fn [{:keys [chats]}]
-      (doseq [[id {:keys [name photo-path public-key add-chat?
-                          dapp? dapp-url dapp-hash]}] js-res/default-contacts]
-        (let [id' (clojure.core/name id)]
-          (when-not (chats id')
-            (when add-chat?
-              (dispatch [:add-chat id' {:name (:en name)}]))
-            (dispatch [:add-contacts [{:whisper-identity id'
-                                       :name             (:en name)
-                                       :photo-path       photo-path
-                                       :public-key       public-key
-                                       :dapp?            dapp?
-                                       :dapp-url         (:en dapp-url)
-                                       :dapp-hash        dapp-hash}]])))))))
+      (let [default-contacts js-res/default-contacts
+            default-dapps-group-contacts (mapv #(hash-map :identity (clojure.core/name (first %)))
+                                               (filter #(:dapp? (second %)) default-contacts))]
+        (doseq [[id {:keys [name photo-path public-key add-chat?
+                            dapp? dapp-url dapp-hash]}] default-contacts]
+          (let [id' (clojure.core/name id)]
+            (when-not (chats id')
+              (when add-chat?
+                (dispatch [:add-chat id' {:name (:en name)}]))
+              ;;TODO strange condition, we add contact only if there is no chat, it works, but...
+              (dispatch [:add-contacts [{:whisper-identity id'
+                                         :name             (:en name)
+                                         :photo-path       photo-path
+                                         :public-key       public-key
+                                         :dapp?            dapp?
+                                         :dapp-url         (:en dapp-url)
+                                         :dapp-hash        dapp-hash}]]))))
+        ;;TODO should be emmited only once on account creations (because user can edit/remove this group)
+        (dispatch [:add-groups [{:group-id    "dapps"
+                                 :name        (label :t/contacts-group-dapps)
+                                 :timestamp   (.getTime (js/Date.))
+                                 :contacts    default-dapps-group-contacts}]])))))

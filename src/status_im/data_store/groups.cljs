@@ -14,3 +14,7 @@
 (defn save
   [{:keys [group-id] :as group}]
   (data-store/save group (data-store/exists? group-id)))
+
+(defn save-all
+  [contacts]
+  (mapv save contacts))
