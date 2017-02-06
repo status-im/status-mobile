@@ -45,10 +45,10 @@
                  :auto-focus             false
                  :blur-on-submit         true
                  :multiline              true
-                 :on-content-size-change #(let [size (-> (.-nativeEvent %)
-                                                         (.-contentSize)
-                                                         (.-height))]
-                                            (set-layout-size size))
+                 :on-change #(let [size (-> (.-nativeEvent %)
+                                            (.-contentSize)
+                                            (.-height))]
+                               (set-layout-size size))
                  :accessibility-label    :input
                  :on-focus               #(do (dispatch [:set :focused true])
                                               (dispatch [:set-chat-ui-props :show-emoji? false]))
