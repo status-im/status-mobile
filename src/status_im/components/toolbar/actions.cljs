@@ -16,7 +16,7 @@
    :handler handler})
 
 (defn opts [handler]
-  {:image   {:source {:uri :icon_dots_horizontal_dark}
+  {:image   {:source {:uri :icon_options_dark}
              :style  st/action-opts}
    :handler handler})
 

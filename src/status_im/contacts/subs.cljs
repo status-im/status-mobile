@@ -1,7 +1,8 @@
 (ns status-im.contacts.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
-            [status-im.utils.identicon :refer [identicon]]))
+            [status-im.utils.identicon :refer [identicon]]
+            [clojure.string :as str]))
 
 (register-sub :current-contact
   (fn [db [_ k]]
@@ -53,6 +54,21 @@
 (defn get-contact-letter [contact]
   (when-let [letter (first (:name contact))]
     (clojure.string/upper-case letter)))
+
+(defn search-filter [text item]
+  (let [name (-> (or (:name item) "")
+                 (str/lower-case))
+        text (str/lower-case text)]
+    (not= (.indexOf name text) -1)))
+
+(register-sub :filtered-contacts
+  (fn [db _]
+    (let [contacts (subscribe [:all-added-contacts])
+          text (subscribe [:get-in [:toolbar-search :text]])]
+      (reaction
+        (if @text
+          (filter #(search-filter @text %) @contacts)
+          @contacts)))))
 
 (register-sub :contacts-with-letters
   (fn [db _]

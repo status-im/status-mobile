@@ -1,6 +1,6 @@
 (ns status-im.android.platform
   (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+            [status-im.components.toolbar.styles :refer [toolbar-background1 toolbar-background2]]))
 
 (def component-styles
   {:status-bar            {:default     {:height    0
@@ -8,7 +8,7 @@
                                          :color     styles/color-white}
                            :main        {:height    0
                                          :bar-style "dark-content"
-                                         :color     toolbar-background2}
+                                         :color     toolbar-background1}
                            :transparent {:height       20
                                          :bar-style    "light-content"
                                          :translucent? true
@@ -34,12 +34,13 @@
                            :item     {:status-text {:color       styles/color-black
                                                     :line-height 22
                                                     :font-size   14}}}
-   :contacts              {:subtitle     {:color     styles/color-gray2
+   :contacts              {:subtitle     {:color     styles/color-gray4
                                           :font-size 14}
                            :separator    {:height 0}
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
                                           :height          56
+                                          :padding-top 10
                                           :backgroundColor styles/color-light-gray}}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}

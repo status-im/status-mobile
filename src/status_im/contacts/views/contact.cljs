@@ -32,5 +32,5 @@
        [touchable-highlight
         {:on-press #((or more-on-click more-on-press) contact)}
         [view st/more-btn
-         [icon :dots_horizontal_dark st/dots-horizontal-icon]]])]]
+         [icon :options_gray st/options-icon]]])]]
    [view (get-in platform-specific [:component-styles :contacts :separator])]])

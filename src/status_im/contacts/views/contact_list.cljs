@@ -9,7 +9,7 @@
             [status-im.contacts.views.contact :refer [contact-view]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar.view :refer [toolbar-with-search toolbar]]
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-background1]]
             [status-im.components.drawer.view :refer [drawer-view open-drawer]]
@@ -53,23 +53,25 @@
        label]]]]])
 
 (defview contact-list-toolbar []
-  [group [:get :contacts-group]
-   modal [:get :modal]]
+  [group       [:get :contacts-group]
+   modal       [:get :modal]
+   show-search [:get-in [:toolbar-search :show]]]
   [view
    [status-bar]
-   [toolbar {:title            (label (if-not group
-                                        :t/contacts
-                                        (if (= group :dapps)
-                                          :t/contacts-group-dapps
-                                          :t/contacts-group-new-chat)))
-             :nav-action       (when modal
-                                 (act/back #(dispatch [:navigate-back])))
-             :background-color toolbar-background1
-             :style            (get-in platform-specific [:component-styles :toolbar])
-             :actions          [(act/search #())]}]])
+   (toolbar-with-search
+     {:show-search?       (= show-search :contact-list)
+      :search-key         :contact-list
+      :title               (label (if-not group
+                                    :t/contacts
+                                    (if (= group :dapps)
+                                      :t/contacts-group-dapps
+                                      :t/contacts-group-new-chat)))
+      :search-placeholder (label :t/search-for)
+      :actions            (when modal
+                            (act/back #(dispatch [:navigate-back])))})])
 
 (defview contact-list []
-  [contacts [:contacts-with-letters]
+  [contacts [:filtered-contacts]
    group [:get :contacts-group]
    modal [:get :modal]
    click-handler [:get :contacts-click-handler]

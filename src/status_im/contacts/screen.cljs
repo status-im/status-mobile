@@ -70,7 +70,7 @@
      [touchable-highlight
       {:on-press #()} ;;TODO: navigate to edit group screen
       [view st/more-btn
-       [icon :dots_horizontal_dark st/dots-horizontal-icon]]])])
+       [icon :options_gray st/options-icon]]])])
 
 (defn group-top-view []
   [linear-gradient {:style  st/contact-group-header-gradient-bottom
@@ -93,8 +93,7 @@
   (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])]
     [view st/contact-group
      (when subtitle
-       [view st/contact-group-header
-        [subtitle-view subtitle contacts-count edit?]])
+       [subtitle-view subtitle contacts-count edit?])
      (when (and subtitle shadows?)
          [group-top-view])
      [view
@@ -151,7 +150,7 @@
    (when @show-toolbar-shadow?
      [linear-gradient {:style  st/contact-group-header-gradient-bottom
                        :colors st/contact-group-header-gradient-bottom-colors}])
-   (if (pos? (+ (count groups) contacts-count)) ;;TODO: make subscription for groups count
+   (if (pos? (+ (count groups) contacts-count))
      [scroll-view {:style    st/contact-groups
                    :onScroll #(on-scroll-animation % show-toolbar-shadow?)}
       (when (pos? contacts-count)
@@ -159,10 +158,11 @@
          contacts
          contacts-count
          nil
-         :contacts
+         nil
          edit?
          click-handler])
       (for [group groups]
+        ^{:key group}
         [contact-group-view-new
          group
          edit?

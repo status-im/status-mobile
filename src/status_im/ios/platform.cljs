@@ -50,6 +50,7 @@
                                        :opacity 0.4}
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
+                                          :margin-top      24
                                           :height          53
                                           :backgroundColor styles/color-white}}
    :bottom-gradient       {:height 1}

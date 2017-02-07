@@ -48,16 +48,13 @@
 (def contact-group
   {:flex-direction :column})
 
-(def contact-group-header
-  {:flex-direction   :column
-   :margin-top 24})
-
 (def contact-group-subtitle
   {:margin-left 16})
 
 (def contact-group-count
   {:flex 1
-   :margin-left 14})
+   :margin-left 8
+   :opacity 0.6})
 
 (def contact-group-header-gradient-top
   {:flexDirection   :row
@@ -77,9 +74,6 @@
 (def contact-group-header-gradient-bottom-colors
   ["rgba(24, 52, 76, 0.01)"
    "rgba(24, 52, 76, 0.05)"])
-
-(def contact-group-header-height (+ (:height contact-group-header-inner)
-                                    (:height contact-group-header-gradient-bottom)))
 
 (def show-all
   {:flexDirection   :row
@@ -174,7 +168,7 @@
   {:width  4
    :height 16})
 
-(def dots-horizontal-icon
+(def options-icon
   {:width  24
    :height 24})
 
