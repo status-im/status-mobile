@@ -54,9 +54,10 @@
    :fontSize   16})
 
 (def group-icon
-  {:marginTop 4
-   :width     14
-   :height    9})
+  {:margin-top    4
+   :margin-bottom 2.7
+   :width         14
+   :height        9})
 
 (def up-icon
   {:width  14

@@ -6,22 +6,23 @@
     [taoensso.timbre :refer-macros [debug]]
     [status-im.protocol.validation :refer-macros [valid?]]
     [status-im.protocol.web3.filtering :as f]
-    [status-im.protocol.listeners :as l]))
+    [status-im.protocol.listeners :as l]
+    [clojure.string :as str]))
 
 (defn prepare-mesage
-  [{:keys [message group-id keypair new-keypair type]}]
+  [{:keys [message group-id keypair new-keypair type username requires-ack?]}]
   (let [message' (-> message
                      (update :payload assoc
+                             :username username
                              :group-id group-id
                              :type type
                              :timestamp (u/timestamp))
                      (assoc :topics [group-id]
-                            :requires-ack? true
-                            :keypair keypair
+                            :requires-ack? (or (nil? requires-ack?) requires-ack?)
                             :type type))]
-    (if new-keypair
-      (assoc message' :new-keypair keypair)
-      message')))
+    (cond-> message'
+            keypair (assoc :keypair keypair)
+            new-keypair (assoc :new-keypair keypair))))
 
 (defn- send-group-message!
   [{:keys [web3] :as opts} type]
@@ -31,14 +32,24 @@
     (debug :send-group-message message)
     (d/add-pending-message! web3 message)))
 
-(s/def ::group-message
+(s/def :group/message
   (s/merge :protocol/message (s/keys :req-un [:chat-message/payload])))
+
+(s/def :public-group/username (s/and string? (complement str/blank?)))
+(s/def :public-group/message
+  (s/merge :group/message (s/keys :username :public-group/username)))
 
 (defn send!
   [{:keys [keypair message] :as options}]
   {:pre [(valid? :message/keypair keypair)
-         (valid? ::group-message message)]}
+         (valid? :group/message message)]}
   (send-group-message! options :group-message))
+
+(defn send-to-public-group!
+  [{:keys [message] :as options}]
+  {:pre [(valid? :public-group/message message)]}
+  (send-group-message! (assoc options :requires-ack? false)
+                       :public-group-message))
 
 (defn leave!
   [options]

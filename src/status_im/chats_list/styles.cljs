@@ -32,9 +32,9 @@
    :border-bottom-color color-separator})
 
 (def chat-container
-  {:flex-direction      :row
-   :background-color    color-white
-   :height              94})
+  {:flex-direction   :row
+   :background-color color-white
+   :height           94})
 
 (def chat-icon-container
   {:margin-top  -2
@@ -44,24 +44,41 @@
    :height      48})
 
 (def item-container
-  {:flex-direction      :column
-   :margin-left         30
-   :padding-top         16
-   :padding-right       16
-   :flex                1})
+  {:flex-direction :column
+   :margin-left    30
+   :padding-top    16
+   :padding-right  16
+   :flex           1})
 
 (def name-view
   {:flex-direction :row})
 
 (def name-text
-  {:color      text1-color
-   :font-size  14})
+  {:color     text1-color
+   :font-size 14})
 
-(def group-icon
-  {:margin-top  5
-   :margin-left 8
-   :width       14
-   :height      9})
+(def private-group-icon-container
+  {:width        16
+   :height       9
+   :padding-top  -4
+   :margin-top   (get-in p/platform-specific [:private-group-icon-container :margin-top])
+   :margin-right 6})
+
+(def private-group-icon
+  {:width  16
+   :height 16})
+
+(def public-group-icon-container
+  {:width        16
+   :height       12
+   :padding-top  -2
+   :margin-top   (get-in p/platform-specific [:public-group-icon-container :margin-top])
+   :margin-right 6})
+
+(def public-group-icon
+  {:width         16
+   :height        16
+   :margin-bottom -20})
 
 (def memebers-text
   {:marginTop  2
@@ -124,7 +141,7 @@
    :height   22
    :color    color-white})
 
-(def person-stalker-icon
-  {:fontSize 20
-   :height   22
-   :color    color-white})
+(def group-icon
+  {:height     22
+   :width      22
+   :tint-color :white})

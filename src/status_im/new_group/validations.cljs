@@ -15,3 +15,7 @@
 
 (s/def ::name (s/and ::not-empty-string
                      ::not-illegal-name))
+
+(s/def ::topic (s/and ::not-empty-string
+                      ::not-illegal-name
+                      (partial re-matches #"[a-z0-9\-]+")))

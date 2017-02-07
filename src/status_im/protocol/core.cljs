@@ -8,6 +8,7 @@
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.chat :as chat]
             [status-im.protocol.group :as group]
+            [status-im.protocol.web3.public-group :as public-group]
             [status-im.protocol.listeners :as l]
             [status-im.protocol.encryption :as e]
             [status-im.protocol.discoveries :as discoveries]
@@ -25,6 +26,7 @@
 (def start-watching-group! group/start-watching-group!)
 (def stop-watching-group! group/stop-watching-group!)
 (def send-group-message! group/send!)
+(def send-public-group-message! group/send-to-public-group!)
 (def invite-to-group! group/invite!)
 (def update-group! group/update-group!)
 (def remove-from-group! group/remove-identity!)
@@ -51,7 +53,11 @@
 (s/def ::rpc-url string?)
 (s/def ::identity string?)
 (s/def :message/chat-id string?)
-(s/def ::group (s/keys :req-un [:message/chat-id :message/keypair]))
+(s/def ::public? (s/and boolean? true?))
+(s/def ::group-id :message/chat-id)
+(s/def ::group (s/or
+                 :group (s/keys :req-un [::group-id :message/keypair])
+                 :public-group (s/keys :req-un [::group-id ::public?])))
 (s/def ::groups (s/* ::group))
 (s/def ::callback fn?)
 (s/def ::contact (s/keys :req-un [::identity :message/keypair]))
@@ -76,20 +82,18 @@
   (d/reset-all-pending-messages!)
   (let [web3             (u/make-web3 rpc-url)
         listener-options {:web3     web3
-                          :identity identity}]
+                          :identity identity
+                          :callback callback}]
     ;; start listening to groups
-    (doseq [{:keys [chat-id keypair]} groups]
-      (f/add-filter!
-        web3
-        {:topics [chat-id]}
-        (l/message-listener (assoc listener-options :callback callback
-                                                    :keypair keypair))))
+    (doseq [group groups]
+      (let [options (merge listener-options group)]
+        (group/start-watching-group! options)))
     ;; start listening to user's inbox
     (f/add-filter!
       web3
       {:to     identity
        :topics [f/status-topic]}
-      (l/message-listener (assoc listener-options :callback callback)))
+      (l/message-listener listener-options))
     ;; start listening to profiles
     (doseq [{:keys [identity keypair]} contacts]
       (watch-user! {:web3     web3
@@ -98,10 +102,10 @@
                     :callback callback}))
     (d/set-pending-mesage-callback! callback)
     (let [online-message #(discoveries/send-online!
-                           {:web3    web3
-                            :message {:from       identity
-                                      :message-id (random/id)
-                                      :keypair    profile-keypair}})]
+                            {:web3    web3
+                             :message {:from       identity
+                                       :message-id (random/id)
+                                       :keypair    profile-keypair}})]
       (d/run-delivery-loop!
         web3
         (assoc options :online-message online-message)))

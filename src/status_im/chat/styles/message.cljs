@@ -4,7 +4,8 @@
                                                  color-blue
                                                  selected-message-color
                                                  text1-color
-                                                 text2-color]]
+                                                 text2-color
+                                                 color-gray]]
             [status-im.constants :refer [text-content-type
                                          content-type-command]]))
 
@@ -124,6 +125,9 @@
              {:backgroundColor color-blue})
            (when selected
              {:backgroundColor selected-message-color}))))
+
+(def author
+  {:color color-gray})
 
 (def comand-request-view
   {:paddingRight 16})

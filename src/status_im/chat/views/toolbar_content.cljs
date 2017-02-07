@@ -49,22 +49,31 @@
                                    :synced (label :t/sync-synced)
                                    online-text)}])
 
-(defn group-last-activity [{:keys [contacts sync-state]}]
+(defn group-last-activity [{:keys [contacts sync-state public?]}]
   (if (or (= sync-state :in-progress)
           (= sync-state :synced))
     [last-activity {:sync-state sync-state}]
-    [view {:flex-direction :row}
-     [icon :group st/group-icon]
-     [text {:style st/members
-            :font  :medium}
-      (let [cnt (inc (count contacts))]
-        (label-pluralize cnt :t/members-active))]]))
+    (if public?
+      [view {:flex-direction :row}
+       [text {:font :default
+              :style (get-in platform-specific [:component-styles :toolbar-last-activity])}
+        (label :t/public-group-status)]]
+      [view {:flex-direction :row}
+       [icon :group st/group-icon]
+       [text {:style st/members
+              :font  :medium}
+        (if public?
+          (label :t/public-group-status)
+          (let [cnt (inc (count contacts))]
+            (label-pluralize cnt :t/members-active)))]])))
 
 (defn toolbar-content-view []
   (let [{:keys [group-chat
                 name
                 contacts
-                chat-id]} (subscribe [:chat-properties [:group-chat :name :contacts :chat-id]])
+                chat-id
+                public?]}
+        (subscribe [:chat-properties [:group-chat :name :contacts :chat-id :public?]])
         show-actions? (subscribe [:chat-ui-props :show-actions?])
         accounts      (subscribe [:get :accounts])
         contact       (subscribe [:get-in [:contacts @chat-id]])
@@ -72,15 +81,19 @@
     (fn []
       [view (st/chat-name-view (or (empty? @accounts)
                                    @show-actions?))
-       [text {:style           st/chat-name-text
-              :number-of-lines 1
-              :font            :toolbar-title}
-        (if (str/blank? @name)
-          (generate-gfy)
-          (or (get-contact-translated @chat-id :name @name)
-              (label :t/chat-name)))]
+       (let [chat-name (if (str/blank? @name)
+                         (generate-gfy)
+                         (or (get-contact-translated @chat-id :name @name)
+                             (label :t/chat-name)))]
+         [text {:style           st/chat-name-text
+                :number-of-lines 1
+                :font            :toolbar-title}
+          (if @public?
+            (str "#" chat-name)
+            chat-name)])
        (if @group-chat
          [group-last-activity {:contacts   @contacts
+                               :public?    @public?
                                :sync-state @sync-state}]
          [last-activity {:online-text (online-text @contact @chat-id)
                          :sync-state  @sync-state}])])))
