@@ -70,11 +70,11 @@
                 :height 13}
    :handler    #(dispatch [:show-group-settings])})
 
-(defn group-chat-items [members]
-  [(item-members members)
-   item-search
-   item-notifications
-   item-settings])
+(defn group-chat-items [members public?]
+  (into (if public? [] [(item-members members)])
+        [item-search
+         item-notifications
+         item-settings]))
 
 (defn user-chat-items [chat-id]
   [(item-user chat-id)
@@ -114,21 +114,22 @@
         subtitle])]]])
 
 (defn actions-list-view []
-  (let [{:keys [group-chat chat-id]}
-        (subscribe [:chat-properties [:group-chat :chat-id]])
+  (let [{:keys [group-chat chat-id public?]}
+        (subscribe [:chat-properties [:group-chat :chat-id :public?]])
         members (subscribe [:current-chat-contacts])
         status-bar-height (get-in platform-specific [:component-styles :status-bar :default :height])]
-    (when-let [actions (if @group-chat
-                         (group-chat-items @members)
-                         (user-chat-items @chat-id))]
-      [view (merge
-              (st/actions-wrapper status-bar-height)
-              (get-in platform-specific [:component-styles :actions-list-view]))
-       [view st/actions-separator]
-       [view st/actions-view
-        (for [action actions]
-          (if action
-            ^{:key action} [action-view action]))]])))
+    (fn []
+      (when-let [actions (if @group-chat
+                           (group-chat-items @members @public?)
+                           (user-chat-items @chat-id))]
+        [view (merge
+                (st/actions-wrapper status-bar-height)
+                (get-in platform-specific [:component-styles :actions-list-view]))
+         [view st/actions-separator]
+         [view st/actions-view
+          (for [action actions]
+            (if action
+              ^{:key action} [action-view action]))]]))))
 
 (defn actions-view []
   [overlay {:on-click-outside #(dispatch [:set-chat-ui-props :show-actions? false])}

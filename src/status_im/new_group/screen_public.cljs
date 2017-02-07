@@ -1,4 +1,4 @@
-(ns status-im.new-group.screen
+(ns status-im.new-group.screen-public
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.resources :as res]
@@ -22,53 +22,44 @@
             [cljs.spec :as s]))
 
 (defview new-group-toolbar []
-  [new-chat-name [:get :new-chat-name]]
-  (let [create-btn-enabled? (s/valid? ::v/name new-chat-name)]
+  [topic [:get :public-group/topic]]
+  (let [create-btn-enabled? (s/valid? ::v/topic topic)]
     [view
      [status-bar]
      [toolbar
-      {:title   (label :t/new-group-chat)
+      {:title   (label :t/new-public-group-chat)
        :actions [{:image   {:source res/v                   ;; {:uri "icon_search"}
                             :style  (st/toolbar-icon create-btn-enabled?)}
                   :handler (when create-btn-enabled?
-                             #(dispatch [:create-new-group new-chat-name]))}]}]]))
+                             #(dispatch [:create-new-public-group topic]))}]}]]))
 
 (defview group-name-input []
-  [new-chat-name [:get :new-chat-name]]
+  [topic [:get :public-group/topic]]
   [view
    [text-field
-    {:error          (cond
-                       (not (s/valid? ::v/not-empty-string new-chat-name))
-                       (label :t/empty-group-chat-name)
-                       (not (s/valid? ::v/not-illegal-name new-chat-name))
-                       (label :t/illegal-group-chat-name))
-     :wrapper-style  st/group-chat-name-wrapper
-     :error-color    color-blue
-     :line-color     separator-color
-     :label-hidden?  true
-     :input-style    st/group-chat-name-input
-     :auto-focus     true
-     :on-change-text #(dispatch [:set :new-chat-name %])
-     :value          new-chat-name}]])
+    {:error           (cond
+                        (not (s/valid? ::v/not-empty-string topic))
+                        (label :t/empty-topic)
 
-(defview new-group []
-  [contacts [:all-added-contacts]]
+                        (not (s/valid? ::v/topic topic))
+                        (label :t/topic-format))
+     :wrapper-style   st/group-chat-name-wrapper
+     :error-color     color-blue
+     :line-color      separator-color
+     :label-hidden?   true
+     :input-style     st/group-chat-topic-input
+     :auto-focus      true
+     :on-change-text  #(dispatch [:set :public-group/topic %])
+     :value           topic
+     :validator       #(re-matches #"[a-z\-]*" %)
+     :auto-capitalize :none}]
+   [text {:style st/topic-hash} "#"]])
+
+(defn new-public-group []
   [view st/new-group-container
    [new-group-toolbar]
    [view st/chat-name-container
     [text {:style st/members-text
            :font  :medium}
-     (label :t/group-chat-name)]
-    [group-name-input]
-    [text {:style st/members-text
-           :font  :medium}
-     (label :t/members-title)]
-    #_[touchable-highlight {:on-press (fn [])}
-     [view st/add-container
-      [icon :add_gray st/add-icon]
-      [text {:style st/add-text} (label :t/add-members)]]]
-    [list-view
-     {:dataSource (to-datasource contacts)
-      :renderRow  (fn [row _ _]
-                    (list-item [new-group-contact row]))
-      :style      st/contacts-list}]]])
+     (label :t/public-group-topic)]
+    [group-name-input]]])

@@ -7,7 +7,9 @@
             [clojure.string :as s]
             [status-im.utils.handlers :as u]
             [status-im.utils.random :as random]
-            [taoensso.timbre :refer-macros [debug]]))
+            [taoensso.timbre :refer-macros [debug]]
+            [taoensso.timbre :as log]
+            [status-im.navigation.handlers :as nav]))
 
 (defn deselect-contact
   [db [_ id]]
@@ -44,7 +46,7 @@
                          :group-chat  true
                          :group-admin current-public-key
                          :is-active   true
-                         :timestamp   (.getTime (js/Date.))
+                         :timestamp   (random/timestamp)
                          :contacts    contacts})))
 
 (defn add-chat
@@ -91,6 +93,42 @@
       ((after show-chat!))
       ((after start-listen-group!))))
 
+(register-handler :create-new-public-group
+  (after (fn [_ [_ topic]]
+           (dispatch [:navigation-replace :chat topic])))
+  (u/side-effect!
+    (fn [db [_ topic]]
+      (let [exists? (boolean (get-in db [:chats topic]))
+            group   {:chat-id     topic
+                     :name        topic
+                     :color       default-chat-color
+                     :group-chat  true
+                     :public?     true
+                     :is-active   true
+                     :timestamp   (random/timestamp)}]
+        (when-not exists?
+          (dispatch [::add-public-group group])
+          (dispatch [::save-public-group group])
+          (dispatch [::start-watching-group topic]))))))
+
+(register-handler ::add-public-group
+  (fn [db [_ {:keys [chat-id] :as group}]]
+    (assoc-in db [:chats chat-id] group)))
+
+(register-handler ::save-public-group
+  (u/side-effect!
+    (fn [_ [_ group]]
+      (chats/save group))))
+
+(register-handler ::start-watching-group
+  (u/side-effect!
+    (fn [{:keys [web3 current-public-key]} [_ topic]]
+      (protocol/start-watching-group!
+        {:web3     web3
+         :group-id topic
+         :identity current-public-key
+         :callback #(dispatch [:incoming-message %1 %2])}))))
+
 (register-handler :group-chat-invite-received
   (u/side-effect!
     (fn [{:keys [current-public-key web3]}
@@ -122,3 +160,7 @@
                :identity current-public-key
                :keypair  keypair
                :callback #(dispatch [:incoming-message %1 %2])})))))))
+
+(defmethod nav/preload-data! :new-public-group
+  [db]
+  (dissoc db :public-group/topic))

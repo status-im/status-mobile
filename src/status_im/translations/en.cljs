@@ -27,6 +27,7 @@
    :members-active                        {:one   "1 member, 1 active"
                                            :other "{{count}} members, {{count}} active"
                                            :zero  "no members"}
+   :public-group-status                   "Public"
    :active-online                         "Online"
    :active-unknown                        "Unknown"
    :available                             "Available"
@@ -119,6 +120,10 @@
    :chats                                 "Chats"
    :new-chat                              "New chat"
    :new-group-chat                        "New group chat"
+   :new-public-group-chat                 "Join public group chat"
+   :empty-topic                           "Empty topic"
+   :topic-format                          "Wrong format [a-z0-9\\-]+"
+   :public-group-topic                    "Topic"
 
    ;discover
    :discover                              "Discover"

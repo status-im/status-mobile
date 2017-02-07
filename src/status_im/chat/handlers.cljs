@@ -511,17 +511,18 @@
   (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
   (u/side-effect!
     (fn [{:keys [web3 current-chat-id chats current-public-key]} _]
-      (let [{:keys [public-key private-key]} (chats current-chat-id)]
+      (let [{:keys [public-key private-key public?]} (chats current-chat-id)]
         (protocol/stop-watching-group!
           {:web3     web3
            :group-id current-chat-id})
-        (protocol/leave-group-chat!
-          {:web3     web3
-           :group-id current-chat-id
-           :keypair  {:public  public-key
-                      :private private-key}
-           :message  {:from       current-public-key
-                      :message-id (random/id)}}))
+        (when-not public?
+          (protocol/leave-group-chat!
+            {:web3     web3
+             :group-id current-chat-id
+             :keypair  {:public  public-key
+                        :private private-key}
+             :message  {:from       current-public-key
+                        :message-id (random/id)}})))
       (dispatch [:remove-chat current-chat-id]))))
 
 (register-handler :remove-chat
@@ -563,12 +564,13 @@
   [{:keys [web3 current-public-key chats]}
    [_ {:keys [from chat-id message-id]}]]
   (when-not (console? chat-id)
-    (let [{:keys [group-chat]} (chats chat-id)]
-      (protocol/send-seen! {:web3    web3
-                            :message {:from       current-public-key
-                                      :to         from
-                                      :group-id   (when group-chat chat-id)
-                                      :message-id message-id}}))))
+    (let [{:keys [group-chat public?]} (chats chat-id)]
+      (when-not public?
+        (protocol/send-seen! {:web3    web3
+                              :message {:from       current-public-key
+                                        :to         from
+                                        :group-id   (when group-chat chat-id)
+                                        :message-id message-id}})))))
 (register-handler :send-seen!
   [(after (fn [_ [_ {:keys [message-id]}]]
             (messages/update {:message-id     message-id
@@ -579,7 +581,7 @@
 
 (defn send-clock-value-request!
   [{:keys [web3 current-public-key]} [_ {:keys [message-id from]}]]
-  (protocol/send-clock-value-request! {:web3 web3
+  (protocol/send-clock-value-request! {:web3    web3
                                        :message {:from       current-public-key
                                                  :to         from
                                                  :message-id message-id}}))
@@ -605,9 +607,9 @@
 
 (register-handler :send-clock-value!
   (u/side-effect!
-   (fn [db [_ to message-id]]
-     (let [{:keys [clock-value]} (messages/get-by-id message-id)]
-       (send-clock-value! db to message-id clock-value)))))
+    (fn [db [_ to message-id]]
+      (let [{:keys [clock-value]} (messages/get-by-id message-id)]
+        (send-clock-value! db to message-id clock-value)))))
 
 (register-handler :set-web-view-url
   (fn [{:keys [current-chat-id] :as db} [_ url]]
@@ -663,7 +665,7 @@
 
 (register-handler :update-message-overhead!
   (u/side-effect!
-   (fn [_ [_ chat-id network-status]]
-     (if (= network-status :offline)
-       (chats/inc-message-overhead chat-id)
-       (chats/reset-message-overhead chat-id)))))
+    (fn [_ [_ chat-id network-status]]
+      (if (= network-status :offline)
+        (chats/inc-message-overhead chat-id)
+        (chats/reset-message-overhead chat-id)))))

@@ -20,7 +20,7 @@
                            :additional-height 0}
    :chat                  {:new-message {:border-top-color styles/color-transparent
                                          :border-top-width 0.5}}
-   :discover             {:subtitle {:color     styles/color-gray2
+   :discover              {:subtitle {:color     styles/color-gray2
                                       :font-size 14}
                            :popular  {:border-radius 1
                                       :margin-top    2
@@ -72,14 +72,17 @@
 ;; Structure to be exported
 
 (def platform-specific
-  {:component-styles  component-styles
-   :fonts             fonts
-   :list-selection-fn show-dialog
-   :tabs              {:tab-shadows? true}
-   :chats             {:action-button?       true
-                       :new-chat-in-toolbar? false}
-   :contacts          {:action-button?          true
-                       :new-contact-in-toolbar? false
-                       :uppercase-subtitles?    false
-                       :group-block-shadows?    true}
-   :discover         {:uppercase-subtitles? false}})
+  {:component-styles             component-styles
+   :fonts                        fonts
+   :list-selection-fn            show-dialog
+   :tabs                         {:tab-shadows? true}
+   :chats                        {:action-button?       true
+                                  :new-chat-in-toolbar? false}
+   :contacts                     {:action-button?          true
+                                  :new-contact-in-toolbar? false
+                                  :uppercase-subtitles?    false
+                                  :group-block-shadows?    true}
+   :discover                     {:uppercase-subtitles? false}
+   :public-group-icon-container  {:margin-top 4}
+   :private-group-icon-container {:margin-top 6}
+   :public-group-chat-hash-style {:top 10 :left 4}})

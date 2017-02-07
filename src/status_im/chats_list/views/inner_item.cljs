@@ -77,24 +77,34 @@
       unviewed-messages]]))
 
 (defn chat-list-item-inner-view [{:keys [chat-id name color last-message
-                                         online group-chat contacts] :as chat}]
+                                         online group-chat contacts public?]
+                                  :as chat}]
   (let [last-message (or (first (sort-by :clock-value > (:messages chat)))
                          last-message)
         name         (or (get-contact-translated chat-id :name name)
-                         (generate-gfy))]
+                         (generate-gfy))
+        private-group? (and group-chat (not public?))
+        public-group?  (and group-chat public?)]
     [view st/chat-container
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/item-container
       [view st/name-view
-       [text {:style st/name-text
-              :font  :medium}
-        (if (str/blank? name)
-          (generate-gfy)
-          (truncate-str name 30))]
-       (when group-chat
-         [icon :group st/group-icon])
-       (when group-chat
+       (when public-group?
+         [view st/public-group-icon-container
+          [icon :public_group st/public-group-icon]])
+       (when private-group?
+         [view st/private-group-icon-container
+          [icon :private_group st/private-group-icon]])
+       (let [chat-name (if (str/blank? name)
+                         (generate-gfy)
+                         (truncate-str name 30))]
+         [text {:style st/name-text
+                :font  :medium}
+          (if public-group?
+            (str "#" chat-name)
+            chat-name)])
+       #_(when private-group?
          [text {:style st/memebers-text}
           (label-pluralize (inc (count contacts)) :t/members)])]
       [message-content-text last-message]]

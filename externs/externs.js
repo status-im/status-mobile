@@ -202,5 +202,14 @@ var TopLevel = {
 "IBGLog": function() {},
 "getCardId": function() {},
 "readTag": function() {},
-"writeTag": function() {}
+"writeTag": function() {},
+"Error": function() {},
+"Linking": function() {},
+"reload": function() {},
+"stop": function() {},
+"toLocaleString": function() {},
+"openURL": function() {},
+"Number" : function () {},
+"toAscii" : function () {},
+"toNumber" : function () {}
 };

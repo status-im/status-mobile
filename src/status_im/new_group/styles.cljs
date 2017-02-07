@@ -2,7 +2,8 @@
   (:require [status-im.components.styles :refer [color-white
                                                  color-blue
                                                  text1-color
-                                                 text2-color]]))
+                                                 text2-color]]
+            [status-im.utils.platform :refer [platform-specific]]))
 
 (defn toolbar-icon [enabled?]
   {:width   20
@@ -18,8 +19,20 @@
   {:margin-left 16})
 
 (def group-chat-name-input
-  {:font-size  14
-   :color      text1-color})
+  {:font-size 14
+   :color     text1-color})
+
+(def group-chat-topic-input
+  {:font-size    14
+   :color        text1-color
+   :padding-left 13})
+
+(def topic-hash
+  (merge group-chat-name-input
+         {:width    10
+          :height   16
+          :position :absolute}
+         (get-in platform-specific [:public-group-chat-hash-style])))
 
 (def group-chat-name-wrapper
   {:padding-top 0})
@@ -52,10 +65,10 @@
   {:background-color :white})
 
 (def contact-container
-  {:flex-direction :row
+  {:flex-direction  :row
    :justify-content :center
-   :align-items :center
-   :height         56})
+   :align-items     :center
+   :height          56})
 
 (def contact-item-checkbox
   {:outer-size  20

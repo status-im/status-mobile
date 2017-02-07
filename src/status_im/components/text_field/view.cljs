@@ -34,11 +34,12 @@
                     :on-focus          #()
                     :on-blur           #()
                     :on-change-text    #()
-                    :on-change         #()})
+                    :on-change         #()
+                    :auto-capitalize   :sentences})
 
 (defn field-animation [{:keys [top to-top font-size to-font-size
                                line-width to-line-width]}]
-  (let [duration (:label-animation-duration config)
+  (let [duration  (:label-animation-duration config)
         animation (anim/parallel [(anim/timing top {:toValue  to-top
                                                     :duration duration})
                                   (anim/timing font-size {:toValue  to-font-size
@@ -101,10 +102,14 @@
                 label-font-size
                 line-width
                 current-value
-                max-line-width]} (r/state component)
+                max-line-width
+                valid-value
+                temp-value
+                max-length]} (r/state component)
         {:keys [wrapper-style input-style label-hidden? line-color focus-line-color secure-text-entry
-                label-color error-color error label value on-focus on-blur
-                on-change-text on-change on-end-editing editable placeholder]} (merge default-props (r/props component))
+                label-color error-color error label value on-focus on-blur validator auto-focus
+                on-change-text on-change on-end-editing editable placeholder auto-capitalize]}
+        (merge default-props (r/props component))
         line-color       (if error error-color line-color)
         focus-line-color (if error error-color focus-line-color)
         label-color      (if (and error (not float-label?)) error-color label-color)
@@ -118,6 +123,7 @@
                   :placeholder       (or placeholder "")
                   :editable          editable
                   :secure-text-entry secure-text-entry
+                  :auto-capitalize   auto-capitalize
                   :on-focus          #(on-input-focus {:component component
                                                        :animation {:top           label-top
                                                                    :to-top        (:label-top config)
@@ -137,21 +143,34 @@
                                                       :onBlur    on-blur})
                   :on-change-text    (fn [text]
                                        (r/set-state component {:current-value text})
-                                       (on-change-text text))
+                                       (if (or (not validator) (validator text))
+                                         (do
+                                           (r/set-state component {:valid-value text
+                                                                   :temp-value  nil})
+                                           (on-change-text text))
+                                         (r/set-state component {:temp-value valid-value
+                                                                 :max-length (count valid-value)})))
                   :on-change         #(on-change %)
                   :default-value     value
+                  :value             temp-value
+                  :max-length        max-length
                   :on-submit-editing #(.blur @input-ref)
-                  :on-end-editing    (when on-end-editing
-                                       on-end-editing)}]
+                  :on-end-editing    (when on-end-editing on-end-editing)
+                  :auto-focus        (true? auto-focus)}]
      [view {:style    (st/underline-container line-color)
             :onLayout #(r/set-state component {:max-line-width (get-width %)})}
       [animated-view {:style (st/underline focus-line-color line-width)}]]
      [text {:style (st/error-text error-color)} error]]))
 
 (defn text-field [_ _]
-  (let [component-data {:get-initial-state            get-initial-state
-                        :component-will-mount         component-will-mount
-                        :display-name                 "text-field"
-                        :reagent-render               reagent-render}]
+  (let [component-data {:get-initial-state    get-initial-state
+                        :component-will-mount component-will-mount
+                        :display-name         "text-field"
+                        :reagent-render       reagent-render
+                        :component-did-update (fn [comp]
+                                                (let [{:keys [temp-value]} (r/state comp)]
+                                                  (when temp-value
+                                                    (r/set-state comp {:temp-value nil
+                                                                       :max-length nil}))))}]
     ;(log/debug "Creating text-field component: " data)
     (r/create-class component-data)))
