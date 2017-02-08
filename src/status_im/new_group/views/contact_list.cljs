@@ -15,17 +15,18 @@
 
 (defn contact-list-toolbar [contacts-count show-search?]
   (toolbar-with-search
-    {:show-search?       show-search?
-     :search-key         :new-group-contact-list
-     :title              (str (label :t/new-group) " " contacts-count)
+    {:show-search?       (= show-search? :contact-group-list)
+     :search-key         :contact-group-list
+     :title              (str (label :t/new-group) " (" contacts-count ")")
      :search-placeholder (label :t/search-for)}))
 
-(defview new-group-contact-list []
-  [contacts [:all-added-contacts]
-   selected-contacts-count [:selected-contacts-count]]
+(defview contact-group-list []
+  [contacts [:filtered-contacts] ;;TODO works strange with the toggle selection
+   selected-contacts-count [:selected-contacts-count]
+   show-search [:get-in [:toolbar-search :show]]]
   [view st/new-group-container
    [status-bar]
-   [contact-list-toolbar selected-contacts-count false]
+   [contact-list-toolbar selected-contacts-count show-search]
    [view {:flex 1}
     [list-view
      {:dataSource (to-datasource contacts)
@@ -33,4 +34,4 @@
                     (list-item [new-group-contact row]))
       :style      st/contacts-list}]]
    (when (pos? selected-contacts-count)
-     [confirm-button (label :t/next) #(dispatch [:navigate-to :new-contacts-group])])])
+     [confirm-button (label :t/next) #(dispatch [:navigate-to :contact-group])])])

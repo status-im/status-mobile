@@ -57,9 +57,8 @@
    :align-items :center
    :height         56})
 
-(def contact-item-checkbox
-  {:outer-size  20
-   :filter-size 16
-   :inner-size  12
-   :outer-color color-blue
-   :inner-color color-blue})
+(def toggle-container
+  {:width          56
+   :height         56
+   :alignItems     :center
+   :justifyContent :center})

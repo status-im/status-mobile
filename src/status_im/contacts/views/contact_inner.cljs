@@ -10,10 +10,8 @@
    [contact-icon-contacts-tab contact]])
 
 (defn contact-inner-view
-  ([contact]
-   (contact-inner-view contact nil))
-  ([{:keys [whisper-identity name] :as contact} info]
-   [view st/contact-inner-container
+  ([{:keys [info style] {:keys [whisper-identity name] :as contact} :contact}]
+   [view (merge st/contact-inner-container style)
     [contact-photo contact]
     [view st/info-container
      [text {:style           st/name-text

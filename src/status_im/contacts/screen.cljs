@@ -27,34 +27,23 @@
             [status-im.components.styles :refer [color-blue
                                                  create-icon]]))
 
-
 (def contacts-limit 5)
 
-(defn toolbar-view [show-search?]
+(defn toolbar-view []
   (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
-        actions      [(act/opts #(dispatch [:open-contacts-menu (:list-selection-fn platform-specific) new-contact?]))]]
-    (toolbar-with-search
-     {:show-search?       show-search?
-      :search-key         :contact-list
-      :title              (label :t/contacts)
-      :search-placeholder (label :t/search-for)
-      :nav-action         (act/hamburger open-drawer)
-      :actions            actions
-      :on-search-submit   (fn [text]
-                            (when-not (str/blank? text)
-                              (dispatch [:set :contacts-filter #(let [name (-> (or (:name %) "")
-                                                                               (str/lower-case))
-                                                                      text (str/lower-case text)]
-                                                                  (not= (.indexOf name text) -1))])
-                              (dispatch [:set :contact-list-search-text text])
-                              (dispatch [:navigate-to :contact-list-search-results])))})))
+        actions      [(act/search #(dispatch [:navigate-to :group-contacts nil :show-search]))
+                      (act/opts #(dispatch [:open-contacts-menu (:list-selection-fn platform-specific) new-contact?]))]]
+    [toolbar {:style          tst/toolbar-with-search
+              :title          (label :t/contacts)
+              :nav-action     (act/hamburger open-drawer)
+              :actions        actions}]))
 
 (defn toolbar-edit []
   [toolbar {:style          tst/toolbar-with-search ;;TODO: maybe better use new style
             :nav-action     (act/back #(dispatch [:set-in [:contacts-ui-props :edit?] false]))
             :title          (label :t/edit-contacts)}])
 
-(defn subtitle-view [subtitle contacts-count edit?]
+(defn subtitle-view [subtitle contacts-count group extended?]
   [view (get-in platform-specific [:component-styles :contacts :group-header])
    [text {:style      (merge st/contact-group-subtitle
                              (get-in platform-specific [:component-styles :contacts :subtitle]))
@@ -66,9 +55,9 @@
           :uppercase? (get-in platform-specific [:contacts :uppercase-subtitles?])
           :font       :medium}
     (str contacts-count)]
-   (when edit?
+   (when extended?
      [touchable-highlight
-      {:on-press #()} ;;TODO: navigate to edit group screen
+      {:on-press #(dispatch [:open-contact-group-menu (:list-selection-fn platform-specific) group])}
       [view st/more-btn
        [icon :options_gray st/options-icon]]])])
 
@@ -93,7 +82,7 @@
   (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])]
     [view st/contact-group
      (when subtitle
-       [subtitle-view subtitle contacts-count edit?])
+       [subtitle-view subtitle contacts-count group edit?])
      (when (and subtitle shadows?)
          [group-top-view])
      [view
@@ -115,10 +104,10 @@
      (when shadows?
        [group-bottom-view])]))
 
-(defview contact-group-view-new [{:keys [group-id name] :as group} edit? click-handler]
+(defview contact-group-view-new [{:keys [name] :as group} edit? click-handler]
   [contacts [:all-added-group-contacts group]
    contacts-count [:all-added-group-contacts-count group]]
-  [contact-group-view contacts contacts-count name group-id edit? click-handler])
+  [contact-group-view contacts contacts-count name group edit? click-handler])
 
 (defn contacts-action-button []
   [action-button {:button-color color-blue
@@ -137,15 +126,13 @@
   [contacts             [:get-added-contacts-with-limit contacts-limit]
    contacts-count       [:added-contacts-count]
    click-handler        [:get :contacts-click-handler]
-   show-search          [:get-in [:toolbar-search :show]]
    edit?                [:get-in [:contacts-ui-props :edit?]]
    groups               [:get :groups]
    show-toolbar-shadow? (r/atom false)]
   [view st/contacts-list-container
    (if edit?
      [toolbar-edit]
-     [toolbar-view (and current-view?
-                      (= show-search :contact-list))])
+     [toolbar-view])
    [view {:style st/toolbar-line}]
    (when @show-toolbar-shadow?
      [linear-gradient {:style  st/contact-group-header-gradient-bottom

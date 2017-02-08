@@ -190,6 +190,7 @@
    :new-group                             "New Group"
    :reorder-groups                        "Reorder Group"
    :group-name                            "Group name"
+   :edit-group                            "Edit Group"
 
    ;participants
    :add-participants                      "Add Participants"

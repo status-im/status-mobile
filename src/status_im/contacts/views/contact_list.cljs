@@ -17,8 +17,7 @@
             [status-im.contacts.styles :as st]
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]
-            [status-im.utils.platform :refer [platform-specific]]
-            [status-im.contacts.views.contact-inner :refer [contact-inner-view]]))
+            [status-im.utils.platform :refer [platform-specific]]))
 
 (defn new-group-chat-view []
   [touchable-highlight

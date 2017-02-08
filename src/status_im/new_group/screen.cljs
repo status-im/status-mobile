@@ -75,19 +75,20 @@
                     (list-item [new-group-contact row]))
       :style      st/contacts-list}]]])
 
-(defview new-contacts-group-toolbar []
+(defview new-contacts-group-toolbar [group-name]
   [view
    [status-bar]
    [toolbar
-    {:title   (label :t/new-group)}]])
+    {:title (or group-name (label :t/new-group))}]])
 
-;;TODO: should be refactored into one common function for group chats and groups
-(defview new-contacts-group []
+;;TODO: should be refactored into one common function for group chats and contact groups
+(defview contact-group []
   [contacts [:selected-group-contacts]
-   new-group-name [:get :new-chat-name]]
+   new-group-name [:get :new-chat-name]
+   group [:get :contact-group]]
   (let [save-btn-enabled? (s/valid? ::v/name new-group-name)]
     [view st/new-group-container
-     [new-contacts-group-toolbar]
+     [new-contacts-group-toolbar (:name group)]
      [view st/chat-name-container
       [text {:style st/members-text
              :font  :medium}

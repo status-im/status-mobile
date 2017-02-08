@@ -16,12 +16,22 @@
             [cljs.reader :refer [read-string]]))
 
 (defmethod nav/preload-data! :group-contacts
+  [db [_ _ group show-search]]
+  ;;TODO need a more elegant way to do
+  (let [db' (if group
+              (assoc db :contacts-group group)
+              db)]
+    (if show-search
+        (assoc-in db' [:toolbar-search :show] :contact-list)
+        db')))
+
+(defmethod nav/preload-data! :contact-group
   [db [_ _ group]]
-  (dissoc
-    (if group
-      (assoc db :contacts-group group)
-      db)
-    :contacts-filter))
+  (if group
+    (assoc db :contact-group group
+              :selected-contacts (into #{} (map :identity (:contacts group)))
+              :new-chat-name (:name group))
+    db))
 
 (defmethod nav/preload-data! :new-group
   [db _]
@@ -33,8 +43,7 @@
   [db [_ _ click-handler]]
   (-> db
       (assoc-in [:toolbar-search :show] nil)
-      (assoc :contacts-click-handler click-handler
-             :contacts-filter nil)))
+      (assoc :contacts-click-handler click-handler)))
 
 (register-handler :remove-contacts-click-handler
   (fn [db]
@@ -300,6 +309,17 @@
                           :cancel-text (label :t/cancel)}))))
 
 (register-handler
+  :open-contact-group-menu
+  (u/side-effect!
+    (fn [_ [_ list-selection-fn group]]
+      (list-selection-fn {:options [(label :t/edit-group)]
+                          :callback (fn [index]
+                                      (case index
+                                        0 (dispatch [:navigate-to :contact-group group])
+                                        :default))
+                          :cancel-text (label :t/cancel)}))))
+
+(register-handler
   :open-contacts-menu
   (u/side-effect!
     (fn [_ [_ list-selection-fn new-contact?]]
@@ -312,7 +332,7 @@
                             :callback (fn [index]
                                         (case (+ d index)
                                           0 (dispatch [:navigate-to :new-contact])
-                                          1 (dispatch [:navigate-to :new-group-contact-list])
+                                          1 (dispatch [:navigate-to :contact-group-list])
                                           2 (dispatch [:set-in [:contacts-ui-props :edit?] true])
                                           :default))
                             :cancel-text (label :t/cancel)})))))

@@ -23,11 +23,12 @@
   [chat [:get-chat whisper-identity]]
   [view st/contact-separator-container
    [touchable-highlight
-    {:on-press #((or on-click on-press) contact)}
+    (when-not extended?
+      {:on-press #((or on-click on-press) contact)})
     [view st/contact-container
      (when letter?
        [letter-view letter])
-     [contact-inner-view contact info]
+     [contact-inner-view {:contact contact :info info}]
      (when extended?
        [touchable-highlight
         {:on-press #((or more-on-click more-on-press) contact)}
