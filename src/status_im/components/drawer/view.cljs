@@ -103,10 +103,6 @@
            [view st/menu-items-container
             [menu-item {:name    (label :t/profile)
                         :handler #(dispatch [:navigate-to :my-profile])}]
-            [menu-item {:name    (label :t/settings)
-                        :handler (fn []
-                                   ;; TODO not implemented
-                                   )}]
             [menu-item {:name    (label :t/discover)
                         :handler #(dispatch [:navigate-to-tab :discover])}]
             [menu-item {:name    (label :t/contacts)
