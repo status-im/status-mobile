@@ -9,7 +9,7 @@
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.styles :refer [color-blue
                                                  separator-color]]
             [status-im.components.status-bar :refer [status-bar]]
@@ -36,7 +36,7 @@
 (defview group-name-input []
   [new-chat-name [:get :new-chat-name]]
   [view
-   [text-field
+   [text-input-with-label
     {:error          (cond
                        (not (s/valid? ::v/not-empty-string new-chat-name))
                        (label :t/empty-group-chat-name)

@@ -1,4 +1,4 @@
-(ns status-im.components.text-field.styles
+(ns status-im.components.text-input-with-label.styles
   (:require [status-im.utils.platform :refer [platform-specific]]))
 
 

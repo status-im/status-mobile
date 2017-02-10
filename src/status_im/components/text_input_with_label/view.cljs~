@@ -1,4 +1,4 @@
-(ns status-im.components.text-field.view
+(ns status-im.components.text-input-with-label.view
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]

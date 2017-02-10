@@ -7,7 +7,7 @@
                                                 linear-gradient
                                                 touchable-highlight]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-gradient
@@ -38,7 +38,7 @@
                 error
                 (label :t/enter-valid-passphrase))]
     [view
-     [text-field
+     [text-input-with-label
       {:value          passphrase
        :error          error
        :error-color    color-blue
@@ -56,7 +56,7 @@
                 error
                 (label :t/enter-valid-password))]
     [view
-     [text-field
+     [text-input-with-label
       {:value             password
        :secure-text-entry true
        :error             error

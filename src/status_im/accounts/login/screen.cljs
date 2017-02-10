@@ -12,7 +12,7 @@
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :refer [toolbar-title-container
                                                          toolbar-title-text]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.styles :refer [color-white
                                                  icon-search
                                                  button-input]]
@@ -27,7 +27,7 @@
 
 (defview address-input [address]
   [view
-   [text-field
+   [text-input-with-label
     {:value          address
      :editable       false
      :label          (label :t/address)
@@ -39,7 +39,7 @@
 
 (defview password-input [error]
   [view
-   [text-field
+   [text-input-with-label
     {:editable          true
      :error             (when (pos? (count error)) (label :t/wrong-password))
      :error-color       :white
