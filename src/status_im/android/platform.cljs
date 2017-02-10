@@ -17,6 +17,18 @@
                                          :color     styles/color-black}}
    :sized-text            {:margin-top        0
                            :additional-height 0}
+   :chat-list             {:list-container               {:background-color styles/color-light-gray}
+                           :chat-container               {:height 76}
+                           :chat-icon-container          {:height 76}
+                           :chat-info-container          {:margin-top 16}
+                           :item-lower-container         {:margin-top 4}
+                           :chat-name                    {:height 24}
+                           :last-message                 {:font-size  14
+                                                          :height     24}
+                           :last-message-timestamp       {:font-size 14}
+                           :unread-count                 {:top 2}
+                           :public-group-icon-container  {:margin-top 4}
+                           :private-group-icon-container {:margin-top 4}}
    :chat                  {:new-message {:border-top-color styles/color-transparent
                                          :border-top-width 0.5}}
    :discover              {:subtitle {:color     styles/color-gray2
@@ -59,11 +71,11 @@
    :toolbar-title-container {:padding-left   16}})
 
 (def fonts
-  {:light         {:font-family "sans-serif-light"}
-   :default       {:font-family "sans-serif"}
-   :medium        {:font-family "sans-serif-medium"}
+  {:light         {:font-family "Roboto-Light"}
+   :default       {:font-family "Roboto-Regular"}
+   :medium        {:font-family "Roboto-Medium"}
 
-   :toolbar-title {:font-family "sans-serif"}})
+   :toolbar-title {:font-family "Roboto-Regular"}})
 
 ;; Dialogs
 
@@ -85,12 +97,11 @@
    :list-selection-fn            show-dialog
    :tabs                         {:tab-shadows? true}
    :chats                        {:action-button?       true
-                                  :new-chat-in-toolbar? false}
+                                  :new-chat-in-toolbar? false
+                                  :render-separator?    false}
    :contacts                     {:action-button?          true
                                   :new-contact-in-toolbar? false
                                   :uppercase-subtitles?    false
                                   :group-block-shadows?    true}
    :discover                     {:uppercase-subtitles? false}
-   :public-group-icon-container  {:margin-top 4}
-   :private-group-icon-container {:margin-top 6}
    :public-group-chat-hash-style {:top 10 :left 4}})

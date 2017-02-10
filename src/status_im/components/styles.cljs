@@ -18,18 +18,17 @@
 (def color-red "red")
 (def color-light-red "#e86363")
 
-(def color-separator "#D6D6D6")
-
 (def text1-color color-black)
 (def text1-disabled-color "#555555")
 (def text2-color color-gray)
 (def text3-color color-blue)
+(def text4-color color-gray4)
 (def online-color color-blue)
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
 (def selected-message-color "#E4E9ED")
 (def selected-contact-color color-light-blue2)
-(def separator-color color-gray4)
+(def separator-color color-gray5)
 (def default-chat-color color-purple)
 
 (def flex
