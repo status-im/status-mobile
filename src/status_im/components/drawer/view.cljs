@@ -11,7 +11,7 @@
                                                 drawer-layout
                                                 touchable-without-feedback
                                                 touchable-opacity]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.status-view.view :refer [status-view]]
             [status-im.components.drawer.styles :as st]
             [status-im.profile.validations :as v]
@@ -64,7 +64,7 @@
             [view st/user-photo-container
              [ci/chat-icon photo-path {:size 64}]]]
            [view st/name-container
-            [text-field
+            [text-input-with-label
              {:line-color       :white
               :focus-line-color :white
               :placeholder      placeholder

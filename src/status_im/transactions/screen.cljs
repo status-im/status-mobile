@@ -14,7 +14,7 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.toolbar.styles :refer [toolbar-title-container]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.transactions.views.transaction-page :refer [transaction-page]]
             [status-im.transactions.styles :as st]
             [status-im.i18n :refer [label label-pluralize]]
@@ -49,7 +49,7 @@
        (for [transaction transactions]
          [transaction-page transaction]))]]
    [view st/form-container
-    [text-field
+    [text-input-with-label
      {:editable          true
       :error             (when wrong-password? (label :t/wrong-password))
       :error-color       :#ffffff80 #_:#7099e6

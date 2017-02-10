@@ -7,7 +7,7 @@
                                                 list-view
                                                 list-item]]
             [status-im.contacts.views.contact :refer [contact-view]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.toolbar.actions :as act]

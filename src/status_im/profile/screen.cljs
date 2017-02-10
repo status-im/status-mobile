@@ -19,7 +19,7 @@
             [status-im.components.icons.custom-icons :refer [oct-icon]]
             [status-im.components.chat-icon.screen :refer [my-profile-icon]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.selectable-field.view :refer [selectable-field]]
             [status-im.components.status-view.view :refer [status-view]]
             [status-im.components.list-selection :refer [share]]
@@ -89,7 +89,7 @@
              [my-profile-icon {:account {:photo-path photo-path
                                          :name       name}
                                :edit?   edit?}])]
-          [text-field
+          [text-input-with-label
            {:line-color       :white
             :focus-line-color :white
             :editable         edit?

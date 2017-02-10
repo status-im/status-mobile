@@ -7,7 +7,7 @@
                                                 image
                                                 linear-gradient
                                                 touchable-highlight]]
-            [status-im.components.text-field.view :refer [text-field]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
@@ -85,7 +85,7 @@
   (let [error (when-not (str/blank? whisper-identity)
                 (validation-error-message whisper-identity current-account error))]
     [view button-input-container
-     [text-field
+     [text-input-with-label
       {:error          error
        :error-color    color-blue
        :input-style    st/qr-input
