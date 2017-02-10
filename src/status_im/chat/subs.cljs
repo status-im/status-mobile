@@ -239,14 +239,11 @@
 (register-sub :input-margin
   (fn []
     (let [kb-height   (subscribe [:get :keyboard-height])
-          focused     (subscribe [:get :focused])
-          mode        (subscribe [:kb-mode])
           kb-max      (subscribe [:get :keyboard-max-height])
           show-emoji? (subscribe [:chat-ui-props :show-emoji?])]
       (reaction
        (cond @show-emoji? (or @kb-max c/emoji-container-height)
              ios? @kb-height
-             (and @focused (= :pan @mode) (pos? @kb-height)) 20
              :else 0)))))
 
 (register-sub :max-layout-height
