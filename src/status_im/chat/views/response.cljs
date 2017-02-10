@@ -151,10 +151,20 @@
   (when (seq suggestions) suggestions))
 
 (defn response-view []
-  (let [response-height (anim/create-value c/input-height)]
-    [container response-height
-     [request-info response-height]
-     [suggestions-web-view]
-     [response-suggestions-view]
-     [cv/validation-messages]
-     [placeholder]]))
+  (let [response-height (anim/create-value c/input-height)
+        command         (subscribe [:get-chat-command])
+        suggestions     (subscribe [:get-content-suggestions])
+        errors          (subscribe [:validation-errors])
+        custom-errors   (subscribe [:custom-validation-errors])]
+    (fn []
+      (when (or (:fullscreen @command)
+                (= :response (:type @command))
+                (seq @suggestions)
+                (seq @errors)
+                (seq @custom-errors))
+        [container response-height
+         [request-info response-height]
+         [suggestions-web-view]
+         [response-suggestions-view]
+         [cv/validation-messages]
+         [placeholder]]))))
