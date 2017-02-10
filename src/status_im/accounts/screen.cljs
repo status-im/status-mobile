@@ -21,6 +21,7 @@
             [status-im.utils.listview :as lw]
             [status-im.accounts.views.account :refer [account-view]]
             [status-im.i18n :refer [label]]
+            [status-im.accessibility-ids :as id]
             [status-im.accounts.styles :as st]
             [status-im.constants :refer [console-chat-id]]))
 
@@ -74,7 +75,7 @@
           (label :t/recover-access)]]]]
       [view st/add-account-button-container
        [touchable-highlight {:on-press            create-account
-                             :accessibility-label :create-account}
+                             :accessibility-label id/accounts-create-button}
         [view st/add-account-button
          [image {:source {:uri :icon_add_white}
                  :style  st/icon-plus}]

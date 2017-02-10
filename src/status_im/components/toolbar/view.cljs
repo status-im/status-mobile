@@ -11,6 +11,7 @@
                                                  icon-search]]
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :as st]
+            [status-im.accessibility-ids :as id]
             [status-im.utils.platform :refer [platform-specific]]))
 
 (defn toolbar [{title                :title
@@ -31,7 +32,7 @@
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
              [image (:image nav-action)]]]
            [touchable-highlight {:on-press            #(dispatch [:navigate-back])
-                                 :accessibility-label :navigate-back}
+                                 :accessibility-label id/toolbar-back-button}
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
              [image {:source {:uri :icon_back}
                      :style  icon-back}]]]))]
