@@ -1,4 +1,4 @@
-(ns ^:figwheel-always status-im.utils.js-resources
+(ns status-im.utils.js-resources
   (:require-macros [status-im.utils.slurp :refer [slurp]])
   (:require [status-im.utils.types :refer [json->clj]]))
 
