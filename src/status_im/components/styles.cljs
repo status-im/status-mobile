@@ -9,9 +9,10 @@
 (def color-gray2 "#8f838c93")
 (def color-gray3 "#00000040")
 (def color-gray4 "#939ba1")
+(def color-gray5 "#d9dae1")
 (def color-steel "#838b91")
 (def color-white "white")
-(def color-light-blue-transparent "#bbc4cb32")
+(def color-light-blue "#628fe3")
 (def color-light-gray "#EEF2F5")
 (def color-red "red")
 (def color-separator "#D6D6D6")
@@ -24,7 +25,7 @@
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
 (def selected-message-color "#E4E9ED")
-(def separator-color "#0000001f")
+(def separator-color color-gray4)
 (def default-chat-color color-purple)
 
 (def flex
@@ -85,7 +86,7 @@
    :height 52
    :justify-content :center
    :align-items :center
-   :background-color "#628fe3"})
+   :background-color color-light-blue})
 
 (def confirm-button-label
   {:color         color-white

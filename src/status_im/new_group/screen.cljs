@@ -16,6 +16,7 @@
                                                  separator-color]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar-with-search toolbar]]
+            [status-im.utils.platform :refer [platform-specific]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.new-group.views.contact :refer [new-group-contact]]
             [status-im.new-group.styles :as st]
@@ -39,9 +40,7 @@
   [new-chat-name [:get :new-chat-name]]
   [view
    [text-field
-    {:error          (cond
-                       (not (s/valid? ::v/not-empty-string new-chat-name))
-                       (label :t/empty-group-chat-name)
+    {:error          (when
                        (not (s/valid? ::v/not-illegal-name new-chat-name))
                        (label :t/illegal-group-chat-name))
      :wrapper-style  st/group-chat-name-wrapper
@@ -84,29 +83,36 @@
 ;;TODO: should be refactored into one common function for group chats and contact groups
 (defview contact-group []
   [contacts [:selected-group-contacts]
-   new-group-name [:get :new-chat-name]
+   group-name [:get :new-chat-name]
    group [:get :contact-group]]
-  (let [save-btn-enabled? (s/valid? ::v/name new-group-name)]
+  (let [save-btn-enabled? (and (s/valid? ::v/name group-name) (pos? (count contacts)))]
     [view st/new-group-container
      [new-contacts-group-toolbar (:name group)]
      [view st/chat-name-container
-      [text {:style st/members-text
+      [text {:style st/group-name-text
              :font  :medium}
        (label :t/group-name)]
       [group-name-input]
       [text {:style st/members-text
              :font  :medium}
-       (str (label :t/members-title) " " (count contacts))]
-      [touchable-highlight {:on-press (fn [])}
+       (str (label :t/group-members) " " (count contacts))]
+      [touchable-highlight {:on-press #(dispatch [:navigate-forget :contact-group-list])}
        [view st/add-container
-        [icon :add_gray st/add-icon]
+        [icon :add_blue st/add-icon]
         [text {:style st/add-text} (label :t/add-members)]]]]
      [list-view
       {:dataSource (to-datasource contacts)
        :renderRow  (fn [row _ _]
-                     (list-item [contact-view {:contact   row
-                                               :more-on-click #()
-                                               :extended? true}]))
+                     (list-item
+                       ^{:key row}
+                       [contact-view
+                                 {:contact       row
+                                  :more-on-click #(dispatch [:open-edit-group-contact-menu
+                                                             (:list-selection-fn platform-specific)
+                                                             row])
+                                  :extended?     true}]))
        :style      st/contacts-list}]
      (when save-btn-enabled?
-       [confirm-button (label :t/save) #(dispatch [:create-new-group new-group-name])])]))
+       [confirm-button (label :t/save) (if group
+                                         #(dispatch [:update-group-after-edit group group-name])
+                                         #(dispatch [:create-new-group group-name]))])]))

@@ -15,11 +15,6 @@
   {:height           2
    :background-color toolbar-background2})
 
-(def toolbar-line
-  {:height           1
-   :background-color "#c0c6ca"
-   :opacity 0.4})
-
 (def contact-groups
   {:flex             1
    :background-color toolbar-background2})
@@ -139,7 +134,7 @@
 (def contact-inner-container
   {:flex            1
    :flexDirection   :row
-   :height          64
+   :height          56
    :margin-right    16
    :backgroundColor color-white})
 
@@ -163,10 +158,6 @@
    :height         56
    :alignItems     :center
    :justifyContent :center})
-
-(def more-btn-icon
-  {:width  4
-   :height 16})
 
 (def options-icon
   {:width  24

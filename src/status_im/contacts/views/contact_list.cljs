@@ -60,11 +60,9 @@
    (toolbar-with-search
      {:show-search?       (= show-search :contact-list)
       :search-key         :contact-list
-      :title               (label (if-not group
-                                    :t/contacts
-                                    (if (= group :dapps)
-                                      :t/contacts-group-dapps
-                                      :t/contacts-group-new-chat)))
+      :title              (if-not group
+                                  (label :t/contacts)
+                                  (or (:name group) (label :t/contacts-group-new-chat)))
       :search-placeholder (label :t/search-for)
       :actions            (when modal
                             (act/back #(dispatch [:navigate-back])))})])
@@ -98,14 +96,15 @@
                                                       :t/show-qr
                                                       :t/scan-qr))}]])
       (when contacts
-        [list-view {:dataSource          (lw/to-datasource contacts)
-                    :enableEmptySections true
-                    :renderRow           (render-row modal click-handler action params)
-                    :bounces             false
-                    :renderHeader        #(list-item
-                                            [view
-                                             (if show-new-group-chat?
-                                               [new-group-chat-view])
-                                             [view st/spacing-top]])
-                    :renderFooter        #(list-item [view st/spacing-bottom])
-                    :style               st/contacts-list}])]]))
+        [list-view {:dataSource                (lw/to-datasource contacts)
+                    :enableEmptySections       true
+                    :renderRow                 (render-row modal click-handler action params)
+                    :bounces                   false
+                    :keyboardShouldPersistTaps true
+                    :renderHeader              #(list-item
+                                                  [view
+                                                   (if show-new-group-chat?
+                                                     [new-group-chat-view])
+                                                   [view st/spacing-top]])
+                    :renderFooter              #(list-item [view st/spacing-bottom])
+                    :style                     st/contacts-list}])]]))

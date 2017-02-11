@@ -6,6 +6,7 @@
             [status-im.data-store.chats :as chats]
             [status-im.data-store.groups :as groups]
             [clojure.string :as s]
+            [status-im.i18n :refer [label]]
             [status-im.utils.handlers :as u]
             [status-im.utils.random :as random]
             [taoensso.timbre :refer-macros [debug]]))
@@ -44,7 +45,21 @@
       (update :groups conj new-group)
       (assoc :selected-contacts #{})))
 
+(defn update-groups [new-group]
+  (fn [groups]
+    (map #(if (= (:group-id new-group) (:group-id %)) new-group %) groups)))
+
+(defn update-group
+  [{:keys [new-group] :as db} _]
+  (-> db
+      (update :groups (update-groups new-group))
+      (assoc :selected-contacts #{})))
+
 (defn create-group!
+  [{:keys [new-group]} _]
+  (groups/save new-group))
+
+(defn update-group!
   [{:keys [new-group]} _]
   (groups/save new-group))
 
@@ -146,11 +161,49 @@
                :keypair  keypair
                :callback #(dispatch [:incoming-message %1 %2])})))))))
 
-(register-handler :create-new-group
-                  (-> prepare-group
-                      ((enrich add-group))
-                      ((after create-group!))
-                      ((after show-contact-list!))))
+(register-handler
+  :create-new-group
+  (-> prepare-group
+      ((enrich add-group))
+      ((after create-group!))
+      ((after show-contact-list!))))
+
+(defn prepare-update-group
+  [{:keys [selected-contacts] :as db} [_ group group-name]]
+  (let [contacts (mapv #(hash-map :identity %) selected-contacts)
+        group'   (assoc group :name        group-name
+                              :contacts    contacts)]
+    (assoc db :new-group group')))
+
+(register-handler
+  :update-group-after-edit
+  (-> prepare-update-group
+      ((enrich update-group))
+      ((after update-group!))
+      ((after show-contact-list!))))
+
+(register-handler
+  :open-edit-group-contact-menu
+  (u/side-effect!
+    (fn [_ [_ list-selection-fn {:keys [name] :as contact}]]
+      (list-selection-fn {:title name
+                          :options [(label :t/remove-from-group)]
+                          :callback (fn [index]
+                                      (case index
+                                        0 (dispatch [:deselect-contact (:whisper-identity contact)])
+                                        :default))
+                          :cancel-text (label :t/cancel)}))))
+
+(defn update-new-group
+  [{:keys [selected-contacts] :as db} [_ group]]
+  (assoc db :new-group group))
+
+(register-handler
+  :update-group
+  (-> update-new-group
+      ((enrich update-group))
+      ((after update-group!))))
+
 
 (defn save-groups! [{:keys [new-groups]} _]
   (groups/save-all new-groups))

@@ -15,4 +15,5 @@
   (fn [_ _]
     (let [selected-contacts (subscribe [:get :selected-contacts])
           added-contacts (subscribe [:all-added-contacts])]
-      (reaction (filter #(@selected-contacts (:whisper-identity %)) @added-contacts)))))
+      (reaction (do @selected-contacts ;;TODO: doesn't work without this line :(
+                  (filter #(@selected-contacts (:whisper-identity %)) @added-contacts))))))

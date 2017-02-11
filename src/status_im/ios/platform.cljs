@@ -1,6 +1,6 @@
 (ns status-im.ios.platform
   (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+            [status-im.components.toolbar.styles :refer [toolbar-background1]]))
 
 (def component-styles
   {:status-bar            {:default     {:height    20
@@ -8,7 +8,7 @@
                                          :color     styles/color-white}
                            :main        {:height    20
                                          :bar-style "default"
-                                         :color     toolbar-background2}
+                                         :color     toolbar-background1}
                            :transparent {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
@@ -41,13 +41,14 @@
                                       :icon        {:padding-top     0
                                                     :bottom          -4
                                                     :justify-content :flex-end}}}
-   :contacts              {:subtitle  {:color          styles/color-black
-                                       :font-size      16
-                                       :letter-spacing -0.2}
-                           :separator {:margin-left 68
-                                       :height 1
-                                       :background-color "#d9dae1"
-                                       :opacity 0.4}
+   :contacts              {:subtitle     {:color          styles/color-black
+                                          :font-size      16
+                                          :letter-spacing -0.2}
+                           :separator    {:margin-left 68
+                                          :height 1
+                                          :background-color "#d9dae1"
+                                          :opacity 0.4}
+                           :icon-check   {:border-radius 50}
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
                                           :margin-top      24

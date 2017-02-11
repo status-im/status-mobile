@@ -92,11 +92,15 @@
                [contact-view {:contact       contact
                               :extended?     edit?
                               :on-click      (when-not edit? click-handler)
-                              :more-on-click nil}])
+                              :more-on-click (when group
+                                               #(dispatch [:open-group-contact-menu
+                                                           (:list-selection-fn platform-specific)
+                                                           contact
+                                                           group]))}])
              contacts))]
-     (when (<= contacts-limit contacts-count)
+     (when (< contacts-limit contacts-count)
        [view st/show-all
-        [touchable-highlight {:on-press #(dispatch [:navigate-to :group-contacts group])}
+        [touchable-highlight (when-not edit? {:on-press #(dispatch [:navigate-to :group-contacts group])})
          [view
           [text {:style st/show-all-text
                  :font  :medium}
@@ -133,7 +137,6 @@
    (if edit?
      [toolbar-edit]
      [toolbar-view])
-   [view {:style st/toolbar-line}]
    (when @show-toolbar-shadow?
      [linear-gradient {:style  st/contact-group-header-gradient-bottom
                        :colors st/contact-group-header-gradient-bottom-colors}])

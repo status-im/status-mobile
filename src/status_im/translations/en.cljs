@@ -136,7 +136,8 @@
    ;contacts
    :contacts                              "Contacts"
    :new-contact                           "New contact"
-   :remove-contact                        "Remove contact"
+   :delete-contact                        "Delete contact"
+   :remove-from-group                     "Remove from group"
    :edit-contacts                         "Edit contacts"
    :show-all                              "SHOW ALL"
    :contacts-group-dapps                  "ÐApps"
@@ -191,6 +192,7 @@
    :reorder-groups                        "Reorder Group"
    :group-name                            "Group name"
    :edit-group                            "Edit Group"
+   :group-members                         "Group members"
 
    ;participants
    :add-participants                      "Add Participants"

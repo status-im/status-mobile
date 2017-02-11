@@ -18,13 +18,15 @@
    (when letter
      [text {:style st/letter-text} letter])])
 
+;;TODO: maybe it's better to have only one global component contact-view with the types: default, extended and toggle
+;;TODO: at the moment toggle in the other component new-group-contact
 (defview contact-view [{{:keys [whisper-identity letter dapp?] :as contact} :contact
                         :keys [extended? letter? on-click more-on-click info]}]
   [chat [:get-chat whisper-identity]]
-  [view st/contact-separator-container
-   [touchable-highlight
-    (when-not extended?
-      {:on-press #((or on-click on-press) contact)})
+  [touchable-highlight
+   (when-not extended?
+     {:on-press #((or on-click on-press) contact)})
+   [view
     [view st/contact-container
      (when letter?
        [letter-view letter])
@@ -33,5 +35,6 @@
        [touchable-highlight
         {:on-press #((or more-on-click more-on-press) contact)}
         [view st/more-btn
-         [icon :options_gray st/options-icon]]])]]
-   [view (get-in platform-specific [:component-styles :contacts :separator])]])
+         [icon :options_gray st/options-icon]]])]
+    [view st/contact-separator-container
+     [view (get-in platform-specific [:component-styles :contacts :separator])]]]])

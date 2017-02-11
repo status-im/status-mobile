@@ -31,7 +31,8 @@
     [list-view
      {:dataSource (to-datasource contacts)
       :renderRow  (fn [row _ _]
-                    (list-item [new-group-contact row]))
-      :style      st/contacts-list}]]
+                    (list-item ^{:key row} [new-group-contact row]))
+      :style      st/contacts-list
+      :keyboardShouldPersistTaps true}]]
    (when (pos? selected-contacts-count)
-     [confirm-button (label :t/next) #(dispatch [:navigate-to :contact-group])])])
+     [confirm-button (label :t/next) #(dispatch [:navigation-replace :contact-group])])])

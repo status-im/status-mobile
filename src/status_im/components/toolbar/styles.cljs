@@ -2,6 +2,7 @@
   (:require [status-im.components.styles :refer [text1-color
                                                  color-white
                                                  color-light-gray
+                                                 color-gray5
                                                  color-blue
                                                  color-black]]))
 
@@ -9,8 +10,8 @@
 (def toolbar-background2 color-light-gray)
 
 (def toolbar-height 56)
-(def toolbar-icon-width 32)
-(def toolbar-icon-spacing 8)
+(def toolbar-icon-width 24)
+(def toolbar-icon-spacing 24)
 
 (def toolbar-gradient
   {:height 4})
@@ -22,6 +23,11 @@
 (def toolbar
   {:flex-direction :row
    :height         toolbar-height})
+
+(def toolbar-line
+  {:height           1
+   :background-color color-gray5
+   :opacity          0.4})
 
 (defn toolbar-nav-actions-container [actions]
   {:width          (when (and actions (> (count actions) 0))

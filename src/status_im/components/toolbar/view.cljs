@@ -50,7 +50,8 @@
             [view st/toolbar-action
              [image action-image]]])
          custom-action)]]
-     [sync-state-gradient-view]]))
+     [sync-state-gradient-view]
+     [view st/toolbar-line]]))
 
 (defn- toolbar-search-submit [on-search-submit]
   (let [text @(subscribe [:get-in [:toolbar-search :text]])]
@@ -67,10 +68,10 @@
       {:style             st/toolbar-search-input
        :auto-focus        true
        :placeholder       search-placeholder
-       :return-key-type   "search"
-       :on-blur           #(dispatch [:set-in [:toolbar-search :show] nil])
-       :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])
-       :on-submit-editing #(toolbar-search-submit on-search-submit)}]
+       ;:return-key-type   "search"
+       ;:on-blur           #(dispatch [:set-in [:toolbar-search :show] nil])
+       :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])}]
+       ;:on-submit-editing #(toolbar-search-submit on-search-submit)}]
      [view
       [text {:style st/toolbar-with-search-title
              :font  :toolbar-title}
@@ -83,7 +84,9 @@
                                    style
                                    on-search-submit]
                             :as   opts}]
-  (let [toggle-search-fn #(dispatch [:set-in [:toolbar-search :show] %])
+  (let [toggle-search-fn #(do
+                            (dispatch [:set-in [:toolbar-search :show] %])
+                            (dispatch [:set-in [:toolbar-search :text] ""]))
         actions          (if-not show-search?
                            (into [(act/search #(toggle-search-fn search-key))] actions))]
     [toolbar {:style          (merge st/toolbar-with-search style)
