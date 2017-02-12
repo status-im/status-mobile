@@ -73,8 +73,10 @@
               :wrapper-style    st/name-input-wrapper
               :value            (or new-name name)
               :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])
-              :on-end-editing   #(when (s/valid? ::v/name new-name)
-                                  (dispatch [:account-update {:name (clean-text new-name)}]))}]]
+              :on-end-editing   #(do
+                                   (dispatch [:set-in [:profile-edit :name] nil])
+                                   (when (s/valid? ::v/name new-name)
+                                     (dispatch [:account-update {:name (clean-text new-name)}])))}]]
            [view st/status-container
             (if @status-edit?
               [text-input {:style               st/status-input
@@ -114,6 +116,7 @@
              [view st/switch-users-container
               [touchable-opacity {:onPress (fn []
                                              (close-drawer)
+                                             (dispatch [:set-in [:profile-edit :name] nil])
                                              (dispatch [:navigate-to :accounts]))}
                [text {:style st/switch-users-text
                       :font  :default}

@@ -95,6 +95,7 @@
 
 (defn reagent-render [_ _]
   (let [component        (r/current-component)
+        input-ref        (r/atom nil)
         {:keys [float-label?
                 label-top
                 label-font-size
@@ -112,7 +113,8 @@
     [view (merge st/text-field-container wrapper-style)
      (when-not label-hidden?
        [animated-text {:style (st/label label-top label-font-size label-color)} label])
-     [text-input {:style             (merge st/text-input input-style)
+     [text-input {:ref               #(reset! input-ref %)
+                  :style             (merge st/text-input input-style)
                   :placeholder       (or placeholder "")
                   :editable          editable
                   :secure-text-entry secure-text-entry
@@ -138,6 +140,7 @@
                                        (on-change-text text))
                   :on-change         #(on-change %)
                   :default-value     value
+                  :on-submit-editing #(.blur @input-ref)
                   :on-end-editing    (when on-end-editing
                                        on-end-editing)}]
      [view {:style    (st/underline-container line-color)

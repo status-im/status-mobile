@@ -191,6 +191,7 @@
    qr [:get-in [:profile-edit :qr-code]]
    current-account [:get-current-account]
    changed-account [:get :profile-edit]]
+  {:component-will-unmount #(dispatch [:set-in [:profile-edit :name] nil])}
   (let [{:keys [phone
                 address
                 public-key]

@@ -6,7 +6,7 @@
             [status-im.utils.homoglyph :as h]))
 
 (defn correct-name? [username]
-  (let [username (some-> username (str/trim))]
+  (when-let [username (some-> username (str/trim))]
     (every? false?
       [(str/blank? username)
        (h/matches username console-chat-id)
