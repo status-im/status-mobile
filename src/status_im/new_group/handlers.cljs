@@ -204,6 +204,20 @@
       ((enrich update-group))
       ((after update-group!))))
 
+(defn remove-group
+  [db [_ group-id]]
+  (update-in db [:groups] (fn [groups]
+                            (remove #(= (:group-id %) group-id) groups))))
+
+(defn delete-group!
+  [_ [_ group-id]]
+  (groups/delete group-id))
+
+(register-handler
+  :delete-group
+  (-> remove-group
+      ((after delete-group!))
+      ((after show-contact-list!))))
 
 (defn save-groups! [{:keys [new-groups]} _]
   (groups/save-all new-groups))

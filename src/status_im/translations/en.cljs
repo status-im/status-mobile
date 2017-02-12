@@ -192,6 +192,8 @@
    :reorder-groups                        "Reorder Group"
    :group-name                            "Group name"
    :edit-group                            "Edit Group"
+   :delete-group                          "DELETE GROUP"
+   :delete-group-prompt                   "This will not affect group members"
    :group-members                         "Group members"
 
    ;participants

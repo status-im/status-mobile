@@ -19,3 +19,8 @@
 (defn exists?
   [group-id]
   (realm/exists? @realm/account-realm :group {:group-id group-id}))
+
+(defn delete
+  [group-id]
+  (when-let [group (realm/get-one-by-field @realm/account-realm :group :group-id group-id)]
+    (realm/delete @realm/account-realm group)))

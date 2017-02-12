@@ -74,11 +74,11 @@
                     (list-item [new-group-contact row]))
       :style      st/contacts-list}]]])
 
-(defview new-contacts-group-toolbar [group-name]
+(defview new-contacts-group-toolbar [edit?]
   [view
    [status-bar]
    [toolbar
-    {:title (or group-name (label :t/new-group))}]])
+    {:title (label (if edit? :t/edit-group :t/new-group))}]])
 
 ;;TODO: should be refactored into one common function for group chats and contact groups
 (defview contact-group []
@@ -87,7 +87,7 @@
    group [:get :contact-group]]
   (let [save-btn-enabled? (and (s/valid? ::v/name group-name) (pos? (count contacts)))]
     [view st/new-group-container
-     [new-contacts-group-toolbar (:name group)]
+     [new-contacts-group-toolbar (boolean group)]
      [view st/chat-name-container
       [text {:style st/group-name-text
              :font  :medium}
@@ -112,6 +112,11 @@
                                                              row])
                                   :extended?     true}]))
        :style      st/contacts-list}]
+     (when group
+       [touchable-highlight {:on-press #(dispatch [:delete-group (:group-id group)])}
+        [view{:height 56 :padding-left 72 :margin-top 15}
+         [text {:style st/delete-group-text} (label :t/delete-group)]
+         [text {:style st/delete-group-prompt-text} (label :t/delete-group-prompt)]]])
      (when save-btn-enabled?
        [confirm-button (label :t/save) (if group
                                          #(dispatch [:update-group-after-edit group group-name])

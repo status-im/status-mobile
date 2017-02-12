@@ -18,3 +18,7 @@
 (defn save-all
   [groups]
   (mapv save groups))
+
+(defn delete
+  [group-id]
+  (data-store/delete group-id))

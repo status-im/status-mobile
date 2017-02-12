@@ -48,7 +48,9 @@
                                           :height 1
                                           :background-color "#d9dae1"
                                           :opacity 0.4}
-                           :icon-check   {:border-radius 50}
+                           :icon-check   {:border-radius 50
+                                          :width 24
+                                          :height 24}
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
                                           :margin-top      24

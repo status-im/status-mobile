@@ -4,6 +4,8 @@
                                                  text1-color
                                                  text2-color
                                                  color-light-blue
+                                                 color-light-red
+                                                 selected-contact-color
                                                  color-gray4]]
             [status-im.utils.platform :refer [platform-specific]]))
 
@@ -51,15 +53,26 @@
    :margin-right 20})
 
 (def add-icon
-  {:align-items       :center
-   :width             24
-   :height            24})
+  {:align-items :center
+   :width       24
+   :height      24})
 
 (def add-text
   {:margin-left 32
    :color       color-light-blue
    :letter-spacing -0.2
    :font-size   17
+   :line-height 20})
+
+(def delete-group-text
+  {:color       color-light-red
+   :letter-spacing 0.5
+   :font-size   14
+   :line-height 20})
+
+(def delete-group-prompt-text
+  {:color       color-gray4
+   :font-size   14
    :line-height 20})
 
 (def contacts-list
@@ -72,14 +85,13 @@
    :height         56})
 
 (def selected-contact
-  {:background-color "#eff3fc"})
+  {:background-color selected-contact-color})
 
 (def icon-check-container
   (merge (get-in platform-specific [:component-styles :contacts :icon-check])
          {:alignItems     :center
-          :justifyContent :center
-          :width 24
-          :height 24}))
+          :justifyContent :center}))
+
 
 (def toggle-container
   {:width          56

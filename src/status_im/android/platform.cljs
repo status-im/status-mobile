@@ -37,7 +37,9 @@
    :contacts              {:subtitle     {:color     styles/color-gray4
                                           :font-size 14}
                            :separator    {:height 0}
-                           :icon-check   {:border-radius 1}
+                           :icon-check   {:border-radius 2
+                                          :width 17
+                                          :height 17}
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
                                           :height          56
