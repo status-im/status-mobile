@@ -4,7 +4,8 @@
                                                  color-light-gray
                                                  color-gray5
                                                  color-blue
-                                                 color-black]]))
+                                                 color-black]]
+            [status-im.utils.platform :as p]))
 
 (def toolbar-background1 color-white)
 (def toolbar-background2 color-light-gray)
@@ -44,9 +45,9 @@
    :padding-right   12})
 
 (def toolbar-title-container
-  {:flex           1
-   :alignItems     :center
-   :justifyContent :center})
+  (merge (get-in p/platform-specific [:component-styles :toolbar-title-container])
+         {:flex           1
+          :justifyContent :center}))
 
 (def toolbar-title-text
   {:margin-top 0
@@ -72,7 +73,6 @@
 
 (def toolbar-with-search-content
   {:flex            1
-   :align-items     :center
    :justify-content :center})
 
 (def toolbar-search-input
@@ -85,29 +85,8 @@
 
 (def toolbar-with-search-title
   {:color       color-black
-   :align-self  :center
-   :text-align  :center
    :font-size   16})
 
-
-;; Specific actions
-
-(def action-hamburger
-  {:width  16
-   :height 12})
-
-(def action-add
-  {:width  17
-   :height 17})
-
-(def action-opts
+(def action-default
   {:width  24
    :height 24})
-
-(def action-search
-  {:width  17
-   :height 17})
-
-(def action-back
-  {:width  8
-   :height 14})

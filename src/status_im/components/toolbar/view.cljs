@@ -7,7 +7,7 @@
                                                 image
                                                 touchable-highlight]]
             [status-im.components.sync-state.gradient :refer [sync-state-gradient-view]]
-            [status-im.components.styles :refer [icon-back
+            [status-im.components.styles :refer [icon-default
                                                  icon-search]]
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :as st]
@@ -34,8 +34,8 @@
            [touchable-highlight {:on-press            #(dispatch [:navigate-back])
                                  :accessibility-label id/toolbar-back-button}
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
-             [image {:source {:uri :icon_back}
-                     :style  icon-back}]]]))]
+             [image {:source {:uri :icon_back_dark}
+                     :style  icon-default}]]]))]
       (or custom-content
           [view {:style st/toolbar-title-container}
            [text {:style st/toolbar-title-text

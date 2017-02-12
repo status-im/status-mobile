@@ -11,6 +11,7 @@
                                                 modal
                                                 splash-screen]]
             [status-im.components.main-tabs :refer [main-tabs]]
+            [status-im.components.context-menu :refer [menu-context]]
             [status-im.contacts.search-results :refer [contacts-search-results]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -110,21 +111,21 @@
                                :login login
                                :recover recover
                                :my-profile my-profile)]
-               [view
-                {:flex 1}
-                [component]
-                (when @modal-view
-                  [view
-                   st/chat-modal
-                   [modal {:animation-type   :slide
-                           :transparent      false
-                           :on-request-close #(dispatch [:navigate-back])}
-                    (let [component (case @modal-view
-                                      :qr-scanner qr-scanner
-                                      :qr-code-view qr-code-view
-                                      :confirm confirm
-                                      :contact-list-modal contact-list)]
-                      [component])]])]))))})))
+               [menu-context {:flex 1}
+                [view {:flex 1}
+                 [component]
+                 (when @modal-view
+                   [view
+                    st/chat-modal
+                    [modal {:animation-type   :slide
+                            :transparent      false
+                            :on-request-close #(dispatch [:navigate-back])}
+                     (let [component (case @modal-view
+                                       :qr-scanner qr-scanner
+                                       :qr-code-view qr-code-view
+                                       :confirm confirm
+                                       :contact-list-modal contact-list)]
+                       [component])]])]]))))})))
 
 (defn init []
   (status/call-module status/init-jail)

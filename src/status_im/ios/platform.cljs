@@ -1,6 +1,5 @@
 (ns status-im.ios.platform
-  (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background1]]))
+  (:require [status-im.components.styles :as styles]))
 
 (def component-styles
   {:status-bar            {:default     {:height    20
@@ -8,7 +7,7 @@
                                          :color     styles/color-white}
                            :main        {:height    20
                                          :bar-style "default"
-                                         :color     toolbar-background1}
+                                         :color     styles/color-white}
                            :transparent {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
@@ -67,7 +66,8 @@
    :toolbar-last-activity {:color            styles/text2-color
                            :background-color :transparent
                            :top              0
-                           :font-size        14}})
+                           :font-size        14}
+   :toolbar-title-container {:align-items :center}})
 
 (def fonts
   {:light         {:font-family "SFUIText-Light"}
@@ -86,7 +86,6 @@
                                (clj->js {:options           (conj options cancel-text)
                                          :cancelButtonIndex (count options)})
                                callback))
-
 
 ;; Structure to be exported
 

@@ -36,8 +36,8 @@
   {:flex 1})
 
 (def icon-search
-  {:width  17
-   :height 17})
+  {:width  24
+   :height 24})
 
 (def create-icon
   {:fontSize 20
@@ -45,8 +45,12 @@
    :color    :white})
 
 (def icon-back
-  {:width  8
-   :height 14})
+  {:width  24
+   :height 24})
+
+(def icon-default
+  {:width  24
+   :height 24})
 
 (def icon-add
   {:width  14
@@ -97,3 +101,12 @@
    :font-size     17
    :line-height   20
    :letter-spacing -0.2})
+
+(def context-menu
+  {:customStyles {:optionsContainer {:padding-top 8
+                                     :padding-bottom 8}
+                  :optionWrapper    {:padding-left 16
+                                     :justify-content :center
+                                     :height 48}
+                  :text             {:font-size  15
+                                     :line-height 20}}})

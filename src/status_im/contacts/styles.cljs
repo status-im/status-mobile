@@ -154,14 +154,18 @@
    :color     text2-color})
 
 (def more-btn
-  {:width          56
+  {:width          24
    :height         56
+   :margin-right   14
    :alignItems     :center
    :justifyContent :center})
 
-(def options-icon
-  {:width  24
-   :height 24})
+(def search-btn
+  {:width          24
+   :height         56
+   :margin-right   24
+   :alignItems     :center
+   :justifyContent :center})
 
 ; New contact
 

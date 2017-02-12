@@ -106,11 +106,10 @@
                      (list-item
                        ^{:key row}
                        [contact-view
-                                 {:contact       row
-                                  :more-on-click #(dispatch [:open-edit-group-contact-menu
-                                                             (:list-selection-fn platform-specific)
-                                                             row])
-                                  :extended?     true}]))
+                        {:contact       row
+                         :extend-options [{:value #(dispatch [:deselect-contact (:whisper-identity row)])
+                                           :text (label :t/remove-from-group)}]
+                         :extended?     true}]))
        :style      st/contacts-list}]
      (when group
        [touchable-highlight {:on-press #(dispatch [:delete-group (:group-id group)])}

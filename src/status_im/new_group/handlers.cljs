@@ -182,18 +182,6 @@
       ((after update-group!))
       ((after show-contact-list!))))
 
-(register-handler
-  :open-edit-group-contact-menu
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn {:keys [name] :as contact}]]
-      (list-selection-fn {:title name
-                          :options [(label :t/remove-from-group)]
-                          :callback (fn [index]
-                                      (case index
-                                        0 (dispatch [:deselect-contact (:whisper-identity contact)])
-                                        :default))
-                          :cancel-text (label :t/cancel)}))))
-
 (defn update-new-group
   [{:keys [selected-contacts] :as db} [_ group]]
   (assoc db :new-group group))

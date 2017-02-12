@@ -1,6 +1,5 @@
 (ns status-im.android.platform
-  (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background1 toolbar-background2]]))
+  (:require [status-im.components.styles :as styles]))
 
 (def component-styles
   {:status-bar            {:default     {:height    0
@@ -8,7 +7,7 @@
                                          :color     styles/color-white}
                            :main        {:height    0
                                          :bar-style "dark-content"
-                                         :color     toolbar-background1}
+                                         :color     styles/color-white}
                            :transparent {:height       20
                                          :bar-style    "light-content"
                                          :translucent? true
@@ -56,7 +55,8 @@
    :toolbar-last-activity {:color            styles/text2-color
                            :background-color :transparent
                            :top              0
-                           :font-size        12}})
+                           :font-size        12}
+   :toolbar-title-container {:padding-left   16}})
 
 (def fonts
   {:light         {:font-family "sans-serif-light"}

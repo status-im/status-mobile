@@ -311,61 +311,6 @@
         (dispatch [:update-group group'])))))
 
 (register-handler
-  :open-contact-menu
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn {:keys [name] :as contact}]]
-      (list-selection-fn {:title name
-                          :options [(label :t/delete-contact)]
-                          :callback (fn [index]
-                                      (case index
-                                        0 (dispatch [:remove-contact contact])
-                                        :default))
-                          :cancel-text (label :t/cancel)}))))
-
-(register-handler
-  :open-group-contact-menu
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn {:keys [name] :as contact} group]]
-      (list-selection-fn {:title name
-                          :options [(label :t/delete-contact)
-                                    (label :t/remove-from-group)]
-                          :callback (fn [index]
-                                      (case index
-                                        0 (dispatch [:remove-contact contact])
-                                        1 (dispatch [:remove-contact-from-group contact group])
-                                        :default))
-                          :cancel-text (label :t/cancel)}))))
-
-(register-handler
-  :open-contact-group-menu
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn group]]
-      (list-selection-fn {:options [(label :t/edit-group)]
-                          :callback (fn [index]
-                                      (case index
-                                        0 (dispatch [:navigate-to :contact-group group])
-                                        :default))
-                          :cancel-text (label :t/cancel)}))))
-
-(register-handler
-  :open-contacts-menu
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn new-contact?]]
-      (let [d (if new-contact? 0 1)]
-        (list-selection-fn {:options  (into []
-                                        (concat
-                                          (when new-contact? [(label :t/new-contact)])
-                                          [(label :t/new-group)
-                                           (label :t/edit)]))
-                            :callback (fn [index]
-                                        (case (+ d index)
-                                          0 (dispatch [:navigate-to :new-contact])
-                                          1 (dispatch [:open-contact-group-list])
-                                          2 (dispatch [:set-in [:contacts-ui-props :edit?] true])
-                                          :default))
-                            :cancel-text (label :t/cancel)})))))
-
-(register-handler
   :open-contact-group-list
   (after #(dispatch [:navigate-to :contact-group-list]))
   (fn [db _]
@@ -375,3 +320,14 @@
                 :new-chat-name "")
       (assoc-in [:toolbar-search :show] nil)
       (assoc-in [:toolbar-search :text] ""))))
+
+(register-handler
+  :open-context-menu
+  (u/side-effect!
+    (fn [_ [_ list-selection-fn options]]
+      (list-selection-fn {:options (mapv :text options)
+                          :callback (fn [index]
+                                      (when (< index (count options))
+                                        (when-let [handler (:value (nth options index))]
+                                          (handler))))
+                          :cancel-text (label :t/cancel)}))))

@@ -20,28 +20,52 @@
             [status-im.components.toolbar.styles :as tst]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
+            [status-im.components.context-menu :refer [context-menu]]
             [status-im.contacts.views.contact :refer [contact-view]]
-            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.utils.platform :refer [platform-specific ios?]]
             [status-im.i18n :refer [label]]
             [status-im.contacts.styles :as st]
+            [status-im.components.toolbar.styles :as tst]
             [status-im.components.styles :refer [color-blue
                                                  create-icon]]))
 
 (def contacts-limit 5)
 
-(defn toolbar-view []
+(defn toolbar-actions []
   (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
-        actions      [(act/search #(dispatch [:navigate-to :group-contacts nil :show-search]))
-                      (act/opts #(dispatch [:open-contacts-menu (:list-selection-fn platform-specific) new-contact?]))]]
-    [toolbar {:style          tst/toolbar-with-search
-              :title          (label :t/contacts)
-              :nav-action     (act/hamburger open-drawer)
-              :actions        actions}]))
+        options (into []
+                      (concat
+                        (when new-contact? [{:value #(dispatch [:navigate-to :new-contact])
+                                             :text (label :t/new-contact)}])
+                        [{:value #(dispatch [:set-in [:contacts-ui-props :edit?] true]) :text (label :t/edit)}
+                         {:value #(dispatch [:open-contact-group-list]) :text (label :t/new-group)}]))]
+    [view {:flex-direction "row"}
+     [touchable-highlight
+      {:on-press #(dispatch [:navigate-to :group-contacts nil :show-search])}
+      [view st/search-btn
+       [icon :search_dark]]]
+     [view st/more-btn
+      [context-menu
+       [icon :options_dark]
+       options]]]))
+
+(defn toolbar-view []
+ [toolbar {:style          tst/toolbar-with-search
+           :title          (label :t/contacts)
+           :nav-action     (act/hamburger open-drawer)
+           :custom-action  (toolbar-actions)}])
 
 (defn toolbar-edit []
   [toolbar {:style          tst/toolbar-with-search ;;TODO: maybe better use new style
             :nav-action     (act/back #(dispatch [:set-in [:contacts-ui-props :edit?] false]))
             :title          (label :t/edit-contacts)}])
+
+(defn options-btn [group]
+  (let [options [{:value #(dispatch [:navigate-to :contact-group group]) :text (label :t/edit-group)}]]
+    [view st/more-btn
+     [context-menu
+      [icon :options_gray]
+      options]]))
 
 (defn subtitle-view [subtitle contacts-count group extended?]
   [view (get-in platform-specific [:component-styles :contacts :group-header])
@@ -56,10 +80,7 @@
           :font       :medium}
     (str contacts-count)]
    (when extended?
-     [touchable-highlight
-      {:on-press #(dispatch [:open-contact-group-menu (:list-selection-fn platform-specific) group])}
-      [view st/more-btn
-       [icon :options_gray st/options-icon]]])])
+     [options-btn group])])
 
 (defn group-top-view []
   [linear-gradient {:style  st/contact-group-header-gradient-bottom
@@ -89,14 +110,15 @@
       (doall
         (map (fn [contact]
                ^{:key contact}
-               [contact-view {:contact       contact
-                              :extended?     edit?
-                              :on-click      (when-not edit? click-handler)
-                              :more-on-click (when group
-                                               #(dispatch [:open-group-contact-menu
-                                                           (:list-selection-fn platform-specific)
-                                                           contact
-                                                           group]))}])
+               [contact-view
+                {:contact       contact
+                 :extended?     edit?
+                 :on-click      (when-not edit? click-handler)
+                 :extend-options (when group
+                                  [{:value #(dispatch [:remove-contact contact])
+                                    :text (label :t/delete-contact)}
+                                   {:value #(dispatch [:remove-contact-from-group contact group])
+                                    :text (label :t/remove-from-group)}])}])
              contacts))]
      (when (< contacts-limit contacts-count)
        [view st/show-all

@@ -92,7 +92,6 @@
          {:alignItems     :center
           :justifyContent :center}))
 
-
 (def toggle-container
   {:width          56
    :height         56
