@@ -177,8 +177,8 @@
             (when-not (chats id')
               (when add-chat?
                 (dispatch [:add-chat id' {:name (:en name)}]))
-              ;;TODO strange condition, we add contact only if there is no chat, it works, but...
-              ;;if we want to add default contacts in new versions of appp we should add if there is no such
+              ;;TODO strange condition, we add contact only if there is no chat, it should check if we have contact in realm
+              ;;if we want to add default contacts in new versions of app we should add it if there is no such
               ;; contact in contacts instead of checking in chats
               (dispatch [:add-contacts [{:whisper-identity id'
                                          :name             (:en name)
@@ -189,7 +189,7 @@
                                          :dapp-hash        dapp-hash}]]))))
         ;;TODO should be emmited only once on account creations (because user can edit/remove this group)
         ;; if we want to leave as is and to have ability to add new default groups in new versions of app
-        ;; we should refactor group deletion, because now i'm deleting groups not making it archived
+        ;; we should refactor group deletion, because now i'm deleting groups instead making it archived
         (dispatch [:add-groups [{:group-id    "dapps"
                                  :name        (label :t/contacts-group-dapps)
                                  :timestamp   (.getTime (js/Date.))

@@ -68,10 +68,7 @@
       {:style             st/toolbar-search-input
        :auto-focus        true
        :placeholder       search-placeholder
-       ;:return-key-type   "search"
-       ;:on-blur           #(dispatch [:set-in [:toolbar-search :show] nil])
        :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])}]
-       ;:on-submit-editing #(toolbar-search-submit on-search-submit)}]
      [view
       [text {:style st/toolbar-with-search-title
              :font  :toolbar-title}

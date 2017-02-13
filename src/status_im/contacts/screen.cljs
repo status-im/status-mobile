@@ -22,14 +22,13 @@
             [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.contacts.views.contact :refer [contact-view]]
-            [status-im.utils.platform :refer [platform-specific ios?]]
+            [status-im.utils.platform :refer [platform-specific]]
             [status-im.i18n :refer [label]]
             [status-im.contacts.styles :as st]
-            [status-im.components.toolbar.styles :as tst]
             [status-im.components.styles :refer [color-blue
                                                  create-icon]]))
 
-(def contacts-limit 5)
+(def contacts-limit 5) ;;TODO for test
 
 (defn toolbar-actions []
   (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
@@ -56,7 +55,7 @@
            :custom-action  (toolbar-actions)}])
 
 (defn toolbar-edit []
-  [toolbar {:style          tst/toolbar-with-search ;;TODO: maybe better use new style
+  [toolbar {:style          tst/toolbar-with-search
             :nav-action     (act/back #(dispatch [:set-in [:contacts-ui-props :edit?] false]))
             :title          (label :t/edit-contacts)}])
 
@@ -111,9 +110,9 @@
         (map (fn [contact]
                ^{:key contact}
                [contact-view
-                {:contact       contact
-                 :extended?     edit?
-                 :on-click      (when-not edit? click-handler)
+                {:contact        contact
+                 :extended?      edit?
+                 :on-click       (when-not edit? click-handler)
                  :extend-options (when group
                                   [{:value #(dispatch [:remove-contact contact])
                                     :text (label :t/delete-contact)}

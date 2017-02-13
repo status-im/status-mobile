@@ -19,7 +19,7 @@
                            :additional-height 0}
    :chat                  {:new-message {:border-top-color styles/color-transparent
                                          :border-top-width 0.5}}
-   :discover             {:subtitle {:color     styles/color-gray2
+   :discover             {:subtitle {:color      styles/color-gray2
                                       :font-size 14}
                            :popular  {:border-radius 1
                                       :margin-top    2
@@ -37,12 +37,12 @@
                                           :font-size 14}
                            :separator    {:height 0}
                            :icon-check   {:border-radius 2
-                                          :width 17
-                                          :height 17}
+                                          :width         17
+                                          :height        17}
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
                                           :height          56
-                                          :padding-top 10
+                                          :padding-top     10
                                           :backgroundColor styles/color-light-gray}}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}

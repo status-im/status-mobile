@@ -101,3 +101,8 @@
 (def check-icon
   {:width  12
    :height 12})
+
+(def delete-group-container
+  {:height       56
+   :padding-left 72
+   :margin-top   15})

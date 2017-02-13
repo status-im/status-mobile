@@ -113,7 +113,7 @@
        :style      st/contacts-list}]
      (when group
        [touchable-highlight {:on-press #(dispatch [:delete-group (:group-id group)])}
-        [view{:height 56 :padding-left 72 :margin-top 15}
+        [view st/delete-group-container
          [text {:style st/delete-group-text} (label :t/delete-group)]
          [text {:style st/delete-group-prompt-text} (label :t/delete-group-prompt)]]])
      (when save-btn-enabled?

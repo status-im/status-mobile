@@ -349,7 +349,7 @@
 ;TODO: check if its new account / signup status / create console chat
 (register-handler :initialize-chats
   [(after #(dispatch [:load-unviewed-messages!]))
-   (after #(dispatch [:load-default-contacts!]))];;TODO should be emitted only once on account creation
+   (after #(dispatch [:load-default-contacts!]))];;TODO should be emitted only once on account creation?
   ((enrich initialize-chats) load-chats!))
 
 (defmethod nav/preload-data! :chat
