@@ -11,6 +11,8 @@
             [status-im.data-store.realm.schemas.account.v1.request :as request]
             [status-im.data-store.realm.schemas.account.v1.tag :as tag]
             [status-im.data-store.realm.schemas.account.v1.user-status :as user-status]
+            [status-im.data-store.realm.schemas.account.v3.group :as group]
+            [status-im.data-store.realm.schemas.account.v3.group-contact :as group-contact]
             [taoensso.timbre :as log]))
 
 (def schema [chat/schema
@@ -24,7 +26,9 @@
              processed-message/schema
              request/schema
              tag/schema
-             user-status/schema])
+             user-status/schema
+             group/schema
+             group-contact/schema])
 
 (defn migration [old-realm new-realm]
   (log/debug "migrating v3 account database: " old-realm new-realm)

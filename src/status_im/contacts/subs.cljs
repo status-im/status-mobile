@@ -61,7 +61,7 @@
         text (str/lower-case text)]
     (not= (.indexOf name text) -1)))
 
-(register-sub :filtered-contacts
+(register-sub :all-added-contacts-filtered
   (fn [db _]
     (let [contacts (subscribe [:all-added-contacts])
           text (subscribe [:get-in [:toolbar-search :text]])]

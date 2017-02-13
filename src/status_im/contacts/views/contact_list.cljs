@@ -68,7 +68,7 @@
                             (act/back #(dispatch [:navigate-back])))})])
 
 (defview contact-list []
-  [contacts [:filtered-contacts]
+  [contacts [:all-added-contacts-filtered]
    group [:get :contacts-group]
    modal [:get :modal]
    click-handler [:get :contacts-click-handler]

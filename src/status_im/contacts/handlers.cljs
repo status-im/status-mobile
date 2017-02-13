@@ -11,7 +11,6 @@
             [status-im.utils.utils :refer [require]]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.random :as random]
-            [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]))
 
@@ -330,14 +329,3 @@
                 :new-chat-name "")
       (assoc-in [:toolbar-search :show] nil)
       (assoc-in [:toolbar-search :text] ""))))
-
-(register-handler
-  :open-context-menu
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn options]]
-      (list-selection-fn {:options (mapv :text options)
-                          :callback (fn [index]
-                                      (case index
-                                        0 (dispatch [:remove-contact contact])
-                                        :default))
-                          :cancel-text (label :t/cancel)}))))

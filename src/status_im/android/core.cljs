@@ -34,7 +34,8 @@
             status-im.data-store.core
             [taoensso.timbre :as log]
             [status-im.components.status :as status]
-            [status-im.chat.styles.screen :as st]
+            [status-im.components.styles :as st]
+            [status-im.chat.styles.screen :as chat-st]
             [status-im.accounts.views.qr-code :refer [qr-code-view]]))
 
 (defn init-back-button-handler! []
@@ -115,12 +116,11 @@
                                :login login
                                :recover recover
                                :my-profile my-profile)]
-               [menu-context {:flex 1}
-                [view {:flex 1}
+               [menu-context st/flex
+                [view st/flex
                  [component]
                  (when @modal-view
-                   [view
-                    st/chat-modal
+                   [view chat-st/chat-modal
                     [modal {:animation-type   :slide
                             :transparent      false
                             :on-request-close #(dispatch [:navigate-back])}

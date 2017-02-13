@@ -30,27 +30,27 @@
   {:padding-top 0})
 
 (def group-name-text
-  {:margin-top    11
-   :margin-bottom 10
+  {:margin-top     11
+   :margin-bottom  10
    :letter-spacing -0.1
-   :color         color-gray4
-   :font-size     13
-   :line-height   20})
+   :color          color-gray4
+   :font-size      13
+   :line-height    20})
 
 (def members-text
-  {:margin-top    10
-   :margin-bottom 8
+  {:margin-top     10
+   :margin-bottom  8
    :letter-spacing -0.2
-   :color         color-gray4
-   :font-size     16
-   :line-height   19})
+   :color          color-gray4
+   :font-size      16
+   :line-height    19})
 
 (def add-container
   {:flex-direction :row
-   :align-items :center
-   :margin-top 16
+   :align-items    :center
+   :margin-top     16
    :margin-bottom  16
-   :margin-right 20})
+   :margin-right   20})
 
 (def add-icon
   {:align-items :center
@@ -58,17 +58,17 @@
    :height      24})
 
 (def add-text
-  {:margin-left 32
-   :color       color-light-blue
+  {:margin-left    32
+   :color          color-light-blue
    :letter-spacing -0.2
-   :font-size   17
-   :line-height 20})
+   :font-size      17
+   :line-height    20})
 
 (def delete-group-text
-  {:color       color-light-red
+  {:color          color-light-red
    :letter-spacing 0.5
-   :font-size   14
-   :line-height 20})
+   :font-size      14
+   :line-height    20})
 
 (def delete-group-prompt-text
   {:color       color-gray4
@@ -79,10 +79,10 @@
   {:background-color :white})
 
 (def contact-container
-  {:flex-direction :row
+  {:flex-direction  :row
    :justify-content :center
-   :align-items :center
-   :height         56})
+   :align-items     :center
+   :height          56})
 
 (def selected-contact
   {:background-color selected-contact-color})

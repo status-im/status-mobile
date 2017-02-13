@@ -47,9 +47,9 @@
   {:margin-left 16})
 
 (def contact-group-count
-  {:flex 1
+  {:flex        1
    :margin-left 8
-   :opacity 0.6})
+   :opacity     0.6})
 
 (def contact-group-header-gradient-top
   {:flexDirection   :row
@@ -120,8 +120,8 @@
 (def option-inner-image
   {:width  24
    :height 18
-   :top 16
-   :left 13})
+   :top    16
+   :left   13})
 
 (def spacing-top
   {:background-color color-white

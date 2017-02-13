@@ -1,6 +1,7 @@
 (ns status-im.components.context-menu
   (:require [reagent.core :as r]
             [status-im.components.styles :as st]
+            [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [re-frame.core :refer [dispatch]]
             [status-im.components.react :refer [view touchable-highlight]]))
@@ -23,10 +24,21 @@
 (def menu-options (get-class "MenuOptions"))
 (def menu-option (get-class "MenuOption"))
 
+(def list-selection-fn (:list-selection-fn platform-specific))
+
+(defn open-ios-menu [options]
+  (list-selection-fn {:options     (mapv :text options)
+                      :callback    (fn [index]
+                                     (when (< index (count options))
+                                       (when-let [handler (:value (nth options index))]
+                                         (handler))))
+                      :cancel-text (label :t/cancel)})
+  nil)
+
 (defn context-menu [trigger options]
   (if ios?
     [touchable-highlight
-     {:on-press #(dispatch [:open-context-menu (:list-selection-fn platform-specific) options])} ;TODO: temporary, should be better way
+     {:on-press #(open-ios-menu options)}
      [view
       trigger]]
     [menu {:onSelect #(when % (do (%) nil))}

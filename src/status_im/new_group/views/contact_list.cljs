@@ -21,7 +21,7 @@
      :search-placeholder (label :t/search-for)}))
 
 (defview contact-group-list []
-  [contacts [:filtered-contacts] ;;TODO works strange with the toggle selection
+  [contacts [:all-added-contacts-filtered]
    selected-contacts-count [:selected-contacts-count]
    show-search [:get-in [:toolbar-search :show]]]
   [view st/new-group-container
@@ -29,10 +29,10 @@
    [contact-list-toolbar selected-contacts-count show-search]
    [view {:flex 1}
     [list-view
-     {:dataSource (to-datasource contacts)
-      :renderRow  (fn [row _ _]
-                    (list-item ^{:key row} [new-group-contact row]))
-      :style      st/contacts-list
+     {:dataSource                (to-datasource contacts)
+      :renderRow                 (fn [row _ _]
+                                  (list-item ^{:key row} [new-group-contact row]))
+      :style                     st/contacts-list
       :keyboardShouldPersistTaps true}]]
    (when (pos? selected-contacts-count)
      [confirm-button (label :t/next) #(dispatch [:navigation-replace :contact-group])])])
