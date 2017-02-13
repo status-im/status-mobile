@@ -10,6 +10,7 @@
                                          content-type-command
                                          content-type-command-request
                                          content-type-status]]
+            [status-im.chat.constants :as const]
             [status-im.i18n :refer [label]]
             [clojure.string :as s]))
 
@@ -110,11 +111,10 @@
               :from         console-chat-id
               :to           "me"}]))
 
-(def crazy-math-message "crazy-math-message")
 ;; -- Saving password ----------------------------------------
 (defn account-generation-message []
   (dispatch [:received-message
-             {:message-id   crazy-math-message
+             {:message-id   const/crazy-math-message-id
               :content      (label :t/account-generation-message)
               :content-type text-content-type
               :outgoing     false
@@ -122,11 +122,9 @@
               :from         console-chat-id
               :to           "me"}]))
 
-(def passphraze-message-id "passphraze-message")
-
 (defn passphrase-messages [mnemonic crazy-math-message?]
   (dispatch [:received-message
-             {:message-id   passphraze-message-id
+             {:message-id   const/passphrase-message-id
               :content      (if crazy-math-message?
                               (label :t/phew-here-is-your-passphrase)
                               (label :t/here-is-your-passphrase))
@@ -146,7 +144,7 @@
   (start-signup))
 
 (def intro-status
-  {:message-id   "intro-status"
+  {:message-id   const/intro-status-message-id
    :content      (label :t/intro-status)
    :from         console-chat-id
    :chat-id      console-chat-id
@@ -159,7 +157,7 @@
   (dispatch [:received-message-when-commands-loaded
              console-chat-id
              {:chat-id      console-chat-id
-              :message-id   "intro-message1"
+              :message-id   const/intro-message1-id
               :content      (command-content
                               :password
                               (label :t/intro-message1))

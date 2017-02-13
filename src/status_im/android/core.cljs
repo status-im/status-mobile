@@ -41,10 +41,15 @@
                        ;; todo: it might be better always return false from
                        ;; this listener and handle application's closing
                        ;; in handlers
-                       (let [stack (subscribe [:get :navigation-stack])]
-                         (when (< 1 (count @stack))
-                           (dispatch [:navigate-back])
-                           true)))]
+                       (let [stack (subscribe [:get :navigation-stack])
+                             creating? (subscribe [:get :creating-account?])]
+                         (cond
+                           @creating? true
+
+                           (< 1 (count @stack))
+                           (do (dispatch [:navigate-back]) true)
+
+                           :else false)))]
     (.addEventListener back-android "hardwareBackPress" new-listener)))
 
 (defn orientation->keyword [o]

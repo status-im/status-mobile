@@ -254,13 +254,13 @@
 (register-handler :account-generation-message
   (u/side-effect!
     (fn [_]
-      (when-not (messages/get-by-id sign-up-service/passphraze-message-id)
+      (when-not (messages/get-by-id chat-consts/passphrase-message-id)
         (sign-up-service/account-generation-message)))))
 
 (register-handler :show-mnemonic
   (u/side-effect!
     (fn [_ [_ mnemonic]]
-      (let [crazy-math-message? (messages/get-by-id sign-up-service/crazy-math-message)]
+      (let [crazy-math-message? (messages/get-by-id chat-consts/crazy-math-message-id)]
         (sign-up-service/passphrase-messages mnemonic crazy-math-message?)))))
 
 (register-handler :sign-up

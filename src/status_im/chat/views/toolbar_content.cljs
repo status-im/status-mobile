@@ -55,7 +55,7 @@
     [last-activity {:sync-state sync-state}]
     (if public?
       [view {:flex-direction :row}
-       [text {:font :default
+       [text {:font  :default
               :style (get-in platform-specific [:component-styles :toolbar-last-activity])}
         (label :t/public-group-status)]]
       [view {:flex-direction :row}
@@ -77,10 +77,12 @@
         show-actions? (subscribe [:chat-ui-props :show-actions?])
         accounts      (subscribe [:get :accounts])
         contact       (subscribe [:get-in [:contacts @chat-id]])
-        sync-state    (subscribe [:get :sync-state])]
+        sync-state    (subscribe [:get :sync-state])
+        creating?     (subscribe [:get :creating-account?])]
     (fn []
       [view (st/chat-name-view (or (empty? @accounts)
-                                   @show-actions?))
+                                   @show-actions?
+                                   @creating?))
        (let [chat-name (if (str/blank? @name)
                          (generate-gfy)
                          (or (get-contact-translated @chat-id :name @name)
