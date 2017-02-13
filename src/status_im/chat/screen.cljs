@@ -28,10 +28,12 @@
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
             [status-im.chat.views.suggestions :refer [suggestion-container]]
+            [status-im.chat.constants :as const]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [status-im.components.sync-state.offline :refer [offline-view]]
-            [status-im.constants :refer [content-type-status]]))
+            [status-im.constants :refer [content-type-status]]
+            [taoensso.timbre :as log]))
 
 (defn contacts-by-identity [contacts]
   (->> contacts
@@ -109,10 +111,11 @@
 
 (defview chat-toolbar []
   [show-actions? [:chat-ui-props :show-actions?]
-   accounts [:get :accounts]]
+   accounts [:get :accounts]
+   creating? [:get :creating-account?]]
   [view
    [status-bar]
-   [toolbar {:hide-nav?      (or (empty? accounts) show-actions?)
+   [toolbar {:hide-nav?      (or (empty? accounts) show-actions? creating?)
              :custom-content [toolbar-content-view]
              :custom-action  [toolbar-action]
              :style          (get-in platform-specific [:component-styles :toolbar])}]
@@ -121,7 +124,7 @@
 (defn get-intro-status-message [all-messages]
   (let [{:keys [timestamp content-type]} (last all-messages)]
     (when (not= content-type content-type-status)
-      {:message-id   "intro-status"
+      {:message-id   const/intro-status-message-id
        :content-type content-type-status
        :timestamp    (or timestamp (time/now-ms))})))
 
@@ -170,11 +173,11 @@
     (anim/start (anim/spring val {:toValue @offset}))))
 
 (defview messages-container [messages]
-  [offset               [:messages-offset]
-   messages-offset      (anim/create-value 0)
-   context              {:offset offset
-                         :val    messages-offset}
-   on-update            (messages-container-animation-logic context)]
+  [offset [:messages-offset]
+   messages-offset (anim/create-value 0)
+   context {:offset offset
+            :val    messages-offset}
+   on-update (messages-container-animation-logic context)]
   {:component-did-mount  on-update
    :component-did-update on-update}
   [animated-view
@@ -182,13 +185,13 @@
    messages])
 
 (defview chat []
-  [group-chat        [:chat :group-chat]
-   show-actions?     [:chat-ui-props :show-actions?]
+  [group-chat [:chat :group-chat]
+   show-actions? [:chat-ui-props :show-actions?]
    show-bottom-info? [:chat-ui-props :show-bottom-info?]
-   show-emoji?       [:chat-ui-props :show-emoji?]
-   command?          [:command?]
-   layout-height     [:get :layout-height]]
-  {:component-did-mount #(dispatch [:check-autorun])
+   show-emoji? [:chat-ui-props :show-emoji?]
+   command? [:command?]
+   layout-height [:get :layout-height]]
+  {:component-did-mount    #(dispatch [:check-autorun])
    :component-will-unmount #(dispatch [:set-chat-ui-props :show-emoji? false])}
   [view {:style    st/chat-view
          :onLayout (fn [event]

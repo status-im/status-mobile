@@ -7,8 +7,10 @@
             [status-im.chat.constants :as c]
             [status-im.chat.views.plain-message :as plain-message]
             [status-im.chat.views.command :as command]
-            [status-im.constants :refer [content-type-status]]
-            [status-im.utils.platform :refer [platform-specific ios?]]))
+            [status-im.constants :refer [content-type-status
+                                         console-chat-id]]
+            [status-im.utils.platform :refer [platform-specific ios?]]
+            [taoensso.timbre :as log]))
 
 (register-sub :chat-properties
   (fn [db [_ properties]]

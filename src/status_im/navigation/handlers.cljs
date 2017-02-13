@@ -1,6 +1,7 @@
 (ns status-im.navigation.handlers
-  (:require [re-frame.core :refer [dispatch debug enrich after]]
-            [status-im.utils.handlers :refer [register-handler]]))
+  (:require [re-frame.core :refer [dispatch subscribe debug enrich after]]
+            [status-im.utils.handlers :refer [register-handler]]
+            [status-im.constants :refer [console-chat-id]]))
 
 (defn push-view [db view-id]
   (-> db
@@ -50,6 +51,11 @@
   (fn [db [_ view-id]]
     (replace-view db view-id)))
 
+(defn- can-navigate-back? [db]
+  (and (not (db :creating-account?))
+       ;; ...
+       ))
+
 (register-handler :navigate-back
   (enrich -preload-data!)
   (fn [{:keys [navigation-stack view-id modal] :as db} _]
@@ -59,13 +65,15 @@
       (>= 1 (count navigation-stack)) db
 
       :else
-      (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
-            first-in-stack (first navigation-stack)]
-        (if (= view-id first-in-stack)
-          (-> db
-              (assoc :view-id previous-view-id)
-              (assoc :navigation-stack navigation-stack'))
-          (assoc db :view-id first-in-stack))))))
+      (if (can-navigate-back? db)
+        (let [[previous-view-id :as navigation-stack'] (pop navigation-stack)
+              first-in-stack (first navigation-stack)]
+          (if (= view-id first-in-stack)
+            (-> db
+                (assoc :view-id previous-view-id)
+                (assoc :navigation-stack navigation-stack'))
+            (assoc db :view-id first-in-stack)))
+        db))))
 
 (register-handler :navigate-to-tab
   (enrich preload-data!)

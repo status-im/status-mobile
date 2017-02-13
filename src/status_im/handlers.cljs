@@ -80,7 +80,8 @@
       (dispatch [:init-debug-mode address])
       (dispatch [:send-account-update-if-needed])
       (dispatch [:start-requesting-discoveries])
-      (dispatch [:remove-old-discoveries!]))))
+      (dispatch [:remove-old-discoveries!])
+      (dispatch [:set :creating-account? false]))))
 
 (register-handler :reset-app
   (u/side-effect!
