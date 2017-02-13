@@ -72,8 +72,9 @@ doo-index.html
 # Re-natal
 re-natal
 
-# status-go
+# Status
 Statusgo.framework
+status-dev-cli
 
 #ios
 ios/Pods

@@ -22,12 +22,20 @@
 
    :faucet
    (fn [params id]
-     (dispatch [:open-faucet (params "url") id]))})
+     (dispatch [:open-faucet (params "url") id]))
+
+   :debug
+   (fn [params id]
+     (let [debug-on? (= (params "mode") "On")]
+       (dispatch [:account-update {:debug? debug-on?}])
+       (if debug-on?
+         (dispatch [:debug-server-start])
+         (dispatch [:debug-server-stop]))))})
 
 (def commands-names (set (keys console-commands)))
 
 (def commands-with-delivery-status
-  (disj commands-names :password :faucet))
+  (disj commands-names :password :faucet :debug))
 
 (register-handler :invoke-console-command-handler!
   (u/side-effect!

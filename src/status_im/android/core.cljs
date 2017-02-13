@@ -9,7 +9,8 @@
                                                 back-android
                                                 view
                                                 modal
-                                                splash-screen]]
+                                                splash-screen
+                                                http-bridge]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.components.context-menu :refer [menu-context]]
             [status-im.contacts.search-results :refer [contacts-search-results]]
@@ -85,6 +86,9 @@
                        #(when-not (= 0 @keyboard-height)
                           (dispatch [:set :keyboard-height 0])))
          (.hide splash-screen))
+       :component-will-unmount
+       (fn []
+         (.stop http-bridge))
        :render
        (fn []
          (when @view-id

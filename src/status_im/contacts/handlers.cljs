@@ -289,7 +289,7 @@
           (dispatch [:update-contact! {:whisper-identity from
                                        :last-online      timestamp}]))))))
 
-(register-handler :remove-contact
+(register-handler :hide-contact
   (after stop-watching-contact)
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
@@ -310,6 +310,16 @@
       (let [group' (update-in group [:contacts] (remove-contact-from-group whisper-identity))]
         (dispatch [:update-group group'])))))
 
+(register-handler :remove-contact
+  (fn [db [_ whisper-identity pred]]
+    (if-let [contact (contacts/get-by-id whisper-identity)]
+      (if (pred contact)
+        (do
+          (contacts/delete contact)
+          (update db :contacts dissoc whisper-identity))
+        db)
+      db)))
+
 (register-handler
   :open-contact-group-list
   (after #(dispatch [:navigate-to :contact-group-list]))
@@ -327,7 +337,7 @@
     (fn [_ [_ list-selection-fn options]]
       (list-selection-fn {:options (mapv :text options)
                           :callback (fn [index]
-                                      (when (< index (count options))
-                                        (when-let [handler (:value (nth options index))]
-                                          (handler))))
+                                      (case index
+                                        0 (dispatch [:remove-contact contact])
+                                        :default))
                           :cancel-text (label :t/cancel)}))))

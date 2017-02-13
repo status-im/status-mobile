@@ -1767,6 +1767,51 @@ status.command({
     }
 });
 
+function debugSuggestions(params) {
+    var suggestions = ["On", "Off"].map(function(entry) {
+        return status.components.touchable(
+            {onPress: [status.events.SET_VALUE, entry]},
+            status.components.view(
+                suggestionContainerStyle,
+                [status.components.view(
+                    suggestionSubContainerStyle,
+                    [
+                        status.components.text(
+                            {style: valueStyle},
+                            entry
+                        )
+                    ]
+                )]
+            )
+        );
+    });
+
+    var view = status.components.scrollView(
+        suggestionsContainerStyle(faucets.length),
+        suggestions
+    );
+
+    return {markup: view};
+}
+
+status.command({
+    name: "debug",
+    title: "Debug",
+    description: "Starts/stops a debug server",
+    color: "#7099e6",
+    registeredOnly: true,
+    params: [{
+        name: "mode",
+        suggestions: debugSuggestions,
+        type: status.types.TEXT
+    }],
+    preview: function (params) {
+        return status.components.text(
+            {},
+            "Debug mode: " + params.mode
+        );
+    }
+});
 
 function browseSuggestions(params) {
     if (params.url && params.url !== "undefined" && params.url != "") {

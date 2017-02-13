@@ -51,3 +51,4 @@
                     message'  (assoc message :payload payload'')]
                 (callback (if ack? :ack type) message')
                 (ack/check-ack! web3 from payload'' identity)))))))))
+
