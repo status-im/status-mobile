@@ -25,7 +25,8 @@
             [status-im.utils.datetime :as dt]
             [status-im.utils.name :refer [shortened-name]]
             [status-im.utils.js-resources :as js-res]
-            [status-im.commands.utils :as cu]))
+            [status-im.commands.utils :as cu]
+            [taoensso.timbre :as log]))
 
 (defn drag-icon []
   [view st/drag-container

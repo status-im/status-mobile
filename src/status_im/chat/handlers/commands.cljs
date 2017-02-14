@@ -1,6 +1,7 @@
 (ns status-im.chat.handlers.commands
   (:require [re-frame.core :refer [enrich after dispatch]]
             [status-im.utils.handlers :refer [register-handler] :as u]
+            [status-im.components.react :as react-comp]
             [status-im.components.status :as status]
             [status-im.models.commands :as commands]
             [status-im.chat.utils :refer [console? not-console?]]
@@ -295,7 +296,9 @@
     (fn [_ [_ {:keys [command]}]]
       (let [suggestions-trigger (keyword (:suggestions-trigger command))]
         (if (= :on-send suggestions-trigger)
-          (dispatch [:invoke-commands-suggestions!])
+          (do
+            (dispatch [:invoke-commands-suggestions!])
+            (react-comp/dismiss-keyboard!))
           (do
             (dispatch [:set-chat-ui-props :sending-disabled? true])
             (dispatch [:validate-command])))))))
