@@ -90,15 +90,18 @@
 ;; Structure to be exported
 
 (def platform-specific
-  {:component-styles  component-styles
-   :fonts             fonts
-   :list-selection-fn show-action-sheet
-   :tabs              {:tab-shadows? false}
-   :chats             {:action-button?       false
-                       :new-chat-in-toolbar? true}
-   :contacts          {:action-button?          false
-                       :new-contact-in-toolbar? true
-                       :uppercase-subtitles?    true
-                       :group-block-shadows?    false}
-   :discover         {:uppercase-subtitles? true}})
+  {:component-styles             component-styles
+   :fonts                        fonts
+   :list-selection-fn            show-action-sheet
+   :tabs                         {:tab-shadows? false}
+   :chats                        {:action-button?       false
+                                  :new-chat-in-toolbar? true}
+   :contacts                     {:action-button?          false
+                                  :new-contact-in-toolbar? true
+                                  :uppercase-subtitles?    true
+                                  :group-block-shadows?    false}
+   :discover                     {:uppercase-subtitles? true}
+   :public-group-icon-container  {:margin-top 2}
+   :private-group-icon-container {:margin-top 2}
+   :public-group-chat-hash-style {:top 6 :left 3}})
 

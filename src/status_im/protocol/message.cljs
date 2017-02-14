@@ -19,7 +19,7 @@
 (s/def :payload/new-keypair :message/keypair)
 
 (s/def :group-message/type
-  #{:group-message :group-invitation :add-group-identity
+  #{:public-group-message :group-message :group-invitation :add-group-identity
     :remove-group-identity :leave-group :update-group})
 
 (s/def :discover-message/type #{:online :status :discover :contact-request :update-keys})

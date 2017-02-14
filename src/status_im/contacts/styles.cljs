@@ -123,6 +123,10 @@
    :top    16
    :left   13})
 
+(def group-icon
+  (assoc option-inner-image
+    :tint-color color-gray))
+
 (def spacing-top
   {:background-color color-white
    :height           8})

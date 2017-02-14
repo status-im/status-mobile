@@ -2,11 +2,7 @@
   (:require [status-im.components.styles :refer [color-white
                                                  color-blue
                                                  text1-color
-                                                 text2-color
-                                                 color-light-blue
-                                                 color-light-red
-                                                 selected-contact-color
-                                                 color-gray4]]
+                                                 text2-color]]
             [status-im.utils.platform :refer [platform-specific]]))
 
 (defn toolbar-icon [enabled?]
@@ -23,8 +19,20 @@
   {:margin-left 16})
 
 (def group-chat-name-input
-  {:font-size  14
-   :color      text1-color})
+  {:font-size 14
+   :color     text1-color})
+
+(def group-chat-topic-input
+  {:font-size    14
+   :color        text1-color
+   :padding-left 13})
+
+(def topic-hash
+  (merge group-chat-name-input
+         {:width    10
+          :height   16
+          :position :absolute}
+         (get-in platform-specific [:public-group-chat-hash-style])))
 
 (def group-chat-name-wrapper
   {:padding-top 0})

@@ -1,4 +1,4 @@
-(ns status-im.new-group.screen
+(ns status-im.new-group.screen-private
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.resources :as res]

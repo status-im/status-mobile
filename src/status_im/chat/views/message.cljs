@@ -46,10 +46,10 @@
         members (subscribe [:current-chat-contacts])]
     (fn [{:keys [messages-count content datemark]}]
       (let [{:keys [status]} (if @group-chat
-                                    {:photo-path  nil
-                                     :status      nil
-                                     :last-online 0}
-                                    (first @members))]
+                               {:photo-path  nil
+                                :status      nil
+                                :last-online 0}
+                               (first @members))]
         [view st/status-container
          [chat-icon-message-status @chat-id @group-chat @name @color false]
          [text {:style           st/status-from
@@ -143,11 +143,10 @@
                        :current-chat-id current-chat-id}]]))
 
 (defn message-view
-  [message content]
+  [{:keys [username same-author index] :as message} content]
   [view (st/message-view message)
-   #_(when incoming-group
-       [text {:style message-author-text}
-        "Justas"])
+   (when (and username (or (= 1 index) (not same-author)))
+     [text {:style st/author} username])
    content])
 
 (defmulti message-content (fn [_ message _]
@@ -202,7 +201,7 @@
 (defn text-message
   [{:keys [content] :as message}]
   [message-view message
-   (let [parsed-text (parse-text content)
+   (let [parsed-text  (parse-text content)
          simple-text? (= (count parsed-text) 2)]
      (if simple-text?
        [autolink {:style   (st/text-message message)
@@ -374,10 +373,10 @@
                   children)])}))
     (into [view] children)))
 
-(defn chat-message [{:keys [outgoing message-id chat-id user-statuses from content] :as message}]
-  (let [my-identity     (subscribe [:get :current-public-key])
-        status          (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
-        preview         (subscribe [:get-in [:message-data :preview message-id]])]
+(defn chat-message [{:keys [outgoing message-id chat-id user-statuses from] :as message}]
+  (let [my-identity  (subscribe [:get :current-public-key])
+        status       (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
+        preview      (subscribe [:get-in [:message-data :preview message-id]])]
     (r/create-class
       {:component-will-mount
        (fn []

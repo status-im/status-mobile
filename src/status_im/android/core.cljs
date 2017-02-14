@@ -24,6 +24,7 @@
             [status-im.accounts.screen :refer [accounts]]
             [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
+            [status-im.new-group.screen-public :refer [new-public-group]]
             [status-im.new-group.screen :refer [new-group contact-group]];; TODO: confusion with names
             [status-im.new-group.views.contact-list :refer [contact-group-list]]
             [status-im.participants.views.add :refer [new-participants]]
@@ -101,6 +102,7 @@
                                :remove-participants remove-participants
                                :chat-list main-tabs
                                :new-group new-group
+                               :new-public-group new-public-group
                                :contact-group contact-group
                                :contact-group-list contact-group-list
                                :group-settings group-settings

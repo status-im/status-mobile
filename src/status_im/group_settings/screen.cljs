@@ -160,11 +160,12 @@
         (label :t/add-members)]]]
      [chat-members]]))
 
-(defn group-settings []
+(defview group-settings []
+  [public? [:chat :public?]]
   [view st/group-settings
    [new-group-toolbar]
    [scroll-view st/body
-    [chat-name]
+    (when-not public? [chat-name])
     [members]
     [text {:style st/settings-text}
      (label :t/settings)]
