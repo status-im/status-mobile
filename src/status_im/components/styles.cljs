@@ -8,11 +8,16 @@
 (def color-gray "#838c93de")
 (def color-gray2 "#8f838c93")
 (def color-gray3 "#00000040")
+(def color-gray4 "#939ba1")
+(def color-gray5 "#d9dae1")
 (def color-steel "#838b91")
 (def color-white "white")
-(def color-light-blue-transparent "#bbc4cb32")
+(def color-light-blue "#628fe3")
+(def color-light-blue2 "#eff3fc")
 (def color-light-gray "#EEF2F5")
 (def color-red "red")
+(def color-light-red "#e86363")
+
 (def color-separator "#D6D6D6")
 
 (def text1-color color-black)
@@ -23,15 +28,16 @@
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
 (def selected-message-color "#E4E9ED")
-(def separator-color "#0000001f")
+(def selected-contact-color color-light-blue2)
+(def separator-color color-gray4)
 (def default-chat-color color-purple)
 
 (def flex
   {:flex 1})
 
 (def icon-search
-  {:width  17
-   :height 17})
+  {:width  24
+   :height 24})
 
 (def create-icon
   {:fontSize 20
@@ -39,8 +45,12 @@
    :color    :white})
 
 (def icon-back
-  {:width  8
-   :height 14})
+  {:width  24
+   :height 24})
+
+(def icon-default
+  {:width  24
+   :height 24})
 
 (def icon-add
   {:width  14
@@ -78,3 +88,25 @@
 (def button-input
   {:flex          1
    :flexDirection :column})
+
+(def confirm-button
+  {:flex-direction   :row
+   :height           52
+   :justify-content  :center
+   :align-items      :center
+   :background-color color-light-blue})
+
+(def confirm-button-label
+  {:color          color-white
+   :font-size      17
+   :line-height    20
+   :letter-spacing -0.2})
+
+(def context-menu
+  {:customStyles {:optionsContainer {:padding-top 8
+                                     :padding-bottom 8}
+                  :optionWrapper    {:padding-left 16
+                                     :justify-content :center
+                                     :height 48}
+                  :text             {:font-size  15
+                                     :line-height 20}}})

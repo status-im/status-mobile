@@ -19,4 +19,4 @@
    [item-checkbox {:onToggle (on-toggle whisper-identity)
                    :checked  checked
                    :size     30}]
-   [contact-inner-view contact]])
+   [contact-inner-view {:contact contact}]])

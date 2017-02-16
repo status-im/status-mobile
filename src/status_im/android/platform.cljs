@@ -1,6 +1,5 @@
 (ns status-im.android.platform
-  (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+  (:require [status-im.components.styles :as styles]))
 
 (def component-styles
   {:status-bar            {:default     {:height    0
@@ -8,7 +7,7 @@
                                          :color     styles/color-white}
                            :main        {:height    0
                                          :bar-style "dark-content"
-                                         :color     toolbar-background2}
+                                         :color     styles/color-white}
                            :transparent {:height       20
                                          :bar-style    "light-content"
                                          :translucent? true
@@ -34,8 +33,17 @@
                            :item     {:status-text {:color       styles/color-black
                                                     :line-height 22
                                                     :font-size   14}}}
-   :contacts              {:subtitle {:color     styles/color-gray2
-                                      :font-size 14}}
+   :contacts              {:subtitle     {:color     styles/color-gray4
+                                          :font-size 14}
+                           :separator    {:height 0}
+                           :icon-check   {:border-radius 2
+                                          :width         17
+                                          :height        17}
+                           :group-header {:flexDirection   :row
+                                          :alignItems      :center
+                                          :height          56
+                                          :padding-top     10
+                                          :backgroundColor styles/color-light-gray}}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}
@@ -47,7 +55,8 @@
    :toolbar-last-activity {:color            styles/text2-color
                            :background-color :transparent
                            :top              0
-                           :font-size        12}})
+                           :font-size        12}
+   :toolbar-title-container {:padding-left   16}})
 
 (def fonts
   {:light         {:font-family "sans-serif-light"}
@@ -55,7 +64,6 @@
    :medium        {:font-family "sans-serif-medium"}
 
    :toolbar-title {:font-family "sans-serif"}})
-
 
 ;; Dialogs
 
