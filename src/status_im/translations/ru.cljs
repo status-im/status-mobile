@@ -8,6 +8,8 @@
    :chat-name                             "Имя чата"
    :notifications-title                   "Уведомления и звуки"
    :offline                               "Оффлайн"
+   :cancel                                "Отмена"
+   :next                                  "Продолжить"
 
    ;drawer
    :invite-friends                        "Пригласить друзей"
@@ -119,6 +121,7 @@
    ;contacts
    :contacts                              "Контакты"
    :new-contact                           "Новый контакт"
+   :edit-contacts                         "Редактирование контактов"
    :show-all                              "ПОКАЗАТЬ ВСЕ"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Люди"
@@ -161,6 +164,9 @@
    :group-chat-name                       "Имя чата"
    :empty-group-chat-name                 "Введите имя"
    :illegal-group-chat-name               "Выберите другое имя"
+   :new-group                             "Новая группа"
+   :group-name                            "Название группы"
+   :reorder-groups                        "Упорядочить группы"
 
    ;participants
    :add-participants                      "Добавить участников"

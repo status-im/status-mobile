@@ -74,6 +74,7 @@
       (dispatch [:initialize-sync-listener])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
+      (dispatch [:load-groups])
       (dispatch [:init-chat])
       (dispatch [:init-discoveries])
       (dispatch [:init-debug-mode address])
