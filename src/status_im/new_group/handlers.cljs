@@ -4,7 +4,9 @@
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.data-store.chats :as chats]
+            [status-im.data-store.contact-groups :as groups]
             [clojure.string :as s]
+            [status-im.i18n :refer [label]]
             [status-im.utils.handlers :as u]
             [status-im.utils.random :as random]
             [taoensso.timbre :refer-macros [debug]]
@@ -86,7 +88,7 @@
                   :private private-key}
        :callback #(dispatch [:incoming-message %1 %2])})))
 
-(register-handler :create-new-group
+(register-handler :create-new-group-chat
   (-> prepare-chat
       ((enrich add-chat))
       ((after create-chat!))
@@ -160,6 +162,98 @@
                :identity current-public-key
                :keypair  keypair
                :callback #(dispatch [:incoming-message %1 %2])})))))))
+
+(defn prepare-group
+  [{:keys [selected-contacts contact-groups] :as db} [_ group-name]]
+  (let [contacts (mapv #(hash-map :identity %) selected-contacts)]
+    (assoc db :new-group {:group-id    (random/id)
+                          :name        group-name
+                          :order       (count contact-groups)
+                          :timestamp   (random/timestamp)
+                          :contacts    contacts})))
+
+(defn add-group
+  [{:keys [new-group] :as db} _]
+  (update db :contact-groups merge {(:group-id new-group) new-group}))
+
+(defn update-group
+  [{:keys [new-group] :as db} _]
+  (update db :contact-groups merge {(:group-id new-group) new-group}))
+
+(defn create-group!
+  [{:keys [new-group]} _]
+  (groups/save new-group))
+
+(defn update-group!
+  [{:keys [new-group] :as db} _]
+  (groups/save new-group))
+
+(defn show-contact-list!
+  [_ _]
+  (dispatch [:navigate-to-clean :contact-list]))
+
+(register-handler
+  :create-new-group
+  (-> prepare-group
+      ((enrich add-group))
+      ((after create-group!))
+      ((after show-contact-list!))))
+
+(defn prepare-group-after-edit
+  [{:keys [selected-contacts] :as db} [_ group group-name]]
+  (let [contacts (mapv #(hash-map :identity %) selected-contacts)
+        group'   (assoc group :name        group-name
+                              :contacts    contacts)]
+    (assoc db :new-group group')))
+
+(register-handler
+  :update-group-after-edit
+  (-> prepare-group-after-edit
+      ((enrich update-group))
+      ((after update-group!))
+      ((after show-contact-list!))))
+
+(register-handler
+  :update-group
+  (-> (fn [db [_ new-group]]
+          (assoc db :new-group new-group))
+      ((enrich update-group))
+      ((after update-group!))
+      ((after show-contact-list!))))
+
+(defn save-groups! [{:keys [new-groups]} _]
+  (groups/save-all new-groups))
+
+(defn update-pending-status [old-groups {:keys [group-id pending?] :as group}]
+  (let [{old-pending :pending?
+         :as         old-group} (get old-groups group-id)
+        pending?' (if old-pending (and old-pending pending?) pending?)]
+    (assoc group :pending? (boolean pending?'))))
+
+(defn add-new-groups
+  [{:keys [contact-groups] :as db} [_ new-groups]]
+  (let [identities  (set (keys contact-groups))
+        new-groups' (->> new-groups
+                           (map #(update-pending-status contact-groups %))
+                           (remove #(identities (:group-id %)))
+                           (map #(vector (:group-id %) %))
+                           (into {}))]
+    (-> db
+        (update :contact-groups merge new-groups')
+        (assoc :new-groups (vals new-groups')))))
+
+(register-handler :add-groups
+  (after save-groups!)
+  add-new-groups)
+
+(defn load-groups! [db _]
+  (let [groups (->> (groups/get-all)
+                    (map (fn [{:keys [group-id] :as group}]
+                           [group-id group]))
+                    (into {}))]
+    (assoc db :contact-groups groups)))
+
+(register-handler :load-groups load-groups!)
 
 (defmethod nav/preload-data! :new-public-group
   [db]
