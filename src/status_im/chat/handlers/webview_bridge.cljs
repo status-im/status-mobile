@@ -108,8 +108,7 @@
   [db [_ _ {:keys [handler action params]}]]
   (assoc db :contacts-click-handler handler
             :contacts-click-action action
-            :contacts-click-params params
-            :contacts-filter #(not (nil? (:address %)))))
+            :contacts-click-params params))
 
 (def qr-context {:toolbar-title (label :t/address)})
 

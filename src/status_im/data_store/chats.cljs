@@ -4,12 +4,12 @@
   (:refer-clojure :exclude [exists?]))
 
 (defn- normalize-contacts
-  [chats]
-  (map #(update % :contacts vals) chats))
+  [item]
+  (update item :contacts vals))
 
 (defn get-all
   []
-  (normalize-contacts (data-store/get-all-active)))
+  (map normalize-contacts (data-store/get-all-active)))
 
 (defn get-by-id
   [id]
