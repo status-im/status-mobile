@@ -65,6 +65,7 @@
     "react-native-linear-gradient": "1.5.7",
     "react-native-network-info": "github:alwx/react-native-network-info",
     "react-native-orientation": "github:youennPennarun/react-native-orientation",
+    "react-native-popup-menu": "^0.7.1",
     "react-native-qrcode": "^0.2.2",
     "react-native-randombytes": "^2.1.0",
     "react-native-share": "1.0.17",

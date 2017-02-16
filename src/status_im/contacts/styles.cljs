@@ -6,7 +6,7 @@
                                                  color-separator
                                                  color-gray2
                                                  color-gray]]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]
+            [status-im.components.toolbar.styles :refer [toolbar-background1 toolbar-background2]]
             [status-im.utils.platform :as p]))
 
 ;; Contacts list
@@ -14,6 +14,9 @@
 (def toolbar-shadow
   {:height           2
    :background-color toolbar-background2})
+
+(def toolbar-actions
+  {:flex-direction :row})
 
 (def contact-groups
   {:flex             1
@@ -43,22 +46,13 @@
 (def contact-group
   {:flex-direction :column})
 
-(def contact-group-header
-  {:flex-direction   :column
-   :background-color toolbar-background2})
-
-(def contact-group-header-inner
-  {:flexDirection   :row
-   :alignItems      :center
-   :height          48
-   :backgroundColor toolbar-background2})
-
 (def contact-group-subtitle
-  {:flex       1
-   :margin-left 16})
+  {:margin-left 16})
 
 (def contact-group-count
-  {:margin-right 14})
+  {:flex        1
+   :margin-left 8
+   :opacity     0.6})
 
 (def contact-group-header-gradient-top
   {:flexDirection   :row
@@ -79,9 +73,6 @@
   ["rgba(24, 52, 76, 0.01)"
    "rgba(24, 52, 76, 0.05)"])
 
-(def contact-group-header-height (+ (:height contact-group-header-inner)
-                                    (:height contact-group-header-gradient-bottom)))
-
 (def show-all
   {:flexDirection   :row
    :alignItems      :center
@@ -94,6 +85,9 @@
    :color         text3-color
    ;; ios only:
    :letterSpacing 0.5})
+
+(def contact-separator-container
+  {:background-color color-white})
 
 (def contact-container
   {:flex-direction   :row
@@ -129,8 +123,8 @@
 (def option-inner-image
   {:width  24
    :height 18
-   :top 16
-   :left 13})
+   :top    16
+   :left   13})
 
 (def group-icon
   (assoc option-inner-image
@@ -167,14 +161,18 @@
    :color     text2-color})
 
 (def more-btn
-  {:width          56
+  {:width          24
    :height         56
+   :margin-right   14
    :alignItems     :center
    :justifyContent :center})
 
-(def more-btn-icon
-  {:width  4
-   :height 16})
+(def search-btn
+  {:width          24
+   :height         56
+   :margin-right   24
+   :alignItems     :center
+   :justifyContent :center})
 
 ; New contact
 
