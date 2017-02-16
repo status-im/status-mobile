@@ -2,7 +2,11 @@
   (:require [status-im.components.styles :refer [color-white
                                                  color-blue
                                                  text1-color
-                                                 text2-color]]
+                                                 text2-color
+                                                 color-light-blue
+                                                 color-light-red
+                                                 selected-contact-color
+                                                 color-gray4]]
             [status-im.utils.platform :refer [platform-specific]]))
 
 (defn toolbar-icon [enabled?]
@@ -37,27 +41,49 @@
 (def group-chat-name-wrapper
   {:padding-top 0})
 
+(def group-name-text
+  {:margin-top     11
+   :margin-bottom  10
+   :letter-spacing -0.1
+   :color          color-gray4
+   :font-size      13
+   :line-height    20})
+
 (def members-text
-  {:margin-top    24
-   :margin-bottom 8
-   :color         text2-color
-   :font-size     14
-   :line-height   20})
+  {:margin-top     10
+   :margin-bottom  8
+   :letter-spacing -0.2
+   :color          color-gray4
+   :font-size      16
+   :line-height    19})
 
 (def add-container
   {:flex-direction :row
-   :margin-bottom  16})
+   :align-items    :center
+   :margin-top     16
+   :margin-bottom  16
+   :margin-right   20})
 
 (def add-icon
-  {:margin-vertical   18
-   :margin-horizontal 3
-   :width             17
-   :height            17})
+  {:align-items :center
+   :width       24
+   :height      24})
 
 (def add-text
-  {:margin-top  16
-   :margin-left 32
-   :color       text2-color
+  {:margin-left    32
+   :color          color-light-blue
+   :letter-spacing -0.2
+   :font-size      17
+   :line-height    20})
+
+(def delete-group-text
+  {:color          color-light-red
+   :letter-spacing 0.5
+   :font-size      14
+   :line-height    20})
+
+(def delete-group-prompt-text
+  {:color       color-gray4
    :font-size   14
    :line-height 20})
 
@@ -70,9 +96,25 @@
    :align-items     :center
    :height          56})
 
-(def contact-item-checkbox
-  {:outer-size  20
-   :filter-size 16
-   :inner-size  12
-   :outer-color color-blue
-   :inner-color color-blue})
+(def selected-contact
+  {:background-color selected-contact-color})
+
+(def icon-check-container
+  (merge (get-in platform-specific [:component-styles :contacts :icon-check])
+         {:alignItems     :center
+          :justifyContent :center}))
+
+(def toggle-container
+  {:width          56
+   :height         56
+   :alignItems     :center
+   :justifyContent :center})
+
+(def check-icon
+  {:width  12
+   :height 12})
+
+(def delete-group-container
+  {:height       56
+   :padding-left 72
+   :margin-top   15})

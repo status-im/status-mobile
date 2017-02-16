@@ -12,6 +12,7 @@
                                                 splash-screen
                                                 http-bridge]]
             [status-im.components.main-tabs :refer [main-tabs]]
+            [status-im.components.context-menu :refer [menu-context]]
             [status-im.contacts.search-results :refer [contacts-search-results]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -23,8 +24,9 @@
             [status-im.accounts.screen :refer [accounts]]
             [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
-            [status-im.new-group.screen-private :refer [new-group]]
             [status-im.new-group.screen-public :refer [new-public-group]]
+            [status-im.new-group.screen-private :refer [new-group contact-group]];; TODO: confusion with names
+            [status-im.new-group.views.contact-list :refer [contact-group-list]]
             [status-im.participants.views.add :refer [new-participants]]
             [status-im.participants.views.remove :refer [remove-participants]]
             [status-im.group-settings.screen :refer [group-settings]]
@@ -33,7 +35,8 @@
             status-im.data-store.core
             [taoensso.timbre :as log]
             [status-im.components.status :as status]
-            [status-im.chat.styles.screen :as st]
+            [status-im.components.styles :as st]
+            [status-im.chat.styles.screen :as chat-st]
             [status-im.accounts.views.qr-code :refer [qr-code-view]]))
 
 (defn init-back-button-handler! []
@@ -105,6 +108,8 @@
                                :chat-list main-tabs
                                :new-group new-group
                                :new-public-group new-public-group
+                               :contact-group contact-group
+                               :contact-group-list contact-group-list
                                :group-settings group-settings
                                :contact-list main-tabs
                                :contact-list-search-results contacts-search-results
@@ -118,21 +123,20 @@
                                :login login
                                :recover recover
                                :my-profile my-profile)]
-               [view
-                {:flex 1}
-                [component]
-                (when @modal-view
-                  [view
-                   st/chat-modal
-                   [modal {:animation-type   :slide
-                           :transparent      false
-                           :on-request-close #(dispatch [:navigate-back])}
-                    (let [component (case @modal-view
-                                      :qr-scanner qr-scanner
-                                      :qr-code-view qr-code-view
-                                      :confirm confirm
-                                      :contact-list-modal contact-list)]
-                      [component])]])]))))})))
+               [menu-context st/flex
+                [view st/flex
+                 [component]
+                 (when @modal-view
+                   [view chat-st/chat-modal
+                    [modal {:animation-type   :slide
+                            :transparent      false
+                            :on-request-close #(dispatch [:navigate-back])}
+                     (let [component (case @modal-view
+                                       :qr-scanner qr-scanner
+                                       :qr-code-view qr-code-view
+                                       :confirm confirm
+                                       :contact-list-modal contact-list)]
+                       [component])]])]]))))})))
 
 (defn init []
   (status/call-module status/init-jail)

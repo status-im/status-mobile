@@ -17,12 +17,24 @@
             [status-im.utils.js-resources :as js-res]))
 
 (defmethod nav/preload-data! :group-contacts
+  [db [_ _ group show-search?]]
+  (-> db
+      (assoc :contacts-group group)
+      (update :toolbar-search assoc
+              :show (when show-search? :contact-list)
+              :text "")))
+
+(defmethod nav/preload-data! :contact-group
   [db [_ _ group]]
-  (dissoc
-    (if group
-      (assoc db :contacts-group group)
-      db)
-    :contacts-filter))
+  (if group
+    (-> db
+        (assoc :contact-group group
+               :selected-contacts (into #{} (map :identity (:contacts group)))
+               :new-chat-name (:name group))
+        (update :toolbar-search assoc
+                :show :contact-list
+                :text ""))
+    db))
 
 (defmethod nav/preload-data! :new-group
   [db _]
@@ -34,8 +46,7 @@
   [db [_ _ click-handler]]
   (-> db
       (assoc-in [:toolbar-search :show] nil)
-      (assoc :contacts-click-handler click-handler
-             :contacts-filter nil)))
+      (assoc :contacts-click-handler click-handler)))
 
 (register-handler :remove-contacts-click-handler
   (fn [db]
@@ -167,16 +178,15 @@
 (defn save-contacts! [{:keys [new-contacts]} _]
   (contacts/save-all new-contacts))
 
-(defn update-pending-status [old-contacts {:keys [whisper-identity pending] :as contact}]
-  (let [{old-pending :pending
-         :as         old-contact} (get old-contacts whisper-identity)]
-    (if old-contact
-      (assoc contact :pending (and old-pending pending))
-      (assoc contact :pending pending))))
+(defn update-pending-status [old-contacts {:keys [whisper-identity pending?] :as contact}]
+  (let [{old-pending :pending?
+         :as         old-contact} (get old-contacts whisper-identity)
+        pending?' (if old-contact (and old-pending pending?) pending?)]
+    (assoc contact :pending? (boolean pending?'))))
 
 (defn add-new-contacts
   [{:keys [contacts] :as db} [_ new-contacts]]
-  (let [identities    (set (map :whisper-identity contacts))
+  (let [identities    (set (keys contacts))
         new-contacts' (->> new-contacts
                            (map #(update-pending-status contacts %))
                            (remove #(identities (:whisper-identity %)))
@@ -243,9 +253,9 @@
 (register-handler :add-pending-contact
   (u/side-effect!
     (fn [{:keys [chats contacts]} [_ chat-id]]
-      (let [contact  (if-let [contact-info (get-in chats [chat-id :contact-info])]
-                       (read-string contact-info)
-                       (assoc (get contacts chat-id) :pending false))
+      (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
+                      (read-string contact-info)
+                      (assoc (get contacts chat-id) :pending? false))
             contact' (assoc contact :address (public-key->address chat-id))]
         (dispatch [::prepare-contact contact'])
         (dispatch [:watch-contact contact'])
@@ -283,6 +293,8 @@
       (let [{{:keys [public private]} :keypair
              timestamp                :timestamp} payload
             prev-last-updated (get-in db [:contacts from :keys-last-updated])]
+
+
         (when (<= prev-last-updated timestamp)
           (let [contact {:whisper-identity  from
                          :public-key        public
@@ -305,8 +317,18 @@
   (after stop-watching-contact)
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
-      (dispatch [:update-contact! (assoc contact :pending true)])
+      (dispatch [:update-contact! (assoc contact :pending? true)])
       (dispatch [:account-update-keys]))))
+
+(defn remove-contact-from-group [whisper-identity]
+  (fn [contacts]
+    (remove #(= whisper-identity (:identity %)) contacts)))
+
+(register-handler :remove-contact-from-group
+  (u/side-effect!
+    (fn [_ [_ {:keys [whisper-identity]} group]]
+      (let [group' (update group :contacts (remove-contact-from-group whisper-identity))]
+        (dispatch [:update-group group'])))))
 
 (register-handler :remove-contact
   (fn [db [_ whisper-identity pred]]
@@ -329,3 +351,14 @@
                                            0 (dispatch [:hide-contact contact])
                                            :default))
                           :cancel-text (label :t/cancel)}))))
+
+(register-handler
+  :open-contact-group-list
+  (after #(dispatch [:navigate-to :contact-group-list]))
+  (fn [db _]
+    (->
+      (assoc db :contact-group nil
+                :selected-contacts #{}
+                :new-chat-name "")
+      (assoc-in [:toolbar-search :show] nil)
+      (assoc-in [:toolbar-search :text] ""))))
