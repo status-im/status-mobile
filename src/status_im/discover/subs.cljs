@@ -28,12 +28,13 @@
   (fn [db [_ limit tags]]
     (let [discoveries (reaction (:discoveries @db))
           current-tag (reaction (:current-tag @db))
-          search-tags (reaction (:discover-search-tags @db))
-          discoveries (->> (get-discoveries-by-tags @discoveries @current-tag (or tags @search-tags))
-                           (map #(assoc % :priority (calculate-priority db %)))
-                           (sort-by :priority >))]
-      (reaction {:discoveries (take limit discoveries)
-                 :total       (count discoveries)}))))
+          search-tags (reaction (:discover-search-tags @db))]
+      (reaction
+        (let [discoveries (->> (get-discoveries-by-tags @discoveries @current-tag (or tags @search-tags))
+                               (map #(assoc % :priority (calculate-priority @db %)))
+                               (sort-by :priority >))]
+          {:discoveries (take limit discoveries)
+           :total       (count discoveries)})))))
 
 (register-sub :get-recent-discoveries
   (fn [db]
