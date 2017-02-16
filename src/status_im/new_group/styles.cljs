@@ -2,7 +2,11 @@
   (:require [status-im.components.styles :refer [color-white
                                                  color-blue
                                                  text1-color
-                                                 text2-color]]
+                                                 text2-color
+                                                 color-light-blue
+                                                 color-light-red
+                                                 selected-contact-color
+                                                 color-gray4]]
             [status-im.utils.platform :refer [platform-specific]]))
 
 (defn toolbar-icon [enabled?]

@@ -11,7 +11,8 @@
             [taoensso.timbre :as log]
             [status-im.i18n :refer [label]]
             [status-im.utils.homoglyph :as h]
-            [status-im.utils.js-resources :as js-res]))
+            [status-im.utils.js-resources :as js-res]
+            [status-im.utils.random :as random]))
 
 (def commands-js "commands.js")
 
@@ -167,19 +168,16 @@
 
 (reg-handler :load-default-contacts!
   (u/side-effect!
-    (fn [{:keys [chats]}]
+    (fn [{:keys [chats groups]}]
       (let [default-contacts js-res/default-contacts
             default-dapps-group-contacts (mapv #(hash-map :identity (clojure.core/name (first %)))
-                                               (filter #(:dapp? (second %)) default-contacts))]
+                                               (filter #(true? (:dapp? (second %))) default-contacts))]
         (doseq [[id {:keys [name photo-path public-key add-chat?
                             dapp? dapp-url dapp-hash]}] default-contacts]
           (let [id' (clojure.core/name id)]
             (when-not (chats id')
               (when add-chat?
                 (dispatch [:add-chat id' {:name (:en name)}]))
-              ;;TODO strange condition, we add contact only if there is no chat, it should check if we have contact in realm
-              ;;if we want to add default contacts in new versions of app we should add it if there is no such
-              ;; contact in contacts instead of checking in chats
               (dispatch [:add-contacts [{:whisper-identity id'
                                          :name             (:en name)
                                          :photo-path       photo-path
@@ -187,10 +185,8 @@
                                          :dapp?            dapp?
                                          :dapp-url         (:en dapp-url)
                                          :dapp-hash        dapp-hash}]]))))
-        ;;TODO should be emmited only once on account creations (because user can edit/remove this group)
-        ;; if we want to leave as is and to have ability to add new default groups in new versions of app
-        ;; we should refactor group deletion, because now i'm deleting groups instead making it archived
-        (dispatch [:add-groups [{:group-id    "dapps"
-                                 :name        (label :t/contacts-group-dapps)
-                                 :timestamp   (.getTime (js/Date.))
-                                 :contacts    default-dapps-group-contacts}]])))))
+        (dispatch [:add-groups [{:group-id  "dapps"
+                                 :name      (label :t/contacts-group-dapps)
+                                 :order     0
+                                 :timestamp (random/timestamp)
+                                 :contacts  default-dapps-group-contacts}]])))))

@@ -15,6 +15,9 @@
   {:height           2
    :background-color toolbar-background2})
 
+(def toolbar-actions
+  {:flex-direction :row})
+
 (def contact-groups
   {:flex             1
    :background-color toolbar-background2})

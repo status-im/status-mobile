@@ -18,7 +18,7 @@
      [text {:style st/letter-text} letter])])
 
 (defn options-btn [contact more-options]
-  (let [options [{:value #(dispatch [:remove-contact contact]) :text (label :t/delete-contact)}]]
+  (let [options [{:value #(dispatch [:hide-contact contact]) :text (label :t/delete-contact)}]]
     [view st/more-btn
      [context-menu
       [icon :options_gray]

@@ -28,17 +28,16 @@
             [status-im.components.styles :refer [color-blue
                                                  create-icon]]))
 
-(def contacts-limit 5) ;;TODO for test
+(def contacts-limit 5)
+
+(def toolbar-options
+  [{:text (label :t/new-contact) :value #(dispatch [:navigate-to :new-contact])}
+   {:text (label :t/edit)        :value #(dispatch [:set-in [:contacts-ui-props :edit?] true])}
+   {:text (label :t/new-group)   :value #(dispatch [:open-contact-group-list])}])
 
 (defn toolbar-actions []
-  (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])
-        options (into []
-                      (concat
-                        (when new-contact? [{:value #(dispatch [:navigate-to :new-contact])
-                                             :text (label :t/new-contact)}])
-                        [{:value #(dispatch [:set-in [:contacts-ui-props :edit?] true]) :text (label :t/edit)}
-                         {:value #(dispatch [:open-contact-group-list]) :text (label :t/new-group)}]))]
-    [view {:flex-direction "row"}
+  (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])]
+    [view st/toolbar-actions
      [touchable-highlight
       {:on-press #(dispatch [:navigate-to :group-contacts nil :show-search])}
       [view st/search-btn
@@ -46,7 +45,7 @@
      [view st/more-btn
       [context-menu
        [icon :options_dark]
-       options]]]))
+       (if new-contact? toolbar-options (rest toolbar-options))]]]))
 
 (defn toolbar-view []
  [toolbar {:style          tst/toolbar-with-search
@@ -89,17 +88,13 @@
   [linear-gradient {:style  st/contact-group-header-gradient-top
                     :colors st/contact-group-header-gradient-top-colors}])
 
-(defn line-view []
-  [view {:style {:background-color "#D7D7D7"
-                 :height           1}}])
-
 (defn on-scroll-animation [e show-toolbar-shadow?]
   (let [offset (.. e -nativeEvent -contentOffset -y)]
-    (reset! show-toolbar-shadow?
-            (> offset 0))))
+    (reset! show-toolbar-shadow? (pos? offset))))
 
-(defn contact-group-view [contacts contacts-count subtitle group edit? click-handler]
-  (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])]
+(defn contact-group-form [{:keys [contacts contacts-count group edit? click-handler]}]
+  (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])
+        subtitle (:name group)]
     [view st/contact-group
      (when subtitle
        [subtitle-view subtitle contacts-count group edit?])
@@ -114,7 +109,7 @@
                  :extended?      edit?
                  :on-click       (when-not edit? click-handler)
                  :extend-options (when group
-                                  [{:value #(dispatch [:remove-contact contact])
+                                  [{:value #(dispatch [:hide-contact contact])
                                     :text (label :t/delete-contact)}
                                    {:value #(dispatch [:remove-contact-from-group contact group])
                                     :text (label :t/remove-from-group)}])}])
@@ -129,10 +124,11 @@
      (when shadows?
        [group-bottom-view])]))
 
-(defview contact-group-view-new [{:keys [name] :as group} edit? click-handler]
-  [contacts [:all-added-group-contacts group]
-   contacts-count [:all-added-group-contacts-count group]]
-  [contact-group-view contacts contacts-count name group edit? click-handler])
+(defview contact-group-view [{:keys [group] :as params}]
+  [contacts [:all-added-group-contacts-with-limit (:group-id group) contacts-limit]
+   contacts-count [:all-added-group-contacts-count (:group-id group)]]
+  [contact-group-form (merge params {:contacts contacts
+                                     :contacts-count contacts-count})])
 
 (defn contacts-action-button []
   [action-button {:button-color color-blue
@@ -152,7 +148,7 @@
    contacts-count       [:added-contacts-count]
    click-handler        [:get :contacts-click-handler]
    edit?                [:get-in [:contacts-ui-props :edit?]]
-   groups               [:get :groups]
+   groups               [:all-added-groups]
    show-toolbar-shadow? (r/atom false)]
   [view st/contacts-list-container
    (if edit?
@@ -165,19 +161,15 @@
      [scroll-view {:style    st/contact-groups
                    :onScroll #(on-scroll-animation % show-toolbar-shadow?)}
       (when (pos? contacts-count)
-        [contact-group-view
-         contacts
-         contacts-count
-         nil
-         nil
-         edit?
-         click-handler])
+        [contact-group-form {:contacts       contacts
+                             :contacts-count contacts-count
+                             :edit?          edit?
+                             :click-handler  click-handler}])
       (for [group groups]
         ^{:key group}
-        [contact-group-view-new
-         group
-         edit?
-         click-handler])]
+        [contact-group-view {:group          group
+                             :edit?          edit?
+                             :click-handler  click-handler}])]
      [view st/empty-contact-groups
       [react/icon :group_big st/empty-contacts-icon]
       [text {:style st/empty-contacts-text} (label :t/no-contacts)]])

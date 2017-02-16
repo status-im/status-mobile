@@ -80,6 +80,26 @@
    [toolbar
     {:title (label (if edit? :t/edit-group :t/new-group))}]])
 
+(defn chat-name-view [contacts-count]
+  [view st/chat-name-container
+   [text {:style st/group-name-text
+          :font  :medium}
+    (label :t/group-name)]
+   [group-name-input]
+   [text {:style st/members-text
+          :font  :medium}
+    (str (label :t/group-members) " " contacts-count)]
+   [touchable-highlight {:on-press #(dispatch [:navigate-forget :contact-group-list])}
+    [view st/add-container
+     [icon :add_blue st/add-icon]
+     [text {:style st/add-text} (label :t/add-members)]]]])
+
+(defn delete-btn [on-press]
+  [touchable-highlight {:on-press on-press}
+   [view st/delete-group-container
+    [text {:style st/delete-group-text} (label :t/delete-group)]
+    [text {:style st/delete-group-prompt-text} (label :t/delete-group-prompt)]]])
+
 ;;TODO: should be refactored into one common function for group chats and contact groups
 (defview contact-group []
   [contacts [:selected-group-contacts]
@@ -88,18 +108,7 @@
   (let [save-btn-enabled? (and (s/valid? ::v/name group-name) (pos? (count contacts)))]
     [view st/new-group-container
      [new-contacts-group-toolbar (boolean group)]
-     [view st/chat-name-container
-      [text {:style st/group-name-text
-             :font  :medium}
-       (label :t/group-name)]
-      [group-name-input]
-      [text {:style st/members-text
-             :font  :medium}
-       (str (label :t/group-members) " " (count contacts))]
-      [touchable-highlight {:on-press #(dispatch [:navigate-forget :contact-group-list])}
-       [view st/add-container
-        [icon :add_blue st/add-icon]
-        [text {:style st/add-text} (label :t/add-members)]]]]
+     [chat-name-view (count contacts)]
      [list-view
       {:dataSource (to-datasource contacts)
        :renderRow  (fn [row _ _]
@@ -112,10 +121,7 @@
                          :extended?     true}]))
        :style      st/contacts-list}]
      (when group
-       [touchable-highlight {:on-press #(dispatch [:delete-group (:group-id group)])}
-        [view st/delete-group-container
-         [text {:style st/delete-group-text} (label :t/delete-group)]
-         [text {:style st/delete-group-prompt-text} (label :t/delete-group-prompt)]]])
+       [delete-btn #(dispatch [:update-group (assoc group :pending? true)])])
      (when save-btn-enabled?
        [confirm-button (label :t/save) (if group
                                          #(dispatch [:update-group-after-edit group group-name])

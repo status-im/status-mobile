@@ -1,15 +1,14 @@
-(ns status-im.data-store.groups
-  (:require [status-im.data-store.realm.groups :as data-store]
-    [re-frame.core :refer [dispatch]])
+(ns status-im.data-store.contact-groups
+  (:require [status-im.data-store.realm.contact-groups :as data-store])
   (:refer-clojure :exclude [exists?]))
 
 (defn- normalize-contacts
-  [groups]
-  (map #(update % :contacts vals) groups))
+  [item]
+  (update item :contacts vals))
 
 (defn get-all
   []
-  (normalize-contacts (data-store/get-all-as-list)))
+  (map normalize-contacts (data-store/get-all-as-list)))
 
 (defn save
   [{:keys [group-id] :as group}]

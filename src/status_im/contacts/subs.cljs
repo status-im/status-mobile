@@ -31,14 +31,20 @@
            (reaction)))))
 
 (register-sub :all-added-group-contacts
-  (fn [_ [_ group]]
+  (fn [db [_ group-id]]
     (let [contacts (subscribe [:all-added-contacts])
-          group-contacts (into #{} (map #(:identity %) (:contacts group)))]
-      (reaction (filter #(group-contacts (:whisper-identity %)) @contacts)))))
+          group-contacts (reaction (into #{} (map #(:identity %)
+                                                  (get-in @db [:contact-groups group-id :contacts]))))]
+      (reaction (filter #(@group-contacts (:whisper-identity %)) @contacts)))))
+
+(register-sub :all-added-group-contacts-with-limit
+  (fn [db [_ group-id limit]]
+    (let [contacts (subscribe [:all-added-group-contacts group-id])]
+      (reaction (take limit @contacts)))))
 
 (register-sub :all-added-group-contacts-count
-  (fn [_ [_ group]]
-    (let [contacts (subscribe [:all-added-group-contacts group])]
+  (fn [_ [_ group-id]]
+    (let [contacts (subscribe [:all-added-group-contacts group-id])]
       (reaction (count @contacts)))))
 
 (register-sub :get-added-contacts-with-limit
@@ -51,6 +57,13 @@
     (let [contacts (subscribe [:all-added-contacts])]
       (reaction (count @contacts)))))
 
+(register-sub :all-added-groups
+  (fn [db _]
+    (let [groups (reaction (vals (:contact-groups @db)))]
+      (->> (remove :pending? @groups)
+           (sort-by :order >)
+           (reaction)))))
+
 (defn get-contact-letter [contact]
   (when-let [letter (first (:name contact))]
     (clojure.string/upper-case letter)))
@@ -59,11 +72,13 @@
   (let [name (-> (or (:name item) "")
                  (str/lower-case))
         text (str/lower-case text)]
-    (not= (.indexOf name text) -1)))
+    (not= (str/index-of name text) nil)))
 
-(register-sub :all-added-contacts-filtered
-  (fn [db _]
-    (let [contacts (subscribe [:all-added-contacts])
+(register-sub :all-added-group-contacts-filtered
+  (fn [_ [_ group-id]]
+    (let [contacts (if group-id
+                     (subscribe [:all-added-group-contacts group-id])
+                     (subscribe [:all-added-contacts]))
           text (subscribe [:get-in [:toolbar-search :text]])]
       (reaction
         (if @text

@@ -45,6 +45,7 @@
 (defn render-row [chat-modal click-handler action params]
   (fn [row _ _]
     (list-item
+      ^{:key row}
       [contact-view {:contact  row
                      :letter?  chat-modal
                      :on-click (when click-handler
@@ -78,44 +79,47 @@
       :actions            (when modal
                             (act/back #(dispatch [:navigate-back])))})])
 
-(defview contact-list []
-  [contacts [:all-added-contacts-filtered]
-   group [:get :contacts-group]
-   modal [:get :modal]
-   click-handler [:get :contacts-click-handler]
-   action [:get :contacts-click-action]
+(defview contacts-list-view [group modal click-handler action]
+  [contacts [:all-added-group-contacts-filtered (:group-id group)]
    params [:get :contacts-click-params]]
   (let [show-new-group-chat? (and (= group :people)
                                   (get-in platform-specific [:chats :new-chat-in-toolbar?]))]
-    [drawer-view
-     [view st/contacts-list-container
-      [contact-list-toolbar]
-      ;; todo add stub
-      (when modal
-        [view
-         [contact-list-entry {:click-handler #(do
-                                                (dispatch [:send-to-webview-bridge
-                                                           {:event (name :webview-send-transaction)}])
-                                                (dispatch [:navigate-back]))
-                              :icon          :icon_enter_address
-                              :icon-style    st/enter-address-icon
-                              :label         (label :t/enter-address)}]
-         [contact-list-entry {:click-handler #(click-handler :qr-scan action)
-                              :icon          :icon_scan_q_r
-                              :icon-style    st/scan-qr-icon
-                              :label         (label (if (= :request action)
-                                                      :t/show-qr
-                                                      :t/scan-qr))}]])
-      (when contacts
-        [list-view {:dataSource                (lw/to-datasource contacts)
-                    :enableEmptySections       true
-                    :renderRow                 (render-row modal click-handler action params)
-                    :bounces                   false
-                    :keyboardShouldPersistTaps true
-                    :renderHeader              #(list-item
-                                                  [view
-                                                   (if show-new-group-chat?
-                                                     [new-group-chat-view])
-                                                   [view st/spacing-top]])
-                    :renderFooter              #(list-item [view st/spacing-bottom])
-                    :style                     st/contacts-list}])]]))
+    (when contacts
+      [list-view {:dataSource                (lw/to-datasource contacts)
+                  :enableEmptySections       true
+                  :renderRow                 (render-row modal click-handler action params)
+                  :bounces                   false
+                  :keyboardShouldPersistTaps true
+                  :renderHeader              #(list-item
+                                                [view
+                                                 (if show-new-group-chat?
+                                                   [new-group-chat-view])
+                                                 [view st/spacing-top]])
+                  :renderFooter              #(list-item [view st/spacing-bottom])
+                  :style                     st/contacts-list}])))
+
+(defview contact-list []
+  [action [:get :contacts-click-action]
+   modal [:get :modal]
+   click-handler [:get :contacts-click-handler]
+   group [:get :contacts-group]]
+  [drawer-view
+   [view st/contacts-list-container
+    [contact-list-toolbar]
+    ;; todo add stub
+    (when modal
+      [view
+       [contact-list-entry {:click-handler #(do
+                                              (dispatch [:send-to-webview-bridge
+                                                         {:event (name :webview-send-transaction)}])
+                                              (dispatch [:navigate-back]))
+                            :icon          :icon_enter_address
+                            :icon-style    st/enter-address-icon
+                            :label         (label :t/enter-address)}]
+       [contact-list-entry {:click-handler #(click-handler :qr-scan action)
+                            :icon          :icon_scan_q_r
+                            :icon-style    st/scan-qr-icon
+                            :label         (label (if (= :request action)
+                                                    :t/show-qr
+                                                    :t/scan-qr))}]])
+    [contacts-list-view group modal click-handler action]]])

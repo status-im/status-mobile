@@ -18,18 +18,20 @@
   [db [_ _ group show-search?]]
   (-> db
       (assoc :contacts-group group)
-      (assoc-in [:toolbar-search :show] (when show-search? :contact-list))
-      (assoc-in [:toolbar-search :text] "")))
+      (update :toolbar-search assoc
+              :show (when show-search? :contact-list)
+              :text "")))
 
 (defmethod nav/preload-data! :contact-group
   [db [_ _ group]]
   (if group
     (-> db
-      (assoc :contact-group group
-             :selected-contacts (into #{} (map :identity (:contacts group)))
-             :new-chat-name (:name group))
-      (assoc-in [:toolbar-search :show] :contact-list)
-      (assoc-in [:toolbar-search :text] ""))
+        (assoc :contact-group group
+               :selected-contacts (into #{} (map :identity (:contacts group)))
+               :new-chat-name (:name group))
+        (update :toolbar-search assoc
+                :show :contact-list
+                :text ""))
     db))
 
 (defmethod nav/preload-data! :new-group
@@ -174,16 +176,15 @@
 (defn save-contacts! [{:keys [new-contacts]} _]
   (contacts/save-all new-contacts))
 
-(defn update-pending-status [old-contacts {:keys [whisper-identity pending] :as contact}]
-  (let [{old-pending :pending
-         :as         old-contact} (get old-contacts whisper-identity)]
-    (if old-contact
-      (assoc contact :pending (and old-pending pending))
-      (assoc contact :pending pending))))
+(defn update-pending-status [old-contacts {:keys [whisper-identity pending?] :as contact}]
+  (let [{old-pending :pending?
+         :as         old-contact} (get old-contacts whisper-identity)
+        pending?' (if old-contact (and old-pending pending?) pending?)]
+    (assoc contact :pending? (boolean pending?'))))
 
 (defn add-new-contacts
   [{:keys [contacts] :as db} [_ new-contacts]]
-  (let [identities    (set (map :whisper-identity contacts))
+  (let [identities    (set (keys contacts))
         new-contacts' (->> new-contacts
                            (map #(update-pending-status contacts %))
                            (remove #(identities (:whisper-identity %)))
@@ -232,7 +233,7 @@
     (fn [{:keys [chats contacts]} [_ chat-id]]
       (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
                       (read-string contact-info)
-                      (assoc (get contacts chat-id) :pending false))
+                      (assoc (get contacts chat-id) :pending? false))
             contact' (assoc contact :address (public-key->address chat-id))]
         (dispatch [::prepare-contact contact'])
         (dispatch [:watch-contact contact'])
@@ -294,10 +295,6 @@
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
       (dispatch [:update-contact! (assoc contact :pending? true)])
       (dispatch [:account-update-keys]))))
-      ;;TODO (dispatch [:remove-contact-from-groups]))))
-      ;; TODO i don't know, if contact is pending, do we need to remove it from groups?
-
-;;TODO: (register-handler  :remove-contact-from-groups)
 
 (defn remove-contact-from-group [whisper-identity]
   (fn [contacts]
@@ -306,7 +303,7 @@
 (register-handler :remove-contact-from-group
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity]} group]]
-      (let [group' (update-in group [:contacts] (remove-contact-from-group whisper-identity))]
+      (let [group' (update group :contacts (remove-contact-from-group whisper-identity))]
         (dispatch [:update-group group'])))))
 
 (register-handler :remove-contact

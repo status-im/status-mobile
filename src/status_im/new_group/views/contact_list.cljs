@@ -21,7 +21,7 @@
      :search-placeholder (label :t/search-for)}))
 
 (defview contact-group-list []
-  [contacts [:all-added-contacts-filtered]
+  [contacts [:all-added-group-contacts-filtered]
    selected-contacts-count [:selected-contacts-count]
    show-search [:get-in [:toolbar-search :show]]]
   [view st/new-group-container

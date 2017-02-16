@@ -1,4 +1,4 @@
-(ns status-im.data-store.realm.groups
+(ns status-im.data-store.realm.contact-groups
   (:require [status-im.data-store.realm.core :as realm]
     [status-im.utils.random :refer [timestamp]])
   (:refer-clojure :exclude [exists?]))
@@ -6,7 +6,7 @@
 (defn get-all
   []
   (-> @realm/account-realm
-      (realm/get-all :group)))
+      (realm/get-all :contact-group)))
 
 (defn get-all-as-list
   []
@@ -14,13 +14,13 @@
 
 (defn save
   [group update?]
-  (realm/save @realm/account-realm :group group update?))
+  (realm/save @realm/account-realm :contact-group group update?))
 
 (defn exists?
   [group-id]
-  (realm/exists? @realm/account-realm :group {:group-id group-id}))
+  (realm/exists? @realm/account-realm :contact-group {:group-id group-id}))
 
 (defn delete
   [group-id]
-  (when-let [group (realm/get-one-by-field @realm/account-realm :group :group-id group-id)]
+  (when-let [group (realm/get-one-by-field @realm/account-realm :contact-group :group-id group-id)]
     (realm/delete @realm/account-realm group)))
