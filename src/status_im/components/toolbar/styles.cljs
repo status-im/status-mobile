@@ -2,15 +2,17 @@
   (:require [status-im.components.styles :refer [text1-color
                                                  color-white
                                                  color-light-gray
+                                                 color-gray5
                                                  color-blue
-                                                 color-black]]))
+                                                 color-black]]
+            [status-im.utils.platform :as p]))
 
 (def toolbar-background1 color-white)
 (def toolbar-background2 color-light-gray)
 
 (def toolbar-height 56)
-(def toolbar-icon-width 32)
-(def toolbar-icon-spacing 8)
+(def toolbar-icon-width 24)
+(def toolbar-icon-spacing 24)
 
 (def toolbar-gradient
   {:height 4})
@@ -22,6 +24,11 @@
 (def toolbar
   {:flex-direction :row
    :height         toolbar-height})
+
+(def toolbar-line
+  {:height           1
+   :background-color color-gray5
+   :opacity          0.4})
 
 (defn toolbar-nav-actions-container [actions]
   {:width          (when (and actions (> (count actions) 0))
@@ -38,9 +45,9 @@
    :padding-right   12})
 
 (def toolbar-title-container
-  {:flex           1
-   :alignItems     :center
-   :justifyContent :center})
+  (merge (get-in p/platform-specific [:component-styles :toolbar-title-container])
+         {:flex           1
+          :justifyContent :center}))
 
 (def toolbar-title-text
   {:margin-top 0
@@ -61,12 +68,11 @@
    :justify-content :center})
 
 (def toolbar-with-search
-  {:background-color toolbar-background2
+  {:background-color toolbar-background1
    :elevation        0})
 
 (def toolbar-with-search-content
   {:flex            1
-   :align-items     :center
    :justify-content :center})
 
 (def toolbar-search-input
@@ -79,25 +85,8 @@
 
 (def toolbar-with-search-title
   {:color       color-black
-   :align-self  :center
-   :text-align  :center
    :font-size   16})
 
-
-;; Specific actions
-
-(def action-hamburger
-  {:width  16
-   :height 12})
-
-(def action-add
-  {:width  17
-   :height 17})
-
-(def action-search
-  {:width  17
-   :height 17})
-
-(def action-back
-  {:width  8
-   :height 14})
+(def action-default
+  {:width  24
+   :height 24})
