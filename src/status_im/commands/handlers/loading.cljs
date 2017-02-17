@@ -163,20 +163,3 @@
 (reg-handler ::clear-commands-callbacks
   (fn [db [chat-id]]
     (assoc-in db [::commands-callbacks chat-id] nil)))
-
-(reg-handler :load-default-contacts!
-  (u/side-effect!
-    (fn [{:keys [chats]}]
-      (doseq [[id {:keys [name photo-path public-key add-chat?
-                          dapp? dapp-url dapp-hash]}] js-res/default-contacts]
-        (let [id' (clojure.core/name id)]
-          (when-not (chats id')
-            (when add-chat?
-              (dispatch [:add-chat id' {:name (:en name)}]))
-            (dispatch [:add-contacts [{:whisper-identity id'
-                                       :name             (:en name)
-                                       :photo-path       photo-path
-                                       :public-key       public-key
-                                       :dapp?            dapp?
-                                       :dapp-url         (:en dapp-url)
-                                       :dapp-hash        dapp-hash}]])))))))

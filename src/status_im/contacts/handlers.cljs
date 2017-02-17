@@ -13,7 +13,8 @@
             [status-im.utils.random :as random]
             [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]
-            [cljs.reader :refer [read-string]]))
+            [cljs.reader :refer [read-string]]
+            [status-im.utils.js-resources :as js-res]))
 
 (defmethod nav/preload-data! :group-contacts
   [db [_ _ group]]
@@ -185,17 +186,37 @@
         (update :contacts merge new-contacts')
         (assoc :new-contacts (vals new-contacts')))))
 
-(register-handler :add-contacts
-  (after save-contacts!)
-  add-new-contacts)
-
 (defn public-key->address [public-key]
-  (let [length (count public-key)
+  (let [length         (count public-key)
         normalized-key (case length
                          132 (subs public-key 4)
                          130 (subs public-key 2)
-                         128 public-key)]
-    (subs (.sha3 js/Web3.prototype normalized-key #js {:encoding "hex"}) 26)))
+                         128 public-key
+                         nil)]
+    (when normalized-key
+      (subs (.sha3 js/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+
+(register-handler :load-default-contacts!
+  (u/side-effect!
+    (fn [{:keys [chats]}]
+      (doseq [[id {:keys [name photo-path public-key add-chat?
+                          dapp? dapp-url dapp-hash]}] js-res/default-contacts]
+        (let [id' (clojure.core/name id)]
+          (when-not (chats id')
+            (when add-chat?
+              (dispatch [:add-chat id' {:name (:en name)}]))
+            (dispatch [:add-contacts [{:whisper-identity id'
+                                       :address          (public-key->address id')
+                                       :name             (:en name)
+                                       :photo-path       photo-path
+                                       :public-key       public-key
+                                       :dapp?            dapp?
+                                       :dapp-url         (:en dapp-url)
+                                       :dapp-hash        dapp-hash}]])))))))
+
+(register-handler :add-contacts
+  (after save-contacts!)
+  add-new-contacts)
 
 (defn add-new-contact [db [_ {:keys [whisper-identity] :as contact}]]
   (-> db
@@ -222,9 +243,9 @@
 (register-handler :add-pending-contact
   (u/side-effect!
     (fn [{:keys [chats contacts]} [_ chat-id]]
-      (let [contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
-                      (read-string contact-info)
-                      (assoc (get contacts chat-id) :pending false))
+      (let [contact  (if-let [contact-info (get-in chats [chat-id :contact-info])]
+                       (read-string contact-info)
+                       (assoc (get contacts chat-id) :pending false))
             contact' (assoc contact :address (public-key->address chat-id))]
         (dispatch [::prepare-contact contact'])
         (dispatch [:watch-contact contact'])
@@ -258,21 +279,21 @@
 (register-handler
   :update-keys-received
   (u/side-effect!
-   (fn [db [_ {:keys [from payload]}]]
-     (let [{{:keys [public private]} :keypair
-            timestamp              :timestamp} payload
-           prev-last-updated (get-in db [:contacts from :keys-last-updated])]
-       (when (<= prev-last-updated timestamp)
-         (let [contact {:whisper-identity  from
-                        :public-key        public
-                        :private-key       private
-                        :keys-last-updated timestamp}]
-           (dispatch [:update-contact! contact])))))))
+    (fn [db [_ {:keys [from payload]}]]
+      (let [{{:keys [public private]} :keypair
+             timestamp                :timestamp} payload
+            prev-last-updated (get-in db [:contacts from :keys-last-updated])]
+        (when (<= prev-last-updated timestamp)
+          (let [contact {:whisper-identity  from
+                         :public-key        public
+                         :private-key       private
+                         :keys-last-updated timestamp}]
+            (dispatch [:update-contact! contact])))))))
 
 (register-handler
   :contact-online-received
   (u/side-effect!
-    (fn [db [_ {:keys               [from]
+    (fn [db [_ {:keys                          [from]
                 {{:keys [timestamp]} :content} :payload}]]
       (let [prev-last-online (get-in db [:contacts from :last-online])]
         (when (and timestamp (< prev-last-online timestamp))
@@ -301,10 +322,10 @@
   :open-contact-menu
   (u/side-effect!
     (fn [_ [_ list-selection-fn {:keys [name] :as contact}]]
-      (list-selection-fn {:title name
-                          :options [(label :t/remove-contact)]
-                          :callback (fn [index]
-                                      (case index
-                                        0 (dispatch [:hide-contact contact])
-                                        :default))
+      (list-selection-fn {:title       name
+                          :options     [(label :t/remove-contact)]
+                          :callback    (fn [index]
+                                         (case index
+                                           0 (dispatch [:hide-contact contact])
+                                           :default))
                           :cancel-text (label :t/cancel)}))))
