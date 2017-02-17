@@ -106,5 +106,19 @@
         {
             "en": "https://beta.gnosis.pm"
         }
+    },
+
+    "melonport":
+    {
+        "name":
+        {
+            "en": "Melonport"
+        },
+        "photo-path": "contacts://melonport",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://portal.melonport.com/"
+        }
     }
 }
