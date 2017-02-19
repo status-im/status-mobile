@@ -12,12 +12,14 @@
                  [tailrecursion/cljs-priority-map "1.2.0"]
                  [com.taoensso/timbre "4.7.4"]]
   :plugins [[lein-cljsbuild "1.1.4"]
-            [lein-figwheel "0.5.8"]]
+            [lein-figwheel "0.5.8"]
+            [rasom/lein-externs "0.1.7"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
                          ["do" "clean"
                           ["with-profile" "prod" "cljsbuild" "once" "ios"]
-                          ["with-profile" "prod" "cljsbuild" "once" "android"]]}
+                          ["with-profile" "prod" "cljsbuild" "once" "android"]]
+            "generate-externs" ["with-profile" "prod" "externs" "android" "externs/externs.js"]}
   :test-paths ["test/clj"]
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.8"]
