@@ -120,8 +120,11 @@
    ;chats
    :chats                                 "Chats"
    :new-chat                              "New chat"
+   :delete-chat                           "Delete chat"
    :new-group-chat                        "New group chat"
-   :new-public-group-chat                 "Join public group chat"
+   :new-public-group-chat                 "Join public chat"
+   :edit-chats                            "Edit chats"
+   :search-chats                          "Search chats"
    :empty-topic                           "Empty topic"
    :topic-format                          "Wrong format [a-z0-9\\-]+"
    :public-group-topic                    "Topic"

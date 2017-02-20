@@ -11,10 +11,8 @@
                                                          toolbar-background2]]
             [status-im.utils.platform :as p]))
 
-(defn toolbar [chats-scrolled?]
-  (merge {:background-color (if chats-scrolled?
-                              toolbar-background1
-                              toolbar-background2)}
+(defn toolbar []
+  (merge {:background-color toolbar-background1}
          (get-in p/platform-specific [:component-styles :toolbar])))
 
 (def gradient-top-bottom-shadow
@@ -135,6 +133,16 @@
   (merge (get-in p/platform-specific [:component-styles :main-tab-list])
          {:background-color color-light-gray}))
 
+(def toolbar-actions
+  {:flex-direction :row
+   :padding-right  14})
+
+(def toolbar-btn
+  {:width          24
+   :height         56
+   :margin-left    24
+   :alignItems     :center
+   :justifyContent :center})
 
 (def create-icon
   {:fontSize 20

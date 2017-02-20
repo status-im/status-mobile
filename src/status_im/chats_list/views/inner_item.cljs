@@ -4,6 +4,7 @@
             [clojure.string :as str]
             [status-im.components.react :refer [view image icon text]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
+            [status-im.components.context-menu :refer [context-menu]]
             [status-im.models.commands :refer [parse-command-message-content]]
             [status-im.chats-list.styles :as st]
             [status-im.utils.utils :refer [truncate-str]]
@@ -76,9 +77,16 @@
             :font  :medium}
       unviewed-messages]]))
 
+(defn options-btn [chat-id]
+  (let [options [{:value #(dispatch [:remove-chat chat-id]) :text (label :t/delete-chat)}]]
+    [view st/more-btn
+     [context-menu
+      [icon :options_gray]
+      options]]))
+
 (defn chat-list-item-inner-view [{:keys [chat-id name color last-message
-                                         online group-chat contacts public?]
-                                  :as chat}]
+                                         online group-chat contacts public?] :as chat}
+                                 edit?]
   (let [last-message (or (first (sort-by :clock-value > (:messages chat)))
                          last-message)
         name         (or (get-contact-translated chat-id :name name)
@@ -108,9 +116,12 @@
          [text {:style st/memebers-text}
           (label-pluralize (inc (count contacts)) :t/members)])]
       [message-content-text last-message]]
-     [view
-      (when last-message
-        [view st/status-container
-         [message-status chat last-message]
-         [message-timestamp last-message]])
-      [unviewed-indicator chat-id]]]))
+     (if edit?
+       [view st/status-container
+        [options-btn chat-id]]
+       [view
+        (when last-message
+          [view st/status-container
+           [message-status chat last-message]
+           [message-timestamp last-message]])
+        [unviewed-indicator chat-id]])]))
