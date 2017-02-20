@@ -172,6 +172,8 @@
       ;; fixes https://github.com/status-im/status-react/issues/594
       ;; todo: revisit with more clever solution
       (let [text' (if (= text (str chat-consts/command-char " ")) chat-consts/command-char text)]
+        (when (string/blank? text)
+          (dispatch [:set-in [:suggestions current-chat-id] nil]))
         (if (console? current-chat-id)
           (dispatch [::check-input-for-commands text'])
           (dispatch [::check-suggestions current-chat-id text']))))))

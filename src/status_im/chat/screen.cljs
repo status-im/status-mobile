@@ -203,9 +203,9 @@
     [messages-view group-chat]]
    ;; todo uncomment this
    #_(when @group-chat [typing-all])
-   (if command?
-     [response-view]
+   (when-not command?
      [suggestion-container])
+   [response-view]
    (when show-emoji?
      [emoji-view])
    [chat-message-input-view]
