@@ -414,6 +414,7 @@
               (dispatch [:add-chat from chat]))
             (when-not (:pending? existing-contact)
               (dispatch [:update-contact! contact])
+              (dispatch [:update-chat! chat])
               (dispatch [:watch-contact contact]))))))))
 
 (register-handler ::post-error

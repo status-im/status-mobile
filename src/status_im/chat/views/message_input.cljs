@@ -24,18 +24,31 @@
     [view st/send-container
      [icon :send st/send-icon]]]])
 
-(defn plain-input-options [disable?]
-  {:style             st-message/message-input
-   :on-change-text    (when-not disable? plain-message/set-input-message)
-   :editable          (not disable?)
-   :on-submit-editing plain-message/send})
+(defn plain-input-options [{:keys [set-layout-size-fn disable?]}]
+  {:style                  st-message/message-input
+   :on-change-text         (when-not disable? plain-message/set-input-message)
+   :on-submit-editing      plain-message/send
+   :on-content-size-change #(let [size (-> (.-nativeEvent %)
+                                           (.-contentSize)
+                                           (.-height))]
+                              (set-layout-size-fn size))
+   :on-focus               #(do (dispatch [:set :focused true])
+                                (dispatch [:set-chat-ui-props :show-emoji? false]))
+   :on-blur                #(do (dispatch [:set :focused false])
+                                (set-layout-size-fn 0))
+   :blur-on-submit         true
+   :multiline              true
+   :editable               (not disable?)})
 
-(defn command-input-options [icon-width disable? sending-disabled?]
+(defn command-input-options [{:keys [icon-width disable? sending-disabled?]}]
   {:style             (st-response/command-input icon-width disable?)
    :on-change-text    (when-not disable? command/set-input-message)
    :on-submit-editing (fn []
                         (when-not sending-disabled?
-                          (dispatch [:send-command!])))})
+                          (dispatch [:send-command!])))
+   :on-focus          #(dispatch [:set :focused true])
+   :on-blur           #(dispatch [:set :focused true])
+   :blur-on-submit    false})
 
 (defn get-options [{:keys [type placeholder]} command-type]
   (let [options (case (keyword type)
@@ -63,22 +76,15 @@
   [text-input
    (merge
      (if command?
-       (command-input-options icon-width disable? sending-disabled?)
-       (plain-input-options (or disable? (not active?))))
+       (command-input-options {:icon-width        icon-width
+                               :disable?          disable?
+                               :sendind-disabled? sending-disabled?})
+       (plain-input-options {:set-layout-size-fn set-layout-size
+                             :disable?           (or disable? (not active?))}))
      {:placeholder-text-color :#c0c5c9
       :auto-focus             (when command?
                                 (not (:fullscreen command)))
-      :blur-on-submit         false
-      :multiline              true
-      :on-content-size-change #(let [size (-> (.-nativeEvent %)
-                                              (.-contentSize)
-                                              (.-height))]
-                                 (set-layout-size size))
       :accessibility-label    id/chat-message-input
-      :on-focus               #(do (dispatch [:set :focused true])
-                                   (dispatch [:set-chat-ui-props :show-emoji? false]))
-      :on-blur                #(do (dispatch [:set :focused false])
-                                   (set-layout-size 0))
       :default-value          (if command?
                                 (or input-command "")
                                 (or input-message ""))}
