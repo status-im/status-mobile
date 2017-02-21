@@ -61,6 +61,17 @@
                                       :icon        {:padding-top     0
                                                     :bottom          -4
                                                     :justify-content :flex-end}}}
+   :new-chat              {:option-inner-container {:height 64}
+                           :option-icon-container  {:background-color styles/color-blue-transparent
+                                                    :margin-top       12}
+                           :option-name-text {:font-size 17
+                                              :color     styles/color-light-blue}
+                           :contact-list-title-container {:background-color styles/color-white
+                                                          :padding-top      19
+                                                          :padding-bottom   15
+                                                          :margin-top       16}
+                           :contact-list-title           {:color     styles/text1-color
+                                                          :font-size 16}}
    :contacts              {:subtitle     {:color          styles/text1-color
                                           :font-size      16
                                           :letter-spacing -0.2}

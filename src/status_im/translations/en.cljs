@@ -154,6 +154,7 @@
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "People"
    :contacts-group-new-chat               "Start new chat"
+   :choose-from-contacts                  "Choose from contacts"
    :no-contacts                           "No contacts yet"
    :show-qr                               "Show QR"
    :enter-address                         "Enter address"
