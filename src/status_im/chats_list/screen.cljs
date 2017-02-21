@@ -41,7 +41,7 @@
 
 (defn ios-toolbar-actions []
   [(act/opts ios-toolbar-popup-options)
-   (act/add #(dispatch [:navigate-to :group-contacts :people]))])
+   (act/add #(dispatch [:navigate-to :new-chat]))])
 
 (defn toolbar-view []
   [toolbar {:title      (label :t/chats)
@@ -67,7 +67,7 @@
                   :offset-y     22
                   :hide-shadow  true
                   :spacing      13
-                  :on-press     #(dispatch [:navigate-to :group-contacts :people])}])
+                  :on-press     #(dispatch [:navigate-to :new-chat])}])
 
 (defn chat-list-padding []
   [view {:height (if ios? 0 8)
