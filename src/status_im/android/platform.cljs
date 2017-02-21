@@ -56,6 +56,17 @@
                            :item     {:status-text {:color       styles/color-black
                                                     :line-height 22
                                                     :font-size   14}}}
+   :new-chat              {:option-inner-container       {:height 56}
+                           :option-icon-container        {:background-color styles/color-white
+                                                          :margin-top       8}
+                           :option-name-text             {:font-size 16
+                                                          :color     styles/text1-color}
+                           :contact-list-title-container {:background-color styles/color-light-gray
+                                                          :padding-top      28
+                                                          :padding-bottom   20
+                                                          :margin-top       0}
+                           :contact-list-title           {:color     styles/text4-color
+                                                          :font-size 14}}
    :contacts              {:subtitle     {:color     styles/color-gray4
                                           :font-size 14}
                            :subtitle-count {:color     styles/color-gray4
