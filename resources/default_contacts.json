@@ -120,5 +120,19 @@
         {
             "en": "https://portal.melonport.com/"
         }
+    },
+
+    "bchat":
+    {
+        "name":
+        {
+            "en": "bchat"
+        },
+        "photo-path": "contacts://bchat",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
+        }
     }
 }
