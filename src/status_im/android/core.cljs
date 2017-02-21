@@ -24,6 +24,7 @@
             [status-im.accounts.screen :refer [accounts]]
             [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
+            [status-im.new-chat.screen :refer [new-chat]]
             [status-im.new-group.screen-public :refer [new-public-group]]
             [status-im.new-group.screen-private :refer [new-group
                                                         edit-group]]
@@ -113,6 +114,7 @@
                                :add-participants new-participants
                                :remove-participants remove-participants
                                :chat-list main-tabs
+                               :new-chat new-chat
                                :new-group new-group
                                :edit-group edit-group
                                :chat-group-settings chat-group-settings
