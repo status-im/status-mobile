@@ -33,6 +33,19 @@
                            :item     {:status-text {:color       styles/color-black
                                                     :line-height 22
                                                     :font-size   14}}}
+   :new-chat              {:option-inner-container       {:height         56
+                                                          :flex-direction :row}
+                           :option-icon-container        {:background-color styles/color-white
+                                                          :margin-top       8
+                                                          :margin-left      16}
+                           :option-name-text             {:font-size 16
+                                                          :color     styles/text1-color}
+                           :contact-list-title-container {:background-color styles/color-light-gray
+                                                          :padding-top      28
+                                                          :padding-bottom   20
+                                                          :margin-top       0}
+                           :contact-list-title           {:color     styles/text4-color
+                                                          :font-size 14}}
    :contacts              {:subtitle     {:color     styles/color-gray4
                                           :font-size 14}
                            :separator    {:height 0}
@@ -85,7 +98,7 @@
    :list-selection-fn            show-dialog
    :tabs                         {:tab-shadows? true}
    :chats                        {:action-button?       true
-                                  :new-chat-in-toolbar? false}
+                                  :new-chat-in-toolbar? true}
    :contacts                     {:action-button?          true
                                   :new-contact-in-toolbar? false
                                   :uppercase-subtitles?    false

@@ -1,7 +1,7 @@
 (ns status-im.chats-list.styles
   (:require [status-im.components.styles :refer [color-white
                                                  color-light-gray
-                                                 color-separator
+                                                 separator-color
                                                  color-blue
                                                  text1-color
                                                  text2-color
@@ -29,7 +29,7 @@
 
 (def chat-separator-item
   {:border-bottom-width 0.5
-   :border-bottom-color color-separator})
+   :border-bottom-color separator-color})
 
 (def chat-container
   {:flex-direction   :row
