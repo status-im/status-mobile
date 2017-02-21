@@ -104,4 +104,8 @@ StatusHttpProvider.prototype.isConnected = function () {
     }
 };
 
-web3 = new Web3(new StatusHttpProvider("http://localhost:8545"));
+if (window.location.protocol == "https:") {
+    web3 = new Web3(new StatusHttpProvider("http://localhost:8545"));
+} else {
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+}
