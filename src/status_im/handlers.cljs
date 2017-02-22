@@ -27,7 +27,8 @@
     [status-im.i18n :refer [label]]
     [status-im.constants :refer [console-chat-id]]
     [status-im.utils.ethereum-network :as enet]
-    [status-im.utils.instabug :as inst]))
+    [status-im.utils.instabug :as inst]
+    [status-im.utils.platform :as p]))
 
 ;; -- Common --------------------------------------------------------------
 
@@ -46,16 +47,14 @@
     (assoc-in db [:animations k] v)))
 
 (register-handler :initialize-db
-  (fn [{:keys [status-module-initialized? network-status network]} _]
+  (fn [{:keys [status-module-initialized? status-node-started?
+               network-status network]} _]
     (data-store/init)
-    (cond-> (assoc app-db :current-account-id nil
-                          :network-status network-status)
-
-            status-module-initialized?
-            (assoc :status-module-initialized? true)
-
-            true
-            (assoc :network (or network :testnet)))))
+    (assoc app-db :current-account-id nil
+                  :network-status network-status
+                  :status-module-initialized? (or p/ios? js/goog.DEBUG status-module-initialized?)
+                  :status-node-started? status-node-started?
+                  :network (or network :testnet))))
 
 (register-handler :initialize-account-db
   (fn [db _]
@@ -129,9 +128,9 @@
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
           "transaction.failed" (dispatch [:transaction-failed event])
-          "node.started" (log/debug "Event *node.started* received")
+          "node.started"       (dispatch [:status-node-started!])
           "module.initialized" (dispatch [:status-module-initialized!])
-          "local_storage.set" (dispatch [:set-local-storage event])
+          "local_storage.set"  (dispatch [:set-local-storage event])
           (log/debug "Event " type " not handled"))))))
 
 (register-handler :status-module-initialized!
@@ -140,6 +139,10 @@
              (status/module-initialized!))))
   (fn [db]
     (assoc db :status-module-initialized? true)))
+
+(register-handler :status-node-started!
+  (fn [db]
+    (assoc db :status-node-started? true)))
 
 (register-handler :crypt-initialized
   (u/side-effect!
