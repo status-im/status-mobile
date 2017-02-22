@@ -11,9 +11,11 @@
 (def dapp-js (str (slurp "resources/dapp.js")))
 
 (def webview-js (slurp "resources/webview.js"))
-(def jquery (slurp "resources/jquery-3.1.1.min.js"))
-(def web3 (str jquery
-               "; if (typeof Web3 == 'undefined') {"
+(def jquery (str
+              " if (typeof jQuery2 == 'undefined') {"
+              (slurp "resources/jquery-3.1.1.min.js")
+              "}"))
+(def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "resources/web3.0_16_0.min.js")
                "}"))
 (def web3-init (slurp "resources/web3_init.js"))

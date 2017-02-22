@@ -139,7 +139,7 @@
       :source                                {:uri url}
       :render-error                          web-view-error
       :java-script-enabled                   true
-      :injected-on-start-loading-java-script (str js-res/web3 js-res/web3-init)
+      :injected-on-start-loading-java-script (str js-res/web3 js-res/jquery js-res/web3-init)
       :injected-java-script                  (str js-res/webview-js extra-js)
       :bounces                               false
       :on-navigation-state-change            on-navigation-change

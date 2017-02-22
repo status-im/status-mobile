@@ -1,3 +1,4 @@
+if(typeof StatusHttpProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
 
@@ -103,9 +104,16 @@ StatusHttpProvider.prototype.isConnected = function () {
         return false;
     }
 };
+}
 
-if (window.location.protocol == "https:") {
-    web3 = new Web3(new StatusHttpProvider("http://localhost:8545"));
-} else {
-    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var protocol = window.location.protocol
+console.log(protocol);
+if (typeof web3 === "undefined") {
+    if (protocol == "https:") {
+        console.log("StatusHttpProvider");
+        web3 = new Web3(new StatusHttpProvider("http://localhost:8545"));
+    } else if (protocol == "http:") {
+        console.log("HttpProvider");
+        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    }
 }
