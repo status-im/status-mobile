@@ -6,6 +6,7 @@
 (s/def :message/to (s/nilable string?))
 (s/def :message/message-id string?)
 (s/def :message/requires-ack? boolean?)
+(s/def :message/signature string?)
 (s/def :keypair/private string?)
 (s/def :keypair/public string?)
 (s/def :message/keypair (s/keys :req-un [:keypair/private
@@ -39,7 +40,7 @@
 (s/def :protocol/message
   (s/keys :req-un [:message/from :message/message-id]
           :opt-un [:message/to :message/topics :message/requires-ack?
-                   :message/keypair :message/ttl :message/payload]))
+                   :message/keypair :message/ttl :message/payload :message/signature]))
 
 (s/def :chat-message/payload
   (s/keys :req-un [:payload/content :payload/content-type :payload/timestamp]))

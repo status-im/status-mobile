@@ -29,7 +29,7 @@
                      prn-str
                      u/from-utf8)]
     (-> message
-        (select-keys [:from :to :topics :ttl])
+        (select-keys [:from :to :topics :ttl :signature])
         (assoc :payload payload'))))
 
 (s/def :shh/pending-message
