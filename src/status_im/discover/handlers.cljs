@@ -31,14 +31,15 @@
 
 (register-handler :broadcast-status
   (u/side-effect!
-    (fn [{:keys [current-public-key web3 current-account-id accounts contacts]}
+    (fn [{:keys [web3 current-account-id accounts contacts]}
          [_ status hashtags]]
       (let [{:keys [name
                     photo-path
+                    public-key
                     address]} (get accounts current-account-id)
             message-id (random/id)
             message    {:message-id message-id
-                        :from       current-public-key
+                        :from       public-key
                         :payload    {:message-id message-id
                                      :status     status
                                      :hashtags   (vec hashtags)
@@ -46,16 +47,14 @@
                                                   :profile-image photo-path}}}]
         (sign {:web3     web3
                :address  address
-               :message  [message-id current-public-key status]
+               :message  [message-id public-key status]
                :callback (fn [err signature]
-                           (when signature
-                             (let [message (assoc message :signature signature)]
-                               (debug "ALWX > SIGN message" message)
-                               #_(doseq [id (identities contacts)]
-                                 (protocol/send-status!
-                                   {:web3    web3
-                                    :message (assoc message :to id)}))
-                               (dispatch [:status-received message]))))})))))
+                           (let [message (assoc message :signature signature)]
+                             (doseq [id (u/identities contacts)]
+                               (protocol/send-status!
+                                 {:web3    web3
+                                  :message (assoc message :to id)}))
+                             (dispatch [:status-received message])))})))))
 
 (register-handler :status-received
   (u/side-effect!
@@ -63,7 +62,10 @@
       (let [{:keys [message-id status hashtags profile]} payload]
         (when (and (not (discoveries/exists? (:message-id payload)))
                    (not (get discoveries (:message-id payload)))
-                   (signature-valid? web3 [message-id from status] from signature))
+                   ;; TODO: signature signing doesn't work
+                   ;; https://github.com/ethereum/web3.js/issues/404
+                   ;; https://github.com/ethereum/web3.js/issues/562
+                   #_(signature-valid? web3 [message-id from status] from signature))
           (let [{:keys [message-id status hashtags profile]} payload
                 {:keys [name profile-image]} profile
                 discover {:message-id message-id

@@ -40,7 +40,7 @@
 (s/def :protocol/message
   (s/keys :req-un [:message/from :message/message-id]
           :opt-un [:message/to :message/topics :message/requires-ack?
-                   :message/keypair :message/ttl :message/payload :message/signature]))
+                   :message/keypair :message/ttl :message/payload]))
 
 (s/def :chat-message/payload
   (s/keys :req-un [:payload/content :payload/content-type :payload/timestamp]))
