@@ -151,7 +151,8 @@
   (-> db
       (commands/set-command-input (or type :commands) command-key)
       (assoc-in [:chats current-chat-id :command-input :content] cu/command-prefix)
-      (assoc :disable-input true)))
+      (assoc :disable-input true)
+      (assoc :just-set-command? true)))
 
 (register-handler :set-chat-command
   [(after invoke-suggestions-handler!)
