@@ -85,7 +85,8 @@
    :list-selection-fn            show-dialog
    :tabs                         {:tab-shadows? true}
    :chats                        {:action-button?       true
-                                  :new-chat-in-toolbar? false}
+                                  :new-chat-in-toolbar? true
+                                  :render-separator?    false}
    :contacts                     {:action-button?          true
                                   :new-contact-in-toolbar? false
                                   :uppercase-subtitles?    false
