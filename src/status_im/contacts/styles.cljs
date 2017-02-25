@@ -2,14 +2,43 @@
   (:require [status-im.components.styles :refer [text1-color
                                                  text2-color
                                                  text3-color
+                                                 text4-color
+                                                 separator-color
                                                  color-white
-                                                 color-separator
+                                                 color-light-gray
+                                                 color-blue-transparent
                                                  color-gray2
                                                  color-gray]]
             [status-im.components.toolbar.styles :refer [toolbar-background1 toolbar-background2]]
             [status-im.utils.platform :as p]))
 
 ;; Contacts list
+
+(def list-bottom-shadow
+  ["rgba(24, 52, 76, 0.165)"
+   "rgba(24, 52, 76, 0.03)"
+   "rgba(24, 52, 76, 0.01)"])
+
+(def list-top-shadow
+  ["rgba(24, 52, 76, 0.01)"
+   "rgba(24, 52, 76, 0.03)"])
+
+(def list-separator
+  {:border-bottom-width 1
+   :border-bottom-color separator-color})
+
+(def list-separator-wrapper
+  {:background-color color-white
+   :height           1
+   :padding-left     16})
+
+(def option-list-separator-wrapper  (merge list-separator-wrapper {:padding-left 16}))
+(def contact-list-separator-wrapper (merge list-separator-wrapper {:padding-left 72}))
+
+(def new-chat-options
+  {:padding-top      8
+   :padding-bottom   8
+   :background-color color-white})
 
 (def toolbar-shadow
   {:height           2
@@ -23,8 +52,8 @@
    :background-color toolbar-background2})
 
 (def contacts-list-container
-  (merge (get-in p/platform-specific [:component-styles :main-tab-list])
-         {:flex 1}))
+  {:flex          1
+   :margin-bottom 10})
 
 (def empty-contact-groups
   (merge contact-groups
@@ -41,7 +70,7 @@
    :color      color-gray2})
 
 (def contacts-list
-  {:backgroundColor color-white})
+  {:backgroundColor color-light-gray})
 
 (def contact-group
   {:flex-direction :column})
@@ -72,6 +101,16 @@
 (def contact-group-header-gradient-bottom-colors
   ["rgba(24, 52, 76, 0.01)"
    "rgba(24, 52, 76, 0.05)"])
+
+(def contact-list-title-container
+  (merge {:padding-left 16}
+         (get-in p/platform-specific [:component-styles :new-chat :contact-list-title-container])))
+
+(def contact-list-title
+  (get-in p/platform-specific [:component-styles :new-chat :contact-list-title]))
+
+(def contact-list-title-count
+  {:color text4-color})
 
 (def show-all
   {:flexDirection   :row
@@ -107,36 +146,35 @@
    :marginLeft 12})
 
 (def option-inner-container
-  {:flex                1
-   :flex-direction      :row
-   :height              56
-   :background-color    color-white
-   :border-bottom-color color-separator
-   :border-bottom-width 0.5})
+  (merge {:flex             1
+          :background-color color-white}
+         (get-in p/platform-specific [:component-styles :new-chat :option-inner-container])))
 
-(def option-inner
-  {:width       48
-   :height      48
-   :margin-top  4
-   :margin-left 12})
+(def icon-container
+  (merge {:width         40
+          :height        40
+          :border-radius 50}
+         (get-in p/platform-specific [:component-styles :new-chat :option-icon-container])))
 
 (def option-inner-image
   {:width  24
-   :height 18
-   :top    16
-   :left   13})
+   :height 24
+   :top    8
+   :left   8})
 
 (def group-icon
-  (assoc option-inner-image
-    :tint-color color-gray))
+  option-inner-image)
+
+(def option-name-text
+  (get-in p/platform-specific [:component-styles :new-chat :option-name-text]))
 
 (def spacing-top
   {:background-color color-white
-   :height           8})
+   :height           (if p/ios? 0 8)})
 
 (def spacing-bottom
   {:background-color color-white
-   :height           8})
+   :height           (if p/ios? 0 8)})
 
 (def contact-inner-container
   {:flex            1
@@ -148,11 +186,11 @@
 (def info-container
   {:flex           1
    :flexDirection  :column
-   :margin-left    12
+   :margin-left    16
    :justifyContent :center})
 
 (def name-text
-  {:fontSize 15
+  {:fontSize 16
    :color    text1-color})
 
 (def info-text
@@ -174,7 +212,7 @@
    :alignItems     :center
    :justifyContent :center})
 
-; New contact
+                                        ; New contact
 
 (def contact-form-container
   {:flex            1
@@ -207,18 +245,18 @@
   {:margin-right 42})
 
 (def enter-address-icon
-  {:margin-left   21
-   :margin-right  21
-   :margin-top    19
-   :width         20
-   :height        18})
+  {:margin-left  21
+   :margin-right 21
+   :margin-top   19
+   :width        20
+   :height       18})
 
 (def scan-qr-icon
-  {:margin-left   21
-   :margin-right  20
-   :margin-top    18
-   :width         20
-   :height        20})
+  {:margin-left  21
+   :margin-right 20
+   :margin-top   18
+   :width        20
+   :height       20})
 
 ;; Contacts search
 

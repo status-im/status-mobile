@@ -9,7 +9,7 @@
 (def color-gray2 "#8f838c93")
 (def color-gray3 "#00000040")
 (def color-gray4 "#939ba1")
-(def color-gray5 "#d9dae1")
+(def color-gray5 "#d9dae188")
 (def color-steel "#838b91")
 (def color-white "white")
 (def color-light-blue "#628fe3")
@@ -18,18 +18,17 @@
 (def color-red "red")
 (def color-light-red "#e86363")
 
-(def color-separator "#D6D6D6")
-
 (def text1-color color-black)
 (def text1-disabled-color "#555555")
 (def text2-color color-gray)
 (def text3-color color-blue)
+(def text4-color color-gray4)
 (def online-color color-blue)
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
 (def selected-message-color "#E4E9ED")
 (def selected-contact-color color-light-blue2)
-(def separator-color color-gray4)
+(def separator-color color-gray5)
 (def default-chat-color color-purple)
 
 (def flex

@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view text
+                                                linear-gradient
                                                 image
                                                 touchable-highlight
                                                 list-view
@@ -17,30 +18,46 @@
             [status-im.contacts.styles :as st]
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.utils.platform :refer [platform-specific ios?]]))
+
+(defn list-bottom-shadow []
+  [linear-gradient {:style  {:height 4}
+                    :colors st/list-bottom-shadow}])
+
+(defn list-top-shadow []
+  [linear-gradient {:style  {:height 3}
+                    :colors st/list-top-shadow}])
+
+(defn options-list-item [{:keys [on-press icon-uri label-key]}]
+  [touchable-highlight {:on-press on-press}
+   [view st/contact-container
+    [view st/option-inner-container
+     [view st/icon-container
+      [image {:source {:uri icon-uri}
+              :style  st/group-icon}]]
+     [view st/info-container
+      [text {:style st/option-name-text}
+       (label label-key)]]]]])
+
+(defn option-list-separator []
+  [view st/option-list-separator-wrapper
+   [view st/list-separator]])
 
 (defn new-group-chat-view []
   [view
-   [touchable-highlight
-    {:on-press #(dispatch [:navigate-to :new-group])}
-    [view st/contact-container
-     [view st/option-inner-container
-      [view st/option-inner
-       [image {:source {:uri :icon_private_group_big}
-               :style  st/group-icon}]]
-      [view st/info-container
-       [text {:style st/name-text}
-        (label :t/new-group-chat)]]]]]
-   [touchable-highlight
-    {:on-press #(dispatch [:navigate-to :new-public-group])}
-    [view st/contact-container
-     [view st/option-inner-container
-      [view st/option-inner
-       [image {:source {:uri :icon_public_group_big}
-               :style  st/group-icon}]]
-      [view st/info-container
-       [text {:style st/name-text}
-        (label :t/new-public-group-chat)]]]]]])
+   [view st/new-chat-options
+    [options-list-item {:on-press #(dispatch [:navigate-to :new-group])
+                        :icon-uri :icon_private_group_big
+                        :label-key :t/new-group-chat}]
+    (when ios? [option-list-separator])
+    [options-list-item {:on-press #(dispatch [:navigate-to :new-public-group])
+                        :icon-uri :icon_public_group_big
+                        :label-key :t/new-public-group-chat}]
+    (when ios? [option-list-separator])
+    [options-list-item {:on-press #(dispatch [:navigate-to :new-contact])
+                        :icon-uri :icon_add_blue
+                        :label-key :t/add-new-contact}]]
+   (when-not ios? [list-bottom-shadow])])
 
 (defn render-row [chat-modal click-handler action params]
   (fn [row _ _]
@@ -63,6 +80,15 @@
              :number-of-lines 1}
        label]]]]])
 
+(defn contact-list-title [contact-count]
+  [view
+   [view st/contact-list-title-container
+    [text {:style st/contact-list-title
+           :font  :medium}
+     (label :t/choose-from-contacts)
+     (when ios? [text st/contact-list-title-count " " contact-count])]]
+   (when-not ios? [list-top-shadow])])
+
 (defview contact-list-toolbar []
   [group       [:get :contacts-group]
    modal       [:get :modal]
@@ -79,6 +105,11 @@
       :actions            (when modal
                             (act/back #(dispatch [:navigate-back])))})])
 
+(defn render-separator [_ row-id _]
+  (when ios? (list-item ^{:key row-id}
+                        [view st/contact-list-separator-wrapper
+                         [view st/list-separator]])))
+
 (defview contacts-list-view [group modal click-handler action]
   [contacts [:all-added-group-contacts-filtered (:group-id group)]
    params [:get :contacts-click-params]]
@@ -92,9 +123,11 @@
                   :keyboardShouldPersistTaps true
                   :renderHeader              #(list-item
                                                 [view
-                                                 (if show-new-group-chat?
+                                                 (when show-new-group-chat?
                                                    [new-group-chat-view])
+                                                 [contact-list-title (count contacts)]
                                                  [view st/spacing-top]])
+                  :renderSeparator           render-separator
                   :renderFooter              #(list-item [view st/spacing-bottom])
                   :style                     st/contacts-list}])))
 
