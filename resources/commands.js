@@ -695,6 +695,12 @@ status.command({
         );
 
         return status.components.view({}, [text, image]);
+    },
+    shortPreview: function(params) {
+        return status.components.text(
+            {},
+            I18n.t('location_title') + ": " + params.address
+        );
     }
 }).param({
     name: "address",
@@ -861,6 +867,14 @@ var send = {
             [amount, currency]
         );
     },
+    shortPreview: function (params, context) {
+        return status.components.text(
+            {},
+            I18n.t('send_title') + ": "
+            + status.localizeNumber(params.amount, context.delimiter, context.separator)
+            + " ETH"
+        );
+    },
     handler: sendTransaction,
     validator: validateSend
 };
@@ -893,6 +907,14 @@ status.command({
         return I18n.t('request_requesting')
             + status.localizeNumber(params.amount, context.delimiter, context.separator)
             + " ETH";
+    },
+    shortPreview: function (params, context) {
+        return status.components.text(
+            {},
+            I18n.t('request_requesting') + " "
+            + status.localizeNumber(params.amount, context.delimiter, context.separator)
+            + " ETH"
+        );
     },
     validator: function(params) {
         try {

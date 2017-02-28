@@ -86,12 +86,14 @@
    :fontSize   12
    :color      text2-color})
 
-(def last-message-text
+(def last-message-container
   {:margin-top   5
-   :margin-right 40
-   :color        text1-color
-   :fontSize     14
-   :lineHeight   20})
+   :margin-right 40})
+
+(def last-message-text
+  {:color      text1-color
+   :fontSize   14
+   :lineHeight 20})
 
 (def last-message-text-no-messages
   (merge last-message-text

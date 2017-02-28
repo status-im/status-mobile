@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH 송금인: {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH 수금인: {{chat-name}}"
-   :command-text-location                 "위치: {{address}}"
-   :command-text-browse                   "열람중인 웹페이지: {{webpage}}"
-   :command-text-send                     "거래: {{amount}} ETH"
-   :command-text-help                     "도움말"
 
    ;new-group
    :group-chat-name                       "채팅 이름"

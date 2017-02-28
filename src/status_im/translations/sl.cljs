@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH osebi {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH od osebe {{chat-name}}"
-   :command-text-location                 "Lokacija: {{address}}"
-   :command-text-browse                   "Brskanje po spletni strani: {{webpage}}"
-   :command-text-send                     "Transakcija: {{amount}} ETH"
-   :command-text-help                     "Pomoč"
 
    ;new-group
    :group-chat-name                       "Ime za klepet"
