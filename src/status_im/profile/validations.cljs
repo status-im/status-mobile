@@ -11,7 +11,8 @@
       [(str/blank? username)
        (h/matches username console-chat-id)
        (h/matches username wallet-chat-id)
-       (str/includes? username chat-consts/command-char)])))
+       (str/includes? username chat-consts/command-char)
+       (str/includes? username chat-consts/bot-char)])))
 
 (defn correct-email? [email]
   (let [pattern #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"]

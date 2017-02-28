@@ -12,15 +12,15 @@
             [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.i18n :refer [label]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.chat.utils :as chat-utils]))
 
 (defn suggestion-item [{:keys [on-press name description last?]}]
   [touchable-highlight {:on-press on-press}
    [view (style/item-suggestion-container last?)
     [view {:style style/item-suggestion-name}
      [text {:style style/item-suggestion-name-text
-            :font  :roboto-mono}
-      const/command-char name]]
+            :font  :roboto-mono} name]]
     [text {:style           style/item-suggestion-description
            :number-of-lines 2}
      description]]])
@@ -36,11 +36,10 @@
     :description description
     :last?       last?}])
 
-(defview command-item [{:keys [name description] :as command} last?]
-  []
+(defn command-item [{:keys [name description bot] :as command} last?]
   [suggestion-item
    {:on-press    #(dispatch [:select-chat-input-command command nil])
-    :name        name
+    :name        (chat-utils/command-name command)
     :description description
     :last?       last?}])
 

@@ -24,14 +24,15 @@
             [status-im.chat.constants :as const]
             [status-im.components.animation :as anim]
             [status-im.i18n :as i18n]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.chat.utils :as chat-utils]))
 
-(defn command-view [first? {command-name :name :as command}]
+(defn command-view [first? command]
   [touchable-highlight {:on-press #(dispatch [:select-chat-input-command command nil])}
    [view
     [text {:style (style/command first?)
            :font  :roboto-mono}
-     (str const/command-char) command-name]]])
+     (chat-utils/command-name command)]]])
 
 (defview commands-view []
   [commands [:chat :command-suggestions]
@@ -117,7 +118,7 @@
       (when-not (get-in command [:command :sequential-params])
         (let [real-args (remove str/blank? (:args command))]
           (when-let [placeholder (cond
-                                   (= @input-text const/command-char)
+                                   (#{const/command-char const/bot-char} @input-text)
                                    (i18n/label :t/type-a-command)
 
                                    (and command (empty? real-args))

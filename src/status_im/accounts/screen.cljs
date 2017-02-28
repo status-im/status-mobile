@@ -33,9 +33,8 @@
     [view st/account-view
      [account-bage address photo-path name]]]])
 
-(defn- create-account [_]
-  (dispatch-sync [:reset-app])
-  (dispatch [:navigate-to :chat console-chat-id]))
+(defn create-account [_]
+  (dispatch [:reset-app #(dispatch [:navigate-to :chat console-chat-id])]))
 
 (defview accounts []
   [accounts [:get :accounts]]

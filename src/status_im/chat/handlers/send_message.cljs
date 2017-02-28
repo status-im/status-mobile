@@ -127,21 +127,25 @@
     (fn [db [_ {:keys [chat-id address command-message]
                 :as   parameters}]]
       (let [{:keys [id command params]} command-message
-            {:keys [type name]} command
-            path   [(if (= :command type) :commands :responses)
-                    name
-                    :handler]
-            to     (get-in db [:contacts chat-id :address])
-            params {:parameters params
-                    :context    {:from       address
-                                 :to         to
-                                 :message-id id}}]
-        (status/call-jail
-          chat-id
-          path
-          params
-          (fn [result]
-            (dispatch [:command-handler! chat-id parameters result])))))))
+            {:keys [type name bot]} command
+            path     [(if (= :command type) :commands :responses)
+                      name
+                      :handler]
+            to       (get-in db [:contacts chat-id :address])
+            params   {:parameters params
+                      :context    {:from       address
+                                   :to         to
+                                   :message-id id}}
+            identity (or bot chat-id)]
+        (dispatch
+          [:check-and-load-commands!
+           identity
+           #(status/call-jail
+              identity
+              path
+              params
+              (fn [res]
+                (dispatch [:command-handler! chat-id parameters res])))])))))
 
 (register-handler :prepare-message
   (u/side-effect!
