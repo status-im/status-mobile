@@ -45,10 +45,14 @@
         (response/request-info-text name chat-id added)])]]])
 
 (defn suggestion-list-item
-  [[command {:keys [title description]
-             name  :name
-             :as   suggestion}]]
-  (let [label (str chat-consts/command-char name)]
+  [[{:keys [bot] :as command-name}
+    {:keys [title description bot]
+     name  :name
+     :as   command}]]
+  (let [label (apply str
+                     (if bot
+                       [chat-consts/bot-char bot]
+                       [chat-consts/command-char name]))]
     [touchable-highlight
      {:onPress #(set-command-input command)
       :style   st/suggestion-highlight}
@@ -58,7 +62,7 @@
         [text {:style st/value-text} title]
         [text {:style st/description-text} description]]
        [view st/command-label-container
-        [view (st/suggestion-background suggestion)
+        [view (st/suggestion-background command)
          [text {:style st/suggestion-text} label]]]]]]))
 
 (defn title [s]

@@ -48,13 +48,14 @@
 
 (register-handler :initialize-db
   (fn [{:keys [status-module-initialized? status-node-started?
-               network-status network]} _]
+               network-status network first-run]} _]
     (data-store/init)
     (assoc app-db :current-account-id nil
                   :network-status network-status
                   :status-module-initialized? (or p/ios? js/goog.DEBUG status-module-initialized?)
                   :status-node-started? status-node-started?
-                  :network (or network :testnet))))
+                  :network (or network :testnet)
+                  :first-run (or (nil? first-run) first-run))))
 
 (register-handler :initialize-account-db
   (fn [db _]
@@ -84,12 +85,22 @@
 
 (register-handler :reset-app
   (u/side-effect!
-    (fn [_ _]
+    (fn [{:keys [first-run] :as db} [_ callback]]
       (dispatch [:initialize-db])
       (dispatch [:load-accounts])
-      (dispatch [:init-console-chat])
-      (dispatch [:load-default-contacts!])
-      (dispatch [:load-commands!]))))
+
+      (dispatch [::init-chats! callback]))))
+
+(register-handler ::init-chats!
+  (u/side-effect!
+    (fn [{:keys [first-run accounts] :as db} [_ callback]]
+      (when first-run
+        (dispatch [:set :first-run false]))
+      (when (or (not first-run) (empty? accounts))
+        (dispatch [:init-console-chat])
+        (dispatch [:load-default-contacts!])
+        (dispatch [:load-commands!])
+        (when callback (callback))))))
 
 (def ecc (js/require "eccjs"))
 
@@ -128,9 +139,9 @@
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
           "transaction.failed" (dispatch [:transaction-failed event])
-          "node.started"       (dispatch [:status-node-started!])
+          "node.started" (dispatch [:status-node-started!])
           "module.initialized" (dispatch [:status-module-initialized!])
-          "local_storage.set"  (dispatch [:set-local-storage event])
+          "local_storage.set" (dispatch [:set-local-storage event])
           (log/debug "Event " type " not handled"))))))
 
 (register-handler :status-module-initialized!

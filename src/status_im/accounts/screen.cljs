@@ -36,8 +36,7 @@
   (list-item [account-view row]))
 
 (defn create-account [_]
-  (dispatch-sync [:reset-app])
-  (dispatch [:navigate-to :chat console-chat-id]))
+  (dispatch [:reset-app #(dispatch [:navigate-to :chat console-chat-id])]))
 
 (defview accounts []
   [accounts [:get :accounts]
