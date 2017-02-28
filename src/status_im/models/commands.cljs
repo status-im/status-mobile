@@ -42,7 +42,9 @@
   ([db type message-id command-key]
    (set-command-input db type message-id command-key nil))
   ([{:keys [current-chat-id] :as db} type message-id command-key params]
-   (let [command         (get-response-or-command type db command-key)
+   (let [command         (if (map? command-key)
+                           command-key
+                           (get-response-or-command type db command-key))
          command'        (add-params command params)
          first-parameter (get (:params command') 0)
          value           (:value first-parameter)]

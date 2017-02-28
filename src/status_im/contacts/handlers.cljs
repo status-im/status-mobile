@@ -93,13 +93,22 @@
       db)))
 
 (defn load-contacts! [db _]
-  (let [contacts (->> (contacts/get-all)
-                      (map (fn [{:keys [whisper-identity] :as contact}]
-                             [whisper-identity contact]))
-                      (into {}))]
+  (let [contacts-list   (->> (contacts/get-all)
+                             (map (fn [{:keys [whisper-identity] :as contact}]
+                                    [whisper-identity contact])))
+        global-commands (->> contacts-list
+                             (filter (fn [[_ c]] (:global-command c)))
+                             (map (fn [[id {:keys [global-command]}]]
+                                    [(keyword id) (-> global-command
+                                                      (update :params vals)
+                                                      (assoc :bot id
+                                                             :type :command))]))
+                             (into {}))
+        contacts        (into {} contacts-list)]
     (doseq [[_ contact] contacts]
       (dispatch [:watch-contact contact]))
-    (assoc db :contacts contacts)))
+    (assoc db :contacts contacts
+              :global-commands global-commands)))
 
 (register-handler :load-contacts load-contacts!)
 
@@ -199,20 +208,24 @@
 (register-handler :load-default-contacts!
   (u/side-effect!
     (fn [{:keys [chats]}]
-      (doseq [[id {:keys [name photo-path public-key add-chat?
-                          dapp? dapp-url dapp-hash]}] js-res/default-contacts]
+      (doseq [[id {:keys [name photo-path public-key add-chat? global-command
+                          dapp? dapp-url dapp-hash bot-url]}] js-res/default-contacts]
         (let [id' (clojure.core/name id)]
           (when-not (chats id')
             (when add-chat?
               (dispatch [:add-chat id' {:name (:en name)}]))
-            (dispatch [:add-contacts [{:whisper-identity id'
-                                       :address          (public-key->address id')
-                                       :name             (:en name)
-                                       :photo-path       photo-path
-                                       :public-key       public-key
-                                       :dapp?            dapp?
-                                       :dapp-url         (:en dapp-url)
-                                       :dapp-hash        dapp-hash}]])))))))
+            (dispatch [:add-contacts
+                       [{:whisper-identity id'
+                         :address          (public-key->address id')
+                         :name             (:en name)
+                         :photo-path       photo-path
+                         :public-key       public-key
+                         :dapp?            dapp?
+                         :dapp-url         (:en dapp-url)
+                         :bot-url          bot-url
+                         :global-command   global-command
+                         :dapp-hash        dapp-hash}]])
+            (dispatch [:load-commands! id'])))))))
 
 (register-handler :add-contacts
   (after save-contacts!)
