@@ -10,7 +10,35 @@
         },
         "photo-path": "icon_wallet_avatar",
         "add-chat?": true,
-        "dapp?": true
+        "dapp?": true,
+        "has-global-command?": true,
+        "dapp-url":
+        {
+          "en": "https://status.im/dapps/wallet/"
+        },
+        "bot-url": "local://wallet-bot"
+    },
+
+    "mailman":
+    {
+        "name":
+        {
+            "en": "Mailman",
+            "ru": "Печкин"
+        },
+        "dapp?": true,
+        "has-global-command?": true,
+        "bot-url": "local://mailman-bot"
+    },
+
+    "browse":
+    {
+        "name":
+        {
+            "en": "Browse"
+        },
+        "dapp?": true,
+        "bot-url": "local://browse-bot"
     },
 
     "0x0428c9d6c1aaaa8369a7c63819684f30e34396dc0907d49afeac85a0a774ccb919b3482097d992e66bcc538e7a0c6acf874c77748f396f53c0a102e10d1a37765b":

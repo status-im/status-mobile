@@ -1,12 +1,5 @@
 I18n.translations = {
     en: {
-        location_title: 'Location',
-        location_description: 'Share your location',
-        location_address: 'Address',
-
-        browse_title: 'Browser',
-        browse_description: 'Launch the browser',
-
         send_title: 'Send ETH',
         send_description: 'Send a payment',
 
@@ -20,13 +13,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Insufficient funds for gas * price + value (balance '
     },
     ru: {
-        location_title: 'Местоположение',
-        location_description: 'Поделитесь своим местоположением',
-        location_address: 'Адрес',
-
-        browse_title: 'Браузер',
-        browse_description: 'Запуск браузера',
-
         send_title: 'Отправить ETH',
         send_description: 'Отправить платеж',
 
@@ -40,13 +26,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Недостаточно ETH на балансе ('
     },
     af: {
-        location_title: 'Ligging',
-        location_description: 'Deel jou ligging',
-        location_address: 'Addres',
-
-        browse_title: 'Webblaaier',
-        browse_description: 'Begin die webblaaier',
-
         send_title: 'Stuur ETH',
         send_description: 'Stuur \'n betaling',
 
@@ -60,13 +39,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Nie genoeg ETH in rekening nie ('
     },
     ar: {
-        location_title: 'الموقع',
-        location_description: 'شارك موقعك',
-        location_address: 'العنوان',
-
-        browse_title: 'المتصفح',
-        browse_description: 'تشغيل المتصفح',
-
         send_title: 'إرسال ETH',
         send_description: 'إرسال مدفوعات',
 
@@ -80,13 +52,6 @@ I18n.translations = {
         validation_insufficient_amount: 'لا يوجد ETH  كافي بالحساب ('
     },
     'zh-hant': {
-        location_title: '位置',
-        location_description: '分享您的位置',
-        location_address: '地址',
-
-        browse_title: '流覽器',
-        browse_description: '啟動流覽器',
-
         send_title: '發送 ETH',
         send_description: '發送一筆付款',
 
@@ -100,13 +65,6 @@ I18n.translations = {
         validation_insufficient_amount: '餘額中 ETH 不足 ('
     },
     'zh-hans': {
-        location_title: '位置',
-        location_description: '分享你的位置',
-        location_address: '地址',
-
-        browse_title: '浏览器',
-        browse_description: '启动浏览器',
-
         send_title: '发送ETH',
         send_description: '付款',
 
@@ -120,13 +78,6 @@ I18n.translations = {
         validation_insufficient_amount: 'ETH余额不足 ('
     },
     'zh-yue': {
-        location_title: '所在位置',
-        location_description: '分享所在位置',
-        location_address: '地址',
-
-        browse_title: '瀏覽器',
-        browse_description: '啟動瀏覽器',
-
         send_title: '發送ETH',
         send_description: '發送付款',
 
@@ -140,13 +91,6 @@ I18n.translations = {
         validation_insufficient_amount: '沒有足夠ETH餘額 ('
     },
     'zh-wuu': {
-        location_title: '位置',
-        location_description: '分享您的位置',
-        location_address: '地址',
-
-        browse_title: '浏览器',
-        browse_description: '启动浏览器',
-
         send_title: '发送ETH',
         send_description: '发送付款',
 
@@ -160,13 +104,6 @@ I18n.translations = {
         validation_insufficient_amount: 'ETH余额不足 ('
     },
     nl: {
-        location_title: 'Locatie',
-        location_description: 'Deel je locatie',
-        location_address: 'Adres',
-
-        browse_title: 'Browser',
-        browse_description: 'Start de browser',
-
         send_title: 'Stuur ETH',
         send_description: 'Stuur een betaling',
 
@@ -180,13 +117,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Niet genoeg ETH op saldo ('
     },
     fr: {
-        location_title: 'Emplacement',
-        location_description: 'Partager votre emplacement',
-        location_address: 'Adresse',
-
-        browse_title: 'Navigateur',
-        browse_description: 'Lancer le navigateur',
-
         send_title: 'Envoyer l\'ETH',
         send_description: 'Envoyer un paiement',
 
@@ -200,13 +130,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Pas assez d\'ETH sur le solde ('
     },
     de: {
-        location_title: 'Ort',
-        location_description: 'Teilen Sie Ihren Ort',
-        location_address: 'Adresse',
-
-        browse_title: 'Browser',
-        browse_description: 'Browser starten',
-
         send_title: 'ETH abschicken',
         send_description: 'Zahlung senden',
 
@@ -220,13 +143,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Nicht genügend ETH auf dem Konto ('
     },
     hi: {
-        location_title: 'स्थान',
-        location_description: 'अपना स्थान साझा करें',
-        location_address: 'पता',
-
-        browse_title: 'ब्राउज़र',
-        browse_description: 'ब्राउज़र लॉन्च करें',
-
         send_title: 'ETH भेजें',
         send_description: 'भुगतान भेजें',
 
@@ -240,13 +156,6 @@ I18n.translations = {
         validation_insufficient_amount: 'बैलेंस पर पर्याप्त ETH नहीं है ('
     },
     hu: {
-        location_title: 'Helyszín',
-        location_description: 'Helyszín megosztása',
-        location_address: 'Cím',
-
-        browse_title: 'Böngésző',
-        browse_description: 'Böngésző indítása',
-
         send_title: 'ETH küldése',
         send_description: 'Kifizetés küldése',
 
@@ -260,13 +169,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Nincs elég ETH a számlán ('
     },
     it: {
-        location_title: 'Posizione',
-        location_description: 'Condividi la tua posizione',
-        location_address: 'Indirizzo',
-
-        browse_title: 'Browser',
-        browse_description: 'Lancia il browser',
-
         send_title: 'Invia ETH',
         send_description: 'Invia un pagamento',
 
@@ -280,13 +182,6 @@ I18n.translations = {
         validation_insufficient_amount: 'ETH insufficiente sul bilancio ('
     },
     ja: {
-        location_title: '位置',
-        location_description: '位置情報を共有',
-        location_address: 'アドレス',
-
-        browse_title: 'ブラウザ',
-        browse_description: 'ブラウザを起動',
-
         send_title: 'ETHを送信',
         send_description: '支払いを送信',
 
@@ -300,13 +195,6 @@ I18n.translations = {
         validation_insufficient_amount: '残高に十分なETHがありません('
     },
     ko: {
-        location_title: '위치',
-        location_description: '내 위치 공유하기',
-        location_address: '주소',
-
-        browse_title: '브라우저',
-        browse_description: '브라우저 시작하기',
-
         send_title: 'ETH 보내기',
         send_description: '지불금 보내기',
 
@@ -320,13 +208,6 @@ I18n.translations = {
         validation_insufficient_amount: 'ETH 잔고가 부족합니다 ('
     },
     pl: {
-        location_title: 'Lokalizacja',
-        location_description: 'Udostępnij swoją lokalizację',
-        location_address: 'Adres',
-
-        browse_title: 'Przeglądarka',
-        browse_description: 'Uruchom przeglądarkę',
-
         send_title: 'Wyślij ETH',
         send_description: 'Wyślij płatność',
 
@@ -340,13 +221,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Brak wystarczającej liczby ETH na koncie ('
     },
     'pt-br': {
-        location_title: 'Localização',
-        location_description: 'Compartilhar sua localização',
-        location_address: 'Endereço',
-
-        browse_title: 'Navegador',
-        browse_description: 'Abrir o navegador',
-
         send_title: 'Enviar ETH',
         send_description: 'Enviar um pagamento',
 
@@ -360,13 +234,6 @@ I18n.translations = {
         validation_insufficient_amount: 'ETH insuficiente no saldo ('
     },
     'pt-pt': {
-        location_title: 'Location',
-        location_description: 'Partilhar a sua localização',
-        location_address: 'Endereço',
-
-        browse_title: 'Navegador',
-        browse_description: 'Abrir o navegador',
-
         send_title: 'Enviar ETH',
         send_description: 'Enviar um pagamento',
 
@@ -380,13 +247,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Não há ETH suficiente no saldo ('
     },
     ro: {
-        location_title: 'Locație',
-        location_description: "Partajează locația",
-        location_address: 'Adresă',
-
-        browse_title: 'Browser',
-        browse_description: 'Lansare browser',
-
         send_title: 'Trimite ETH',
         send_description: 'Trimite o plată',
 
@@ -400,13 +260,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Sold ETH insuficient ('
     },
     sl: {
-        location_title: 'Lokacija',
-        location_description: 'Deli svojo lokacijo',
-        location_address: 'Naslov',
-
-        browse_title: 'Brskalnik',
-        browse_description: 'Zaženi brskalnik',
-
         send_title: 'Pošlji ETH',
         send_description: 'Pošlji plačilo',
 
@@ -420,13 +273,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Stanje ETH na računu je prenizko ('
     },
     es: {
-        location_title: 'Ubicación',
-        location_description: 'Comparte tu ubicación',
-        location_address: 'Dirección',
-
-        browse_title: 'Navegador',
-        browse_description: 'Iniciar el navegador',
-
         send_title: 'Enviar ETH ',
         send_description: 'Enviar un pago',
 
@@ -440,13 +286,6 @@ I18n.translations = {
         validation_insufficient_amount: 'No hay suficiente ETH en conjunto ('
     },
     'es-ar': {
-        location_title: 'Ubicación',
-        location_description: 'Comparte tu ubicación',
-        location_address: 'Dirección',
-
-        browse_title: 'Navegador',
-        browse_description: 'Iniciar navegador',
-
         send_title: 'Enviar ETH',
         send_description: 'Enviar un pago',
 
@@ -460,13 +299,6 @@ I18n.translations = {
         validation_insufficient_amount: 'No tienes suficiente ETH en tu saldo ('
     },
     sw: {
-        location_title: 'Eneo',
-        location_description: 'Shiriki eneo lako',
-        location_address: 'Anwani',
-
-        browse_title: 'Programu ya utafutaji',
-        browse_description: 'Zindua programu ya utafutaji',
-
         send_title: 'Tuma ETH',
         send_description: 'Tuma malipo',
 
@@ -480,13 +312,6 @@ I18n.translations = {
         validation_insufficient_amount: 'ETH haitoshi kwenye salio ('
     },
     sv: {
-        location_title: 'Plats',
-        location_description: 'Dela din plats',
-        location_address: 'Adress',
-
-        browse_title: 'Webbläsare',
-        browse_description: 'Starta webbläsaren',
-
         send_title: 'Skicka ETH',
         send_description: 'Skicka en betalning',
 
@@ -500,13 +325,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Inte tillräcklig ETH på balansen ('
     },
     'fr-ch': {
-        location_title: 'Emplacement',
-        location_description: 'Partagez votre emplacement',
-        location_address: 'Adresse',
-
-        browse_title: 'Navigateur',
-        browse_description: 'Lancer le navigateur',
-
         send_title: 'Envoyer des ETH',
         send_description: 'Envoyer un paiement',
 
@@ -520,13 +338,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Pas assez d\'ETH sur le solde ('
     },
     'de-ch': {
-        location_title: 'Standort',
-        location_description: 'Teile dein Standort',
-        location_address: 'Adresse',
-
-        browse_title: 'Browser',
-        browse_description: 'Starte den Browser',
-
         send_title: 'Sende ETH',
         send_description: 'Senden eine Zahlung',
 
@@ -540,13 +351,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Nicht genug ETH vorhanden ('
     },
     'it-ch': {
-        location_title: 'Posizione',
-        location_description: 'Condividi la tua posizione',
-        location_address: 'Indirizzo',
-
-        browse_title: 'Browser',
-        browse_description: 'Avvia il browser',
-
         send_title: 'Invia ETH',
         send_description: 'Invia un pagamento',
 
@@ -560,13 +364,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Saldo ETH non sufficiente ('
     },
     th: {
-        location_title: 'ตำแหน่ง',
-        location_description: 'แชร์ตำแหน่งของคุณ',
-        location_address: 'ที่อยู่',
-
-        browse_title: 'เบราว์เซอร์',
-        browse_description: 'เปิดเบราว์เซอร์',
-
         send_title: 'ส่ง ETH',
         send_description: 'ส่งการชำระเงิน',
 
@@ -580,13 +377,6 @@ I18n.translations = {
         validation_insufficient_amount: 'มี ETH ไม่เพียงพอในยอดคงเหลือ ('
     },
     tr: {
-        location_title: 'Konum',
-        location_description: 'Konumunuzu paylaşın',
-        location_address: 'Adres',
-
-        browse_title: 'Tarayıcı',
-        browse_description: 'Tarayıcıyı başlat',
-
         send_title: 'ETH gönder',
         send_description: 'Bir ödeme gönder',
 
@@ -599,14 +389,7 @@ I18n.translations = {
         validation_invalid_number: 'Miktar geçerli bir sayı değil',
         validation_insufficient_amount: 'Yeterli ETH bakiyesi yok ('
     },
-     uk: {
-        location_title: 'Місцезнаходження',
-        location_description: 'Поділіться своїм місцезнаходженням',
-        location_address: 'Адреса',
-
-        browse_title: 'Браузер',
-        browse_description: 'Запустити браузер',
-
+    uk: {
         send_title: 'Надіслати ETH',
         send_description: 'Надіслати платіж',
 
@@ -620,13 +403,6 @@ I18n.translations = {
         validation_insufficient_amount: 'Не вистачає ETH на балансі ('
     },
     ur: {
-        location_title: 'مقام',
-        location_description: 'اپنا مقام بتائیں',
-        location_address: 'پتہ',
-
-        browse_title: 'براؤزر',
-        browse_description: 'براؤزر کھولیں',
-
         send_title: 'ETH بھیجیں',
         send_description: 'ادائیگی کریں',
 
@@ -640,13 +416,6 @@ I18n.translations = {
         validation_insufficient_amount: 'ETH میں کافی بیلنس نہیں ہے ('
     },
     vi: {
-        location_title: 'Vị trí',
-        location_description: 'Chia sẻ vị trí của bạn',
-        location_address: 'Địa chỉ',
-
-        browse_title: 'Trình duyệt',
-        browse_description: 'Mở trình duyệt',
-
         send_title: 'Gửi ETH',
         send_description: 'Gửi một khoản thanh toán',
 
@@ -660,275 +429,3 @@ I18n.translations = {
         validation_insufficient_amount: 'Không đủ ETH trong số dư ('
     }
 };
-
-status.command({
-    name: "location",
-    icon: "location",
-    title: I18n.t('location_title'),
-    description: I18n.t('location_description'),
-    color: "#a187d5",
-    preview: function (params) {
-        var text = status.components.text(
-            {
-                style: {
-                    marginTop: 5,
-                    marginHorizontal: 0,
-                    fontSize: 14,
-                    fontFamily: "font",
-                    color: "black"
-                }
-            }, params.address);
-        var uri = "https://maps.googleapis.com/maps/api/staticmap?center="
-            + params.address
-            + "&size=100x100&maptype=roadmap&key=AIzaSyBNsj1qoQEYPb3IllmWMAscuXW0eeuYqAA&language=en"
-            + "&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7C"
-            + params.address;
-
-        var image = status.components.image(
-            {
-                source: {uri: uri},
-                style: {
-                    width: 100,
-                    height: 100
-                }
-            }
-        );
-
-        return status.components.view({}, [text, image]);
-    },
-    shortPreview: function(params) {
-        return status.components.text(
-            {},
-            I18n.t('location_title') + ": " + params.address
-        );
-    }
-}).param({
-    name: "address",
-    type: status.types.TEXT,
-    placeholder: I18n.t('location_address')
-});
-
-
-function browseSuggestions(params) {
-    if (params.url && params.url !== "undefined" && params.url != "") {
-        var url = params.url;
-        if (!/^[a-zA-Z-_]+:/.test(url)) {
-            url = 'http://' + url;
-        }
-
-        return {webViewUrl: url};
-    }
-}
-
-status.command({
-    name: "browse",
-    title: I18n.t('browse_title'),
-    description: I18n.t('browse_description'),
-    color: "#ffa500",
-    fullscreen: true,
-    suggestionsTrigger: 'on-send',
-    params: [{
-        name: "url",
-        suggestions: browseSuggestions,
-        type: status.types.TEXT
-    }]
-});
-
-function validateSend(params, context) {
-    if (!context.to) {
-        return {
-            errors: [
-                status.components.validationMessage(
-                    "Wrong address",
-                    "Recipient address must be specified"
-                )
-            ]
-        };
-    }
-    if (!params.amount) {
-        return {
-            errors: [
-                status.components.validationMessage(
-                    I18n.t('validation_title'),
-                    I18n.t('validation_amount_specified')
-                )
-            ]
-        };
-    }
-
-    try {
-        var val = web3.toWei(params.amount.replace(",", "."), "ether");
-        if (val <= 0) { throw new Error(); }
-    } catch (err) {
-        return {
-            errors: [
-                status.components.validationMessage(
-                    I18n.t('validation_title'),
-                    I18n.t('validation_invalid_number')
-                )
-            ]
-        };
-    }
-
-    var balance = web3.eth.getBalance(context.from);
-    var estimatedGas = web3.eth.estimateGas({
-        from: context.from,
-        to: context.to,
-        value: val
-    });
-    if (bn(val).plus(bn(estimatedGas)).greaterThan(bn(balance))) {
-        return {
-            errors: [
-                status.components.validationMessage(
-                    I18n.t('validation_title'),
-                    I18n.t('validation_insufficient_amount')
-                    + web3.fromWei(balance, "ether")
-                    + " ETH)"
-                )
-            ]
-        };
-    }
-}
-
-function sendTransaction(params, context) {
-    var data = {
-        from: context.from,
-        to: context.to,
-        value: web3.toWei(params.amount.replace(",", "."), "ether")
-    };
-
-    try {
-        return web3.eth.sendTransaction(data);
-    } catch (err) {
-        return {error: err};
-    }
-}
-
-var send = {
-    name: "send",
-    icon: "money_white",
-    color: "#5fc48d",
-    title: I18n.t('send_title'),
-    description: I18n.t('send_description'),
-    params: [{
-        name: "amount",
-        type: status.types.NUMBER
-    }],
-    preview: function (params, context) {
-        var amountStyle = {
-            fontSize: 36,
-            color: "#000000",
-            height: 40
-        };
-
-        var amount = status.components.view(
-            {
-                flexDirection: "column",
-                alignItems: "flex-end",
-            },
-            [status.components.text(
-                {
-                    style: amountStyle,
-                    font: "light"
-                },
-                status.localizeNumber(params.amount, context.delimiter, context.separator)
-            )]);
-
-        var currency = status.components.view(
-            {
-                style: {
-                    flexDirection: "column",
-                    justifyContent: "flex-end",
-                    paddingBottom: 0
-                }
-            },
-            [status.components.text(
-                {
-                    style: {
-                        color: "#9199a0",
-                        fontSize: 16,
-                        lineHeight: 18,
-                        marginLeft: 7.5
-                    }
-                },
-                "ETH"
-            )]
-        );
-
-        return status.components.view(
-            {
-                style: {
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 8,
-                    marginBottom: 8
-                }
-            },
-            [amount, currency]
-        );
-    },
-    shortPreview: function (params, context) {
-        return status.components.text(
-            {},
-            I18n.t('send_title') + ": "
-            + status.localizeNumber(params.amount, context.delimiter, context.separator)
-            + " ETH"
-        );
-    },
-    handler: sendTransaction,
-    validator: validateSend
-};
-
-status.command(send);
-status.response(send);
-
-status.command({
-    name: "request",
-    title: I18n.t('request_title'),
-    color: "#7099e6",
-    description: I18n.t('request_description'),
-    params: [{
-        name: "amount",
-        type: status.types.NUMBER
-    }],
-    handler: function (params) {
-        return {
-            event: "request",
-            params: [params.amount],
-            request: {
-                command: "send",
-                params: {
-                    amount: params.amount
-                }
-            }
-        };
-    },
-    preview: function (params, context) {
-        return I18n.t('request_requesting')
-            + status.localizeNumber(params.amount, context.delimiter, context.separator)
-            + " ETH";
-    },
-    shortPreview: function (params, context) {
-        return status.components.text(
-            {},
-            I18n.t('request_requesting') + " "
-            + status.localizeNumber(params.amount, context.delimiter, context.separator)
-            + " ETH"
-        );
-    },
-    validator: function(params) {
-        try {
-            var val = web3.toWei(params.amount, "ether");
-            if (val <= 0) { throw new Error(); }
-        } catch (err) {
-            return {
-                errors: [
-                    status.components.validationMessage(
-                        I18n.t('validation_title'),
-                        I18n.t('validation_invalid_number')
-                    )
-                ]
-            };
-        }
-    }
-});

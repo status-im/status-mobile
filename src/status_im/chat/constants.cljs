@@ -1,6 +1,7 @@
 (ns status-im.chat.constants)
 
 (def command-char "/")
+(def bot-char "@")
 
 (def input-height 56)
 (def max-input-height 66)

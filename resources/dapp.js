@@ -23,7 +23,7 @@ status.command({
                     url = 'http://' + url;
                 }
             }
-            return {webViewUrl: url};
+            status.browse(url);
         },
         type: status.types.TEXT
     }]

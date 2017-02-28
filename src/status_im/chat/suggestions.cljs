@@ -10,16 +10,28 @@
 (defn suggestion? [text]
   (= (get text 0) chat-consts/command-char))
 
-(defn can-be-suggested? [text]
-  (fn [{:keys [name]}]
-    (.startsWith (str chat-consts/command-char name) text)))
+(defn bot-suggestion? [text]
+  (= (get text 0) chat-consts/bot-char))
+
+(defn can-be-suggested? [first-char text]
+  (fn [{:keys [name bot]}]
+    (s/starts-with? (s/lower-case (str first-char (or bot name))) text)))
 
 (defn get-suggestions
-  [{:keys [current-chat-id] :as db} text]
+  [{:keys [current-chat-id global-commands] :as db} text]
   (let [commands (get-in db [:chats current-chat-id :commands])]
-    (if (suggestion? text)
-      (filter (fn [[_ v]] ((can-be-suggested? text) v)) commands)
-      [])))
+    (cond
+      (suggestion? text)
+      (filter (fn [[_ v]]
+                ((can-be-suggested? chat-consts/command-char text) v))
+              (merge commands global-commands))
+
+      (bot-suggestion? text)
+      (filter (fn [[_ v]]
+                ((can-be-suggested? chat-consts/bot-char text) v))
+              global-commands)
+
+      :else [])))
 
 (defn get-command [db text]
   (when (suggestion? text)

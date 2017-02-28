@@ -145,7 +145,7 @@
   [db [_ chat-id text]]
   (let [suggestions (get-in db [:command-suggestions chat-id])]
     (if (= 1 (count suggestions))
-      (dispatch [:set-chat-command (ffirst suggestions)])
+      (dispatch [:set-chat-command (second (first suggestions))])
       (dispatch [::set-text chat-id text]))))
 
 (register-handler ::check-dapp-suggestions

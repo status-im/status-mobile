@@ -30,22 +30,28 @@
   [{:keys [current-chat-id canceled-command] :as db} _]
   (when-not canceled-command
     (let [{:keys [command content params]} (get-in db [:chats current-chat-id :command-input])
-          data   (get-in db [:local-storage current-chat-id])
-          {:keys [name type]} command
-          path   [(if (= :command type) :commands :responses)
-                  name
-                  :params
-                  0
-                  :suggestions]
-          params {:parameters (or params {})
-                  :context    (merge {:data data}
-                                     (command-dependent-context-params command))}]
-      (status/call-jail current-chat-id
-                        path
-                        params
-                        #(dispatch [:suggestions-handler {:command command
-                                                          :content content
-                                                          :chat-id current-chat-id} %])))))
+          data     (get-in db [:local-storage current-chat-id])
+          {:keys [name type bot]} command
+          path     [(if (= :command type) :commands :responses)
+                    name
+                    :params
+                    0
+                    :suggestions]
+          params   {:parameters (or params {})
+                    :context    (merge {:data data}
+                                       (command-dependent-context-params command))}
+          identity (or bot current-chat-id)]
+      (dispatch
+        [:check-and-load-commands!
+         identity
+         (fn []
+           (status/call-jail
+             identity
+             path
+             params
+             #(dispatch [:suggestions-handler {:command command
+                                               :content content
+                                               :chat-id current-chat-id} %])))]))))
 
 (defn cancel-command!
   [{:keys [canceled-command]}]
@@ -147,9 +153,10 @@
         (dispatch [:request-command-preview request-data])))))
 
 (defn set-chat-command
-  [{:keys [current-chat-id] :as db} [_ command-key type]]
+  [{:keys [current-chat-id] :as db} [_ command type]]
+  (log/debug :set-chat-command command type)
   (-> db
-      (commands/set-command-input (or type :commands) command-key)
+      (commands/set-command-input (or type :commands) command)
       (assoc-in [:chats current-chat-id :command-input :content] cu/command-prefix)
       (assoc :disable-input true)
       (assoc :just-set-command? true)))
@@ -247,7 +254,7 @@
     (fn [db [_ {:keys [command-input chat-id address] :as data}]]
       (let [command-input'    (or command-input (commands/get-command-input db))
             {:keys [parameter-idx params command]} command-input'
-            {:keys [name type]} command
+            {:keys [name type bot]} command
             current-parameter (-> command
                                   :params
                                   (get parameter-idx)
@@ -260,11 +267,16 @@
                                name
                                :validator]
             parameters        {:context    context
-                               :parameters params}]
-        (status/call-jail chat-id
-                          path
-                          parameters
-                          #(dispatch [::validate! command-input data %]))))))
+                               :parameters params}
+            identity          (or bot chat-id)]
+        (dispatch
+          [:check-and-load-commands!
+           identity
+           (fn []
+             (status/call-jail identity
+                               path
+                               parameters
+                               #(dispatch [::validate! command-input data %])))])))))
 
 (register-handler :request-command-preview
   (u/side-effect!

@@ -3,6 +3,7 @@
             [status-im.data-store.realm.schemas.account.v2.core :as v2]
             [status-im.data-store.realm.schemas.account.v3.core :as v3]
             [status-im.data-store.realm.schemas.account.v4.core :as v4]
+            [status-im.data-store.realm.schemas.account.v5.core :as v5]
             ))
 
 ; put schemas ordered by version
@@ -17,4 +18,7 @@
                :migration     v3/migration}
               {:schema        v4/schema
                :schemaVersion 4
-               :migration     v4/migration}])
+               :migration     v4/migration}
+              {:schema        v5/schema
+               :schemaVersion 5
+               :migration     v5/migration}])

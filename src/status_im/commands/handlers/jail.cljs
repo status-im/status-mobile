@@ -43,13 +43,14 @@
 
 (defn suggestions-handler!
   [{:keys [contacts chats] :as db} [{:keys [chat-id]} {:keys [result]}]]
-  (let [{:keys [markup webViewUrl]} (:returned result)
+  (let [{:keys [markup]} (:returned result)
+        {:keys [web-view-url]} (:context result)
         {:keys [dapp? dapp-url]} (get contacts chat-id)
         text         (get-in chats [chat-id :input-text])
         hiccup       (when-not (s/blank? text) (generate-hiccup markup))
-        web-view-url (if (and (= webViewUrl "dapp-url") dapp? dapp-url)
+        web-view-url (if (and (= web-view-url "dapp-url") dapp? dapp-url)
                        (get-contact-translated chat-id :dapp-url dapp-url)
-                       webViewUrl)]
+                       web-view-url)]
     (-> db
         (assoc-in [:suggestions chat-id] hiccup)
         (assoc-in [:web-view-url chat-id] web-view-url)

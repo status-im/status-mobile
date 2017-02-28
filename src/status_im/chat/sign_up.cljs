@@ -183,6 +183,5 @@
    :name             (s/capitalize console-chat-id)
    :photo-path       console-chat-id
    :dapp?            true
-   ; todo remove/change dapp config fot console
-   :dapp-url         "http://localhost:8185/resources"
+   :bot-url          "local://console-bot"
    :dapp-hash        858845357})
