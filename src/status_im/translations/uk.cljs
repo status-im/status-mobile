@@ -153,10 +153,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH для {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH від {{chat-name}}"
-   :command-text-location                 "Місцезнаходження: {{address}}"
-   :command-text-browse                   "Перегляд веб-сторінки: {{webpage}}"
-   :command-text-send                     "Транзакція: {{amount}} ETH"
-   :command-text-help                     "Допомога"
 
    ;new-group
    :group-chat-name                       "Назва розмови"

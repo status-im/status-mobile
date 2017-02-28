@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH aan {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH van {{chat-name}}"
-   :command-text-location                 "Ligging {{address}}"
-   :command-text-browse                   "Webblaaier-blad: {{webpage}}"
-   :command-text-send                     "Transaksie: {{amount}} ETH"
-   :command-text-help                     "Help"
 
    ;new-group
    :group-chat-name                       "Bynaam"

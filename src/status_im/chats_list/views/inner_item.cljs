@@ -12,40 +12,49 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.constants :refer [console-chat-id
                                          content-type-command
-                                         content-type-command-request] :as c]
-            [taoensso.timbre :as log]))
+                                         content-type-wallet-command
+                                         content-type-command-request]]
+            [taoensso.timbre :as log]
+            [reagent.core :as r]))
 
-(defmulti message-content (fn [{:keys [content-type]}] content-type))
+(defn message-content-text [chat-id]
+  (let [message (subscribe [:get-last-message chat-id])
+        preview (subscribe [:get-last-message-short-preview chat-id])]
+    (r/create-class
+      {:component-will-mount
+       (fn []
+         (when (and (get-in @message [:content :command])
+                    (not @preview))
+           (dispatch [:request-command-preview @message :short-preview])))
 
-(defn command-content
-  [{{:keys [command content-command params]} :content}]
-  (let [kw (keyword (str "t/command-text-" (name (or content-command command))))]
-    (label kw params)))
+       :reagent-render
+       (fn [_]
+         [view]
+         (let [{:keys [content] :as message} @message
+               preview @preview]
+           [view st/last-message-container
+            (cond
 
-(defmethod message-content content-type-command
-  [message]
-  (command-content message))
+              (not message)
+              [text {:style st/last-message-text-no-messages}
+               (label :t/no-messages)]
 
-(defmethod message-content c/content-type-wallet-command
-  [message]
-  (command-content message))
+              (str/blank? content)
+              [text {:style st/last-message-text-no-messages}
+               ""]
 
-(defmethod message-content content-type-command-request
-  [message]
-  (command-content message))
+              (:content content)
+              [text {:style           st/last-message-text
+                     :number-of-lines 2}
+               (:content content)]
 
-(defmethod message-content :default
-  [{:keys [content]}]
-  content)
+              (:command content)
+              preview
 
-(defn message-content-text [message]
-  (let [content (message-content message)]
-    (if (str/blank? content)
-      [text {:style st/last-message-text-no-messages}
-       (label :t/no-messages)]
-      [text {:style           st/last-message-text
-             :number-of-lines 2}
-       content])))
+              :else
+              [text {:style           st/last-message-text
+                     :number-of-lines 2}
+               content])]))})))
 
 (defview message-status [{:keys [chat-id contacts]}
                          {:keys [message-id message-status user-statuses message-type outgoing] :as msg}]
@@ -76,13 +85,12 @@
             :font  :medium}
       unviewed-messages]]))
 
-(defn chat-list-item-inner-view [{:keys [chat-id name color last-message
+(defn chat-list-item-inner-view [{:keys [chat-id name color
                                          online group-chat contacts public?]
-                                  :as chat}]
-  (let [last-message (or (first (sort-by :clock-value > (:messages chat)))
-                         last-message)
-        name         (or (get-contact-translated chat-id :name name)
-                         (generate-gfy))
+                                  :as   chat}]
+  (let [last-message   (subscribe [:get-last-message chat-id])
+        name           (or (get-contact-translated chat-id :name name)
+                           (generate-gfy))
         private-group? (and group-chat (not public?))
         public-group?  (and group-chat public?)]
     [view st/chat-container
@@ -107,10 +115,10 @@
        #_(when private-group?
          [text {:style st/memebers-text}
           (label-pluralize (inc (count contacts)) :t/members)])]
-      [message-content-text last-message]]
+      [message-content-text chat-id]]
      [view
-      (when last-message
+      (when @last-message
         [view st/status-container
-         [message-status chat last-message]
-         [message-timestamp last-message]])
+         [message-status chat @last-message]
+         [message-timestamp @last-message]])
       [unviewed-indicator chat-id]]]))

@@ -16,7 +16,14 @@ I18n.translations = {
         password_validation_title: 'Password',
 
         faucet_incorrect_title: 'Incorrect faucet',
-        faucet_incorrect_description: 'Please, select a one from the list'
+        faucet_incorrect_description: 'Please, select a one from the list',
+
+        debug_mode_title: 'Debug mode',
+        debug_mode_description: 'Starts/stops a debug mode',
+
+        faucet_title: 'Faucet',
+        faucet_description: 'Get some ETH',
+        faucet_placeholder: 'Faucet URL'
     },
     ru: {
         phone_title: 'Отправить номер телефона',
@@ -1735,20 +1742,26 @@ function faucetSuggestions(params) {
 
 status.command({
     name: "faucet",
-    title: "Faucet",
-    description: "Get some ETH",
+    title: I18n.t('faucet_title'),
+    description: I18n.t('faucet_description'),
     color: "#7099e6",
     registeredOnly: true,
     params: [{
         name: "url",
         type: status.types.TEXT,
         suggestions: faucetSuggestions,
-        placeholder: "Faucet URL"
+        placeholder: I18n.t('faucet_placeholder')
     }],
     preview: function (params) {
         return status.components.text(
             {},
             params.url
+        );
+    },
+    shortPreview: function (params) {
+        return status.components.text(
+            {},
+            I18n.t('faucet_title') + ": " + params.url
         );
     },
     validator: function (params, context) {
@@ -1796,8 +1809,8 @@ function debugSuggestions(params) {
 
 status.command({
     name: "debug",
-    title: "Debug",
-    description: "Starts/stops a debug server",
+    title: I18n.t('debug_mode_title'),
+    description: I18n.t('debug_mode_description'),
     color: "#7099e6",
     registeredOnly: true,
     params: [{
@@ -1808,7 +1821,13 @@ status.command({
     preview: function (params) {
         return status.components.text(
             {},
-            "Debug mode: " + params.mode
+            I18n.t('debug_mode_title') + ": " + params.mode
+        );
+    },
+    shortPreview: function (params) {
+        return status.components.text(
+            {},
+            I18n.t('debug_mode_title') + ": " + params.mode
         );
     }
 });

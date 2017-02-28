@@ -153,10 +153,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH kwa {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH kutoka {{chat-name}}"
-   :command-text-location                 "Eneo: {{address}}"
-   :command-text-browse                   "Ukurasa wa tovuti wa kutafuta: {{webpage}}"
-   :command-text-send                     "Mashirikiano: {{amount}} ETH"
-   :command-text-help                     "Msaada"
 
    ;new-group
    :group-chat-name                       "Jina la gumzo"

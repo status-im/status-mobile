@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH đến {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH từ {{chat-name}}"
-   :command-text-location                 "Vị trí: {{address}}"
-   :command-text-browse                   "Trình duyệt trang web: {{webpage}}"
-   :command-text-send                     "Giao dịch: {{amount}} ETH"
-   :command-text-help                     "Giúp đỡ"
 
    ;new-group
    :group-chat-name                       "Tên trò chuyện"

@@ -178,12 +178,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH to {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH from {{chat-name}}"
-   :command-text-location                 "Location: {{address}}"
-   :command-text-browse                   "Browsing webpage: {{webpage}}"
-   :command-text-send                     "Transaction: {{amount}} ETH"
-   :command-text-help                     "Help"
-   :command-text-faucet                   "Faucet: {{url}}"
-   :command-text-request                  "Request: {{amount}} ETH"
 
    ;new-group
    :group-chat-name                       "Chat name"

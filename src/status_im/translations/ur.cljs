@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH کرنے {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH سے {{chat-name}}"
-   :command-text-location                 "مقام: {{address}}"
-   :command-text-browse                   "ویب پیج براؤز کریں: {{webpage}}"
-   :command-text-send                     "بیوپار: {{amount}} ETH"
-   :command-text-help                     "مدد"
 
    ;new-group
    :group-chat-name                       "چیٹ کا نام"
