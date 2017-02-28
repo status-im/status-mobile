@@ -54,8 +54,12 @@
   (fn [_ [_ chat-id]]
     (reaction (chats/get-by-id chat-id))))
 
-(register-sub
-  :get-commands
+(register-sub :get-bots-suggestions
+  (fn [db _]
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:bots-suggestions @chat-id])))))
+
+(register-sub :get-commands
   (fn [db [_ chat-id]]
     (let [current-chat (or chat-id (@db :current-chat-id))]
       (reaction (or (get-in @db [:chats current-chat :commands]) {})))))
@@ -138,8 +142,7 @@
           requests          (subscribe [:chat :request-suggestions chat-id])
           commands          (subscribe [:chat :command-suggestions chat-id])]
       (reaction
-        (and (or @show-suggestions?
-                 (.startsWith (or @input-text "") const/command-char))
+        (and (or @show-suggestions? (chat-utils/starts-as-command? @input-text))
              (not (:command @selected-command))
              (or (not-empty @requests)
                  (not-empty @commands)))))))

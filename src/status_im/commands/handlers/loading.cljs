@@ -4,6 +4,7 @@
             [status-im.utils.utils :refer [http-get show-popup]]
             [clojure.string :as s]
             [status-im.data-store.commands :as commands]
+            [status-im.data-store.contacts :as contacts]
             [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [reg-handler]]
@@ -12,33 +13,33 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.homoglyph :as h]
             [status-im.utils.js-resources :as js-res]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [status-im.chat.sign-up :as sign-up]))
 
 (def commands-js "commands.js")
 
 (defn load-commands!
-  [{:keys [current-chat-id contacts]} [identity]]
-  (let [identity (or identity current-chat-id)
-        contact  (or (get contacts identity)
-                     {:whisper-identity identity})]
-    (when identity
-      (dispatch [::fetch-commands! contact])))
+  [{:keys [current-chat-id contacts]} [identity callback]]
+  (let [identity' (or identity current-chat-id)
+        contact  (or (get contacts identity')
+                     sign-up/console-contact)]
+    (when identity'
+      (dispatch [::fetch-commands! {:contact  contact
+                                    :callback callback}])))
   ;; todo uncomment
   #_(if-let [{:keys [file]} (commands/get-by-chat-id identity)]
       (dispatch [::parse-commands! identity file])
       (dispatch [::fetch-commands! identity])))
 
 (defn fetch-commands!
-  [_ [{:keys [whisper-identity dapp? dapp-url]}]]
+  [_ [{{:keys [dapp? dapp-url bot-url whisper-identity]} :contact
+       :as                                               params}]]
   (cond
-    (= console-chat-id whisper-identity)
-    (dispatch [::validate-hash whisper-identity js-res/console-js])
-
-    (= wallet-chat-id whisper-identity)
-    (dispatch [::validate-hash whisper-identity js-res/wallet-js])
+    (js-res/local-resource? bot-url)
+    (dispatch [::validate-hash params (js-res/get-resource bot-url)])
 
     (and dapp? dapp-url)
-    (http-get (s/join "/" [dapp-url commands-js])
+    (http-get (s/join "/" [dapp-url "commands.js"])
               (fn [response]
                 (and
                   (string? (.text response))
@@ -48,13 +49,14 @@
               #(dispatch [::validate-hash whisper-identity js-res/dapp-js]))
 
     :else
-    (dispatch [::validate-hash whisper-identity js-res/commands-js])))
+    (dispatch [::validate-hash params js-res/commands-js])))
 
 (defn dispatch-loaded!
-  [db [identity file]]
+  [db [{{:keys [whisper-identity]} :contact
+        :as                        params} file]]
   (if (::valid-hash db)
-    (dispatch [::parse-commands! identity file])
-    (dispatch [::loading-failed! identity ::wrong-hash])))
+    (dispatch [::parse-commands! params file])
+    (dispatch [::loading-failed! whisper-identity ::wrong-hash])))
 
 (defn get-hash-by-identity
   [db identity]
@@ -65,19 +67,23 @@
   ;; todo tbd hashing algorithm
   (hash file))
 
-(defn parse-commands! [_ [identity file]]
-  (status/parse-jail identity file
-                     (fn [result]
-                       (let [{:keys [error result]} (json->clj result)]
-                         (log/debug "Error parsing commands: " error result)
-                         (if error
-                           (dispatch [::loading-failed! identity ::error-in-jail error])
-                           (if identity
-                             (dispatch [::add-commands identity file result])
-                             (dispatch [::add-all-commands result])))))))
+(defn parse-commands!
+  [_ [{{:keys [whisper-identity]} :contact
+       :keys                      [callback]}
+      file]]
+  (status/parse-jail
+    whisper-identity file
+    (fn [result]
+      (let [{:keys [error result]} (json->clj result)]
+        (log/debug "Parsing commands results: " error result)
+        (if error
+          (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
+          (do
+            (dispatch [::add-commands whisper-identity file result])
+            (when callback (callback))))))))
 
 (defn validate-hash
-  [db [identity file]]
+  [db [_ file]]
   (let [valid? true
         ;; todo check
         #_(= (get-hash-by-identity db identity)
@@ -102,18 +108,36 @@
 
 (defn add-commands
   [db [id _ {:keys [commands responses autorun]}]]
-  (let [account    @(subscribe [:get-current-account])
-        commands'  (filter-forbidden-names account id commands)
-        responses' (filter-forbidden-names account id responses)]
-    (-> db
-        (assoc-in [id :commands] (mark-as :command commands'))
-        (assoc-in [id :responses] (mark-as :response responses'))
-        (assoc-in [id :commands-loaded] true)
-        (assoc-in [id :autorun] autorun))))
+  (let [account        @(subscribe [:get-current-account])
+        commands'      (filter-forbidden-names account id commands)
+        global-command (:global commands')
+        commands''     (apply dissoc commands' [:init :global])
+        responses'     (filter-forbidden-names account id responses)]
+    (cond-> db
+
+            (get-in db [:chats id])
+            (update-in [:chats id] assoc
+                       :commands (mark-as :command commands'')
+                       :responses (mark-as :response responses')
+                       :commands-loaded true
+                       :autorun autorun
+                       :global-command global-command)
+
+            global-command
+            (update :global-commands assoc (keyword id)
+                    (assoc global-command :bot id
+                                          :type :command)))))
 
 (defn save-commands-js!
   [_ [id file]]
-  (commands/save {:chat-id id :file file}))
+  #_(commands/save {:chat-id id :file file}))
+
+(defn save-global-command!
+  [{:keys [global-commands]} [id]]
+  (let [command (get global-commands (keyword id))]
+    (when command
+      (contacts/save {:whisper-identity id
+                      :global-command   command}))))
 
 (defn loading-failed!
   [db [id reason details]]
@@ -126,6 +150,13 @@
       (show-popup "Error" m)
       (log/debug m))))
 
+(reg-handler :check-and-load-commands!
+  (u/side-effect!
+    (fn [{:keys [chats]} [identity callback]]
+      (if (get-in chats [identity :commands-loaded])
+        (callback)
+        (dispatch [:load-commands! identity callback])))))
+
 (reg-handler :load-commands! (u/side-effect! load-commands!))
 (reg-handler ::fetch-commands! (u/side-effect! fetch-commands!))
 
@@ -136,19 +167,14 @@
 (reg-handler ::parse-commands! (u/side-effect! parse-commands!))
 
 (reg-handler ::add-commands
-  [(path :chats)
-   (after save-commands-js!)
+  [(after save-commands-js!)
+   (after save-global-command!)
    (after #(dispatch [:check-autorun]))
    (after #(dispatch [:update-suggestions]))
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
             (dispatch [:invoke-chat-loaded-callbacks id])))]
   add-commands)
-
-(reg-handler ::add-all-commands
-  (fn [db [{:keys [commands responses]}]]
-    (assoc db :all-commands {:commands  (mark-as :command commands)
-                             :responses (mark-as :response responses)})))
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))
 

@@ -5,17 +5,18 @@
             [status-im.chat.views.input.validation-messages :refer [validation-message]]
             [status-im.i18n :as i18n]
             [status-im.utils.phone-number :as phone-number]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.chat.utils :as chat-utils]))
 
 (defn text-ends-with-space? [text]
   (when text
     (= (str/last-index-of text const/spacing-char)
        (dec (count text)))))
 
-(defn possible-chat-actions [db chat-id]
+(defn possible-chat-actions [{:keys [global-commands] :as db} chat-id]
   (let [{:keys [commands requests responses]} (get-in db [:chats chat-id])
 
-        commands'  (into {} (map (fn [[k v]] [k [v :any]]) commands))
+        commands'  (into {} (map (fn [[k v]] [k [v :any]]) (merge global-commands commands)))
         responses' (into {} (map (fn [{:keys [message-id type]}]
                                   [type [(get responses type) message-id]])
                                 requests))]
@@ -60,9 +61,9 @@
          possible-actions (possible-chat-actions db chat-id)
          command-args     (split-command-args input-text)
          command-name     (first command-args)]
-     (when (.startsWith (or command-name "") const/command-char)
-       (when-let [[command to-message-id] (-> (filter (fn [[{:keys [name]} message-id]]
-                                                        (= name (subs command-name 1)))
+     (when (chat-utils/starts-as-command? (or command-name ""))
+       (when-let [[command to-message-id] (-> (filter (fn [[{:keys [name bot]} message-id]]
+                                                        (= (or bot name) (subs command-name 1)))
                                                       possible-actions)
                                               (first))]
          {:command  command

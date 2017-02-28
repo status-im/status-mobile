@@ -176,6 +176,9 @@
      (doseq [{:keys [content] :as message} messages]
        (when (and (:command content)
                   (not (:content content)))
+         ;; todo rewrite it so that commands defined outside chat's context
+         ;; (bots' commands in group chats and global commands in all chats)
+         ;; could be rendered properly
          (dispatch [:request-command-data (assoc message :chat-id current-chat-id)])))
      (assoc db :messages messages))))
 

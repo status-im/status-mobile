@@ -2,21 +2,21 @@
   (:require [status-im.chat.constants :as chat-consts]
             [clojure.string :as str]))
 
-(defn suggestion? [text]
-  (= (get text 0) chat-consts/command-char))
+(defn can-be-suggested?
+  ([text] (can-be-suggested? chat-consts/command-char :name text))
+  ([first-char name-key text]
+   (fn [command]
+     (let [name (get command name-key)]
+       (let [text' (cond
+                     (.startsWith text first-char)
+                     text
 
-(defn can-be-suggested? [text]
-  (fn [{:keys [name]}]
-    (let [text' (cond
-                  (.startsWith text chat-consts/command-char)
-                  text
+                     (str/blank? text)
+                     first-char
 
-                  (str/blank? text)
-                  chat-consts/command-char
-
-                  :default
-                  nil)]
-      (.startsWith (str chat-consts/command-char name) text'))))
+                     :default
+                     nil)]
+         (.startsWith (str first-char name) text'))))))
 
 (defn get-request-suggestions
   [{:keys [current-chat-id] :as db} text]
@@ -30,3 +30,8 @@
   [{:keys [current-chat-id] :as db} text]
   (let [commands (get-in db [:chats current-chat-id :commands])]
     (filter (fn [[_ v]] ((can-be-suggested? text) v)) commands)))
+
+(defn get-global-command-suggestions
+  [{:keys [global-commands] :as db} text]
+  (filter (fn [[_ v]] ((can-be-suggested? chat-consts/bot-char :bot text) v))
+          global-commands))

@@ -1,7 +1,8 @@
 (ns status-im.chat.utils
   (:require [status-im.constants :refer [console-chat-id
                                          wallet-chat-id]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [status-im.chat.constants :as const]))
 
 (defn console? [s]
   (= console-chat-id s))
@@ -45,3 +46,13 @@
   (if validator
     (validator message)
     (pos? (count message))))
+
+(defn command-name [{:keys [bot name]}]
+  (if bot
+    (str const/bot-char bot)
+    (str const/command-char name)))
+
+(defn starts-as-command? [text]
+  (and (not (nil? text))
+       (or (str/starts-with? text const/bot-char)
+           (str/starts-with? text const/command-char))))

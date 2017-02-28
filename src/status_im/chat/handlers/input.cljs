@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [enrich after dispatch]]
             [taoensso.timbre :as log]
             [status-im.chat.constants :as const]
+            [status-im.chat.utils :as chat-utils]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.suggestions :as suggestions]
             [status-im.components.react :as react-comp]
@@ -38,9 +39,8 @@
   :select-chat-input-command
   (handlers/side-effect!
     (fn [{:keys [current-chat-id chat-ui-props] :as db}
-         [_ {:keys [name prefill sequential-params] :as command} metadata]]
-      (dispatch [:set-chat-input-text (str const/command-char
-                                           name
+         [_ {:keys [prefill sequential-params] :as command} metadata]]
+      (dispatch [:set-chat-input-text (str (chat-utils/command-name command)
                                            const/spacing-char
                                            (when-not sequential-params
                                              (input-model/join-command-args prefill)))])
@@ -66,10 +66,10 @@
   :set-command-argument
   (handlers/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ [index arg]]]
-      (let [command      (-> (get-in db [:chats current-chat-id :input-text])
-                             (input-model/split-command-args))
-            seq-params?  (-> (input-model/selected-chat-command db current-chat-id)
-                             (get-in [:command :sequential-params]))]
+      (let [command     (-> (get-in db [:chats current-chat-id :input-text])
+                            (input-model/split-command-args))
+            seq-params? (-> (input-model/selected-chat-command db current-chat-id)
+                            (get-in [:command :sequential-params]))]
         (if seq-params?
           (dispatch [:set-chat-seq-arg-input-text arg])
           (let [command-name (first command)
@@ -95,16 +95,17 @@
 (handlers/register-handler
   :update-suggestions
   (fn [{:keys [current-chat-id] :as db} [_ chat-id text]]
-    (let [chat-id     (or chat-id current-chat-id)
-          chat-text   (or text (get-in db [:chats chat-id :input-text]) "")
-          requests    (suggestions/get-request-suggestions db chat-text)
-          suggestions (suggestions/get-command-suggestions db chat-text)
+    (let [chat-id         (or chat-id current-chat-id)
+          chat-text       (or text (get-in db [:chats chat-id :input-text]) "")
+          requests        (suggestions/get-request-suggestions db chat-text)
+          suggestions     (suggestions/get-command-suggestions db chat-text)
+          global-commands (suggestions/get-global-command-suggestions db chat-text)
           {:keys [dapp?]} (get-in db [:contacts chat-id])]
-      (when (and dapp? (empty? (into requests suggestions)))
+      (when (and dapp? (every? empty? [requests suggestions global-commands]))
         (dispatch [::check-dapp-suggestions chat-id chat-text]))
       (-> db
           (assoc-in [:chats chat-id :request-suggestions] requests)
-          (assoc-in [:chats chat-id :command-suggestions] suggestions)))))
+          (assoc-in [:chats chat-id :command-suggestions] (into suggestions global-commands))))))
 
 (handlers/register-handler
   :load-chat-parameter-box
@@ -137,12 +138,12 @@
   ::send-message
   (handlers/side-effect!
     (fn [{:keys [current-public-key current-account-id] :as db} [_ command-message chat-id]]
-      (let [text    (get-in db [:chats chat-id :input-text])
-            data    {:message  text
-                     :command  command-message
-                     :chat-id  chat-id
-                     :identity current-public-key
-                     :address  current-account-id}]
+      (let [text (get-in db [:chats chat-id :input-text])
+            data {:message  text
+                  :command  command-message
+                  :chat-id  chat-id
+                  :identity current-public-key
+                  :address  current-account-id}]
         (dispatch [:set-chat-input-text nil chat-id])
         (dispatch [:set-chat-input-metadata nil chat-id])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
@@ -156,18 +157,28 @@
   :proceed-command
   (handlers/side-effect!
     (fn [db [_ command chat-id]]
-      (let [after-validation #(dispatch [::request-command-data
-                                         {:command   command
-                                          :chat-id   chat-id
-                                          :data-type :on-send
-                                          :after     (fn [_ res]
-                                                       (dispatch [::send-command res command chat-id]))}])]
-        (dispatch [::request-command-data
-                   {:command   command
-                    :chat-id   chat-id
-                    :data-type :validator
-                    :after     #(dispatch [::proceed-validation-messages
-                                           command chat-id %2 after-validation])}])))))
+      (let [jail-id (or (get-in command [:command :bot]) chat-id)]
+        ;:check-and-load-commands!
+        (let [params
+              {:command command
+               :chat-id jail-id}
+
+              on-send-params
+              (merge params
+                     {:data-type :on-send
+                      :after     (fn [_ res]
+                                   (dispatch [::send-command res command chat-id]))})
+
+              after-validation
+              #(dispatch [::request-command-data on-send-params])
+
+              validation-params
+              (merge params
+                     {:data-type :validator
+                      :after     #(dispatch [::proceed-validation-messages
+                                             command chat-id %2 after-validation])})]
+
+          (dispatch [::request-command-data validation-params]))))))
 
 (handlers/register-handler
   ::proceed-validation-messages
@@ -215,7 +226,7 @@
   (handlers/side-effect!
     (fn [{:keys [contacts] :as db}
          [_ {{:keys [command metadata args] :as c} :command
-             :keys [message-id chat-id data-type after]}]]
+             :keys                                 [message-id chat-id data-type after]}]]
       (let [{:keys [dapp? dapp-url name]} (get contacts chat-id)
             message-id      (random/id)
             metadata        (merge metadata
@@ -228,7 +239,8 @@
                              :to-message (:to-message-id metadata)
                              :created-at (time/now-ms)
                              :id         message-id
-                             :chat-id    chat-id}
+                             :chat-id    chat-id
+                             :jail-id    (or (:bot command) chat-id)}
             request-data    {:message-id   message-id
                              :chat-id      chat-id
                              :content      {:command (:name command)
