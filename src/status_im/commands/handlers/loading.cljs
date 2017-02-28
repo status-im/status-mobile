@@ -28,24 +28,20 @@
 
 (defn fetch-commands!
   [_ [{:keys [whisper-identity dapp? dapp-url]}]]
-  (when true
-    ;-let [url (get-in db [:chats identity :dapp-url])]
-    (cond
-      (= console-chat-id whisper-identity)
-      (dispatch [::validate-hash whisper-identity js-res/console-js])
+  (cond
+    (= console-chat-id whisper-identity)
+    (dispatch [::validate-hash whisper-identity js-res/console-js])
 
-      (= wallet-chat-id whisper-identity)
-      (dispatch [::validate-hash whisper-identity js-res/wallet-js])
+    (= wallet-chat-id whisper-identity)
+    (dispatch [::validate-hash whisper-identity js-res/wallet-js])
 
-      (and dapp? dapp-url)
-      (dispatch [::validate-hash whisper-identity js-res/dapp-js])
+    (and dapp? dapp-url)
+    (http-get (s/join "/" [dapp-url commands-js])
+              #(dispatch [::validate-hash whisper-identity %])
+              #(dispatch [::validate-hash whisper-identity js-res/dapp-js]))
 
-      :else
-      (dispatch [::validate-hash whisper-identity js-res/commands-js])
-      #_(http-get (s/join "/" [url commands-js])
-
-                  #(dispatch [::validate-hash identity %])
-                  #(dispatch [::loading-failed! identity ::file-was-not-found])))))
+    :else
+    (dispatch [::validate-hash whisper-identity js-res/commands-js])))
 
 (defn dispatch-loaded!
   [db [identity file]]
