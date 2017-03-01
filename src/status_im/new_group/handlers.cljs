@@ -218,8 +218,7 @@
   (-> (fn [db [_ new-group]]
           (assoc db :new-group new-group))
       ((enrich update-group))
-      ((after update-group!))
-      ((after show-contact-list!))))
+      ((after update-group!))))
 
 (defn save-groups! [{:keys [new-groups]} _]
   (groups/save-all new-groups))
@@ -258,3 +257,35 @@
 (defmethod nav/preload-data! :new-public-group
   [db]
   (dissoc db :public-group/topic))
+
+(defn move-item [v from to]
+  (if (< from to)
+    (concat (subvec v 0 from)
+            (subvec v (inc from) (inc to))
+            [(v from)]
+            (subvec v (inc to)))
+    (concat (subvec v 0 to)
+            [(v from)]
+            (subvec v to from)
+            (subvec v (inc from)))))
+
+(register-handler :change-group-order
+  (fn [{:keys [groups-order] :as db} [_ from to]]
+    (if (>= to 0)
+      (assoc db :groups-order (move-item (vec groups-order) from to))
+      db)))
+
+(register-handler :update-groups
+  (after save-groups!)
+  (fn [db [_ new-groups]]
+    (-> db
+        (update :contact-groups merge (map #(vector (:group-id %) %) new-groups))
+        (assoc db :new-groups new-groups))))
+
+(register-handler :save-group-order
+  (u/side-effect!
+    (fn [{:keys [groups-order contact-groups] :as db} _]
+      (let [new-groups (mapv #(assoc (contact-groups (second %)) :order (first %))
+                              (map-indexed vector (reverse groups-order)))]
+        (dispatch [:update-groups new-groups])
+        (dispatch [:navigate-to-clean :contact-list])))))

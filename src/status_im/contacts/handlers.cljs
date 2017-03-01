@@ -46,7 +46,15 @@
   [db [_ _ click-handler]]
   (-> db
       (assoc-in [:toolbar-search :show] nil)
+      (assoc-in [:contact-list-ui-props :edit?] false)
       (assoc :contacts-click-handler click-handler)))
+
+(defmethod nav/preload-data! :reorder-groups
+  [db [_ _]]
+  (assoc db :groups-order (->> (vals (:contact-groups db))
+                               (remove :pending?)
+                               (sort-by :order >)
+                               (map :group-id))))
 
 (register-handler :remove-contacts-click-handler
   (fn [db]
@@ -208,21 +216,29 @@
 
 (register-handler :load-default-contacts!
   (u/side-effect!
-    (fn [{:keys [chats]}]
-      (doseq [[id {:keys [name photo-path public-key add-chat?
-                          dapp? dapp-url dapp-hash]}] js-res/default-contacts]
-        (let [id' (clojure.core/name id)]
-          (when-not (chats id')
-            (when add-chat?
-              (dispatch [:add-chat id' {:name (:en name)}]))
-            (dispatch [:add-contacts [{:whisper-identity id'
-                                       :address          (public-key->address id')
-                                       :name             (:en name)
-                                       :photo-path       photo-path
-                                       :public-key       public-key
-                                       :dapp?            dapp?
-                                       :dapp-url         (:en dapp-url)
-                                       :dapp-hash        dapp-hash}]])))))))
+    (fn [{:keys [chats groups]}]
+      (let [default-contacts js-res/default-contacts
+            default-dapps-group-contacts (mapv #(hash-map :identity (clojure.core/name (first %)))
+                                               (filter #(true? (:dapp? (second %))) default-contacts))]
+        (doseq [[id {:keys [name photo-path public-key add-chat?
+                            dapp? dapp-url dapp-hash]}] default-contacts]
+          (let [id' (clojure.core/name id)]
+            (when-not (chats id')
+              (when add-chat?
+                (dispatch [:add-chat id' {:name (:en name)}]))
+              (dispatch [:add-contacts [{:whisper-identity id'
+                                         :address          (public-key->address id')
+                                         :name             (:en name)
+                                         :photo-path       photo-path
+                                         :public-key       public-key
+                                         :dapp?            dapp?
+                                         :dapp-url         (:en dapp-url)
+                                         :dapp-hash        dapp-hash}]]))))
+        (dispatch [:add-groups [{:group-id  "dapps"
+                                 :name      (label :t/contacts-group-dapps)
+                                 :order     0
+                                 :timestamp (random/timestamp)
+                                 :contacts  default-dapps-group-contacts}]])))))
 
 (register-handler :add-contacts
   (after save-contacts!)
@@ -326,8 +342,8 @@
 
 (register-handler :remove-contact-from-group
   (u/side-effect!
-    (fn [_ [_ {:keys [whisper-identity]} group]]
-      (let [group' (update group :contacts (remove-contact-from-group whisper-identity))]
+    (fn [{:keys [contact-groups]} [_ {:keys [whisper-identity]} {:keys [group-id]}]]
+      (let [group' (update (contact-groups group-id) :contacts (remove-contact-from-group whisper-identity))]
         (dispatch [:update-group group'])))))
 
 (register-handler :remove-contact
