@@ -68,6 +68,7 @@
 		E0AD9E8F495A4907B65104BF /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BEE3436791D42248F853999 /* libRCTImageResizer.a */; };
 		EC8998BFE2C04023A860C065 /* libRNNetworkInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74B7BDFF464F43D3BA8EA040 /* libRNNetworkInfo.a */; };
 		EF2B5857B4A34E0C9707FB3F /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B3B19223008342D096AA356E /* Octicons.ttf */; };
+		F9238D6C1E5F055900C047B9 /* SF-UI-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */; };
 		FD4F213C3873473CB703B1D2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 674B3D9595A047AB8D518F4E /* libRNFS.a */; };
 /* End PBXBuildFile section */
 
@@ -468,6 +469,7 @@
 		F090E261B9854867A728CE4F /* RealmReact.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RealmReact.xcodeproj; path = "../node_modules/realm/react-native/ios/RealmReact.xcodeproj"; sourceTree = "<group>"; };
 		F3548417D8DA4362B6796A54 /* RNInstabug.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNInstabug.xcodeproj; path = "../node_modules/instabug-reactnative/ios/RNInstabug.xcodeproj"; sourceTree = "<group>"; };
 		F93B6663A59F4B26BD4DA525 /* RNNetworkInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNNetworkInfo.xcodeproj; path = "../node_modules/react-native-network-info/ios/RNNetworkInfo.xcodeproj"; sourceTree = "<group>"; };
+		F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Semibold.otf"; sourceTree = "<group>"; };
 		FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -671,6 +673,7 @@
 		2028E0111D4275BD00227DCD /* SF */ = {
 			isa = PBXGroup;
 			children = (
+				F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */,
 				9ED2F4601D9D577B00B36508 /* SF-UI-Text-Bold.otf */,
 				9E0B01A01DDC5DA7002B0359 /* SF-UI-Text-Light.otf */,
 				9ED2F45D1D9D52DD00B36508 /* SF-UI-Text-Regular.otf */,
@@ -1471,6 +1474,7 @@
 				9ED2F45F1D9D535A00B36508 /* SF-UI-Text-Medium.otf in Resources */,
 				2028DFFA1D4275B600227DCD /* SF-UI-Display-Regular.otf in Resources */,
 				2028DFF91D4275B600227DCD /* SF-UI-Display-Medium.otf in Resources */,
+				F9238D6C1E5F055900C047B9 /* SF-UI-Text-Semibold.otf in Resources */,
 				2028DFFC1D4275B600227DCD /* SF-UI-Display-Thin.otf in Resources */,
 				2028DFFB1D4275B600227DCD /* SF-UI-Display-Semibold.otf in Resources */,
 				D28AEFB4C39548EB80416889 /* Entypo.ttf in Resources */,
