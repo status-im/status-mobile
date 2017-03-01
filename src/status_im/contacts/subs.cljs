@@ -30,12 +30,15 @@
            (sort-contacts)
            (reaction)))))
 
+(defn filter-group-contacts [group-contacts contacts]
+  (filter #(group-contacts (:whisper-identity %)) contacts))
+
 (register-sub :all-added-group-contacts
   (fn [db [_ group-id]]
     (let [contacts (subscribe [:all-added-contacts])
           group-contacts (reaction (into #{} (map #(:identity %)
                                                   (get-in @db [:contact-groups group-id :contacts]))))]
-      (reaction (filter #(@group-contacts (:whisper-identity %)) @contacts)))))
+      (reaction (filter-group-contacts @group-contacts @contacts)))))
 
 (register-sub :all-added-group-contacts-with-limit
   (fn [db [_ group-id limit]]

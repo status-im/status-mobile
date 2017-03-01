@@ -11,7 +11,7 @@
                                                 list-item]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.styles :refer [color-blue
-                                                 separator-color]]
+                                                 color-gray4]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
@@ -45,7 +45,7 @@
                         (label :t/topic-format))
      :wrapper-style   st/group-chat-name-wrapper
      :error-color     color-blue
-     :line-color      separator-color
+     :line-color      color-gray4
      :label-hidden?   true
      :input-style     st/group-chat-topic-input
      :auto-focus      true

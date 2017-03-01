@@ -117,8 +117,8 @@
    [status-bar]
    [toolbar {:hide-nav?      (or (empty? accounts) show-actions? creating?)
              :custom-content [toolbar-content-view]
-             :custom-action  [toolbar-action]
-             :style          (get-in platform-specific [:component-styles :toolbar])}]
+             :style          (get-in platform-specific [:component-styles :toolbar])
+             :custom-action  [toolbar-action]}]
    [add-contact-bar]])
 
 (defn get-intro-status-message [all-messages]

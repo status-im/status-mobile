@@ -11,9 +11,11 @@
     (let [contacts (subscribe [:get :selected-contacts])]
       (reaction (count @contacts)))))
 
+(defn filter-contacts [selected-contacts added-contacts]
+  (filter #(selected-contacts (:whisper-identity %)) added-contacts))
+
 (register-sub :selected-group-contacts
   (fn [_ _]
     (let [selected-contacts (subscribe [:get :selected-contacts])
           added-contacts (subscribe [:all-added-contacts])]
-      (reaction (do @selected-contacts ;;TODO: doesn't work without this line :(
-                  (filter #(@selected-contacts (:whisper-identity %)) @added-contacts))))))
+      (reaction (filter-contacts @selected-contacts @added-contacts)))))

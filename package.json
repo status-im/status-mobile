@@ -68,6 +68,7 @@
     "react-native-qrcode": "^0.2.2",
     "react-native-randombytes": "^2.1.0",
     "react-native-share": "1.0.17",
+    "react-native-sortable-listview": "^0.1.1",
     "react-native-splash-screen": "1.0.9",
     "react-native-swiper": "1.5.3",
     "react-native-tcp": "^2.0.4",
