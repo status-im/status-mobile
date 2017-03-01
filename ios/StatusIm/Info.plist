@@ -46,8 +46,8 @@
 			</dict>
 		</dict>
 	</dict>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>Need microphone access for Instabug and Audio Messages</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Need microphone access for Instabug and Audio Messages</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need to access your camera</string>
 	<key>NSContactsUsageDescription</key>
@@ -58,6 +58,7 @@
 	<string>We need to access your photo storage to give you an ability to select photos</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>SF-UI-Text-Semibold.otf</string>
 		<string>SF-UI-Text-Bold.otf</string>
 		<string>SF-UI-Text-Regular.otf</string>
 		<string>SF-UI-Text-Medium.otf</string>

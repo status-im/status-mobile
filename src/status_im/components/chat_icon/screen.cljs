@@ -24,15 +24,14 @@
                      (get resources/contacts))
                 {:uri photo-path})]
     [image {:source photo
-            :style  (merge st/default-image-style
-                           (st/image-style size))}]))
+            :style  (st/image-style size)}]))
 
-(defn dapp-badge [styles]
-  [view (:online-view-wrapper styles)
-   [view (:online-view styles)
+(defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
+  [view online-view-wrapper
+   [view online-view
     [view
-     [view (:online-dot-left styles)]
-     [view (:online-dot-right styles)]]]])
+     [view online-dot-left]
+     [view online-dot-right]]]])
 
 (defn contact-badge [type styles]
   (when (= type :edit)
@@ -127,19 +126,19 @@
     :default-chat-icon      (st/default-chat-icon-message-status color)
     :default-chat-icon-text st/message-status-icon-text}])
 
-(defn contact-icon-view [contact styles]
-  (let [photo-path (:photo-path contact)
-        ;; TODO: stub
-        type       :online]
-    [view (:container styles)
+(defn contact-icon-view [{:keys [photo-path name dapp?]} {:keys [container] :as styles}]
+  (let [photo-path photo-path]
+    [view container
      (if-not (s/blank? photo-path)
        [chat-icon photo-path styles]
-       [default-chat-icon (:name contact) styles])
-     [contact-badge type styles]]))
+       [default-chat-icon name styles])
+     (when dapp?
+       [dapp-badge styles])]))
 
 (defn contact-icon-contacts-tab [contact]
   [contact-icon-view contact
    {:container              st/container-chat-list
+    :online-view-wrapper    st/online-view-wrapper
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right

@@ -17,6 +17,7 @@
                               toolbar-background2)}
          (get-in p/platform-specific [:component-styles :toolbar])))
 
+
 (def gradient-top-bottom-shadow
   ["rgba(24, 52, 76, 0.165)"
    "rgba(24, 52, 76, 0.03)"

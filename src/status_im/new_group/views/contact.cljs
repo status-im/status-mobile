@@ -24,6 +24,4 @@
        [view (merge st/icon-check-container
                     {:background-color (if checked color-light-blue color-gray5)})
         (when checked
-          [icon :check_on st/check-icon])]]]
-    [view cst/contact-separator-container
-     [view (get-in platform-specific [:component-styles :contacts :separator])]]]])
+          [icon :check_on st/check-icon])]]]]])
