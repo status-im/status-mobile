@@ -6,7 +6,7 @@
             [status-im.i18n :refer [get-contact-translated label]]))
 
 (defn contact-photo [contact]
-  [view st/contact-photo-container
+  [view
    [contact-icon-contacts-tab contact]])
 
 (defn contact-inner-view

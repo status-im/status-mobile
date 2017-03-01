@@ -29,12 +29,11 @@
 
 (defn underline-container [background-color]
   {:background-color background-color
-   :height           1
    :align-items      :center})
 
-(defn underline [background-color width]
+(defn underline [background-color width height]
   {:background-color background-color
-   :height           1
+   :height           height
    :width            width})
 
 (defn error-text [color]

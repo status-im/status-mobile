@@ -18,7 +18,8 @@
      [text {:style st/letter-text} letter])])
 
 (defn options-btn [contact more-options]
-  (let [options [{:value #(dispatch [:hide-contact contact]) :text (label :t/delete-contact)}]]
+  (let [options [{:value #(dispatch [:hide-contact contact]) :text (label :t/delete-contact)
+                  :style st/delete-contact-text}]]
     [view st/more-btn
      [context-menu
       [icon :options_gray]
@@ -26,7 +27,7 @@
 
 ;;TODO: maybe it's better to have only one global component contact-view with the types: default, extended and toggle
 ;;TODO: at the moment toggle in the other component new-group-contact
-(defview contact-view [{{:keys [whisper-identity letter dapp?] :as contact} :contact
+(defview contact-view [{{:keys [whisper-identity letter] :as contact} :contact
                         :keys [extended? letter? on-click extend-options info]}]
   [chat [:get-chat whisper-identity]]
   [touchable-highlight
@@ -38,6 +39,4 @@
        [letter-view letter])
      [contact-inner-view {:contact contact :info info}]
      (when extended?
-       [options-btn contact extend-options])]
-    [view st/contact-separator-container
-     [view (get-in platform-specific [:component-styles :contacts :separator])]]]])
+       [options-btn contact extend-options])]]])

@@ -144,6 +144,7 @@
    :delete-contact                        "Delete contact"
    :remove-from-group                     "Remove from group"
    :edit-contacts                         "Edit contacts"
+   :search-contacts                       "Search contacts"
    :show-all                              "SHOW ALL"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "People"
@@ -193,14 +194,15 @@
    :group-chat-name                       "Chat name"
    :empty-group-chat-name                 "Please enter a name"
    :illegal-group-chat-name               "Please select another name"
-   :new-group                             "New Group"
-   :reorder-groups                        "Reorder Group"
+   :new-group                             "New group"
+   :reorder-groups                        "Reorder groups"
    :group-name                            "Group name"
-   :edit-group                            "Edit Group"
-   :delete-group                          "DELETE GROUP"
+   :edit-group                            "Edit group"
+   :delete-group                          "Delete group"
    :delete-group-prompt                   "This will not affect group members"
    :group-members                         "Group members"
-
+   :contact-s                             {:one   "contact"
+                                           :other "contacts"}
    ;participants
    :add-participants                      "Add Participants"
    :remove-participants                   "Remove Participants"

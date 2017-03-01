@@ -15,9 +15,9 @@
             [status-im.components.action-button :refer [action-button
                                                         action-button-item]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar-with-search toolbar]]
-            [status-im.components.toolbar.actions :as act]
-            [status-im.components.toolbar.styles :as tst]
+            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.toolbar-new.styles :as tst]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.components.context-menu :refer [context-menu]]
@@ -31,31 +31,24 @@
 (def contacts-limit 5)
 
 (def toolbar-options
-  [{:text (label :t/new-contact) :value #(dispatch [:navigate-to :new-contact])}
-   {:text (label :t/edit)        :value #(dispatch [:set-in [:contacts-ui-props :edit?] true])}
-   {:text (label :t/new-group)   :value #(dispatch [:open-contact-group-list])}])
+  [{:text (label :t/new-contact)    :value #(dispatch [:navigate-to :new-contact])}
+   {:text (label :t/edit)           :value #(dispatch [:set-in [:contacts-ui-props :edit?] true])}
+   {:text (label :t/new-group)      :value #(dispatch [:open-contact-group-list])}
+   {:text (label :t/reorder-groups) :value #(dispatch [:navigate-to :reorder-groups])}])
 
 (defn toolbar-actions []
   (let [new-contact? (get-in platform-specific [:contacts :new-contact-in-toolbar?])]
-    [view st/toolbar-actions
-     [touchable-highlight
-      {:on-press #(dispatch [:navigate-to :group-contacts nil :show-search])}
-      [view st/search-btn
-       [icon :search_dark]]]
-     [view st/more-btn
-      [context-menu
-       [icon :options_dark]
-       (if new-contact? toolbar-options (rest toolbar-options))]]]))
+    [(act/search #(dispatch [:navigate-to :group-contacts nil :show-search]))
+     (act/opts (if new-contact? toolbar-options (rest toolbar-options)))]))
 
 (defn toolbar-view []
- [toolbar {:style          tst/toolbar-with-search
-           :title          (label :t/contacts)
+ [toolbar {:title          (label :t/contacts)
            :nav-action     (act/hamburger open-drawer)
-           :custom-action  (toolbar-actions)}])
+           :actions        (toolbar-actions)}])
 
 (defn toolbar-edit []
-  [toolbar {:style          tst/toolbar-with-search
-            :nav-action     (act/back #(dispatch [:set-in [:contacts-ui-props :edit?] false]))
+  [toolbar {:nav-action     (act/back #(dispatch [:set-in [:contacts-ui-props :edit?] false]))
+            :actions        [{:image :blank}]
             :title          (label :t/edit-contacts)}])
 
 (defn options-btn [group]
@@ -67,16 +60,15 @@
 
 (defn subtitle-view [subtitle contacts-count group extended?]
   [view (get-in platform-specific [:component-styles :contacts :group-header])
-   [text {:style      (merge st/contact-group-subtitle
-                             (get-in platform-specific [:component-styles :contacts :subtitle]))
-          :uppercase? (get-in platform-specific [:contacts :uppercase-subtitles?])
+   [text {:style      (get-in platform-specific [:component-styles :contacts :subtitle])
           :font       :medium}
     subtitle]
    [text {:style      (merge st/contact-group-count
-                             (get-in platform-specific [:component-styles :contacts :subtitle]))
+                             (get-in platform-specific [:component-styles :contacts :subtitle-count]))
           :uppercase? (get-in platform-specific [:contacts :uppercase-subtitles?])
           :font       :medium}
     (str contacts-count)]
+   [view {:flex 1}]
    (when extended?
      [options-btn group])])
 
@@ -88,10 +80,6 @@
   [linear-gradient {:style  st/contact-group-header-gradient-top
                     :colors st/contact-group-header-gradient-top-colors}])
 
-(defn on-scroll-animation [e show-toolbar-shadow?]
-  (let [offset (.. e -nativeEvent -contentOffset -y)]
-    (reset! show-toolbar-shadow? (pos? offset))))
-
 (defn contact-group-form [{:keys [contacts contacts-count group edit? click-handler]}]
   (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])
         subtitle (:name group)]
@@ -100,27 +88,36 @@
        [subtitle-view subtitle contacts-count group edit?])
      (when (and subtitle shadows?)
          [group-top-view])
-     [view
+     [view st/contacts-list
       (doall
         (map (fn [contact]
                ^{:key contact}
-               [contact-view
-                {:contact        contact
-                 :extended?      edit?
-                 :on-click       (when-not edit? click-handler)
-                 :extend-options (when group
-                                  [{:value #(dispatch [:hide-contact contact])
-                                    :text (label :t/delete-contact)}
-                                   {:value #(dispatch [:remove-contact-from-group contact group])
-                                    :text (label :t/remove-from-group)}])}])
+               [view
+                [contact-view
+                 {:contact        contact
+                  :extended?      edit?
+                  :on-click       (when-not edit? click-handler)
+                  :extend-options (when group
+                                   [{:value #(dispatch [:hide-contact contact])
+                                     :text (label :t/delete-contact)
+                                     :style st/delete-contact-text}
+                                    {:value #(dispatch [:remove-contact-from-group contact group])
+                                     :text (label :t/remove-from-group)}])}]
+                (when-not (= contact (last contacts))
+                  [view st/contact-item-separator-wrapper
+                   [view st/contact-item-separator]])])
              contacts))]
      (when (< contacts-limit contacts-count)
-       [view st/show-all
-        [touchable-highlight (when-not edit? {:on-press #(dispatch [:navigate-to :group-contacts group])})
-         [view
-          [text {:style st/show-all-text
-                 :font  :medium}
-           (str (- contacts-count contacts-limit) " " (label :t/more))]]]])
+       [view
+        [view st/contact-item-separator-wrapper
+         [view st/contact-item-separator]]
+        [view st/show-all
+         [touchable-highlight (when-not edit? {:on-press #(dispatch [:navigate-to :group-contacts group])})
+          [view
+           [text {:style st/show-all-text
+                  :uppercase? (get-in platform-specific [:uppercase?])
+                  :font (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
+            (str (- contacts-count contacts-limit) " " (label :t/more))]]]]])
      (when shadows?
        [group-bottom-view])]))
 
@@ -148,18 +145,13 @@
    contacts-count       [:added-contacts-count]
    click-handler        [:get :contacts-click-handler]
    edit?                [:get-in [:contacts-ui-props :edit?]]
-   groups               [:all-added-groups]
-   show-toolbar-shadow? (r/atom false)]
+   groups               [:all-added-groups]]
   [view st/contacts-list-container
    (if edit?
      [toolbar-edit]
      [toolbar-view])
-   (when @show-toolbar-shadow?
-     [linear-gradient {:style  st/contact-group-header-gradient-bottom
-                       :colors st/contact-group-header-gradient-bottom-colors}])
    (if (pos? (+ (count groups) contacts-count))
-     [scroll-view {:style    st/contact-groups
-                   :onScroll #(on-scroll-animation % show-toolbar-shadow?)}
+     [scroll-view {:style    st/contact-groups}
       (when (pos? contacts-count)
         [contact-group-form {:contacts       contacts
                              :contacts-count contacts-count

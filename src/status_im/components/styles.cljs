@@ -3,7 +3,7 @@
 (def color-transparent "transparent")
 (def color-blue "#7099e6")
 (def color-blue-transparent "#7099e632")
-(def color-black "#000000de")
+(def color-black "#000000")
 (def color-purple "#a187d5")
 (def color-gray "#838c93de")
 (def color-gray2 "#8f838c93")
@@ -24,12 +24,12 @@
 (def text1-disabled-color "#555555")
 (def text2-color color-gray)
 (def text3-color color-blue)
-(def online-color color-blue)
+(def online-color color-light-blue)
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
 (def selected-message-color "#E4E9ED")
 (def selected-contact-color color-light-blue2)
-(def separator-color color-gray4)
+(def separator-color "#0000001f")
 (def default-chat-color color-purple)
 
 (def flex
@@ -45,8 +45,8 @@
    :color    :white})
 
 (def icon-back
-  {:width  24
-   :height 24})
+  {:width  8
+   :height 14})
 
 (def icon-default
   {:width  24
@@ -96,17 +96,18 @@
    :align-items      :center
    :background-color color-light-blue})
 
-(def confirm-button-label
-  {:color          color-white
-   :font-size      17
-   :line-height    20
-   :letter-spacing -0.2})
-
-(def context-menu
-  {:customStyles {:optionsContainer {:padding-top 8
+(def context-menu-options
+  {:customStyles {:optionsContainer {:elevation      2
+                                     :margin-top     30
+                                     :padding-top    8
+                                     :width          164
                                      :padding-bottom 8}
-                  :optionWrapper    {:padding-left 16
+                  :optionWrapper    {:padding-left    16
+                                     :padding-right   16
                                      :justify-content :center
-                                     :height 48}
-                  :text             {:font-size  15
-                                     :line-height 20}}})
+                                     :height          48}}})
+
+(def context-menu-text
+  {:font-size   15
+   :line-height 20
+   :color       text1-color})
