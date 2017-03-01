@@ -29,6 +29,7 @@
                     :label-color       "#838c93"
                     :line-color        separator-color
                     :focus-line-color  separator-color
+                    :focus-line-height 1
                     :error-color       "#d50000"
                     :secure-text-entry false
                     :on-focus          #()
@@ -38,14 +39,16 @@
                     :auto-capitalize   :sentences})
 
 (defn field-animation [{:keys [top to-top font-size to-font-size
-                               line-width to-line-width]}]
+                               line-width to-line-width line-height to-line-height]}]
   (let [duration  (:label-animation-duration config)
         animation (anim/parallel [(anim/timing top {:toValue  to-top
                                                     :duration duration})
                                   (anim/timing font-size {:toValue  to-font-size
                                                           :duration duration})
                                   (anim/timing line-width {:toValue  to-line-width
-                                                           :duration duration})])]
+                                                           :duration duration})
+                                  (anim/timing line-height {:toValue  to-line-height
+                                                            :duration duration})])]
     (anim/start animation (fn [arg]
                             (when (.-finished arg)
                               (log/debug "Field animation finished"))))))
@@ -58,6 +61,7 @@
    :label-top       0
    :label-font-size 0
    :line-width      (anim/create-value 0)
+   :line-height     (anim/create-value 1)
    :max-line-width  100})
 
 ; Invoked once, both on the client and server, immediately before the initial
@@ -80,7 +84,8 @@
     (log/debug "input focused")
     (r/set-state component {:has-focus    true
                             :float-label? true})
-    (field-animation animation)
+    (field-animation (merge animation
+                            {:to-line-width (:max-line-width (r/state component))}))
     (when onFocus (onFocus))))
 
 (defn on-input-blur [{:keys [component value animation onBlur]}]
@@ -101,14 +106,14 @@
                 label-top
                 label-font-size
                 line-width
+                line-height
                 current-value
-                max-line-width
                 valid-value
                 temp-value
                 max-length]} (r/state component)
-        {:keys [wrapper-style input-style label-hidden? line-color focus-line-color secure-text-entry
-                label-color error-color error label value on-focus on-blur validator auto-focus
-                on-change-text on-change on-end-editing editable placeholder auto-capitalize]}
+        {:keys [wrapper-style input-style label-hidden? line-color focus-line-color focus-line-height
+                secure-text-entry label-color error-color error label value on-focus on-blur validator
+                auto-focus on-change-text on-change on-end-editing editable placeholder auto-capitalize]}
         (merge default-props (r/props component))
         line-color       (if error error-color line-color)
         focus-line-color (if error error-color focus-line-color)
@@ -125,21 +130,24 @@
                   :secure-text-entry secure-text-entry
                   :auto-capitalize   auto-capitalize
                   :on-focus          #(on-input-focus {:component component
-                                                       :animation {:top           label-top
-                                                                   :to-top        (:label-top config)
-                                                                   :font-size     label-font-size
-                                                                   :to-font-size  (:label-font-small config)
-                                                                   :line-width    line-width
-                                                                   :to-line-width max-line-width}
+                                                       :animation {:top            label-top
+                                                                   :to-top         (:label-top config)
+                                                                   :font-size      label-font-size
+                                                                   :to-font-size   (:label-font-small config)
+                                                                   :line-width     line-width
+                                                                   :line-height    line-height
+                                                                   :to-line-height focus-line-height}
                                                        :onFocus   on-focus})
                   :on-blur           #(on-input-blur {:component component
                                                       :value     (or current-value value)
-                                                      :animation {:top           label-top
-                                                                  :to-top        (:label-bottom config)
-                                                                  :font-size     label-font-size
-                                                                  :to-font-size  (:label-font-large config)
-                                                                  :line-width    line-width
-                                                                  :to-line-width 0}
+                                                      :animation {:top            label-top
+                                                                  :to-top         (:label-bottom config)
+                                                                  :font-size      label-font-size
+                                                                  :to-font-size   (:label-font-large config)
+                                                                  :line-width     line-width
+                                                                  :line-height    line-height
+                                                                  :to-line-width  0
+                                                                  :to-line-height 1}
                                                       :onBlur    on-blur})
                   :on-change-text    (fn [text]
                                        (r/set-state component {:current-value text})
@@ -159,7 +167,7 @@
                   :auto-focus        (true? auto-focus)}]
      [view {:style    (st/underline-container line-color)
             :onLayout #(r/set-state component {:max-line-width (get-width %)})}
-      [animated-view {:style (st/underline focus-line-color line-width)}]]
+      [animated-view {:style (st/underline focus-line-color line-width line-height)}]]
      [text {:style (st/error-text error-color)} error]]))
 
 (defn text-field [_ _]

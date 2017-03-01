@@ -4,7 +4,7 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.react :refer [view touchable-highlight]]))
+            [status-im.components.react :refer [view touchable-highlight text]]))
 
 (def react-native-popup-menu (js/require "react-native-popup-menu"))
 
@@ -43,7 +43,9 @@
       trigger]]
     [menu {:onSelect #(when % (do (%) nil))}
      [menu-trigger trigger]
-     [menu-options st/context-menu
-      (for [option options]
+     [menu-options st/context-menu-options
+      (for [{:keys [style value] :as option} options]
         ^{:key option}
-        [menu-option option])]]))
+        [menu-option {:value value}
+         [text {:style (merge st/context-menu-text style)}
+          (:text option)]])]]))

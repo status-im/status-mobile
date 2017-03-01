@@ -89,10 +89,10 @@
 
 (def online-view-wrapper
   {:position         :absolute
-   :bottom           -1
-   :right            0
-   :width            22
-   :height           22
+   :bottom           -2
+   :right            -2
+   :width            17
+   :height           17
    :border-radius    11
    :background-color :white})
 
@@ -109,8 +109,8 @@
   {:position         :absolute
    :bottom           2
    :right            2
-   :width            18
-   :height           18
+   :width            13
+   :height           13
    :border-radius    9
    :background-color online-color})
 
@@ -130,13 +130,13 @@
 
 (def online-dot
   {:position         :absolute
-   :top              7
-   :width            4
-   :height           4
+   :top              5
+   :width            3
+   :height           3
    :border-radius    2
    :background-color color-white})
-(def online-dot-left (merge online-dot {:left 4}))
-(def online-dot-right (merge online-dot {:left 10}))
+(def online-dot-left (merge online-dot {:left 2.8}))
+(def online-dot-right (merge online-dot {:left 7.2}))
 
 (def photo-pencil
   {:margin-left  8
@@ -172,8 +172,8 @@
    :height 44})
 
 (def container-chat-list
-  {:width  48
-   :height 48})
+  {:width  40
+   :height 40})
 
 (def container-menu-item
   {:width  32
