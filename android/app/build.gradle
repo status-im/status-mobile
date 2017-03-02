@@ -158,6 +158,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-network-info')
     compile project(':react-native-http-bridge')
     compile project(':nfc-react-native')
     compile project(':instabug-reactnative')

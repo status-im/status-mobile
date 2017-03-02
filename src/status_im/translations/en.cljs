@@ -109,6 +109,7 @@
    :intro-status                          "Chat with me to setup your account and change your settings!"
    :intro-message1                        "Welcome to Status\nTap this message to set your password & get started!"
    :account-generation-message            "Gimmie a sec, I gotta do some crazy math to generate your account!"
+   :debug-enabled                         "Debug server has been launched! Your IP address is {{ip}}. You can now add your DApp by running *status-dev-cli add-dapp --ip {{ip}}* from your computer"
 
    ;phone types
    :phone-e164                            "International 1"
