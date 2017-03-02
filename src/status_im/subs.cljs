@@ -2,6 +2,7 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
             status-im.chat.subs
+            status-im.chats-list.subs
             status-im.group-settings.subs
             status-im.discover.subs
             status-im.contacts.subs
