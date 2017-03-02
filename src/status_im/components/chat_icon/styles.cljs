@@ -3,7 +3,7 @@
                                                  online-color]]))
 
 (defn default-chat-icon [color]
-  {:margin          4
+  {:margin          0
    :width           40
    :height          40
    :alignItems      :center
@@ -204,8 +204,8 @@
 
 (def pending-wrapper
   {:position         :absolute
-   :bottom           4
-   :right            5
+   :bottom           0
+   :right            0
    :width            12
    :height           12
    :border-radius    6
