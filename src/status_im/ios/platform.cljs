@@ -1,5 +1,6 @@
 (ns status-im.ios.platform
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.components.styles :as styles]
+            [status-im.utils.utils :as utils]))
 
 (def component-styles
   {:status-bar            {:default     {:height    20
@@ -27,6 +28,19 @@
                            :additional-height 5}
    :actions-list-view     {:border-bottom-color styles/color-gray3
                            :border-bottom-width 0.5}
+   :chat-list             {:list-container               {:background-color styles/color-white}
+                           :chat-container               {:height 74}
+                           :chat-icon-container          {:height 74}
+                           :chat-info-container          {:margin-top 14}
+                           :chat-options-container       {:margin-top 14}
+                           :item-lower-container         {:margin-top 6}
+                           :chat-name                    {:height 20}
+                           :last-message                 {:font-size  15
+                                                          :height     24}
+                           :last-message-timestamp       {:font-size 15}
+                           :unread-count                 {:top 3}
+                           :public-group-icon-container  {:margin-top 2}
+                           :private-group-icon-container {:margin-top 2}}
    :chat                  {:new-message {:border-top-color styles/color-gray3
                                          :border-top-width 0.5}}
    :discover             {:subtitle  {:color          styles/color-steel
@@ -150,10 +164,15 @@
 
 (def react-native (js/require "react-native"))
 
-(defn show-action-sheet [{:keys [options callback cancel-text]}]
+(defn action-sheet-options [options]
+  (let [destructive-opt-index (utils/first-index :destructive? options)]
+    (clj->js (merge {:options           (mapv :text options)
+                     :cancelButtonIndex (count options)}
+                    (when destructive-opt-index {:destructiveButtonIndex destructive-opt-index})))))
+
+(defn show-action-sheet [{:keys [options callback]}]
   (.showActionSheetWithOptions (.-ActionSheetIOS react-native)
-                               (clj->js {:options           (conj options cancel-text)
-                                         :cancelButtonIndex (count options)})
+                               (action-sheet-options options)
                                callback))
 
 ;; Structure to be exported
@@ -164,7 +183,8 @@
    :list-selection-fn            show-action-sheet
    :tabs                         {:tab-shadows? false}
    :chats                        {:action-button?       false
-                                  :new-chat-in-toolbar? true}
+                                  :new-chat-in-toolbar? true
+                                  :render-separator?    true}
    :uppercase?                   false
    :contacts                     {:action-button?          false
                                   :new-contact-in-toolbar? true
@@ -174,4 +194,3 @@
    :private-group-icon-container {:margin-top 2}
    :group-chat-focus-line-height 1
    :public-group-chat-hash-style {:top 6 :left 3}})
-

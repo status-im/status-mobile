@@ -24,6 +24,7 @@
 (def text1-disabled-color "#555555")
 (def text2-color color-gray)
 (def text3-color color-blue)
+(def text4-color color-gray4)
 (def online-color color-light-blue)
 (def new-messages-count-color color-blue-transparent)
 (def chat-background color-light-gray)
@@ -107,7 +108,7 @@
                                      :justify-content :center
                                      :height          48}}})
 
-(def context-menu-text
+(defn context-menu-text [destructive?]
   {:font-size   15
    :line-height 20
-   :color       text1-color})
+   :color       (if destructive? color-light-red text1-color)})
