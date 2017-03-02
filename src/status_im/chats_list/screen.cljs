@@ -68,15 +68,16 @@
          :background-color :white}])
 
 (defn chat-shadow-item []
-  [view {:height 12}
-   [chat-list-padding]
-   [linear-gradient {:style  {:height 4}
-                     :colors st/gradient-top-bottom-shadow}]])
+  (when-not ios?
+    [view {:height 12}
+     [chat-list-padding]
+     [linear-gradient {:style  {:height 4}
+                       :colors st/gradient-top-bottom-shadow}]]))
 
 (defn render-separator-fn [chats]
   (fn [_ row-id _]
     (list-item
-     (when (< row-id (- (count chats) 1))
+     (when (< row-id (dec (count chats)))
        ^{:key (str "separator-" row-id)}
        [view st/chat-separator-wrapper
         [view st/chat-separator-item]]))))
@@ -88,8 +89,8 @@
    [list-view {:dataSource      (to-datasource chats)
                :renderRow       (fn [[id :as row] _ _]
                                   (list-item ^{:key id} [chat-list-item row]))
-               :renderHeader    #(when-not (empty? chats) (list-item [chat-list-padding]))
-               :renderFooter    #(when-not (empty? chats) (list-item [chat-shadow-item]))
+               :renderHeader    #(when (seq chats) (list-item [chat-list-padding]))
+               :renderFooter    #(when (seq chats) (list-item [chat-shadow-item]))
                :renderSeparator (when (get-in platform-specific [:chats :render-separator?])
                                   (render-separator-fn chats))
                :style           st/list-container}]

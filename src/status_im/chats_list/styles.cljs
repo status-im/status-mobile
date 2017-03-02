@@ -25,11 +25,12 @@
 
 (def chat-separator-wrapper
   {:background-color color-white
-   :height           0.5
+   :opacity          0.5
+   :height           1
    :padding-left     72})
 
 (def chat-separator-item
-  {:border-bottom-width 0.5
+  {:border-bottom-width 1
    :border-bottom-color separator-color})
 
 (def chat-container
