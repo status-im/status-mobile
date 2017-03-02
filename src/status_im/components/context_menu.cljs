@@ -27,12 +27,13 @@
 (def list-selection-fn (:list-selection-fn platform-specific))
 
 (defn open-ios-menu [options]
-  (list-selection-fn {:options     (mapv :text options)
-                      :callback    (fn [index]
-                                     (when (< index (count options))
-                                       (when-let [handler (:value (nth options index))]
-                                         (handler))))
-                      :cancel-text (label :t/cancel)})
+  (let [cancel-option {:text (label :t/cancel)}
+        options       (conj options cancel-option)]
+    (list-selection-fn {:options  options
+                        :callback (fn [index]
+                                    (when (< index (count options))
+                                      (when-let [handler (:value (nth options index))]
+                                        (handler))))}))
   nil)
 
 (defn context-menu [trigger options]
@@ -44,8 +45,8 @@
     [menu {:onSelect #(when % (do (%) nil))}
      [menu-trigger trigger]
      [menu-options st/context-menu-options
-      (for [{:keys [style value] :as option} options]
+      (for [{:keys [style value destructive?] :as option} options]
         ^{:key option}
         [menu-option {:value value}
-         [text {:style (merge st/context-menu-text style)}
+         [text {:style (merge (st/context-menu-text destructive?) style)}
           (:text option)]])]]))
