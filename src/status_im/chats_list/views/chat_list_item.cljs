@@ -6,7 +6,7 @@
                                                 touchable-highlight]]
             [status-im.chats-list.views.inner-item :refer [chat-list-item-inner-view]]))
 
-(defn chat-list-item [[chat-id chat]]
+(defn chat-list-item [[chat-id chat] edit?]
   [touchable-highlight {:on-press #(dispatch [:navigate-to :chat chat-id])}
    [view
-    [chat-list-item-inner-view (assoc chat :chat-id chat-id)]]])
+    [chat-list-item-inner-view (assoc chat :chat-id chat-id) edit?]]])
