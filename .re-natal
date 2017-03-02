@@ -39,7 +39,8 @@
     "react-native-autolink",
     "instabug-reactnative",
     "nfc-react-native",
-    "react-native-http-bridge"
+    "react-native-http-bridge",
+    "react-native-network-info"
   ],
   "imageDirs": [
     "images"
