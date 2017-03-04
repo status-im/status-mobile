@@ -134,5 +134,19 @@
         {
             "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
         }
+    },
+    
+    "Dentacoin":
+    {
+        "name":
+        {
+            "en": "Dentacoin"
+        },
+        "photo-path": "contacts://dentacoin",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://dentacoin.com/testnet/"
+        }
     }
 }
