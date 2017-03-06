@@ -1,9 +1,5 @@
 function browseSuggestions(params, context) {
-    var url;
-
-    if (context["dapp-url"]) {
-        url = context["dapp-url"];
-    }
+    var url = context.contact["dapp-url"];
 
     if (params.url && params.url !== "undefined" && params.url != "") {
         url = params.url;
