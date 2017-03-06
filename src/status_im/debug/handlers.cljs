@@ -47,6 +47,7 @@
             "/add-dapp"     (dispatch [:debug-add-dapp obj])
             "/remove-dapp"  (dispatch [:debug-remove-dapp obj])
             "/dapp-changed" (dispatch [:debug-dapp-changed obj])
+            "/switch-node"  (dispatch [:debug-switch-node obj])
             :default))
         (catch js/Error e
           (log/debug "Error: " e))))))
@@ -79,4 +80,9 @@
                  (get-in chats [whisper-identity :debug?])
                  webview-bridge)
         (.reload webview-bridge)))))
+
+(register-handler :debug-switch-node
+  (u/side-effect!
+    (fn [{:keys [current-account-id]} [_ {:keys [url]}]]
+      (dispatch [:initialize-protocol current-account-id url]))))
 

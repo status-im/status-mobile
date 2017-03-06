@@ -18,4 +18,6 @@
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "resources/web3.0_16_0.min.js")
                "}"))
-(def web3-init (slurp "resources/web3_init.js"))
+(defn web3-init [provider-address]
+  (str "var providerAddress = \"" provider-address "\";"
+       (slurp "resources/web3_init.js")))

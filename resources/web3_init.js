@@ -107,13 +107,14 @@ StatusHttpProvider.prototype.isConnected = function () {
 }
 
 var protocol = window.location.protocol
+var address = providerAddress || "http://localhost:8545";
 console.log(protocol);
 if (typeof web3 === "undefined") {
     if (protocol == "https:") {
         console.log("StatusHttpProvider");
-        web3 = new Web3(new StatusHttpProvider("http://localhost:8545"));
+        web3 = new Web3(new StatusHttpProvider(address));
     } else if (protocol == "http:") {
         console.log("HttpProvider");
-        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        web3 = new Web3(new Web3.providers.HttpProvider(address));
     }
 }
