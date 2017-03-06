@@ -27,7 +27,7 @@
     {}))
 
 (defn invoke-suggestions-handler!
-  [{:keys [current-chat-id canceled-command] :as db} _]
+  [{:keys [contacts current-chat-id canceled-command] :as db} _]
   (when-not canceled-command
     (let [{:keys [command content params]} (get-in db [:chats current-chat-id :command-input])
           data     (get-in db [:local-storage current-chat-id])
@@ -37,10 +37,12 @@
                     :params
                     0
                     :suggestions]
+          identity (or bot current-chat-id)
+          contact  (get contacts current-chat-id)
           params   {:parameters (or params {})
-                    :context    (merge {:data data}
-                                       (command-dependent-context-params command))}
-          identity (or bot current-chat-id)]
+                    :context    (merge {:data    data
+                                        :contact contact}
+                                       (command-dependent-context-params command))}]
       (dispatch
         [:check-and-load-commands!
          identity
@@ -281,7 +283,7 @@
 (register-handler :request-command-preview
   (u/side-effect!
     (fn [{:keys [chats]} [_ {{:keys [command params content-command type]} :content
-               :keys [message-id chat-id on-requested] :as message} data-type]]
+                             :keys                                         [message-id chat-id on-requested] :as message} data-type]]
       (if-not (get-in chats [chat-id :commands-loaded])
         (do (dispatch [:add-commands-loading-callback
                        chat-id

@@ -631,15 +631,15 @@
   (fn [db [_ chat-id mode]]
     (assoc-in db [:kb-mode chat-id] mode)))
 
-(register-handler :check-autorun
+(register-handler :check-and-open-dapp!
   (u/side-effect!
-    (fn [{:keys [current-chat-id] :as db}]
-      (let [autorun (get-in db [:chats current-chat-id :autorun])]
-        (when autorun
+    (fn [{:keys [current-chat-id global-commands] :as db}]
+      (let [dapp-url (get-in db [:contacts current-chat-id :dapp-url])]
+        (when dapp-url
           (am/go
             ;;todo: find another way to make it work...
             (a/<! (a/timeout 100))
-            (dispatch [:set-chat-command (keyword autorun)])
+            (dispatch [:set-chat-command (:browse global-commands)])
             (dispatch [:animate-command-suggestions])))))))
 
 (register-handler :update-group-message
