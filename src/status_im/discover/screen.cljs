@@ -78,12 +78,13 @@
    search-text [:get-in [:toolbar-search :text]]
    contacts [:get :contacts]
    current-account [:get-current-account]
-   discoveries [:get-recent-discoveries]]
+   discoveries [:get-recent-discoveries]
+   tabs-hidden? [:tabs-hidden?]]
   [view st/discover-container
    [toolbar-view (and current-view?
                       (= show-search :discover)) search-text]
    (if discoveries
-     [scroll-view {:style (get-in platform-specific [:component-styles :main-tab-list])}
+     [scroll-view (st/list-container tabs-hidden?)
       [discover-popular {:contacts        contacts
                          :current-account current-account}]
       [discover-recent {:current-account current-account}]]

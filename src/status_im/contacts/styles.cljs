@@ -1,5 +1,5 @@
 (ns status-im.contacts.styles
-  (:require-macros [status-im.utils.styles :refer [defstyles]])
+  (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.components.styles :refer [text1-color
                                                  text2-color
                                                  text3-color
@@ -11,6 +11,7 @@
                                                  color-light-red
                                                  color-gray]]
             [status-im.components.toolbar.styles :refer [toolbar-background1 toolbar-background2]]
+            [status-im.components.tabs.styles :as tabs-st]
             [status-im.utils.platform :as p]))
 
 ;; Contacts list
@@ -22,10 +23,10 @@
   {:flex             1
    :background-color toolbar-background2})
 
-(defstyles contacts-list-container
+(defnstyle contacts-list-container [tabs-hidden?]
   {:flex    1
    :android {:margin-bottom 20}
-   :ios     {:margin-bottom 72}})
+   :ios     {:margin-bottom (if tabs-hidden? 20 (+ 16 tabs-st/tabs-height))}})
 
 (def contacts-list
   {:background-color color-white})
@@ -137,8 +138,8 @@
 
 (def info-container
   (merge (get-in p/platform-specific [:component-styles :contacts :info-container])
-         {:flex           1
-          :flexDirection  :column}))
+         {:flex          1
+          :flexDirection :column}))
 
 (def name-text
   (get-in p/platform-specific [:component-styles :contacts :name-text]))
@@ -194,18 +195,18 @@
   {:margin-right 42})
 
 (def enter-address-icon
-  {:margin-left   21
-   :margin-right  21
-   :margin-top    19
-   :width         20
-   :height        18})
+  {:margin-left  21
+   :margin-right 21
+   :margin-top   19
+   :width        20
+   :height       18})
 
 (def scan-qr-icon
-  {:margin-left   21
-   :margin-right  20
-   :margin-top    18
-   :width         20
-   :height        20})
+  {:margin-left  21
+   :margin-right 20
+   :margin-top   18
+   :width        20
+   :height       20})
 
 ;; Contacts search
 
