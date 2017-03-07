@@ -89,9 +89,10 @@
         [view st/chat-separator-item]]))))
 
 (defview chats-list []
-  [chats   [:filtered-chats]
-   edit?   [:get-in [:chat-list-ui-props :edit?]]
-   search? [:get-in [:toolbar-search :show]]]
+  [chats        [:filtered-chats]
+   edit?        [:get-in [:chat-list-ui-props :edit?]]
+   search?      [:get-in [:toolbar-search :show]]
+   tabs-hidden? [:tabs-hidden?]]
   [view st/chats-container
    (cond
      edit?   [toolbar-edit]
@@ -104,7 +105,7 @@
                :renderFooter    #(when (seq chats) (list-item [chat-shadow-item]))
                :renderSeparator (when (get-in platform-specific [:chats :render-separator?])
                                   (render-separator-fn chats))
-               :style           st/list-container}]
+               :style           (st/list-container tabs-hidden?)}]
    (when (and (not edit?)
               (not search?)
               (get-in platform-specific [:chats :action-button?]))
