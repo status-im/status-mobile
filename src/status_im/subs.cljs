@@ -33,3 +33,13 @@
           accounts (subscribe [:get :accounts])]
       (reaction (when (and @accounts @account-id)
                   (get-in @accounts [@account-id :signed-up?]))))))
+
+(register-sub :tabs-hidden?
+  (fn []
+    (let [search-mode?        (subscribe [:get-in [:toolbar-search :show]])
+          chats-edit-mode?    (subscribe [:get-in [:chat-list-ui-props :edit?]])
+          contacts-edit-mode? (subscribe [:get-in [:contacts-ui-props :edit?]])
+          view-id             (subscribe [:get :view-id])]
+      (reaction (or @search-mode?
+                    (and (= @view-id :chat-list) @chats-edit-mode?)
+                    (and (= @view-id :contact-list) @contacts-edit-mode?))))))

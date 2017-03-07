@@ -1,5 +1,5 @@
 (ns status-im.components.toolbar-new.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyles]])
+  (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.components.styles :refer [text1-color
                                                  color-white
                                                  color-light-gray
@@ -25,7 +25,7 @@
   (merge {:flex-direction :row}
          (get-in p/platform-specific [:component-styles :toolbar-new])))
 
-(defnstyles toolbar-nav-actions-container
+(defnstyle toolbar-nav-actions-container
   [actions]
   {:flex-direction :row
    :ios            {:width (when (and actions (pos? (count actions)))

@@ -152,8 +152,9 @@
    contacts-count       [:added-contacts-count]
    click-handler        [:get :contacts-click-handler]
    edit?                [:get-in [:contacts-ui-props :edit?]]
-   groups               [:all-added-groups]]
-  [view st/contacts-list-container
+   groups               [:all-added-groups]
+   tabs-hidden?         [:tabs-hidden?]]
+  [view (st/contacts-list-container tabs-hidden?)
    (if edit?
      [toolbar-edit]
      [toolbar-view])
