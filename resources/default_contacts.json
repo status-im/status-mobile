@@ -148,5 +148,19 @@
         {
             "en": "http://dentacoin.com/testnet/"
         }
+    },
+
+    "Augur":
+    {
+        "name":
+        {
+            "en": "Augur"
+        },
+        "photo-path": "contacts://augur",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://app.augur.net"
+        }
     }
 }
