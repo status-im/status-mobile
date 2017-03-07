@@ -44,8 +44,11 @@
    (-> (.fetch js/window url (clj->js {:method "GET"}))
        (.then (fn [response]
                 (log response)
-                (.text response)))
-       (.then on-success)
+                [(.text response)] (.ok response)))
+       (.then (fn [[response ok?]]
+                (when ok? (on-success response))
+                (when (and on-error (not ok?))
+                  (on-error response))))
        (.catch (or on-error
                    (fn [error]
                      (show-popup "Error" (str error))))))))
