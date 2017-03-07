@@ -1,12 +1,31 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="im.status.ethereum">
 
+    <!-- non-dangerous permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
-    <uses-permission android:name="android.permission.READ_PROFILE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+
+    <!-- dangerous permissions -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+
+    <!-- these permissions should be removed -->
+    <!-- react-native-orientation adds an unnecessary permission; here we remove it -->
+    <uses-permission android:name="android.permission.BLUETOOTH" tools:node="remove"/>
+    <!-- react-native-contacts -->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" tools:node="remove"/>
+    <!-- react-native-camera -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
+    <uses-permission android:name="android.permission.RECORD_VIDEO" tools:node="remove"/>
+    <!-- React Native unnecessary permissions (https://github.com/facebook/react-native/issues/5886) -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove"/>
 
     <application
             android:allowBackup="true"

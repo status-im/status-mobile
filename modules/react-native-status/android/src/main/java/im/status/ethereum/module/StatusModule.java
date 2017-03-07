@@ -14,6 +14,10 @@ import com.github.status_im.status_go.cmd.Statusgo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -103,10 +107,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         Activity currentActivity = getCurrentActivity();
 
-        File extStore = Environment.getExternalStorageDirectory();
-        String dataFolder = extStore.exists() ?
-                extStore.getAbsolutePath() + "/ethereum/testnet" :
-                currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
+        String dataFolder = currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
         Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
 
         try {
@@ -156,6 +157,86 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         Statusgo.StartNode(config);
         Log.d(TAG, "Geth node started");
+    }
+
+    private String getOldExternalDir() {
+        File extStore = Environment.getExternalStorageDirectory();
+        return extStore.exists() ? extStore.getAbsolutePath() + "/ethereum/testnet" : getNewInternalDir();
+    }
+
+    private String getNewInternalDir() {
+        Activity currentActivity = getCurrentActivity();
+        return currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
+    }
+
+    private void deleteDirectory(File folder) {
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDirectory(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
+    }
+
+    private void copyDirectory(File sourceLocation, File targetLocation) throws IOException {
+        if (sourceLocation.isDirectory()) {
+            if (!targetLocation.exists() && !targetLocation.mkdirs()) {
+                throw new IOException("Cannot create dir " + targetLocation.getAbsolutePath());
+            }
+
+            String[] children = sourceLocation.list();
+            for (int i = 0; i < children.length; i++) {
+                copyDirectory(new File(sourceLocation, children[i]), new File(targetLocation, children[i]));
+            }
+        } else {
+            File directory = targetLocation.getParentFile();
+            if (directory != null && !directory.exists() && !directory.mkdirs()) {
+                throw new IOException("Cannot create dir " + directory.getAbsolutePath());
+            }
+
+            InputStream in = new FileInputStream(sourceLocation);
+            OutputStream out = new FileOutputStream(targetLocation);
+
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+        }
+    }
+
+    @ReactMethod
+    public void shouldMoveToInternalStorage(Callback callback) {
+        String oldDir = getOldExternalDir();
+        String newDir = getNewInternalDir();
+
+        File oldDirFile = new File(oldDir);
+        File newDirFile = new File(newDir);
+
+        callback.invoke(oldDirFile.exists() && !newDirFile.exists());
+    }
+
+    @ReactMethod
+    public void moveToInternalStorage(Callback callback) {
+        String oldDir = getOldExternalDir();
+        String newDir = getNewInternalDir();
+
+        try {
+            File oldDirFile = new File(oldDir);
+            copyDirectory(oldDirFile, new File(newDir));
+            deleteDirectory(oldDirFile);
+        } catch (IOException e) {
+            Log.d(TAG, "Moving error: " + e);
+        }
+
+        callback.invoke();
     }
 
     @ReactMethod

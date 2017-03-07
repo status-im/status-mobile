@@ -26,18 +26,6 @@
                               (.log js/console type error))]
              (img->base64 path on-success on-error)))))))
 
-(register-handler :open-image-source-selector
-  (u/side-effect!
-    (fn [_ [_ list-selection-fn]]
-      (list-selection-fn {:title       (label :t/image-source-title)
-                          :options     [(label :t/image-source-make-photo) (label :t/image-source-gallery)]
-                          :callback    (fn [index]
-                                         (case index
-                                           0 (dispatch [:navigate-to :profile-photo-capture])
-                                           1 (dispatch [:open-image-picker])
-                                           :default))
-                          :cancel-text (label :t/image-source-cancel)}))))
-
 (register-handler :phone-number-change-requested
   ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
   ;; We allow to change phone number only from console because this requires entering SMS verification code.

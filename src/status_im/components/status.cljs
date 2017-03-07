@@ -61,6 +61,14 @@
   (.addListener r/device-event-emitter "gethEvent"
                 #(dispatch [:signal-event (.-jsonEvent %)])))
 
+(defn should-move-to-internal-storage? [on-result]
+  (when status
+    (call-module #(.shouldMoveToInternalStorage status on-result))))
+
+(defn move-to-internal-storage [on-result]
+  (when status
+    (call-module #(.moveToInternalStorage status on-result))))
+
 (defn start-node [on-result]
   (when status
     (call-module #(.startNode status on-result))))

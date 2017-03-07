@@ -37,6 +37,7 @@ Command.prototype.create = function (com) {
     this["on-send"] = com.onSend;
     this.fullscreen = com.fullscreen;
     this.request = com.request;
+    this["execute-immediately?"] = com.executeImmediately;
     this["sequential-params"] = com.sequentialParams;
     this.addToCatalog();
 
