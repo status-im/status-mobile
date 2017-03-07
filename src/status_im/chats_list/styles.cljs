@@ -1,4 +1,5 @@
 (ns status-im.chats-list.styles
+  (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.components.styles :refer [color-white
                                                  color-light-gray
                                                  color-blue
@@ -8,7 +9,7 @@
                                                  text4-color
                                                  separator-color
                                                  new-messages-count-color]]
-            [status-im.components.tabs.styles :refer [tabs-height]]
+            [status-im.components.tabs.styles :as tabs-st]
             [status-im.components.toolbar.styles :refer [toolbar-background1
                                                          toolbar-background2]]
             [status-im.utils.platform :as p]))
@@ -99,10 +100,10 @@
    :height 16})
 
 (def last-message-container
-  {:flex-shrink  1})
+  {:flex-shrink 1})
 
 (def last-message-text
-  (merge {:color       text4-color}
+  (merge {:color text4-color}
          (get-in p/platform-specific [:component-styles :chat-list :last-message])))
 
 (def status-container
@@ -136,9 +137,12 @@
 (def chats-container
   {:flex 1})
 
-(def list-container
-  (merge (get-in p/platform-specific [:component-styles :main-tab-list])
-         (get-in p/platform-specific [:component-styles :chat-list :list-container])))
+(defnstyle list-container [tabs-hidden?]
+  {:android {:background-color color-light-gray
+             :margin-bottom    20}
+
+   :ios     {:background-color color-white
+             :margin-bottom    (if tabs-hidden? 20 (+ 16 tabs-st/tabs-height))}})
 
 (def toolbar-actions
   {:flex-direction :row

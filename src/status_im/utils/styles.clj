@@ -1,51 +1,51 @@
 (ns status-im.utils.styles)
 
-(defn body [styles]
-  `(let [styles#            ~styles
-         common#            (dissoc styles# :android :ios)
+(defn body [style]
+  `(let [style#            ~style
+         common#            (dissoc style# :android :ios)
          platform#          (keyword status-im.utils.platform/platform)
-         platform-specific# (get styles# platform#)]
+         platform-specific# (get style# platform#)]
      (if platform-specific#
        (merge common# platform-specific#)
        common#)))
 
-(defmacro defstyles
-  "Defines styles symbol.
-   Styles parameter may contain plaform specific styles:
+(defmacro defstyle
+  "Defines style symbol.
+   Style parameter may contain plaform specific style:
    {:width   100
     :height  125
     :ios     {:height 20}
     :android {:margin-top 3}}
 
-    Reuslting styles for Android:
+    Reuslting style for Android:
     {:width 100
      :height 125
      :margin-top 3}
 
-    Resulting styles for iOS:
+    Resulting style for iOS:
     {:width  100
      :height 20}"
-  [style-name styles]
+  [style-name style]
   `(def ~style-name
-     ~(body styles)))
+     ~(body style)))
 
-(defmacro defnstyles
-  "Defines styles function.
-   Styles parameter may contain plaform specific styles:
+(defmacro defnstyle
+  "Defines style function.
+   Style parameter may contain plaform specific style:
    {:width   100
     :height  (* a 2)
     :ios     {:height (/ a 2)}
     :android {:margin-top 3}}
 
-    Resulting styles for Android (with (= a 10)):
+    Resulting style for Android (with (= a 10)):
     {:width 100
      :height 20
      :margin-top 3}
 
-    Resulting styles for iOS (with (= a 10)):
+    Resulting style for iOS (with (= a 10)):
     {:width  100
      :height 5}"
-  [style-name params styles]
+  [style-name params style]
   `(defn ~style-name
      [~@params]
-     ~(body styles)))
+     ~(body style)))
