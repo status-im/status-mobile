@@ -6,6 +6,7 @@
     [taoensso.timbre :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.components.status :as status]
+    [status-im.components.permissions :as permissions]
     [status-im.utils.handlers :refer [register-handler] :as u]
     status-im.chat.handlers
     status-im.group-settings.handlers
@@ -122,11 +123,24 @@
   (log/debug "Started Node")
   (enet/get-network #(dispatch [:set :network %])))
 
+(defn move-to-internal-storage [db]
+  (status/move-to-internal-storage
+    (fn []
+      (status/start-node
+        (fn [result]
+          (node-started db result))))))
+
 (register-handler :initialize-geth
   (u/side-effect!
     (fn [db _]
-      (log/debug "Starting node")
-      (status/start-node (fn [result] (node-started db result))))))
+      (status/should-move-to-internal-storage?
+        (fn [should-move?]
+          (if should-move?
+            (dispatch [:request-permissions
+                       [:read-external-storage]
+                       #(move-to-internal-storage db)
+                       #(dispatch [:move-to-internal-failure-message])])
+            (status/start-node (fn [result] (node-started db result)))))))))
 
 (register-handler :signal-event
   (u/side-effect!
@@ -167,6 +181,14 @@
                      (when webview-bridge
                        (.resetOkHttpClient webview-bridge)))
         nil))))
+
+(register-handler :request-permissions
+  (u/side-effect!
+    (fn [_ [_ permissions then else]]
+      (permissions/request-permissions
+        permissions
+        then
+        else))))
 
 ;; -- User data --------------------------------------------------------------
 (register-handler :load-user-phone-number

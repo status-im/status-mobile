@@ -186,6 +186,22 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
 }
 
 ////////////////////////////////////////////////////////////////////
+#pragma mark - shouldMoveToInternalStorage
+//////////////////////////////////////////////////////////////////// shouldMoveToInternalStorage
+RCT_EXPORT_METHOD(shouldMoveToInternalStorage:(RCTResponseSenderBlock)onResultCallback) {
+    // Android only
+    onResultCallback(@[[NSNull null]]);
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - moveToInternalStorage
+//////////////////////////////////////////////////////////////////// moveToInternalStorage
+RCT_EXPORT_METHOD(moveToInternalStorage:(RCTResponseSenderBlock)onResultCallback) {
+    // Android only
+    onResultCallback(@[[NSNull null]]);
+}
+
+////////////////////////////////////////////////////////////////////
 #pragma mark - StartNodeRPCServer method
 //////////////////////////////////////////////////////////////////// createAccount
 RCT_EXPORT_METHOD(startNodeRPCServer) {

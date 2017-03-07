@@ -132,26 +132,42 @@
       (when-not (messages/get-by-id chat-consts/passphrase-message-id)
         (sign-up-service/account-generation-message)))))
 
+(register-handler :move-to-internal-failure-message
+  (u/side-effect!
+    (fn [_]
+      (when-not (messages/get-by-id chat-consts/move-to-internal-failure-message-id)
+        (sign-up-service/move-to-internal-failure-message)))))
+
 (register-handler :show-mnemonic
   (u/side-effect!
     (fn [_ [_ mnemonic]]
       (let [crazy-math-message? (messages/get-by-id chat-consts/crazy-math-message-id)]
         (sign-up-service/passphrase-messages mnemonic crazy-math-message?)))))
 
+(defn- handle-sms [{body :body}]
+  (when-let [matches (re-matches #"(\d{4})" body)]
+    (dispatch [:sign-up-confirm (second matches)])))
+
 (register-handler :sign-up
   (after (fn [_ [_ phone-number]]
            (dispatch [:account-update {:phone phone-number}])))
   (fn [db [_ phone-number message-id]]
+    (sign-up-service/start-listening-confirmation-code-sms)
     (let [formatted (format-phone-number phone-number)]
       (-> db
           (assoc :user-phone-number formatted)
-          sign-up-service/start-listening-confirmation-code-sms
           (server/sign-up formatted
                           message-id
                           sign-up-service/on-sign-up-response)))))
 
+(register-handler :start-listening-confirmation-code-sms
+  (fn [db [_ listener]]
+    (if-not (:confirmation-code-sms-listener db)
+      (assoc db :confirmation-code-sms-listener listener)
+      db)))
+
 (register-handler :stop-listening-confirmation-code-sms
-  (fn [db [_]]
+  (fn [db]
     (if (:confirmation-code-sms-listener db)
       (sign-up-service/stop-listening-confirmation-code-sms db)
       db)))

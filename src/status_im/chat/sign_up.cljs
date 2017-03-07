@@ -42,14 +42,15 @@
                 :from         console-chat-id
                 :to           "me"}])))
 
-(defn handle-sms [{body :body}]
-  (when-let [matches (re-matches #"(\d{4})" body)]
-    (dispatch [:sign-up-confirm (second matches)])))
-
-(defn start-listening-confirmation-code-sms [db]
-  (if-not (:confirmation-code-sms-listener db)
-    (assoc db :confirmation-code-sms-listener (add-sms-listener handle-sms))
-    db))
+(defn start-listening-confirmation-code-sms []
+  (dispatch [:request-permissions
+             [:receive-sms]
+             (fn []
+               (let [listener (add-sms-listener
+                                (fn [{body :body}]
+                                  (when-let [matches (re-matches #"(\d{4})" body)]
+                                    (dispatch [:sign-up-confirm (second matches)]))))]
+                 (dispatch [:start-listening-confirmation-code-sms listener])))]))
 
 (defn stop-listening-confirmation-code-sms [db]
   (when-let [listener (:confirmation-code-sms-listener db)]
@@ -70,7 +71,9 @@
 
 (defn sync-contacts []
   ;; TODO 'on-sync-contacts' is never called
-  (dispatch [:sync-contacts on-sync-contacts]))
+  (dispatch [:request-permissions
+             [:read-contacts]
+             #(dispatch [:sync-contacts on-sync-contacts])]))
 
 (defn on-send-code-response [body]
   (dispatch [:received-message
@@ -117,6 +120,18 @@
              {:message-id   const/crazy-math-message-id
               :content      (label :t/account-generation-message)
               :content-type text-content-type
+              :outgoing     false
+              :chat-id      console-chat-id
+              :from         console-chat-id
+              :to           "me"}]))
+
+(defn move-to-internal-failure-message []
+  (dispatch [:received-message
+             {:message-id   const/move-to-internal-failure-message-id
+              :content      (command-content
+                              :grant-permissions
+                              (label :t/move-to-internal-failure-message))
+              :content-type content-type-command-request
               :outgoing     false
               :chat-id      console-chat-id
               :from         console-chat-id

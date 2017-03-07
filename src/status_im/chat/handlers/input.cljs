@@ -97,7 +97,9 @@
   (fn [{:keys [current-chat-id] :as db} [_ chat-id text]]
     (let [chat-id         (or chat-id current-chat-id)
           chat-text       (or text (get-in db [:chats chat-id :input-text]) "")
-          requests        (suggestions/get-request-suggestions db chat-text)
+          requests        (->> (suggestions/get-request-suggestions db chat-text)
+                               (remove (fn [{:keys [type]}]
+                                         (= type :grant-permissions))))
           suggestions     (suggestions/get-command-suggestions db chat-text)
           global-commands (suggestions/get-global-command-suggestions db chat-text)
           {:keys [dapp?]} (get-in db [:contacts chat-id])]

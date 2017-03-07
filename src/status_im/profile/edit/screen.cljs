@@ -37,8 +37,13 @@
                            :on-change-text #(dispatch [:set-in [:profile-edit :name] %])}]])
 
 (def profile-icon-options
-  [{:text (label :t/image-source-gallery)    :value #(dispatch [:open-image-picker])}
-   {:text (label :t/image-source-make-photo) :value #(dispatch [:navigate-to :profile-photo-capture])}])
+  [{:text  (label :t/image-source-gallery)
+    :value #(dispatch [:open-image-picker])}
+   {:text  (label :t/image-source-make-photo)
+    :value (fn []
+             (dispatch [:request-permissions
+                        [:camera :write-external-storage]
+                        #(dispatch [:navigate-to :profile-photo-capture])]))}])
 
 (defn edit-profile-bage [contact]
   [view st/edit-profile-bage

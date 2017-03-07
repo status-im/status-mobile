@@ -705,6 +705,14 @@ status.response({
     }
 });
 
+status.response({
+    name: "grant-permissions",
+    color: "#7099e6",
+    description: "Grant permissions",
+    icon: "lock_white",
+    executeImmediately: true
+});
+
 status.addListener("on-message-input-change", function (params, context) {
     return jsSuggestions({code: params.message}, context);
 });
