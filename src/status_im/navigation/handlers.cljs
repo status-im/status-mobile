@@ -12,7 +12,7 @@
   (let [stack' (if (> 2 (count stack))
                  (list :chat-list)
                  (pop stack))]
-    (conj stack' view-id)))
+      (conj stack' view-id)))
 
 (defn replace-view [db view-id]
   (-> db
@@ -75,13 +75,22 @@
             (assoc db :view-id first-in-stack)))
         db))))
 
+(defn navigate-to-clean
+  [db [_ view-id]]
+  (-> db
+      (assoc :navigation-stack (list))
+      (push-view view-id)))
+
+(register-handler :navigate-to-clean navigate-to-clean)
+
 (register-handler :navigate-to-tab
-  (enrich preload-data!)
-  (fn [db [_ view-id]]
-    (-> db
-        (assoc :prev-tab-view-id (:view-id db))
-        (assoc :prev-view-id (:view-id db))
-        (replace-view view-id))))
+  (->
+    (fn [db [_ view-id]]
+      (-> db
+          (assoc :prev-tab-view-id (:view-id db))
+          (assoc :prev-view-id (:view-id db))))
+    ((enrich navigate-to-clean))
+    ((enrich preload-data!))))
 
 (register-handler :on-navigated-to-tab
   (enrich preload-data!)
@@ -95,10 +104,3 @@
 
 (register-handler :show-profile show-profile)
 
-(defn navigate-to-clean
-  [db [_ view-id]]
-  (-> db
-      (assoc :navigation-stack (list))
-      (push-view view-id)))
-
-(register-handler :navigate-to-clean navigate-to-clean)
