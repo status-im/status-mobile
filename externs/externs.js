@@ -70,6 +70,7 @@ var TopLevel = {
 "getCardId" : function () {},
 "getExample" : function () {},
 "getInitialOrientation" : function () {},
+"getIPAddress" : function () {},
 "getLayout" : function () {},
 "getNumber" : function () {},
 "getSyncing" : function () {},

@@ -131,7 +131,8 @@
 
 (defview suggestions-web-view []
   [url [:web-view-url]
-   extra-js [:web-view-extra-js]]
+   extra-js [:web-view-extra-js]
+   rpc-url [:get :rpc-url]]
   (when url
     [webview-bridge
      {:ref                                   #(dispatch [:set-webview-bridge %])
@@ -139,7 +140,9 @@
       :source                                {:uri url}
       :render-error                          web-view-error
       :java-script-enabled                   true
-      :injected-on-start-loading-java-script (str js-res/web3 js-res/jquery js-res/web3-init)
+      :injected-on-start-loading-java-script (str js-res/web3
+                                                  js-res/jquery
+                                                  (js-res/web3-init rpc-url))
       :injected-java-script                  (str js-res/webview-js extra-js)
       :bounces                               false
       :on-navigation-state-change            on-navigation-change
