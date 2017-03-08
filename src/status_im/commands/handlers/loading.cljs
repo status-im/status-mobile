@@ -37,6 +37,11 @@
 
     (and dapp? dapp-url)
     (http-get (s/join "/" [dapp-url commands-js])
+              (fn [response]
+                (and
+                  (string? (.text response))
+                  (when-let [content-type (.. response -headers (get "Content-Type"))]
+                    (s/includes? "application/javascript" content-type))))
               #(dispatch [::validate-hash whisper-identity %])
               #(dispatch [::validate-hash whisper-identity js-res/dapp-js]))
 
