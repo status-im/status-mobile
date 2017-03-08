@@ -42,6 +42,7 @@
      [touchable-highlight {:style    st/back-btn-touchable
                            :on-press (fn []
                                        (dispatch [:set-in [:profile-edit :edit?] false])
+                                       (dispatch [:set-in [:profile-edit :name] nil])
                                        (dispatch [:navigate-back]))}
       [view st/back-btn-container
        [icon :back st/back-btn-icon]]]
@@ -132,10 +133,10 @@
       [icon :back st/back-btn-icon]]]
     ;; TODO not implemented
     #_[touchable-highlight {:style    st/actions-btn-touchable
-                          :on-press (fn []
-                                      (.log js/console "Dots pressed!"))}
-     [view st/actions-btn-container
-      [icon :dots st/edit-btn-icon]]]]
+                            :on-press (fn []
+                                        (.log js/console "Dots pressed!"))}
+       [view st/actions-btn-container
+        [icon :dots st/edit-btn-icon]]]]
 
    [status-image-view {:account    contact
                        :photo-path photo-path
@@ -191,7 +192,6 @@
    qr [:get-in [:profile-edit :qr-code]]
    current-account [:get-current-account]
    changed-account [:get :profile-edit]]
-  {:component-will-unmount #(dispatch [:set-in [:profile-edit :name] nil])}
   (let [{:keys [phone
                 address
                 public-key]
