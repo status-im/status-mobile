@@ -141,10 +141,6 @@
                            :height          56
                            :align-items     :center
                            :justify-content :center}
-   :toolbar-last-activity {:color            styles/text2-color
-                           :background-color :transparent
-                           :top              0
-                           :font-size        12}
    :text-field-focus-line-height 2})
 
 (def fonts
