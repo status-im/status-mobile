@@ -10,7 +10,6 @@
                                     label
                                     label-pluralize]]
             [status-im.chat.styles.screen :as st]
-            [status-im.components.refreshable-text.view :refer [refreshable-text]]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
@@ -41,13 +40,11 @@
 
 (defview last-activity [{:keys [online-text sync-state]}]
   [state [:get :sync-data]]
-  [refreshable-text {:style      st/last-activity
-                     :text-style (get-in platform-specific [:component-styles :toolbar-last-activity])
-                     :font       :default
-                     :value      (case sync-state
-                                   :in-progress (in-progress-text state)
-                                   :synced (label :t/sync-synced)
-                                   online-text)}])
+  [text {:style st/last-activity-text}
+   (case sync-state
+     :in-progress (in-progress-text state)
+     :synced (label :t/sync-synced)
+     online-text)])
 
 (defn group-last-activity [{:keys [contacts sync-state public?]}]
   (if (or (= sync-state :in-progress)
@@ -55,13 +52,10 @@
     [last-activity {:sync-state sync-state}]
     (if public?
       [view {:flex-direction :row}
-       [text {:font  :default
-              :style (get-in platform-specific [:component-styles :toolbar-last-activity])}
+       [text {:style (get-in platform-specific [:component-styles :toolbar-last-activity])}
         (label :t/public-group-status)]]
       [view {:flex-direction :row}
-       [icon :group st/group-icon]
-       [text {:style st/members
-              :font  :medium}
+       [text {:style st/members}
         (if public?
           (label :t/public-group-status)
           (let [cnt (inc (count contacts))]

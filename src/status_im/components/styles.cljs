@@ -10,6 +10,7 @@
 (def color-gray3 "#00000040")
 (def color-gray4 "#939ba1")
 (def color-gray5 "#d9dae1")
+(def color-gray6 "#212121")
 (def color-steel "#838b91")
 (def color-white "white")
 (def color-light-blue "#628fe3")

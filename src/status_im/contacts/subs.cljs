@@ -156,6 +156,11 @@
   (fn [db [_ identity]]
     (reaction (get-in @db [:contacts identity]))))
 
+(register-sub :contact-name-by-identity
+  (fn [db [_ identity]]
+    (let [contacts (subscribe [:get-contacts])]
+      (reaction (:name (@contacts identity))))))
+
 (register-sub :all-new-contacts
   (fn [db _]
     (contacts-by-current-chat remove db)))
