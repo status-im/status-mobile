@@ -1,18 +1,22 @@
 (ns status-im.chat.styles.message
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :refer [color-white
                                                  color-black
                                                  color-blue
+                                                 color-light-blue
                                                  selected-message-color
                                                  text1-color
                                                  text2-color
-                                                 color-gray]]
+                                                 color-gray
+                                                 color-gray4]]
             [status-im.constants :refer [text-content-type
                                          content-type-command]]))
 
-(def style-message-text
-  {:fontSize   14
-   :lineHeight 21
-   :color      text1-color})
+(defstyle style-message-text
+  {:fontSize 15
+   :color    text1-color
+   :android  {:line-height 22}
+   :ios      {:line-height 23}})
 
 (def style-sub-text
   {:top        -2
@@ -22,17 +26,17 @@
    :height     16})
 
 (defn message-padding-top
-  [{:keys [new-day same-author same-direction]}]
+  [{:keys [first-in-date? same-author same-direction]}]
   (cond
-    new-day 0
-    same-author 4
-    same-direction 20
-    :else 10))
+    first-in-date? 20
+    same-author    8
+    same-direction 16
+    :else          24))
 
 (defn last-message-padding
   [{:keys [last-message typing]}]
   (when (and last-message (not typing))
-    {:paddingBottom 20}))
+    {:paddingBottom 16}))
 
 (def message-datemark
   {:margin-top    10
@@ -42,29 +46,20 @@
   {:height 16})
 
 (def message-body-base
-  {:padding-right 8
-   :padding-left  8})
+  {:padding-right 10
+   :padding-left  10})
 
 (defn message-body
   [{:keys [outgoing] :as message}]
-  (let [align (if outgoing :flex-end :flex-start)]
+  (let [align     (if outgoing :flex-end :flex-start)
+        direction (if outgoing :row-reverse :row)]
     (merge message-body-base
-           {:flexDirection :column
+           {:flexDirection direction
             :width         260
             :paddingTop    (message-padding-top message)
             :alignSelf     align
             :alignItems    align}
            (last-message-padding message))))
-
-(defn incoming-group-message-body-st
-  [message]
-  (merge message-body-base
-         {:flexDirection :row
-          :alignSelf     :flex-start
-          :marginTop     (message-padding-top message)
-          :paddingRight  8
-          :paddingLeft   8}
-         (last-message-padding message)))
 
 (def selected-message
   {:marginTop  18
@@ -75,75 +70,72 @@
 (def group-message-wrapper
   {:flexDirection :column})
 
-(def group-message-view
-  {:flexDirection :column
-   :width         260
-   :paddingLeft   8
-   :alignItems    :flex-start})
+(defn group-message-view
+  [{:keys [outgoing] :as message}]
+  (let [align (if outgoing :flex-end :flex-start)]
+    {:flexDirection :column
+     :width         260
+     :padding-left  10
+     :padding-right 10
+     :alignItems    align}))
 
-(def message-author {:width 24})
+(def message-author
+  {:width     36
+   :alignSelf :flex-start})
 
 (def photo-view {:borderRadius 12})
 (def photo
   {:borderRadius 12
-   :width        24
-   :height       24})
+   :width        36
+   :height       36})
 
 (def delivery-view
   {:flexDirection :row
-   :marginTop     2})
+   :marginTop     2
+   :opacity       0.5})
 
-(def delivery-image
-  {:marginTop 6
-   :width     9
-   :height    7})
-
-(def delivery-text
-  {:fontSize   12
-   :color      text2-color
-   :marginLeft 5})
+(defstyle delivery-text
+  {:color      color-gray4
+   :marginLeft 5
+   :android    {:font-size 13}
+   :ios        {:font-size 14}})
 
 (defn text-message
   [{:keys [outgoing group-chat incoming-group]}]
   (merge style-message-text
-         {:marginTop (if incoming-group
-                       4
-                       0)}
-         (when (and outgoing group-chat)
-           {:color color-white})))
+         {:marginTop (if incoming-group 4 0)}))
 
-(defn message-view
+(defnstyle message-view
   [{:keys [content-type outgoing group-chat selected]}]
-  (merge {:borderRadius    14
-          :padding         12
-          :backgroundColor color-white}
+  (merge {:padding         12
+          :backgroundColor color-white
+          :android         {:border-radius 4}
+          :ios             {:border-radius 8}}
          (when (= content-type content-type-command)
            {:paddingTop    10
-            :paddingBottom 14})
-         (if outgoing
-           (when (and group-chat (= content-type text-content-type))
-             {:backgroundColor color-blue})
-           (when selected
-             {:backgroundColor selected-message-color}))))
+            :paddingBottom 14})))
 
-(def author
-  {:color color-gray})
+(defstyle author
+  {:color         color-gray4
+   :margin-bottom 5
+   :android       {:font-size 13}
+   :ios           {:font-size 14}})
 
 (def comand-request-view
   {:paddingRight 16})
 
 (def command-request-message-view
-  {:borderRadius    14
-   :padding         12
-   :paddingRight    28
-   :backgroundColor color-white})
+  {:borderRadius     14
+   :padding-vertical 10
+   :paddingRight     28
+   :backgroundColor  color-white})
 
 (def command-request-from-text
   (merge style-sub-text {:marginBottom 2}))
 
-(defn command-request-image-touchable [top-offset?]
+(defn command-request-image-touchable []
   {:position       :absolute
-   :top            (if top-offset? 4 -1)
+   :top            0
    :right          -8
    :alignItems     :center
    :justifyContent :center
@@ -177,14 +169,16 @@
    :height    14})
 
 (def content-command-view
-  {:flexDirection :column})
+  {:flexDirection :column
+   :alignItems    :flex-start})
 
 (def command-container
   {:flexDirection :row
+   :margin-top    4
    :marginRight   32})
 
 (def command-image
-  {:margin-top 5
+  {:margin-top 9
    :width      12
    :height     13
    :tint-color :#a9a9a9cc})

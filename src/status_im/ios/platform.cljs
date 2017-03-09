@@ -178,10 +178,6 @@
    :toolbar-border        {:height           1
                            :background-color styles/color-gray5
                            :opacity          0.5}
-   :toolbar-last-activity {:color            styles/text2-color
-                           :background-color :transparent
-                           :top              0
-                           :font-size        14}
    :text-field-focus-line-height 1})
 
 (def fonts
@@ -227,4 +223,3 @@
    :public-group-icon-container  {:margin-top 2}
    :private-group-icon-container {:margin-top 2}
    :public-group-chat-hash-style {:top 6 :left 3}})
-

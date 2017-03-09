@@ -25,8 +25,8 @@
    :members                               {:one   "1 member"
                                            :other "{{count}} members"
                                            :zero  "no members"}
-   :members-active                        {:one   "1 member, 1 active"
-                                           :other "{{count}} members, {{count}} active"
+   :members-active                        {:one   "1 member"
+                                           :other "{{count}} members"
                                            :zero  "no members"}
    :public-group-status                   "Public"
    :active-online                         "Online"
