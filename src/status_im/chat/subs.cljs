@@ -275,3 +275,11 @@
     (let [last-message (subscribe [:get-last-message chat-id])]
       (reaction
         (get-in @db [:message-data :short-preview (:message-id @last-message)])))))
+
+(register-sub :get-chat-last-outgoing-message
+  (fn [db [_ chat-id]]
+    (reaction
+     (->> (:messages (get-in @db [:chats chat-id]))
+          (filter :outgoing)
+          (sort-by :clock-value >)
+          (first)))))

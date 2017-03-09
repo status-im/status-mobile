@@ -77,13 +77,14 @@
   (list-item [chat-datemark value]))
 
 (defmethod message-row :default
-  [{:keys [contact-by-identity group-chat messages-count row index]}]
+  [{:keys [contact-by-identity group-chat messages-count row index last-outgoing?]}]
   (let [message (-> row
                     (add-message-color contact-by-identity)
                     (assoc :group-chat group-chat)
                     (assoc :messages-count messages-count)
                     (assoc :index index)
-                    (assoc :last-message (= (js/parseInt index) (dec messages-count))))]
+                    (assoc :last-message (= (js/parseInt index) (dec messages-count)))
+                    (assoc :last-outgoing? last-outgoing?))]
     (list-item [chat-message message])))
 
 (defn toolbar-action []
@@ -152,7 +153,9 @@
   [messages [:chat :messages]
    contacts [:chat :contacts]
    message-extras [:get :message-extras]
-   loaded? [:all-messages-loaded?]]
+   loaded? [:all-messages-loaded?]
+   current-chat-id [:get-current-chat-id]
+   last-outgoing-message [:get-chat-last-outgoing-message @current-chat-id]]
   (let [contacts' (contacts-by-identity contacts)
         messages  (messages-with-timemarks messages message-extras)]
     [list-view {:renderRow                 (fn [row _ index]
@@ -160,7 +163,8 @@
                                                            :group-chat          group-chat
                                                            :messages-count      (count messages)
                                                            :row                 row
-                                                           :index               index}))
+                                                           :index               index
+                                                           :last-outgoing?      (= (:message-id last-outgoing-message) (:message-id row))}))
                 :renderScrollComponent     #(invertible-scroll-view (js->clj %))
                 :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
                 :enableEmptySections       true
