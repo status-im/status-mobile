@@ -4,6 +4,7 @@
             [status-im.navigation.handlers :as nav]
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]
+            [status-im.utils.hex :refer [valid-hex?]]
             [status-im.components.status :as status]
             [clojure.string :as s]
             [taoensso.timbre :as log]))
@@ -120,13 +121,15 @@
 (register-handler ::transaction-queued
   (after #(dispatch [:navigate-to-modal :confirm]))
   (fn [db [_ {:keys [id message_id args]}]]
-    (let [{:keys [from to value]} args
-          transaction {:id         id
-                       :from       from
-                       :to         to
-                       :value      (.toDecimal js/Web3.prototype value)
-                       :message-id message_id}]
-      (assoc-in db [:transactions-queue id] transaction))))
+    (let [{:keys [from to value]} args]
+      (if (valid-hex? to)
+        (let [transaction {:id         id
+                           :from       from
+                           :to         to
+                           :value      (.toDecimal js/Web3.prototype value)
+                           :message-id message_id}]
+          (assoc-in db [:transactions-queue id] transaction))
+        db))))
 
 (register-handler :transaction-completed
   (u/side-effect!
