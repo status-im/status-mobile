@@ -1,26 +1,30 @@
 (ns status-im.protocol.web3.signature
-  (:require [taoensso.timbre :refer-macros [debug]]))
-
-(def elliptic-ec (.-ec (js/require "elliptic")))
-(def secp (new elliptic-ec "secp256k1"))
+  (:require [taoensso.timbre :refer-macros [debug]]
+            [taoensso.timbre :as log]))
 
 (defn sign [{:keys [web3 address message callback]}]
   (when address
-    (let [to-sign         (->> (.toString message)
-                               (.sha3 web3))
-          unlock-callback (fn [error res]
-                            (if res
-                              (.sign (.-eth web3) address to-sign callback)
-                              (callback :unlock-error nil)))]
-      (.unlockAccount (.-personal web3) address nil nil unlock-callback))))
+    (let [to-sign (->> (.toString message)
+                       (.sha3 web3))]
+      (.sendAsync (.-currentProvider web3)
+                  (clj->js {:method "personal_sign"
+                            :params [to-sign (str "0x" address) "testpass"]
+                            :from   address
+                            :id     1})
+                  (fn [err res]
+                    (if-let [res (-> res (js->clj) (get "result"))]
+                      (callback nil res)
+                      (callback :sign-error nil)))))))
 
-(defn signature-valid? [web3 message public-key signature]
-  (let [message   (->> (.toString message)
-                       (.sha3 web3))
-        signature (.substr signature 2)
-        r         (.substr signature 0 64)
-        s         (.substr signature 64 64)
-        v         (.toHex web3 (- (.toDecimal web3 (str "0x" (.substr signature 128 2))) 27))
-        key       (.keyFromPublic secp (.substr public-key 2) "hex")
-        result    (.verify key message (js-obj "r" r "s" s "v" v))])
-  result)
+(defn check-signature [{:keys [web3 message from address signature callback]}]
+  (let [message (->> (.toString message)
+                     (.sha3 web3))]
+    (.sendAsync (.-currentProvider web3)
+                (clj->js {:method "personal_ecRecover"
+                          :params [message signature]
+                          :from   from
+                          :id     1})
+                (fn [err res]
+                  (if-let [res (-> res (js->clj) (get "result"))]
+                    (callback nil (= res (str "0x" address)))
+                    (callback :validation-error false))))))

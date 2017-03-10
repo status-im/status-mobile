@@ -2,14 +2,15 @@
   (:require [re-frame.core :refer [after dispatch enrich]]
             [status-im.utils.utils :refer [first-index]]
             [status-im.utils.handlers :refer [register-handler get-hashtags]]
-            [status-im.protocol.web3.signature :refer [sign signature-valid?]]
+            [status-im.protocol.web3.signature :refer [sign check-signature]]
             [status-im.protocol.core :as protocol]
             [status-im.navigation.handlers :as nav]
             [status-im.data-store.discover :as discoveries]
             [status-im.utils.handlers :as u]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
-            [taoensso.timbre :refer-macros [debug]]))
+            [taoensso.timbre :refer-macros [debug]]
+            [taoensso.timbre :as log]))
 
 (def request-discoveries-interval-s 600)
 
@@ -42,40 +43,47 @@
                         :from       public-key
                         :payload    {:message-id message-id
                                      :status     status
+                                     :address    address
                                      :hashtags   (vec hashtags)
                                      :profile    {:name          name
                                                   :profile-image photo-path}}}]
-        (sign {:web3     web3
-               :address  address
-               :message  [message-id public-key status]
-               :callback (fn [err signature]
-                           (let [message (assoc message :signature signature)]
-                             (doseq [id (u/identities contacts)]
-                               (protocol/send-status!
-                                 {:web3    web3
-                                  :message (assoc message :to id)}))
-                             (dispatch [:status-received message])))})))))
+        (sign {:web3       web3
+               :address    address
+               :public-key public-key
+               :message    [message-id public-key status]
+               :callback   (fn [err signature]
+                             (when signature
+                               (let [message (assoc message :signature signature)]
+                                 (doseq [id (u/identities contacts)]
+                                   (protocol/send-status!
+                                     {:web3    web3
+                                      :message (assoc message :to id)}))
+                                 (dispatch [:status-received message]))))})))))
 
 (register-handler :status-received
   (u/side-effect!
     (fn [{:keys [web3 discoveries]} [_ {:keys [from payload signature]}]]
-      (let [{:keys [message-id status hashtags profile]} payload]
+      (let [{:keys [message-id address status hashtags profile]} payload]
         (when (and (not (discoveries/exists? (:message-id payload)))
-                   (not (get discoveries (:message-id payload)))
-                   ;; TODO: signature signing doesn't work
-                   ;; https://github.com/ethereum/web3.js/issues/404
-                   ;; https://github.com/ethereum/web3.js/issues/562
-                   #_(signature-valid? web3 [message-id from status] from signature))
-          (let [{:keys [message-id status hashtags profile]} payload
-                {:keys [name profile-image]} profile
-                discover {:message-id message-id
-                          :name       name
-                          :photo-path profile-image
-                          :status     status
-                          :whisper-id from
-                          :tags       (map #(hash-map :name %) hashtags)
-                          :created-at (time/now-ms)}]
-            (dispatch [:add-discover discover])))))))
+                   (not (get discoveries (:message-id payload))))
+          (check-signature
+            {:web3      web3
+             :message   [message-id from status]
+             :from      from
+             :address   address
+             :signature signature
+             :callback  (fn [err valid?]
+                          (when valid?
+                            (let [{:keys [message-id status hashtags profile]} payload
+                                  {:keys [name profile-image]} profile
+                                  discover {:message-id message-id
+                                            :name       name
+                                            :photo-path profile-image
+                                            :status     status
+                                            :whisper-id from
+                                            :tags       (map #(hash-map :name %) hashtags)
+                                            :created-at (time/now-ms)}]
+                              (dispatch [:add-discover discover]))))}))))))
 
 (register-handler :start-requesting-discoveries
   (fn [{:keys [request-discoveries-timer] :as db}]
