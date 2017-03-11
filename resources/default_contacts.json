@@ -160,7 +160,21 @@
         "dapp?": true,
         "dapp-url":
         {
-            "en": "https://app.augur.net"
+          "en": "https://app.augur.net"
+        }
+    },
+
+    "Ethlance":
+    {
+        "name":
+        {
+            "en": "Ethlance"
+        },
+        "photo-path": "contacts://ethlance",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://madvas.github.io/ethlance/resources/public/"
         }
     }
 }
