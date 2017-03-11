@@ -29,4 +29,5 @@
    :melonport (js/require "./images/contacts/melonport.png")
    :bchat (js/require "./images/contacts/bchat.png")
    :dentacoin (js/require "./images/contacts/Dentacoin.png")
-   :augur (js/require "./images/contacts/augur.png")})
+   :augur (js/require "./images/contacts/augur.png")
+   :ethlance (js/require "./images/contacts/ethlance.png")})
