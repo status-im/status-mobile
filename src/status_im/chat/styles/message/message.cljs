@@ -1,4 +1,4 @@
-(ns status-im.chat.styles.message
+(ns status-im.chat.styles.message.message
   (:require [status-im.components.styles :refer [color-white
                                                  color-black
                                                  color-blue

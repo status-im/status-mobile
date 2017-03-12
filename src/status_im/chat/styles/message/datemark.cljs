@@ -1,4 +1,4 @@
-(ns status-im.chat.styles.datemark)
+(ns status-im.chat.styles.message.datemark)
 
 (def datemark-wrapper
   {:flex        1

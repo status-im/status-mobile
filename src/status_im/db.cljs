@@ -33,8 +33,6 @@
              :contacts-ids               #{}
              :selected-contacts          #{}
              :chats-updated-signal       0
-             :chat-ui-props              {:show-actions?     false
-                                          :show-bottom-info? false}
              :selected-participants      #{}
              :view-id                    nil
              :navigation-stack           '()

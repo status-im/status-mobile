@@ -26,7 +26,7 @@
        (fn []
          (when (and (get-in @message [:content :command])
                     (not @preview))
-           (dispatch [:request-command-preview @message :short-preview])))
+           (dispatch [:request-command-data @message :short-preview])))
 
        :reagent-render
        (fn [_]
@@ -50,7 +50,7 @@
                (:content content)]
 
               (:command content)
-              preview
+              (:markup preview)
 
               :else
               [text {:style           st/last-message-text

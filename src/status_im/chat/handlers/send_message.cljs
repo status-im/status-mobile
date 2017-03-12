@@ -43,28 +43,11 @@
      :clock-value  (inc clock-value)
      :show?        true}))
 
-(register-handler :send-chat-message
-  (u/side-effect!
-    (fn [{:keys [current-chat-id current-public-key current-account-id] :as db}
-         [_ {:keys [chat-id] :as command-message}]]
-      (let [text (get-in db [:chats current-chat-id :input-text])
-            data {:command  command-message
-                  :message  text
-                  :chat-id  (or chat-id current-chat-id)
-                  :identity current-public-key
-                  :address  current-account-id}]
-        (dispatch [:clear-input current-chat-id])
-        (cond
-          command-message
-          (dispatch [::check-commands-handlers! data])
-          (not (s/blank? text))
-          (dispatch [::prepare-message data]))))))
-
 (defn console-command? [chat-id command-name]
   (and (= console-chat-id chat-id)
        (console/commands-names (keyword command-name))))
 
-(register-handler ::check-commands-handlers!
+(register-handler :check-commands-handlers!
   (u/side-effect!
     (fn [_ [_ {:keys [command message chat-id] :as params}]]
       (let [{:keys [command] :as message} command]
@@ -83,14 +66,7 @@
 
               :else
               (dispatch [:prepare-command! chat-id params'])))))
-      (dispatch [:set-chat-ui-props :sending-disabled? false])
-      (when-not (s/blank? message)
-        (dispatch [::prepare-message params])))))
-
-(register-handler :clear-input
-  (path :chats)
-  (fn [db [_ chat-id]]
-    (assoc-in db [chat-id :input-text] nil)))
+      (dispatch [:set-chat-ui-props :sending-in-progress? false]))))
 
 (register-handler :prepare-command!
   (u/side-effect!
@@ -106,10 +82,10 @@
                                (cu/check-author-direction db chat-id))]
         (log/debug "Handler data: " request handler-data (dissoc params :commands :command-message))
         (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [:set-chat-ui-props :sending-disabled? false])
+        (dispatch [:set-chat-ui-props :sending-in-progress? false])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
         (when (cu/console? chat-id)
-          (dispatch `[:console-respond-command params]))
+          (dispatch [:console-respond-command params]))
         (when (and (= "send" (get-in command-message [:command :name]))
                    (not= add-to-chat-id wallet-chat-id))
           (let [ct               (if request
@@ -170,7 +146,7 @@
           params
           #(dispatch [:command-handler! chat-id parameters %]))))))
 
-(register-handler ::prepare-message
+(register-handler :prepare-message
   (u/side-effect!
     (fn [{:keys [network-status] :as db} [_ {:keys [chat-id identity message] :as params}]]
       (let [{:keys [group-chat public?]} (get-in db [:chats chat-id])
@@ -195,7 +171,7 @@
                                 (assoc :to chat-id :message-type :user-message))
             params'     (assoc params :message message'')]
         (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [:set-chat-ui-props :sending-disabled? false])
+        (dispatch [:set-chat-ui-props :sending-in-progress? false])
         (dispatch [::add-message params'])
         (dispatch [::save-message! params'])))))
 
@@ -212,13 +188,6 @@
                                 :timestamp (time/now-ms)}])
       (messages/save chat-id message))))
 
-(register-handler :clear-response-suggestions
-  (fn [db [_ chat-id]]
-    (-> db
-        (update-in [:suggestions] dissoc chat-id)
-        (update-in [:has-suggestions?] dissoc chat-id)
-        (assoc-in [:animations :to-response-height chat-id] input-height))))
-
 (register-handler ::send-dapp-message
   (u/side-effect!
     (fn [db [_ chat-id {:keys [content]}]]
@@ -227,7 +196,6 @@
                     :message-handler]
             params {:parameters {:message content}
                     :context    {:data data}}]
-        (dispatch [:clear-response-suggestions chat-id])
         (status/call-jail chat-id
                           path
                           params

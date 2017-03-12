@@ -16,11 +16,6 @@
   ([name middleware handler]
    (register-handler name [(path :animations) middleware] handler)))
 
-(register-handler :animate-cancel-command
-  (after #(dispatch [:text-edit-mode]))
-  (fn [{:keys [current-chat-id] :as db} _]
-    (assoc-in db [:animations :to-response-height current-chat-id] input-height)))
-
 (def response-height (+ input-height response-height-normal))
 
 (register-handler :animate-command-suggestions

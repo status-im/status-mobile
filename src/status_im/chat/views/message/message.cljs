@@ -1,4 +1,4 @@
-(ns status-im.chat.views.message
+(ns status-im.chat.views.message.message
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [clojure.string :as s]
             [re-frame.core :refer [subscribe dispatch]]
@@ -16,10 +16,10 @@
             [status-im.components.animation :as anim]
             [status-im.chat.constants :as chat-consts]
             [status-im.components.list-selection :refer [share browse]]
-            [status-im.chat.views.request-message :refer [message-content-command-request]]
-            [status-im.chat.styles.message :as st]
-            [status-im.chat.styles.command-pill :as pill-st]
-            [status-im.chat.views.datemark :refer [chat-datemark]]
+            [status-im.chat.views.message.request-message :refer [message-content-command-request]]
+            [status-im.chat.styles.message.message :as st]
+            [status-im.chat.styles.message.command-pill :as pill-st]
+            [status-im.chat.views.message.datemark :refer [chat-datemark]]
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
             [status-im.resources :as res]
@@ -120,7 +120,7 @@
              chat-id]
    current-chat-id [:get-current-chat-id]
    contact-chat [:get-in [:chats (if outgoing to from)]]
-   preview [:get-in [:message-data :preview message-id]]]
+   preview [:get-in [:message-data :preview message-id :markup]]]
   (let [{:keys [command params]} (parse-command-message-content commands content)
         {:keys     [name type]
          icon-path :icon} command]
@@ -376,13 +376,13 @@
 (defn chat-message [{:keys [outgoing message-id chat-id user-statuses from] :as message}]
   (let [my-identity  (subscribe [:get :current-public-key])
         status       (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
-        preview      (subscribe [:get-in [:message-data :preview message-id]])]
+        preview      (subscribe [:get-in [:message-data :preview message-id :markup]])]
     (r/create-class
       {:component-will-mount
        (fn []
          (when (and (get-in message [:content :command])
                     (not @preview))
-           (dispatch [:request-command-preview message])))
+           (dispatch [:request-command-data message :preview])))
 
        :component-did-mount
        (fn []

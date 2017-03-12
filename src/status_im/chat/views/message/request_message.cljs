@@ -1,4 +1,4 @@
-(ns status-im.chat.views.request-message
+(ns status-im.chat.views.message.request-message
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.components.react :refer [view
@@ -7,17 +7,19 @@
                                                 image
                                                 icon
                                                 touchable-highlight]]
-            [status-im.chat.styles.message :as st]
+            [status-im.chat.styles.message.message :as st]
             [status-im.accessibility-ids :as id]
             [status-im.models.commands :refer [parse-command-request]]
-            [status-im.components.animation :as anim]))
+            [status-im.components.animation :as anim]
+            [taoensso.timbre :as log]))
 
 (def request-message-icon-scale-delay 600)
 
 (defn set-chat-command [message-id command]
   (let [command-key (keyword (:name command))
-        params      (:set-params command)]
-    (dispatch [:set-response-chat-command message-id command-key params])))
+        metadata    (-> (:set-params command)
+                        (assoc :to-message-id message-id))]
+    (dispatch [:select-chat-input-command command metadata])))
 
 (def min-scale 1)
 (def max-scale 1.3)
@@ -72,7 +74,7 @@
         commands-atom       (subscribe [:get-responses])
         answered?           (subscribe [:is-request-answered? message-id])
         status-initialized? (subscribe [:get :status-module-initialized?])
-        preview             (subscribe [:get-in [:message-data :preview message-id]])]
+        markup              (subscribe [:get-in [:message-data :preview message-id :markup]])]
     (fn [{:keys [message-id content from incoming-group]}]
       (let [commands @commands-atom
             params   (:params content)
@@ -89,9 +91,9 @@
              [text {:style st/command-request-from-text
                     :font  :default}
               from])
-           (if (and @preview
-                    (not (string? @preview)))
-             [view @preview]
+           (if (and @markup
+                    (not (string? @markup)))
+             [view @markup]
              [text {:style     st/style-message-text
                     :on-layout #(reset! top-offset {:specified? true
                                                     :value      (-> (.-nativeEvent %)
@@ -99,7 +101,7 @@
                                                                     (.-height)  
                                                                     (> 25))})
                     :font      :default}
-              (or @preview content)])]]
+              (or @markup content)])]]
          (when (:request-text command)
            [view st/command-request-text-view
             [text {:style st/style-sub-text

@@ -43,13 +43,13 @@
   (u/side-effect!
     (fn [db _]
       (dispatch [:navigate-to :chat console-chat-id])
-      (dispatch [:set-chat-command :phone]))))
+      (js/setTimeout #(dispatch [:select-chat-input-command {:name "phone"}]) 500))))
 
 (register-handler :open-chat-with-the-send-transaction
   (u/side-effect!
     (fn [db [_ chat-id]]
       (dispatch [:navigate-to :chat chat-id])
-      (dispatch [:set-chat-command :send]))))
+      (js/setTimeout #(dispatch [:select-chat-input-command {:name "send"}]) 500))))
 
 (defn prepare-edit-profile
   [{:keys [current-account-id] :as db} _]

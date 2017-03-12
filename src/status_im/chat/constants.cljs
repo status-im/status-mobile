@@ -1,6 +1,9 @@
 (ns status-im.chat.constants)
 
 (def command-char "/")
+(def spacing-char " ")
+(def masking-char "•")
+(def arg-wrapping-char "\"")
 
 (def input-height 56)
 (def max-input-height 66)
@@ -14,8 +17,6 @@
 (def suggestions-header-height 22)
 (def minimum-command-suggestions-height
   (+ input-height suggestions-header-height))
-
-(def emoji-container-height 250)
 
 (def crazy-math-message-id "crazy-math-message")
 (def passphrase-message-id "passphraze-message")

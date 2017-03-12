@@ -32,9 +32,9 @@
                         :callback    (fn [index]
                                        (case index
                                          0 (do
-                                             (dispatch [:set-chat-command :browse])
-                                             (dispatch [:fill-chat-command-content link])
-                                             (js/setTimeout #(dispatch [:send-command!]) 500))
+                                             (dispatch [:select-chat-input-command {:name    "browse"
+                                                                                    :prefill [link]}])
+                                             (js/setTimeout #(dispatch [:send-current-message]) 500))
                                          1 (.openURL linking link)
                                          :default))
                         :cancel-text (label :t/browsing-cancel)})))

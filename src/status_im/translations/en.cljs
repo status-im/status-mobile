@@ -11,6 +11,7 @@
    :search-for                            "Search for..."
    :cancel                                "Cancel"
    :next                                  "Next"
+   :type-a-message                        "Type a message..."
 
    ;drawer
    :invite-friends                        "Invite friends"
