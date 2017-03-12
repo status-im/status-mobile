@@ -47,6 +47,11 @@
   (some-> (data-store/get-by-id message-id)
           (clojure.core/update :user-statuses user-statuses-to-map)))
 
+(defn get-message-content-by-id [message-id]
+  (when-let [{:keys [content-type content] :as message} (get-by-id message-id)]
+    (when (command-type? content-type)
+      (str-to-map content))))
+
 (defn get-messages
   [messages]
   (->> messages

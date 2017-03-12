@@ -70,7 +70,8 @@
    :default       {:font-family "Roboto-Regular"}
    :medium        {:font-family "Roboto-Medium"}
 
-   :toolbar-title {:font-family "Roboto-Regular"}})
+   :toolbar-title {:font-family "Roboto-Regular"}
+   :roboto-mono   {:font-family "RobotoMono-Medium"}})
 
 ;; Dialogs
 

@@ -16,9 +16,9 @@
 (def toolbar-container
   {})
 
-(defn messages-container [bottom]
+(def messages-container
   {:flex           1
-   :padding-bottom bottom
+   :padding-bottom 0
    :margin-bottom  0})
 
 (def toolbar-view
