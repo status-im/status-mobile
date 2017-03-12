@@ -1,24 +1,31 @@
 (ns status-im.commands.utils
   (:require [clojure.set :as set]
             [clojure.walk :as w]
-            [status-im.components.react :refer [text scroll-view view web-view
-                                                image touchable-highlight]]
+            [status-im.components.react :refer [text
+                                                scroll-view
+                                                view
+                                                web-view
+                                                image
+                                                touchable-highlight]]
+            [status-im.chat.views.input.web-view :as chat-web-view]
+            [status-im.chat.views.input.validation-messages :as chat-validation-messages]
             [re-frame.core :refer [dispatch trim-v debug]]
-            [status-im.utils.handlers :refer [register-handler]]))
-
-(def command-prefix "c ")
+            [status-im.utils.handlers :refer [register-handler]]
+            [taoensso.timbre :as log]))
 
 (defn json->clj [json]
   (when-not (= json "undefined")
     (js->clj (.parse js/JSON json) :keywordize-keys true)))
 
 (def elements
-  {:text        text
-   :view        view
-   :scroll-view scroll-view
-   :web-view    web-view
-   :image       image
-   :touchable   touchable-highlight})
+  {:text               text
+   :view               view
+   :scroll-view        scroll-view
+   :web-view           web-view
+   :image              image
+   :touchable          touchable-highlight
+   :bridged-web-view   chat-web-view/bridged-web-view
+   :validation-message chat-validation-messages/validation-message})
 
 (defn get-element [n]
   (elements (keyword (.toLowerCase n))))

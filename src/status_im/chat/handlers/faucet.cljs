@@ -41,17 +41,6 @@
               #(received-message (label :t/faucet-success))
               #(received-message (label :t/faucet-error)))))
 
-(defmethod open-faucet :prefill
-  [faucet-name current-address {:keys [prefill-js]}]
-  (let [prefill-js  (gstring/format prefill-js current-address)
-        web-view-js (gstring/format
-                     "document.addEventListener('DOMContentLoaded', function(){ %s };"
-                     prefill-js)]
-    (dispatch [:set-chat-command :browse])
-    (dispatch [:fill-chat-command-content faucet-name])
-    (dispatch [:set-web-view-extra-js web-view-js])
-    (js/setTimeout #(dispatch [:send-command!]) 500)))
-
 (register-handler
  :open-faucet
  (u/side-effect!

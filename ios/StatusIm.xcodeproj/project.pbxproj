@@ -56,6 +56,7 @@
 		A6AF670051B842249D520C7B /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7ED174A34D7D42358313368B /* Foundation.ttf */; };
 		AD5063BC2B2A4C52ACE0A0B4 /* libUdpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A96279092BEC4C4B93914F48 /* libUdpSockets.a */; };
 		AE97D4B08C9F4821B8E9C50B /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 359B076A658B4FBAB5128B03 /* Ionicons.ttf */; };
+		B23B48FF1E76917B006D4535 /* RobotoMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B23B48FE1E76917B006D4535 /* RobotoMono-Medium.ttf */; };
 		B24FC7FD1DE7195700D694FF /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FC1DE7195700D694FF /* Social.framework */; };
 		B24FC7FF1DE7195F00D694FF /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B24FC7FE1DE7195F00D694FF /* MessageUI.framework */; };
 		B2A5F45C1DEC36BB00174F4D /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2A5F4381DEC36B200174F4D /* libRCTAnimation.a */; };
@@ -453,6 +454,7 @@
 		9F1854E6D9654226B1FC8308 /* RCTCamera.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RCTCamera.xcodeproj"; sourceTree = "<group>"; };
 		A96279092BEC4C4B93914F48 /* libUdpSockets.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libUdpSockets.a; sourceTree = "<group>"; };
 		ACA66A8F16CD2FE21F38738B /* Pods-StatusIm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusIm.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm.debug.xcconfig"; sourceTree = "<group>"; };
+		B23B48FE1E76917B006D4535 /* RobotoMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RobotoMono-Medium.ttf"; sourceTree = "<group>"; };
 		B24FC7F51DE7190C00D694FF /* RNShare.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNShare.xcodeproj; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; };
 		B24FC7FC1DE7195700D694FF /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		B24FC7FE1DE7195F00D694FF /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -468,8 +470,8 @@
 		DF1CD4C3D1254774ACCAE4E8 /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
 		F090E261B9854867A728CE4F /* RealmReact.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RealmReact.xcodeproj; path = "../node_modules/realm/react-native/ios/RealmReact.xcodeproj"; sourceTree = "<group>"; };
 		F3548417D8DA4362B6796A54 /* RNInstabug.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNInstabug.xcodeproj; path = "../node_modules/instabug-reactnative/ios/RNInstabug.xcodeproj"; sourceTree = "<group>"; };
-		F93B6663A59F4B26BD4DA525 /* RNNetworkInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNNetworkInfo.xcodeproj; path = "../node_modules/react-native-network-info/ios/RNNetworkInfo.xcodeproj"; sourceTree = "<group>"; };
 		F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Semibold.otf"; sourceTree = "<group>"; };
+		F93B6663A59F4B26BD4DA525 /* RNNetworkInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNNetworkInfo.xcodeproj; path = "../node_modules/react-native-network-info/ios/RNNetworkInfo.xcodeproj"; sourceTree = "<group>"; };
 		FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -642,6 +644,7 @@
 				54E2B86FB12D4CC49DA05C69 /* MaterialIcons.ttf */,
 				B3B19223008342D096AA356E /* Octicons.ttf */,
 				2756305FAFF144C4A6B0A039 /* Zocial.ttf */,
+				B23B48FE1E76917B006D4535 /* RobotoMono-Medium.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1477,6 +1480,7 @@
 				F9238D6C1E5F055900C047B9 /* SF-UI-Text-Semibold.otf in Resources */,
 				2028DFFC1D4275B600227DCD /* SF-UI-Display-Thin.otf in Resources */,
 				2028DFFB1D4275B600227DCD /* SF-UI-Display-Semibold.otf in Resources */,
+				B23B48FF1E76917B006D4535 /* RobotoMono-Medium.ttf in Resources */,
 				D28AEFB4C39548EB80416889 /* Entypo.ttf in Resources */,
 				82E689BAF9FB43C8AC6FF1CA /* EvilIcons.ttf in Resources */,
 				C3EE9AEA6F77464588FBAA64 /* FontAwesome.ttf in Resources */,
