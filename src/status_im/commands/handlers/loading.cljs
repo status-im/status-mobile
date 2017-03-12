@@ -139,6 +139,7 @@
   [(path :chats)
    (after save-commands-js!)
    (after #(dispatch [:check-autorun]))
+   (after #(dispatch [:update-suggestions]))
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
             (dispatch [:invoke-chat-loaded-callbacks id])))]

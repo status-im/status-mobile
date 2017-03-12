@@ -58,6 +58,7 @@
 	<string>We need to access your photo storage to give you an ability to select photos</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>RobotoMono-Medium.ttf</string>
 		<string>SF-UI-Text-Semibold.otf</string>
 		<string>SF-UI-Text-Bold.otf</string>
 		<string>SF-UI-Text-Regular.otf</string>

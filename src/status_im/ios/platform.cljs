@@ -84,7 +84,8 @@
    :medium        {:font-family "SFUIText-Medium"}
    :bold          {:font-family "SFUIText-Bold"}
 
-   :toolbar-title {:font-family "SFUIText-Semibold"}})
+   :toolbar-title {:font-family "SFUIText-Semibold"}
+   :roboto-mono   {:font-family "RobotoMono-Medium"}})
 
 ;; Dialogs
 
