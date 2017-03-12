@@ -35,6 +35,8 @@
 (def separator-color "#0000001f")
 (def default-chat-color color-purple)
 
+;;rgb 237 241 243
+
 (def flex
   {:flex 1})
 

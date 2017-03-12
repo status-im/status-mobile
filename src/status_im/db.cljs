@@ -33,16 +33,12 @@
              :contacts-ids               #{}
              :selected-contacts          #{}
              :chats-updated-signal       0
-             :chat-ui-props              {:show-actions?     false
-                                          :show-bottom-info? false}
              :selected-participants      #{}
              :view-id                    nil
              :navigation-stack           '()
              :current-tag                nil
              :qr-codes                   {}
              :keyboard-height            0
-             :animations                 {;; todo clear this
-                                          }
              :loading-allowed            true
 
              :sync-state                 :done

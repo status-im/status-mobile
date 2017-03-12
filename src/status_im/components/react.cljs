@@ -3,7 +3,8 @@
             [status-im.components.styles :as st]
             [status-im.utils.utils :as u
              :refer [get-react-property get-class adapt-class]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.i18n :as i18n]))
 
 (def react-native (js/require "react-native"))
 (def native-modules (.-NativeModules react-native))
@@ -79,7 +80,7 @@
     [text-input-class (merge
                         {:underline-color-android :transparent
                          :placeholder-text-color  st/text2-color
-                         :placeholder             "Type"
+                         :placeholder             (i18n/label :t/type-a-message)
                          :value                   text}
                         (-> opts
                             (dissoc :font)
@@ -88,8 +89,9 @@
 (defn icon
   ([n] (icon n st/icon-default))
   ([n style]
-   [image {:source {:uri (keyword (str "icon_" (name n)))}
-           :style  style}]))
+   [image {:source     {:uri (keyword (str "icon_" (name n)))}
+           :resizeMode "contain"
+           :style      style}]))
 
 (defn list-view [props]
   [list-view-class (merge {:enableEmptySections true} props)])

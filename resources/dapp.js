@@ -1,8 +1,8 @@
 I18n.translations = {
-  en: {
-    browse_title: 'Browser',
-    browse_description: 'Launch the browser'
-  }
+    en: {
+        browse_title: 'Browser',
+        browse_description: 'Open web browser'
+    }
 };
 
 status.command({
@@ -11,22 +11,23 @@ status.command({
     description: I18n.t('browse_description'),
     color: "#ffa500",
     fullscreen: true,
-    suggestionsTrigger: 'on-send',
     params: [{
         name: "url",
-        suggestions: function(params, context) {
-            var url = "dapp-url";
-
-            if (params.url && params.url !== "undefined" && params.url != "") {
-                url = params.url;
-                if (!/^[a-zA-Z-_]+:/.test(url)) {
-                    url = 'http://' + url;
-                }
-            }
-            return {webViewUrl: url};
-        },
+        optional: true,
         type: status.types.TEXT
-    }]
+    }],
+    onSend: function (params, context) {
+        var url = params.url || params.metadata.url;
+        if (!/^[a-zA-Z-_]+:/.test(url)) {
+            url = 'http://' + url;
+        }
+
+        return {
+            title: params.metadata.name,
+            dynamicTitle: true,
+            markup: status.components.bridgedWebView(url)
+        };
+    }
 });
 
 status.autorun("browse");

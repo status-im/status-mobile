@@ -33,7 +33,7 @@ Command.prototype.create = function (com) {
     this.params = com.params || [];
     this.preview = com.preview;
     this["short-preview"] = com.shortPreview;
-    this["suggestions-trigger"] = com.suggestionsTrigger || "on-change";
+    this["on-send"] = com.onSend;
     this.fullscreen = com.fullscreen;
     this.request = com.request;
     this.addToCatalog();
@@ -124,33 +124,17 @@ function webView(url) {
     }];
 }
 
+function bridgedWebView(url) {
+    return ['bridged-web-view', {
+        url: url
+    }];
+}
+
 function validationMessage(titleText, descriptionText) {
-    var titleStyle = {
-        style: {
-            color: "white",
-            fontSize: 12
-        }
-    };
-    var title = status.components.text(titleStyle, titleText);
-
-    var descriptionStyle = {
-        style: {
-            color: "white",
-            fontSize: 12,
-            opacity: 0.9
-        }
-    };
-    var description = status.components.text(descriptionStyle, descriptionText);
-
-    return status.components.view(
-        {
-            backgroundColor: "red",
-            height: 61,
-            paddingLeft: 16,
-            paddingTop: 14,
-        },
-        [title, description]
-    );
+    return ['validation-message', {
+        title: titleText,
+        description: descriptionText
+    }];
 }
 
 var status = {
@@ -180,7 +164,8 @@ var status = {
         PASSWORD: 'password'
     },
     events: {
-        SET_VALUE: 'set-value'
+        SET_VALUE: 'set-value',
+        SET_COMMAND_ARGUMENT: 'set-command-argument'
     },
     components: {
         view: view,
@@ -189,7 +174,8 @@ var status = {
         touchable: touchable,
         scrollView: scrollView,
         webView: webView,
-        validationMessage: validationMessage
+        validationMessage: validationMessage,
+        bridgedWebView: bridgedWebView
     }
 };
 
