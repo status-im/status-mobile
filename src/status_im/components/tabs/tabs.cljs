@@ -54,5 +54,11 @@
 
 (defn tabs [{:keys [tab-list selected-view-id prev-view-id]}]
   [tabs-container
-   [view st/tabs-inner-container
-    (doall (map-indexed #(create-tab %1 %2 selected-view-id prev-view-id) tab-list))]])
+   (into
+     [view st/tabs-inner-container]
+     (let [tabs (into [] tab-list)]
+       [[create-tab 0 (nth tabs 0) selected-view-id prev-view-id]
+        [create-tab 1 (nth tabs 1) selected-view-id prev-view-id]
+        [create-tab 2 (nth tabs 2) selected-view-id prev-view-id]])
+     ;; todo: figure why it doesn't work on iOS release build
+     #_(map-indexed #(create-tab %1 %2 selected-view-id prev-view-id) tab-list))])

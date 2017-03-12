@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} {{chat-name}} को ETH"
    :chat-send-eth-from                    "{{amount}} {{chat-name}} से ETH"
-   :command-text-location                 "स्थान: {{address}}"
-   :command-text-browse                   "वेबपेज ब्राउजिंग: {{webpage}}"
-   :command-text-send                     "लेनदेन: {{amount}} ETH"
-   :command-text-help                     "मदद करें"
 
    ;new-group
    :group-chat-name                       "चैट नाम" 

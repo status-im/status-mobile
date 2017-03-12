@@ -120,5 +120,33 @@
         {
             "en": "https://portal.melonport.com/"
         }
+    },
+
+    "bchat":
+    {
+        "name":
+        {
+            "en": "bchat"
+        },
+        "photo-path": "contacts://bchat",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
+        }
+    },
+    
+    "Dentacoin":
+    {
+        "name":
+        {
+            "en": "Dentacoin"
+        },
+        "photo-path": "contacts://dentacoin",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://dentacoin.com/testnet/"
+        }
     }
 }

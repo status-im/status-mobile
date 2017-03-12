@@ -41,11 +41,24 @@
 
 (defn http-get
   ([url on-success on-error]
+    (http-get url nil on-success on-error))
+  ([url valid-response? on-success on-error]
    (-> (.fetch js/window url (clj->js {:method "GET"}))
        (.then (fn [response]
                 (log response)
-                (.text response)))
-       (.then on-success)
+                (let [ok?  (.-ok response)
+                      ok?' (if valid-response?
+                             (and ok? (valid-response? response))
+                             ok?)]
+                  [(.text response) ok?'])))
+       (.then (fn [[response ok?]]
+                (cond
+                  ok? (on-success response)
+
+                  (and on-error (not ok?))
+                  (on-error response)
+
+                  :else false)))
        (.catch (or on-error
                    (fn [error]
                      (show-popup "Error" (str error))))))))

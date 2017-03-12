@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH至 {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH来自 {{chat-name}}"
-   :command-text-location                 "地址: {{address}}"
-   :command-text-browse                   "浏览网页: {{webpage}}"
-   :command-text-send                     "交易: {{amount}} ETH"
-   :command-text-help                     "帮助"
 
    ;new-group
    :group-chat-name                       "聊天名称"

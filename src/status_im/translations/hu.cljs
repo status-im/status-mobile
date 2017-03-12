@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH ide {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH innen {{chat-name}}"
-   :command-text-location                 "Helyszín: {{address}}"
-   :command-text-browse                   "Böngészési weboldal: {{webpage}}"
-   :command-text-send                     "Tranzakció: {{amount}} ETH"
-   :command-text-help                     "Segítség"
 
    ;new-group
    :group-chat-name                       "Csevegés neve"

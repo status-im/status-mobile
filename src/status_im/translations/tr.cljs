@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH alıcı: {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH gönderen: {{chat-name}}"
-   :command-text-location                 "Konum: {{address}}"
-   :command-text-browse                   "Web sayfası: {{webpage}}"
-   :command-text-send                     "İşlem: {{amount}} ETH"
-   :command-text-help                     "Yardım"
 
    ;new-group
    :group-chat-name                       "Sohbet adı"

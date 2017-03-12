@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH pentru {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH de la {{chat-name}}"
-   :command-text-location                 "Locație: {{address}}"
-   :command-text-browse                   "Se răsfoiește pagina web: {{webpage}}"
-   :command-text-send                     "Tranzacție: {{amount}} ETH"
-   :command-text-help                     "Ajutor"
 
    ;new-group
    :group-chat-name                       "Nume chat"

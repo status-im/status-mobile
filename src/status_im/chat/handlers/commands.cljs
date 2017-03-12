@@ -151,7 +151,8 @@
   (-> db
       (commands/set-command-input (or type :commands) command-key)
       (assoc-in [:chats current-chat-id :command-input :content] cu/command-prefix)
-      (assoc :disable-input true)))
+      (assoc :disable-input true)
+      (assoc :just-set-command? true)))
 
 (register-handler :set-chat-command
   [(after invoke-suggestions-handler!)
@@ -267,20 +268,26 @@
 
 (register-handler :request-command-preview
   (u/side-effect!
-    (fn [_ [_ {{:keys [command params content-command type]} :content
-               :keys [message-id chat-id on-requested] :as message}]]
-      (let [path     [(if (= :response (keyword type)) :responses :commands)
-                      (if content-command content-command command)
-                      :preview]
-            params   {:parameters params
-                      :context    (merge {:platform platform/platform} i18n/delimeters)}
-            callback #(do (when-let [result (get-in % [:result :returned])]
-                            (dispatch [:set-in [:message-data :preview message-id]
-                                       (if (string? result)
-                                         result
-                                         (cu/generate-hiccup result))]))
-                          (when on-requested (on-requested %)))]
-        (status/call-jail chat-id path params callback)))))
+    (fn [{:keys [chats]} [_ {{:keys [command params content-command type]} :content
+               :keys [message-id chat-id on-requested] :as message} data-type]]
+      (if-not (get-in chats [chat-id :commands-loaded])
+        (do (dispatch [:add-commands-loading-callback
+                       chat-id
+                       #(dispatch [:request-command-preview message data-type])])
+            (dispatch [:load-commands! chat-id]))
+        (let [data-type (or data-type :preview)
+              path      [(if (= :response (keyword type)) :responses :commands)
+                         (if content-command content-command command)
+                         data-type]
+              params    {:parameters params
+                         :context    (merge {:platform platform/platform} i18n/delimeters)}
+              callback  #(do (when-let [result (get-in % [:result :returned])]
+                               (dispatch [:set-in [:message-data data-type message-id]
+                                          (if (string? result)
+                                            result
+                                            (cu/generate-hiccup result))]))
+                             (when on-requested (on-requested %)))]
+          (status/call-jail chat-id path params callback))))))
 
 (register-handler :set-command-parameter
   (fn [db [_ {:keys [value parameter]}]]

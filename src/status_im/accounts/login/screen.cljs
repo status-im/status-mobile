@@ -48,6 +48,7 @@
      :label-color       "#ffffff80"
      :line-color        :white
      :input-style       st/input-style
+     :auto-capitalize   :none
      :on-change-text    #(do
                           (dispatch [:set-in [:login :password] %])
                           (dispatch [:set-in [:login :error] ""]))}]])

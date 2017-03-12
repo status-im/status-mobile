@@ -42,10 +42,11 @@
       :else nil)))
 
 (defn suggestions-handler!
-  [{:keys [contacts] :as db} [{:keys [chat-id]} {:keys [result]}]]
+  [{:keys [contacts chats] :as db} [{:keys [chat-id]} {:keys [result]}]]
   (let [{:keys [markup webViewUrl]} (:returned result)
         {:keys [dapp? dapp-url]} (get contacts chat-id)
-        hiccup       (generate-hiccup markup)
+        text         (get-in chats [chat-id :input-text])
+        hiccup       (when-not (s/blank? text) (generate-hiccup markup))
         web-view-url (if (and (= webViewUrl "dapp-url") dapp? dapp-url)
                        (get-contact-translated chat-id :dapp-url dapp-url)
                        webViewUrl)]
@@ -59,13 +60,13 @@
   (log/debug "Suggestion event: " data)
   (let [{:keys [dapp?]} (get-in db [:contacts current-chat-id])
         command? (= :command (:type (cm/get-chat-command db)))]
-  (case (keyword n)
-    :set-value (if command?
-                 (dispatch [:fill-chat-command-content data])
-                 (when dapp?
-                   (dispatch [:set-chat-input-text data])))
-    ;; todo show error?
-    nil)))
+    (case (keyword n)
+      :set-value (if command?
+                   (dispatch [:fill-chat-command-content data])
+                   (when dapp?
+                     (dispatch [:set-chat-input-text data])))
+      ;; todo show error?
+      nil)))
 
 (defn print-error-message! [message]
   (fn [_ params]

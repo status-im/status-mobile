@@ -153,10 +153,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH a {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH de {{chat-name}}"
-   :command-text-location                 "Ubicación: {{address}}"
-   :command-text-browse                   "Navegando la página web: {{webpage}}"
-   :command-text-send                     "Transacción: {{amount}} ETH"
-   :command-text-help                     "Ayuda"
 
    ;new-group
    :group-chat-name                       "Nombre del chat"

@@ -5,6 +5,9 @@
   (.cloneWithRows ds (reduce (fn [ac el] (.push ac el) ac)
                              (clj->js []) rows)))
 
+(defmacro data-source [config]
+  (js/ReactNative.ListView.DataSource. (clj->js config)))
+
 (defn to-datasource [items]
   (clone-with-rows (data-source {:rowHasChanged not=}) items))
 

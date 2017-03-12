@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETHを{{chat-name}}に"
    :chat-send-eth-from                    "{{amount}} ETHを{{chat-name}}から"
-   :command-text-location                 "位置: {{address}}"
-   :command-text-browse                   "ウェブページ閲覧: {{webpage}}"
-   :command-text-send                     "トランザクション: {{amount}} ETH"
-   :command-text-help                     "ヘルプ"
 
    ;new-group
    :group-chat-name                       "チャット名"

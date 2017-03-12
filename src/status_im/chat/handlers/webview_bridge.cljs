@@ -7,6 +7,7 @@
             [taoensso.timbre :as log]
             [status-im.models.commands :as commands]
             [status-im.commands.utils :as cu]
+            [status-im.contacts.validations :as v]
             [status-im.components.status :as s]
             [status-im.components.nfc :as nfc]
             [status-im.constants :as c]
@@ -19,18 +20,25 @@
   (when-let [{:keys [address]} (contacts public-key)]
     (when address {:address address})))
 
+(defn wrap-hex [s]
+  (if (js/isNaN (.parseInt js/Number s))
+    s
+    (str "\"" s "\"")))
+
 (defn scan-qr-handler
   [{:keys [contacts]} [_ _ data]]
-  (let [data'  (read-string data)
+  (let [data'  (try (read-string (wrap-hex data))
+                    (catch :default e data))
         data'' (cond
                  (map? data') data'
-                 (.isAddress web3.prototype data') {:address data'}
+                 (v/is-address? data') {:address data'}
                  (string? data') (by-public-key data' contacts)
                  :else nil)]
     (when data''
       (dispatch [:send-to-webview-bridge
                  {:params data''
-                  :event  (name :webview-send-transaction)}]))))
+                  :event  (name :webview-send-transaction)}]))
+    (dispatch [:navigate-back])))
 
 (register-handler :webview-address-from-qr
   (u/side-effect! scan-qr-handler))

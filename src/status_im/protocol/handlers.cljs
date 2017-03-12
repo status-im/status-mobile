@@ -21,37 +21,39 @@
             [status-im.utils.scheduler :as s]))
 
 (register-handler :initialize-protocol
-  (fn [db [_ current-account-id]]
+  (fn [db [_ current-account-id ethereum-rpc-url]]
     (let [{:keys [public-key status updates-public-key
                   updates-private-key]}
           (get-in db [:accounts current-account-id])]
       (if public-key
-        (let [groups (chats/get-active-group-chats)
-              w3     (protocol/init-whisper!
-                       {:rpc-url                     c/ethereum-rpc-url
-                        :identity                    public-key
-                        :groups                      groups
-                        :callback                    #(dispatch [:incoming-message %1 %2])
-                        :ack-not-received-s-interval 125
-                        :default-ttl                 120
-                        :send-online-s-interval      180
-                        :ttl-config                  {:public-group-message 2400}
-                        :max-attempts-number         3
-                        :delivery-loop-ms-interval   500
-                        :profile-keypair             {:public  updates-public-key
-                                                      :private updates-private-key}
-                        :hashtags                    (u/get-hashtags status)
-                        :pending-messages            (pending-messages/get-all)
-                        :contacts                    (keep (fn [{:keys [whisper-identity
-                                                                        public-key
-                                                                        private-key]}]
-                                                             (when (and public-key private-key)
-                                                               {:identity whisper-identity
-                                                                :keypair  {:public  public-key
-                                                                           :private private-key}}))
-                                                           (contacts/get-all))
-                        :post-error-callback         #(dispatch [::post-error %])})]
-          (assoc db :web3 w3))
+        (let [rpc-url (or ethereum-rpc-url c/ethereum-rpc-url)
+              groups  (chats/get-active-group-chats)
+              w3      (protocol/init-whisper!
+                        {:rpc-url                     rpc-url
+                         :identity                    public-key
+                         :groups                      groups
+                         :callback                    #(dispatch [:incoming-message %1 %2])
+                         :ack-not-received-s-interval 125
+                         :default-ttl                 120
+                         :send-online-s-interval      180
+                         :ttl-config                  {:public-group-message 2400}
+                         :max-attempts-number         3
+                         :delivery-loop-ms-interval   500
+                         :profile-keypair             {:public  updates-public-key
+                                                       :private updates-private-key}
+                         :hashtags                    (u/get-hashtags status)
+                         :pending-messages            (pending-messages/get-all)
+                         :contacts                    (keep (fn [{:keys [whisper-identity
+                                                                         public-key
+                                                                         private-key]}]
+                                                              (when (and public-key private-key)
+                                                                {:identity whisper-identity
+                                                                 :keypair  {:public  public-key
+                                                                            :private private-key}}))
+                                                            (contacts/get-all))
+                         :post-error-callback         #(dispatch [::post-error %])})]
+          (assoc db :web3 w3
+                    :rpc-url rpc-url))
         db))))
 
 (register-handler :update-sync-state

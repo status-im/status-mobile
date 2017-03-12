@@ -8,7 +8,11 @@
 
 (defn- parse-payload [payload]
   (debug :parse-payload)
-  (r/read-string (u/to-utf8 payload)))
+  (try
+    {:payload (r/read-string (u/to-utf8 payload))}
+    (catch :default err
+      (debug :parse-payload-error err)
+      {:error err})))
 
 (defn- decrypt [key content]
   (try
@@ -36,12 +40,14 @@
       (let [{:keys [from payload to] :as message}
             (js->clj js-message :keywordize-keys true)
 
-            {:keys [type ack?] :as payload'}
+            {{:keys [type ack?] :as payload'} :payload
+             payload-error                    :error}
             (parse-payload payload)]
-        (when (or (not= (i/normalize-hex identity)
-                        (i/normalize-hex from))
-                  ;; allow user to receive his own discoveries
-                  (= type :discover))
+        (when (and (not payload-error)
+                   (or (not= (i/normalize-hex identity)
+                             (i/normalize-hex from))
+                       ;; allow user to receive his own discoveries
+                       (= type :discover)))
           (let [{:keys [content error]} (parse-content (:private keypair)
                                                        payload'
                                                        (not= "0x0" to))]

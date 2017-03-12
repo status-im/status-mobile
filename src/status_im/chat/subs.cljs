@@ -57,12 +57,9 @@
 
 (register-sub :get-commands-and-responses
   (fn [db [_ chat-id]]
-    (reaction (or (->> (get-in @db [:chats chat-id])
-                       ((juxt :commands :responses))
-                       (apply merge))
-                  (->> (get @db :all-commands)
-                       ((juxt :commands :responses))
-                       (apply merge))))))
+    (reaction (->> (get-in @db [:chats chat-id])
+                   ((juxt :commands :responses))
+                   (apply merge)))))
 
 (register-sub :get-chat-input-text
   (fn [db _]
@@ -265,3 +262,16 @@
   (fn [_ [_ id]]
     (let [contacts (subscribe [:get :contacts])]
       (reaction (:photo-path (@contacts id))))))
+
+(register-sub :get-last-message
+  (fn [db [_ chat-id]]
+    (reaction
+      (let [{:keys [last-message messages]} (get-in @db [:chats chat-id])]
+        (first
+          (sort-by :clock-value > (conj messages last-message)))))))
+
+(register-sub :get-last-message-short-preview
+  (fn [db [_ chat-id]]
+    (let [last-message (subscribe [:get-last-message chat-id])]
+      (reaction
+        (get-in @db [:message-data :short-preview (:message-id @last-message)])))))

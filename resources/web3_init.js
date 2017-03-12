@@ -1,3 +1,4 @@
+if(typeof StatusHttpProvider === "undefined"){
 var callbackId = 0;
 var callbacks = {};
 
@@ -45,7 +46,7 @@ StatusHttpProvider.prototype.send = function (payload) {
 
         return result;
     } else {
-        result = StatusBridge.sendRequestSync(JSON.stringify(payload));
+        result = StatusBridge.sendRequestSync(this.host, JSON.stringify(payload));
 
         try {
             result = JSON.parse(result);
@@ -60,7 +61,7 @@ StatusHttpProvider.prototype.send = function (payload) {
 StatusHttpProvider.prototype.prepareRequest = function () {
     var request = new XMLHttpRequest();
 
-    request.open('POST', "http://localhost:8545", false);
+    request.open('POST', this.host, false);
     request.setRequestHeader('Content-Type', 'application/json');
     return request;
 };
@@ -72,12 +73,13 @@ function sendAsync(payload, callback) {
     if (typeof StatusBridge == "undefined") {
         var data = {
             payload: JSON.stringify(payload),
-            callbackId: JSON.stringify(messageId)
+            callbackId: JSON.stringify(messageId),
+            host: this.host
         };
 
         webkit.messageHandlers.sendRequest.postMessage(JSON.stringify(data));
     } else {
-        StatusBridge.sendRequest(JSON.stringify(messageId), JSON.stringify(payload));
+        StatusBridge.sendRequest(this.host, JSON.stringify(messageId), JSON.stringify(payload));
     }
 };
 
@@ -103,5 +105,17 @@ StatusHttpProvider.prototype.isConnected = function () {
         return false;
     }
 };
+}
 
-web3 = new Web3(new StatusHttpProvider("http://localhost:8545"));
+var protocol = window.location.protocol
+var address = providerAddress || "http://localhost:8545";
+console.log(protocol);
+if (typeof web3 === "undefined") {
+    if (protocol == "https:") {
+        console.log("StatusHttpProvider");
+        web3 = new Web3(new StatusHttpProvider(address));
+    } else if (protocol == "http:") {
+        console.log("HttpProvider");
+        web3 = new Web3(new Web3.providers.HttpProvider(address));
+    }
+}

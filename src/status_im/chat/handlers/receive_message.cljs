@@ -11,7 +11,8 @@
              :as c]
             [cljs.reader :refer [read-string]]
             [status-im.data-store.chats :as chats]
-            [status-im.utils.scheduler :as s]))
+            [status-im.utils.scheduler :as s]
+            [taoensso.timbre :as log]))
 
 (defn store-message [{chat-id :chat-id :as message}]
   (messages/save chat-id (dissoc message :new?)))
@@ -51,6 +52,7 @@
         (when (get-in message [:content :command])
           (dispatch [:request-command-preview message]))
         (dispatch [::add-message chat-id' message'])
+        (dispatch [::set-last-message message'])
         (when (= (:content-type message') content-type-command-request)
           (dispatch [:add-request chat-id' message']))
         (dispatch [:add-unviewed-message chat-id' message-id])
@@ -89,6 +91,11 @@
   (fn [db [_ add-to-chat-id {:keys [chat-id new?] :as message}]]
     (cu/add-message-to-db db add-to-chat-id chat-id message new?)))
 
+(register-handler ::set-last-message
+  (fn [{:keys [chats] :as db} [_ {:keys [chat-id] :as message}]]
+    (dispatch [:request-command-preview message :short-preview])
+    (assoc-in db [:chats chat-id :last-message] message)))
+
 (defn commands-loaded? [db chat-id]
   (get-in db [:chats chat-id :commands-loaded]))
 
@@ -96,8 +103,8 @@
 
 (register-handler :received-message-when-commands-loaded
   (u/side-effect!
-    (fn [db [_ chat-id message]]
-      (if (commands-loaded? db chat-id)
+    (fn [{:keys [status-node-started?] :as db} [_ chat-id message]]
+      (if (and status-node-started? (commands-loaded? db chat-id))
         (dispatch [:received-message message])
         (s/execute-later
           #(dispatch [:received-message-when-commands-loaded chat-id message])
