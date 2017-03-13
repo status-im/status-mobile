@@ -51,9 +51,9 @@
              identity
              path
              params
-             #(dispatch [:suggestions-handler {:command command
-                                               :content content
-                                               :chat-id current-chat-id} %])))]))))
+             #(dispatch [:received-bot-response {:command command
+                                                 :content content
+                                                 :chat-id current-chat-id} %])))]))))
 
 (defn cancel-command!
   [{:keys [canceled-command]}]

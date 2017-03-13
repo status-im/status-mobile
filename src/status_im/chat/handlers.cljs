@@ -33,7 +33,7 @@
             status-im.chat.handlers.animation
             status-im.chat.handlers.requests
             status-im.chat.handlers.unviewed-messages
-            status-im.chat.handlers.send-message
+            [status-im.chat.handlers.send-message :as send-message]
             status-im.chat.handlers.receive-message
             status-im.chat.handlers.faucet
             [cljs.core.async :as a]
@@ -133,10 +133,10 @@
 (defn check-suggestions
   [db [_ chat-id text]]
   (let [suggestions (suggestions/get-suggestions db text)
-        {:keys [dapp?]} (get-in db [:contacts chat-id])]
-    (when (and dapp? (empty? suggestions))
+        {:keys [bot-url]} (get-in db [:contacts chat-id])]
+    (when (and bot-url (empty? suggestions))
       (if (seq text)
-        (dispatch [::check-dapp-suggestions chat-id text])
+        (dispatch [::check-bot-suggestions chat-id text])
         (dispatch [:clear-response-suggestions chat-id])))
     (log/debug "Suggestions: " suggestions)
     (assoc-in db [:command-suggestions chat-id] suggestions)))
@@ -148,23 +148,18 @@
       (dispatch [:set-chat-command (second (first suggestions))])
       (dispatch [::set-text chat-id text]))))
 
-(register-handler ::check-dapp-suggestions
+(register-handler ::check-bot-suggestions
   (u/side-effect!
     (fn [db [_ chat-id text]]
       (let [data   (get-in db [:local-storage chat-id])
-            path   [:functions
-                    :message-suggestions]
+            path   [:functions :text-change]
             params {:parameters {:message text}
                     :context    {:data data}}]
-        (status/call-jail chat-id
-                          path
-                          params
-                          (fn [{:keys [result] :as data}]
-                            (let [{:keys [returned]} result]
-                              (log/debug "Message suggestions: " returned)
-                              (if returned
-                                (dispatch [:suggestions-handler {:chat-id chat-id} data])
-                                (dispatch [:clear-response-suggestions chat-id])))))))))
+        (status/call-jail
+          chat-id
+          path
+          params
+          #(dispatch [:received-bot-response {:chat-id chat-id} %]))))))
 
 (register-handler :set-chat-input-text
   (u/side-effect!

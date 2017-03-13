@@ -156,14 +156,14 @@
                 :as   parameters}]]
       (let [{:keys [id command params]} command-message
             {:keys [type name bot]} command
-            path   [(if (= :command type) :commands :responses)
-                    name
-                    :handler]
-            to     (get-in db [:contacts chat-id :address])
-            params {:parameters params
-                    :context    {:from       address
-                                 :to         to
-                                 :message-id id}}
+            path     [(if (= :command type) :commands :responses)
+                      name
+                      :handler]
+            to       (get-in db [:contacts chat-id :address])
+            params   {:parameters params
+                      :context    {:from       address
+                                   :to         to
+                                   :message-id id}}
             identity (or bot chat-id)]
         (dispatch
           [:check-and-load-commands!
@@ -223,41 +223,49 @@
         (update-in [:has-suggestions?] dissoc chat-id)
         (assoc-in [:animations :to-response-height chat-id] input-height))))
 
-(register-handler ::send-dapp-message
+(register-handler ::send-bot-message
   (u/side-effect!
     (fn [db [_ chat-id {:keys [content]}]]
       (let [data   (get-in db [:local-storage chat-id])
-            path   [:functions
-                    :message-handler]
+            path   [:functions :message]
             params {:parameters {:message content}
                     :context    {:data data}}]
         (dispatch [:clear-response-suggestions chat-id])
-        (status/call-jail chat-id
-                          path
-                          params
-                          (fn [{:keys [result]}]
-                            (log/debug "Message handler result: " result)
-                            (dispatch [::received-dapp-message chat-id result])))))))
+        (status/call-jail
+          chat-id
+          path
+          params
+          (fn [{:keys [result] :as data}]
+            (log/debug "Message handler result: " result)
+            (dispatch [:received-bot-response {:chat-id chat-id} data])))))))
 
-(register-handler ::received-dapp-message
+(register-handler :received-bot-response
+  [(after #(dispatch [:animate-show-response]))]
   (u/side-effect!
-    (fn [_ [_ chat-id {:keys [returned]}]]
-      (let [{:keys [data messages err]} returned
-            content (or err data)]
-        (doseq [message messages]
+    (fn [_ [_ {:keys [chat-id]} {:keys [result] :as data}]]
+      (let [{:keys [text-message log-messages suggestions web-view-url]}
+            (:context result)]
+        (if suggestions
+          (dispatch [:suggestions-handler {:chat-id chat-id} suggestions])
+          (dispatch [:clear-response-suggestions chat-id]))
+        (dispatch [:set-in [:web-view-url chat-id] web-view-url])
+        (dispatch [:set-in [:has-suggestions? chat-id]
+                   (boolean (or suggestions web-view-url))])
+        (doseq [message log-messages]
           (let [{:keys [message type]} message]
-            (dispatch [:received-message
-                       {:message-id   (random/id)
-                        :content      (str type ": " message)
-                        :content-type text-content-type
-                        :outgoing     false
-                        :chat-id      chat-id
-                        :from         chat-id
-                        :to           "me"}])))
-        (when content
+            (when (or (not= type "debug") js/goog.DEBUG)
+              (dispatch [:received-message
+                         {:message-id   (random/id)
+                          :content      (str type ": " message)
+                          :content-type text-content-type
+                          :outgoing     false
+                          :chat-id      chat-id
+                          :from         chat-id
+                          :to           "me"}]))))
+        (when text-message
           (dispatch [:received-message
                      {:message-id   (random/id)
-                      :content      (str content)
+                      :content      (str text-message)
                       :content-type text-content-type
                       :outgoing     false
                       :chat-id      chat-id
@@ -270,9 +278,9 @@
           :as   db} [_ {{:keys [message-type]
                          :as   message} :message
                         chat-id         :chat-id}]]
-      (let [{:keys [dapp?]} (get-in db [:contacts chat-id])]
-        (if dapp?
-          (dispatch [::send-dapp-message chat-id message])
+      (let [{:keys [dapp? bot-url]} (get-in db [:contacts chat-id])]
+        (if bot-url
+          (dispatch [::send-bot-message chat-id message])
           (when message
             (let [message' (select-keys message [:from :message-id])
                   payload  (select-keys message [:timestamp :content :content-type

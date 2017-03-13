@@ -42,45 +42,6 @@ var jsDescriptionStyle = {
     color: "#838c93de"
 };
 
-var messages = [];
-
-
-console = (function(old){
-    return {
-        log: function(text){
-            old.log(text);
-            var message = {
-                type: 'log',
-                message: JSON.stringify(text)
-            };
-            messages.push(message);
-            context.messages.push(message);
-        },
-        info: function (text) {
-            old.info(text);
-            context.messages.push({
-                type: 'info',
-                message: JSON.stringify(text)
-            });
-        },
-        warn: function (text) {
-            old.warn(text);
-            context.messages.push({
-                type: 'warn',
-                message: JSON.stringify(text)
-            });
-        },
-        error: function (text) {
-            old.error(text);
-            context.messages.push({
-                type: 'error',
-                message: JSON.stringify(text)
-            });
-        }
-    };
-}(console));
-
-
 
 if (!String.prototype.startsWith) {
     String.prototype.startsWith = function(searchString, position){
@@ -257,7 +218,7 @@ function getPartialSuggestions(doc, fullCode, code) {
             suggestions.push(createObjectSuggestion(suggestedFunction, docInfo, null, parameters.length - 1));
         }
     }
-    console.log(suggestions);
+    //console.debug(suggestions);
     return suggestions;
 }
 
@@ -265,10 +226,10 @@ function getJsSuggestions(code, context) {
     var suggestions = [];
     var doc = DOC_MAP;
     // TODO: what's /c / doing there ???
-    console.log(code);
+    //console.debug(code);
     if (!code || code == "" || code == "c ") {
         code = "";
-        console.log("Last message: " + context.data);
+        //console.debug("Last message: " + context.data);
         if (context.data != null) {
             suggestions.push({
                 title: 'Last command used:',
@@ -306,8 +267,8 @@ function getJsSuggestions(code, context) {
             suggestions = getPartialSuggestions(doc, originalCode, levelCode);
         }
 
-        console.log("Final code: " + code);
-        console.log("Level code: " + levelCode);
+        //console.debug("Final code: " + code);
+        //console.debug("Level code: " + levelCode);
         suggestions = suggestions.concat(getPartialSuggestions(doc, originalCode, code));
     }
     return suggestions;
@@ -344,13 +305,13 @@ function createMarkupText(text) {
             )
         );
     }
-    console.log(parts);
+    //console.debug(parts);
     return parts;
 }
 
 function jsSuggestions(params, context) {
 
-    console.log(context);
+    //console.debug(context);
 
     var suggestions = getJsSuggestions(params.code, context);
     var sugestionsMarkup = [];
@@ -381,7 +342,7 @@ function jsSuggestions(params, context) {
         var view = status.components.scrollView(jsSuggestionsContainerStyle(sugestionsMarkup.length),
             sugestionsMarkup
         );
-        return {markup: view};
+        status.setSuggestions(view);
     }
 }
 
@@ -512,7 +473,7 @@ function phoneSuggestions(params, context) {
         suggestions
     );
 
-    return {markup: view};
+    status.setSuggestions(view);
 }
 
 var phoneConfig = {
@@ -576,7 +537,7 @@ function faucetSuggestions(params) {
         suggestions
     );
 
-    return {markup: view};
+    status.setSuggestions(view);
 }
 
 status.command({
@@ -643,7 +604,7 @@ function debugSuggestions(params) {
         suggestions
     );
 
-    return {markup: view};
+    status.setSuggestions(view);
 }
 
 status.command({
@@ -794,10 +755,15 @@ status.response({
     }
 });
 
-status.registerFunction("message-suggestions", function(params, context) {
+status.on("text-change", function(params, context) {
     return jsSuggestions({code: params.message}, context);
 });
 
-status.registerFunction("message-handler", function(params, context) {
-    return jsHandler({code: params.message}, context);
+status.on("message", function(params, context) {
+    var res = jsHandler({code: params.message}, context);
+    var message = res.data;
+    if(res.err){
+        message = "Error: " + JSON.stringify(res.err);
+    }
+    status.sendMessage(message);
 });

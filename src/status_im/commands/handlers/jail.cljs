@@ -42,19 +42,16 @@
       :else nil)))
 
 (defn suggestions-handler!
-  [{:keys [contacts chats] :as db} [{:keys [chat-id]} {:keys [result]}]]
-  (let [{:keys [markup]} (:returned result)
-        {:keys [web-view-url]} (:context result)
-        {:keys [dapp? dapp-url]} (get contacts chat-id)
-        text         (get-in chats [chat-id :input-text])
-        hiccup       (when-not (s/blank? text) (generate-hiccup markup))
-        web-view-url (if (and (= web-view-url "dapp-url") dapp? dapp-url)
-                       (get-contact-translated chat-id :dapp-url dapp-url)
-                       web-view-url)]
-    (-> db
+  [{:keys [contacts chats] :as db} [{:keys [chat-id]} suggestions]]
+  (let [
+        ;{:keys [web-view-url]} (:context result)
+        text   (get-in chats [chat-id :input-text])
+        hiccup (when-not (s/blank? text) (generate-hiccup suggestions))]
+    (assoc-in db [:suggestions chat-id] hiccup)
+    #_(-> db
         (assoc-in [:suggestions chat-id] hiccup)
-        (assoc-in [:web-view-url chat-id] web-view-url)
-        (assoc-in [:has-suggestions? chat-id] (or hiccup web-view-url)))))
+        #_(assoc-in [:web-view-url chat-id] web-view-url)
+        (assoc-in [:has-suggestions? chat-id] (boolean hiccup) #_(or hiccup web-view-url)))))
 
 (defn suggestions-events-handler!
   [{:keys [current-chat-id] :as db} [[n data]]]
@@ -82,9 +79,9 @@
   (u/side-effect! command-handler!))
 
 (reg-handler :suggestions-handler
-  [(after #(dispatch [:animate-show-response]))
-   (after (print-error-message! "Error on param suggestions"))]
+  [(after (print-error-message! "Error on param suggestions"))]
   suggestions-handler!)
+
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
 
 (reg-handler :set-local-storage
