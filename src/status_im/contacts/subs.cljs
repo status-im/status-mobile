@@ -40,6 +40,16 @@
                                                   (get-in @db [:contact-groups group-id :contacts]))))]
       (reaction (filter-group-contacts @group-contacts @contacts)))))
 
+(defn filter-not-group-contacts [group-contacts contacts]
+  (remove #(group-contacts (:whisper-identity %)) contacts))
+
+(register-sub :all-not-added-group-contacts
+  (fn [db [_ group-id]]
+    (let [contacts (subscribe [:all-added-contacts])
+          group-contacts (reaction (into #{} (map #(:identity %)
+                                                  (get-in @db [:contact-groups group-id :contacts]))))]
+      (reaction (filter-not-group-contacts @group-contacts @contacts)))))
+
 (register-sub :all-added-group-contacts-with-limit
   (fn [db [_ group-id limit]]
     (let [contacts (subscribe [:all-added-group-contacts group-id])]
@@ -77,16 +87,30 @@
         text (str/lower-case text)]
     (not= (str/index-of name text) nil)))
 
+(defn search-filter-reaction [contacts]
+  (let [text (subscribe [:get-in [:toolbar-search :text]])]
+    (reaction
+      (if @text
+        (filter #(search-filter @text %) @contacts)
+        @contacts))))
+
 (register-sub :all-added-group-contacts-filtered
   (fn [_ [_ group-id]]
     (let [contacts (if group-id
                      (subscribe [:all-added-group-contacts group-id])
-                     (subscribe [:all-added-contacts]))
-          text (subscribe [:get-in [:toolbar-search :text]])]
-      (reaction
-        (if @text
-          (filter #(search-filter @text %) @contacts)
-          @contacts)))))
+                     (subscribe [:all-added-contacts]))]
+      (search-filter-reaction contacts))))
+
+(register-sub :all-group-not-added-contacts-filtered
+  (fn [db _]
+    (let [contact-group-id (:contact-group-id @db)
+          contacts (subscribe [:all-not-added-group-contacts contact-group-id])]
+      (search-filter-reaction contacts))))
+
+(register-sub :contacts-filtered
+  (fn [db [_ subscription-id]]
+    (let [contacts (subscribe [subscription-id])]
+      (search-filter-reaction contacts))))
 
 (register-sub :contacts-with-letters
   (fn [db _]

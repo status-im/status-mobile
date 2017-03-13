@@ -55,7 +55,7 @@
    [action-button-item
     {:title       (label :t/new-group-chat)
      :buttonColor :#1abc9c
-     :onPress     #(dispatch [:navigate-to :new-group])}
+     :onPress     #(dispatch [:open-contact-toggle-list :chat-group])}
     [icon :private_group_big st/group-icon]]
    [action-button-item
     {:title       (label :t/new-public-group-chat)
