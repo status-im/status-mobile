@@ -25,8 +25,14 @@
             [status-im.transactions.screen :refer [confirm]]
             [status-im.chats-list.screen :refer [chats-list]]
             [status-im.new-group.screen-public :refer [new-public-group]]
-            [status-im.new-group.screen-private :refer [new-group contact-group]]
-            [status-im.new-group.views.contact-list :refer [contact-group-list]]
+            [status-im.new-group.screen-private :refer [new-group
+                                                        edit-group]]
+            [status-im.new-group.views.chat-group-settings :refer [chat-group-settings]]
+            [status-im.new-group.views.contact-list :refer [edit-group-contact-list
+                                                            edit-chat-group-contact-list]]
+            [status-im.new-group.views.contact-toggle-list :refer [contact-toggle-list
+                                                                   add-contacts-toggle-list
+                                                                   add-participants-toggle-list]]
             [status-im.new-group.views.reorder-groups :refer [reorder-groups]]
             [status-im.participants.views.add :refer [new-participants]]
             [status-im.participants.views.remove :refer [remove-participants]]
@@ -108,11 +114,16 @@
                                :remove-participants remove-participants
                                :chat-list main-tabs
                                :new-group new-group
+                               :edit-group edit-group
+                               :chat-group-settings chat-group-settings
+                               :add-contacts-toggle-list add-contacts-toggle-list
+                               :add-participants-toggle-list add-participants-toggle-list
+                               :edit-group-contact-list edit-group-contact-list
+                               :edit-chat-group-contact-list edit-chat-group-contact-list
                                :new-public-group new-public-group
-                               :contact-group contact-group
-                               :contact-group-list contact-group-list
                                :group-settings group-settings
                                :contact-list main-tabs
+                               :contact-toggle-list contact-toggle-list
                                :contact-list-search-results contacts-search-results
                                :group-contacts contact-list
                                :reorder-groups reorder-groups

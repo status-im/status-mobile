@@ -26,8 +26,7 @@
          {:flex 1}))
 
 (def contacts-list
-  (merge (get-in p/platform-specific [:component-styles :contacts :contacts-list-container])
-         {:background-color color-white}))
+  {:background-color color-white})
 
 (def empty-contact-groups
   (merge contact-groups
@@ -123,13 +122,8 @@
   (assoc option-inner-image
     :tint-color color-gray))
 
-(def spacing-top
-  {:background-color color-white
-   :height           8})
-
-(def spacing-bottom
-  {:background-color color-white
-   :height           8})
+(def contact-list-spacing
+  (get-in p/platform-specific [:component-styles :contacts :contact-list-spacing]))
 
 (def contact-inner-container
   (merge (get-in p/platform-specific [:component-styles :contacts :contact-inner-container])

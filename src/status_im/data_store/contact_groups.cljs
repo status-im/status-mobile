@@ -18,6 +18,15 @@
   [groups]
   (mapv save groups))
 
+(defn save-property
+  [group-id property-name value]
+  (data-store/save-property group-id property-name value))
+
 (defn delete
   [group-id]
   (data-store/delete group-id))
+
+(defn add-contacts
+  [group-id identities]
+  (data-store/add-contacts group-id identities))
+
