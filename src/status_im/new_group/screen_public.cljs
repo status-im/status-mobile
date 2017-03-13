@@ -15,7 +15,6 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
-            [status-im.new-group.views.contact :refer [new-group-contact]]
             [status-im.new-group.styles :as st]
             [status-im.new-group.validations :as v]
             [status-im.i18n :refer [label]]
@@ -56,7 +55,7 @@
    [text {:style st/topic-hash} "#"]])
 
 (defn new-public-group []
-  [view st/new-group-container
+  [view st/group-container
    [new-group-toolbar]
    [view st/chat-name-container
     [text {:style st/members-text

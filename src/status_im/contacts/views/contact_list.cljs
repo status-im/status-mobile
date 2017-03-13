@@ -23,7 +23,7 @@
 (defn new-group-chat-view []
   [view
    [touchable-highlight
-    {:on-press #(dispatch [:navigate-to :new-group])}
+    {:on-press #(dispatch [:open-contact-toggle-list :chat-group])}
     [view st/contact-container
      [view st/option-inner-container
       [view st/option-inner
@@ -53,7 +53,9 @@
                      :extend-options (when group
                                        [{:value #(dispatch [:hide-contact row])
                                          :text (label :t/delete-contact)}
-                                        {:value #(dispatch [:remove-contact-from-group row group])
+                                        {:value #(dispatch [:remove-contact-from-group
+                                                            (:whisper-identity row)
+                                                            (:group-id group)])
                                          :text (label :t/remove-from-group)}])
                      :on-click       (when (and (not edit?) click-handler)
                                        #(click-handler row action params))}])))
@@ -69,6 +71,22 @@
       [text {:style           st/name-text
              :number-of-lines 1}
        label]]]]])
+
+(defn modal-view [action click-handler]
+  [view
+   [contact-list-entry {:click-handler #(do
+                                          (dispatch [:send-to-webview-bridge
+                                                     {:event (name :webview-send-transaction)}])
+                                          (dispatch [:navigate-back]))
+                        :icon          :icon_enter_address
+                        :icon-style    st/enter-address-icon
+                        :label         (label :t/enter-address)}]
+   [contact-list-entry {:click-handler #(click-handler :qr-scan action)
+                        :icon          :icon_scan_q_r
+                        :icon-style    st/scan-qr-icon
+                        :label         (label (if (= :request action)
+                                                :t/show-qr
+                                                :t/scan-qr))}]])
 
 (defview contact-list-toolbar-edit [group]
   [toolbar {:nav-action     (act/back #(dispatch [:set-in [:contact-list-ui-props :edit?] false]))
@@ -96,8 +114,8 @@
 
 (defn render-separator [_ row-id _]
   (list-item ^{:key row-id}
-              [view st/contact-item-separator-wrapper
-               [view st/contact-item-separator]]))
+             [view st/contact-item-separator-wrapper
+              [view st/contact-item-separator]]))
 
 (defview contacts-list-view [group modal click-handler action edit?]
   [contacts [:all-added-group-contacts-filtered (:group-id group)]
@@ -112,9 +130,10 @@
                   :keyboardShouldPersistTaps true
                   :renderHeader              #(list-item
                                                 [view
-                                                 (when show-new-group-chat?
-                                                   [new-group-chat-view])])
-                  :renderFooter              #(list-item [view st/spacing-bottom])
+                                                 (if show-new-group-chat?
+                                                   [new-group-chat-view]
+                                                   [view st/contact-list-spacing])])
+                  :renderFooter              #(list-item [view st/contact-list-spacing])
                   :renderSeparator           render-separator
                   :style                     st/contacts-list}])))
 
@@ -123,7 +142,8 @@
    modal [:get :modal]
    edit? [:get-in [:contact-list-ui-props :edit?]]
    click-handler [:get :contacts-click-handler]
-   group [:get :contacts-group]]
+   group [:get :contacts-group]
+   type [:get :group-type]]
   [drawer-view
    [view {:flex 1}
     [view
@@ -133,18 +153,5 @@
        [contact-list-toolbar group])]
     ;; todo add stub
     (when modal
-      [view
-       [contact-list-entry {:click-handler #(do
-                                              (dispatch [:send-to-webview-bridge
-                                                         {:event (name :webview-send-transaction)}])
-                                              (dispatch [:navigate-back]))
-                            :icon          :icon_enter_address
-                            :icon-style    st/enter-address-icon
-                            :label         (label :t/enter-address)}]
-       [contact-list-entry {:click-handler #(click-handler :qr-scan action)
-                            :icon          :icon_scan_q_r
-                            :icon-style    st/scan-qr-icon
-                            :label         (label (if (= :request action)
-                                                    :t/show-qr
-                                                    :t/scan-qr))}]])
+      [modal-view action click-handler])
     [contacts-list-view group modal click-handler action edit?]]])

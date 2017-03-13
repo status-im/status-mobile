@@ -49,8 +49,8 @@
                                             :font-size 14}
                            :info-container {:margin-left 16}
                            :contact-inner-container {:height 56}
-                           :contacts-list-container {:padding-top    8
-                                                     :padding-bottom 8}
+                           :contact-list-spacing {:background-color styles/color-white
+                                                  :height           8}
                            :separator    {:height 0}
                            :icon-check   {:border-radius 2
                                           :width         17
@@ -76,13 +76,17 @@
                            :members-text {:font-size 14}
                            :members-text-count  {:font-size 14}
                            :add-text {:margin-left    16
-                                      :letter-spacing 0.5
-                                      :font-size      14}
-                           :delete-group-text {:letter-spacing 0.5
-                                               :font-size      14}
-                           :delete-group-prompt-text {:font-size 14}
+                                      :line-height    24
+                                      :font-size      16}
                            :contact-container {:height 56}
-                           :delete-group-container {:padding-left 72}}
+                           :settings-group-text {:letter-spacing 0.5
+                                                 :font-size      16}
+                           :delete-group-prompt-text {:font-size 12}
+                           :settings-group-item {:padding-left   16
+                                                 :height         56
+                                                 :flex-direction :row
+                                                 :align-items    :center}
+                           :settings-group-container {:margin-top    23}}
    :reorder-groups        {:order-item-container     {:height           56
                                                       :background-color styles/color-white}
                            :order-item-icon          {:padding-right 16}
@@ -144,6 +148,5 @@
    :discover                     {:uppercase-subtitles? false}
    :public-group-icon-container  {:margin-top 4}
    :private-group-icon-container {:margin-top 6}
-   :group-chat-focus-line-color  styles/color-light-blue
    :group-chat-focus-line-height 2
    :public-group-chat-hash-style {:top 10 :left 4}})

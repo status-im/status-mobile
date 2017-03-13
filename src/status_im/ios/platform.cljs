@@ -89,13 +89,22 @@
                                       :letter-spacing -0.2
                                       :font-size      17
                                       :line-height    20}
-                           :delete-group-text {:letter-spacing -0.2
-                                               :font-size      17
-                                               :line-height    20}
-                           :delete-group-prompt-text {:font-size      13
-                                                      :letter-spacing -0.1}
                            :contact-container {:height 63}
-                           :delete-group-container {:padding-left 68}}
+                           :settings-group-text {:color          styles/color-light-blue
+                                                 :letter-spacing -0.2
+                                                 :font-size      17
+                                                 :line-height    20}
+                           :settings-group-item {:padding-left   16
+                                                 :height         64
+                                                 :flex-direction :row
+                                                 :align-items    :center}
+                           :settings-group-container {:margin-top     25}
+                           :settings-icon-container {:background-color "#628fe333"
+                                                     :border-radius    50}
+                           :delete-group-prompt-text {:font-size      14
+                                                      :letter-spacing -0.2}
+                           :delete-icon-container {:background-color "#d84b4b33"
+                                                   :border-radius    50}}
    :reorder-groups        {:order-item-separator     {:margin-left      16
                                                       :opacity          0.5}
                            :order-item-container     {:height 63}
@@ -163,7 +172,6 @@
    :discover                     {:uppercase-subtitles? true}
    :public-group-icon-container  {:margin-top 2}
    :private-group-icon-container {:margin-top 2}
-   :group-chat-focus-line-color  styles/color-gray5
    :group-chat-focus-line-height 1
    :public-group-chat-hash-style {:top 6 :left 3}})
 
