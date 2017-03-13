@@ -37,10 +37,11 @@
                                  (select-keys [:name :color]))]
     (assoc db :new-chat-name name
               :new-chat-color color
+              :group-type :chat-group
               :group-settings {})))
 
 (register-handler :show-group-settings
-  (after (fn [_ _] (dispatch [:navigate-to :group-settings])))
+  (after (fn [_ _] (dispatch [:navigate-to :chat-group-settings])))
   prepare-chat-settings)
 
 (register-handler :set-chat-name
