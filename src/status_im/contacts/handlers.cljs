@@ -24,29 +24,20 @@
               :show (when show-search? :contact-list)
               :text "")))
 
-(defmethod nav/preload-data! :contact-group
-  [db [_ _ group]]
+(defmethod nav/preload-data! :edit-group
+  [db [_ _ group group-type]]
   (if group
-    (-> db
-        (assoc :contact-group group
-               :selected-contacts (into #{} (map :identity (:contacts group)))
-               :new-chat-name (:name group))
-        (update :toolbar-search assoc
-                :show :contact-list
-                :text ""))
+    (assoc db :contact-group-id (:group-id group)
+              :group-type group-type
+              :new-chat-name (:name group))
     db))
-
-(defmethod nav/preload-data! :new-group
-  [db _]
-  (-> db
-      (assoc :new-group #{})
-      (assoc :new-chat-name nil)))
 
 (defmethod nav/preload-data! :contact-list
   [db [_ _ click-handler]]
   (-> db
       (assoc-in [:toolbar-search :show] nil)
       (assoc-in [:contact-list-ui-props :edit?] false)
+      (assoc-in [:contacts-ui-props :edit?] false)
       (assoc :contacts-click-handler click-handler)))
 
 (defmethod nav/preload-data! :reorder-groups
@@ -342,7 +333,7 @@
 
 (register-handler :remove-contact-from-group
   (u/side-effect!
-    (fn [{:keys [contact-groups]} [_ {:keys [whisper-identity]} {:keys [group-id]}]]
+    (fn [{:keys [contact-groups]} [_ whisper-identity group-id]]
       (let [group' (update (contact-groups group-id) :contacts (remove-contact-from-group whisper-identity))]
         (dispatch [:update-group group'])))))
 
@@ -369,11 +360,12 @@
                           :cancel-text (label :t/cancel)}))))
 
 (register-handler
-  :open-contact-group-list
-  (after #(dispatch [:navigate-to :contact-group-list]))
-  (fn [db _]
+  :open-contact-toggle-list
+  (after #(dispatch [:navigate-to :contact-toggle-list]))
+  (fn [db [_ group-type]]
     (->
       (assoc db :contact-group nil
+                :group-type group-type
                 :selected-contacts #{}
                 :new-chat-name "")
       (assoc-in [:toolbar-search :show] nil)

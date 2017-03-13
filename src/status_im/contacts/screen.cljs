@@ -33,7 +33,7 @@
 (def toolbar-options
   [{:text (label :t/new-contact)    :value #(dispatch [:navigate-to :new-contact])}
    {:text (label :t/edit)           :value #(dispatch [:set-in [:contacts-ui-props :edit?] true])}
-   {:text (label :t/new-group)      :value #(dispatch [:open-contact-group-list])}
+   {:text (label :t/new-group)      :value #(dispatch [:open-contact-toggle-list :contact-group])}
    {:text (label :t/reorder-groups) :value #(dispatch [:navigate-to :reorder-groups])}])
 
 (defn toolbar-actions []
@@ -52,7 +52,8 @@
             :title          (label :t/edit-contacts)}])
 
 (defn options-btn [group]
-  (let [options [{:value #(dispatch [:navigate-to :contact-group group]) :text (label :t/edit-group)}]]
+  (let [options [{:value #(dispatch [:navigate-to :edit-group group :contact-group])
+                  :text (label :t/edit-group)}]]
     [view st/more-btn
      [context-menu
       [icon :options_gray]
@@ -89,6 +90,7 @@
      (when (and subtitle shadows?)
          [group-top-view])
      [view st/contacts-list
+      [view st/contact-list-spacing]
       (doall
         (map (fn [contact]
                ^{:key contact}
@@ -101,7 +103,9 @@
                                    [{:value #(dispatch [:hide-contact contact])
                                      :text (label :t/delete-contact)
                                      :style st/delete-contact-text}
-                                    {:value #(dispatch [:remove-contact-from-group contact group])
+                                    {:value #(dispatch [:remove-contact-from-group
+                                                        (:whisper-identity contact)
+                                                        (:group-id group)])
                                      :text (label :t/remove-from-group)}])}]
                 (when-not (= contact (last contacts))
                   [view st/contact-item-separator-wrapper
@@ -112,7 +116,10 @@
         [view st/contact-item-separator-wrapper
          [view st/contact-item-separator]]
         [view st/show-all
-         [touchable-highlight (when-not edit? {:on-press #(dispatch [:navigate-to :group-contacts group])})
+         [touchable-highlight {:on-press #(do
+                                            (when edit?
+                                              (dispatch [:set-in [:contact-list-ui-props :edit?] true]))
+                                            (dispatch [:navigate-to :group-contacts group]))}
           [view
            [text {:style st/show-all-text
                   :uppercase? (get-in platform-specific [:uppercase?])

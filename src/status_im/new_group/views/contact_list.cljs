@@ -1,6 +1,7 @@
 (ns status-im.new-group.views.contact-list
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch]]
+            [status-im.contacts.views.contact :refer [contact-view]]
             [status-im.components.react :refer [view
                                                 text
                                                 list-view
@@ -9,50 +10,92 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
             [status-im.utils.listview :refer [to-datasource]]
-            [status-im.new-group.views.contact :refer [new-group-contact]]
+            [status-im.new-group.views.group :refer [separator]]
             [status-im.new-group.styles :as st]
             [status-im.contacts.styles :as cst]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :refer [label]]
+            [status-im.components.toolbar-new.actions :as act]))
 
-(defn title-with-count [title count-value]
-  [view st/toolbar-title-with-count
-   [text {:style st/toolbar-title-with-count-text
-          :font  :toolbar-title}
-    title]
-   (when (pos? count-value)
-     [view st/toolbar-title-with-count-container
-      [text {:style st/toolbar-title-with-count-text-count
-             :font  :toolbar-title}
-       count-value]])])
-
-(defn contact-list-toolbar [contacts-count show-search? search-text]
+(defview contact-list-toolbar [title]
+  [show-search [:get-in [:toolbar-search :show]]
+   search-text [:get-in [:toolbar-search :text]]]
   (toolbar-with-search
-    {:show-search?       (= show-search? :contact-group-list)
+    {:show-search?       (= show-search :contact-list)
      :search-text        search-text
-     :search-key         :contact-group-list
-     :custom-title       (title-with-count (label :t/new-group) contacts-count)
+     :search-key         :contact-list
+     :title              title
      :search-placeholder (label :t/search-contacts)}))
 
 (defn render-separator [_ row-id _]
   (list-item ^{:key row-id}
-             [view cst/contact-item-separator-wrapper
-              [view cst/contact-item-separator]]))
+             [separator]))
 
-(defview contact-group-list []
-  [contacts [:all-added-group-contacts-filtered]
-   selected-contacts-count [:selected-contacts-count]
-   show-search [:get-in [:toolbar-search :show]]
-   search-text [:get-in [:toolbar-search :text]]]
-  [view st/new-group-container
+(defn render-spacing []
+  #(list-item [view cst/contact-list-spacing]))
+
+(defn render-row [group]
+  (fn [row _ _]
+    (list-item
+      ^{:key row}
+      [contact-view {:contact        row
+                     :extended?      true
+                     :extend-options (when group
+                                       [{:value #(dispatch [:remove-contact-from-group
+                                                            (:whisper-identity row)
+                                                            (:group-id group)])
+                                         :text (label :t/remove-from-group)}])
+                     :on-click       nil}])))
+
+(defview contacts-list-view [group]
+  [contacts [:all-added-group-contacts-filtered (:group-id group)]]
+  [view {:flex 1}
+   [list-view {:dataSource                (to-datasource contacts)
+               :enableEmptySections       true
+               :renderRow                 (render-row group)
+               :bounces                   false
+               :keyboardShouldPersistTaps true
+               :renderSeparator           render-separator
+               :renderFooter              (render-spacing)
+               :renderHeader              (render-spacing)}]])
+
+(defview edit-group-contact-list []
+  [group [:get-contact-group]
+   type [:get :group-type]]
+  [view st/group-container
    [status-bar]
-   [contact-list-toolbar selected-contacts-count show-search search-text]
-   [view {:flex 1}
-    [list-view
-     {:dataSource                (to-datasource contacts)
-      :renderRow                 (fn [row _ _]
-                                  (list-item ^{:key row} [new-group-contact row]))
-      :renderSeparator           render-separator
-      :style                     cst/contacts-list
-      :keyboardShouldPersistTaps true}]]
-   (when (pos? selected-contacts-count)
-     [confirm-button (label :t/next) #(dispatch [:navigation-replace :contact-group])])])
+   [contact-list-toolbar (:name group)]
+   [contacts-list-view group]])
+
+(defn render-chat-row [admin?]
+  (fn [row _ _]
+    (list-item
+      ^{:key row}
+      [contact-view {:contact        row
+                     :extended?      admin?
+                     :extend-options [{:value #(do
+                                                 (dispatch [:set :selected-participants #{(:whisper-identity row)}])
+                                                 (dispatch [:remove-participants]))
+                                       :text (label :t/remove)}]
+                     :on-click       #()}])))
+
+(defview chat-contacts-list-view []
+  [contacts [:contacts-filtered :current-chat-contacts]
+   current-pk [:get :current-public-key]
+   group-admin [:chat :group-admin]]
+  (let [admin? (= current-pk group-admin)]
+    [view {:flex 1}
+     [list-view {:dataSource                (to-datasource contacts)
+                 :enableEmptySections       true
+                 :renderRow                 (render-chat-row admin?)
+                 :bounces                   false
+                 :keyboardShouldPersistTaps true
+                 :renderSeparator           render-separator
+                 :renderFooter              (render-spacing)
+                 :renderHeader              (render-spacing)}]]))
+
+(defview edit-chat-group-contact-list []
+  [chat-name [:chat :name]]
+  [view st/group-container
+   [status-bar]
+   [contact-list-toolbar chat-name]
+   [chat-contacts-list-view]])

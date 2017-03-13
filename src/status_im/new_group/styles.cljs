@@ -22,7 +22,7 @@
    :height  18
    :opacity (if enabled? 1 0.3)})
 
-(def new-group-container
+(def group-container
   {:flex             1
    :flex-direction   :column
    :background-color color-white})
@@ -40,8 +40,12 @@
   {:margin-top  21
    :margin-left 16})
 
+(def add-button-container
+  {:margin-left 16})
+
 (def group-chat-name-input
   {:font-size      17
+   :padding-bottom 0
    :letter-spacing -0.2
    :color          text1-color})
 
@@ -56,9 +60,6 @@
           :height   16
           :position :absolute}
          (get-in platform-specific [:public-group-chat-hash-style])))
-
-(def group-chat-focus-line-color
-  (get-in platform-specific [:group-chat-focus-line-color]))
 
 (def group-chat-focus-line-height
   (get-in platform-specific [:group-chat-focus-line-height]))
@@ -93,27 +94,36 @@
    :height         64
    :margin-top     12})
 
-(def add-icon-container
-  {:width           40
-   :align-items     :center
-   :justify-content :center})
+(def settings-icon-container
+  (merge (ps-new-group :settings-icon-container)
+         {:width            40
+          :height           40
+          :align-items      :center
+          :justify-content  :center}))
 
 (def add-icon
   {:align-items :center
    :width       24
    :height      24})
 
-(def add-text
-  (merge (ps-new-group :add-text)
+(def add-group-text
+  (merge (ps-new-group :settings-group-text)
          {:color color-light-blue}))
 
+(def settings-group-text
+  (merge (ps-new-group :settings-group-text)))
+
+(def settings-group-text-container
+  {:padding-left 16})
+
 (def delete-group-text
-  (merge (ps-new-group :delete-group-text)
+  (merge (ps-new-group :settings-group-text)
          {:color color-light-red}))
 
 (def delete-group-prompt-text
   (merge (ps-new-group :delete-group-prompt-text)
-         {:color          color-gray4}))
+         {:color          color-gray4
+          :padding-top    5}))
 
 (def contact-container
   (merge (ps-new-group :contact-container)
@@ -139,10 +149,18 @@
   {:width  12
    :height 12})
 
-(def delete-group-container
-  (merge (ps-new-group :delete-group-container)
-         {:height       64
-          :padding-top  12}))
+(def settings-group-container
+  (ps-new-group :settings-group-container))
+
+(def settings-group-item
+  (ps-new-group :settings-group-item))
+
+(def delete-icon-container
+  (merge (ps-new-group :delete-icon-container)
+         {:width            40
+          :height           40
+          :align-items      :center
+          :justify-content  :center}))
 
 (def order-item-container
   {:background-color color-white})
@@ -178,13 +196,18 @@
 
 (def toolbar-title-with-count-text-count
   (merge toolbar-title-with-count-text
-         {:color "#628fe3"}))
+         {:color color-light-blue}))
 
 (def toolbar-title-with-count
   {:flex-direction :row})
 
 (def toolbar-title-with-count-container
   {:padding-left 6})
+
+(def separator
+  {:background-color color-gray5
+   :height           1
+   :opacity          0.5})
 
 
 
