@@ -118,7 +118,7 @@
   [event]
   (let [{:strs [loading url]} (js->clj event)]
     (when-not (= "about:blank" url)
-      (if loading
+      (when-not loading
         (dispatch [:set-web-view-url url])
         (dispatch [:set-chat-command-content (str cu/command-prefix url)])))))
 
