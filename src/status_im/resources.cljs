@@ -30,4 +30,5 @@
    :bchat (js/require "./images/contacts/bchat.png")
    :dentacoin (js/require "./images/contacts/Dentacoin.png")
    :augur (js/require "./images/contacts/augur.png")
-   :ethlance (js/require "./images/contacts/ethlance.png")})
+   :ethlance (js/require "./images/contacts/ethlance.png")
+   :commiteth (js/require "./images/contacts/commiteth.png")})

@@ -174,7 +174,21 @@
         "dapp?": true,
         "dapp-url":
         {
-            "en": "https://madvas.github.io/ethlance/resources/public/"
+          "en": "https://madvas.github.io/ethlance/resources/public/"
+        }
+    },
+    
+    "Commiteth":
+    {
+        "name":
+        {
+            "en": "Commiteth"
+        },
+        "photo-path": "contacts://commiteth",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://commiteth.com"
         }
     }
 }
