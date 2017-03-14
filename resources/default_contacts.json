@@ -148,5 +148,19 @@
         {
             "en": "http://dentacoin.com/testnet/"
         }
+    },
+    
+    "Commiteth":
+    {
+        "name":
+        {
+            "en": "Commiteth"
+        },
+        "photo-path": "contacts://commiteth",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://commiteth.com"
+        }
     }
 }
