@@ -1,4 +1,5 @@
 (ns status-im.components.toolbar-new.styles
+  (:require-macros [status-im.utils.styles :refer [defnstyles]])
   (:require [status-im.components.styles :refer [text1-color
                                                  color-white
                                                  color-light-gray
@@ -24,13 +25,12 @@
   (merge {:flex-direction :row}
          (get-in p/platform-specific [:component-styles :toolbar-new])))
 
-(defn toolbar-nav-actions-container [actions]
-  (let [center? (get-in p/platform-specific [:component-styles :toolbar-title-center?])]
-    (merge {:flex-direction :row}
-           (when center?
-             {:width          (when (and actions (pos? (count actions)))
-                                (-> (+ toolbar-icon-width toolbar-icon-spacing)
-                                    (* (count actions))))}))))
+(defnstyles toolbar-nav-actions-container
+  [actions]
+  {:flex-direction :row
+   :ios            {:width (when (and actions (pos? (count actions)))
+                             (-> (+ toolbar-icon-width toolbar-icon-spacing)
+                                 (* (count actions))))}})
 
 (def toolbar-title-container
   (merge (get-in p/platform-specific [:component-styles :toolbar-title-container])
