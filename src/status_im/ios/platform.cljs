@@ -22,7 +22,6 @@
                            :padding-left        16
                            :padding-right       16}
    :toolbar-title-container {:align-items    :center}
-   :toolbar-title-center? true
    :toolbar-with-search-content {:align-items  :center}
    :sized-text            {:margin-top        -5
                            :additional-height 5}
@@ -148,7 +147,6 @@
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
-   :main-tab-list         {:margin-bottom 72}
    :toolbar-search-input  {:padding-left 10}
    :toolbar-nav-action    {:width           46
                            :height          56
