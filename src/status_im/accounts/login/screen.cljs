@@ -34,7 +34,6 @@
      :label-color    "#ffffff80"
      :line-color     :white
      :input-style    st/input-style
-     :wrapper-style  (merge button-input st/address-input-wrapper)
      :on-change-text #(dispatch [:set-in [:login :address] %])}]])
 
 (defview password-input [error]
