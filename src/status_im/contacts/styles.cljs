@@ -1,4 +1,5 @@
 (ns status-im.contacts.styles
+  (:require-macros [status-im.utils.styles :refer [defstyles]])
   (:require [status-im.components.styles :refer [text1-color
                                                  text2-color
                                                  text3-color
@@ -21,9 +22,10 @@
   {:flex             1
    :background-color toolbar-background2})
 
-(def contacts-list-container
-  (merge (get-in p/platform-specific [:component-styles :main-tab-list])
-         {:flex 1}))
+(defstyles contacts-list-container
+  {:flex    1
+   :android {:margin-bottom 20}
+   :ios     {:margin-bottom 72}})
 
 (def contacts-list
   {:background-color color-white})
