@@ -68,6 +68,11 @@
 
 (def search-text-input (r/atom nil))
 
+(defn- toolbar-search-submit [on-search-submit]
+  (let [text @(subscribe [:get-in [:toolbar-search :text]])]
+    (on-search-submit text)
+    (dispatch [:set-in [:toolbar-search :text] nil])))
+
 (defn- toolbar-with-search-content [{:keys [show-search?
                                             search-placeholder
                                             title
@@ -80,7 +85,9 @@
        :ref               #(reset! search-text-input %)
        :auto-focus        true
        :placeholder       search-placeholder
-       :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])}]
+       :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])
+       :on-submit-editing (when on-search-submit
+                            #(toolbar-search-submit on-search-submit))}]
      (or custom-title
          [view
           [text {:style st/toolbar-title-text

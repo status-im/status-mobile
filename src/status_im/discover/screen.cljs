@@ -8,8 +8,8 @@
                                         text
                                         text-input
                                         icon]]
-    [status-im.components.toolbar.view :refer [toolbar-with-search]]
-    [status-im.components.toolbar.actions :as act]
+    [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
+    [status-im.components.toolbar-new.actions :as act]
     [status-im.components.drawer.view :refer [open-drawer]]
     [status-im.components.carousel.carousel :refer [carousel]]
     [status-im.discover.views.popular-list :refer [discover-popular-list]]
@@ -23,9 +23,10 @@
   (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
     (or hashtags [])))
 
-(defn toolbar-view [show-search?]
+(defn toolbar-view [show-search? search-text]
   [toolbar-with-search
    {:show-search?       show-search?
+    :search-text        search-text
     :search-key         :discover
     :title              (label :t/discover)
     :search-placeholder (label :t/search-tags)
@@ -74,12 +75,13 @@
 
 (defview discover [current-view?]
   [show-search [:get-in [:toolbar-search :show]]
+   search-text [:get-in [:toolbar-search :text]]
    contacts [:get :contacts]
    current-account [:get-current-account]
    discoveries [:get-recent-discoveries]]
   [view st/discover-container
    [toolbar-view (and current-view?
-                      (= show-search :discover))]
+                      (= show-search :discover)) search-text]
    (if discoveries
      [scroll-view {:style (get-in platform-specific [:component-styles :main-tab-list])}
       [discover-popular {:contacts        contacts
