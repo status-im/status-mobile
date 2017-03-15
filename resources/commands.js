@@ -92,7 +92,7 @@ I18n.translations = {
 
         request_title: '請求 ETH',
         request_description: '請求一筆付款',
-        request_requesting: '正在請求',
+        request_requesting: '正在請求 ',
 
         validation_title: '金額',
         validation_amount_specified: 'ي未指定金額',
@@ -112,7 +112,7 @@ I18n.translations = {
 
         request_title: '请求ETH',
         request_description: '要求付款',
-        request_requesting: '正在请求',
+        request_requesting: '正在请求 ',
 
         validation_title: '金額',
         validation_amount_specified: '必须指定金额',
@@ -132,7 +132,7 @@ I18n.translations = {
 
         request_title: '徵求ETH',
         request_description: '徵求付款',
-        request_requesting: '徵求中',
+        request_requesting: '徵求中 ',
 
         validation_title: '金額',
         validation_amount_specified: '必須指定金額',
@@ -192,7 +192,7 @@ I18n.translations = {
 
         request_title: 'Demander l\'ETH',
         request_description: 'Demander un paiement',
-        request_requesting: 'Demande en cours...',
+        request_requesting: 'Demande en cours: ',
 
         validation_title: 'Montant',
         validation_amount_specified: 'Le montant doit être spécifié',
@@ -212,7 +212,7 @@ I18n.translations = {
 
         request_title: 'ETH anfragen',
         request_description: 'Zahlung anfragen',
-        request_requesting: 'Frage an',
+        request_requesting: 'Anfrage: ',
 
         validation_title: 'Betrag',
         validation_amount_specified: 'Betrag muss angegeben werden',
@@ -232,7 +232,7 @@ I18n.translations = {
 
         request_title: 'ETH का अनुरोध करें',
         request_description: 'भुगतान का अनुरोध करें',
-        request_requesting: 'अनुरोध किया जा रहा है',
+        request_requesting: 'अनुरोध किया जा रहा है ',
 
         validation_title: 'राशि',
         validation_amount_specified: 'राशि निर्दिष्ट की जानी चाहिए',
@@ -272,7 +272,7 @@ I18n.translations = {
 
         request_title: 'Richiedi ETH',
         request_description: 'Richiedi un pagamento',
-        request_requesting: 'Richiesta in corso ',
+        request_requesting: 'Richiesta in corso: ',
 
         validation_title: 'Ammontare',
         validation_amount_specified: 'L\'ammontare deve essere specificato',
@@ -292,7 +292,7 @@ I18n.translations = {
 
         request_title: 'ETHをリクエスト',
         request_description: '支払いをリクエスト',
-        request_requesting: 'リクエスト中',
+        request_requesting: 'リクエスト中 ',
 
         validation_title: '金額',
         validation_amount_specified: '金額を特定する必要があります',
@@ -332,7 +332,7 @@ I18n.translations = {
 
         request_title: 'Poproś o ETH',
         request_description: 'Poproś o płatność',
-        request_requesting: 'Przesyłanie prośby',
+        request_requesting: 'Przesyłanie prośby ',
 
         validation_title: 'Kwota',
         validation_amount_specified: 'Należy określić kwotę',
@@ -352,7 +352,7 @@ I18n.translations = {
 
         request_title: 'Solicitar ETH',
         request_description: 'Solicitar um pagamento',
-        request_requesting: 'Solicitando',
+        request_requesting: 'Solicitando ',
 
         validation_title: 'Quantia',
         validation_amount_specified: 'É necessário especificar a quantia',
@@ -372,7 +372,7 @@ I18n.translations = {
 
         request_title: 'Solicitar ETH',
         request_description: 'Solicitar um pagamento',
-        request_requesting: 'A solicitar',
+        request_requesting: 'A solicitar ',
 
         validation_title: 'Montante',
         validation_amount_specified: 'O montante deve ser especificado',
@@ -392,7 +392,7 @@ I18n.translations = {
 
         request_title: 'Solicită ETH',
         request_description: 'Solicită o plată',
-        request_requesting: 'Se solicită',
+        request_requesting: 'Se solicită ',
 
         validation_title: 'Sumă',
         validation_amount_specified: 'Trebuie menționată o sumă',
@@ -432,7 +432,7 @@ I18n.translations = {
 
         request_title: 'Solicitar ETH',
         request_description: 'Solicitar un pago',
-        request_requesting: 'Solicitando',
+        request_requesting: 'Solicitando ',
 
         validation_title: 'Cantidad',
         validation_amount_specified: 'Hay que especificar la cantidad',
@@ -521,14 +521,14 @@ I18n.translations = {
     },
     'de-ch': {
         location_title: 'Standort',
-        location_description: 'Teile dein Standort',
+        location_description: 'Teile deinen Standort',
         location_address: 'Adresse',
 
         browse_title: 'Browser',
         browse_description: 'Starte den Browser',
 
         send_title: 'Sende ETH',
-        send_description: 'Senden eine Zahlung',
+        send_description: 'Sende eine Zahlung',
 
         request_title: 'Fordere ETH an',
         request_description: 'Eine Zahlung anfordern',
@@ -552,7 +552,7 @@ I18n.translations = {
 
         request_title: 'Richiedi ETH',
         request_description: 'Richiedi un pagamento',
-        request_requesting: 'Richiesta in corso... ',
+        request_requesting: 'Richiesta in corso: ',
 
         validation_title: 'Importo',
         validation_amount_specified: 'Specificare l\'importo',
