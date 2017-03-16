@@ -45,6 +45,7 @@
    :status-failed                         "Fehlgeschlagen"
 
    ;datetime
+   :datetime-ago-format                   "{{ago}} {{number}} {{time-intervals}}"
    :datetime-second                       {:one   "Sekunde"
                                            :other "Sekunden"}
    :datetime-minute                       {:one   "Minute"
@@ -53,7 +54,7 @@
                                            :other "Stunden"}
    :datetime-day                          {:one   "Tag"
                                            :other "Tage"}
-   :datetime-multiple                     "s"     
+   :datetime-multiple                     "s"
    :datetime-ago                          "vor"
    :datetime-yesterday                    "Gestern"
    :datetime-today                        "Heute"
@@ -217,6 +218,6 @@
    :one-more-item                         "Noch ein Objekt"
    :fee                                   "Gebühr"
    :value                                 "Wert"
-                                          
-   ;:webview                              
+
+   ;:webview
    :web-view-error                        "Ups, Fehler"})

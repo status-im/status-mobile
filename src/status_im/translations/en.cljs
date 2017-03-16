@@ -51,6 +51,7 @@
    :status-failed                         "Failed"
 
    ;datetime
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "second"
                                            :other "seconds"}
    :datetime-minute                       {:one   "minute"

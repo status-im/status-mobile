@@ -45,6 +45,7 @@
    :status-failed                         "Fallido"
 
    ;datetime
+   :datetime-ago-format                   "{{ago}} {{number}} {{time-intervals}}"
    :datetime-second                       {:one   "segundo"
                                            :other "segundos"}
    :datetime-minute                       {:one   "minuto"

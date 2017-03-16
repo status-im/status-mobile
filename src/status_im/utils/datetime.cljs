@@ -40,7 +40,9 @@
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]
-    (gstring/format "%s %s %s" diff name (label :t/datetime-ago))))
+    (label :t/datetime-ago-format {:ago (label :t/datetime-ago)
+                                   :number diff
+                                   :time-intervals name})))
 
 (defn time-ago [time]
   (let [diff (t/in-seconds (t/interval time (t/now)))]
