@@ -74,7 +74,6 @@
                            :contact-inner-container {:height 56}
                            :contact-list-spacing {:background-color styles/color-white
                                                   :height           8}
-                           :separator    {:height 0}
                            :icon-check   {:border-radius 2
                                           :width         17
                                           :height        17}
@@ -95,6 +94,22 @@
                            :name-text {:fontSize       16
                                        :line-height    24
                                        :color          styles/text1-color}}
+   :profile               {:profile-bage {:padding-top 24}
+                           :profile-name-text {:color       styles/color-black
+                                               :font-size   16
+                                               :line-height 24}
+                           :profile-status-text {:font-size   15
+                                                 :line-height 20}
+                           :profile-setting-item {:padding-left  72
+                                                  :padding-right 13
+                                                  :height        72}
+                           :profile-setting-title {:font-size 12}
+                           :profile-setting-text {:font-size 16
+                                                  :color     styles/color-black}
+                           :profile-setting-spacing {:height 7}
+                           :form-separator {:margin-left 72}
+                           :edit-name-title {:font-size 12}
+                           :profile-icon-edit-text {:font-size 12}}
    :new-group             {:group-name-text {:font-size 12}
                            :members-text {:font-size 14}
                            :members-text-count  {:font-size 14}
@@ -119,10 +134,17 @@
                                                       :line-height    24}
                            :reorder-list-container   {:padding-top 16}
                            :order-item-contacts      {:font-size   16
-                                                      :line-height 24}}
+                                                      :line-height 24}
+                           :add-to-contacts-text     {:font-size      14
+                                                      :letter-spacing 0.5}}
    :confirm-button-label  {:color          styles/color-white
                            :font-size      14
                            :letter-spacing 0.5}
+   :action-button-label   {:color          styles/color-black
+                           :font-size      16
+                           :line-height    24}
+   :action-button         {:height 56}
+   :separator             {:height 0}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}
@@ -133,7 +155,8 @@
    :toolbar-last-activity {:color            styles/text2-color
                            :background-color :transparent
                            :top              0
-                           :font-size        12}})
+                           :font-size        12}
+   :text-field-focus-line-height 2})
 
 (def fonts
   {:light         {:font-family "Roboto-Light"}
@@ -166,10 +189,9 @@
                                   :render-separator?    false}
    :uppercase?                   true
    :contacts                     {:action-button?          true
-                                  :new-contact-in-toolbar? false
-                                  :group-block-shadows?    true}
+                                  :new-contact-in-toolbar? false}
+   :group-block-shadows?         true
    :discover                     {:uppercase-subtitles? false}
    :public-group-icon-container  {:margin-top 4}
    :private-group-icon-container {:margin-top 6}
-   :group-chat-focus-line-height 2
    :public-group-chat-hash-style {:top 10 :left 4}})
