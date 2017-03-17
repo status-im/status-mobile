@@ -1,6 +1,7 @@
 (ns status-im.contacts.views.contact-list
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [status-im.components.common.common :refer [separator]]
             [status-im.components.react :refer [view text
                                                 image
                                                 icon
@@ -114,8 +115,7 @@
 
 (defn render-separator [_ row-id _]
   (list-item ^{:key row-id}
-             [view st/contact-item-separator-wrapper
-              [view st/contact-item-separator]]))
+             [separator st/contact-item-separator]))
 
 (defview contacts-list-view [group modal click-handler action edit?]
   [contacts [:all-added-group-contacts-filtered (:group-id group)]

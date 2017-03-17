@@ -10,6 +10,10 @@
 (defn open [opts]
   (.open class (clj->js opts)))
 
+(defn share-options [text]
+  [{:text (label :t/sharing-copy-to-clipboard) :value #(copy-to-clipboard text)}
+   {:text (label :t/sharing-share)             :value #(open {:message text})}])
+
 (defn share [text dialog-title]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       dialog-title

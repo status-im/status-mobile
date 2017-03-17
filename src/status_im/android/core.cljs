@@ -39,6 +39,7 @@
             [status-im.participants.views.remove :refer [remove-participants]]
             [status-im.group-settings.screen :refer [group-settings]]
             [status-im.profile.screen :refer [profile my-profile]]
+            [status-im.profile.edit.screen :refer [edit-my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
             status-im.data-store.core
             [taoensso.timbre :as log]
@@ -133,11 +134,13 @@
                                :qr-scanner qr-scanner
                                :chat chat
                                :profile profile
+                               :my-profile my-profile
+                               :edit-my-profile edit-my-profile
                                :profile-photo-capture profile-photo-capture
                                :accounts accounts
                                :login login
-                               :recover recover
-                               :my-profile my-profile)]
+                               :recover recover)]
+
                [menu-context st/flex
                 [view st/flex
                  [component]
