@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch]]
     [status-im.contacts.styles :as cst]
+    [status-im.components.common.common :as cmn]
     [status-im.components.react :refer [view
                                         text
                                         icon
@@ -15,8 +16,7 @@
     [status-im.i18n :refer [label]]))
 
 (defn separator []
-  [view cst/contact-item-separator-wrapper
-   [view cst/contact-item-separator]])
+  [cmn/separator cst/contact-item-separator])
 
 (defview group-name-input []
   [new-group-name [:get :new-chat-name]]
@@ -99,8 +99,7 @@
 
 (defn more-btn [contacts-limit contacts-count on-press]
   [view
-   [view cst/contact-item-separator-wrapper
-    [view cst/contact-item-separator]]
+   [separator]
    [view cst/show-all
     [touchable-highlight {:on-press on-press}
      [view

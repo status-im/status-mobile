@@ -4,17 +4,16 @@
             [status-im.components.react :refer [view
                                                 text
                                                 icon
-                                                linear-gradient
                                                 touchable-highlight
                                                 list-item]]
             [status-im.components.confirm-button :refer [confirm-button]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.sortable-list-view :refer [sortable-list-view sortable-item]]
+            [status-im.components.common.common :refer [top-shaddow bottom-shaddow]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.utils.platform :refer [android?]]
             [status-im.new-group.styles :as st]
-            [status-im.contacts.styles :as cst]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.utils.platform :refer [platform-specific]]
             [reagent.core :as r]))
@@ -35,14 +34,6 @@
       [view st/order-item-icon
        [icon :grab_gray]]]]))
 
-(defn top-shaddow []
-  [linear-gradient {:style  cst/contact-group-header-gradient-bottom
-                    :colors cst/contact-group-header-gradient-bottom-colors}])
-
-(defn bottom-shaddow []
-  [linear-gradient {:style  cst/contact-group-header-gradient-top
-                    :colors cst/contact-group-header-gradient-top-colors}])
-
 (defn render-separator [last shadows?]
   (fn [_ row-id _]
     (list-item
@@ -57,7 +48,7 @@
 (defview reorder-groups []
   [groups [:get :contact-groups]
    order  [:get :groups-order]
-   shadows? (get-in platform-specific [:contacts :group-block-shadows?])]
+   shadows? (get-in platform-specific [:group-block-shadows?])]
   (let [this (r/current-component)]
     [view st/reorder-groups-container
      [status-bar]

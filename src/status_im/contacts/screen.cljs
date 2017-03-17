@@ -3,17 +3,18 @@
   (:require [reagent.core :as r]
             [clojure.string :as str]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [status-im.components.common.common :refer [separator]]
             [status-im.components.react :refer [view
                                                 text
                                                 image
                                                 icon
                                                 touchable-highlight
-                                                linear-gradient
                                                 scroll-view
                                                 list-view
                                                 list-item] :as react]
-            [status-im.components.action-button :refer [action-button
-                                                        action-button-item]]
+            [status-im.components.common.common :refer [top-shaddow bottom-shaddow]]
+            [status-im.components.native-action-button :refer [native-action-button
+                                                               native-action-button-item]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.toolbar-new.actions :as act]
@@ -73,22 +74,14 @@
    (when extended?
      [options-btn group])])
 
-(defn group-top-view []
-  [linear-gradient {:style  st/contact-group-header-gradient-bottom
-                    :colors st/contact-group-header-gradient-bottom-colors}])
-
-(defn group-bottom-view []
-  [linear-gradient {:style  st/contact-group-header-gradient-top
-                    :colors st/contact-group-header-gradient-top-colors}])
-
 (defn contact-group-form [{:keys [contacts contacts-count group edit? click-handler]}]
-  (let [shadows? (get-in platform-specific [:contacts :group-block-shadows?])
+  (let [shadows? (get-in platform-specific [:group-block-shadows?])
         subtitle (:name group)]
     [view st/contact-group
      (when subtitle
        [subtitle-view subtitle contacts-count group edit?])
      (when (and subtitle shadows?)
-         [group-top-view])
+         [top-shaddow])
      [view st/contacts-list
       [view st/contact-list-spacing]
       (doall
@@ -108,13 +101,11 @@
                                                         (:group-id group)])
                                      :text (label :t/remove-from-group)}])}]
                 (when-not (= contact (last contacts))
-                  [view st/contact-item-separator-wrapper
-                   [view st/contact-item-separator]])])
+                  [separator st/contact-item-separator])])
              contacts))]
      (when (< contacts-limit contacts-count)
        [view
-        [view st/contact-item-separator-wrapper
-         [view st/contact-item-separator]]
+        [separator st/contact-item-separator]
         [view st/show-all
          [touchable-highlight {:on-press #(do
                                             (when edit?
@@ -126,7 +117,7 @@
                   :font (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
             (str (- contacts-count contacts-limit) " " (label :t/more))]]]]])
      (when shadows?
-       [group-bottom-view])]))
+       [bottom-shaddow])]))
 
 (defview contact-group-view [{:keys [group] :as params}]
   [contacts [:all-added-group-contacts-with-limit (:group-id group) contacts-limit]
@@ -135,12 +126,12 @@
                                      :contacts-count contacts-count})])
 
 (defn contacts-action-button []
-  [action-button {:button-color color-blue
-                  :offset-x     16
-                  :offset-y     22
-                  :hide-shadow  true
-                  :spacing      13}
-   [action-button-item
+  [native-action-button {:button-color color-blue
+                         :offset-x            16
+                         :offset-y            22
+                         :hide-shadow         true
+                         :spacing             13}
+   [native-action-button-item
     {:title       (label :t/new-contact)
      :buttonColor :#9b59b6
      :onPress     #(dispatch [:navigate-to :new-contact])}

@@ -62,7 +62,7 @@
          (get-in platform-specific [:public-group-chat-hash-style])))
 
 (def group-chat-focus-line-height
-  (get-in platform-specific [:group-chat-focus-line-height]))
+  (get-in platform-specific [:component-styles :text-field-focus-line-height]))
 
 (def group-chat-name-wrapper
   {:padding-top    0
