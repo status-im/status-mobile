@@ -23,6 +23,7 @@
                 custom-action        :custom-action
                 background-color     :background-color
                 custom-content       :custom-content
+                hide-border?         :hide-border?
                 style                :style}]
   (let [style (merge (st/toolbar-wrapper background-color) style)]
     [view {:style style}
@@ -63,8 +64,9 @@
              {:key (str "action-" action-image)}))
          custom-action)]]
      [sync-state-gradient-view]
-     [view st/toolbar-border-container
-      [view st/toolbar-border]]]))
+     (when-not hide-border?
+       [view st/toolbar-border-container
+        [view st/toolbar-border]])]))
 
 (def search-text-input (r/atom nil))
 

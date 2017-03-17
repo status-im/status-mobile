@@ -77,10 +77,6 @@
                            :subtitle-count {:color          styles/color-gray4
                                             :font-size      16
                                             :letter-spacing -0.2}
-                           :separator    {:margin-left      72
-                                          :height           1
-                                          :background-color styles/color-gray5
-                                          :opacity          0.5}
                            :info-container {:margin-left 16}
                            :contact-inner-container {:height 63}
                            :icon-check   {:border-radius 50
@@ -104,6 +100,29 @@
                                        :line-height    20
                                        :letter-spacing -0.2
                                        :color          styles/text1-color}}
+   :profile               {:profile-bage {:padding-top 24}
+                           :profile-name-text {:font-size      17
+                                               :line-height    20
+                                               :letter-spacing -0.2}
+                           :profile-status-text {:font-size      14
+                                                 :line-height    20
+                                                 :letter-spacing -0.2}
+                           :profile-setting-item {:padding-left  16
+                                                  :padding-right 16
+                                                  :height        73}
+                           :profile-setting-title {:font-size      14
+                                                   :letter-spacing -0.2}
+                           :profile-setting-text {:font-size      17
+                                                  :letter-spacing -0.2}
+                           :profile-setting-spacing {:height 10}
+                           :add-to-contacts-text {:font-size      17
+                                                  :line-height    20
+                                                  :letter-spacing -0.2}
+                           :edit-name-title {:font-size      13
+                                             :letter-spacing -0.1}
+                           :profile-icon-edit-text {:font-size        15
+                                                    :line-height      20
+                                                    :letter-spacing   -0.2}}
    :new-group             {:group-name-text {:font-size 13}
                            :members-text {:letter-spacing -0.2
                                           :font-size      16}
@@ -144,6 +163,15 @@
                            :font-size      17
                            :line-height    20
                            :letter-spacing -0.2}
+   :action-button-label   {:color          styles/color-light-blue
+                           :letter-spacing -0.2
+                           :font-size      17
+                           :line-height    20}
+   :action-button-icon-container {:background-color styles/color-light-blue-transparent}
+   :action-button         {:height 64}
+   :separator             {:height           1
+                           :background-color styles/color-gray5
+                           :opacity          0.5}
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
@@ -159,7 +187,8 @@
    :toolbar-last-activity {:color            styles/text2-color
                            :background-color :transparent
                            :top              0
-                           :font-size        14}})
+                           :font-size        14}
+   :text-field-focus-line-height 1})
 
 (def fonts
   {:light         {:font-family "SFUIText-Light"}
@@ -196,10 +225,10 @@
                                   :render-separator?    true}
    :uppercase?                   false
    :contacts                     {:action-button?          false
-                                  :new-contact-in-toolbar? true
-                                  :group-block-shadows?    false}
+                                  :new-contact-in-toolbar? true}
+   :group-block-shadows?         false
    :discover                     {:uppercase-subtitles? true}
    :public-group-icon-container  {:margin-top 2}
    :private-group-icon-container {:margin-top 2}
-   :group-chat-focus-line-height 1
    :public-group-chat-hash-style {:top 6 :left 3}})
+

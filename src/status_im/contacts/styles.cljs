@@ -52,25 +52,6 @@
   {:margin-left 8
    :opacity     0.6})
 
-(def contact-group-header-gradient-top
-  {:flexDirection   :row
-   :height          3
-   :backgroundColor toolbar-background2})
-
-(def contact-group-header-gradient-top-colors
-  ["rgba(24, 52, 76, 0.165)"
-   "rgba(24, 52, 76, 0.03)"
-   "rgba(24, 52, 76, 0.01)"])
-
-(def contact-group-header-gradient-bottom
-  {:flexDirection   :row
-   :height          2
-   :backgroundColor toolbar-background2})
-
-(def contact-group-header-gradient-bottom-colors
-  ["rgba(24, 52, 76, 0.01)"
-   "rgba(24, 52, 76, 0.05)"])
-
 (def show-all
   (merge (get-in p/platform-specific [:component-styles :contacts :show-all])
          {:flexDirection   :row
@@ -80,11 +61,8 @@
 (def show-all-text
   (get-in p/platform-specific [:component-styles :contacts :show-all-text]))
 
-(def contact-item-separator-wrapper
-  {:background-color color-white})
-
 (def contact-item-separator
-  (get-in p/platform-specific [:component-styles :contacts :separator]))
+  {:margin-left      72})
 
 (def contact-container
   (merge (get-in p/platform-specific [:component-styles :contacts :contact-container])
@@ -152,13 +130,6 @@
 (def more-btn
   {:width          24
    :height         24
-   :alignItems     :center
-   :justifyContent :center})
-
-(def search-btn
-  {:width          24
-   :height         56
-   :margin-right   24
    :alignItems     :center
    :justifyContent :center})
 
