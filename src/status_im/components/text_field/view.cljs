@@ -92,8 +92,7 @@
   (log/debug "Input blurred")
   (r/set-state component {:has-focus    false
                           :float-label? (if (s/blank? value) false true)})
-  (when (s/blank? value)
-    (field-animation animation))
+  (field-animation animation)
   (when onBlur (onBlur)))
 
 (defn get-width [event]
@@ -113,7 +112,8 @@
                 max-length]} (r/state component)
         {:keys [wrapper-style input-style label-hidden? line-color focus-line-color focus-line-height
                 secure-text-entry label-color error-color error label value on-focus on-blur validator
-                auto-focus on-change-text on-change on-end-editing editable placeholder auto-capitalize]}
+                auto-focus on-change-text on-change on-end-editing editable placeholder auto-capitalize
+                multiline number-of-lines]}
         (merge default-props (r/props component))
         line-color       (if error error-color line-color)
         focus-line-color (if error error-color focus-line-color)
@@ -127,6 +127,8 @@
                   :style             (merge st/text-input input-style)
                   :placeholder       (or placeholder "")
                   :editable          editable
+                  :multiline         multiline
+                  :number-of-lines   number-of-lines
                   :secure-text-entry secure-text-entry
                   :auto-capitalize   auto-capitalize
                   :on-focus          #(on-input-focus {:component component

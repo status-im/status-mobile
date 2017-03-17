@@ -12,7 +12,7 @@
     [status-im.utils.listview :refer [to-datasource]]
     [status-im.new-group.views.toggle-contact :refer [group-toggle-contact
                                                       group-toggle-participant]]
-    [status-im.new-group.views.group :refer [separator]]
+    [status-im.components.common.common :refer [separator]]
     [status-im.new-group.styles :as st]
     [status-im.contacts.styles :as cst]
     [status-im.i18n :refer [label]]
@@ -41,7 +41,7 @@
 
 (defn render-separator [_ row-id _]
   (list-item ^{:key row-id}
-             [separator]))
+             [separator cst/contact-item-separator]))
 
 (defn render-spacing []
   #(list-item [view cst/contact-list-spacing]))

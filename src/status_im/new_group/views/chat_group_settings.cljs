@@ -68,7 +68,7 @@
     [view st/group-container
      [view {:flex 1}
       [group-toolbar type true]
-      [scroll-view {:keyboardShouldPersistTaps true}
+      [scroll-view
        [group-name-view]
        [chat-group-members]
        [view st/separator]

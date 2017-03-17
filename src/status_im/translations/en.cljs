@@ -68,6 +68,7 @@
 
    ;profile
    :profile                               "Profile"
+   :edit-profile                          "Edit profile"
    :report-user                           "REPORT USER"
    :message                               "Message"
    :username                              "Username"
@@ -77,6 +78,10 @@
    :email                                 "Email"
    :profile-no-status                     "No status"
    :add-to-contacts                       "Add to contacts"
+   :in-contacts                           "In contacts"
+   :start-conversation                    "Start conversation"
+   :send-transaction                      "Send transaction"
+   :share-qr                              "Share QR"
    :error-incorrect-name                  "Please select another name"
    :error-incorrect-email                 "Incorrect e-mail"
 

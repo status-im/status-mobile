@@ -9,8 +9,7 @@
                                                 icon
                                                 image
                                                 touchable-highlight]]
-            [status-im.components.action-button :refer [action-button
-                                                        action-button-item]]
+            [status-im.components.native-action-button :refer [native-action-button]]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.styles :refer [color-blue]]
             [status-im.components.status-bar :refer [status-bar]]
@@ -62,12 +61,12 @@
     :search-placeholder (label :t/search-for)}])
 
 (defn chats-action-button []
-  [action-button {:button-color color-blue
-                  :offset-x     16
-                  :offset-y     22
-                  :hide-shadow  true
-                  :spacing      13
-                  :on-press     #(dispatch [:navigate-to :new-chat])}])
+  [native-action-button {:button-color color-blue
+                         :offset-x     16
+                         :offset-y     22
+                         :hide-shadow  true
+                         :spacing      13
+                         :on-press     #(dispatch [:navigate-to :new-chat])}])
 
 (defn chat-list-padding []
   [view {:height (if ios? 0 8)

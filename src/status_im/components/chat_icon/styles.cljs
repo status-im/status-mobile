@@ -1,6 +1,7 @@
 (ns status-im.components.chat-icon.styles
   (:require [status-im.components.styles :refer [color-white
-                                                 online-color]]))
+                                                 online-color]]
+            [status-im.utils.platform :as p]))
 
 (defn default-chat-icon [color]
   {:margin          0
@@ -237,3 +238,26 @@
    :width            4
    :height           4
    :border-radius    2})
+
+(defn profile-icon-mask [size]
+  {:height           size
+   :width            size
+   :position         :absolute
+   :z-index          1
+   :background-color :black
+   :opacity          0.4
+   :border-radius    50})
+
+(defn profile-icon-edit-text-containter [size]
+  {:height          size
+   :width           size
+   :position        :absolute
+   :z-index         2
+   :align-items     :center
+   :justify-content :center})
+
+(def profile-icon-edit-text
+  (merge (get-in p/platform-specific [:component-styles :profile :profile-icon-edit-text])
+         {:color            :white
+          :background-color :transparent}))
+
