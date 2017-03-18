@@ -99,8 +99,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         File extStore = Environment.getExternalStorageDirectory();
         String dataFolder = extStore.exists() ?
-                extStore.getAbsolutePath() + "/ethereum" :
-                currentActivity.getApplicationInfo().dataDir + "/ethereum";
+                extStore.getAbsolutePath() + "/ethereum/testnet" :
+                currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
         Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
 
         try {
@@ -111,7 +111,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.e(TAG, "error making folder: " + dataFolder, e);
         }
 
-        Statusgo.StartNode(dataFolder);
+        Statusgo.StartNode(Statusgo.GenerateConfig(dataFolder, 3));
         Log.d(TAG, "Geth node started");
     }
 

@@ -135,7 +135,7 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
         NSURL *folderName =[[[[NSFileManager defaultManager]
                               URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
                              lastObject]
-                            URLByAppendingPathComponent:@"ethereum"];
+                            URLByAppendingPathComponent:@"ethereum/testnet"];
         
         if (![[NSFileManager defaultManager] fileExistsAtPath:folderName.path])
             [[NSFileManager defaultManager] createDirectoryAtPath:folderName.path withIntermediateDirectories:NO attributes:nil error:&error];
@@ -147,7 +147,8 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                        ^(void) {
-            StartNode((char *) [folderName.path UTF8String]);
+            char *config = GenerateConfig([folderName.path UTF8String], 3);
+            StartNode(config);
         });
         NSString *peer1 = @"enode://5f23bf4913dd005ce945648cb12d3ef970069818d8563a3fe054e5e1dc3898b9cb83e0af1f51b2dce75eaffc76e93f996caf538e21c5b64db5fa324958d59630@95.85.40.211:30303";
         NSString *peer2 = @"enode://b9de2532421f15ac55da9d9a7cddc0dc08b0d646d631fd7ab2a170bd2163fb86b095dd8bde66b857592812f7cd9539f2919b6c64bc1a784a1d1c6ec8137681ed@188.166.229.119:30303";
