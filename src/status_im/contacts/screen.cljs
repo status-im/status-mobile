@@ -92,9 +92,9 @@
                   :extended?      edit?
                   :on-click       (when-not edit? click-handler)
                   :extend-options (when group
-                                   [{:value #(dispatch [:hide-contact contact])
-                                     :text (label :t/delete-contact)
-                                     :style st/delete-contact-text}
+                                   [{:value        #(dispatch [:hide-contact contact])
+                                     :text         (label :t/delete-contact)
+                                     :destructive? true}
                                     {:value #(dispatch [:remove-contact-from-group
                                                         (:whisper-identity contact)
                                                         (:group-id group)])

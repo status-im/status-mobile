@@ -38,6 +38,10 @@
   {:android {:padding-top    8
              :padding-bottom 8}})
 
+(defstyle my-profile-info-container
+  {:android {:padding-top    8
+             :padding-bottom 8}})
+
 (def profile-bage
   (merge (ps-profile :profile-bage)
          {:align-items :center}))
@@ -47,6 +51,9 @@
    :align-items    :center
    :padding-left   24
    :padding-top    25})
+
+(def context-menu-custom-styles
+  {:optionsContainer {:margin-top 78}})
 
 (def profile-name-container
   {:margin-top 12})
@@ -80,9 +87,9 @@
          {:flex-direction :row
           :align-items    :center}))
 
-(def profile-setting-text-container
+(defn profile-setting-text-container [options]
   {:flex          1
-   :padding-right 20})
+   :padding-right (if options 16 40)})
 
 (def profile-setting-title
   (merge (ps-profile :profile-setting-title)
@@ -90,6 +97,10 @@
 
 (def profile-setting-text
   (ps-profile :profile-setting-text))
+
+(def profile-setting-text-empty
+  (merge profile-setting-text
+         {:color color-gray4}))
 
 (def profile-setting-spacing
   (ps-profile :profile-setting-spacing))

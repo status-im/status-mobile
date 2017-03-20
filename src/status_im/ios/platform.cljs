@@ -19,7 +19,7 @@
    :toolbar               {:border-bottom-color styles/color-gray3
                            :border-bottom-width 0.5}
    :toolbar-new           {:height              56
-                           :padding-top         20
+                           :padding-top         18
                            :padding-left        16
                            :padding-right       16}
    :toolbar-title-container {:align-items    :center}
@@ -167,7 +167,9 @@
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
-   :toolbar-search-input  {:padding-left 10}
+   :toolbar-search-input  {:padding-left   8
+                           :padding-top    2
+                           :letter-spacing -0.2}
    :toolbar-nav-action    {:width           46
                            :height          56
                            :align-items     :center
