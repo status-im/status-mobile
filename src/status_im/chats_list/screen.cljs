@@ -53,9 +53,11 @@
   [toolbar {:nav-action (act/back #(dispatch [:set-in [:chat-list-ui-props :edit?] false]))
             :title      (label :t/edit-chats)}])
 
-(defn toolbar-search []
+(defview toolbar-search []
+  [search-text [:get-in [:toolbar-search :text]]]
   [toolbar-with-search
    {:show-search?       true
+    :search-text        search-text
     :search-key         :chat-list
     :title              (label :t/chats)
     :search-placeholder (label :t/search-for)}])
