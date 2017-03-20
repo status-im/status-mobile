@@ -205,7 +205,7 @@
 (defn action-sheet-options [options]
   (let [destructive-opt-index (utils/first-index :destructive? options)]
     (clj->js (merge {:options           (mapv :text options)
-                     :cancelButtonIndex (count options)}
+                     :cancelButtonIndex (dec (count options))}
                     (when destructive-opt-index {:destructiveButtonIndex destructive-opt-index})))))
 
 (defn show-action-sheet [{:keys [options callback]}]
