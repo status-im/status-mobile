@@ -8,7 +8,8 @@
                                                 touchable-highlight]]
             [status-im.components.sync-state.gradient :refer [sync-state-gradient-view]]
             [status-im.components.styles :refer [icon-default
-                                                 icon-search]]
+                                                 icon-search
+                                                 color-gray4]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.styles :as st]
@@ -83,13 +84,14 @@
   [view st/toolbar-with-search-content
    (if show-search?
      [text-input
-      {:style             st/toolbar-search-input
-       :ref               #(reset! search-text-input %)
-       :auto-focus        true
-       :placeholder       search-placeholder
-       :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])
-       :on-submit-editing (when on-search-submit
-                            #(toolbar-search-submit on-search-submit))}]
+      {:style                  st/toolbar-search-input
+       :ref                    #(reset! search-text-input %)
+       :auto-focus             true
+       :placeholder            search-placeholder
+       :placeholder-text-color color-gray4
+       :on-change-text         #(dispatch [:set-in [:toolbar-search :text] %])
+       :on-submit-editing      (when on-search-submit
+                                 #(toolbar-search-submit on-search-submit))}]
      (or custom-title
          [view
           [text {:style st/toolbar-title-text
