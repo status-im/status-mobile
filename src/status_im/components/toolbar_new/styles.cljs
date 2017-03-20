@@ -1,9 +1,10 @@
 (ns status-im.components.toolbar-new.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :refer [text1-color
                                                  color-white
                                                  color-light-gray
                                                  color-gray5
+                                                 color-gray4
                                                  color-blue
                                                  color-black]]
             [status-im.utils.platform :as p]))
@@ -37,10 +38,11 @@
          {:flex           1
           :align-self     :stretch}))
 
-(def toolbar-title-text
+(defstyle toolbar-title-text
   {:color          text1-color
    :letter-spacing -0.2
-   :font-size      17})
+   :font-size      17
+   :ios            {:padding-top 2}})
 
 (def toolbar-border-container
   (get-in p/platform-specific [:component-styles :toolbar-border-container]))
@@ -68,13 +70,16 @@
          {:flex 1}))
 
 (def toolbar-search-input
-  (merge (get-in p/platform-specific [:component-styles :toolbar-search-input])
-         {:flex           1
-          :padding-bottom 10
-          :font-size      17
-          :padding-top    0
-          :align-self     :stretch
-          :color          color-black}))
+  (merge {:line-height         24
+          :height              24
+          :font-size           17
+          :padding-top         0
+          :padding-left        0
+          :padding-bottom      0
+          :text-align-vertical :center
+          :color               color-black}
+         (get-in p/platform-specific [:component-styles :toolbar-search-input])))
+
 
 (def action-default
   {:width  24

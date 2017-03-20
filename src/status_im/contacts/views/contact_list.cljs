@@ -28,8 +28,9 @@
       [contact-view {:contact        row
                      :extended?      edit?
                      :extend-options (when group
-                                       [{:value #(dispatch [:hide-contact row])
-                                         :text (label :t/delete-contact)}
+                                       [{:value        #(dispatch [:hide-contact row])
+                                         :text         (label :t/delete-contact)
+                                         :destructive? true}
                                         {:value #(dispatch [:remove-contact-from-group
                                                             (:whisper-identity row)
                                                             (:group-id group)])
