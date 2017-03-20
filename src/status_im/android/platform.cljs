@@ -19,7 +19,7 @@
                                          :bar-style "light-content"
                                          :color     styles/color-black}}
    :toolbar-new           {:height         55
-                           :padding-top    18
+                           :padding-top    15
                            :padding-left   16
                            :padding-right  16}
    :toolbar-title-container {:padding-left   30}

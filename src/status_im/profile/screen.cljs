@@ -80,15 +80,17 @@
                   :arrow_right_blue
                   #(dispatch [:open-chat-with-the-send-transaction chat-id])]])
 
-(defn profile-info-item [label value options text-mode]
+(defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [view st/profile-setting-item
-   [view st/profile-setting-text-container
+   [view (st/profile-setting-text-container options)
     [text {:style st/profile-setting-title}
      label]
     [view st/profile-setting-spacing]
-    [text {:style st/profile-setting-text
-           :numberOfLines 1
-           :ellipsizeMode text-mode}
+    [text {:style           (if empty-value?
+                              st/profile-setting-text-empty
+                              st/profile-setting-text)
+           :number-of-lines 1
+           :ellipsizeMode   text-mode}
      value]]
    (when options
      [context-menu
@@ -101,23 +103,23 @@
 
 (defn profile-info-address-item [{:keys [address] :as contact}]
   [profile-info-item
-   (label :t/address)
-   address
-   (into []
-     (concat [{:value (show-qr contact :address)
-               :text (label :t/show-qr)}]
-             (share-options address)))
-   :middle])
+   {:label     (label :t/address)
+    :value     address
+    :options   (into []
+                 (concat [{:value (show-qr contact :address)
+                           :text (label :t/show-qr)}]
+                         (share-options address)))
+    :text-mode :middle}])
 
 (defn profile-info-public-key-item [public-key contact]
   [profile-info-item
-   (label :t/public-key)
-   public-key
-   (into []
-     (concat [{:value (show-qr contact :public-key)
-               :text (label :t/show-qr)}]
-             (share-options public-key)))
-   :middle])
+   {:label     (label :t/public-key)
+    :value     public-key
+    :options   (into []
+                 (concat [{:value (show-qr contact :public-key)
+                           :text (label :t/show-qr)}]
+                         (share-options public-key)))
+    :text-mode :middle}])
 
 (defn info-item-separator []
   [separator st/info-item-separator])
@@ -135,25 +137,44 @@
       ^{:key (str "item-" i)}
       (str status " "))))
 
+(defn profile-info-status-item [status & [options]]
+  (let [status-empty? (= "" status)
+        status-text  (if status-empty?
+                       (label :t/profile-no-status)
+                       (colorize-status-hashtags status))]
+    [profile-info-item {:label        (label :t/status)
+                        :value        status-text
+                        :options      options
+                        :empty-value? status-empty?}]))
+
+(defn profile-info-phone-item [phone & [options]]
+  (let [phone-empty? (or (nil? phone) (= "" phone))
+        phone-text  (if phone-empty?
+                       (label :t/not-specified)
+                       phone)]
+    [profile-info-item {:label        (label :t/phone-number)
+                        :value        phone-text
+                        :options      options
+                        :empty-value? phone-empty?}]))
+
 (defn profile-info [{:keys [whisper-identity :whisper-identity
                             status           :status
                             phone            :phone] :as contact}]
-  [view
-   [profile-info-item (label :t/status) (colorize-status-hashtags status)]
-   [info-item-separator]
-   [profile-info-address-item contact]
-   [info-item-separator]
-   [profile-info-public-key-item whisper-identity contact]
-   [info-item-separator]
-   [profile-info-item (label :t/phone-number) phone]])
+    [view
+     [profile-info-status-item status]
+     [info-item-separator]
+     [profile-info-address-item contact]
+     [info-item-separator]
+     [profile-info-public-key-item whisper-identity contact]
+     [info-item-separator]
+     [profile-info-phone-item phone]])
 
 (defn my-profile-info [{:keys [public-key :public-key
                                status     :status
                                phone      :phone] :as contact}]
-  [view
-   [profile-info-item
-    (label :t/status)
-    (colorize-status-hashtags  status)
+  [view st/my-profile-info-container
+   [profile-info-status-item
+    status
     [{:value #(dispatch [:open-edit-my-profile])
       :text (label :t/edit)}]]
    [info-item-separator]
@@ -161,8 +182,10 @@
    [info-item-separator]
    [profile-info-public-key-item public-key contact]
    [info-item-separator]
-   [profile-info-item (label :t/phone-number) phone [{:value #(dispatch [:phone-number-change-requested])
-                                                      :text (label :t/edit)}]]])
+   [profile-info-phone-item
+    phone
+    [{:value #(dispatch [:phone-number-change-requested])
+      :text (label :t/edit)}]]])
 
 (defview my-profile []
   [current-account [:get-current-account]]

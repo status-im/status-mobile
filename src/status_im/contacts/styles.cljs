@@ -190,6 +190,3 @@
    :background-color color-white
    :align-items      :center
    :justify-content  :center})
-
-(def delete-contact-text
-  {:color color-light-red})
