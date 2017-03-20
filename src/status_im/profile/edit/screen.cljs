@@ -48,7 +48,8 @@
     [context-menu
      [my-profile-icon {:account contact
                        :edit?   true}]
-     profile-icon-options]]
+     profile-icon-options
+     st/context-menu-custom-styles]]
    [view st/edit-profile-name-container
     [text {:style st/edit-name-title}
      (label :t/name)]
