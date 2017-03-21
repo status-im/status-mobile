@@ -165,7 +165,7 @@
     (fn []
       (when (or (:fullscreen @command)
                 (= :response (:type @command))
-                (and (not (s/blank? @text)) (seq @suggestions))
+                (and (or (nil? @text) (not (s/blank? @text))) (seq @suggestions))
                 (seq @errors)
                 (seq @custom-errors))
         [container response-height

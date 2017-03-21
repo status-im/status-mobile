@@ -17,8 +17,7 @@
     (assoc-in db [:rendered-commands chat-id message-id] hiccup)))
 
 (defn command-handler!
-  [_ [chat-id
-      {:keys [command-message] :as parameters}
+  [_ [{:keys [chat-id command-message] :as parameters}
       {:keys [result error]}]]
   (let [{:keys [context returned]} result
         {handler-error :error} returned]
@@ -43,15 +42,9 @@
 
 (defn suggestions-handler!
   [{:keys [contacts chats] :as db} [{:keys [chat-id]} suggestions]]
-  (let [
-        ;{:keys [web-view-url]} (:context result)
-        text   (get-in chats [chat-id :input-text])
-        hiccup (when-not (s/blank? text) (generate-hiccup suggestions))]
-    (assoc-in db [:suggestions chat-id] hiccup)
-    #_(-> db
-        (assoc-in [:suggestions chat-id] hiccup)
-        #_(assoc-in [:web-view-url chat-id] web-view-url)
-        (assoc-in [:has-suggestions? chat-id] (boolean hiccup) #_(or hiccup web-view-url)))))
+  (let [text   (get-in chats [chat-id :input-text])
+        hiccup (generate-hiccup suggestions)]
+    (assoc-in db [:suggestions chat-id] hiccup)))
 
 (defn suggestions-events-handler!
   [{:keys [current-chat-id] :as db} [[n data]]]

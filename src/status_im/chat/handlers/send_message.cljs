@@ -231,13 +231,11 @@
             params {:parameters {:message content}
                     :context    {:data data}}]
         (dispatch [:clear-response-suggestions chat-id])
-        (status/call-jail
-          chat-id
-          path
-          params
-          (fn [{:keys [result] :as data}]
-            (log/debug "Message handler result: " result)
-            (dispatch [:received-bot-response {:chat-id chat-id} data])))))))
+        (status/call-function!
+          {:chat-id    chat-id
+           :function   :message
+           :parameters {:message content}
+           :context    {:data data}})))))
 
 (register-handler :received-bot-response
   [(after #(dispatch [:animate-show-response]))]

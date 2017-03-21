@@ -146,6 +146,12 @@
       (show-popup "Error" m)
       (log/debug m))))
 
+(defn invoke-init-command!
+  [{:keys [current-account-id chats] :as db} [bot-id]]
+  (status/call-function!
+    {:chat-id bot-id
+     :function :init}))
+
 (reg-handler :check-and-load-commands!
   (u/side-effect!
     (fn [{:keys [chats]} [identity callback]]
@@ -168,8 +174,12 @@
    (after #(dispatch [:check-and-open-dapp!]))
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
-            (dispatch [:invoke-chat-loaded-callbacks id])))]
+            (dispatch [:invoke-chat-loaded-callbacks id])))
+   (after (fn [_ [id]]
+            (dispatch [::invoke-init-command id])))]
   add-commands)
+
+(reg-handler ::invoke-init-command (u/side-effect! invoke-init-command!))
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))
 

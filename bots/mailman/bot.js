@@ -38,3 +38,7 @@ status.command({
     type: status.types.TEXT,
     placeholder: I18n.t('location_address')
 });
+
+status.on("init", function(params, context) {
+    status.sendMessage("Hello, man!");
+});

@@ -152,14 +152,13 @@
   (u/side-effect!
     (fn [db [_ chat-id text]]
       (let [data   (get-in db [:local-storage chat-id])
-            path   [:functions :text-change]
             params {:parameters {:message text}
                     :context    {:data data}}]
-        (status/call-jail
-          chat-id
-          path
-          params
-          #(dispatch [:received-bot-response {:chat-id chat-id} %]))))))
+        (status/call-function!
+          {:chat-id    chat-id
+           :function   :text-change
+           :parameters {:message text}
+           :context    {:data data}})))))
 
 (register-handler :set-chat-input-text
   (u/side-effect!
@@ -358,9 +357,7 @@
                              (assoc :current-chat-id chat-id)
                              (update-in [:animations :to-response-height chat-id]
                                         #(if command? % 0)))
-        commands-loaded? (if js/goog.DEBUG
-                           false
-                           (get-in db [:chats chat-id :commands-loaded]))]
+        commands-loaded? (get-in db [:chats chat-id :commands-loaded])]
     (when (= current-chat-id wallet-chat-id)
       (dispatch [:cancel-command]))
     (dispatch [:load-requests! chat-id])
