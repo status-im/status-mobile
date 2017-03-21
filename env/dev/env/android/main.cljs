@@ -1,5 +1,6 @@
 (ns ^:figwheel-no-load env.android.main
   (:require [reagent.core :as r]
+            [re-frisk-remote.core :as rr]
             [status-im.android.core :as core]
             [figwheel.client :as figwheel :include-macros true]))
 
@@ -17,5 +18,7 @@
   :websocket-url "ws://10.0.3.2:3449/figwheel-ws"
   :heads-up-display false
   :jsload-callback callback)
+
+(rr/enable-re-frisk-remote!)
 
 (core/init)

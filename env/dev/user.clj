@@ -1,6 +1,7 @@
 (ns user
   (:use [figwheel-sidecar.repl-api :as ra])
   (:require [hawk.core :as hawk]
+            [re-frisk-sidecar.core :as rfs]
             [clojure.string :as s]))
 ;; This namespace is loaded automatically by nREPL
 
@@ -72,4 +73,5 @@
                       (map keyword (s/split env-build-ids #","))
                       [:android])
       builds        (get-builds build-ids buids-by-id)]
-  (start-figwheel build-ids builds))
+  (start-figwheel build-ids builds)
+  (rfs/-main))

@@ -1,5 +1,6 @@
  (ns ^:figwheel-no-load env.ios.main
   (:require [reagent.core :as r]
+            [re-frisk-remote.core :as rr]
             [status-im.ios.core :as core]
             [figwheel.client :as figwheel :include-macros true]
             [cljs.pprint]))
@@ -14,5 +15,7 @@
  :websocket-url "ws://localhost:3449/figwheel-ws"
  :heads-up-display false
  :jsload-callback #(swap! cnt inc))
+
+(rr/enable-re-frisk-remote!)
 
 (core/init)
