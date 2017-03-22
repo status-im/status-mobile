@@ -74,7 +74,8 @@
                                                           :font-size 16}}
    :contacts              {:subtitle     {:color          styles/text1-color
                                           :font-size      16
-                                          :letter-spacing -0.2}
+                                          :letter-spacing -0.2
+                                          :flex-shrink    1}
                            :subtitle-count {:color          styles/color-gray4
                                             :font-size      16
                                             :letter-spacing -0.2}
@@ -86,9 +87,10 @@
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
                                           :margin-top      24
+                                          :padding-top     19
+                                          :padding-bottom  15
                                           :padding-left    16
                                           :padding-right   16
-                                          :height          53
                                           :backgroundColor styles/color-white}
                            :show-all     {:padding-left    72
                                           :height          64}
@@ -151,12 +153,6 @@
                                                    :border-radius    50}}
    :reorder-groups        {:order-item-separator     {:margin-left      16
                                                       :opacity          0.5}
-                           :order-item-container     {:height 63}
-                           :order-item-icon          {:padding-right 20}
-                           :order-item-label         {:padding-left   16
-                                                      :font-size      17
-                                                      :line-height    20
-                                                      :letter-spacing -0.2}
                            :order-item-contacts      {:font-size      17
                                                       :line-height    20
                                                       :letter-spacing -0.2}}

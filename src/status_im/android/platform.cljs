@@ -66,8 +66,9 @@
                                                           :margin-top       0}
                            :contact-list-title           {:color     styles/text4-color
                                                           :font-size 14}}
-   :contacts              {:subtitle     {:color     styles/color-gray4
-                                          :font-size 14}
+   :contacts              {:subtitle     {:color       styles/color-gray4
+                                          :font-size   14
+                                          :flex-shrink 1}
                            :subtitle-count {:color     styles/color-gray4
                                             :font-size 14}
                            :info-container {:margin-left 16}
@@ -79,8 +80,8 @@
                                           :height        17}
                            :group-header {:flexDirection   :row
                                           :alignItems      :center
-                                          :height          56
-                                          :padding-top     10
+                                          :padding-top     28
+                                          :padding-bottom  20
                                           :padding-left    16
                                           :padding-right   14
                                           :backgroundColor styles/color-light-gray}
@@ -125,14 +126,7 @@
                                                  :flex-direction :row
                                                  :align-items    :center}
                            :settings-group-container {:margin-top    23}}
-   :reorder-groups        {:order-item-container     {:height           56
-                                                      :background-color styles/color-white}
-                           :order-item-icon          {:padding-right 16}
-                           :order-item-label         {:padding-left   16
-                                                      :font-size      16
-                                                      :color          styles/color-black
-                                                      :line-height    24}
-                           :reorder-list-container   {:padding-top 16}
+   :reorder-groups        {:reorder-list-container   {:padding-top 16}
                            :order-item-contacts      {:font-size   16
                                                       :line-height 24}
                            :add-to-contacts-text     {:font-size      14
