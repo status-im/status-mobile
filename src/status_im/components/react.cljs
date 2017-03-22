@@ -30,6 +30,7 @@
 (def list-view-class (get-class "ListView"))
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
+(def keyboard-avoiding-view (get-class "KeyboardAvoidingView"))
 
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
