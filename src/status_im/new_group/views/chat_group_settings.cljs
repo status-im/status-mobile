@@ -4,6 +4,7 @@
     [status-im.contacts.views.contact :refer [contact-view]]
     [status-im.components.react :refer [view
                                         scroll-view
+                                        keyboard-avoiding-view
                                         icon
                                         touchable-highlight]]
     [status-im.components.confirm-button :refer [confirm-button]]
@@ -17,6 +18,7 @@
                                              separator]]
     [status-im.new-group.validations :as v]
     [status-im.i18n :refer [label]]
+    [status-im.utils.platform :refer [ios?]]
     [cljs.spec :as s]))
 
 (def contacts-limit 3)
@@ -65,7 +67,8 @@
    type [:get :group-type]]
   (let [save-btn-enabled? (and (s/valid? ::v/name new-chat-name)
                                (not= new-chat-name chat-name))]
-    [view st/group-container
+    [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                  st/group-container)
      [view {:flex 1}
       [group-toolbar type true]
       [scroll-view

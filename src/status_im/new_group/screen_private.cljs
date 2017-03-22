@@ -4,6 +4,7 @@
             [status-im.contacts.views.contact :refer [contact-view]]
             [status-im.components.react :refer [view
                                                 scroll-view
+                                                keyboard-avoiding-view
                                                 list-view
                                                 list-item]]
             [status-im.components.confirm-button :refer [confirm-button]]
@@ -18,6 +19,7 @@
                                                      separator]]
             [status-im.new-group.validations :as v]
             [status-im.i18n :refer [label]]
+            [status-im.utils.platform :refer [ios?]]
             [cljs.spec :as s]))
 
 (def contacts-limit 3)
@@ -55,16 +57,17 @@
    type [:get :group-type]]
   (let [save-btn-enabled? (and (s/valid? ::v/name group-name)
                                (not= group-name (:name group)))]
-    [view st/group-container
+    [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                  st/group-container)
      [group-toolbar type true]
      [group-name-view]
-     [add-btn #(dispatch [:navigate-to :add-contacts-toggle-list])]
-     [group-contacts-view group]
-     [view st/separator]
-     [delete-btn #(do
-                    (dispatch [:delete-group])
-                    (dispatch [:navigate-to-clean :contact-list]))]
-     [view {:flex 1}]
+     [view {:flex 1}
+      [add-btn #(dispatch [:navigate-to :add-contacts-toggle-list])]
+      [group-contacts-view group]
+      [view st/separator]
+      [delete-btn #(do
+                     (dispatch [:delete-group])
+                     (dispatch [:navigate-to-clean :contact-list]))]]
      (when save-btn-enabled?
        [confirm-button (label :t/save) save])]))
 
@@ -83,7 +86,8 @@
    group-name [:get :new-chat-name]
    group-type [:get :group-type]]
   (let [save-btn-enabled? (and (s/valid? ::v/name group-name) (pos? (count contacts)))]
-    [view st/group-container
+    [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                  st/group-container)
      [group-toolbar group-type false]
      [group-name-view]
      [view {:flex 1}
