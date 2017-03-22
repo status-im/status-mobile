@@ -130,6 +130,7 @@
 (def more-btn
   {:width          24
    :height         24
+   :margin-left    16
    :alignItems     :center
    :justifyContent :center})
 

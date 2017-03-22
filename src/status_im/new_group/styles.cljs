@@ -1,6 +1,8 @@
 (ns status-im.new-group.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.components.styles :refer [color-white
                                                  color-blue
+                                                 color-black
                                                  text1-color
                                                  text2-color
                                                  color-light-blue
@@ -165,21 +167,34 @@
 (def order-item-container
   {:background-color color-white})
 
-(def order-item-inner-container
-  (merge {:flex-direction :row
-          :align-items    :center}
-         (ps-reorder :order-item-container)))
+(defstyle order-item-inner-container
+  {:flex-direction :row
+   :align-items    :center
+   :android        {:padding-top      17
+                    :padding-bottom   15
+                    :min-height       56
+                    :background-color color-white}
+   :ios            {:padding-vertical 22
+                    :min-height       63}})
 
-(def order-item-label
-  (ps-reorder :order-item-label))
+(defstyle order-item-label
+  {:padding-left 16
+   :flex-shrink  1
+   :android      {:font-size   16
+                  :color       color-black
+                  :line-height 24}
+   :ios          {:font-size      17
+                  :line-height    20
+                  :letter-spacing -0.2}})
 
 (def order-item-contacts
   (merge (ps-reorder :order-item-contacts)
          {:padding-left 8
           :color color-gray4}))
 
-(def order-item-icon
-  (ps-reorder :order-item-icon))
+(defstyle order-item-icon
+  {:android {:padding-horizontal 16}
+   :ios     {:padding-horizontal 20}})
 
 (def order-item-separator-wrapper
   {:background-color color-white})
