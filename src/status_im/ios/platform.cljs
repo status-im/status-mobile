@@ -1,5 +1,6 @@
 (ns status-im.ios.platform
   (:require [status-im.components.styles :as styles]
+            [status-im.i18n :refer [label]]
             [status-im.utils.utils :as utils]))
 
 (def component-styles
@@ -194,9 +195,11 @@
 (def react-native (js/require "react-native"))
 
 (defn action-sheet-options [options]
-  (let [destructive-opt-index (utils/first-index :destructive? options)]
+  (let [destructive-opt-index (utils/first-index :destructive? options)
+        cancel-option         {:text (label :t/cancel)}
+        options               (conj options cancel-option)]
     (clj->js (merge {:options           (mapv :text options)
-                     :cancelButtonIndex (count options)}
+                     :cancelButtonIndex (dec (count options))}
                     (when destructive-opt-index {:destructiveButtonIndex destructive-opt-index})))))
 
 (defn show-action-sheet [{:keys [options callback]}]
