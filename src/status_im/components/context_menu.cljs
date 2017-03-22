@@ -27,13 +27,11 @@
 (def list-selection-fn (:list-selection-fn platform-specific))
 
 (defn open-ios-menu [options]
-  (let [cancel-option {:text (label :t/cancel)}
-        options       (conj options cancel-option)]
-    (list-selection-fn {:options  options
-                        :callback (fn [index]
-                                    (when (< index (count options))
-                                      (when-let [handler (:value (nth options index))]
-                                        (handler))))}))
+  (list-selection-fn {:options  options
+                      :callback (fn [index]
+                                  (when (< index (count options))
+                                    (when-let [handler (:value (nth options index))]
+                                      (handler))))})
   nil)
 
 (defn context-menu [trigger options]
