@@ -3,6 +3,7 @@
   (:require [re-frame.core :refer [dispatch]]
     [status-im.contacts.views.contact :refer [contact-view]]
     [status-im.components.react :refer [view
+                                        keyboard-avoiding-view
                                         text
                                         list-view
                                         list-item]]
@@ -10,6 +11,7 @@
     [status-im.components.status-bar :refer [status-bar]]
     [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
     [status-im.utils.listview :refer [to-datasource]]
+    [status-im.utils.platform :refer [ios?]]
     [status-im.new-group.views.toggle-contact :refer [group-toggle-contact
                                                       group-toggle-participant]]
     [status-im.components.common.common :refer [separator]]
@@ -50,7 +52,8 @@
   [contacts [:all-added-group-contacts-filtered]
    selected-contacts-count [:selected-contacts-count]
    group-type [:get :group-type]]
-  [view st/group-container
+  [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                st/group-container)
    [status-bar]
    [toggle-list-toolbar
     (label (if (= group-type :contact-group)
@@ -74,7 +77,8 @@
   [contacts [:all-group-not-added-contacts-filtered]
    group [:get-contact-group]
    selected-contacts-count [:selected-contacts-count]]
-  [view st/group-container
+  [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                st/group-container)
    [status-bar]
    [toggle-list-toolbar (:name group) selected-contacts-count]
    [view {:flex 1}
@@ -96,7 +100,8 @@
   [contacts [:contacts-filtered :all-new-contacts]
    chat-name [:chat :name]
    selected-contacts-count [:selected-participants-count]]
-  [view st/group-container
+  [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                st/group-container)
    [status-bar]
    [toggle-list-toolbar chat-name selected-contacts-count]
    [view {:flex 1}

@@ -14,9 +14,11 @@
             [status-im.profile.validations :as v]
             [status-im.components.react :refer [view
                                                 scroll-view
+                                                keyboard-avoiding-view
                                                 text
                                                 touchable-highlight
                                                 text-input]]
+            [status-im.utils.platform :refer [ios?]]
             [cljs.spec :as s]))
 
 (defn edit-my-profile-toolbartoolbar []
@@ -77,7 +79,8 @@
         profile-edit-data-changed? (or (not= (:name current-account) (:name changed-account))
                                        (not= (:status current-account) (:status changed-account))
                                        (not= (:photo-path current-account) (:photo-path changed-account)))]
-    [view st/profile
+    [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                  st/profile)
      [status-bar]
      [edit-my-profile-toolbartoolbar]
      [view {:flex 1}
