@@ -15,7 +15,7 @@
    :invite-friends                        "Invite friends"
    :faq                                   "FAQ"
    :switch-users                          "Switch users"
-   :feedback                              "Got Feedback?\nShake your phone!"
+   :feedback                              "Got feedback?\nShake your phone!"
 
    ;chat
    :is-typing                             "is typing"
