@@ -70,7 +70,7 @@
    :message                               "Message"
    :username                              "Username"
    :not-specified                         "Not specified"
-   :public-key                            "Public Key"
+   :public-key                            "Public key"
    :phone-number                          "Phone number"
    :email                                 "Email"
    :profile-no-status                     "No status"
