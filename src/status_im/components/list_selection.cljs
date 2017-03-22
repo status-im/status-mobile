@@ -17,7 +17,7 @@
 (defn share [text dialog-title]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       dialog-title
-                        :options     [(label :t/sharing-copy-to-clipboard) (label :t/sharing-share)]
+                        :options     (share-options text)
                         :callback    (fn [index]
                                        (case index
                                          0 (copy-to-clipboard text)

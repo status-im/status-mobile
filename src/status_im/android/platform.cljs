@@ -172,7 +172,7 @@
 (defn show-dialog [{:keys [title options callback]}]
   (let [dialog (new react-native-dialogs)]
     (.set dialog (clj->js {:title         title
-                           :items         options
+                           :items         (mapv :text options)
                            :itemsCallback callback}))
     (.show dialog)))
 
