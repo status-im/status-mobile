@@ -61,8 +61,7 @@
 
 (def item-upper-container
   {:flex            1
-   :flex-direction  :row
-   :justify-content :space-between})
+   :flex-direction  :row})
 
 (def item-lower-container
   (merge {:flex            1
@@ -70,9 +69,14 @@
           :justify-content :space-between}
          (get-in p/platform-specific [:component-styles :chat-list :item-lower-container])))
 
+(def message-status-container
+  {:flex-direction :row
+   :align-items    :center})
+
 (def name-view
   {:flex-direction :row
-   :flex-shrink    1})
+   :flex           1
+   :margin-right   4})
 
 (def name-text
   (merge {:color     text1-color
@@ -112,9 +116,10 @@
    :right          16})
 
 (def status-image
-  {:marginTop 4
-   :width     9
-   :height    7})
+  {:opacity      0.6
+   :margin-right 4
+   :width        16
+   :height       16})
 
 (def datetime-text
   (merge {:color text4-color}

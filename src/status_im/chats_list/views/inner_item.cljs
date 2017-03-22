@@ -108,10 +108,12 @@
      (when private-group?
       [view st/private-group-icon-container
        [icon :private_group st/private-group-icon]])
-     [text {:style st/name-text}
-      (if public-group?
-        (str "#" chat-name)
-        chat-name)]]))
+     [view {:flex-shrink 1}
+      [text {:style st/name-text
+             :number-of-lines 1}
+       (if public-group?
+         (str "#" chat-name)
+         chat-name)]]]))
 
 (defn chat-list-item-inner-view [{:keys [chat-id name color online
                                          group-chat contacts public?] :as chat}
@@ -126,7 +128,7 @@
       [view st/item-upper-container
        [chat-list-item-name name group-chat public?]
        (when (and (not edit?) @last-message)
-         [view
+         [view st/message-status-container
           [message-status chat @last-message]
           [message-timestamp @last-message]])]
       [view st/item-lower-container

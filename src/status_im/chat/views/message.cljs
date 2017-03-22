@@ -252,7 +252,7 @@
             seen-by-everyone?)
       [view st/delivery-view
        [image {:source (case status
-                         :seen {:uri :icon_ok_small}
+                         :seen {:uri :icon_ok_small_copy_2}
                          :failed res/delivery-failed-icon
                          nil)
                :style  st/delivery-image}]
@@ -296,7 +296,7 @@
                               (or delivery-status message-status app-db-message-status-value :sending))]
     [view st/delivery-view
      [image {:source (case status
-                       :seen {:uri :icon_ok_small}
+                       :seen {:uri :icon_ok_small_copy_2}
                        :failed res/delivery-failed-icon
                        nil)
              :style  st/delivery-image}]
