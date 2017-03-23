@@ -140,11 +140,6 @@
    :confirm-button-label  {:color          styles/color-white
                            :font-size      14
                            :letter-spacing 0.5}
-   :action-button-label   {:color          styles/color-black
-                           :font-size      16
-                           :line-height    24}
-   :action-button         {:height 56}
-   :separator             {:height 0}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}
