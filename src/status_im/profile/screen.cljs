@@ -166,46 +166,38 @@
 
 (defview my-profile []
   [current-account [:get-current-account]]
-  (let [shadows? (get-in platform-specific [:group-block-shadows?])]
-    [view st/profile
-     [status-bar]
-     [my-profile-toolbar]
-     [view st/my-profile-form
-      [profile-bage current-account]]
-     (when shadows?
-       [bottom-shaddow])
-     [view st/profile-info-container
-      (when shadows?
-        [top-shaddow])
-      [view st/profile-actions-container
-       [action-button (label :t/share-qr)
-                      :q_r_blue
-                      (show-qr current-account :public-key)]]
-      [view st/form-separator]
-      [my-profile-info current-account]
-      (when shadows?
-        [bottom-shaddow])]]))
+  [view st/profile
+   [status-bar]
+   [my-profile-toolbar]
+   [view st/my-profile-form
+    [profile-bage current-account]]
+   [bottom-shaddow]
+   [view st/profile-info-container
+    [top-shaddow]
+    [view st/profile-actions-container
+     [action-button (label :t/share-qr)
+                    :q_r_blue
+                    (show-qr current-account :public-key)]]
+    [view st/form-separator]
+    [my-profile-info current-account]
+    [bottom-shaddow]]])
 
 (defview profile []
   [{:keys [pending?
            whisper-identity]
     :as contact} [:contact]
    chat-id [:get :current-chat-id]]
-  (let [shadows? (get-in platform-specific [:group-block-shadows?])]
-    [view st/profile
-     [status-bar]
-     [toolbar]
-     [scroll-view
-      [view st/profile-form
-       [profile-bage contact]
-       [add-to-contacts pending? chat-id]]
-      (when shadows?
-        [bottom-shaddow])
-      [view st/profile-info-container
-       (when shadows?
-         [top-shaddow])
-       [profile-actions whisper-identity chat-id]
-       [view st/form-separator]
-       [profile-info contact]
-       (when shadows?
-         [bottom-shaddow])]]]))
+  [view st/profile
+   [status-bar]
+   [toolbar]
+   [scroll-view
+    [view st/profile-form
+     [profile-bage contact]
+     [add-to-contacts pending? chat-id]]
+    [bottom-shaddow]
+    [view st/profile-info-container
+     [top-shaddow]
+     [profile-actions whisper-identity chat-id]
+     [view st/form-separator]
+     [profile-info contact]
+     [bottom-shaddow]]]])

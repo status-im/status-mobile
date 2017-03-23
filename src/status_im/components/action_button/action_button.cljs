@@ -1,6 +1,6 @@
 (ns status-im.components.action-button.action-button
   (:require [status-im.components.action-button.styles :as st]
-            [status-im.components.common.common :refer [separator]]
+            [status-im.components.common.common :refer [list-separator]]
             [status-im.components.react :refer [view
                                                 text
                                                 icon
@@ -16,4 +16,4 @@
       label]]]])
 
 (defn action-separator []
-  [separator st/action-separator])
+  [list-separator])

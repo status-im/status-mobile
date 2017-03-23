@@ -15,6 +15,7 @@
             [status-im.components.context-menu :refer [menu-context]]
             [status-im.contacts.search-results :refer [contacts-search-results]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
+            [status-im.contacts.views.contact-list-modal :refer [contact-list-modal]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
             [status-im.qr-scanner.screen :refer [qr-scanner]]
             [status-im.discover.search-results :refer [discover-search-results]]
@@ -153,7 +154,7 @@
                                        :qr-scanner qr-scanner
                                        :qr-code-view qr-code-view
                                        :confirm confirm
-                                       :contact-list-modal contact-list)]
+                                       :contact-list-modal contact-list-modal)]
                        [component])]])]]))))})))
 
 (defn init []
