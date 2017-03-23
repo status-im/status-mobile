@@ -1,7 +1,8 @@
 var _status_catalog = {
         commands: {},
         responses: {},
-        functions: {}
+        functions: {},
+        subscriptions: {}
     },
     status = {};
 
@@ -109,6 +110,10 @@ function view(options, elements) {
     return ['view', options].concat(elements);
 }
 
+function slider(options) {
+    return ['slider', options];
+}
+
 function image(options) {
     return ['image', options];
 }
@@ -119,6 +124,14 @@ function touchable(options, element) {
 
 function scrollView(options, elements) {
     return ['scroll-view', options].concat(elements);
+}
+
+function subscribe(path) {
+    return ['subscribe', path];
+}
+
+function dispatch(path) {
+    return ['dispatch', path];
 }
 
 function webView(url) {
@@ -178,15 +191,24 @@ var status = {
     components: {
         view: view,
         text: text,
+        slider: slider,
         image: image,
         touchable: touchable,
         scrollView: scrollView,
         webView: webView,
         validationMessage: validationMessage,
-        bridgedWebView: bridgedWebView
+        bridgedWebView: bridgedWebView,
+        subscribe: subscribe,
+        dispatch: dispatch
     },
     setSuggestions: function (view) {
         addContext("suggestions", view);
+    },
+    setDefaultDb: function (db) {
+        addContext("default-db", db);
+    },
+    updateDb: function (db) {
+        addContext("update-db", db)
     },
     sendMessage: function (text) {
         addContext("text-message", text);
@@ -202,9 +224,25 @@ var status = {
         }
         logMessages.push(message);
         addContext("log-messages", logMessages);
+    },
+    defineSubscription: function (name, subscriptions, handler) {
+        _status_catalog.subscriptions[name] = {
+            subscriptions: subscriptions,
+            handler: handler
+        };
     }
 };
 
+function calculateSubscription(parameters, context) {
+    var subscriptionConfig = _status_catalog.subscriptions[parameters.name];
+    if (!subscriptionConfig) {
+        return;
+    }
+
+    return subscriptionConfig.handler(parameters.subscriptions);
+}
+
+status.addListener("subscription", calculateSubscription);
 
 console = (function (old) {
     return {

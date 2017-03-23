@@ -17,15 +17,18 @@
 
 (def browse-js (slurp-bot :browse))
 
-(def mailman-js (slurp-bot :mailman ))
+(def mailman-js (slurp-bot :mailman))
+
+(def demo-bot-js (slurp-bot :demo_bot))
 
 (def commands-js wallet-js)
 
 (def resources
-  {:wallet-bot wallet-js
+  {:wallet-bot  wallet-js
    :console-bot console-js
-   :browse-bot browse-js
-   :mailman-bot mailman-js})
+   :browse-bot  browse-js
+   :mailman-bot mailman-js
+   :demo-bot    demo-bot-js})
 
 (defn get-resource [url]
   (let [resource-name (keyword (subs url (count local-protocol)))]

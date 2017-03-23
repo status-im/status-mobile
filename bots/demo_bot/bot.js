@@ -26,7 +26,7 @@ status.defineSubscription(
     function (params) {
         return round(params.value);
     }
-)
+);
 
 function superSuggestion(params, context) {
     var balance = parseFloat(web3.fromWei(web3.eth.getBalance(context.from), "ether"));
@@ -69,11 +69,11 @@ function superSuggestion(params, context) {
         validationText: validationText
     });
 
-    status.setSuggestions(view);
+    return {markup: view};
 };
 
-status.on("text-change", superSuggestion);
-status.on("message", function (params, context) {
+status.addListener("on-message-input-change", superSuggestion);
+status.addListener("on-message-send", function (params, context) {
     if (isNaN(params.message)) {
         status.sendMessage("Seems that you don't want to send money :(");
         return;

@@ -108,7 +108,7 @@
        (into {})))
 
 (defn add-commands
-  [db [id _ {:keys [commands responses]}]]
+  [db [id _ {:keys [commands responses subscriptions]}]]
   (let [account        @(subscribe [:get-current-account])
         commands'      (filter-forbidden-names account id commands)
         global-command (:global commands')
@@ -121,7 +121,7 @@
                        :commands-loaded true
                        :commands (mark-as :command commands'')
                        :responses (mark-as :response responses')
-                       :global-command global-command)
+                       :subscriptions subscriptions)
 
             global-command
             (update :global-commands assoc (keyword id)
@@ -173,7 +173,14 @@
    ;;(after #(dispatch [:update-suggestions]))
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
-            (dispatch [:invoke-chat-loaded-callbacks id])))]
+            (dispatch [:invoke-chat-loaded-callbacks id])))
+   (after (fn [{:keys [contacts]} [id]]
+            (let [subscriptions (get-in contacts [id :subscriptions])]
+              (doseq [[name opts] subscriptions]
+                (dispatch [:register-bot-subscription
+                           (assoc opts :bot id
+                                       :name name)])))))]
+
   add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))

@@ -7,5 +7,9 @@
 
 (defmacro slurp-bot [bot-name & files]
   (->> (concat files ["translations.js" "bot.js"])
-       (map #(clojure.core/slurp (s/join "/" ["bots" (name bot-name) %])))
+       (map (fn [file-name]
+              (try
+                (clojure.core/slurp
+                  (s/join "/" ["bots" (name bot-name) file-name]))
+                (catch Exception _ ""))))
        (apply str)))

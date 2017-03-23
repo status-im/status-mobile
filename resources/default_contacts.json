@@ -32,6 +32,16 @@
         "bot-url": "local://mailman-bot"
     },
 
+    "demo-bot":
+    {
+        "name":
+        {
+            "en": "Demo bot"
+        },
+        "dapp?": true,
+        "bot-url": "local://demo-bot"
+    },
+
     "browse":
     {
         "name":

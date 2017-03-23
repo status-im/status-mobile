@@ -180,8 +180,9 @@
             {:keys [hash]} (get transactions id)
             pending-message (get transaction-subscribers message-id)]
         (when (and pending-message id hash)
-          (dispatch [::send-pending-message message-id hash])
-          (dispatch [::remove-transaction id]))))))
+          (dispatch [::send-pending-message message-id hash]))
+        ;; todo revisit this
+        (dispatch [::remove-transaction id])))))
 
 (def wrong-password-code "2")
 (def discard-code "4")

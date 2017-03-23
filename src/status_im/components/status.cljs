@@ -147,14 +147,14 @@
            (.callJail status chat-id (cljs->json path) (cljs->json params') cb))))))
 
 (defn call-function!
-  [{:keys [chat-id function] :as opts}]
+  [{:keys [chat-id function callback] :as opts}]
   (let [path   [:functions function]
         params (select-keys opts [:parameters :context])]
     (call-jail
       chat-id
       path
       params
-      #(dispatch [:received-bot-response {:chat-id chat-id} %]))))
+      (or callback #(dispatch [:received-bot-response {:chat-id chat-id} %])))))
 
 (defn set-soft-input-mode [mode]
   (when status
