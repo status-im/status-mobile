@@ -101,7 +101,7 @@
           suggestions     (suggestions/get-command-suggestions db chat-text)
           global-commands (suggestions/get-global-command-suggestions db chat-text)
           {:keys [dapp?]} (get-in db [:contacts chat-id])]
-      (when (and dapp? (every? empty? [requests suggestions global-commands]))
+      (when (and dapp? (every? empty? [requests suggestions]))
         (dispatch [::check-dapp-suggestions chat-id chat-text]))
       (-> db
           (assoc-in [:chats chat-id :request-suggestions] requests)
@@ -276,13 +276,14 @@
 (handlers/register-handler
   ::check-dapp-suggestions
   (handlers/side-effect!
-    (fn [db [_ chat-id text]]
+    (fn [{:keys [current-account-id] :as db}  [_ chat-id text]]
       (let [data (get-in db [:local-storage chat-id])]
         (status/call-function!
           {:chat-id    chat-id
            :function   :on-message-input-change
            :parameters {:message text}
-           :context    {:data data}})))))
+           :context    {:data data
+                        :from current-account-id}})))))
 
 (handlers/register-handler
   :clear-seq-arguments

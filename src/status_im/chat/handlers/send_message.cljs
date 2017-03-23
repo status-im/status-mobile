@@ -190,22 +190,28 @@
 
 (register-handler ::send-dapp-message
   (u/side-effect!
-    (fn [db [_ chat-id {:keys [content]}]]
+    (fn [{:keys [current-account-id] :as db} [_ chat-id {:keys [content]}]]
       (let [data (get-in db [:local-storage chat-id])]
         (status/call-function!
           {:chat-id    chat-id
            :function   :on-message-send
            :parameters {:message content}
-           :context    {:data data}})))))
+           :context    {:data data
+                        :from current-account-id}})))))
 
 (register-handler :received-bot-response
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
       (let [{:keys [returned context]} result
             {:keys [markup text-message]} returned
-            {:keys [log-messages]} context]
+            {:keys [log-messages update-db default-db]} context]
+        (when update-db
+          (dispatch [:update-bot-db {:bot chat-id
+                                     :db  update-db}]))
         (when markup
-          (dispatch [:suggestions-handler (assoc params :result data)]))
+          (dispatch [:suggestions-handler (assoc params
+                                            :result data
+                                            :default-db default-db)]))
         (doseq [message log-messages]
           (let [{:keys [message type]} message]
             (when (or (not= type "debug") js/goog.DEBUG)

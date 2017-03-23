@@ -8,7 +8,8 @@
             status-im.contacts.subs
             status-im.new-group.subs
             status-im.participants.subs
-            status-im.transactions.subs))
+            status-im.transactions.subs
+            status-im.bots.subs))
 
 (register-sub :get
   (fn [db [_ k]]

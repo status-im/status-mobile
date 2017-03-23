@@ -3,7 +3,6 @@
             [clojure.string :refer [join split]]
             [status-im.utils.random :refer [timestamp]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
-            [status-im.commands.utils :refer [generate-hiccup]]
             [cljs.reader :refer [read-string]]
             [status-im.constants :as c])
   (:refer-clojure :exclude [update]))
