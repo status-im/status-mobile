@@ -30,6 +30,11 @@
            (sort-contacts)
            (reaction)))))
 
+(register-sub :all-added-people-contacts
+  (fn [_ _]
+    (let [contacts (subscribe [:all-added-contacts])]
+      (reaction (remove #(true? (:dapp? %)) @contacts)))))
+
 (defn filter-group-contacts [group-contacts contacts]
   (filter #(group-contacts (:whisper-identity %)) contacts))
 

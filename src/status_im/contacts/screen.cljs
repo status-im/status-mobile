@@ -75,13 +75,12 @@
      [options-btn group])])
 
 (defn contact-group-form [{:keys [contacts contacts-count group edit? click-handler]}]
-  (let [shadows? (get-in platform-specific [:group-block-shadows?])
-        subtitle (:name group)]
+  (let [subtitle (:name group)]
     [view st/contact-group
      (when subtitle
        [subtitle-view subtitle contacts-count group edit?])
-     (when (and subtitle shadows?)
-         [top-shaddow])
+     (when subtitle
+       [top-shaddow])
      [view st/contacts-list
       [view st/contact-list-spacing]
       (doall
@@ -116,8 +115,7 @@
                   :uppercase? (get-in platform-specific [:uppercase?])
                   :font (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
             (str (- contacts-count contacts-limit) " " (label :t/more))]]]]])
-     (when shadows?
-       [bottom-shaddow])]))
+     [bottom-shaddow]]))
 
 (defview contact-group-view [{:keys [group] :as params}]
   [contacts [:all-added-group-contacts-with-limit (:group-id group) contacts-limit]

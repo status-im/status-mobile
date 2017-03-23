@@ -31,6 +31,9 @@
 (def contacts-list
   {:background-color color-white})
 
+(def contacts-list-modal
+  {:background-color toolbar-background2})
+
 (def empty-contact-groups
   (merge contact-groups
          {:align-items     :center
