@@ -34,28 +34,25 @@
       [view st/order-item-icon
        [icon :grab_gray]]]]))
 
-(defn render-separator [last shadows?]
+(defn render-separator [last]
   (fn [_ row-id _]
     (list-item
       (if (= row-id last)
-        (when shadows?
-          ^{:key "bottom-shaddow"}
-          [bottom-shaddow])
+        ^{:key "bottom-shaddow"}
+        [bottom-shaddow]
         ^{:key row-id}
         [view st/order-item-separator-wrapper
          [view st/order-item-separator]]))))
 
 (defview reorder-groups []
   [groups [:get :contact-groups]
-   order  [:get :groups-order]
-   shadows? (get-in platform-specific [:group-block-shadows?])]
+   order  [:get :groups-order]]
   (let [this (r/current-component)]
     [view st/reorder-groups-container
      [status-bar]
      [toolbar-view]
      [view st/reorder-list-container
-      (when shadows?
-        [top-shaddow])
+      [top-shaddow]
       [sortable-list-view
        {:data             groups
         :order            order
@@ -63,5 +60,5 @@
                                (.forceUpdate this))
         :render-row       (fn [row]
                            (sortable-item [group-item row]))
-        :render-separator (render-separator (last order) shadows?)}]]
+        :render-separator (render-separator (last order))}]]
      [confirm-button (label :t/save) #(dispatch [:save-group-order])]]))

@@ -163,15 +163,6 @@
                            :font-size      17
                            :line-height    20
                            :letter-spacing -0.2}
-   :action-button-label   {:color          styles/color-light-blue
-                           :letter-spacing -0.2
-                           :font-size      17
-                           :line-height    20}
-   :action-button-icon-container {:background-color styles/color-light-blue-transparent}
-   :action-button         {:height 64}
-   :separator             {:height           1
-                           :background-color styles/color-gray5
-                           :opacity          0.5}
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
