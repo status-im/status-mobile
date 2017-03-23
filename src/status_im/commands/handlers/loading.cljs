@@ -104,7 +104,7 @@
        (into {})))
 
 (defn add-commands
-  [db [id _ {:keys [commands responses]}]]
+  [db [id _ {:keys [commands responses subscriptions]}]]
   (let [account        @(subscribe [:get-current-account])
         commands'      (filter-forbidden-names account id commands)
         global-command (:global commands')
@@ -117,6 +117,7 @@
                        :commands (mark-as :command commands'')
                        :responses (mark-as :response responses')
                        :commands-loaded true
+                       :subscriptions subscriptions
                        :global-command global-command)
 
             global-command
@@ -149,8 +150,9 @@
 (defn invoke-init-command!
   [{:keys [current-account-id chats] :as db} [bot-id]]
   (status/call-function!
-    {:chat-id bot-id
-     :function :init}))
+    {:chat-id  bot-id
+     :function :init
+     :context  {:from current-account-id}}))
 
 (reg-handler :check-and-load-commands!
   (u/side-effect!
@@ -175,6 +177,12 @@
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
             (dispatch [:invoke-chat-loaded-callbacks id])))
+   (after (fn [{:keys [chats]} [id]]
+            (let [subscriptions (get-in chats [id :subscriptions])]
+              (doseq [[name opts] subscriptions]
+                (dispatch [:register-bot-subscription
+                           (assoc opts :bot id
+                                       :name name)])))))
    (after (fn [_ [id]]
             (dispatch [::invoke-init-command id])))]
   add-commands)

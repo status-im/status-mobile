@@ -332,7 +332,7 @@ function jsSuggestions(params, context) {
                 ])]);
         if (suggestion.pressValue) {
             suggestionMarkup = status.components.touchable({
-                    onPress: [status.events.SET_VALUE, suggestion.pressValue]},
+                    onPress: status.components.dispatch([status.events.SET_VALUE, suggestion.pressValue])},
                 suggestionMarkup);
         }
         sugestionsMarkup.push(suggestionMarkup);
@@ -444,7 +444,7 @@ function phoneSuggestions(params, context) {
 
     suggestions = ph.map(function (phone) {
         return status.components.touchable(
-            {onPress: [status.events.SET_VALUE, phone.number]},
+            {onPress: status.components.dispatch([status.events.SET_VALUE, phone.number])},
             status.components.view(suggestionContainerStyle,
                 [status.components.view(suggestionSubContainerStyle,
                     [
@@ -512,7 +512,7 @@ var faucets = [
 function faucetSuggestions(params) {
     var suggestions = faucets.map(function(entry) {
         return status.components.touchable(
-            {onPress: [status.events.SET_VALUE, entry.url]},
+            {onPress: status.components.dispatch([status.events.SET_VALUE, entry.url])},
             status.components.view(
                 suggestionContainerStyle,
                 [status.components.view(
@@ -583,7 +583,7 @@ status.command({
 function debugSuggestions(params) {
     var suggestions = ["On", "Off"].map(function(entry) {
         return status.components.touchable(
-            {onPress: [status.events.SET_VALUE, entry]},
+            {onPress: status.components.dispatch([status.events.SET_VALUE, entry])},
             status.components.view(
                 suggestionContainerStyle,
                 [status.components.view(

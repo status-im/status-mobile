@@ -220,12 +220,13 @@
   (fn [db [_ chat-id]]
     (-> db
         (update-in [:suggestions] dissoc chat-id)
+        (update-in [:raw-suggestions] dissoc chat-id)
         (update-in [:has-suggestions?] dissoc chat-id)
         (assoc-in [:animations :to-response-height chat-id] input-height))))
 
 (register-handler ::send-bot-message
   (u/side-effect!
-    (fn [db [_ chat-id {:keys [content]}]]
+    (fn [{:keys [current-account-id] :as db} [_ chat-id {:keys [content]}]]
       (let [data   (get-in db [:local-storage chat-id])
             path   [:functions :message]
             params {:parameters {:message content}
@@ -235,16 +236,23 @@
           {:chat-id    chat-id
            :function   :message
            :parameters {:message content}
-           :context    {:data data}})))))
+           :context    {:data data
+                        :from current-account-id}})))))
 
 (register-handler :received-bot-response
   [(after #(dispatch [:animate-show-response]))]
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id]} {:keys [result] :as data}]]
-      (let [{:keys [text-message log-messages suggestions web-view-url]}
+      (let [{:keys [text-message log-messages suggestions web-view-url
+                    update-db default-db]}
             (:context result)]
+        (when update-db
+          (dispatch [:update-bot-db {:bot chat-id
+                                     :db  update-db}]))
         (if suggestions
-          (dispatch [:suggestions-handler {:chat-id chat-id} suggestions])
+          (dispatch [:suggestions-handler
+                     {:chat-id    chat-id
+                      :default-db default-db} suggestions])
           (dispatch [:clear-response-suggestions chat-id]))
         (dispatch [:set-in [:web-view-url chat-id] web-view-url])
         (dispatch [:set-in [:has-suggestions? chat-id]

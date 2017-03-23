@@ -150,7 +150,7 @@
 
 (register-handler ::check-bot-suggestions
   (u/side-effect!
-    (fn [db [_ chat-id text]]
+    (fn [{:keys [current-account-id] :as db} [_ chat-id text]]
       (let [data   (get-in db [:local-storage chat-id])
             params {:parameters {:message text}
                     :context    {:data data}}]
@@ -158,7 +158,8 @@
           {:chat-id    chat-id
            :function   :text-change
            :parameters {:message text}
-           :context    {:data data}})))))
+           :context    {:data data
+                        :from current-account-id}})))))
 
 (register-handler :set-chat-input-text
   (u/side-effect!

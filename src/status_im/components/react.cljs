@@ -51,6 +51,7 @@
 (def keyboard (.-Keyboard react-native))
 (def linking (.-Linking js/ReactNative))
 
+(def slider (get-class "Slider"))
 ;; Accessor methods for React Components
 
 (defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]

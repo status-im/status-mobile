@@ -3,7 +3,6 @@
             [re-frame.core :refer [enrich after debug dispatch path]]
             [status-im.data-store.messages :as messages]
             [status-im.chat.utils :as cu]
-            [status-im.commands.utils :refer [generate-hiccup]]
             [status-im.utils.random :as random]
             [status-im.constants :refer [wallet-chat-id
                                          content-type-command

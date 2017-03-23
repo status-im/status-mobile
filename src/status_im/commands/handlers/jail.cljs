@@ -13,8 +13,9 @@
 
 (defn render-command
   [db [chat-id message-id markup]]
-  (let [hiccup (generate-hiccup markup)]
-    (assoc-in db [:rendered-commands chat-id message-id] hiccup)))
+  (generate-hiccup
+    markup
+    #(dispatch [:set-in [:rendered-commands chat-id message-id] %])))
 
 (defn command-handler!
   [_ [{:keys [chat-id command-message] :as parameters}
@@ -41,21 +42,36 @@
       :else nil)))
 
 (defn suggestions-handler!
-  [{:keys [contacts chats] :as db} [{:keys [chat-id]} suggestions]]
-  (let [text   (get-in chats [chat-id :input-text])
-        hiccup (generate-hiccup suggestions)]
-    (assoc-in db [:suggestions chat-id] hiccup)))
+  [{:keys [raw-suggestions]} [{:keys [chat-id default-db]} suggestions]]
+  (when-not (= (get raw-suggestions chat-id) suggestions)
+    (dispatch [:set-in [:raw-suggestions chat-id] suggestions])
+    (when default-db
+      (dispatch [:update-bot-db {:bot chat-id
+                                 :db  default-db}]))
+    (generate-hiccup
+      suggestions
+      #(dispatch [:set-in [:suggestions chat-id] %]))))
 
 (defn suggestions-events-handler!
-  [{:keys [current-chat-id] :as db} [[n data]]]
-  (log/debug "Suggestion event: " data)
+  [{:keys [current-chat-id bot-db] :as db} [[n & data :as ev] val]]
+  (log/debug "Suggestion event: " ev val)
   (let [{:keys [dapp?]} (get-in db [:contacts current-chat-id])
         command? (= :command (:type (cm/get-chat-command db)))]
     (case (keyword n)
       :set-value (if command?
-                   (dispatch [:fill-chat-command-content data])
+                   (dispatch [:fill-chat-command-content (first data)])
                    (when dapp?
                      (dispatch [:set-chat-input-text data])))
+      :set (let [opts {:bot   current-chat-id
+                       :path  (mapv keyword data)
+                       :value val}]
+             (dispatch [:set-in-bot-db opts]))
+      :set-value-from-db
+      (let [path  (keyword (first data))
+            value (str (get-in bot-db [current-chat-id path]))]
+        (if command?
+          (dispatch [:fill-chat-command-content value])
+          (dispatch [:set-chat-input-text value])))
       ;; todo show error?
       nil)))
 
@@ -65,7 +81,7 @@
       (show-popup "Error" (s/join "\n" [message params]))
       (log/debug message params))))
 
-(reg-handler ::render-command render-command)
+(reg-handler ::render-command (u/side-effect! render-command))
 
 (reg-handler :command-handler!
   (after (print-error-message! "Error on command handling"))
@@ -73,7 +89,7 @@
 
 (reg-handler :suggestions-handler
   [(after (print-error-message! "Error on param suggestions"))]
-  suggestions-handler!)
+  (u/side-effect! suggestions-handler!))
 
 (reg-handler :suggestions-event! (u/side-effect! suggestions-events-handler!))
 
