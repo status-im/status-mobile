@@ -124,6 +124,10 @@
   (fn [db _]
     (reaction (get-in @db [:suggestions (:current-chat-id @db)]))))
 
+(register-sub :get-raw-suggestions
+  (fn [db _]
+    (reaction (get-in @db [:raw-suggestions (:current-chat-id @db)]))))
+
 (register-sub :command?
   (fn [db]
     (->> (get-in @db [:edit-mode (:current-chat-id @db)])
@@ -139,7 +143,7 @@
   (fn []
     (let [command?            (subscribe [:command?])
           type                (subscribe [:command-type])
-          command-suggestions (subscribe [:get-content-suggestions])]
+          command-suggestions (subscribe [:get-raw-suggestions])]
       (reaction
         (cond (and @command? (= @type :response))
               c/request-info-height

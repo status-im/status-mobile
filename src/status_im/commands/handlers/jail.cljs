@@ -13,9 +13,8 @@
 
 (defn render-command
   [db [chat-id message-id markup]]
-  (generate-hiccup
-    markup
-    #(dispatch [:set-in [:rendered-commands chat-id message-id] %])))
+  (let [hiccup (generate-hiccup markup)]
+    (assoc-in db [:rendered-commands chat-id message-id] hiccup)))
 
 (defn command-handler!
   [_ [{:keys [chat-id command-message] :as parameters}
@@ -42,15 +41,13 @@
       :else nil)))
 
 (defn suggestions-handler!
-  [{:keys [raw-suggestions]} [{:keys [chat-id default-db]} suggestions]]
+  [{:keys [contacts chats raw-suggestions] :as db}
+   [{:keys [chat-id default-db]} suggestions]]
   (when-not (= (get raw-suggestions chat-id) suggestions)
     (dispatch [:set-in [:raw-suggestions chat-id] suggestions])
     (when default-db
       (dispatch [:update-bot-db {:bot chat-id
-                                 :db  default-db}]))
-    (generate-hiccup
-      suggestions
-      #(dispatch [:set-in [:suggestions chat-id] %]))))
+                                 :db  default-db}]))))
 
 (defn suggestions-events-handler!
   [{:keys [current-chat-id bot-db] :as db} [[n & data :as ev] val]]
@@ -81,7 +78,7 @@
       (show-popup "Error" (s/join "\n" [message params]))
       (log/debug message params))))
 
-(reg-handler ::render-command (u/side-effect! render-command))
+(reg-handler ::render-command render-command)
 
 (reg-handler :command-handler!
   (after (print-error-message! "Error on command handling"))

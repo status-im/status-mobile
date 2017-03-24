@@ -189,17 +189,9 @@
 
 (register-handler ::add-validation-errors
   (after #(dispatch [:fix-response-height]))
-  (u/side-effect!
-    (fn [db [_ chat-id errors]]
-      (doseq [error errors]
-        (cu/generate-hiccup
-          error
-          #(dispatch [::add-validation-error chat-id %]))))))
-
-(register-handler
-  ::add-validation-error
-  (fn [db [_ chat-id error]]
-    (update-in db [:custom-validation-errors chat-id] conj error)))
+  (fn [db [_ chat-id errors]]
+    (assoc-in db [:custom-validation-errors chat-id]
+              (map cu/generate-hiccup errors))))
 
 (register-handler :clear-validation-errors
   (fn [db]
@@ -304,12 +296,10 @@
               params    {:parameters params
                          :context    (merge {:platform platform/platform} i18n/delimeters)}
               callback  #(do (when-let [result (get-in % [:result :returned])]
-                               (if (string? result)
-                                 (dispatch [:set-in [:message-data data-type message-id] result])
-                                 (cu/generate-hiccup
-                                   result
-                                   (fn [component]
-                                     (dispatch [:set-in [:message-data data-type message-id] component])))))
+                               (dispatch [:set-in [:message-data data-type message-id]
+                                          (if (string? result)
+                                            result
+                                            (cu/generate-hiccup result))]) )
                              (when on-requested (on-requested %)))]
           (status/call-jail chat-id path params callback))))))
 

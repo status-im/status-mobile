@@ -152,14 +152,15 @@
   [view st/input-placeholder])
 
 (defview response-suggestions-view []
-  [suggestions [:get-content-suggestions]]
-  (when (seq suggestions) suggestions))
+  [bot-db [:current-bot-db]
+   suggestions [:get-raw-suggestions]]
+  (cu/generate-hiccup suggestions bot-db))
 
 (defn response-view []
   (let [response-height (anim/create-value c/input-height)
         command         (subscribe [:get-chat-command])
         text            (subscribe [:get-chat-input-text])
-        suggestions     (subscribe [:get-content-suggestions])
+        suggestions     (subscribe [:get-raw-suggestions])
         errors          (subscribe [:validation-errors])
         custom-errors   (subscribe [:custom-validation-errors])]
     (fn []
