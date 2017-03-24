@@ -202,7 +202,7 @@
         "dapp?": true,
         "dapp-url":
         {
-            "en": "http://etherplay.io"
+            "en": "http://test.etherplay.io"
         }
     }
 }
