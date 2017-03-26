@@ -284,7 +284,7 @@
   (fn [db [_ new-groups]]
     (-> db
         (update :contact-groups merge (map #(vector (:group-id %) %) new-groups))
-        (assoc db :new-groups new-groups))))
+        (assoc :new-groups new-groups))))
 
 (register-handler :save-group-order
   (u/side-effect!
@@ -317,7 +317,7 @@
 (defn add-selected-contacts-to-group
   [{:keys [selected-contacts contact-groups contact-group-id] :as db} _]
   (let [new-identities (mapv #(hash-map :identity %) selected-contacts)]
-    (update db [:contact-groups contact-group-id :contacts] concat new-identities)))
+    (update-in db [:contact-groups contact-group-id :contacts] concat new-identities)))
 
 (defn add-selected-contacts-to-group!
   [{:keys [contact-group-id selected-contacts]} _]
