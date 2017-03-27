@@ -15,5 +15,14 @@
      [text {:style st/action-button-label}
       label]]]])
 
+(defn action-button-disabled [label icon-key]
+  [view st/action-button
+   [view st/action-button-icon-container-disabled
+    [view {:opacity 0.4}
+     [icon icon-key]]]
+   [view st/action-button-label-container
+    [text {:style st/action-button-label-disabled}
+     label]]])
+
 (defn action-separator []
   [list-separator])
