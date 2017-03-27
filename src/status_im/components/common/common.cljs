@@ -19,6 +19,12 @@
   [view st/separator-wrapper
    [view (merge st/separator style)]])
 
+(defn form-spacer []
+  [view
+   [bottom-shaddow]
+   [view st/form-spacer]
+   [top-shaddow]])
+
 (defn list-separator []
   [separator st/list-separator])
 

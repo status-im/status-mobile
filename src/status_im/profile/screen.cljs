@@ -4,12 +4,16 @@
             [clojure.string :as str]
             [reagent.core :as r]
             [status-im.contacts.styles :as cst]
-            [status-im.components.common.common :refer [separator]]
+            [status-im.components.common.common :refer [separator
+                                                        form-spacer
+                                                        top-shaddow
+                                                        bottom-shaddow]]
             [status-im.components.styles :refer [color-blue color-gray5]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.action-button.action-button :refer [action-button
+                                                                      action-button-disabled
                                                                       action-separator]]
-            [status-im.components.common.common :refer [top-shaddow bottom-shaddow]]
+            [status-im.components.action-button.styles :refer [actions-list]]
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
@@ -33,6 +37,12 @@
   [toolbar {:actions [(act/opts [{:value #(dispatch [:open-edit-my-profile])
                                   :text (label :t/edit)}])]}])
 
+(defn profile-toolbar [contact]
+  [toolbar
+   (when-not (:pending? contact)
+     {:actions [(act/opts [{:value #(dispatch [:hide-contact contact])
+                            :text  (label :t/remove-from-contacts)}])]})])
+
 (defn online-text [last-online]
   (let [last-online-date (time/to-date last-online)
         now-date         (time/now)]
@@ -45,33 +55,24 @@
   [view st/profile-bage
    [my-profile-icon {:account contact
                      :edit?   false}]
-   [view st/profile-name-container
-    [text {:style st/profile-name-text}
-     name]]
-   (when-not (nil? last-online)
-     [view st/profile-status-container
-      [text {:style st/profile-status-text}
-       (online-text last-online)]])])
+   [view st/profile-bage-name-container
+    [text {:style st/profile-name-text
+           :number-of-lines 1}
+      name]
+    (when-not (nil? last-online)
+      [view st/profile-activity-status-container
+       [text {:style st/profile-activity-status-text}
+        (online-text last-online)]])]])
 
-(defn add-to-contacts [pending? chat-id]
-  [view
+(defn profile-actions [{:keys [pending? whisper-identity]} chat-id]
+  [view actions-list
    (if pending?
-     [touchable-highlight {:on-press #(dispatch [:add-pending-contact chat-id])}
-      [view st/add-to-contacts
-       [text {:style st/add-to-contacts-text
-              :font (when android? :medium)
-              :uppercase? (get-in platform-specific [:uppercase?])}
-        (label :t/add-to-contacts)]]]
-     [view st/in-contacts
-      [icon :ok_blue]
-      [view st/in-contacts-inner
-       [text {:style st/in-contacts-text
-              :font (when android? :medium)
-              :uppercase? (get-in platform-specific [:uppercase?])}
-        (label :t/in-contacts)]]])])
-
-(defn profile-actions [whisper-identity chat-id]
-  [view st/profile-actions-container
+     [action-button (label :t/add-to-contacts)
+                    :add_blue
+                    #(dispatch [:add-pending-contact chat-id])]
+     [action-button-disabled (label :t/in-contacts)
+                             :ok_dark])
+   [action-separator]
    [action-button (label :t/start-conversation)
                   :chats_blue
                   #(message-user whisper-identity)]
@@ -82,7 +83,7 @@
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [view st/profile-setting-item
-   [view (st/profile-setting-text-container options)
+   [view (st/profile-info-text-container options)
     [text {:style st/profile-setting-title}
      label]
     [view st/profile-setting-spacing]
@@ -137,18 +138,8 @@
       ^{:key (str "item-" i)}
       (str status " "))))
 
-(defn profile-info-status-item [status & [options]]
-  (let [status-empty? (= "" status)
-        status-text  (if status-empty?
-                       (label :t/profile-no-status)
-                       (colorize-status-hashtags status))]
-    [profile-info-item {:label        (label :t/status)
-                        :value        status-text
-                        :options      options
-                        :empty-value? status-empty?}]))
-
 (defn profile-info-phone-item [phone & [options]]
-  (let [phone-empty? (or (nil? phone) (= "" phone))
+  (let [phone-empty? (or (nil? phone) (str/blank? phone))
         phone-text  (if phone-empty?
                        (label :t/not-specified)
                        phone)]
@@ -157,27 +148,16 @@
                         :options      options
                         :empty-value? phone-empty?}]))
 
-(defn profile-info [{:keys [whisper-identity :whisper-identity
-                            status           :status
-                            phone            :phone] :as contact}]
-    [view
-     [profile-info-status-item status]
-     [info-item-separator]
-     [profile-info-address-item contact]
-     [info-item-separator]
-     [profile-info-public-key-item whisper-identity contact]
-     [info-item-separator]
-     [profile-info-phone-item phone]])
-
-(defn my-profile-info [{:keys [public-key :public-key
-                               status     :status
-                               phone      :phone] :as contact}]
-  [view st/my-profile-info-container
-   [profile-info-status-item
-    status
-    [{:value #(dispatch [:open-edit-my-profile])
-      :text (label :t/edit)}]]
+(defn profile-info [{:keys [whisper-identity status phone] :as contact}]
+  [view
+   [profile-info-address-item contact]
    [info-item-separator]
+   [profile-info-public-key-item whisper-identity contact]
+   [info-item-separator]
+   [profile-info-phone-item phone]])
+
+(defn my-profile-info [{:keys [public-key status phone] :as contact}]
+  [view
    [profile-info-address-item contact]
    [info-item-separator]
    [profile-info-public-key-item public-key contact]
@@ -187,40 +167,58 @@
     [{:value #(dispatch [:phone-number-change-requested])
       :text (label :t/edit)}]]])
 
+(defn- profile-status-on-press []
+  (dispatch [:set-in [:profile-edit :edit-status?] true])
+  (dispatch [:open-edit-my-profile]))
+
+(defn profile-status [status & [edit?]]
+  [view st/profile-status-container
+   (if (or (nil? status) (str/blank? status))
+     [touchable-highlight {:on-press profile-status-on-press}
+      [view
+       [text {:style st/add-a-status}
+        (label :t/add-a-status)]]]
+     [scroll-view
+      [touchable-highlight {:on-press (when edit? profile-status-on-press)}
+       [view
+        [text {:style st/profile-status-text}
+         (colorize-status-hashtags status)]]]])])
+
 (defview my-profile []
-  [current-account [:get-current-account]]
+  [{:keys [status] :as current-account} [:get-current-account]]
   [view st/profile
    [status-bar]
    [my-profile-toolbar]
-   [view st/my-profile-form
-    [profile-bage current-account]]
-   [bottom-shaddow]
+   [view st/profile-form
+    [profile-bage current-account]
+    [profile-status status true]]
+   [form-spacer]
+   [view actions-list
+    [action-button (label :t/show-qr)
+     :q_r_blue
+     (show-qr current-account :public-key)]]
+   [form-spacer]
    [view st/profile-info-container
-    [top-shaddow]
-    [view st/profile-actions-container
-     [action-button (label :t/share-qr)
-                    :q_r_blue
-                    (show-qr current-account :public-key)]]
-    [view st/form-separator]
     [my-profile-info current-account]
     [bottom-shaddow]]])
 
 (defview profile []
   [{:keys [pending?
+           status
            whisper-identity]
     :as contact} [:contact]
    chat-id [:get :current-chat-id]]
   [view st/profile
    [status-bar]
-   [toolbar]
+   [profile-toolbar contact]
    [scroll-view
     [view st/profile-form
      [profile-bage contact]
-     [add-to-contacts pending? chat-id]]
-    [bottom-shaddow]
+     (when (and (not (nil? status)) (not (str/blank? status)))
+       [profile-status status])]
+    [form-spacer]
+    [profile-actions contact chat-id]
+    [form-spacer]
     [view st/profile-info-container
-     [top-shaddow]
-     [profile-actions whisper-identity chat-id]
-     [view st/form-separator]
      [profile-info contact]
      [bottom-shaddow]]]])

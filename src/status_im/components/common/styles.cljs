@@ -63,3 +63,7 @@
           :padding-left 8
           :color        text4-color}))
 
+
+(defstyle form-spacer
+  {:ios     {:height 16}
+   :android {:height 11}})

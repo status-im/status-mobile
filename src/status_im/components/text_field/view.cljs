@@ -39,16 +39,19 @@
                     :auto-capitalize   :sentences})
 
 (defn field-animation [{:keys [top to-top font-size to-font-size
-                               line-width to-line-width line-height to-line-height]}]
+                               line-width to-line-width line-height to-line-height]} & [value-blank?]]
   (let [duration  (:label-animation-duration config)
-        animation (anim/parallel [(anim/timing top {:toValue  to-top
-                                                    :duration duration})
-                                  (anim/timing font-size {:toValue  to-font-size
+        animation (anim/parallel (into []
+                                   (concat
+                                     (when (or (nil? value-blank?) value-blank?)
+                                       [(anim/timing top {:toValue  to-top
                                                           :duration duration})
-                                  (anim/timing line-width {:toValue  to-line-width
-                                                           :duration duration})
-                                  (anim/timing line-height {:toValue  to-line-height
-                                                            :duration duration})])]
+                                        (anim/timing font-size {:toValue  to-font-size
+                                                                :duration duration})])
+                                     [(anim/timing line-width {:toValue  to-line-width
+                                                               :duration duration})
+                                      (anim/timing line-height {:toValue  to-line-height
+                                                                :duration duration})])))]
     (anim/start animation (fn [arg]
                             (when (.-finished arg)
                               (log/debug "Field animation finished"))))))
@@ -92,7 +95,7 @@
   (log/debug "Input blurred")
   (r/set-state component {:has-focus    false
                           :float-label? (if (s/blank? value) false true)})
-  (field-animation animation)
+  (field-animation animation (s/blank? value))
   (when onBlur (onBlur)))
 
 (defn get-width [event]
