@@ -95,22 +95,6 @@
                            :name-text {:fontSize       16
                                        :line-height    24
                                        :color          styles/text1-color}}
-   :profile               {:profile-bage {:padding-top 24}
-                           :profile-name-text {:color       styles/color-black
-                                               :font-size   16
-                                               :line-height 24}
-                           :profile-status-text {:font-size   15
-                                                 :line-height 20}
-                           :profile-setting-item {:padding-left  72
-                                                  :padding-right 13
-                                                  :height        72}
-                           :profile-setting-title {:font-size 12}
-                           :profile-setting-text {:font-size 16
-                                                  :color     styles/color-black}
-                           :profile-setting-spacing {:height 7}
-                           :form-separator {:margin-left 72}
-                           :edit-name-title {:font-size 12}
-                           :profile-icon-edit-text {:font-size 12}}
    :new-group             {:group-name-text {:font-size 12}
                            :members-text {:font-size 14}
                            :members-text-count  {:font-size 14}

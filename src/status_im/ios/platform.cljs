@@ -103,29 +103,6 @@
                                        :line-height    20
                                        :letter-spacing -0.2
                                        :color          styles/text1-color}}
-   :profile               {:profile-bage {:padding-top 24}
-                           :profile-name-text {:font-size      17
-                                               :line-height    20
-                                               :letter-spacing -0.2}
-                           :profile-status-text {:font-size      14
-                                                 :line-height    20
-                                                 :letter-spacing -0.2}
-                           :profile-setting-item {:padding-left  16
-                                                  :padding-right 16
-                                                  :height        73}
-                           :profile-setting-title {:font-size      14
-                                                   :letter-spacing -0.2}
-                           :profile-setting-text {:font-size      17
-                                                  :letter-spacing -0.2}
-                           :profile-setting-spacing {:height 10}
-                           :add-to-contacts-text {:font-size      17
-                                                  :line-height    20
-                                                  :letter-spacing -0.2}
-                           :edit-name-title {:font-size      13
-                                             :letter-spacing -0.1}
-                           :profile-icon-edit-text {:font-size        15
-                                                    :line-height      20
-                                                    :letter-spacing   -0.2}}
    :new-group             {:group-name-text {:font-size 13}
                            :members-text {:letter-spacing -0.2
                                           :font-size      16}
