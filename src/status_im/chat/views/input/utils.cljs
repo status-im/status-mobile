@@ -2,10 +2,15 @@
   (:require [taoensso.timbre :as log]
             [status-im.utils.platform :refer [platform-specific]]))
 
-(def default-area-height 300)
+(def min-height     20)
+(def default-height 300)
 
-(defn max-area-height [bottom screen-height]
+(defn default-container-area-height [bottom screen-height]
   (let [status-bar-height (get-in platform-specific [:component-styles :status-bar :default :height])]
-    (if (> (+ bottom default-area-height status-bar-height) screen-height)
+    (if (> (+ bottom default-height status-bar-height) screen-height)
       (- screen-height bottom status-bar-height)
-      default-area-height)))
+      default-height)))
+
+(defn max-container-area-height [bottom screen-height]
+  (let [status-bar-height (get-in platform-specific [:component-styles :status-bar :default :height])]
+    (- screen-height bottom status-bar-height)))

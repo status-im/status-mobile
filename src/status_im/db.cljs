@@ -39,8 +39,6 @@
              :current-tag                nil
              :qr-codes                   {}
              :keyboard-height            0
-             :animations                 {;; todo clear this
-                                          }
              :loading-allowed            true
 
              :sync-state                 :done

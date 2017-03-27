@@ -23,10 +23,6 @@
   (fn [db [_ path]]
     (reaction (get-in @db path))))
 
-(register-sub :animations
-  (fn [db [_ k]]
-    (reaction (get-in @db [:animations k]))))
-
 (register-sub :signed-up?
   (fn []
     (let [account-id (subscribe [:get :current-account-id])

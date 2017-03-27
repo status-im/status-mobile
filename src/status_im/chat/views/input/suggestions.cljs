@@ -6,9 +6,10 @@
                                                 touchable-highlight
                                                 text
                                                 icon]]
+            [status-im.data-store.messages :as messages]
             [status-im.chat.styles.input.suggestions :as style]
             [status-im.chat.views.input.utils :as input-utils]
-            [status-im.data-store.messages :as messages]
+            [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
             [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]))
 
@@ -44,33 +45,23 @@
    [text {:style style/item-title-text}
     s]])
 
-(defn header []
-  [view {:style style/header-container}
-   [view style/header-icon]])
-
 (defview suggestions-view []
-  [input-height [:chat-ui-props :input-height]
-   layout-height [:get :layout-height]
-   chat-input-margin [:chat-input-margin]
-   show-suggestions? [:show-suggestions?]
+  [show-suggestions? [:show-suggestions?]
    requests [:chat :request-suggestions]
    commands [:chat :command-suggestions]]
   (when show-suggestions?
-    (let [bottom (+ input-height chat-input-margin)]
-      [view (style/root (input-utils/max-area-height bottom layout-height)
-                        bottom)
-       [header]
-       [view {:flex 1}
-        [scroll-view {:keyboardShouldPersistTaps true}
-         (when (seq requests)
-           [view
-            [item-title false (label :t/suggestions-requests)]
-            (for [{:keys [chat-id message-id] :as request} requests]
-              ^{:key [chat-id message-id]}
-              [request-item 0 request])])
-         (when (seq commands)
-           [view
-            [item-title (seq requests) (label :t/suggestions-commands)]
-            (for [command (remove #(nil? (:title (second %))) commands)]
-              ^{:key (first command)}
-              [command-item 0 command])])]]])))
+    [expandable-view :suggestions
+     [view {:flex 1}
+      [scroll-view {:keyboardShouldPersistTaps true}
+       (when (seq requests)
+         [view
+          [item-title false (label :t/suggestions-requests)]
+          (for [{:keys [chat-id message-id] :as request} requests]
+            ^{:key [chat-id message-id]}
+            [request-item 0 request])])
+       (when (seq commands)
+         [view
+          [item-title (seq requests) (label :t/suggestions-commands)]
+          (for [command (remove #(nil? (:title (second %))) commands)]
+            ^{:key (first command)}
+            [command-item 0 command])])]]]))

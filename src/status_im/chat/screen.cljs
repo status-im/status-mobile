@@ -169,7 +169,6 @@
    show-actions? [:chat-ui-props :show-actions?]
    show-bottom-info? [:chat-ui-props :show-bottom-info?]
    show-emoji? [:chat-ui-props :show-emoji?]
-   command? [:command?]
    layout-height [:get :layout-height]]
   {:component-did-mount    #(dispatch [:check-autorun])
    :component-will-unmount #(dispatch [:set-chat-ui-props :show-emoji? false])}

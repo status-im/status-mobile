@@ -1,7 +1,8 @@
-(ns status-im.chat.suggestions-responder
+(ns status-im.chat.views.input.animations.responder
   (:require [status-im.components.drag-drop :as drag]
             [status-im.components.animation :as anim]
-            [re-frame.core :refer [dispatch]]))
+            [re-frame.core :refer [dispatch]]
+            [taoensso.timbre :as log]))
 
 ;; todo bad name. Ideas?
 (defn enough-dy [gesture]
@@ -14,16 +15,12 @@
         (anim/start
           (anim/spring response-height {:toValue to-value}))))))
 
-(defn on-release [response-height handler-name]
+(defn on-release [response-height handler-name key]
   (fn [_ gesture]
     (when (enough-dy gesture)
-      (dispatch [handler-name
-                 (.-vy gesture)
-                 ;; todo access to "private" property
-                 ;; better to find another way...
-                 (.-_value response-height)]))))
+      (dispatch [handler-name (.-vy gesture) (.-_value response-height) key]))))
 
-(defn pan-responder [response-height layout-height handler-name]
+(defn pan-responder [response-height layout-height handler-name key]
   (drag/create-pan-responder
     {:on-move    (on-move response-height layout-height)
-     :on-release (on-release response-height handler-name)}))
+     :on-release (on-release response-height handler-name key)}))

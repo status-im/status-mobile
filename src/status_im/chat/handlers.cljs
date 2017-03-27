@@ -235,10 +235,7 @@
   (let [chat-id          (or id current-chat-id)
         messages         (get-in db [:chats chat-id :messages])
         command?         (= :command (get-in db [:edit-mode chat-id]))
-        db'              (-> db
-                             (assoc :current-chat-id chat-id)
-                             (update-in [:animations :to-response-height chat-id]
-                                        #(if command? % 0)))
+        db'              (assoc db :current-chat-id chat-id)
         commands-loaded? (if js/goog.DEBUG
                            false
                            (get-in db [:chats chat-id :commands-loaded]))]
