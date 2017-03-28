@@ -3,7 +3,7 @@
   (:require [reagent.core :as r]
             [clojure.string :as str]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [status-im.components.common.common :refer [separator]]
+            [status-im.components.common.common :refer [separator top-shaddow bottom-shaddow]]
             [status-im.components.react :refer [view
                                                 text
                                                 image
@@ -12,7 +12,6 @@
                                                 scroll-view
                                                 list-view
                                                 list-item] :as react]
-            [status-im.components.common.common :refer [top-shaddow bottom-shaddow]]
             [status-im.components.native-action-button :refer [native-action-button
                                                                native-action-button-item]]
             [status-im.components.status-bar :refer [status-bar]]
@@ -74,7 +73,7 @@
    (when extended?
      [options-btn group])])
 
-(defn contact-group-form [{:keys [contacts contacts-count group edit? click-handler]}]
+(defn contact-group-form [{:keys [contacts contacts-count group edit?]}]
   (let [subtitle (:name group)]
     [view st/contact-group
      (when subtitle
@@ -90,7 +89,6 @@
                 [contact-view
                  {:contact        contact
                   :extended?      edit?
-                  :on-click       (when-not edit? click-handler)
                   :extend-options (when group
                                    [{:value        #(dispatch [:hide-contact contact])
                                      :text         (label :t/delete-contact)
@@ -139,7 +137,6 @@
 (defview contact-list [current-view?]
   [contacts             [:get-added-contacts-with-limit contacts-limit]
    contacts-count       [:added-contacts-count]
-   click-handler        [:get :contacts-click-handler]
    edit?                [:get-in [:contacts-ui-props :edit?]]
    groups               [:all-added-groups]
    tabs-hidden?         [:tabs-hidden?]]
@@ -152,13 +149,11 @@
       (when (pos? contacts-count)
         [contact-group-form {:contacts       contacts
                              :contacts-count contacts-count
-                             :edit?          edit?
-                             :click-handler  click-handler}])
+                             :edit?          edit?}])
       (for [group groups]
         ^{:key group}
         [contact-group-view {:group          group
-                             :edit?          edit?
-                             :click-handler  click-handler}])]
+                             :edit?          edit?}])]
      [view st/empty-contact-groups
       [react/icon :group_big st/empty-contacts-icon]
       [text {:style st/empty-contacts-text} (label :t/no-contacts)]])
