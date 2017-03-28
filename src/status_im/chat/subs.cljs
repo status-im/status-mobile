@@ -185,20 +185,20 @@
 
 (register-sub :get-default-container-area-height
   (fn [db]
-    (let [input-height      (subscribe [:chat-ui-props :input-height])
-          layout-height     (subscribe [:get :layout-height])
-          chat-input-margin (subscribe [:chat-input-margin])
-          bottom            (+ @input-height @chat-input-margin)]
-      (reaction
+    (reaction
+      (let [input-height      (subscribe [:chat-ui-props :input-height])
+            layout-height     (subscribe [:get :layout-height])
+            chat-input-margin (subscribe [:chat-input-margin])
+            bottom            (+ @input-height @chat-input-margin)]
         (input-utils/default-container-area-height bottom @layout-height)))))
 
 (register-sub :get-max-container-area-height
   (fn [db]
-    (let [input-height      (subscribe [:chat-ui-props :input-height])
-          layout-height     (subscribe [:get :layout-height])
-          chat-input-margin (subscribe [:chat-input-margin])
-          bottom            (+ @input-height @chat-input-margin)]
-      (reaction
+    (reaction
+      (let [input-height      (subscribe [:chat-ui-props :input-height])
+            layout-height     (subscribe [:get :layout-height])
+            chat-input-margin (subscribe [:chat-input-margin])
+            bottom            (+ @input-height @chat-input-margin)]
         (input-utils/max-container-area-height bottom @layout-height)))))
 
 (register-sub :chat-animations

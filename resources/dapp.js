@@ -7,22 +7,23 @@ I18n.translations = {
 
 status.command({
     name: "browse",
-    fullscreen: true,
     title: I18n.t('browse_title'),
     description: I18n.t('browse_description'),
+    color: "#ffa500",
+    fullscreen: true,
     params: [{
         name: "url",
-        placeholder: "url",
+        optional: true,
         type: status.types.TEXT
     }],
     onSend: function (params, context) {
-        var url = params.args.url;
+        var url = params.args.url || params.metadata.url;
         if (!/^[a-zA-Z-_]+:/.test(url)) {
             url = 'http://' + url;
         }
 
         return {
-            title: "Browser",
+            title: params.metadata.name,
             dynamicTitle: true,
             markup: status.components.bridgedWebView(url)
         };

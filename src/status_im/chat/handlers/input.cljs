@@ -3,12 +3,13 @@
             [taoensso.timbre :as log]
             [status-im.chat.constants :as const]
             [status-im.chat.models.input :as input-model]
-            [status-im.chat.suggestions :as suggestions]
+            [status-im.chat.models.suggestions :as suggestions]
             [status-im.components.react :as react-comp]
             [status-im.components.status :as status]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as random]
+            [status-im.i18n :as i18n]
             [clojure.string :as str]))
 
 (defn- changed-arg-position [xs ys]
@@ -195,9 +196,12 @@
 (handlers/register-handler
   ::send-command
   (handlers/side-effect!
-    (fn [db [_ on-send command chat-id]]
+    (fn [db [_ on-send {{:keys [fullscreen]} :command :as command} chat-id]]
       (if on-send
         (do
+          (log/debug "ALWX fs" fullscreen)
+          (when fullscreen
+            (dispatch [:choose-predefined-expandable-height :result-box :max]))
           (dispatch [:set-chat-ui-props :result-box on-send])
           (dispatch [:set-chat-ui-props :sending-in-progress? false])
           (react-comp/dismiss-keyboard!))
@@ -210,9 +214,14 @@
 (handlers/register-handler
   ::request-command-data
   (handlers/side-effect!
-    (fn [db [_ {{:keys [command metadata args] :as c} :command
-                :keys [chat-id data-type after]}]]
-      (let [message-id      (random/id)
+    (fn [{:keys [contacts] :as db}
+         [_ {{:keys [command metadata args] :as c} :command
+             :keys [message-id chat-id data-type after]}]]
+      (let [{:keys [dapp? dapp-url name]} (get contacts chat-id)
+            metadata        (merge metadata
+                                   (when dapp?
+                                     {:url  (i18n/get-contact-translated chat-id :dapp-url dapp-url)
+                                      :name (i18n/get-contact-translated chat-id :name name)}))
             params          (input-model/args->params c)
             command-message {:command    command
                              :params     params

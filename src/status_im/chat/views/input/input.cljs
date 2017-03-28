@@ -6,6 +6,7 @@
             [taoensso.timbre :as log]
             [status-im.accessibility-ids :as id]
             [status-im.components.react :refer [view
+                                                animated-view
                                                 text
                                                 scroll-view
                                                 text-input
@@ -19,7 +20,8 @@
             [status-im.chat.views.input.validation-messages :as validation-messages]
             [status-im.chat.styles.input.input :as style]
             [status-im.chat.utils :as utils]
-            [status-im.chat.constants :as const]))
+            [status-im.chat.constants :as const]
+            [status-im.components.animation :as anim]))
 
 (defn command-view [{command-name :name :as command}]
   [touchable-highlight {:on-press #(dispatch [:select-chat-input-command command nil])}
@@ -36,7 +38,8 @@
                                          (dispatch [:update-suggestions]))}
      [view style/commands-list-icon
       [icon :input_list style/commands-list-icon]]]]
-   [scroll-view {:horizontal true}
+   [scroll-view {:horizontal                     true
+                 :showsHorizontalScrollIndicator false}
     [view style/commands
      (for [[command-key command] (remove #(nil? (:title (second %))) commands)]
        ^{:key command-key}
@@ -57,7 +60,7 @@
       [text {:style (style/input-helper-text width)}
        placeholder])))
 
-(defn input-view []
+(defn input-view [_]
   (let [component            (r/current-component)
         set-layout-width     #(r/set-state component {:width %})
         set-layout-height    #(r/set-state component {:height %})
@@ -71,10 +74,10 @@
          (dispatch [:update-suggestions]))
 
        :reagent-render
-       (fn []
+       (fn [{:keys [anim-margin]}]
          (let [{:keys [width height]} (r/state component)
                command @command]
-           [view (style/input-root height (str/blank? @input-text))
+           [animated-view {:style (style/input-root height anim-margin)}
             [text-input
              {:ref                    #(dispatch [:set-chat-ui-props :input-ref %])
               :accessibility-label    id/chat-message-input
@@ -122,12 +125,12 @@
                [view style/input-clear-container
                 [icon :close_gray style/input-clear-icon]]])]))})))
 
-(defview input-container []
+(defview input-container [{:keys [anim-margin]}]
   [command-complete? [:command-complete?]
    selected-command [:selected-chat-command]
    input-text [:chat :input-text]]
   [view style/input-container
-   [input-view]
+   [input-view {:anim-margin anim-margin}]
    (when (and (not (str/blank? input-text))
               (or command-complete? (not selected-command)))
      [touchable-highlight {:on-press #(do (dispatch [:set-chat-ui-props :sending-in-progress? true])
@@ -135,23 +138,40 @@
       [view style/send-message-container
        [icon :arrow_top style/send-message-icon]]])])
 
-(defview container []
-  [margin [:chat-input-margin]
-   show-emoji? [:chat-ui-props :show-emoji?]
-   input-text [:chat :input-text]]
-  [view
-   [parameter-box/parameter-box-view]
-   [result-box/result-box-view]
-   [suggestions/suggestions-view]
-   [validation-messages/validation-messages-view]
-   [view {:style     (style/root margin)
-          :on-layout #(let [h (-> (.-nativeEvent %)
-                                  (.-layout)
-                                  (.-height))]
-                        (dispatch [:set-chat-ui-props :input-height h]))}
-    [view (style/container (str/blank? input-text))
-     (when (str/blank? input-text)
-       [commands-view])
-     [input-container]]
-    (when show-emoji?
-      [emoji/emoji-view])]])
+(defn container []
+  (let [margin                (subscribe [:chat-input-margin])
+        show-emoji?           (subscribe [:chat-ui-props :show-emoji?])
+        input-text            (subscribe [:chat :input-text])
+        anim-margin           (anim/create-value 8)
+        container-anim-margin (anim/create-value 16)]
+    (r/create-class
+      {:component-did-update
+       (fn [component]
+         (let [{:keys [text-empty?]} (reagent.core/props component)]
+           (let [to-anim-value           (if text-empty? 8 0)
+                 to-container-anim-value (if text-empty? 16 8)]
+             (anim/start
+               (anim/timing anim-margin {:toValue  to-anim-value
+                                         :duration 100}))
+             (anim/start
+               (anim/timing container-anim-margin {:toValue  to-container-anim-value
+                                                   :duration 100})))))
+
+       :reagent-render
+       (fn []
+         [view
+          [parameter-box/parameter-box-view]
+          [result-box/result-box-view]
+          [suggestions/suggestions-view]
+          [validation-messages/validation-messages-view]
+          [view {:style     (style/root @margin)
+                 :on-layout #(let [h (-> (.-nativeEvent %)
+                                         (.-layout)
+                                         (.-height))]
+                               (dispatch [:set-chat-ui-props :input-height h]))}
+           [animated-view {:style (style/container container-anim-margin)}
+            (when (str/blank? @input-text)
+              [commands-view])
+            [input-container {:anim-margin anim-margin}]]
+           (when @show-emoji?
+             [emoji/emoji-view])]])})))

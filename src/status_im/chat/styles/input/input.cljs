@@ -20,25 +20,26 @@
    :elevation        2
    :margin-bottom    margin-bottom})
 
-(defn container [blank-text?]
+(defn container [container-anim-margin]
   {:background-color common/color-white
    :flex-direction   :column
-   :padding-left     (if blank-text? 16 8)
-   :padding-right    (if blank-text? 16 8)
+   :padding-left     container-anim-margin
+   :padding-right    container-anim-margin
    :padding-top      8
-   :padding-bottom   (if blank-text? 16 8)})
+   :padding-bottom   container-anim-margin})
 
 (def input-container
-  {:flex-direction :row})
+  {:flex-direction :row
+   :align-items    :flex-end})
 
-(defn input-root [content-height blank-text?]
-  {:align-items      :center
+(defn input-root [content-height anim-margin]
+  {:align-items      :flex-start
    :background-color color-input
    :border-radius    8
    :flex-direction   :row
    :flex-grow        1
    :height           (+ (min (max min-input-height content-height) max-input-height) 0)
-   :margin-top       (if blank-text? 8 0)
+   :margin-top       anim-margin
    :padding-left     10
    :padding-right    10})
 
@@ -75,6 +76,7 @@
 (def input-clear-container
   {:width            24
    :height           24
+   :margin-top       7
    :align-items      :center})
 
 (def input-clear-icon

@@ -30,7 +30,8 @@
             [status-im.components.animation :as anim]
             [status-im.components.sync-state.offline :refer [offline-view]]
             [status-im.constants :refer [content-type-status]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
 (defn contacts-by-identity [contacts]
   (->> contacts
@@ -169,7 +170,8 @@
    show-actions? [:chat-ui-props :show-actions?]
    show-bottom-info? [:chat-ui-props :show-bottom-info?]
    show-emoji? [:chat-ui-props :show-emoji?]
-   layout-height [:get :layout-height]]
+   layout-height [:get :layout-height]
+   input-text [:chat :input-text]]
   {:component-did-mount    #(dispatch [:check-autorun])
    :component-will-unmount #(dispatch [:set-chat-ui-props :show-emoji? false])}
   [view {:style st/chat-view
@@ -179,7 +181,7 @@
                           (dispatch [:set-layout-height height]))))}
    [chat-toolbar]
    [messages-view group-chat]
-   [input/container]
+   [input/container {:text-empty? (str/blank? input-text)}]
    (when show-actions?
      [actions-view])
    (when show-bottom-info?

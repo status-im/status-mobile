@@ -8,8 +8,9 @@
                                                 icon]]
             [status-im.data-store.messages :as messages]
             [status-im.chat.styles.input.suggestions :as style]
-            [status-im.chat.views.input.utils :as input-utils]
+            [status-im.chat.constants :as const]
             [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
+            [status-im.chat.views.input.utils :as input-utils]
             [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]))
 
@@ -19,7 +20,7 @@
     [view {:style style/item-suggestion-name}
      [text {:style style/item-suggestion-name-text
             :font  :roboto-mono}
-      "/" name]]
+      const/command-char name]]
     [text {:style style/item-suggestion-description}
      description]]])
 

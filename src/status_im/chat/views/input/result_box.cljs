@@ -6,6 +6,7 @@
                                                 touchable-highlight
                                                 text
                                                 icon]]
+            [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
             [status-im.chat.styles.input.result-box :as style]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.i18n :refer [label]]
@@ -13,7 +14,6 @@
 
 (defn header [title]
   [view {:style style/header-container}
-   [view style/header-icon]
    [view style/header-title-container
     [text {:style style/header-title-text
            :number-of-lines 1
@@ -28,13 +28,9 @@
    markup])
 
 (defview result-box-view []
-  [input-height [:chat-ui-props :input-height]
-   layout-height [:get :layout-height]
-   chat-input-margin [:chat-input-margin]
-   {:keys [markup title] :as result-box} [:chat-ui-props :result-box]]
+  [{:keys [markup title] :as result-box} [:chat-ui-props :result-box]]
   (when result-box
-    (let [bottom (+ input-height chat-input-margin)]
-      [view (style/root (input-utils/default-container-area-height bottom layout-height)
-                        bottom)
-       [header title]
-       [result-box-container markup]])))
+    [expandable-view :result-box
+     [view {:flex 1}
+      [header title]
+      [result-box-container markup]]]))

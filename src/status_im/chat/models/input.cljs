@@ -24,26 +24,26 @@
 
 (defn split-command-args [command-text]
   (let [splitted (str/split command-text const/spacing-char)]
-    (-> (reduce (fn [[list command-started?] arg]
-                  (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
-                        has-quote?         (and (= quotes-count 1)
-                                                (not= -1 (.indexOf arg const/arg-wrapping-char)))
-                        arg                (str/replace arg #"\"" "")
-                        new-list           (if command-started?
-                                             (let [index (dec (count list))]
-                                               (update list index str const/spacing-char arg))
-                                             (conj list arg))
-                        command-continues? (or (and command-started? (not has-quote?))
-                                               (and (not command-started?) has-quote?))]
-                    [new-list command-continues?]))
-                [[] false]
-                splitted)
-        (first))))
+    (first
+      (reduce (fn [[list command-started?] arg]
+                (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
+                      has-quote?         (and (= quotes-count 1)
+                                              (str/index-of arg const/arg-wrapping-char))
+                      arg                (str/replace arg #"\"" "")
+                      new-list           (if command-started?
+                                           (let [index (dec (count list))]
+                                             (update list index str const/spacing-char arg))
+                                           (conj list arg))
+                      command-continues? (or (and command-started? (not has-quote?))
+                                             (and (not command-started?) has-quote?))]
+                  [new-list command-continues?]))
+              [[] false]
+              splitted))))
 
 (defn join-command-args [args]
   (->> args
        (map (fn [arg]
-              (if (= (.indexOf arg const/spacing-char) -1)
+              (if (not (str/index-of arg const/spacing-char))
                 arg
                 (str const/arg-wrapping-char arg const/arg-wrapping-char))))
        (str/join const/spacing-char)))
@@ -67,9 +67,9 @@
          :args          (remove empty? (rest command-args))}))))
 
 (defn current-chat-argument-position
-  [command input-text]
+  [{:keys [args] :as command} input-text]
   (if command
-    (let [current (-> (:args command) (count))]
+    (let [current (count args)]
       (if (= (last input-text) const/spacing-char)
         current
         (dec current)))
@@ -83,14 +83,16 @@
 
 (defn command-complete?
   ([{:keys [current-chat-id] :as db} chat-id]
-   (let [chat-id          (or chat-id current-chat-id)
-         input-text       (get-in db [:chats chat-id :input-text])
-         chat-command     (selected-chat-command db chat-id)]
+   (let [chat-id             (or chat-id current-chat-id)
+         input-text          (get-in db [:chats chat-id :input-text])
+         chat-command        (selected-chat-command db chat-id)]
      (command-complete? chat-command)))
-  ([chat-command]
-   (and chat-command
-        (= (count (:args chat-command))
-           (count (get-in chat-command [:command :params]))))))
+  ([{:keys [args] :as chat-command}]
+   (let [params          (get-in chat-command [:command :params])
+         required-params (remove :optional params)]
+     (and chat-command
+          (or (= (count args) (count params))
+              (= (count args) (count required-params)))))))
 
 (defn args->params [{:keys [command args]}]
   (let [params (:params command)]

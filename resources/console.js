@@ -1812,7 +1812,6 @@ status.command({
 
 status.command({
     name: "browse",
-    fullscreen: true,
     title: "Browser",
     description: "Launch the browser",
     params: [{

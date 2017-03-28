@@ -29,6 +29,7 @@
    :flex         1
    :font-size    15
    :text-align   :center
+   :padding-top  1
    :margin-left  32
    :margin-right 32})
 
@@ -38,17 +39,9 @@
    :align-items      :center
    :position         :absolute
    :right            6
-   :top              -6})
+   :top              -2})
 
 (def header-close-icon
   {:width      12
    :height     12
    :margin-top 6})
-
-(def header-icon
-  {:background-color "#bbbbbb"
-   :width            30
-   :border-radius    2
-   :margin-top       8
-   :margin-bottom    8
-   :height           3})

@@ -13,16 +13,25 @@
         (update-in [:chat-animations current-chat-id key :changes-counter] inc))))
 
 (handlers/register-handler
-  :set-default-expandable-height
+  :hide-expandable
   (handlers/side-effect!
-    (fn [{:keys [current-chat-id layout-height] :as db} [_ key]]
+    (fn [_ [_ key]]
+      (dispatch [:set-expandable-height key 1]))))
+
+(handlers/register-handler
+  :choose-predefined-expandable-height
+  (handlers/side-effect!
+    (fn [{:keys [current-chat-id chat-ui-props layout-height] :as db} [_ key preset]]
       (let [input-height      (get-in chat-ui-props [current-chat-id :input-height])
             chat-input-margin (if platform/ios?
                                 (get db :keyboard-height)
                                 0)
             bottom            (+ input-height chat-input-margin)
-            default-height    (input-utils/default-container-area-height bottom layout-height)]
-        (dispatch [:set-expandable-height key default-height])))))
+            height            (case preset
+                                :min input-utils/min-height
+                                :max (input-utils/max-container-area-height bottom layout-height)
+                                (input-utils/default-container-area-height bottom layout-height))]
+        (dispatch [:set-expandable-height key height])))))
 
 (handlers/register-handler
   :fix-expandable-height
