@@ -16,8 +16,8 @@
      {:style  st/gradient-top
       :colors st/gradient-top-colors}]))
 
-(defn separator [style]
-  [view st/separator-wrapper
+(defn separator [style wrapper-style]
+  [view (merge st/separator-wrapper wrapper-style)
    [view (merge st/separator style)]])
 
 (defn form-spacer []

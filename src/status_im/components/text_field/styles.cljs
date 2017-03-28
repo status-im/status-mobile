@@ -41,4 +41,5 @@
     (merge input-error-text-style
            {:color            color
             :background-color :transparent
-            :font-size        12})))
+            :font-size        12
+            :line-height      20})))

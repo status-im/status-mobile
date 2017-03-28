@@ -269,15 +269,27 @@
    :not-enough-eth                        (str "Not enough ETH on balance "
                                                "({{balance}} ETH)")
    ;transactions
+   :confirm                               "Confirm"
    :confirm-transactions                  {:one   "Confirm transaction"
                                            :other "Confirm {{count}} transactions"
                                            :zero  "No transactions"}
+   :transactions-confirmed                {:one   "Transaction confirmed"
+                                           :other "{{count}} transactions confirmed"
+                                           :zero  "No transactions confirmed"}
+   :transaction                           "Transaction"
+   :pending-transactions                  "Pending transactions"
+   :enter-password-transactions           {:one   "Enter your password to confirm the transaction"
+                                           :other "Enter your password to confirm the transactions"}
    :status                                "Status"
    :pending-confirmation                  "Pending confirmation"
    :recipient                             "Recipient"
    :one-more-item                         "One more item"
    :fee                                   "Fee"
    :value                                 "Value"
+   :to                                    "To"
+   :from                                  "From"
+   :data                                  "Data"
+   :got-it                                "Got it"
 
    ;:webview
    :web-view-error                        "oops, error"})
