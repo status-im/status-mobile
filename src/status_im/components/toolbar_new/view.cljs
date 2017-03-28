@@ -25,6 +25,7 @@
                 background-color     :background-color
                 custom-content       :custom-content
                 hide-border?         :hide-border?
+                border-style         :border-style
                 style                :style}]
   (let [style (merge (st/toolbar-wrapper background-color) style)]
     [view {:style style}
@@ -66,7 +67,7 @@
          custom-action)]]
      [sync-state-gradient-view]
      (when-not hide-border?
-       [view st/toolbar-border-container
+       [view (merge st/toolbar-border-container border-style)
         [view st/toolbar-border]])]))
 
 (def search-text-input (r/atom nil))
@@ -122,4 +123,3 @@
                                 nav-action)
               :custom-content [toolbar-with-search-content opts]
               :actions        actions}]))
-

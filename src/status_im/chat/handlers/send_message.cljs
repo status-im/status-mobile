@@ -73,7 +73,7 @@
           (if (:sent-to-jail? message)
             ;; todo there could be other reasons for "long-running"
             ;; hanling of the command besides sendTransaction
-            (dispatch [:navigate-to-modal :confirm])
+            (dispatch [:navigate-to-modal :pending-transactions])
             (cond
               (console-command? chat-id command-name)
               (dispatch [:invoke-console-command-handler! params'])

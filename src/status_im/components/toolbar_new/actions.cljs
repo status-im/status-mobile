@@ -45,3 +45,7 @@
              :style  st/action-default}
    :handler handler})
 
+(defn close-white [handler]
+  {:image   {:source {:uri :icon_close_white}
+             :style  st/action-default}
+   :handler handler})
