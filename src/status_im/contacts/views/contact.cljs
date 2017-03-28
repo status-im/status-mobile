@@ -10,7 +10,8 @@
 
 (defn- on-press [{:keys [whisper-identity] :as contact}]
   (dispatch [:send-contact-request! contact])
-  (dispatch [:start-chat whisper-identity {} :navigation-replace]))
+  (dispatch [:navigate-to-clean :chat-list])
+  (dispatch [:start-chat whisper-identity {}]))
 
 (defn letter-view [letter]
   [view st/letter-container
