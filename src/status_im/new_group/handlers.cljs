@@ -236,10 +236,11 @@
 (defn add-new-groups
   [{:keys [contact-groups] :as db} [_ new-groups]]
   (let [identities  (set (keys contact-groups))
+        old-groups-count (count identities)
         new-groups' (->> new-groups
                            (map #(update-pending-status contact-groups %))
                            (remove #(identities (:group-id %)))
-                           (map #(vector (:group-id %) %))
+                           (map #(vector (:group-id %2) (assoc %2 :order %1)) (iterate inc old-groups-count))
                            (into {}))]
     (-> db
         (update :contact-groups merge new-groups')
@@ -317,7 +318,7 @@
 (defn add-selected-contacts-to-group
   [{:keys [selected-contacts contact-groups contact-group-id] :as db} _]
   (let [new-identities (mapv #(hash-map :identity %) selected-contacts)]
-    (update-in db [:contact-groups contact-group-id :contacts] concat new-identities)))
+    (update-in db [:contact-groups contact-group-id :contacts] #(into [] (set (concat % new-identities))))))
 
 (defn add-selected-contacts-to-group!
   [{:keys [contact-group-id selected-contacts]} _]
@@ -325,8 +326,25 @@
 
 (register-handler
   :add-selected-contacts-to-group
-  (-> add-selected-contacts-to-group
-      ((after add-selected-contacts-to-group!))))
+  (after add-selected-contacts-to-group!)
+  add-selected-contacts-to-group)
+
+(defn add-contacts-to-group
+  [db [_ group-id contacts]]
+  (let [new-identities (mapv #(hash-map :identity %) contacts)]
+    (if (get-in db [:contact-groups group-id])
+      (update-in db [:contact-groups group-id :contacts] #(into [] (set (concat % new-identities))))
+      db)))
+
+(defn add-contacts-to-group!
+  [db [_ group-id contacts]]
+  (when (get-in db [:contact-groups group-id])
+    (groups/add-contacts group-id contacts)))
+
+(register-handler
+  :add-contacts-to-group
+  (after add-contacts-to-group!)
+  add-contacts-to-group)
 
 (defn delete-group []
   (fn [{:keys [contact-group-id] :as db} _]

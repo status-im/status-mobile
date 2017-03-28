@@ -10,7 +10,8 @@
         },
         "photo-path": "icon_wallet_avatar",
         "add-chat?": true,
-        "dapp?": true
+        "dapp?": true,
+        "groups": ["dapps"]
     },
 
     "0x0428c9d6c1aaaa8369a7c63819684f30e34396dc0907d49afeac85a0a774ccb919b3482097d992e66bcc538e7a0c6acf874c77748f396f53c0a102e10d1a37765b":
@@ -35,7 +36,8 @@
         "dapp-url":
         {
             "en": "http://auctionhouse.dappbench.com"
-        }
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "flight-delays-suck":
@@ -49,7 +51,8 @@
         "dapp-url":
         {
             "en": "https://fdd.etherisc.com"
-        }
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "mkr-market":
@@ -63,7 +66,8 @@
         "dapp-url":
         {
             "en": "https://mkr.market"
-        }
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "FirstBlood":
@@ -77,7 +81,8 @@
         "dapp-url":
         {
             "en": "https://app.firstblood.io"
-        }
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "oaken-water-meter":
@@ -91,7 +96,8 @@
         "dapp-url":
         {
             "en": "http://waterflowdapp.projectoaken.com"
-        }
+        },
+        "groups": ["dapps"]
     },
 
     "gnosis":
@@ -105,7 +111,8 @@
         "dapp-url":
         {
             "en": "https://beta.gnosis.pm"
-        }
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "melonport":
@@ -119,7 +126,8 @@
         "dapp-url":
         {
             "en": "https://portal.melonport.com/"
-        }
+        },
+        "groups": ["dapps"]
     },
 
     "bchat":
@@ -133,7 +141,8 @@
         "dapp-url":
         {
             "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
-        }
+        },
+        "groups": ["dapps"]
     },
     
     "Dentacoin":
@@ -147,7 +156,8 @@
         "dapp-url":
         {
             "en": "http://dentacoin.com/testnet/"
-        }
+        },
+        "groups": ["dapps"]
     },
 
     "Augur":
@@ -161,7 +171,8 @@
         "dapp-url":
         {
           "en": "https://app.augur.net"
-        }
+        },
+        "groups": ["dapps"]
     },
 
     "Ethlance":
@@ -175,7 +186,8 @@
         "dapp-url":
         {
           "en": "https://madvas.github.io/ethlance/resources/public/"
-        }
+        },
+        "groups": ["dapps"]
     },
     
     "Commiteth":
@@ -189,6 +201,7 @@
         "dapp-url":
         {
             "en": "https://commiteth.com"
-        }
+        },
+        "groups": ["dapps"]
     }
 }
