@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.react :refer [view]]
-            [status-im.contacts.views.contact-inner :refer [contact-inner-view]]
+            [status-im.components.contact.contact :refer [contact-inner-view]]
             [status-im.components.item-checkbox :refer [item-checkbox]]
             [status-im.participants.styles :as st]))
 

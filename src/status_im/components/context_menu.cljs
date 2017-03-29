@@ -1,6 +1,6 @@
 (ns status-im.components.context-menu
   (:require [reagent.core :as r]
-            [status-im.components.styles :as st]
+            [status-im.components.styles :as common]
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [re-frame.core :refer [dispatch]]
@@ -24,6 +24,26 @@
 (def menu-options (get-class "MenuOptions"))
 (def menu-option (get-class "MenuOption"))
 
+(defn context-menu-options [custom-styles]
+  {:customStyles {:optionsContainer
+                  (merge {:elevation      2
+                          :margin-top     30
+                          :padding-top    8
+                          :width          164
+                          :padding-bottom 8}
+                         (:optionsContainer custom-styles))
+                  :optionWrapper
+                  (merge {:padding-left    16
+                          :padding-right   16
+                          :justify-content :center
+                          :height          48}
+                         (:optionWrapper custom-styles))}})
+
+(defn context-menu-text [destructive?]
+  {:font-size   15
+   :line-height 20
+   :color       (if destructive? common/color-light-red common/text1-color)})
+
 (def list-selection-fn (:list-selection-fn platform-specific))
 
 (defn open-ios-menu [options]
@@ -42,9 +62,9 @@
       trigger]]
     [menu {:onSelect #(when % (do (%) nil))}
      [menu-trigger trigger]
-     [menu-options (st/context-menu-options customStyles)
+     [menu-options (context-menu-options customStyles)
       (for [{:keys [style value destructive?] :as option} options]
         ^{:key option}
         [menu-option {:value value}
-         [text {:style (merge (st/context-menu-text destructive?) style)}
+         [text {:style (merge (context-menu-text destructive?) style)}
           (:text option)]])]]))

@@ -2,7 +2,10 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch]]
     [status-im.contacts.styles :as cst]
-    [status-im.components.common.common :as cmn]
+    [status-im.components.common.common :as common]
+    [status-im.components.action-button.action-button :refer [action-button
+                                                              action-button-disabled
+                                                              action-separator]]
     [status-im.components.react :refer [view
                                         text
                                         icon
@@ -14,9 +17,6 @@
     [status-im.utils.platform :refer [platform-specific]]
     [status-im.new-group.styles :as st]
     [status-im.i18n :refer [label]]))
-
-(defn separator []
-  [cmn/separator cst/contact-item-separator])
 
 (defview group-name-input []
   [new-group-name [:get :new-chat-name]]
@@ -49,14 +49,9 @@
    [group-name-input]])
 
 (defn add-btn [on-press]
-  [view st/add-button-container
-   [touchable-highlight {:on-press on-press}
-    [view st/add-container
-     [view st/settings-icon-container
-      [icon :add_blue st/add-icon]]
-     [view st/settings-group-text-container
-      [text {:style st/add-group-text}
-       (label :t/add-members)]]]]])
+  [action-button (label :t/add-members)
+                 :add_blue
+                 on-press])
 
 (defn delete-btn [on-press]
   [view st/settings-group-container
@@ -80,15 +75,11 @@
       [view st/settings-group-text-container
        [text {:style st/settings-group-text}
         (label :t/mute-notifications)]]]]]
-   [separator]
-   [touchable-highlight {:on-press #(dispatch [:clear-history])}
-    [view st/settings-group-item
-     [view st/settings-icon-container
-      [icon :close_blue st/add-icon]]
-     [view st/settings-group-text-container
-      [text {:style st/settings-group-text}
-       (label :t/clear-history)]]]]
-   [separator]
+   [action-separator]
+   [action-button (label :t/clear-history)
+                  :close_blue
+                  #(dispatch [:clear-history])]
+   [action-separator]
    [touchable-highlight {:on-press #(dispatch [:leave-group-chat])}
     [view st/settings-group-item
      [view st/delete-icon-container
@@ -99,7 +90,7 @@
 
 (defn more-btn [contacts-limit contacts-count on-press]
   [view
-   [separator]
+   [common/list-separator]
    [view cst/show-all
     [touchable-highlight {:on-press on-press}
      [view

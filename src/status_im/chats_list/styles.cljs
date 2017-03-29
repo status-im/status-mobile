@@ -18,18 +18,6 @@
   (merge {:background-color toolbar-background1}
          (get-in p/platform-specific [:component-styles :toolbar])))
 
-
-(def gradient-top-bottom-shadow
-  ["rgba(24, 52, 76, 0.165)"
-   "rgba(24, 52, 76, 0.03)"
-   "rgba(24, 52, 76, 0.01)"])
-
-(def chat-separator-wrapper
-  {:background-color color-white
-   :opacity          0.5
-   :height           1
-   :padding-left     72})
-
 (def chat-separator-item
   {:border-bottom-width 1
    :border-bottom-color color-gray5})
@@ -152,13 +140,6 @@
 (def toolbar-actions
   {:flex-direction :row
    :padding-right  14})
-
-(def toolbar-btn
-  {:width          24
-   :height         56
-   :margin-left    24
-   :alignItems     :center
-   :justifyContent :center})
 
 (def opts-btn
   {:width          24
