@@ -49,7 +49,7 @@ public class MainApplication extends Application implements ReactApplication {
               new NfcReactNativePackage(),
               new RNInstabugReactnativePackage("b239f82a9cb00464e4c72cc703e6821e",MainApplication.this,"shake"),
               new SplashScreenReactPackage(),
-              new StatusPackage(),
+              new StatusPackage(BuildConfig.DEBUG),
               new RealmReactPackage(),
               new VectorIconsPackage(),
               new ReactNativeContacts(),

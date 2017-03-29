@@ -2,7 +2,6 @@ package im.status.ethereum.module;
 
 import android.app.Activity;
 import android.os.*;
-import android.os.Process;
 import android.view.WindowManager;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -20,6 +19,9 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.json.JSONObject;
+import org.json.JSONException;
+
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
     private static final String TAG = "StatusModule";
@@ -29,12 +31,14 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private static StatusModule module;
     private ServiceConnector status = null;
     private ExecutorService executor = null;
+    private boolean debug;
 
-    StatusModule(ReactApplicationContext reactContext) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
         }
+        this.debug = debug;
         reactContext.addLifecycleEventListener(this);
     }
 
@@ -133,7 +137,23 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
 
-        Statusgo.StartNode(Statusgo.GenerateConfig(dataFolder, 3));
+        String config;
+        String defaultConfig = Statusgo.GenerateConfig(dataFolder, 3);
+        try {
+            JSONObject jsonConfig = new JSONObject(defaultConfig);
+            jsonConfig.put("LogEnabled", this.debug);
+            jsonConfig.put("LogFile", "geth.log");
+            jsonConfig.put("LogLevel", "DEBUG");
+
+            config = jsonConfig.toString();
+        } catch (JSONException e) {
+            Log.d(TAG, "Something went wrong " + e.getMessage());
+            Log.d(TAG, "Default configuration will be used");
+
+            config = defaultConfig;
+        }
+
+        Statusgo.StartNode(config);
         Log.d(TAG, "Geth node started");
     }
 

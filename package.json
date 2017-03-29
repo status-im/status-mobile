@@ -81,7 +81,7 @@
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
     "vm-browserify": "0.0.4",
-    "web3": "0.16.0"
+    "web3": "github:status-im/web3.js#status-0.18.4"
   },
   "browser": {
     "crypto": "react-native-crypto",

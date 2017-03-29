@@ -11,7 +11,24 @@
     :opt-un [:message/to]))
 
 (defn post-message!
-  [web3 message callback]
+  [web3 {:keys [topics from to] :as message} callback]
   {:pre [(valid? :shh/message message)]}
   (debug :post-message message)
-  (.post (u/shh web3) (clj->js message) callback))
+  (let [topic      (first topics)
+        shh        (u/shh web3)
+        encrypted? (boolean to)
+        message'   (if encrypted?
+                     message
+                     (assoc message :keyname topic))
+        do-post    (fn [] (.post shh (clj->js message') callback))]
+    (if encrypted?
+      (do-post)
+      (.hasSymKey
+        shh topic
+        (fn [_ res]
+          (if-not res
+            (.addSymKey
+              shh topic u/status-key-data
+              (fn [error _]
+                (when-not error (do-post))))
+            (do-post)))))))
