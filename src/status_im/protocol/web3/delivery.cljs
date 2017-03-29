@@ -128,10 +128,10 @@
                        :last-attempt (u/timestamp)))))
 
 (defn delivery-callback
-  [web3 post-error-callback {:keys [id requires-ack? to]}]
+  [web3 post-error-callback {:keys [id requires-ack? to]} message]
   (fn [error _]
     (when error
-      (log/warn :shh-post-error error)
+      (log/warn :shh-post-error error message)
       (when post-error-callback
         (post-error-callback error)))
     (when-not error
@@ -207,7 +207,7 @@
             (when (should-be-retransmitted? options data)
               (try
                 (let [message' (check-ttl message type ttl-config default-ttl)
-                      callback (delivery-callback web3 post-error-callback data)]
+                      callback (delivery-callback web3 post-error-callback data message')]
                   (t/post-message! web3 message' callback))
                 (catch :default err
                   (log/error :post-message-error err))

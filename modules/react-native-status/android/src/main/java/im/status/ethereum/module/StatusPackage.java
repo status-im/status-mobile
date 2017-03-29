@@ -12,12 +12,18 @@ import java.util.List;
 
 public class StatusPackage implements ReactPackage {
 
+    private boolean debug;
+
+    public StatusPackage (boolean debug) {
+        this.debug = debug;
+    }
+
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         System.loadLibrary("statusgoraw");
         System.loadLibrary("statusgo");
-        modules.add(new StatusModule(reactContext));
+        modules.add(new StatusModule(reactContext, this.debug));
 
         return modules;
     }
