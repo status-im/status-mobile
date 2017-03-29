@@ -1,14 +1,15 @@
 (ns status-im.contacts.views.contact-list-modal
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-    [status-im.components.common.common :refer [list-separator form-title bottom-shaddow]]
+  (:require [re-frame.core :refer [dispatch]]
+    [status-im.components.common.common :as common]
+    [status-im.components.renderers.renderers :as renderers]
     [status-im.components.react :refer [view text
                                         image
                                         icon
                                         touchable-highlight
                                         list-view
                                         list-item]]
-    [status-im.contacts.views.contact :refer [contact-view]]
+    [status-im.components.contact.contact :refer [contact-view]]
     [status-im.components.action-button.action-button :refer [action-button
                                                               action-separator]]
     [status-im.components.action-button.styles :refer [actions-list]]
@@ -16,17 +17,10 @@
     [status-im.components.status-bar :refer [status-bar]]
     [status-im.components.toolbar-new.view :refer [toolbar-with-search toolbar]]
     [status-im.components.toolbar-new.actions :as act]
-    [status-im.components.toolbar-new.styles :refer [toolbar-background1]]
-    [status-im.components.drawer.view :refer [drawer-view open-drawer]]
-    [status-im.components.image-button.view :refer [scan-button]]
+    [status-im.components.drawer.view :refer [drawer-view]]
     [status-im.contacts.styles :as st]
     [status-im.utils.listview :as lw]
-    [status-im.i18n :refer [label]]
-    [status-im.utils.platform :refer [platform-specific]]))
-
-(defn render-separator [_ row-id _]
-  (list-item ^{:key row-id}
-             [list-separator]))
+    [status-im.i18n :refer [label]]))
 
 (defview contact-list-modal-toolbar []
   [show-search [:get-in [:toolbar-search :show]]
@@ -60,7 +54,7 @@
     (list-item
       ^{:key row}
       [contact-view {:contact  row
-                     :on-click #(when click-handler
+                     :on-press #(when click-handler
                                   (click-handler row action params))}])))
 
 (defview contact-list-modal []
@@ -80,11 +74,12 @@
                 :renderHeader              #(list-item
                                               [view
                                                [actions-view action click-handler]
-                                               [bottom-shaddow]
-                                               [form-title (label :t/choose-from-contacts) (count contacts)]
-                                               [view st/contact-list-spacing]])
+                                               [common/bottom-shaddow]
+                                               [common/form-title (label :t/choose-from-contacts)
+                                                                  {:count-value (count contacts)}]
+                                               [common/list-header]])
                 :renderFooter              #(list-item [view
-                                                        [view st/contact-list-spacing]
-                                                        [bottom-shaddow]])
-                :renderSeparator           render-separator
+                                                        [common/list-footer]
+                                                        [common/bottom-shaddow]])
+                :renderSeparator           renderers/list-separator-renderer
                 :style                     st/contacts-list-modal}]]])

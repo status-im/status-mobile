@@ -91,30 +91,3 @@
 (def button-input
   {:flex          1
    :flexDirection :column})
-
-(def confirm-button
-  {:flex-direction   :row
-   :height           52
-   :justify-content  :center
-   :align-items      :center
-   :background-color color-light-blue})
-
-(defn context-menu-options [custom-styles]
-  {:customStyles {:optionsContainer
-                  (merge {:elevation      2
-                          :margin-top     30
-                          :padding-top    8
-                          :width          164
-                          :padding-bottom 8}
-                         (:optionsContainer custom-styles))
-                  :optionWrapper
-                  (merge {:padding-left    16
-                          :padding-right   16
-                          :justify-content :center
-                          :height          48}
-                         (:optionWrapper custom-styles))}})
-
-(defn context-menu-text [destructive?]
-  {:font-size   15
-   :line-height 20
-   :color       (if destructive? color-light-red text1-color)})
