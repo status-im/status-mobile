@@ -9,7 +9,7 @@
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.i18n :refer [label]]
             [status-im.profile.screen :refer [colorize-status-hashtags]]
-            [status-im.components.confirm-button :refer [confirm-button]]
+            [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.chat-icon.screen :refer [my-profile-icon]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.profile.validations :as v]
@@ -104,6 +104,6 @@
        [edit-profile-status changed-account]
        [status-prompt changed-account]]
      (when (and profile-edit-data-changed? profile-edit-data-valid?)
-       [confirm-button (label :t/save) #(do
+       [sticky-button (label :t/save) #(do
                                           (dispatch [:check-status-change (:status changed-account)])
                                           (dispatch [:account-update changed-account]))])]))

@@ -1,14 +1,16 @@
 (ns status-im.contacts.views.contact-list
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [status-im.components.common.common :refer [separator]]
+            [status-im.components.common.common :as common]
+            [status-im.components.renderers.renderers :as renderers]
+            [status-im.components.contact.contact :refer [contact-view]]
+            [status-im.contacts.screen :refer [contact-options]]
             [status-im.components.react :refer [view text
                                                 image
                                                 icon
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
-            [status-im.contacts.views.contact :refer [contact-view]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar-with-search toolbar]]
@@ -26,15 +28,9 @@
     (list-item
       ^{:key row}
       [contact-view {:contact        row
+                     :on-press       #(dispatch [:open-chat-with-contact %])
                      :extended?      edit?
-                     :extend-options (when group
-                                       [{:value        #(dispatch [:hide-contact row])
-                                         :text         (label :t/delete-contact)
-                                         :destructive? true}
-                                        {:value #(dispatch [:remove-contact-from-group
-                                                            (:whisper-identity row)
-                                                            (:group-id group)])
-                                         :text (label :t/remove-from-group)}])}])))
+                     :extend-options (contact-options row group)}])))
 
 (defview contact-list-toolbar-edit [group]
   [toolbar {:nav-action     (act/back #(dispatch [:set-in [:contact-list-ui-props :edit?] false]))
@@ -57,20 +53,15 @@
      :actions            [(act/opts [{:text (label :t/edit)
                                       :value #(dispatch [:set-in [:contact-list-ui-props :edit?] true])}])]}))
 
-(defn render-separator [_ row-id _]
-  (list-item ^{:key row-id}
-             [separator st/contact-item-separator]))
-
 (defview contacts-list-view [group edit?]
   [contacts [:all-added-group-contacts-filtered (:group-id group)]]
   [list-view {:dataSource                (lw/to-datasource contacts)
               :enableEmptySections       true
               :renderRow                 (render-row group edit?)
-              :bounces                   false
               :keyboardShouldPersistTaps true
-              :renderHeader              #(list-item [view st/contact-list-spacing])
-              :renderFooter              #(list-item [view st/contact-list-spacing])
-              :renderSeparator           render-separator
+              :renderHeader              renderers/list-header-renderer
+              :renderFooter              renderers/list-footer-renderer
+              :renderSeparator           renderers/list-separator-renderer
               :style                     st/contacts-list}])
 
 (defview contact-list []

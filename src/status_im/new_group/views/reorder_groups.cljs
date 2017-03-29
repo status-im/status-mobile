@@ -6,11 +6,11 @@
                                                 icon
                                                 touchable-highlight
                                                 list-item]]
-            [status-im.components.confirm-button :refer [confirm-button]]
+            [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.sortable-list-view :refer [sortable-list-view sortable-item]]
-            [status-im.components.common.common :refer [top-shaddow bottom-shaddow]]
+            [status-im.components.common.common :as common]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.utils.platform :refer [android?]]
             [status-im.new-group.styles :as st]
@@ -39,7 +39,7 @@
     (list-item
       (if (= row-id last)
         ^{:key "bottom-shaddow"}
-        [bottom-shaddow]
+        [common/bottom-shaddow]
         ^{:key row-id}
         [view st/order-item-separator-wrapper
          [view st/order-item-separator]]))))
@@ -52,7 +52,7 @@
      [status-bar]
      [toolbar-view]
      [view st/reorder-list-container
-      [top-shaddow]
+      [common/top-shaddow]
       [sortable-list-view
        {:data             groups
         :order            order
@@ -61,4 +61,4 @@
         :render-row       (fn [row]
                            (sortable-item [group-item row]))
         :render-separator (render-separator (last order))}]]
-     [confirm-button (label :t/save) #(dispatch [:save-group-order])]]))
+     [sticky-button (label :t/save) #(dispatch [:save-group-order])]]))

@@ -55,69 +55,7 @@
                            :item     {:status-text {:color       styles/color-black
                                                     :line-height 22
                                                     :font-size   14}}}
-   :new-chat              {:option-inner-container       {:height 56}
-                           :option-icon-container        {:background-color styles/color-white
-                                                          :margin-top       8}
-                           :option-name-text             {:font-size 16
-                                                          :color     styles/text1-color}
-                           :contact-list-title-container {:background-color styles/color-light-gray
-                                                          :padding-top      28
-                                                          :padding-bottom   20
-                                                          :margin-top       0}
-                           :contact-list-title           {:color     styles/text4-color
-                                                          :font-size 14}}
-   :contacts              {:subtitle     {:color       styles/color-gray4
-                                          :font-size   14
-                                          :flex-shrink 1}
-                           :subtitle-count {:color     styles/color-gray4
-                                            :font-size 14}
-                           :info-container {:margin-left 16}
-                           :contact-inner-container {:height 56}
-                           :contact-list-spacing {:background-color styles/color-white
-                                                  :height           8}
-                           :icon-check   {:border-radius 2
-                                          :width         17
-                                          :height        17}
-                           :group-header {:flexDirection   :row
-                                          :alignItems      :center
-                                          :padding-top     28
-                                          :padding-bottom  20
-                                          :padding-left    16
-                                          :padding-right   14
-                                          :backgroundColor styles/color-light-gray}
-                           :show-all     {:padding-left    72
-                                          :height          56}
-                           :show-all-text {:fontSize       14
-                                           :color          styles/color-blue
-                                           :letter-spacing 0.5}
-                           :show-all-text-font :medium
-                           :contact-container {:padding-right 16}
-                           :name-text {:fontSize       16
-                                       :line-height    24
-                                       :color          styles/text1-color}}
-   :new-group             {:group-name-text {:font-size 12}
-                           :members-text {:font-size 14}
-                           :members-text-count  {:font-size 14}
-                           :add-text {:margin-left    16
-                                      :line-height    24
-                                      :font-size      16}
-                           :contact-container {:height 56}
-                           :settings-group-text {:letter-spacing 0.5
-                                                 :font-size      16}
-                           :delete-group-prompt-text {:font-size 12}
-                           :settings-group-item {:padding-left   16
-                                                 :height         56
-                                                 :flex-direction :row
-                                                 :align-items    :center}
-                           :settings-group-container {:margin-top    23}}
-   :reorder-groups        {:reorder-list-container   {:padding-top 16}
-                           :order-item-contacts      {:font-size   16
-                                                      :line-height 24}
-                           :add-to-contacts-text     {:font-size      14
-                                                      :letter-spacing 0.5}}
-   :confirm-button-label  {:color          styles/color-white
-                           :font-size      14
-                           :letter-spacing 0.5}
+   :contacts              {:show-all-text-font :medium}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}

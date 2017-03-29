@@ -13,7 +13,6 @@
                                                 http-bridge]]
             [status-im.components.main-tabs :refer [main-tabs]]
             [status-im.components.context-menu :refer [menu-context]]
-            [status-im.contacts.search-results :refer [contacts-search-results]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.contact-list-modal :refer [contact-list-modal]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -38,7 +37,6 @@
             [status-im.new-group.views.reorder-groups :refer [reorder-groups]]
             [status-im.participants.views.add :refer [new-participants]]
             [status-im.participants.views.remove :refer [remove-participants]]
-            [status-im.group-settings.screen :refer [group-settings]]
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.edit.screen :refer [edit-my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
@@ -125,10 +123,8 @@
                                :edit-group-contact-list edit-group-contact-list
                                :edit-chat-group-contact-list edit-chat-group-contact-list
                                :new-public-group new-public-group
-                               :group-settings group-settings
                                :contact-list main-tabs
                                :contact-toggle-list contact-toggle-list
-                               :contact-list-search-results contacts-search-results
                                :group-contacts contact-list
                                :reorder-groups reorder-groups
                                :new-contact new-contact

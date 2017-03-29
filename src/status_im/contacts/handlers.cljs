@@ -380,3 +380,10 @@
                 :new-chat-name "")
       (assoc-in [:toolbar-search :show] nil)
       (assoc-in [:toolbar-search :text] ""))))
+
+(register-handler :open-chat-with-contact
+  (u/side-effect!
+    (fn [_ [_ {:keys [whisper-identity] :as contact}]]
+      (dispatch [:send-contact-request! contact])
+      (dispatch [:navigate-to-clean :chat-list])
+      (dispatch [:start-chat whisper-identity {}]))))

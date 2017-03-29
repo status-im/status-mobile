@@ -13,12 +13,6 @@
                                                  color-gray5]]
             [status-im.utils.platform :refer [platform-specific] :as p]))
 
-(defn ps-reorder [item]
-  (get-in platform-specific [:component-styles :reorder-groups item]))
-
-(defn ps-new-group [item]
-  (get-in platform-specific [:component-styles :new-group item]))
-
 (defn toolbar-icon [enabled?]
   {:width   20
    :height  18
@@ -34,9 +28,9 @@
    :flex-direction   :column
    :background-color color-light-gray})
 
-(def reorder-list-container
-  (merge {:flex 1}
-         (ps-reorder :reorder-list-container)))
+(defstyle reorder-list-container
+  {:flex    1
+   :android {:padding-top 16}})
 
 (def chat-name-container
   {:margin-top  21
@@ -71,24 +65,25 @@
    :height         40
    :padding-bottom 0})
 
-(def group-name-text
-  (merge (ps-new-group :group-name-text)
-         {:letter-spacing -0.1
-          :color          color-gray4}))
+(defstyle group-name-text
+  {:letter-spacing -0.1
+   :color          color-gray4
+   :ios            {:font-size 13}
+   :android        {:font-size 12}})
 
-(def members-container
-  {:flex-direction :row
-   :padding-top     20})
+(defstyle members-text
+  {:color   color-gray4
+   :ios     {:letter-spacing -0.2
+             :font-size      16}
+   :android {:font-size 14}})
 
-(def members-text
-  (merge (ps-new-group :members-text)
-         {:color          color-gray4}))
-
-(def members-text-count
-  (merge (ps-new-group :members-text-count)
-         {:margin-left    8
-          :color          color-gray4
-          :opacity        0.6}))
+(defstyle members-text-count
+  {:margin-left 8
+   :color       color-gray4
+   :opacity     0.6
+   :ios         {:letter-spacing -0.2
+                 :font-size      16}
+   :android     {:font-size 14}})
 
 (def add-container
   {:flex-direction :row
@@ -96,73 +91,70 @@
    :height         64
    :margin-top     12})
 
-(def settings-icon-container
-  (merge (ps-new-group :settings-icon-container)
-         {:width            40
-          :height           40
-          :align-items      :center
-          :justify-content  :center}))
+(defstyle settings-icon-container
+  {:width            40
+   :height           40
+   :align-items      :center
+   :justify-content  :center
+   :ios              {:background-color "#628fe333"
+                      :border-radius    50}})
 
 (def add-icon
   {:align-items :center
    :width       24
    :height      24})
 
-(def add-group-text
-  (merge (ps-new-group :settings-group-text)
-         {:color color-light-blue}))
+(defstyle add-group-text
+  {:color   color-light-blue
+   :ios     {:color          color-light-blue
+             :letter-spacing -0.2
+             :font-size      17
+             :line-height    20}
+   :android {:letter-spacing 0.5
+             :font-size      16}})
 
 (def settings-group-text
-  (merge (ps-new-group :settings-group-text)))
+  add-group-text)
 
 (def settings-group-text-container
   {:padding-left 16})
 
 (def delete-group-text
-  (merge (ps-new-group :settings-group-text)
+  (merge add-group-text
          {:color color-light-red}))
 
-(def delete-group-prompt-text
-  (merge (ps-new-group :delete-group-prompt-text)
-         {:color          color-gray4
-          :padding-top    5}))
+(defstyle delete-group-prompt-text
+  {:color       color-gray4
+   :padding-top 5
+   :ios         {:font-size      14
+                 :letter-spacing -0.2}
+   :android     {:font-size 12}})
 
-(def contact-container
-  (merge (ps-new-group :contact-container)
-         {:flex-direction  :row
-          :justify-content :center
-          :align-items     :center}))
+(defstyle contact-container
+  {:flex-direction  :row
+   :justify-content :center
+   :align-items     :center
+   :ios             {:height 63}
+   :android         {:height 56}})
 
-(def selected-contact
-  {:background-color selected-contact-color})
+(defstyle settings-group-container
+  {:ios     {:margin-top 25}
+   :android {:margin-top 23}})
 
-(def icon-check-container
-  (merge (get-in platform-specific [:component-styles :contacts :icon-check])
-         {:alignItems     :center
-          :justifyContent :center}))
+(defstyle settings-group-item
+  {:padding-left   16
+   :flex-direction :row
+   :align-items    :center
+   :ios            {:height         64}
+   :android        {:height         56}})
 
-(def toggle-container
-  {:width          56
-   :height         56
-   :alignItems     :center
-   :justifyContent :center})
-
-(def check-icon
-  {:width  12
-   :height 12})
-
-(def settings-group-container
-  (ps-new-group :settings-group-container))
-
-(def settings-group-item
-  (ps-new-group :settings-group-item))
-
-(def delete-icon-container
-  (merge (ps-new-group :delete-icon-container)
-         {:width            40
-          :height           40
-          :align-items      :center
-          :justify-content  :center}))
+(defstyle delete-icon-container
+  {:width            40
+   :height           40
+   :align-items      :center
+   :justify-content  :center
+   :ios              {:background-color "#d84b4b33"
+                      :border-radius    50}})
 
 (def order-item-container
   {:background-color color-white})
@@ -187,10 +179,14 @@
                   :line-height    20
                   :letter-spacing -0.2}})
 
-(def order-item-contacts
-  (merge (ps-reorder :order-item-contacts)
-         {:padding-left 8
-          :color color-gray4}))
+(defstyle order-item-contacts
+  {:padding-left 8
+   :color        color-gray4
+   :ios          {:font-size      17
+                  :line-height    20
+                  :letter-spacing -0.2}
+   :android      {:font-size   16
+                  :line-height 24}})
 
 (defstyle order-item-icon
   {:android {:padding-horizontal 16}
@@ -200,9 +196,10 @@
   {:background-color color-white})
 
 (def order-item-separator
-  (merge {:height           1
-          :background-color color-gray5}
-         (ps-reorder :order-item-separator)))
+  {:height           1
+   :background-color color-gray5
+   :ios              {:margin-left 16
+                      :opacity     0.5}})
 
 (def toolbar-title-with-count-text
   {:color          text1-color
