@@ -1,24 +1,24 @@
 (ns status-im.new-group.views.contact-toggle-list
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch]]
-    [status-im.contacts.views.contact :refer [contact-view]]
-    [status-im.components.react :refer [view
-                                        keyboard-avoiding-view
-                                        text
-                                        list-view
-                                        list-item]]
-    [status-im.components.confirm-button :refer [confirm-button]]
-    [status-im.components.status-bar :refer [status-bar]]
-    [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
-    [status-im.utils.listview :refer [to-datasource]]
-    [status-im.utils.platform :refer [ios?]]
-    [status-im.new-group.views.toggle-contact :refer [group-toggle-contact
-                                                      group-toggle-participant]]
-    [status-im.components.common.common :refer [separator]]
-    [status-im.new-group.styles :as st]
-    [status-im.contacts.styles :as cst]
-    [status-im.i18n :refer [label]]
-    [status-im.components.toolbar-new.actions :as act]))
+            [status-im.components.contact.contact :refer [contact-view]]
+            [status-im.components.renderers.renderers :as renderers]
+            [status-im.components.react :refer [view
+                                                keyboard-avoiding-view
+                                                text
+                                                list-view
+                                                list-item]]
+            [status-im.components.sticky-button :refer [sticky-button]]
+            [status-im.components.status-bar :refer [status-bar]]
+            [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
+            [status-im.utils.listview :refer [to-datasource]]
+            [status-im.utils.platform :refer [ios?]]
+            [status-im.new-group.views.toggle-contact :refer [group-toggle-contact
+                                                              group-toggle-participant]]
+            [status-im.new-group.styles :as st]
+            [status-im.contacts.styles :as cst]
+            [status-im.i18n :refer [label]]
+            [status-im.components.toolbar-new.actions :as act]))
 
 (defn title-with-count [title count-value]
   [view st/toolbar-title-with-count
@@ -41,12 +41,17 @@
      :custom-title       (title-with-count title contacts-count)
      :search-placeholder (label :t/search-contacts)}))
 
-(defn render-separator [_ row-id _]
-  (list-item ^{:key row-id}
-             [separator cst/contact-item-separator]))
-
-(defn render-spacing []
-  #(list-item [view cst/contact-list-spacing]))
+(defn toggle-list [contacts render-function]
+  [view {:flex 1}
+   [list-view
+    {:dataSource                (to-datasource contacts)
+     :renderRow                 (fn [row _ _]
+                                  (list-item ^{:key row} [render-function row]))
+     :renderSeparator           renderers/list-separator-renderer
+     :renderFooter              renderers/list-footer-renderer
+     :renderHeader              renderers/list-header-renderer
+     :style                     cst/contacts-list
+     :keyboardShouldPersistTaps true}]])
 
 (defview contact-toggle-list []
   [contacts [:all-added-group-contacts-filtered]
@@ -60,18 +65,9 @@
              :t/new-group
              :t/new-group-chat))
     selected-contacts-count]
-   [view {:flex 1}
-    [list-view
-     {:dataSource                (to-datasource contacts)
-      :renderRow                 (fn [row _ _]
-                                   (list-item ^{:key row} [group-toggle-contact row]))
-      :renderSeparator           render-separator
-      :renderFooter              (render-spacing)
-      :renderHeader              (render-spacing)
-      :style                     cst/contacts-list
-      :keyboardShouldPersistTaps true}]]
+   [toggle-list contacts group-toggle-contact]
    (when (pos? selected-contacts-count)
-     [confirm-button (label :t/next) #(dispatch [:navigate-to :new-group])])])
+     [sticky-button (label :t/next) #(dispatch [:navigate-to :new-group])])])
 
 (defview add-contacts-toggle-list []
   [contacts [:all-group-not-added-contacts-filtered]
@@ -81,18 +77,9 @@
                                                 st/group-container)
    [status-bar]
    [toggle-list-toolbar (:name group) selected-contacts-count]
-   [view {:flex 1}
-    [list-view
-     {:dataSource                (to-datasource contacts)
-      :renderRow                 (fn [row _ _]
-                                   (list-item ^{:key row} [group-toggle-contact row]))
-      :renderSeparator           render-separator
-      :renderFooter              (render-spacing)
-      :renderHeader              (render-spacing)
-      :style                     cst/contacts-list
-      :keyboardShouldPersistTaps true}]]
+   [toggle-list contacts group-toggle-contact]
    (when (pos? selected-contacts-count)
-     [confirm-button (label :t/save) #(do
+     [sticky-button (label :t/save) #(do
                                         (dispatch [:add-selected-contacts-to-group])
                                         (dispatch [:navigate-back]))])])
 
@@ -104,18 +91,9 @@
                                                 st/group-container)
    [status-bar]
    [toggle-list-toolbar chat-name selected-contacts-count]
-   [view {:flex 1}
-    [list-view
-     {:dataSource                (to-datasource contacts)
-      :renderRow                 (fn [row _ _]
-                                   (list-item ^{:key row} [group-toggle-participant row]))
-      :renderSeparator           render-separator
-      :renderFooter              (render-spacing)
-      :renderHeader              (render-spacing)
-      :style                     cst/contacts-list
-      :keyboardShouldPersistTaps true}]]
+   [toggle-list contacts group-toggle-participant]
    (when (pos? selected-contacts-count)
-     [confirm-button (label :t/save) #(do
+     [sticky-button (label :t/save) #(do
                                         (dispatch [:add-new-participants])
                                         (dispatch [:navigate-back]))])])
 

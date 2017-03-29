@@ -11,7 +11,6 @@
                                                 splash-screen
                                                 http-bridge]]
             [status-im.components.main-tabs :refer [main-tabs]]
-            [status-im.contacts.search-results :refer [contacts-search-results]]
             [status-im.contacts.views.contact-list :refer [contact-list]]
             [status-im.contacts.views.contact-list-modal :refer [contact-list-modal]]
             [status-im.contacts.views.new-contact :refer [new-contact]]
@@ -36,7 +35,6 @@
             [status-im.new-group.screen-public :refer [new-public-group]]
             [status-im.participants.views.add :refer [new-participants]]
             [status-im.participants.views.remove :refer [remove-participants]]
-            [status-im.group-settings.screen :refer [group-settings]]
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.edit.screen :refer [edit-my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
@@ -107,10 +105,8 @@
                                :add-participants-toggle-list add-participants-toggle-list
                                :reorder-groups reorder-groups
                                :new-public-group new-public-group
-                               :group-settings group-settings
                                :contact-list main-tabs
                                :contact-toggle-list contact-toggle-list
-                               :contact-list-search-results contacts-search-results
                                :group-contacts contact-list
                                :new-contact new-contact
                                :qr-scanner qr-scanner

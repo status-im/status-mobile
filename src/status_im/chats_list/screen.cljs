@@ -1,6 +1,8 @@
 (ns status-im.chats-list.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
+  (:require [re-frame.core :refer [dispatch]]
+            [status-im.components.common.common :as common]
+            [status-im.components.renderers.renderers :as renderers]
             [status-im.components.react :refer [list-view
                                                 list-item
                                                 view
@@ -8,6 +10,7 @@
                                                 text
                                                 icon
                                                 image
+                                                linear-gradient
                                                 touchable-highlight]]
             [status-im.components.native-action-button :refer [native-action-button]]
             [status-im.components.drawer.view :refer [open-drawer]]
@@ -17,7 +20,6 @@
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.styles :as tst]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
-            [status-im.components.react :refer [linear-gradient]]
             [status-im.components.sync-state.offline :refer [offline-view]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.tabs.styles :refer [tabs-height]]
@@ -70,25 +72,6 @@
                          :spacing      13
                          :on-press     #(dispatch [:navigate-to :new-chat])}])
 
-(defn chat-list-padding []
-  [view {:height (if ios? 0 8)
-         :background-color :white}])
-
-(defn chat-shadow-item []
-  (when-not ios?
-    [view {:height 12}
-     [chat-list-padding]
-     [linear-gradient {:style  {:height 4}
-                       :colors st/gradient-top-bottom-shadow}]]))
-
-(defn render-separator-fn [chats]
-  (fn [_ row-id _]
-    (list-item
-     (when (< row-id (dec (count chats)))
-       ^{:key (str "separator-" row-id)}
-       [view st/chat-separator-wrapper
-        [view st/chat-separator-item]]))))
-
 (defview chats-list []
   [chats        [:filtered-chats]
    edit?        [:get-in [:chat-list-ui-props :edit?]]
@@ -102,10 +85,11 @@
    [list-view {:dataSource      (to-datasource chats)
                :renderRow       (fn [[id :as row] _ _]
                                   (list-item ^{:key id} [chat-list-item row edit?]))
-               :renderHeader    #(when (seq chats) (list-item [chat-list-padding]))
-               :renderFooter    #(when (seq chats) (list-item [chat-shadow-item]))
-               :renderSeparator (when (get-in platform-specific [:chats :render-separator?])
-                                  (render-separator-fn chats))
+               :renderHeader    renderers/list-header-renderer
+               :renderFooter    #(list-item [view
+                                             [common/list-footer]
+                                             [common/bottom-shaddow]])
+               :renderSeparator renderers/list-separator-renderer
                :style           (st/list-container tabs-hidden?)}]
    (when (and (not edit?)
               (not search?)

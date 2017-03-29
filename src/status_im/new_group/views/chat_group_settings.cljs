@@ -1,30 +1,27 @@
 (ns status-im.new-group.views.chat-group-settings
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch]]
-    [status-im.contacts.views.contact :refer [contact-view]]
-    [status-im.components.react :refer [view
-                                        scroll-view
-                                        keyboard-avoiding-view
-                                        icon
-                                        touchable-highlight]]
-    [status-im.components.confirm-button :refer [confirm-button]]
-    [status-im.new-group.styles :as st]
-    [status-im.new-group.views.group :refer [group-toolbar
-                                             group-chat-settings-btns
-                                             group-name-view
-                                             add-btn
-                                             more-btn
-                                             delete-btn
-                                             separator]]
-    [status-im.new-group.validations :as v]
-    [status-im.i18n :refer [label]]
-    [status-im.utils.platform :refer [ios?]]
-    [cljs.spec :as s]))
+            [status-im.components.contact.contact :refer [contact-view]]
+            [status-im.components.common.common :as common]
+            [status-im.components.react :refer [view
+                                                scroll-view
+                                                keyboard-avoiding-view
+                                                icon
+                                                touchable-highlight]]
+            [status-im.components.sticky-button :refer [sticky-button]]
+            [status-im.new-group.styles :as st]
+            [status-im.new-group.views.group :refer [group-toolbar
+                                                     group-chat-settings-btns
+                                                     group-name-view
+                                                     add-btn
+                                                     more-btn
+                                                     delete-btn]]
+            [status-im.new-group.validations :as v]
+            [status-im.i18n :refer [label]]
+            [status-im.utils.platform :refer [ios?]]
+            [cljs.spec :as s]))
 
 (def contacts-limit 3)
-
-(defn save-chat-name []
-  (dispatch [:set-chat-name]))
 
 (defview chat-group-contacts-view [admin?]
   [contacts [:current-chat-contacts]]
@@ -32,7 +29,7 @@
         contacts-count (count contacts)]
     [view
      (when (and admin? (pos? contacts-count))
-       [separator])
+       [common/list-separator])
      [view
       (doall
         (map (fn [row]
@@ -40,14 +37,13 @@
                [view
                 [contact-view
                  {:contact        row
-                  :on-click       #()
                   :extend-options [{:value #(do
                                               (dispatch [:set :selected-participants #{(:whisper-identity row)}])
                                               (dispatch [:remove-participants]))
-                                      :text (label :t/remove)}]
+                                    :text  (label :t/remove)}]
                   :extended?      admin?}]
                 (when-not (= row (last limited-contacts))
-                  [separator])])
+                  [common/list-separator])])
              limited-contacts))]
      (when (< contacts-limit contacts-count)
        [more-btn contacts-limit contacts-count #(dispatch [:navigate-to :edit-chat-group-contact-list])])]))
@@ -77,4 +73,4 @@
        [view st/separator]
        [group-chat-settings-btns]]]
      (when save-btn-enabled?
-       [confirm-button (label :t/save) save-chat-name])]))
+       [sticky-button (label :t/save) #(dispatch [:set-chat-name])])]))

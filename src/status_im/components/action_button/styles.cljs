@@ -32,8 +32,7 @@
              :font-size      17
              :line-height    20}
    :android {:color          color-black
-             :font-size      16
-             :line-height    24}})
+             :font-size      16}})
 
 (defstyle actions-list
   {:background-color color-white
