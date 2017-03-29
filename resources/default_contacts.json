@@ -190,5 +190,19 @@
         {
             "en": "https://commiteth.com"
         }
+    },
+
+    "Etherplay":
+    {
+        "name":
+        {
+            "en": "Etherplay"
+        },
+        "photo-path": "contacts://etherplay",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://test.etherplay.io"
+        }
     }
 }
