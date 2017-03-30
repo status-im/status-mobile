@@ -140,22 +140,23 @@
    edit?                [:get-in [:contacts-ui-props :edit?]]
    groups               [:all-added-groups]
    tabs-hidden?         [:tabs-hidden?]]
-  [view (st/contacts-list-container tabs-hidden?)
-   (if edit?
-     [toolbar-edit]
-     [toolbar-view])
-   (if (pos? (+ (count groups) contacts-count))
-     [scroll-view {:style    st/contact-groups}
-      (when (pos? contacts-count)
-        [contact-group-form {:contacts       contacts
-                             :contacts-count contacts-count
-                             :edit?          edit?}])
-      (for [group groups]
-        ^{:key group}
-        [contact-group-view {:group          group
-                             :edit?          edit?}])]
-     [view st/empty-contact-groups
-      [react/icon :group_big st/empty-contacts-icon]
-      [text {:style st/empty-contacts-text} (label :t/no-contacts)]])
+  [view {:flex 1}
+   [view (st/contacts-list-container tabs-hidden?)
+    (if edit?
+      [toolbar-edit]
+      [toolbar-view])
+    (if (pos? (+ (count groups) contacts-count))
+      [scroll-view {:style    st/contact-groups}
+       (when (pos? contacts-count)
+         [contact-group-form {:contacts       contacts
+                              :contacts-count contacts-count
+                              :edit?          edit?}])
+       (for [group groups]
+         ^{:key group}
+         [contact-group-view {:group          group
+                              :edit?          edit?}])]
+      [view st/empty-contact-groups
+       [react/icon :group_big st/empty-contacts-icon]
+       [text {:style st/empty-contacts-text} (label :t/no-contacts)]])]
    (when (and (not edit?) (get-in platform-specific [:contacts :action-button?]))
        [contacts-action-button])])
