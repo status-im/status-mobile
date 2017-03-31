@@ -42,7 +42,9 @@
 (defn- save-contacts
   [identities contacts]
   (doseq [contact-identity identities]
-    (.push contacts (clj->js {:identity contact-identity}))))
+    (when-not (.find contacts (fn [object _ _]
+                                (= contact-identity (aget object "identity"))))
+      (.push contacts (clj->js {:identity contact-identity})))))
 
 (defn add-contacts
   [group-id identities]

@@ -174,6 +174,13 @@
 (register-handler :get-contacts-identities
   (u/side-effect! get-identities-by-contacts!))
 
+(defn add-contacts-to-groups [{:keys [new-contacts]} _]
+  (let [default-contacts js-res/default-contacts]
+    (doseq [{:keys [whisper-identity]} new-contacts]
+      (let [groups (:groups ((keyword whisper-identity) default-contacts))]
+        (doseq [group groups]
+          (dispatch [:add-contacts-to-group group [whisper-identity]]))))))
+
 (defn save-contacts! [{:keys [new-contacts]} _]
   (contacts/save-all new-contacts))
 
@@ -209,8 +216,15 @@
   (u/side-effect!
     (fn [{:keys [chats groups]}]
       (let [default-contacts js-res/default-contacts
-            default-dapps-group-contacts (mapv #(hash-map :identity (clojure.core/name (first %)))
-                                               (filter #(true? (:dapp? (second %))) default-contacts))]
+            default-groups js-res/default-contact-groups]
+        (dispatch [:add-groups (mapv
+                                 (fn [[id {:keys [name contacts]}]]
+                                   {:group-id (clojure.core/name id)
+                                    :name      (:en name)
+                                    :order     0
+                                    :timestamp (random/timestamp)
+                                    :contacts  (mapv #(hash-map :identity %) contacts)})
+                                 default-groups)])
         (doseq [[id {:keys [name photo-path public-key add-chat?
                             dapp? dapp-url dapp-hash]}] default-contacts]
           (let [id' (clojure.core/name id)]
@@ -224,16 +238,12 @@
                                          :public-key       public-key
                                          :dapp?            dapp?
                                          :dapp-url         (:en dapp-url)
-                                         :dapp-hash        dapp-hash}]]))))
-        (dispatch [:add-groups [{:group-id  "dapps"
-                                 :name      (label :t/contacts-group-dapps)
-                                 :order     0
-                                 :timestamp (random/timestamp)
-                                 :contacts  default-dapps-group-contacts}]])))))
+                                         :dapp-hash        dapp-hash}]]))))))))
 
 (register-handler :add-contacts
-  (after save-contacts!)
-  add-new-contacts)
+  (-> add-new-contacts
+      ((after save-contacts!))
+      ((after add-contacts-to-groups))))
 
 (defn add-new-contact [db [_ {:keys [whisper-identity] :as contact}]]
   (-> db
