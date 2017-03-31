@@ -3,6 +3,7 @@
   (:require [status-im.utils.types :refer [json->clj]]))
 
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
+(def default-contact-groups (json->clj (slurp "resources/default_contact_groups.json")))
 
 (def commands-js (slurp "resources/commands.js"))
 (def console-js (slurp "resources/console.js"))
