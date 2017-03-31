@@ -203,7 +203,6 @@
             "en": "https://commiteth.com"
         },
         "groups": ["dapps"]
-        }
     },
 
     "Etherplay":
@@ -219,6 +218,5 @@
             "en": "http://test.etherplay.io"
         },
         "groups": ["dapps"]
-        }
     }
 }
