@@ -39,15 +39,16 @@
                 (label :t/enter-valid-passphrase))]
     [view
      [text-field
-      {:value          passphrase
-       :error          error
-       :error-color    color-blue
-       :label          (label :t/passphrase)
-       :label-color    color-gray
-       :line-color     separator-color
-       :input-style    st/input-style
-       :wrapper-style  (merge button-input st/address-input-wrapper)
-       :on-change-text #(dispatch [:set-in [:recover :passphrase] %])}]]))
+      {:value           passphrase
+       :error           error
+       :error-color     color-blue
+       :label           (label :t/passphrase)
+       :label-color     color-gray
+       :line-color      separator-color
+       :input-style     st/input-style
+       :auto-capitalize :none
+       :wrapper-style   (merge button-input st/address-input-wrapper)
+       :on-change-text  #(dispatch [:set-in [:recover :passphrase] %])}]]))
 
 (defview password-input [password]
   [error [:get-in [:recover :password-error]]]
