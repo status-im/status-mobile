@@ -307,15 +307,25 @@
                            photo-path)}
            :style  st/photo}]])
 
+(defview my-photo [from]
+  [account [:get-current-account]]
+  (let [{:keys [photo-path]} account]
+    [view st/photo-view
+     [image {:source {:uri (if (str/blank? photo-path)
+                             (identicon from)
+                             photo-path)}
+             :style  st/photo}]]))
+
 (defn message-body
-  [{:keys [last-outgoing? message-type same-author from index] :as message} content]
+  [{:keys [last-outgoing? message-type same-author from index outgoing] :as message} content]
   (let [delivery-status :seen-by-everyone]
     [view st/group-message-wrapper
      [view (st/message-body message)
       [view st/message-author
-       (when (and (or (= index 1) (not same-author))
-                  (not= from "me"))
-         [member-photo from])]
+       (when (or (= index 1) (not same-author))
+         (if outgoing
+           [my-photo from]
+           [member-photo from]))]
       [view (st/group-message-view message)
        content
        (when last-outgoing?
