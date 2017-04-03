@@ -64,7 +64,7 @@
        [text {:style st/profile-activity-status-text}
         (online-text last-online)]])]])
 
-(defn profile-actions [{:keys [pending? whisper-identity]} chat-id]
+(defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
   [view actions-list
    (if pending?
      [action-button (label :t/add-to-contacts)
@@ -76,10 +76,12 @@
    [action-button (label :t/start-conversation)
                   :chats_blue
                   #(message-user whisper-identity)]
-   [action-separator]
-   [action-button (label :t/send-transaction)
-                  :arrow_right_blue
-                  #(dispatch [:open-chat-with-the-send-transaction chat-id])]])
+   (when-not dapp?
+     [view
+      [action-separator]
+      [action-button (label :t/send-transaction)
+                     :arrow_right_blue
+                     #(dispatch [:open-chat-with-the-send-transaction chat-id])]])])
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [view st/profile-setting-item
