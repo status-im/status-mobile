@@ -1813,6 +1813,15 @@ status.command({
 });
 
 status.command({
+    name: "resetchaindata",
+    title: "Reset chaindata",
+    description: "Reset chaindata",
+    color: "#7099e6",
+    registeredOnly: true,
+    params: []
+});
+
+status.command({
     name: "browse",
     title: "Browser",
     registeredOnly: true,
@@ -1835,7 +1844,6 @@ status.command({
         };
     }
 });
-
 
 // status.command({
 //     name: "help",

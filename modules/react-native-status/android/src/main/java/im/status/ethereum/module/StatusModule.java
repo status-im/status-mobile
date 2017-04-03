@@ -94,6 +94,18 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     // Geth
     private void signalEvent(String jsonEvent) {
         Log.d(TAG, "Signal event: " + jsonEvent);
+        Log.d(TAG, "Signal event: " + (jsonEvent == "{\"type\":\"node.started\",\"event\":{}}"));
+
+        try {
+            JSONObject signal = new JSONObject(jsonEvent);
+            if (signal.getString("type").equals("node.started")) {
+                Log.d(TAG, "Update bridge");
+                this.w3Bridge = new Web3Bridge();
+            }
+        } catch (JSONException e) {
+            
+        }
+
         WritableMap params = Arguments.createMap();
         params.putString("jsonEvent", jsonEvent);
         this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
@@ -123,11 +135,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             try {
                 final String chaindDataFolderPath = dataFolder + "/StatusIM/lightchaindata";
                 final File lightChainFolder = new File(chaindDataFolderPath);
-                if (lightChainFolder.isDirectory())
-                {
+                if (lightChainFolder.isDirectory()) {
                     String[] children = lightChainFolder.list();
-                    for (int i = 0; i < children.length; i++)
-                    {
+                    for (int i = 0; i < children.length; i++) {
                         new File(lightChainFolder, children[i]).delete();
                     }
                 }
@@ -187,11 +197,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        this.w3Bridge = new Web3Bridge();
         Thread thread = new Thread() {
             @Override
             public void run() {
                 Statusgo.StartNodeRPCServer();
+                w3Bridge = new Web3Bridge();
             }
         };
 
@@ -491,6 +501,28 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 w3Bridge.sendRequest(host, payload, callback);
+            }
+        };
+
+        thread.start();
+    }
+
+    @ReactMethod
+    public void resetChainData(final Callback callback) {
+
+        Log.d(TAG, "ResetChainData");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        Log.d(TAG, "Before ResetChainData");
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String result = Statusgo.ResetChainData();
+                Log.d(TAG, "ResetChainData result: " + result);
+                callback.invoke(result);
             }
         };
 

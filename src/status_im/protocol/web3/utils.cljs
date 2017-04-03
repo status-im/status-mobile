@@ -1,7 +1,7 @@
 (ns status-im.protocol.web3.utils
   (:require [cljs-time.core :refer [now]]
             [cljs-time.coerce :refer [to-long]]
-            [status-im.utils.web-provider :as w3]))
+            [status-im.utils.web3-provider :as w3]))
 
 (def web3 (js/require "web3"))
 

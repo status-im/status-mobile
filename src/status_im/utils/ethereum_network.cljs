@@ -1,6 +1,6 @@
 (ns status-im.utils.ethereum-network
   (:require [status-im.constants :as c]
-            [status-im.utils.web-provider :as w3]))
+            [status-im.utils.web3-provider :as w3]))
 
 (def Web3 (js/require "web3"))
 
