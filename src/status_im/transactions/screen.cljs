@@ -57,5 +57,6 @@
       :secure-text-entry true
       :label-color       :#ffffff80
       :line-color        :white
+      :auto-capitalize   :none
       :input-style       st/password-style
       :on-change-text    #(dispatch [:set-in [:confirm-transactions :password] %])}]]])
