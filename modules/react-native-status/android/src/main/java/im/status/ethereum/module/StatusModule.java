@@ -14,6 +14,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.github.status_im.status_go.cmd.Statusgo;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -109,6 +110,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             newFile.mkdir();
         } catch (Exception e) {
             Log.e(TAG, "error making folder: " + dataFolder, e);
+        }
+
+        final String ropstenFlagPath = dataFolder + "/ropsten_flag";
+        final File ropstenFlag = new File(ropstenFlagPath);
+        if (!ropstenFlag.exists()) {
+            try {
+                final String chaindDataFolderPath = dataFolder + "/StatusIM/lightchaindata";
+                final File lightChainFolder = new File(chaindDataFolderPath);
+                if (lightChainFolder.isDirectory())
+                {
+                    String[] children = lightChainFolder.list();
+                    for (int i = 0; i < children.length; i++)
+                    {
+                        new File(lightChainFolder, children[i]).delete();
+                    }
+                }
+                lightChainFolder.delete();
+                ropstenFlag.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         Statusgo.StartNode(Statusgo.GenerateConfig(dataFolder, 3));
