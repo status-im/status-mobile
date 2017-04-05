@@ -1699,10 +1699,10 @@ status.response(phoneConfig);
 status.command(phoneConfig);
 
 var faucets = [
-    {
+    /*{
         name: "Ethereum Ropsten Faucet",
         url: "http://faucet.ropsten.be:3001"
-    },
+    },*/
     {
         name: "Status Testnet Faucet",
         url: "http://46.101.129.137:3001",
