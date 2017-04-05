@@ -1,12 +1,12 @@
 (ns status-im.profile.edit.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [status-im.profile.styles :as st]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.styles :refer [color-blue color-gray5]]
             [re-frame.core :refer [dispatch]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.toolbar-new.actions :as act]
-            [status-im.components.text-field.view :refer [text-field]]
             [status-im.i18n :refer [label]]
             [status-im.profile.screen :refer [colorize-status-hashtags]]
             [status-im.components.sticky-button :refer [sticky-button]]
@@ -32,14 +32,9 @@
 (defview profile-name-input []
   [new-profile-name [:get-in [:profile-edit :name]]]
   [view
-   [text-field
-    {:line-color        st/edit-line-color
-     :focus-line-color  st/profile-focus-line-color
-     :focus-line-height st/profile-focus-line-height
-     :label             (label :t/name)
-     :input-style       st/profile-name-input
-     :on-change-text    #(dispatch [:set-in [:profile-edit :name] %])
-     :value             new-profile-name}]])
+   [text-input-with-label {:label          (label :t/name)
+                           :default-value  new-profile-name
+                           :on-change-text #(dispatch [:set-in [:profile-edit :name] %])}]])
 
 (def profile-icon-options
   [{:text (label :t/image-source-gallery)    :value #(dispatch [:open-image-picker])}

@@ -23,7 +23,9 @@
 (def color-dark-blue-2 "#1f253f")
 (def color-dark-blue-3 "#191f37")
 (def color-light-gray "#EEF2F5")
+(def color-light-gray2 "#ececf0")
 (def color-red "red")
+(def color-red2 "#d84b4b")
 (def color-light-red "#e86363")
 (def color-light-red2 "#f47979")
 
