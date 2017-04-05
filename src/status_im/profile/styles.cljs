@@ -51,18 +51,14 @@
 
 (def edit-profile-bage
   {:flex-direction :row
-   :align-items    :center
    :padding-left   24})
 
 (def context-menu-custom-styles
   {:optionsContainer {:margin-top 78}})
 
-(defstyle edit-profile-name-container
+(def edit-profile-name-container
   {:flex 1
-   :ios     {:padding-left 32
-             :padding-top 15}
-   :android {:padding-top  16
-             :padding-left 16}})
+   :padding-top 30})
 
 (def edit-profile-icon-container
   {:padding-top 25})
@@ -185,9 +181,10 @@
    :padding-bottom     16
    :margin-left        16
    :margin-right       16
-   :margin-top         24
-   :ios                {:padding-top 10}
-   :android            {:padding-top 13}})
+   :ios                {:padding-top 10
+                        :margin-top  10}
+   :android            {:padding-top 13
+                        :margin-top  13}})
 
 (def add-a-status
   (merge profile-status-text

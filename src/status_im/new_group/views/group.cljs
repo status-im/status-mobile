@@ -10,27 +10,13 @@
                                         text
                                         icon
                                         touchable-highlight]]
-    [status-im.components.text-field.view :refer [text-field]]
+    [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
     [status-im.components.styles :refer [color-blue color-gray5 color-light-blue]]
     [status-im.components.status-bar :refer [status-bar]]
     [status-im.components.toolbar-new.view :refer [toolbar]]
     [status-im.utils.platform :refer [platform-specific]]
     [status-im.new-group.styles :as st]
     [status-im.i18n :refer [label]]))
-
-(defview group-name-input []
-  [new-group-name [:get :new-chat-name]]
-  [view
-   [text-field
-    {:wrapper-style     st/group-chat-name-wrapper
-     :line-color        color-gray5
-     :focus-line-color  color-light-blue
-     :focus-line-height st/group-chat-focus-line-height
-     :label-hidden?     true
-     :input-style       st/group-chat-name-input
-     :auto-focus        true
-     :on-change-text    #(dispatch [:set :new-chat-name %])
-     :value             new-group-name}]])
 
 (defn group-toolbar [group-type edit?]
   [view
@@ -42,15 +28,18 @@
                 (if edit? :t/chat-settings :t/new-group-chat)))
      :actions [{:image :blank}]}]])
 
-(defn group-name-view []
+(defview group-name-view []
+  [new-group-name [:get :new-chat-name]]
   [view st/chat-name-container
-   [text {:style st/group-name-text}
-    (label :t/name)]
-   [group-name-input]])
+   [text-input-with-label
+    {:auto-focus        true
+     :label             (label :t/name)
+     :on-change-text    #(dispatch [:set :new-chat-name %])
+     :default-value     new-group-name}]])
 
 (defn add-btn [on-press]
   [action-button (label :t/add-members)
-                 :add_blue
+   :add_blue
                  on-press])
 
 (defn delete-btn [on-press]

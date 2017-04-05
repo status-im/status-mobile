@@ -13,7 +13,6 @@
     [status-im.components.action-button.action-button :refer [action-button
                                                               action-separator]]
     [status-im.components.action-button.styles :refer [actions-list]]
-    [status-im.components.text-field.view :refer [text-field]]
     [status-im.components.status-bar :refer [status-bar]]
     [status-im.components.toolbar-new.view :refer [toolbar-with-search toolbar]]
     [status-im.components.toolbar-new.actions :as act]

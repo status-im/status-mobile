@@ -33,8 +33,7 @@
    :android {:padding-top 16}})
 
 (def chat-name-container
-  {:margin-top  21
-   :margin-left 16})
+  {:margin-top  10})
 
 (def add-button-container
   {:margin-left 16})
@@ -220,6 +219,10 @@
   {:background-color color-gray5
    :height           1
    :opacity          0.5})
+
+(def list-view-container
+  {:flex       1
+   :margin-top 10})
 
 
 
