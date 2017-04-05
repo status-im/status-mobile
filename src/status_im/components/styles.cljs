@@ -17,7 +17,9 @@
 (def color-light-blue-transparent "#628fe333")
 (def color-light-blue2 "#eff3fc")
 (def color-light-gray "#EEF2F5")
+(def color-light-gray2 "#ececf0")
 (def color-red "red")
+(def color-red2 "#d84b4b")
 (def color-light-red "#e86363")
 
 (def color-separator "#D6D6D6")

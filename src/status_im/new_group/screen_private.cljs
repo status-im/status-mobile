@@ -59,7 +59,7 @@
                                                   st/group-container)
      [group-toolbar type true]
      [group-name-view]
-     [view {:flex 1}
+     [view st/list-view-container
       [add-btn #(dispatch [:navigate-to :add-contacts-toggle-list])]
       [group-contacts-view group]
       [view st/separator]
@@ -83,7 +83,7 @@
                                                   st/group-container)
      [group-toolbar group-type false]
      [group-name-view]
-     [view {:flex 1}
+     [view st/list-view-container
       [list-view {:dataSource                (to-datasource contacts)
                   :enableEmptySections       true
                   :renderRow                 render-row
