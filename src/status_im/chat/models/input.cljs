@@ -24,14 +24,16 @@
                         requests)]
     (into commands responses)))
 
-(defn split-command-args [command-text]
+(defn split-command-args [command-text remove-quotes?]
   (let [splitted (str/split command-text const/spacing-char)]
     (first
       (reduce (fn [[list command-started?] arg]
                 (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
                       has-quote?         (and (= quotes-count 1)
                                               (str/index-of arg const/arg-wrapping-char))
-                      arg                (str/replace arg #"\"" "")
+                      arg                (if remove-quotes?
+                                           (str/replace arg #"\"" "")
+                                           arg)
                       new-list           (if command-started?
                                            (let [index (dec (count list))]
                                              (update list index str const/spacing-char arg))
@@ -55,7 +57,7 @@
    (let [chat-id          (or chat-id current-chat-id)
          input-metadata   (get-in db [:chats chat-id :input-metadata])
          possible-actions (possible-chat-actions db chat-id)
-         command-args     (split-command-args input-text)
+         command-args     (split-command-args input-text true)
          command-name     (first command-args)]
      (when (.startsWith (or command-name "") const/command-char)
        (when-let [[command to-message-id] (-> (filter (fn [[{:keys [name]} message-id]]
@@ -171,7 +173,9 @@
          (first))))
 
 (defn make-input-text [modifiers [command & args] old-args selection]
-  (let [arg-pos  (changed-arg-position args old-args)
+  (let [args     (into [] args)
+        old-args (into [] old-args)
+        arg-pos  (changed-arg-position args old-args)
         modifier (get-in modifiers [arg-pos :modifier])
         new-arg  (if (and arg-pos modifier)
                    (let [{:keys [make-change]} modifier]
@@ -180,9 +184,9 @@
                                    :new-args     args
                                    :arg-pos      arg-pos
                                    :selection    selection}))
-                   (get (into [] args) arg-pos))
+                   (get args arg-pos))
         new-args (if arg-pos
-                   (assoc (into [] old-args) arg-pos (when new-arg (str/trim new-arg)))
+                   (assoc old-args arg-pos (when new-arg (str/trim new-arg)))
                    old-args)]
     (str
       command

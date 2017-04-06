@@ -9,9 +9,7 @@
     updated-text))
 
 (defn- get-change [{:keys [command-name old-args new-args arg-pos selection]}]
-  (let [old-args      (into [] old-args)
-        new-args      (into [] new-args)
-        modification  (- (count (get new-args arg-pos))
+  (let [modification  (- (count (get new-args arg-pos))
                          (count (get old-args arg-pos)))
         type          (if (> modification 0) :added :removed)
         position      (-> (:start selection)
@@ -29,7 +27,7 @@
                        (+ position symbols-count)))}))
 
 (defn- make-change [{:keys [command-name old-args new-args arg-pos selection] :as args}]
-  (let [{:keys [type position symbols] :as c} (get-change args)
+  (let [{:keys [type position symbols]} (get-change args)
         make-change  #(if (= type :added)
                         (str (if % (subs % 0 position) "")
                              symbols
