@@ -16,6 +16,6 @@
  :heads-up-display false
  :jsload-callback #(swap! cnt inc))
 
-(rr/enable-re-frisk-remote!)
+(rr/enable-re-frisk-remote! {:host "localhost:4567"})
 
 (core/init)
