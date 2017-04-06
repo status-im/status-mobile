@@ -58,14 +58,14 @@
          command-args     (split-command-args input-text)
          command-name     (first command-args)]
      (when (.startsWith (or command-name "") const/command-char)
-       (when-let [command (-> (filter (fn [[{:keys [name]} message-id]]
-                                        (and (= name (subs command-name 1))
-                                             (= message-id (or (:to-message-id input-metadata)
-                                                               :any))))
-                                      possible-actions)
-                              (ffirst))]
+       (when-let [[command to-message-id] (-> (filter (fn [[{:keys [name]} message-id]]
+                                                        (= name (subs command-name 1)))
+                                                      possible-actions)
+                                              (first))]
          {:command  command
-          :metadata input-metadata
+          :metadata (if (not= :any to-message-id)
+                      (assoc input-metadata :to-message-id to-message-id)
+                      input-metadata)
           :args     (remove empty? (rest command-args))}))))
   ([{:keys [current-chat-id] :as db} chat-id]
     (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
