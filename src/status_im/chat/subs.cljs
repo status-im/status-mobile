@@ -24,7 +24,6 @@
                        (reaction))]))
          (into {}))))
 
-
 (register-sub
   :chat-ui-props
   (fn [db [_ ui-element chat-id]]
@@ -87,11 +86,12 @@
 (register-sub
   :current-chat-argument-position
   (fn [db [_ chat-id]]
-    (let [chat-id    (or chat-id (@db :current-chat-id))
-          command    (subscribe [:selected-chat-command chat-id])
-          input-text (subscribe [:chat :input-text chat-id])]
+    (let [chat-id       (or chat-id (@db :current-chat-id))
+          command       (subscribe [:selected-chat-command chat-id])
+          input-text    (subscribe [:chat :input-text chat-id])
+          seq-arguments (subscribe [:chat :seq-arguments chat-id])]
       (reaction
-        (input-model/current-chat-argument-position @command @input-text)))))
+        (input-model/current-chat-argument-position @command @input-text @seq-arguments)))))
 
 (register-sub
   :chat-parameter-box

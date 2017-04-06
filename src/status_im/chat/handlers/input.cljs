@@ -3,7 +3,6 @@
             [taoensso.timbre :as log]
             [status-im.chat.constants :as const]
             [status-im.chat.models.input :as input-model]
-            [status-im.chat.models.password-input :as password-input]
             [status-im.chat.models.suggestions :as suggestions]
             [status-im.components.react :as react-comp]
             [status-im.components.status :as status]
@@ -16,27 +15,17 @@
 (handlers/register-handler
   :set-chat-input-text
   (fn [{:keys [current-chat-id chats chat-ui-props] :as db} [_ text chat-id]]
-    (let [chat-id   (or chat-id current-chat-id)
-          selection (get-in chat-ui-props [chat-id :selection])]
+    (let [chat-id          (or chat-id current-chat-id)
+          ends-with-space? (input-model/text-ends-with-space? text)]
       (dispatch [:update-suggestions chat-id text])
 
       (if-let [{command :command} (input-model/selected-chat-command db chat-id text)]
         (let [{old-args :args} (input-model/selected-chat-command db chat-id)
-              text-splitted    (input-model/split-command-args text)
-              new-args         (rest text-splitted)
-              modifiers        (input-model/add-modifiers (:params command) new-args)
-              addition         (if (input-model/text-ends-with-space? text)
-                                 const/spacing-char)
-              new-params       {:modified-text (str (input-model/apply-modifiers text-splitted modifiers)
-                                                    addition)
-                                :input-text    (str (input-model/make-input-text modifiers
-                                                                                 text-splitted
-                                                                                 old-args
-                                                                                 selection)
-                                                    addition)}]
-          (update-in db [:chats chat-id] merge new-params))
-        (update-in db [:chats chat-id] merge {:input-text    text
-                                              :modified-text nil})))))
+              text-splitted  (input-model/split-command-args text)
+              new-args       (rest text-splitted)
+              new-input-text (input-model/make-input-text text-splitted old-args)]
+          (assoc-in db [:chats chat-id :input-text] new-input-text))
+        (assoc-in db [:chats chat-id :input-text] text)))))
 
 (handlers/register-handler
   :add-to-chat-input-text
@@ -58,7 +47,11 @@
       (dispatch [:set-chat-ui-props :result-box nil])
       (dispatch [:set-chat-ui-props :validation-messages nil])
       (dispatch [:load-chat-parameter-box command 0])
-      (dispatch [:chat-input-focus]))))
+      (if (:sequential-params command)
+        (js/setTimeout
+          #(dispatch [:chat-input-focus :seq-input-ref])
+          100)
+        (dispatch [:chat-input-focus :input-ref])))))
 
 (handlers/register-handler
   :set-chat-input-metadata
@@ -72,22 +65,29 @@
     (fn [{:keys [current-chat-id] :as db} [_ [index arg]]]
       (let [command      (-> (get-in db [:chats current-chat-id :input-text])
                              (input-model/split-command-args))
-            command-name (first command)
-            command-args (into [] (rest command))
-            command-args (if (< index (count command-args))
-                           (assoc command-args index arg)
-                           (conj command-args arg))]
-        (dispatch [:set-chat-input-text (str command-name
-                                             const/spacing-char
-                                             (input-model/join-command-args command-args)
-                                             const/spacing-char)])))))
+            seq-params?  (-> (input-model/selected-chat-command db current-chat-id)
+                             (get-in [:command :sequential-params]))]
+        (if seq-params?
+          (dispatch [:set-chat-seq-arg-input-text arg])
+          (let [command-name (first command)
+                command-args (into [] (rest command))
+                command-args (if (< index (count command-args))
+                               (assoc command-args index arg)
+                               (conj command-args arg))]
+            (dispatch [:set-chat-input-text (str command-name
+                                                 const/spacing-char
+                                                 (input-model/join-command-args command-args)
+                                                 const/spacing-char)])))))))
 
 (handlers/register-handler
   :chat-input-focus
   (handlers/side-effect!
-    (fn [{:keys [current-chat-id chat-ui-props] :as db}]
-      (when-let [ref (get-in chat-ui-props [current-chat-id :input-ref])]
-        (.focus ref)))))
+    (fn [{:keys [current-chat-id chat-ui-props] :as db} [_ ref]]
+      (try
+        (when-let [ref (get-in chat-ui-props [current-chat-id ref])]
+          (.focus ref))
+        (catch :default e
+          (log/debug "Cannot focus the reference"))))))
 
 (handlers/register-handler
   :update-suggestions
@@ -152,34 +152,35 @@
   ::proceed-command
   (handlers/side-effect!
     (fn [db [_ command chat-id]]
-      (dispatch [::request-command-data
-                 {:command   command
-                  :chat-id   chat-id
-                  :data-type :validator
-                  :after     #(dispatch [::proceed-validation-messages command chat-id %2])}]))))
+      (let [after-validation #(dispatch [::request-command-data
+                                         {:command   command
+                                          :chat-id   chat-id
+                                          :data-type :on-send
+                                          :after     (fn [_ res]
+                                                       (dispatch [::send-command res command chat-id]))}])]
+        (dispatch [::request-command-data
+                   {:command   command
+                    :chat-id   chat-id
+                    :data-type :validator
+                    :after     #(dispatch [::proceed-validation-messages
+                                           command chat-id %2 after-validation])}])))))
 
 (handlers/register-handler
   ::proceed-validation-messages
   (handlers/side-effect!
-    (fn [db [_ command chat-id {:keys [markup validationHandler parameters] :as errors}]]
+    (fn [db [_ command chat-id {:keys [markup validationHandler parameters] :as errors} proceed-fn]]
       (let [set-errors #(do (dispatch [:set-chat-ui-props :validation-messages %])
-                            (dispatch [:set-chat-ui-props :sending-in-progress? false]))
-            proceed    #(dispatch [::request-command-data
-                                   {:command   command
-                                    :chat-id   chat-id
-                                    :data-type :on-send
-                                    :after     (fn [_ res]
-                                                 (dispatch [::send-command res command chat-id]))}])]
+                            (dispatch [:set-chat-ui-props :sending-in-progress? false]))]
         (cond
           markup
           (set-errors markup)
 
           validationHandler
-          (do (dispatch [::execute-validation-handler validationHandler parameters set-errors proceed])
+          (do (dispatch [::execute-validation-handler validationHandler parameters set-errors proceed-fn])
               (dispatch [:set-chat-ui-props :sending-in-progress? false]))
 
           :default
-          (proceed))))))
+          (proceed-fn))))))
 
 (handlers/register-handler
   ::execute-validation-handler
@@ -236,11 +237,19 @@
   :send-current-message
   (handlers/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ chat-id]]
+      (dispatch [:set-chat-ui-props :sending-in-progress? true])
       (let [chat-id      (or chat-id current-chat-id)
-            chat-command (input-model/selected-chat-command db chat-id)]
-        (if chat-command
+            chat-command (input-model/selected-chat-command db chat-id)
+            seq-command? (get-in chat-command [:command :sequential-params])
+            chat-command (if seq-command?
+                           (let [args (get-in db [:chats chat-id :seq-arguments])]
+                             (assoc chat-command :args args))
+                           (update chat-command :args #(remove str/blank? %)))]
+        (if (:command chat-command)
           (if (= :complete (input-model/command-completion chat-command))
-            (dispatch [::proceed-command chat-command chat-id])
+            (do
+              (dispatch [::proceed-command chat-command chat-id])
+              (dispatch [:clear-seq-arguments chat-id]))
             (let [text (get-in db [:chats chat-id :input-text])]
               (dispatch [:set-chat-ui-props :sending-in-progress? false])
               (when-not (input-model/text-ends-with-space? text)
@@ -262,3 +271,47 @@
                           (fn [{:keys [result] :as data}]
                             (dispatch [:suggestions-handler {:chat-id chat-id
                                                              :result  data}])))))))
+
+(handlers/register-handler
+  :clear-seq-arguments
+  (fn [{:keys [current-chat-id chats] :as db} [_ chat-id]]
+    (let [chat-id (or chat-id current-chat-id)]
+      (-> db
+          (assoc-in [:chats chat-id :seq-arguments] [])
+          (assoc-in [:chats chat-id :seq-argument-input-text] nil)))))
+
+(handlers/register-handler
+  :update-seq-arguments
+  (fn [{:keys [current-chat-id chats] :as db} [_ chat-id]]
+    (let [chat-id (or chat-id current-chat-id)
+          text    (get-in chats [chat-id :seq-argument-input-text])]
+      (-> db
+          (update-in [:chats chat-id :seq-arguments] #(into [] (conj % text)))
+          (assoc-in [:chats chat-id :seq-argument-input-text] nil)))))
+
+(handlers/register-handler
+  :send-seq-argument
+  (handlers/side-effect!
+    (fn [{:keys [current-chat-id chats] :as db} [_ chat-id]]
+      (let [chat-id          (or chat-id current-chat-id)
+            text             (get-in chats [chat-id :seq-argument-input-text])
+            seq-arguments    (get-in db [:chats chat-id :seq-arguments])
+            command          (-> (input-model/selected-chat-command db chat-id)
+                                 (assoc :args (into [] (conj seq-arguments text))))
+            args             (get-in chats [chat-id :seq-arguments])
+            after-validation #(do
+                                (dispatch [:update-seq-arguments chat-id])
+                                (dispatch [:send-current-message]))]
+        (dispatch [::request-command-data
+                   {:command   command
+                    :chat-id   chat-id
+                    :data-type :validator
+                    :after     #(do
+                                  (dispatch [::proceed-validation-messages
+                                             command chat-id %2 after-validation]))}])))))
+
+(handlers/register-handler
+  :set-chat-seq-arg-input-text
+  (fn [{:keys [current-chat-id] :as db} [_ text chat-id]]
+    (let [chat-id (or chat-id current-chat-id)]
+      (assoc-in db [:chats chat-id :seq-argument-input-text] text))))

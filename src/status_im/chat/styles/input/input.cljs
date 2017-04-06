@@ -70,10 +70,22 @@
    :text-align-vertical :center
    :height              min-input-height
    :align-items         :center
-   :android             {:left (+ 18 left)
+   :android             {:left (+ 15 left)
                          :top  -1}
    :ios                 {:line-height min-input-height
-                         :left        (+ 15 left)}})
+                         :left        (+ 9 left)}})
+
+(defnstyle input-password-text [left]
+  {:min-width           200
+   :font-size           14
+   :position            :absolute
+   :text-align-vertical :center
+   :height              min-input-height
+   :align-items         :center
+   :android             {:left (+ 15 left)
+                         :top  0.5}
+   :ios                 {:line-height min-input-height
+                         :left        (+ 9 left)}})
 
 (def input-emoji-icon
   {:margin-top 7

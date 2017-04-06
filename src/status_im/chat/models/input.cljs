@@ -2,15 +2,15 @@
   (:require [clojure.string :as str]
             [status-im.components.react :as rc]
             [status-im.chat.constants :as const]
-            [status-im.chat.models.password-input :as password-input]
             [status-im.chat.views.input.validation-messages :refer [validation-message]]
             [status-im.i18n :as i18n]
             [status-im.utils.phone-number :as phone-number]
             [taoensso.timbre :as log]))
 
 (defn text-ends-with-space? [text]
-  (= (str/last-index-of text const/spacing-char)
-     (dec (count text))))
+  (when text
+    (= (str/last-index-of text const/spacing-char)
+       (dec (count text)))))
 
 (defn possible-chat-actions [db chat-id]
   (let [{:keys [commands requests]} (get-in db [:chats chat-id])
@@ -25,22 +25,27 @@
     (into commands responses)))
 
 (defn split-command-args [command-text]
-  (let [splitted (str/split command-text const/spacing-char)]
-    (first
-      (reduce (fn [[list command-started?] arg]
-                (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
-                      has-quote?         (and (= quotes-count 1)
-                                              (str/index-of arg const/arg-wrapping-char))
-                      arg                (str/replace arg #"\"" "")
-                      new-list           (if command-started?
-                                           (let [index (dec (count list))]
-                                             (update list index str const/spacing-char arg))
-                                           (conj list arg))
-                      command-continues? (or (and command-started? (not has-quote?))
-                                             (and (not command-started?) has-quote?))]
-                  [new-list command-continues?]))
-              [[] false]
-              splitted))))
+  (let [space?       (text-ends-with-space? command-text)
+        command-text (if space?
+                       (str command-text ".")
+                       command-text)
+        splitted     (cond-> (str/split command-text const/spacing-char)
+                             space? (drop-last))]
+    (->> splitted
+         (reduce (fn [[list command-started?] arg]
+                   (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
+                         has-quote?         (and (= quotes-count 1)
+                                                 (str/index-of arg const/arg-wrapping-char))
+                         arg                (str/replace arg #"\"" "")
+                         new-list           (if command-started?
+                                              (let [index (dec (count list))]
+                                                (update list index str const/spacing-char arg))
+                                              (conj list arg))
+                         command-continues? (or (and command-started? (not has-quote?))
+                                                (and (not command-started?) has-quote?))]
+                     [new-list command-continues?]))
+                 [[] false])
+         (first))))
 
 (defn join-command-args [args]
   (->> args
@@ -54,6 +59,7 @@
   ([{:keys [current-chat-id] :as db} chat-id input-text]
    (let [chat-id          (or chat-id current-chat-id)
          input-metadata   (get-in db [:chats chat-id :input-metadata])
+         seq-arguments    (get-in db [:chats chat-id :seq-arguments])
          possible-actions (possible-chat-actions db chat-id)
          command-args     (split-command-args input-text)
          command-name     (first command-args)]
@@ -66,24 +72,33 @@
           :metadata (if (not= :any to-message-id)
                       (assoc input-metadata :to-message-id to-message-id)
                       input-metadata)
-          :args     (remove empty? (rest command-args))}))))
+          :args     (if (empty? seq-arguments)
+                      (rest command-args)
+                      seq-arguments)}))))
   ([{:keys [current-chat-id] :as db} chat-id]
     (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
 
 (defn current-chat-argument-position
-  [{:keys [args] :as command} input-text]
+  [{:keys [args] :as command} input-text seq-arguments]
   (if command
-    (let [current (count args)]
-      (if (= (last input-text) const/spacing-char)
-        current
-        (dec current)))
+    (let [args-count (count args)]
+      (cond
+        (:sequential-params command)
+        (count seq-arguments)
+
+        (= (last input-text) const/spacing-char)
+        args-count
+
+        :default
+        (dec args-count)))
     -1))
 
 (defn argument-position [{:keys [current-chat-id] :as db} chat-id]
   (let [chat-id          (or chat-id current-chat-id)
         input-text       (get-in db [:chats chat-id :input-text])
+        seq-arguments    (get-in db [:chats chat-id :seq-arguments])
         chat-command     (selected-chat-command db chat-id)]
-    (current-chat-argument-position chat-command input-text)))
+    (current-chat-argument-position chat-command input-text seq-arguments)))
 
 (defn command-completion
   ([{:keys [current-chat-id] :as db} chat-id]
@@ -92,7 +107,8 @@
          chat-command        (selected-chat-command db chat-id)]
      (command-completion chat-command)))
   ([{:keys [args] :as chat-command}]
-   (let [params          (get-in chat-command [:command :params])
+   (let [args            (remove str/blank? args)
+         params          (get-in chat-command [:command :params])
          required-params (remove :optional params)]
      (if chat-command
        (cond
@@ -134,30 +150,6 @@
                    {:title       (i18n/label :t/phone-number)
                     :description (i18n/label :t/invalid-phone)}]))))
 
-(def text-modifiers
-  [password-input/modifier])
-
-(defn add-modifiers [params new-args]
-  (->> new-args
-       (map-indexed (fn [i arg]
-                      {:position i
-                       :value    arg
-                       :modifier (-> (filter
-                                       (fn [mod]
-                                         ((:execute-when mod) (get params i)))
-                                       text-modifiers)
-                                     (first))}))
-       (into [])))
-
-(defn apply-modifiers [text-splitted args]
-  (if-let [{:keys [position modifier]} (first args)]
-    (if modifier
-      (let [{:keys [get-modified-text]} modifier
-            modified-text (get-modified-text text-splitted position)]
-        (apply-modifiers modified-text (rest args)))
-      (apply-modifiers text-splitted (rest args)))
-    (str/join const/spacing-char text-splitted)))
-
 (defn- changed-arg-position [xs ys]
   (let [longest  (into [] (max-key count xs ys))
         shortest (into [] (if (= longest xs) ys xs))]
@@ -170,19 +162,15 @@
          (remove nil?)
          (first))))
 
-(defn make-input-text [modifiers [command & args] old-args selection]
-  (let [arg-pos  (changed-arg-position args old-args)
-        modifier (get-in modifiers [arg-pos :modifier])
-        new-arg  (if (and arg-pos modifier)
-                   (let [{:keys [make-change]} modifier]
-                     (make-change {:command-name (subs command 1)
-                                   :old-args     old-args
-                                   :new-args     args
-                                   :arg-pos      arg-pos
-                                   :selection    selection}))
-                   (get (into [] args) arg-pos))
+(defn make-input-text [[command & args] old-args]
+  (let [args     (into [] args)
+        old-args (into [] old-args)
+
+        arg-pos  (changed-arg-position args old-args)
+        new-arg  (get args arg-pos)
         new-args (if arg-pos
-                   (assoc (into [] old-args) arg-pos (when new-arg (str/trim new-arg)))
+                   (assoc old-args arg-pos (when new-arg
+                                             (str/trim new-arg)))
                    old-args)]
     (str
       command
