@@ -10,7 +10,7 @@ I18n.translations = {
 
         password_description: 'Password',
         password_placeholder: 'Type your password',
-        password_placeholder2: 'Please re-enter password to confirm',
+        password_placeholder2: 'Confirm',
         password_error: 'Password should be not less then 6 symbols.',
         password_error1: 'Password confirmation doesn\'t match password.',
         password_validation_title: 'Password',
@@ -1653,6 +1653,7 @@ var phoneConfig = {
     color: "#5bb2a2",
     title: I18n.t('phone_title'),
     description: I18n.t('phone_description'),
+    sequentialParams: true,
     validator: function (params) {
         return {
             validationHandler: "phone",
@@ -1872,32 +1873,40 @@ status.response({
     color: "#7099e6",
     description: I18n.t('password_description'),
     icon: "lock_white",
-    params: [{
-        name: "password",
-        type: status.types.PASSWORD,
-        placeholder: I18n.t('password_placeholder'),
-        hidden: true
-    }, {
-        name: "password_confirmation",
-        type: status.types.PASSWORD,
-        placeholder: "Confirm",
-        hidden: true
-    }],
+    sequentialParams: true,
+    params: [
+        {
+            name: "password",
+            type: status.types.PASSWORD,
+            placeholder: I18n.t('password_placeholder'),
+            hidden: true
+        },
+        {
+            name: "password-confirmation",
+            type: status.types.PASSWORD,
+            placeholder: I18n.t('password_placeholder2'),
+            hidden: true
+        }
+    ],
     validator: function (params, context) {
-        if (params["password_confirmation"] != params["password"]) {
-            var error = status.components.validationMessage(
-                I18n.t('password_validation_title'),
-                I18n.t('password_error1')
-            );
-            return {markup: error};
+        if (!params.hasOwnProperty("password-confirmation") || params["password-confirmation"].length === 0) {
+            if (params.password === null || params.password.length < 6) {
+                var error = status.components.validationMessage(
+                    I18n.t('password_validation_title'),
+                    I18n.t('password_error')
+                );
+                return {markup: error};
+            }
+        } else {
+            if (params.password !== params["password-confirmation"]) {
+                var error = status.components.validationMessage(
+                    I18n.t('password_validation_title'),
+                    I18n.t('password_error1')
+                );
+                return {markup: error};
+            }
         }
-        if (params.password.length < 6) {
-            var error = status.components.validationMessage(
-                I18n.t('password_validation_title'),
-                I18n.t('password_error')
-            );
-            return {markup: error};
-        }
+
     },
     preview: function (params, context) {
         var style = {

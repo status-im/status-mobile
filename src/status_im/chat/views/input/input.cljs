@@ -52,36 +52,8 @@
        ^{:key command-key}
        [command-view index command])]]])
 
-(defn- invisible-input [{:keys [set-layout-width value]}]
-  (let [input-text    (subscribe [:chat :input-text])
-        modified-text (subscribe [:chat :modified-text])]
-    [text {:style     style/invisible-input-text
-           :on-layout #(let [w (-> (.-nativeEvent %)
-                                   (.-layout)
-                                   (.-width))]
-                         (set-layout-width w))}
-     (utils/safe-trim (or @modified-text @input-text ""))]))
-
-(defn- input-helper [_]
-  (let [input-text (subscribe [:chat :input-text])]
-    (fn [{:keys [command width]}]
-      (when-let [placeholder (cond
-                               (= @input-text const/command-char)
-                               (i18n/label :t/type-a-command)
-
-                               (and command (empty? (:args command)))
-                               (get-in command [:command :params 0 :placeholder])
-
-                               (and command
-                                    (= (count (:args command)) 1)
-                                    (input-model/text-ends-with-space? @input-text))
-                               (get-in command [:command :params 1 :placeholder]))]
-        [text {:style (style/input-helper-text width)}
-         placeholder]))))
-
-(defn- text-field [_]
+(defn- basic-text-input [_]
   (let [input-text           (subscribe [:chat :input-text])
-        modified-text        (subscribe [:chat :modified-text])
         command              (subscribe [:selected-chat-command])
         sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])]
     (fn [{:keys [set-layout-height height]}]
@@ -90,7 +62,7 @@
         :accessibility-label    id/chat-message-input
         :blur-on-submit         false
         :multiline              true
-        :default-value          (or @modified-text @input-text "")
+        :default-value          (or @input-text "")
         :editable               (not @sending-in-progress?)
         :on-blur                #(do (dispatch [:set-chat-ui-props :input-focused? false])
                                      (set-layout-height 0))
@@ -107,20 +79,72 @@
                                    (set-layout-height h))
         :on-selection-change    #(let [s (-> (.-nativeEvent %)
                                              (.-selection))]
-                                   ;; This will be a bit tricky:
-                                   ;; iOS calls onSelectionChange BEFORE onChangeText, while
-                                   ;; Android calls onChange text first.
-                                   ;; We need some consistency, so we call the callback with a small delay:
-                                   (js/setTimeout
-                                     (fn [] (dispatch [:set-chat-ui-props :selection {:start (.-start s)
-                                                                                      :end   (.-end s)}]))
-                                     20))
-        :on-submit-editing      #(do (dispatch [:set-chat-ui-props :sending-in-progress? true])
-                                     (dispatch [:send-current-message]))
+                                   (when (and (= (.-end s) 10)
+                                              (get command [:command :sequential-params]))
+                                     (dispatch [:chat-input-focus :seq-input-ref])))
+        :on-submit-editing      #(dispatch [:send-current-message])
         :on-focus               #(do (dispatch [:set-chat-ui-props :input-focused? true])
                                      (dispatch [:set-chat-ui-props :show-emoji? false]))
         :style                  (style/input-view height)
         :placeholder-text-color style/color-input-helper-placeholder}])))
+
+(defn- invisible-input [{:keys [set-layout-width value]}]
+  (let [input-text    (subscribe [:chat :input-text])]
+    [text {:style     style/invisible-input-text
+           :on-layout #(let [w (-> (.-nativeEvent %)
+                                   (.-layout)
+                                   (.-width))]
+                         (set-layout-width w))}
+     (or @input-text "")]))
+
+(defn- input-helper [_]
+  (let [input-text (subscribe [:chat :input-text])]
+    (fn [{:keys [command width]}]
+      (when-not (get-in command [:command :sequential-params])
+        (let [real-args (remove str/blank? (:args command))]
+          (when-let [placeholder (cond
+                                   (= @input-text const/command-char)
+                                   (i18n/label :t/type-a-command)
+
+                                   (and command (empty? real-args))
+                                   (get-in command [:command :params 0 :placeholder])
+
+                                   (and command
+                                        (= (count real-args) 1)
+                                        (input-model/text-ends-with-space? @input-text))
+                                   (get-in command [:command :params 1 :placeholder]))]
+            [text {:style (style/input-helper-text width)}
+             placeholder]))))))
+
+(defn get-options [type]
+  (case (keyword type)
+    :phone {:keyboard-type "phone-pad"}
+    :password {:secure-text-entry true}
+    :number {:keyboard-type "numeric"}
+    nil))
+
+(defn- seq-input [_]
+  (let [command            (subscribe [:selected-chat-command])
+        arg-pos            (subscribe [:current-chat-argument-position])
+        seq-arg-input-text (subscribe [:chat :seq-argument-input-text])]
+    (fn [{:keys [command-width]}]
+      (when (get-in @command [:command :sequential-params])
+        (let [{:keys [placeholder hidden type]} (get-in @command [:command :params @arg-pos])]
+          [text-input (merge {:ref               #(dispatch [:set-chat-ui-props :seq-input-ref %])
+                              :style             (style/input-password-text command-width)
+                              :default-value     (or @seq-arg-input-text "")
+                              :on-change-text    #(do (dispatch [:set-chat-seq-arg-input-text %])
+                                                      (dispatch [:set-chat-ui-props :validation-messages nil]))
+                              :secure-text-entry hidden
+                              :placeholder       placeholder
+                              :blur-on-submit    false
+                              :on-submit-editing (fn []
+                                                   (when-not (str/blank? @seq-arg-input-text)
+                                                     (dispatch [:send-seq-argument]))
+                                                   (js/setTimeout
+                                                     #(dispatch [:chat-input-focus :seq-input-ref])
+                                                     100))}
+                             (get-options type))])))))
 
 (defn input-view [_]
   (let [component            (r/current-component)
@@ -137,11 +161,12 @@
          (let [{:keys [width height]} (r/state component)
                command @command]
            [animated-view {:style (style/input-root height anim-margin)}
-            [text-field {:set-layout-height set-layout-height
-                         :height            height}]
+            [basic-text-input {:set-layout-height set-layout-height
+                               :height            height}]
             [invisible-input {:set-layout-width set-layout-width}]
             [input-helper {:command command
                            :width   width}]
+            [seq-input {:command-width width}]
             (if-not command
               [touchable-highlight
                {:on-press #(do (dispatch [:toggle-chat-ui-props :show-emoji?])
@@ -152,21 +177,29 @@
                {:on-press #(do (dispatch [:set-chat-input-text nil])
                                (dispatch [:set-chat-input-metadata nil])
                                (dispatch [:set-chat-ui-props :result-box nil])
-                               (dispatch [:set-chat-ui-props :validation-messages nil]))}
+                               (dispatch [:set-chat-ui-props :validation-messages nil])
+                               (dispatch [:clear-seq-arguments]))}
                [view style/input-clear-container
                 [icon :close_gray style/input-clear-icon]]])]))})))
 
 (defview input-container [{:keys [anim-margin]}]
   [command-completion [:command-completion]
    selected-command [:selected-chat-command]
-   input-text [:chat :input-text]]
+   input-text [:chat :input-text]
+   seq-arg-input-text [:chat :seq-argument-input-text]]
   [view style/input-container
    [input-view {:anim-margin anim-margin}]
    (when (and (not (str/blank? input-text))
               (or (not selected-command)
                   (some #{:complete :less-than-needed} [command-completion])))
-     [touchable-highlight {:on-press #(do (dispatch [:set-chat-ui-props :sending-in-progress? true])
-                                          (dispatch [:send-current-message]))}
+     [touchable-highlight {:on-press #(if (get-in selected-command [:command :sequential-params])
+                                        (do
+                                          (when-not (str/blank? seq-arg-input-text)
+                                            (dispatch [:send-seq-argument]))
+                                          (js/setTimeout
+                                            (fn [] (dispatch [:chat-input-focus :seq-input-ref]))
+                                            100))
+                                        (dispatch [:send-current-message]))}
       [view style/send-message-container
        [icon :arrow_top style/send-message-icon]]])])
 
