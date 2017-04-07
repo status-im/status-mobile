@@ -22,7 +22,7 @@
 
       (if-let [{command :command} (input-model/selected-chat-command db chat-id text)]
         (let [{old-args :args} (input-model/selected-chat-command db chat-id)
-              text-splitted    (input-model/split-command-args text)
+              text-splitted    (input-model/split-command-args text false)
               new-args         (rest text-splitted)
               modifiers        (input-model/add-modifiers (:params command) new-args)
               addition         (if (input-model/text-ends-with-space? text)
@@ -71,7 +71,7 @@
   (handlers/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ [index arg]]]
       (let [command      (-> (get-in db [:chats current-chat-id :input-text])
-                             (input-model/split-command-args))
+                             (input-model/split-command-args true))
             command-name (first command)
             command-args (into [] (rest command))
             command-args (if (< index (count command-args))
@@ -116,7 +116,7 @@
                         parameter-index
                         :suggestions]
                 args   (-> (get-in db [:chats current-chat-id :input-text])
-                           (input-model/split-command-args)
+                           (input-model/split-command-args true)
                            (rest))
                 params {:parameters {:args args}
                         :context    (merge {:data data}
