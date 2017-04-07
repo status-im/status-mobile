@@ -3,7 +3,7 @@
   (:require [status-im.components.styles :as st]))
 
 (def item
-  {:padding-vertical   20
+  {:padding-vertical   19
    :padding-horizontal 16
    :flex               1
    :flex-direction     :row

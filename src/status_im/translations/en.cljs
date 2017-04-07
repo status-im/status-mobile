@@ -278,8 +278,8 @@
                                            :zero  "No transactions confirmed"}
    :transaction                           "Transaction"
    :pending-transactions                  "Pending transactions"
-   :enter-password-transactions           {:one   "Enter your password to confirm the transaction"
-                                           :other "Enter your password to confirm the transactions"}
+   :enter-password-transactions           {:one   "Confirm transaction by entering your password"
+                                           :other "Confirm transactions by entering your password"}
    :status                                "Status"
    :pending-confirmation                  "Pending confirmation"
    :recipient                             "Recipient"
