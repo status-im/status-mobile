@@ -39,7 +39,7 @@
   [current-account [:get-current-account]
    recipient       [:contact-by-address to]]
   (let [recipient-name (or (:name recipient) to)]
-    [rn/view
+    [rn/view st/details-container
      [detail-item (i18n/label :t/to) recipient-name true]
      [detail-item (i18n/label :t/from) (:name current-account) true]
      [detail-data data]]))
@@ -48,16 +48,14 @@
   [{:keys [id] :as transaction} [:get :selected-transaction]
    {:keys [password]}           [:get :confirm-transactions]
    confirmed?                   [:get-in [:transaction-details-ui-props :confirmed?]]]
-
   {:component-did-update #(when-not transaction (rf/dispatch [:navigate-to-modal :pending-transactions]))
    :component-will-unmount #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] false])}
-
   [(if platform/ios? rn/keyboard-avoiding-view rn/view) (merge {:behavior :padding} st/transactions-screen)
    [status-bar/status-bar {:type (if platform/ios? :transparent :main)}]
    [toolbar-view]
    [rn/scroll-view st/details-screen-content-container
     [transactions-list-item/view transaction #(rf/dispatch [:navigate-to-modal :pending-transactions])]
-    (when platform/ios? [common/separator {} st/details-separator])
+    [common/separator st/details-separator st/details-separator-wrapper]
     [details transaction]]
    (when confirmed? [password-form/view 1])
    (let [confirm-text (if confirmed?

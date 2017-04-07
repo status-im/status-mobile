@@ -33,10 +33,8 @@
 (defstyle description-text
    {:color   common/color-gray4
     :android {:margin-top     6
-              :height         14
               :font-size      12}
     :ios     {:margin-top     4
-              :height         16
               :font-size      14
               :letter-spacing -0.2}})
 

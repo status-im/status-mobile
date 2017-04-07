@@ -1,13 +1,13 @@
 (ns status-im.transactions.styles.screens
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as st]
+  (:require [status-im.components.styles :as common]
             [status-im.utils.platform :as platform]))
 
 ;; common
 
 (def transactions-toolbar-background (if platform/ios?
-                                       st/color-dark-blue-2
-                                       st/color-dark-blue-1))
+                                       common/color-dark-blue-2
+                                       common/color-dark-blue-1))
 
 (defstyle toolbar-title-container
   {:flex           1
@@ -19,25 +19,25 @@
                     :padding-bottom  16}})
 
 (def toolbar-title-text
-  {:color     st/color-white
+  {:color     common/color-white
    :font-size 17})
 
 (defstyle toolbar-title-count
-  {:color       st/color-white
+  {:color       common/color-white
    :font-size   17
    :margin-left 8
    :android {:opacity 0.2}
    :ios     {:opacity 0.6}})
 
 (defstyle toolbar-border
-  {:ios {:background-color st/color-white
+  {:ios {:background-color common/color-white
          :opacity          0.1}})
 
 ;; pending-transactions
 
 (def transactions-screen
   {:flex             1
-   :background-color st/color-dark-blue-2})
+   :background-color common/color-dark-blue-2})
 
 (def transactions-screen-content-container
   {:flex            1
@@ -57,10 +57,17 @@
   {:flex    1
    :android {:padding-top 8}})
 
+(def details-separator-wrapper
+  {:background-color common/color-dark-blue-2})
+
 (def details-separator
-  {:margin-bottom 10
-   :margin-left   16
+  {:margin-left   16
+   :background-color common/color-white
    :opacity       0.1})
+
+(defstyle details-container
+  {:ios     {:margin-top 10}
+   :android {:margin-top 0}})
 
 (def details-item
   {:margin-top     10
@@ -71,7 +78,7 @@
 (defstyle details-item-title
   {:width     80
    :font-size 15
-   :color     st/color-white
+   :color     common/color-white
    :android   {:opacity      0.2
                :margin-right 24}
    :ios       {:opacity      0.5
@@ -81,30 +88,30 @@
 (defn details-item-content [name?]
   {:font-size   15
    :flex-shrink 1
-   :color       (if name? st/color-light-blue st/color-white)})
+   :color       (if name? common/color-light-blue common/color-white)})
 
 (defstyle details-data
-  {:margin-top       16
-   :padding          16
-   :background-color st/color-dark-blue-3
+  {:padding          16
+   :margin-top       16
+   :background-color common/color-dark-blue-3
    :ios              {:margin-horizontal 16}})
 
 (defstyle details-data-title
   {:font-size 15
-   :color     st/color-white
+   :color     common/color-white
    :android   {:opacity 0.2}
    :ios       {:opacity 0.5}})
 
 (def details-data-content
   {:font-size  15
-   :color      st/color-white
+   :color      common/color-white
    :margin-top 8})
 
 ;; confirmation-success
 
 (def success-screen
   {:flex             1
-   :background-color st/color-dark-blue-2})
+   :background-color common/color-dark-blue-2})
 
 (def success-screen-content-container
   {:flex            1
@@ -112,7 +119,7 @@
    :justify-content :center})
 
 (def success-icon-container
-  {:background-color st/color-light-blue
+  {:background-color common/color-light-blue
    :border-radius    100
    :height           133
    :width            133
@@ -125,5 +132,5 @@
 
 (def success-text
   {:font-size  17
-   :color      st/color-light-blue3
+   :color      common/color-light-blue3
    :margin-top 26})

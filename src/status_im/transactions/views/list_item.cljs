@@ -25,8 +25,8 @@
   [rn/touchable-highlight {:on-press #(do (rf/dispatch [:deny-transaction transaction-id])
                                           (when on-deny (on-deny)))}
    [rn/view {:style st/item-deny-btn}
-   [rn/image {:source {:uri :icon_close_white}
-              :style st/item-deny-btn-icon}]]])
+    [rn/image {:source {:uri :icon_close_white}
+               :style st/item-deny-btn-icon}]]])
 
 (defview view [{:keys [to value id] :as transaction} on-deny]
   [recipient [:contact-by-address to]]
