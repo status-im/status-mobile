@@ -63,8 +63,7 @@
    type [:get :group-type]]
   (let [save-btn-enabled? (and (s/valid? ::v/name new-chat-name)
                                (not= new-chat-name chat-name))]
-    [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
-                                                  st/group-container)
+    [keyboard-avoiding-view {:style st/group-container}
      [view {:flex 1}
       [group-toolbar type true]
       [scroll-view
