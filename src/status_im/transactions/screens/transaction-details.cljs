@@ -50,7 +50,7 @@
    confirmed?                   [:get-in [:transaction-details-ui-props :confirmed?]]]
   {:component-did-update #(when-not transaction (rf/dispatch [:navigate-to-modal :pending-transactions]))
    :component-will-unmount #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] false])}
-  [(if platform/ios? rn/keyboard-avoiding-view rn/view) (merge {:behavior :padding} st/transactions-screen)
+  [rn/keyboard-avoiding-view {:style st/transactions-screen}
    [status-bar/status-bar {:type (if platform/ios? :transparent :main)}]
    [toolbar-view]
    [rn/scroll-view st/details-screen-content-container

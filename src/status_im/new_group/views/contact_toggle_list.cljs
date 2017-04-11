@@ -57,8 +57,7 @@
   [contacts [:all-added-group-contacts-filtered]
    selected-contacts-count [:selected-contacts-count]
    group-type [:get :group-type]]
-  [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
-                                                st/group-container)
+  [keyboard-avoiding-view {:style st/group-container}
    [status-bar]
    [toggle-list-toolbar
     (label (if (= group-type :contact-group)
@@ -73,8 +72,7 @@
   [contacts [:all-group-not-added-contacts-filtered]
    group [:get-contact-group]
    selected-contacts-count [:selected-contacts-count]]
-  [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
-                                                st/group-container)
+  [keyboard-avoiding-view {:style st/group-container}
    [status-bar]
    [toggle-list-toolbar (:name group) selected-contacts-count]
    [toggle-list contacts group-toggle-contact]
@@ -87,8 +85,7 @@
   [contacts [:contacts-filtered :all-new-contacts]
    chat-name [:chat :name]
    selected-contacts-count [:selected-participants-count]]
-  [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
-                                                st/group-container)
+  [keyboard-avoiding-view {:style st/group-container}
    [status-bar]
    [toggle-list-toolbar chat-name selected-contacts-count]
    [toggle-list contacts group-toggle-participant]
@@ -96,5 +93,3 @@
      [sticky-button (label :t/save) #(do
                                         (dispatch [:add-new-participants])
                                         (dispatch [:navigate-back]))])])
-
-
