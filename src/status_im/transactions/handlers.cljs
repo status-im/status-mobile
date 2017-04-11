@@ -155,8 +155,7 @@
                 (dispatch [::check-completed-transaction!
                            {:message-id message-id}]))
             (dispatch [::remove-transaction id]))
-          (when (or (= modal :pending-transactions)
-                    (= modal :transaction-details))
+          (when (#{:pending-transactions :transaction-details} modal)
             (dispatch [:navigate-to-modal :confirmation-success])))))))
 
 (register-handler ::add-transactions-hash

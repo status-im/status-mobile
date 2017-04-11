@@ -90,8 +90,7 @@
         profile-edit-data-changed? (or (not= (:name current-account) (:name changed-account))
                                        (not= (:status current-account) (:status changed-account))
                                        (not= (:photo-path current-account) (:photo-path changed-account)))]
-    [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
-                                                  st/profile)
+    [keyboard-avoiding-view {:style st/profile}
      [status-bar]
      [edit-my-profile-toolbartoolbar]
      [view st/edit-my-profile-form

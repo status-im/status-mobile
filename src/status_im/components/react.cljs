@@ -3,7 +3,7 @@
             [status-im.components.styles :as st]
             [status-im.utils.utils :as u
              :refer [get-react-property get-class adapt-class]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.utils.platform :refer [platform-specific ios?]]))
 
 (def react-native (js/require "react-native"))
 (def native-modules (.-NativeModules react-native))
@@ -30,7 +30,7 @@
 (def list-view-class (get-class "ListView"))
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
-(def keyboard-avoiding-view (get-class "KeyboardAvoidingView"))
+(def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
@@ -151,3 +151,11 @@
 
 (def http-bridge
   (js/require "react-native-http-bridge"))
+
+;; KeyboardAvoidingView
+
+(defn keyboard-avoiding-view [props & children]
+  (let [view-element (if ios?
+                       [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
+                       [view props])]
+    (vec (concat view-element children))))
