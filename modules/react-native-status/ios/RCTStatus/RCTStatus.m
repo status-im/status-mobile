@@ -139,17 +139,21 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
         
         if (![[NSFileManager defaultManager] fileExistsAtPath:folderName.path])
             [[NSFileManager defaultManager] createDirectoryAtPath:folderName.path withIntermediateDirectories:NO attributes:nil error:&error];
-        NSURL *flagFileUrl = [folderName URLByAppendingPathComponent:@"ropsten_flag"];
+        NSURL *flagFolderUrl = [[[[NSFileManager defaultManager]
+                                URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                               lastObject]
+                              URLByAppendingPathComponent:@"ropsten_flag"];
         
-        if(![[NSFileManager defaultManager] fileExistsAtPath:flagFileUrl.path]){
+        if(![[NSFileManager defaultManager] fileExistsAtPath:flagFolderUrl.path]){
             NSURL *lightChainData = [folderName URLByAppendingPathComponent:@"StatusIM/lightchaindata"];
             [[NSFileManager defaultManager] removeItemAtPath:lightChainData.path
                                                        error:nil];
             NSString *content = @"";
             NSData *fileContents = [content dataUsingEncoding:NSUTF8StringEncoding];
-            [[NSFileManager defaultManager] createFileAtPath:flagFileUrl.path
-                                                    contents:fileContents
-                                                  attributes:nil];
+            [[NSFileManager defaultManager] createDirectoryAtPath:flagFolderUrl.path
+                                      withIntermediateDirectories:NO
+                                                       attributes:nil
+                                                            error:&error];
         }
         
         if (error){
