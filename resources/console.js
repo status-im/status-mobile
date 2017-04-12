@@ -1678,6 +1678,7 @@ function phoneSuggestions(params, context) {
 
 var phoneConfig = {
     name: "phone",
+    registeredOnly: true,
     icon: "phone_white",
     title: I18n.t('phone_title'),
     description: I18n.t('phone_description'),
@@ -1845,6 +1846,7 @@ function browseSuggestions(params) {
 
 status.command({
     name: "browse",
+    registeredOnly: true,
     color: "#ffa500",
     hidden: true,
     fullscreen: true,
