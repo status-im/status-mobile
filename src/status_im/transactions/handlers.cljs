@@ -22,7 +22,7 @@
 ;; && :navigation-replace                                 <- on success
 
 
-(defmethod nav/preload-data! :pending-transactions
+(defmethod nav/preload-data! :unsigned-transactions
   [{:keys [transactions-queue] :as db} _]
   (-> db
       (assoc :transactions transactions-queue
@@ -128,15 +128,17 @@
         (status/discard-transaction id)))))
 
 (register-handler ::transaction-queued
-  (after #(dispatch [:navigate-to-modal :pending-transactions]))
+  (after #(dispatch [:navigate-to-modal :unsigned-transactions]))
   (fn [db [_ {:keys [id message_id args]}]]
-    (let [{:keys [from to value data]} args]
+    (let [{:keys [from to value data gas gasPrice]} args]
       (if (valid-hex? to)
         (let [transaction {:id         id
                            :from       from
                            :to         to
                            :value      (.toDecimal js/Web3.prototype value)
                            :data       data
+                           :gas        (.toDecimal js/Web3.prototype gas)
+                           :gas-price  (.toDecimal js/Web3.prototype gasPrice)
                            :message-id message_id}]
           (assoc-in db [:transactions-queue id] transaction))
         db))))
@@ -155,7 +157,7 @@
                 (dispatch [::check-completed-transaction!
                            {:message-id message-id}]))
             (dispatch [::remove-transaction id]))
-          (when (#{:pending-transactions :transaction-details} modal)
+          (when (#{:unsigned-transactions :transaction-details} modal)
             (dispatch [:navigate-to-modal :confirmation-success])))))))
 
 (register-handler ::add-transactions-hash

@@ -279,7 +279,7 @@
                                            :other "{{count}} transactions confirmed"
                                            :zero  "No transactions confirmed"}
    :transaction                           "Transaction"
-   :pending-transactions                  "Pending transactions"
+   :unsigned-transactions                 "Unsigned transactions"
    :enter-password-transactions           {:one   "Confirm transaction by entering your password"
                                            :other "Confirm transactions by entering your password"}
    :status                                "Status"
@@ -287,6 +287,7 @@
    :recipient                             "Recipient"
    :one-more-item                         "One more item"
    :fee                                   "Fee"
+   :estimated-fee                         "Est. fee"
    :value                                 "Value"
    :to                                    "To"
    :from                                  "From"

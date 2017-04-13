@@ -1,4 +1,4 @@
-(ns status-im.transactions.screens.pending-transactions
+(ns status-im.transactions.screens.unsigned-transactions
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :as rf]
             [status-im.components.common.common :as common]
@@ -23,7 +23,7 @@
     :custom-content   [rn/view {:style st/toolbar-title-container}
                        [rn/text {:style st/toolbar-title-text
                                  :font :toolbar-title}
-                        (i18n/label :t/pending-transactions)]
+                        (i18n/label :t/unsigned-transactions)]
                        [rn/text {:style st/toolbar-title-count
                                  :font :toolbar-title}
                         (count transactions)]]}])
@@ -41,13 +41,13 @@
     [rn/view
      [transactions-list-item/view row]]]))
 
-(defview pending-transactions []
+(defview unsigned-transactions []
   [transactions [:transactions]
    {:keys [password]} [:get :confirm-transactions]
    confirmed?        [:get-in [:transactions-list-ui-props :confirmed?]]]
   {:component-did-update #(when-not (seq transactions) (rf/dispatch [:navigate-back]))
    :component-will-unmount #(rf/dispatch [:set-in [:transactions-list-ui-props :confirmed?] false])}
-  [rn/keyboard-avoiding-view {:style st/transactions-screen}
+  [(if platform/ios? rn/keyboard-avoiding-view rn/view) (merge {:behavior :padding} st/transactions-screen)
    [status-bar/status-bar {:type (if platform/ios? :transparent :main)}]
    [toolbar-view transactions]
    [rn/view {:style st/transactions-screen-content-container}

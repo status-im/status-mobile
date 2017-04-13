@@ -16,7 +16,7 @@
 (defn toolbar-view []
   [toolbar/toolbar
    {:background-color st/transactions-toolbar-background
-    :nav-action       (act/back-white #(rf/dispatch [:navigate-to-modal :pending-transactions]))
+    :nav-action       (act/back-white #(rf/dispatch [:navigate-to-modal :unsigned-transactions]))
     :border-style     st/toolbar-border
     :custom-content   [rn/view {:style st/toolbar-title-container}
                        [rn/text {:style st/toolbar-title-text
@@ -35,26 +35,30 @@
    [rn/text {:style st/details-data-title} (i18n/label :t/data)]
    [rn/text {:style st/details-data-content} content]])
 
-(defview details [{:keys [to data] :as transaction}]
+(defview details [{:keys [to data gas gas-price] :as transaction}]
   [current-account [:get-current-account]
    recipient       [:contact-by-address to]]
-  (let [recipient-name (or (:name recipient) to)]
+  (let [recipient-name (or (:name recipient) to)
+        gas-price      (.fromWei js/Web3.prototype gas-price "ether")
+        fee-value      (* gas gas-price)
+        estimated-fee  (str fee-value " ETH")]
     [rn/view st/details-container
      [detail-item (i18n/label :t/to) recipient-name true]
      [detail-item (i18n/label :t/from) (:name current-account) true]
+     [detail-item (i18n/label :t/estimated-fee) estimated-fee]
      [detail-data data]]))
 
 (defview transaction-details []
   [{:keys [id] :as transaction} [:get :selected-transaction]
    {:keys [password]}           [:get :confirm-transactions]
    confirmed?                   [:get-in [:transaction-details-ui-props :confirmed?]]]
-  {:component-did-update #(when-not transaction (rf/dispatch [:navigate-to-modal :pending-transactions]))
+  {:component-did-update #(when-not transaction (rf/dispatch [:navigate-to-modal :unsigned-transactions]))
    :component-will-unmount #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] false])}
   [rn/keyboard-avoiding-view {:style st/transactions-screen}
    [status-bar/status-bar {:type (if platform/ios? :transparent :main)}]
    [toolbar-view]
    [rn/scroll-view st/details-screen-content-container
-    [transactions-list-item/view transaction #(rf/dispatch [:navigate-to-modal :pending-transactions])]
+    [transactions-list-item/view transaction #(rf/dispatch [:navigate-to-modal :unsigned-transactions])]
     [common/separator st/details-separator st/details-separator-wrapper]
     [details transaction]]
    (when confirmed? [password-form/view 1])
