@@ -50,7 +50,7 @@
                       ok?' (if valid-response?
                              (and ok? (valid-response? response))
                              ok?)]
-                  [(.text response) ok?'])))
+                  [(.-_bodyText response) ok?'])))
        (.then (fn [[response ok?]]
                 (cond
                   ok? (on-success response)
