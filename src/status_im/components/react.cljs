@@ -3,7 +3,7 @@
             [status-im.components.styles :as st]
             [status-im.utils.utils :as u
              :refer [get-react-property get-class adapt-class]]
-            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.utils.platform :refer [platform-specific ios?]]
             [status-im.i18n :as i18n]))
 
 (def react-native (js/require "react-native"))
