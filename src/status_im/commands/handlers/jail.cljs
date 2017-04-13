@@ -1,7 +1,7 @@
 (ns status-im.commands.handlers.jail
   (:require [re-frame.core :refer [after dispatch subscribe trim-v debug]]
             [status-im.utils.handlers :as handlers]
-            [status-im.utils.utils :refer [http-get show-popup]]
+            [status-im.utils.utils :refer [show-popup]]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [generate-hiccup reg-handler]]
             [clojure.string :as s]

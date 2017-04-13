@@ -31,23 +31,28 @@
       (dispatch [::parse-commands! identity file])
       (dispatch [::fetch-commands! identity])))
 
+
+(defn http-get-commands [params url]
+  (http-get url
+            (fn [response]
+              (when-let [content-type (.. response -headers (get "Content-Type"))]
+                (s/includes? content-type "application/javascript")))
+            #(dispatch [::validate-hash params %])
+            #(log/debug (str "command.js wasn't found at " url))))
+
+
 (defn fetch-commands!
   [_ [{{:keys [dapp? dapp-url bot-url whisper-identity]} :contact
        :as                                               params}]]
   (cond
-    (js-res/local-resource? bot-url)
-    (dispatch [::validate-hash params (js-res/get-resource bot-url)])
+    bot-url
+    (if-let [url (js-res/get-resource bot-url)]
+      (dispatch [::validate-hash params url])
+      (http-get-commands params bot-url))
 
-    (and dapp? dapp-url)
+    dapp-url
     (let [url (s/join "/" [dapp-url "commands.js"])]
-      (http-get url
-                (fn [response]
-                  (and
-                    (string? (.text response))
-                    (when-let [content-type (.. response -headers (get "Content-Type"))]
-                      (s/includes? "application/javascript" content-type))))
-                #(dispatch [::validate-hash whisper-identity %])
-                #(log/debug (str "command.js wasn't found at " url))))
+      (http-get-commands params url))
 
     :else
     (dispatch [::validate-hash params js-res/commands-js])))
