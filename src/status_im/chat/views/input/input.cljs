@@ -60,7 +60,7 @@
       [text-input
        {:ref                    #(dispatch [:set-chat-ui-props :input-ref %])
         :accessibility-label    id/chat-message-input
-        :blur-on-submit         false
+        :blur-on-submit         true
         :multiline              true
         :default-value          (or @input-text "")
         :editable               (not @sending-in-progress?)
