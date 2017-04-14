@@ -33,7 +33,7 @@
   {:ios {:background-color common/color-white
          :opacity          0.1}})
 
-;; pending-transactions
+;; unsigned-transactions
 
 (def transactions-screen
   {:flex             1
