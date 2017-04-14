@@ -204,5 +204,18 @@
         {
             "en": "http://test.etherplay.io"
         }
+    },
+      "REXmls":
+    {
+        "name":
+        {
+            "en": "REXmls"
+        },
+        "photo-path": "contacts://rexmls",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://http://rexmls.com/"
+        }
     }
 }
