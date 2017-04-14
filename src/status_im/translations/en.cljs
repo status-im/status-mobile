@@ -247,6 +247,8 @@
    :address                               "Address"
    :password                              "Password"
    :login                                 "Login"
+   :sign-in-to-status                     "Sign in to Status"
+   :sign-in                               "Sign in"
    :wrong-password                        "Wrong password"
 
    ;recover
@@ -256,10 +258,12 @@
    :recover                               "Recover"
    :enter-valid-passphrase                "Please enter a passphrase"
    :enter-valid-password                  "Please enter a password"
+   :twelve-words-in-correct-order         "12 words in correct order"
 
    ;accounts
    :recover-access                        "Recover access"
    :add-account                           "Add account"
+   :create-new-account                    "Create new account"
 
    ;wallet-qr-code
    :done                                  "Done"

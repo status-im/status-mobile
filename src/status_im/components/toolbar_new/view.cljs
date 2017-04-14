@@ -26,6 +26,7 @@
                 custom-content       :custom-content
                 hide-border?         :hide-border?
                 border-style         :border-style
+                title-style          :title-style
                 style                :style}]
   (let [style (merge (st/toolbar-wrapper background-color) style)]
     [view {:style style}
@@ -43,7 +44,7 @@
                      :style  icon-default}]]]))]
       (or custom-content
           [view {:style st/toolbar-title-container}
-           [text {:style st/toolbar-title-text
+           [text {:style (merge st/toolbar-title-text title-style)
                   :font  :toolbar-title}
             title]])
       [view (st/toolbar-actions-container (count actions) custom-action)

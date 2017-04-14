@@ -7,7 +7,8 @@
             [clojure.string :as str]
             [status-im.utils.handlers :as u]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.protocol.core :as protocol]))
+            [status-im.protocol.core :as protocol]
+            [status-im.navigation.handlers :as nav]))
 
 (defn account-recovered [result]
   (let [_          (log/debug result)
@@ -37,3 +38,7 @@
     account-recovered))
 
 (register-handler :recover-account (u/side-effect! recover-account))
+
+(defmethod nav/preload-data! :recover
+  [db]
+  (update db :recover dissoc :password :passphrase))

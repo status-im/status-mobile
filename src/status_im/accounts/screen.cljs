@@ -1,84 +1,61 @@
 (ns status-im.accounts.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [re-frame.core :refer [dispatch dispatch-sync]]
+            [status-im.accounts.styles :as st]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
+            [status-im.components.status-bar :refer [status-bar]]
+            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.common.common :as common]
+            [status-im.components.action-button.action-button :refer [action-button]]
+            [status-im.utils.listview :as lw]
+            [status-im.constants :refer [console-chat-id]]
             [status-im.components.react :refer [view
-                                                scroll-view
                                                 text
                                                 list-view
                                                 list-item
                                                 image
-                                                linear-gradient
                                                 touchable-highlight]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar]]
-            [status-im.components.toolbar.actions :as act]
-            [status-im.components.styles :refer [color-white
-                                                 icon-search
-                                                 icon-plus
-                                                 white-form-text-input]]
-            [status-im.components.toolbar.styles :refer [toolbar-title-container
-                                                         toolbar-title-text]]
-            [status-im.utils.listview :as lw]
-            [status-im.accounts.views.account :refer [account-view]]
-            [status-im.i18n :refer [label]]
-            [status-im.accessibility-ids :as id]
-            [status-im.accounts.styles :as st]
-            [status-im.constants :refer [console-chat-id]]))
+            [status-im.i18n :as i18n]
+            [clojure.string :as str]))
 
-(defn toolbar-title []
-  (let [style (merge toolbar-title-text {:color color-white})]
-    [view toolbar-title-container
-     [text {:style style
-            :font  :medium}
-      (label :t/switch-users)]]))
+(defn account-bage [address photo-path name]
+  [view st/account-bage
+   [image {:source {:uri (if (str/blank? photo-path) :avatar photo-path)}
+           :style  st/photo-image}]
+   [view st/account-bage-text-view
+    [text {:style st/account-bage-text
+           :numberOfLines 1}
+     (or name address)]]])
 
-(defn render-row [row _ _]
-  (list-item [account-view row]))
+(defn account-view [{:keys [address photo-path name] :as account}]
+  [view
+   [touchable-highlight {:on-press #(dispatch [:open-login address photo-path name])}
+    [view st/account-view
+     [account-bage address photo-path name]]]])
 
-(defn create-account [_]
+(defn- create-account [_]
   (dispatch-sync [:reset-app])
   (dispatch [:navigate-to :chat console-chat-id]))
 
 (defview accounts []
-  [accounts [:get :accounts]
-   stack [:get :navigation-stack]]
-  (let [accounts          (vals accounts)
-        show-back?        (> (count stack) 1)]
-    [view st/screen-container
-     [linear-gradient {:colors    ["rgba(182, 116, 241, 1)"
-                                   "rgba(107, 147, 231, 1)"
-                                   "rgba(43, 171, 238, 1)"]
-                       :start     [0, 0]
-                       :end       [0.5, 1]
-                       :locations [0, 0.8, 1]
-                       :style     st/gradient-background}
-      [status-bar {:type :transparent}]
-      [toolbar {:background-color :transparent
-                :nav-action       (if show-back?
-                                    (act/back-white #(dispatch [:navigate-back]))
-                                    act/nothing)
-                :custom-content   [toolbar-title]
-                :actions          [{:image   {:style icon-search}
-                                    :handler #()}]}]]
-     [list-view {:dataSource            (lw/to-datasource accounts)
-                 :enableEmptySections   true
-                 :renderRow             render-row
-                 :bounces               false
-                 :style                 st/account-list
-                 :contentContainerStyle (st/account-list-content (count accounts))}]
-     [view st/bottom-actions-container
-      [view st/recover-button-container
-       [touchable-highlight
-        {:on-press #(dispatch [:navigate-to :recover])}
-        [view st/recover-button
-         [text {:style st/recover-button-text}
-          (label :t/recover-access)]]]]
-      [view st/add-account-button-container
-       [touchable-highlight {:on-press            create-account
-                             :accessibility-label id/accounts-create-button}
-        [view st/add-account-button
-         [image {:source {:uri :icon_add_white}
-                 :style  st/icon-plus}]
-         [text {:style st/add-account-text
-                :font  :default}
-          (label :t/add-account)]]]]]]))
+  [accounts [:get :accounts]]
+  [view st/accounts-container
+   [status-bar {:type :transparent}]
+   [view st/account-title-conatiner
+    [text {:style st/account-title-text
+           :font :toolbar-title}
+     (i18n/label :t/sign-in-to-status)]]
+   [view st/accounts-list-container
+    [list-view {:dataSource      (lw/to-datasource (vals accounts))
+                :renderSeparator #(list-item ^{:key %2} [view {:height 10}])
+                :renderRow       #(list-item [account-view %])}]]
+   [view st/bottom-actions-container
+    [action-button (i18n/label :t/create-new-account)
+                   :add_white
+                   create-account
+                   st/accounts-action-button]
+    [common/separator st/accounts-separator st/accounts-separator-wrapper]
+    [action-button (i18n/label :t/recover-access)
+                   :dots_horizontal_white
+                   #(dispatch [:navigate-to :recover])
+                   st/accounts-action-button]]])

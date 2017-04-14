@@ -1,103 +1,56 @@
 (ns status-im.accounts.recover.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [re-frame.core :refer [dispatch]]
+            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.react :refer [view
                                                 text
                                                 image
-                                                linear-gradient
+                                                keyboard-avoiding-view
                                                 touchable-highlight]]
+            [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.text-field.view :refer [text-field]]
-            [status-im.components.toolbar.view :refer [toolbar]]
-            [status-im.components.toolbar.actions :as act]
-            [status-im.components.toolbar.styles :refer [toolbar-gradient
-                                                         toolbar-title-container
-                                                         toolbar-title-text]]
-            [status-im.components.styles :refer [color-blue
-                                                 color-gray
-                                                 separator-color
-                                                 button-input]]
-            [status-im.components.react :refer [linear-gradient]]
-            [status-im.i18n :refer [label]]
+            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar-new.actions :as act]
+            [status-im.i18n :as i18n]
             [status-im.accounts.recover.styles :as st]
             [status-im.accounts.recover.validations :as v]
-            [cljs.spec :as s]
-            [clojure.string :as str]
-            [taoensso.timbre :as log]))
-
-(defn toolbar-title []
-  [view toolbar-title-container
-   [text {:style toolbar-title-text
-          :font  :medium}
-    (label :t/recover-from-passphrase)]])
+            [cljs.spec :as spec]
+            [clojure.string :as str]))
 
 (defview passphrase-input [passphrase]
   [error [:get-in [:recover :passphrase-error]]]
-  (let [error (if (str/blank? passphrase) "" error)
-        error (if (s/valid? ::v/passphrase passphrase)
-                error
-                (label :t/enter-valid-passphrase))]
-    [view
-     [text-field
-      {:value           passphrase
-       :error           error
-       :error-color     color-blue
-       :label           (label :t/passphrase)
-       :label-color     color-gray
-       :line-color      separator-color
-       :input-style     st/input-style
-       :auto-capitalize :none
-       :wrapper-style   (merge button-input st/address-input-wrapper)
-       :on-change-text  #(dispatch [:set-in [:recover :passphrase] %])}]]))
+  [view {:margin-top 10}
+   [text-input-with-label {:label             (i18n/label :t/passphrase)
+                           :description       (i18n/label :t/twelve-words-in-correct-order)
+                           :multiline         true
+                           :auto-expanding    true
+                           :max-height        st/passphrase-input-max-height
+                           :default-value     passphrase
+                           :auto-capitalize   :none
+                           :on-change-text    #(dispatch [:set-in [:recover :passphrase] %])
+                           :error             error}]])
 
 (defview password-input [password]
   [error [:get-in [:recover :password-error]]]
-  (let [error (if (str/blank? password) "" error)
-        error (if (s/valid? ::v/password password)
-                error
-                (label :t/enter-valid-password))]
-    [view
-     [text-field
-      {:value             password
-       :secure-text-entry true
-       :error             error
-       :error-color       color-blue
-       :label             (label :t/password)
-       :label-color       color-gray
-       :line-color        separator-color
-       :input-style       st/input-style
-       :on-change-text    #(dispatch [:set-in [:recover :password] %])}]]))
+  [view {:margin-top 10}
+   [text-input-with-label {:label             (i18n/label :t/password)
+                           :default-value     password
+                           :auto-capitalize   :none
+                           :on-change-text    #(dispatch [:set-in [:recover :password] %])
+                           :secure-text-entry true
+                           :error             error}]])
 
 (defview recover []
-  [{:keys [passphrase password passphrase-error password-error]} [:get :recover]]
+  [{:keys [passphrase password]} [:get :recover]]
   (let [valid-form? (and
-                      (s/valid? ::v/passphrase passphrase)
-                      (s/valid? ::v/password password))
-        gradient-colors ["rgba(24, 52, 76, 0.165)"
-                         "rgba(24, 52, 76, 0.085)"
-                         "rgba(24, 52, 76, 0)"]
-        _ (log/debug passphrase " - " password)]
-  [view st/screen-container
-   [status-bar {:type :transparent}]
-   [toolbar {:background-color :transparent
-             :nav-action       (act/back #(dispatch [:navigate-back]))
-             :custom-content   [toolbar-title]}]
-   [linear-gradient {:locations [0 0.6 1]
-                     :colors    gradient-colors
-                     :style     toolbar-gradient}]
-   [view st/recover-explain-container
-    [text {:style st/recover-explain-text
-           :font  :medium}
-     (label :t/recover-explain)]]
-   [view st/form-container
-    [view st/form-container-inner
+                      (spec/valid? ::v/passphrase passphrase)
+                      (spec/valid? ::v/password password))]
+    [keyboard-avoiding-view {:style st/screen-container}
+     [status-bar]
+     [toolbar {:actions [{:image :blank}]
+               :title   (i18n/label :t/recover-access)}]
      [passphrase-input (or passphrase "")]
-     [password-input (or password "")]]]
-   [view st/bottom-actions-container
-    [view st/recover-button-container
-     [touchable-highlight
-      {:on-press #(when valid-form?
-                   (dispatch [:recover-account passphrase password]))}
-      [view (st/recover-button valid-form?)
-       [text {:style st/recover-button-text}
-        (label :t/recover)]]]]]]))
+     [password-input (or password "")]
+     [view {:flex 1}]
+     (when valid-form?
+       [sticky-button (i18n/label :t/recover-access) #(dispatch [:recover-account passphrase password])])]))
