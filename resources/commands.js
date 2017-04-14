@@ -667,6 +667,7 @@ status.command({
     title: I18n.t('location_title'),
     description: I18n.t('location_description'),
     color: "#a187d5",
+    sequentialParams: true,
     preview: function (params) {
         var text = status.components.text(
             {
