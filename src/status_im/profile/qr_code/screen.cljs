@@ -1,4 +1,4 @@
-(ns status-im.accounts.views.qr-code
+(ns status-im.profile.qr-code.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [status-im.components.react :refer [view
                                                 text
@@ -9,7 +9,7 @@
             [status-im.components.styles :refer [icon-close]]
             [status-im.components.qr-code :refer [qr-code]]
             [re-frame.core :refer [dispatch subscribe]]
-            [status-im.accounts.styles :as st]
+            [status-im.profile.qr-code.styles :as st]
             [status-im.i18n :refer [label]]
             [clojure.string :as s]))
 
@@ -19,7 +19,6 @@
    {:keys [amount]} [:get :contacts-click-params]]
   [view st/wallet-qr-code
    [status-bar {:type :modal}]
-
    [view st/account-toolbar
     [view st/wallet-account-container
      [view st/qr-photo-container
@@ -34,11 +33,10 @@
        [view st/online-image-container
         [image {:source {:uri :icon_close_white}
                 :style  icon-close}]]]]]]
-
    [view {:style     st/qr-code
           :on-layout #(let [layout (.. % -nativeEvent -layout)]
-                       (dispatch [:set-in [:qr-modal :dimensions] {:width  (.-width layout)
-                                                                   :height (.-height layout)}]))}
+                        (dispatch [:set-in [:qr-modal :dimensions] {:width  (.-width layout)
+                                                                    :height (.-height layout)}]))}
     (when (:width dimensions)
       [view {:style (st/qr-code-container dimensions)}
        [qr-code {:value (if amount?
@@ -48,7 +46,6 @@
                  :size  (- (min (:width dimensions)
                                 (:height dimensions))
                            80)}]])]
-
    [view st/footer
     [view st/wallet-info
      [text {:style st/wallet-name-text} (label :t/main-wallet)]
@@ -57,4 +54,5 @@
     [touchable-highlight {:onPress #(dispatch [:navigate-back])}
      [view st/done-button
       [text {:style st/done-button-text} (label :t/done)]]]]])
+
 

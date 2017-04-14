@@ -188,10 +188,3 @@
             messages (processed-messages/get-filtered (str "ttl > " now))]
         (cache/init! messages)
         (processed-messages/delete (str "ttl <=" now))))))
-
-(defmethod nav/preload-data! :qr-code-view
-  [{:keys [current-account-id] :as db} [_ _ {:keys [contact qr-source amount?]}]]
-  (assoc db :qr-modal {:contact   (or contact
-                                      (get-in db [:accounts current-account-id]))
-                       :qr-source qr-source
-                       :amount?   amount?}))

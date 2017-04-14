@@ -47,7 +47,7 @@
             [status-im.components.status :as status]
             [status-im.components.styles :as st]
             [status-im.chat.styles.screen :as chat-st]
-            [status-im.accounts.views.qr-code :refer [qr-code-view]]))
+            [status-im.profile.qr-code.screen :refer [qr-code-view]]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []

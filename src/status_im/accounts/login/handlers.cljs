@@ -18,6 +18,12 @@
 
 (register-handler :set-login-from-qr set-login-from-qr)
 
+(register-handler
+  :open-login
+  (after #(dispatch [:navigate-to :login]))
+  (fn [db [_ address photo-path name]]
+    (update db :login assoc :address address :photo-path photo-path :name name)))
+
 (defn initialize-account
   [address new-account?]
   (dispatch [:set :login {}])

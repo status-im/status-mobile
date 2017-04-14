@@ -43,7 +43,7 @@
             status-im.data-store.core
             [taoensso.timbre :as log]
             [status-im.chat.styles.screen :as st]
-            [status-im.accounts.views.qr-code :refer [qr-code-view]]
+            [status-im.profile.qr-code.screen :refer [qr-code-view]]
             [status-im.components.status :as status]))
 
 (defn orientation->keyword [o]

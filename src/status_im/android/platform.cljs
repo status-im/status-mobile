@@ -11,7 +11,7 @@
                            :gray        {:height    0
                                          :bar-style "dark-content"
                                          :color     styles/color-light-gray}
-                           :transparent {:height       20
+                           :transparent {:height       25
                                          :bar-style    "light-content"
                                          :translucent? true
                                          :color        styles/color-transparent}

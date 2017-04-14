@@ -1,5 +1,5 @@
 (ns status-im.components.action-button.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.utils.platform :as p]
             [status-im.components.styles :refer [color-white
                                                  color-light-blue-transparent
@@ -15,13 +15,13 @@
    :ios            {:height 63}
    :android        {:height 56}})
 
-(defstyle action-button-icon-container
+(defnstyle action-button-icon-container [cyrcle-color]
   {:border-radius    50
    :width            40
    :height           40
    :align-items      :center
    :justify-content  :center
-   :ios              {:background-color color-light-blue-transparent}})
+   :ios              {:background-color (or cyrcle-color color-light-blue-transparent)}})
 
 (def action-button-label-container
   {:padding-left 16})

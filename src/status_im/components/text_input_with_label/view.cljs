@@ -27,6 +27,7 @@
       :label-font-size-top    st/label-font-size-top
       :label-font-size-bottom st/label-font-size-bottom
       :underline-max-height   st/underline-max-height
+      :content-height*        (r/atom nil)
       :input-ref*             (r/atom nil)
       :value*                 (r/atom default-value)
       :underline-max-width*   (r/atom 0)}))
@@ -38,10 +39,16 @@
   (animate-label text props)
   (reset! (:value* props) text))
 
-(defn text-input-handlers [{:keys [on-focus on-blur on-change-text on-submit-editing ref]} props]
+(defn text-input-handlers [{:keys [on-focus on-blur on-change-text on-change on-submit-editing
+                                   auto-expanding multiline max-height ref]} props]
   {:ref               #(do
                          (reset! (:input-ref* props) %)
                          (when ref (ref %)))
+   :on-change         #(do
+                         (when (and auto-expanding multiline)
+                           (reset! (:content-height* props) (min (.-height (.-contentSize (.-nativeEvent %)))
+                                                                 max-height)))
+                         (when on-change (on-change %)))
    :on-submit-editing #(do
                          (.blur @(:input-ref* props))
                          (when on-submit-editing (on-submit-editing)))
@@ -57,18 +64,19 @@
 
 (defn text-input-with-label [options]
   (let [props (get-init-props options)]
-    (fn [{:keys [label description error] :as options}]
+    (fn [{:keys [label description error hide-underline?] :as options}]
       [view st/component-container
        [animated-text {:style (st/label-animated-text props)} label]
-       [text-input (merge st/text-input
-                          (dissoc options :label :description :error)
+       [text-input (merge (st/text-input @(:content-height* props))
+                          (dissoc options :label :description :error :hide-underline?)
                           (text-input-handlers options props))]
-       [view {:style (st/underline-blured error)
-              :on-layout #(reset! (:underline-max-width* props) (get-width %))}
-        [animated-view {:style (st/underline-focused
-                                 (:underline-width props)
-                                 (:underline-height props)
-                                 error)}]]
+       (when-not hide-underline?
+         [view {:style (st/underline-blured error)
+                :on-layout #(reset! (:underline-max-width* props) (get-width %))}
+          [animated-view {:style (st/underline-focused
+                                   (:underline-width props)
+                                   (:underline-height props)
+                                   error)}]])
        (cond error
              [text {:style st/error-text} error]
              description

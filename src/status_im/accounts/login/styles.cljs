@@ -1,55 +1,34 @@
 (ns status-im.accounts.login.styles
-  (:require [status-im.components.styles :refer [color-white
-                                                 color-blue]]))
+  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
+  (:require [status-im.components.styles :as common]))
 
+(defstyle login-view
+  {:flex              1
+   :ios               {:margin-top    10
+                       :margin-bottom 10}
+   :android           {:margin-top    16
+                       :margin-bottom 16}
+   :margin-horizontal 16})
 
-(defn screen-container [height]
-  {:height height})
+(defstyle login-badge-container
+  {:background-color :white
+   :ios              {:border-radius 8
+                      :padding-top   16
+                      :height        150}
+   :android          {:border-radius 4
+                      :padding-top   12
+                      :height        144}})
 
-(def gradient-background
-  {:position :absolute
-   :top      0
-   :right    0
-   :bottom   0
-   :left     0})
+(defstyle sign-it-text
+  {:color   :white
+   :ios     {:font-size 17
+             :letter-spacing -0.2}
+   :android {:font-size 16}})
 
-(def form-container
-  {:flex            1
-   :flex-direction  "row"
-   :align-items     "center"
-   :justifyContent  "center"})
-
-(def form-container-inner
-  {:flex           1
-   :padding-bottom 100
-   :margin-left    16})
-
-(def bottom-actions-container
-  {:position :absolute
-   :left     0
-   :right    0
-   :bottom   0})
-
-(def connect-button-container
-  {:flex 1})
-
-(def connect-button
-  {:backgroundColor   color-white
-   :flex 1
-   :alignItems :center
-   :paddingVertical   16
-   :paddingHorizontal 28})
-
-(def connect-button-text
-  {:color    color-blue
-   :fontSize 16})
-
-(def input-style
-  {:color :white
-   :font-size 12})
-
-(def scan-label
-  {:color :white})
-
-(def address-input-wrapper
-  {})
+(defstyle sign-in-button
+  {:background-color common/color-blue3
+   :align-items      :center
+   :justify-content  :center
+   :height           52
+   :ios              {:border-radius 8}
+   :android          {:border-radius 4}})

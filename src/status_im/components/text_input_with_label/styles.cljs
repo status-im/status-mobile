@@ -3,16 +3,16 @@
   (:require [status-im.utils.platform :refer [ios?]]
             [status-im.components.styles :as common]))
 
-(defstyle text-input
+(defnstyle text-input [content-height]
   {:placeholder  ""
-   :android      {:height         24
+   :android      {:height         (or content-height 24)
                   :padding-top    0
                   :padding-bottom 0
                   :padding-left   0
                   :margin-top     26
                   :margin-bottom  4
                   :font-size      16}
-   :ios          {:height         26
+   :ios          {:height         (or content-height 26)
                   :margin-top     24
                   :margin-bottom  6
                   :font-size      17
@@ -41,10 +41,8 @@
 (defstyle error-text
    {:color   common/color-red2
     :android {:margin-top     6
-              :height         14
               :font-size      12}
     :ios     {:margin-top     4
-              :height         16
               :font-size      14
               :letter-spacing -0.2}})
 
