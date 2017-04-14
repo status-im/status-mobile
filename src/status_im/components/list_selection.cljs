@@ -28,7 +28,8 @@
 (defn browse [link]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       (label :t/browsing-title)
-                        :options     [(label :t/browsing-browse) (label :t/browsing-open-in-web-browser)]
+                        :options     [{:text (label :t/browsing-browse)}
+                                      {:text (label :t/browsing-open-in-web-browser)}]
                         :callback    (fn [index]
                                        (case index
                                          0 (do
