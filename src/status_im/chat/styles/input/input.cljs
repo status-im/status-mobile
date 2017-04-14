@@ -73,7 +73,9 @@
    :android             {:left (+ 15 left)
                          :top  -1}
    :ios                 {:line-height min-input-height
-                         :left        (+ 9 left)}})
+                         :left        (+ 3 left)
+                         :top 0
+                         :padding-top -3}})
 
 (defnstyle input-password-text [left]
   {:min-width           200
