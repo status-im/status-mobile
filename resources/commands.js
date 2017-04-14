@@ -809,6 +809,7 @@ var send = {
     color: "#5fc48d",
     title: I18n.t('send_title'),
     description: I18n.t('send_description'),
+    sequentialParams: true,
     params: [{
         name: "amount",
         type: status.types.NUMBER
@@ -890,6 +891,7 @@ status.command({
     color: "#5fc48d",
     title: I18n.t('request_title'),
     description: I18n.t('request_description'),
+    sequentialParams: true,
     params: [{
         name: "amount",
         type: status.types.NUMBER
