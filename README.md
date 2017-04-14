@@ -1,5 +1,5 @@
 ![Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum](https://status.im/img/status-github-banner@2x.png?v=1.1 "Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum")
-// TODO badges
+[![Build Status](https://saucelabs.com/buildstatus/jarrad-status)](https://saucelabs.com/beta/builds/50ccf11ec1a44d88b6eb989929e5789f)
 
 # Status - a Mobile Ethereum Operating System
 
