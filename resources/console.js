@@ -1852,6 +1852,7 @@ status.response({
     name: "confirmation-code",
     color: "#7099e6",
     description: I18n.t('confirm_description'),
+    sequentialParams: true,
     params: [{
         name: "code",
         type: status.types.NUMBER
