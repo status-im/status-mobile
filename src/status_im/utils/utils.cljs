@@ -45,23 +45,21 @@
   ([url valid-response? on-success on-error]
    (-> (.fetch js/window url (clj->js {:method "GET"}))
        (.then (fn [response]
-                (log response)
                 (let [ok?  (.-ok response)
                       ok?' (if valid-response?
                              (and ok? (valid-response? response))
                              ok?)]
-                  [(.text response) ok?'])))
-       (.then (fn [[response ok?]]
-                (cond
-                  ok? (on-success response)
-
-                  (and on-error (not ok?))
-                  (on-error response)
-
-                  :else false)))
+                  (if-not ok?'
+                    (on-error response)
+                    (.text response)))))
+       (.then (fn [text]
+                (if (string? text)
+                  (on-success text)
+                  (on-error text))))
        (.catch (or on-error
                    (fn [error]
                      (show-popup "Error" (str error))))))))
+
 
 (defn truncate-str [s max]
   (if (and (< max (count s)) s)
