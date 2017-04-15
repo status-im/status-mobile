@@ -142,6 +142,7 @@
                      :address  current-account-id}]
         (dispatch [:set-chat-input-text nil chat-id])
         (dispatch [:set-chat-input-metadata nil chat-id])
+        (dispatch [:set-chat-ui-props :sending-in-progress? false])
         (cond
           command-message
           (dispatch [:check-commands-handlers! data])
