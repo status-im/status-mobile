@@ -27,8 +27,8 @@
 (register-sub
   :chat-ui-props
   (fn [db [_ ui-element chat-id]]
-    (let [chat-id (or chat-id (:current-chat-id @db))]
-      (reaction (get-in @db [:chat-ui-props chat-id ui-element])))))
+    (let [current-chat-id (subscribe [:get-current-chat-id])]
+      (reaction (get-in @db [:chat-ui-props (or chat-id @current-chat-id) ui-element])))))
 
 (register-sub
   :chat-input-margin

@@ -149,7 +149,7 @@
           (dispatch [:prepare-message data]))))))
 
 (handlers/register-handler
-  ::proceed-command
+  :proceed-command
   (handlers/side-effect!
     (fn [db [_ command chat-id]]
       (let [after-validation #(dispatch [::request-command-data
@@ -248,7 +248,7 @@
         (if (:command chat-command)
           (if (= :complete (input-model/command-completion chat-command))
             (do
-              (dispatch [::proceed-command chat-command chat-id])
+              (dispatch [:proceed-command chat-command chat-id])
               (dispatch [:clear-seq-arguments chat-id]))
             (let [text (get-in db [:chats chat-id :input-text])]
               (dispatch [:set-chat-ui-props :sending-in-progress? false])
