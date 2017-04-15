@@ -84,7 +84,7 @@
    :text-align-vertical :center
    :height              min-input-height
    :align-items         :center
-   :android             {:left (+ 15 left)
+   :android             {:left (+ 10 left)
                          :top  0.5}
    :ios                 {:line-height min-input-height
                          :left        (+ 9 left)}})

@@ -79,8 +79,8 @@
                                    (set-layout-height h))
         :on-selection-change    #(let [s (-> (.-nativeEvent %)
                                              (.-selection))]
-                                   (when (and (= (.-end s) 10)
-                                              (get command [:command :sequential-params]))
+                                   (when (and (= (.-end s) (+ 2 (count (get-in @command [:command :name]))))
+                                              (get-in @command [:command :sequential-params]))
                                      (dispatch [:chat-input-focus :seq-input-ref])))
         :on-submit-editing      #(dispatch [:send-current-message])
         :on-focus               #(do (dispatch [:set-chat-ui-props :input-focused? true])
