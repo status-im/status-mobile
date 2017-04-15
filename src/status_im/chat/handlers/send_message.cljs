@@ -168,7 +168,6 @@
                                 (assoc :to chat-id :message-type :user-message))
             params'     (assoc params :message message'')]
         (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [:set-chat-ui-props :sending-in-progress? false])
         (dispatch [::add-message params'])
         (dispatch [::save-message! params'])))))
 

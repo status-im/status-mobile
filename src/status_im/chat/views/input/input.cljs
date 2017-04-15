@@ -66,13 +66,14 @@
         :editable               (not @sending-in-progress?)
         :on-blur                #(do (dispatch [:set-chat-ui-props :input-focused? false])
                                      (set-layout-height 0))
-        :on-change-text         #(when-not (str/includes? % "\n")
+        :on-change-text         #(if-not (str/includes? % "\n")
                                    (do (dispatch [:set-chat-input-text %])
                                        (dispatch [:load-chat-parameter-box (:command @command)])
                                        (when (not @command)
                                          (dispatch [:set-chat-input-metadata nil])
                                          (dispatch [:set-chat-ui-props :result-box nil]))
-                                       (dispatch [:set-chat-ui-props :validation-messages nil])))
+                                       (dispatch [:set-chat-ui-props :validation-messages nil]))
+                                   (dispatch [:send-current-message]))
         :on-content-size-change #(let [h (-> (.-nativeEvent %)
                                              (.-contentSize)
                                              (.-height))]
@@ -124,20 +125,22 @@
     nil))
 
 (defn- seq-input [_]
-  (let [command            (subscribe [:selected-chat-command])
-        arg-pos            (subscribe [:current-chat-argument-position])
-        seq-arg-input-text (subscribe [:chat :seq-argument-input-text])]
+  (let [command              (subscribe [:selected-chat-command])
+        arg-pos              (subscribe [:current-chat-argument-position])
+        seq-arg-input-text   (subscribe [:chat :seq-argument-input-text])
+        sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])]
     (fn [{:keys [command-width]}]
       (when (get-in @command [:command :sequential-params])
         (let [{:keys [placeholder hidden type]} (get-in @command [:command :params @arg-pos])]
           [text-input (merge {:ref               #(dispatch [:set-chat-ui-props :seq-input-ref %])
-                              :style             (style/input-password-text command-width)
+                              :style             (style/seq-input-text command-width)
                               :default-value     (or @seq-arg-input-text "")
                               :on-change-text    #(do (dispatch [:set-chat-seq-arg-input-text %])
                                                       (dispatch [:set-chat-ui-props :validation-messages nil]))
                               :secure-text-entry hidden
                               :placeholder       placeholder
                               :blur-on-submit    false
+                              :editable          (not @sending-in-progress?)
                               :on-submit-editing (fn []
                                                    (when-not (str/blank? @seq-arg-input-text)
                                                      (dispatch [:send-seq-argument]))

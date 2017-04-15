@@ -77,7 +77,7 @@
                          :top 0
                          :padding-top -3}})
 
-(defnstyle input-password-text [left]
+(defnstyle seq-input-text [left]
   {:min-width           200
    :font-size           14
    :position            :absolute
