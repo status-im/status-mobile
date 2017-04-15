@@ -58,9 +58,26 @@
       (dispatch [:chat-with-command whisper-identity action params]))))
 
 
+(register-handler ::send-command
+  (u/side-effect!
+    (fn [{:keys [current-chat-id] :as db} [_ command-key params]]
+      (let [command       (get-in db [:chats current-chat-id :commands command-key])
+            command-input {:content       "0"
+                           :command       command
+                           :parameter-idx 0
+                           :params        {"amount" (:amount params)}
+                           :to-message-id nil}]
+        (dispatch [:proceed-command
+                   {:command  command,
+                    :metadata nil,
+                    :args     [(str (:amount params))]}
+                   current-chat-id])))))
+
 (defn chat-with-command
   [_ [_ whisper-identity command-key params]]
   (dispatch [:remove-contacts-click-handler])
+  (dispatch [:add-chat-loaded-callback whisper-identity
+             #(dispatch [::send-command command-key params])])
   (dispatch [:start-chat whisper-identity]))
 
 (register-handler :chat-with-command
