@@ -81,7 +81,8 @@
 
 (defn show-chat!
   [{:keys [new-chat]} _]
-  (dispatch [:navigation-replace :chat (:chat-id new-chat)]))
+  (dispatch [:navigate-to-clean :chat-list])
+  (dispatch [:navigate-to :chat (:chat-id new-chat)]))
 
 (defn start-listen-group!
   [{:keys [new-chat web3 current-public-key]}]
