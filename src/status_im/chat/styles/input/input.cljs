@@ -1,7 +1,8 @@
 (ns status-im.chat.styles.input.input
   (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.components.styles :as common]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (def color-root-border "rgba(192, 198, 202, 0.28)")
 (def color-root-border-android "#e8eaeb")
@@ -41,7 +42,7 @@
    :background-color color-input
    :flex-direction   :row
    :flex-grow        1
-   :height           (+ (min (max min-input-height content-height) max-input-height) 0)
+   :height           (min (max min-input-height content-height) max-input-height)
    :margin-top       anim-margin
    :padding-left     10
    :padding-right    10
@@ -53,8 +54,7 @@
    :font-size      14
    :padding-top    input-spacing-top
    :padding-bottom input-spacing-bottom
-   :line-height    20
-   :android        {:min-height content-height}})
+   :height         (min (max min-input-height content-height) max-input-height)})
 
 (def invisible-input-text
   {:font-size        14

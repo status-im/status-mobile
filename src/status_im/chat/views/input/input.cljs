@@ -34,6 +34,7 @@
 
 (defview commands-view []
   [commands [:chat :command-suggestions]
+   requests [:chat :request-suggestions]
    show-suggestions? [:show-suggestions?]]
   [view style/commands-root
    [view style/command-list-icon-container
@@ -47,10 +48,15 @@
    [scroll-view {:horizontal                     true
                  :showsHorizontalScrollIndicator false
                  :keyboardShouldPersistTaps      true}
-    [view style/commands
-     (for [[index [command-key command]] (map-indexed vector commands)]
-       ^{:key command-key}
-       [command-view index command])]]])
+    (let [commands (map-indexed vector commands)
+          requests (map-indexed vector requests)]
+      [view style/commands
+       (for [[index [command-key command]] commands]
+         ^{:key command-key}
+         [command-view index command])
+       (for [[index command] requests]
+         ^{:key (str "request-" index)}
+         [command-view index command])])]])
 
 (defn- basic-text-input [_]
   (let [input-text           (subscribe [:chat :input-text])
@@ -60,24 +66,22 @@
       [text-input
        {:ref                    #(dispatch [:set-chat-ui-props :input-ref %])
         :accessibility-label    id/chat-message-input
-        :blur-on-submit         true
+        :blur-on-submit         false
         :multiline              true
         :default-value          (or @input-text "")
         :editable               (not @sending-in-progress?)
         :on-blur                #(do (dispatch [:set-chat-ui-props :input-focused? false])
                                      (set-layout-height 0))
-        :on-change-text         #(if-not (str/includes? % "\n")
-                                   (do (dispatch [:set-chat-input-text %])
-                                       (dispatch [:load-chat-parameter-box (:command @command)])
-                                       (when (not @command)
-                                         (dispatch [:set-chat-input-metadata nil])
-                                         (dispatch [:set-chat-ui-props :result-box nil]))
-                                       (dispatch [:set-chat-ui-props :validation-messages nil]))
-                                   (dispatch [:send-current-message]))
-        :on-content-size-change #(let [h (-> (.-nativeEvent %)
+        :on-change              #(let [h (-> (.-nativeEvent %)
                                              (.-contentSize)
                                              (.-height))]
                                    (set-layout-height h))
+        :on-change-text         #(do (dispatch [:set-chat-input-text %])
+                                     (dispatch [:load-chat-parameter-box (:command @command)])
+                                     (when (not @command)
+                                       (dispatch [:set-chat-input-metadata nil])
+                                       (dispatch [:set-chat-ui-props :result-box nil]))
+                                     (dispatch [:set-chat-ui-props :validation-messages nil]))
         :on-selection-change    #(let [s (-> (.-nativeEvent %)
                                              (.-selection))]
                                    (when (and (= (.-end s) (+ 2 (count (get-in @command [:command :name]))))
