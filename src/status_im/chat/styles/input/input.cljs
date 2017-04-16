@@ -73,9 +73,7 @@
    :android             {:left (+ 15 left)
                          :top  -1}
    :ios                 {:line-height min-input-height
-                         :left        (+ 3 left)
-                         :top 0
-                         :padding-top -3}})
+                         :left        (+ 10 left)}})
 
 (defnstyle seq-input-text [left]
   {:min-width           200
