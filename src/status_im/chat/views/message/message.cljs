@@ -197,13 +197,13 @@
   [{:keys [content] :as message}]
   [message-view message
    (let [parsed-text  (parse-text content)
-         simple-text? (= (count parsed-text) 2)]
+         simple-text? (and (= (count parsed-text) 2)
+                           (nil? (second parsed-text)))]
      (if simple-text?
        [autolink {:style   (st/text-message message)
                   :text    (apply str parsed-text)
                   :onPress #(browse %)}]
-       [text {:style (st/text-message message)}
-        (parse-text content)]))])
+       [text {:style (st/text-message message)} parsed-text]))])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
 
