@@ -3,7 +3,8 @@
             [status-im.components.styles :as st]
             [status-im.utils.utils :as u
              :refer [get-react-property get-class adapt-class]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.utils.platform :refer [platform-specific ios?]]
+            [status-im.i18n :as i18n]))
 
 (def react-native (js/require "react-native"))
 (def native-modules (.-NativeModules react-native))
@@ -30,6 +31,7 @@
 (def list-view-class (get-class "ListView"))
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
+(def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
@@ -78,17 +80,18 @@
     [text-input-class (merge
                         {:underline-color-android :transparent
                          :placeholder-text-color  st/text2-color
-                         :placeholder             "Type"
+                         :placeholder             (i18n/label :t/type-a-message)
                          :value                   text}
                         (-> opts
                             (dissoc :font)
                             (assoc :style (merge style font))))]))
 
 (defn icon
-  ([n] (icon n {}))
+  ([n] (icon n st/icon-default))
   ([n style]
-   [image {:source {:uri (keyword (str "icon_" (name n)))}
-           :style  style}]))
+   [image {:source     {:uri (keyword (str "icon_" (name n)))}
+           :resizeMode "contain"
+           :style      style}]))
 
 (defn list-view [props]
   [list-view-class (merge {:enableEmptySections true} props)])
@@ -150,3 +153,11 @@
 
 (def http-bridge
   (js/require "react-native-http-bridge"))
+
+;; KeyboardAvoidingView
+
+(defn keyboard-avoiding-view [props & children]
+  (let [view-element (if ios?
+                       [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
+                       [view props])]
+    (vec (concat view-element children))))

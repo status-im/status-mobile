@@ -42,10 +42,6 @@
 
 (register-handler :set-in set-in)
 
-(register-handler :set-animation
-  (fn [db [_ k v]]
-    (assoc-in db [:animations k] v)))
-
 (register-handler :initialize-db
   (fn [{:keys [status-module-initialized? status-node-started?
                network-status network]} _]
@@ -74,6 +70,7 @@
       (dispatch [:initialize-sync-listener])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
+      (dispatch [:load-groups])
       (dispatch [:init-chat])
       (dispatch [:init-discoveries])
       (dispatch [:init-debug-mode address])

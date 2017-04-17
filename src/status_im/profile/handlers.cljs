@@ -1,5 +1,5 @@
 (ns status-im.profile.handlers
-  (:require [re-frame.core :refer [subscribe dispatch]]
+  (:require [re-frame.core :refer [subscribe dispatch after]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.components.react :refer [show-image-picker]]
             [status-im.utils.image-processing :refer [img->base64]]
@@ -43,4 +43,24 @@
   (u/side-effect!
     (fn [db _]
       (dispatch [:navigate-to :chat console-chat-id])
-      (dispatch [:set-chat-command :phone]))))
+      (js/setTimeout #(dispatch [:select-chat-input-command {:name "phone"}]) 500))))
+
+(register-handler :open-chat-with-the-send-transaction
+  (u/side-effect!
+    (fn [db [_ chat-id]]
+      (dispatch [:navigate-to :chat chat-id])
+      (js/setTimeout #(dispatch [:select-chat-input-command {:name "send"}]) 500))))
+
+(defn prepare-edit-profile
+  [{:keys [current-account-id] :as db} _]
+  (let [current-account (select-keys (get-in db [:accounts current-account-id])
+                                     [:name :photo-path :status])]
+    (update-in db [:profile-edit] merge current-account)))
+
+(defn open-edit-profile [_ _]
+  (dispatch [:navigate-to :edit-my-profile]))
+
+(register-handler
+  :open-edit-my-profile
+  (-> prepare-edit-profile
+      ((after open-edit-profile))))

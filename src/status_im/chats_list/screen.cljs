@@ -1,6 +1,8 @@
 (ns status-im.chats-list.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
+  (:require [re-frame.core :refer [dispatch]]
+            [status-im.components.common.common :as common]
+            [status-im.components.renderers.renderers :as renderers]
             [status-im.components.react :refer [list-view
                                                 list-item
                                                 view
@@ -8,80 +10,89 @@
                                                 text
                                                 icon
                                                 image
+                                                linear-gradient
                                                 touchable-highlight]]
-            [status-im.components.action-button :refer [action-button
-                                                        action-button-item]]
+            [status-im.components.native-action-button :refer [native-action-button]]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.styles :refer [color-blue]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar-with-search]]
-            [status-im.components.toolbar.actions :as act]
+            [status-im.components.toolbar-new.view :refer [toolbar toolbar-with-search]]
+            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.toolbar-new.styles :as tst]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
-            [status-im.components.react :refer [linear-gradient]]
             [status-im.components.sync-state.offline :refer [offline-view]]
+            [status-im.components.context-menu :refer [context-menu]]
+            [status-im.components.tabs.styles :refer [tabs-height]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.chats-list.views.chat-list-item :refer [chat-list-item]]
-            [status-im.i18n :refer [label]]
-            [status-im.utils.platform :refer [platform-specific]]
             [status-im.chats-list.styles :as st]
-            [status-im.components.tabs.styles :refer [tabs-height]]))
+            [status-im.i18n :refer [label]]
+            [status-im.utils.platform :refer [platform-specific ios?]]))
 
-(defview toolbar-view []
-  [chats-scrolled? [:get :chats-scrolled?]]
-  (let [new-chat? (get-in platform-specific [:chats :new-chat-in-toolbar?])
-        actions   (if new-chat?
-                    [(act/add #(dispatch [:navigate-to :group-contacts :people]))])]
-    [toolbar-with-search
-     {:show-search?       false
-      :search-key         :chat-list
-      :title              (label :t/chats)
-      :search-placeholder (label :t/search-for)
-      :nav-action         (act/hamburger open-drawer)
-      :actions            actions
-      :style              (st/toolbar chats-scrolled?)}]))
+(def android-toolbar-popup-options
+  [{:text (label :t/edit) :value #(dispatch [:set-in [:chat-list-ui-props :edit?] true])}])
+
+(defn android-toolbar-actions []
+  [(act/search #(dispatch [:set-in [:toolbar-search :show] true]))
+   (act/opts android-toolbar-popup-options)])
+
+(def ios-toolbar-popup-options
+  [{:text (label :t/edit-chats) :value #(dispatch [:set-in [:chat-list-ui-props :edit?] true])}
+   {:text (label :t/search-chats) :value #(dispatch [:set-in [:toolbar-search :show] true])}])
+
+(defn ios-toolbar-actions []
+  [(act/opts ios-toolbar-popup-options)
+   (act/add #(dispatch [:navigate-to :new-chat]))])
+
+(defn toolbar-view []
+  [toolbar {:title      (label :t/chats)
+            :nav-action (act/hamburger open-drawer)
+            :actions    (if ios?
+                          (ios-toolbar-actions)
+                          (android-toolbar-actions))}])
+
+(defn toolbar-edit []
+  [toolbar {:nav-action (act/back #(dispatch [:set-in [:chat-list-ui-props :edit?] false]))
+            :title      (label :t/edit-chats)}])
+
+(defview toolbar-search []
+  [search-text [:get-in [:toolbar-search :text]]]
+  [toolbar-with-search
+   {:show-search?       true
+    :search-text        search-text
+    :search-key         :chat-list
+    :title              (label :t/chats)
+    :search-placeholder (label :t/search-for)}])
 
 (defn chats-action-button []
-  [action-button {:button-color color-blue
-                  :offset-x     16
-                  :offset-y     22
-                  :hide-shadow  true
-                  :spacing      13}
-   [action-button-item
-    {:title       (label :t/new-chat)
-     :buttonColor :#9b59b6
-     :onPress     #(dispatch [:navigate-to :group-contacts :people])}
-    [ion-icon {:name  :md-create
-               :style st/create-icon}]]
-   [action-button-item
-    {:title       (label :t/new-group-chat)
-     :buttonColor :#1abc9c
-     :onPress     #(dispatch [:navigate-to :new-group])}
-    [icon :private_group_big st/group-icon]]
-   [action-button-item
-    {:title       (label :t/new-public-group-chat)
-     :buttonColor :#1abc9c
-     :onPress     #(dispatch [:navigate-to :new-public-group])}
-    [icon :public_group_big st/group-icon]]])
-
-(defn chat-shadow-item []
-  [view {:height 3}
-   [linear-gradient {:style  {:height 3}
-                     :colors st/gradient-top-bottom-shadow}]])
+  [native-action-button {:button-color color-blue
+                         :offset-x     16
+                         :offset-y     22
+                         :hide-shadow  true
+                         :spacing      13
+                         :on-press     #(dispatch [:navigate-to :new-chat])}])
 
 (defview chats-list []
-  [chats [:get :chats]]
+  [chats        [:filtered-chats]
+   edit?        [:get-in [:chat-list-ui-props :edit?]]
+   search?      [:get-in [:toolbar-search :show]]
+   tabs-hidden? [:tabs-hidden?]]
   [view st/chats-container
-   [toolbar-view]
+   (cond
+     edit?   [toolbar-edit]
+     search? [toolbar-search]
+     :else   [toolbar-view])
    [list-view {:dataSource      (to-datasource chats)
                :renderRow       (fn [[id :as row] _ _]
-                                  (list-item ^{:key id} [chat-list-item row]))
-               :renderFooter    #(list-item [chat-shadow-item])
-               :renderSeparator #(list-item
-                                   (when (< %2 (- (count chats) 1))
-                                     ^{:key (str "separator-" %2)}
-                                     [view st/chat-separator-wrapper
-                                      [view st/chat-separator-item]]))
-               :style           st/list-container}]
-   (when (get-in platform-specific [:chats :action-button?])
+                                  (list-item ^{:key id} [chat-list-item row edit?]))
+               :renderHeader    renderers/list-header-renderer
+               :renderFooter    #(list-item [view
+                                             [common/list-footer]
+                                             [common/bottom-shaddow]])
+               :renderSeparator renderers/list-separator-renderer
+               :style           (st/list-container tabs-hidden?)}]
+   (when (and (not edit?)
+              (not search?)
+              (get-in platform-specific [:chats :action-button?]))
      [chats-action-button])
    [offline-view]])

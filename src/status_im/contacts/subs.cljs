@@ -1,7 +1,8 @@
 (ns status-im.contacts.subs
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
-            [status-im.utils.identicon :refer [identicon]]))
+            [status-im.utils.identicon :refer [identicon]]
+            [clojure.string :as str]))
 
 (register-sub :current-contact
   (fn [db [_ k]]
@@ -29,47 +30,98 @@
            (sort-contacts)
            (reaction)))))
 
-(register-sub :all-added-people
-  (fn []
+(register-sub :all-added-people-contacts
+  (fn [_ _]
     (let [contacts (subscribe [:all-added-contacts])]
-      (reaction (remove :dapp? @contacts)))))
+      (reaction (remove #(true? (:dapp? %)) @contacts)))))
 
-(register-sub :all-added-dapps
-  (fn []
-    (let [contacts (subscribe [:all-added-contacts])]
-      (reaction (filter :dapp? @contacts)))))
+(defn filter-group-contacts [group-contacts contacts]
+  (filter #(group-contacts (:whisper-identity %)) contacts))
 
-(register-sub :get-added-people-with-limit
-  (fn [_ [_ limit]]
-    (let [contacts (subscribe [:all-added-people])]
+(register-sub :all-added-group-contacts
+  (fn [db [_ group-id]]
+    (let [contacts (subscribe [:all-added-contacts])
+          group-contacts (reaction (into #{} (map #(:identity %)
+                                                  (get-in @db [:contact-groups group-id :contacts]))))]
+      (reaction (filter-group-contacts @group-contacts @contacts)))))
+
+(defn filter-not-group-contacts [group-contacts contacts]
+  (remove #(group-contacts (:whisper-identity %)) contacts))
+
+(register-sub :all-not-added-group-contacts
+  (fn [db [_ group-id]]
+    (let [contacts (subscribe [:all-added-contacts])
+          group-contacts (reaction (into #{} (map #(:identity %)
+                                                  (get-in @db [:contact-groups group-id :contacts]))))]
+      (reaction (filter-not-group-contacts @group-contacts @contacts)))))
+
+(register-sub :all-added-group-contacts-with-limit
+  (fn [db [_ group-id limit]]
+    (let [contacts (subscribe [:all-added-group-contacts group-id])]
       (reaction (take limit @contacts)))))
 
-(register-sub :get-added-dapps-with-limit
+(register-sub :all-added-group-contacts-count
+  (fn [_ [_ group-id]]
+    (let [contacts (subscribe [:all-added-group-contacts group-id])]
+      (reaction (count @contacts)))))
+
+(register-sub :get-added-contacts-with-limit
   (fn [_ [_ limit]]
-    (let [contacts (subscribe [:all-added-dapps])]
+    (let [contacts (subscribe [:all-added-contacts])]
       (reaction (take limit @contacts)))))
 
-(register-sub :added-people-count
+(register-sub :added-contacts-count
   (fn [_ _]
-    (let [contacts (subscribe [:all-added-people])]
+    (let [contacts (subscribe [:all-added-contacts])]
       (reaction (count @contacts)))))
 
-(register-sub :added-dapps-count
-  (fn [_ _]
-    (let [contacts (subscribe [:all-added-dapps])]
-      (reaction (count @contacts)))))
+(register-sub :all-added-groups
+  (fn [db _]
+    (let [groups (reaction (vals (:contact-groups @db)))]
+      (->> (remove :pending? @groups)
+           (sort-by :order >)
+           (reaction)))))
 
 (defn get-contact-letter [contact]
   (when-let [letter (first (:name contact))]
     (clojure.string/upper-case letter)))
 
+(defn search-filter [text item]
+  (let [name (-> (or (:name item) "")
+                 (str/lower-case))
+        text (str/lower-case text)]
+    (not= (str/index-of name text) nil)))
+
+(defn search-filter-reaction [contacts]
+  (let [text (subscribe [:get-in [:toolbar-search :text]])]
+    (reaction
+      (if @text
+        (filter #(search-filter @text %) @contacts)
+        @contacts))))
+
+(register-sub :all-added-group-contacts-filtered
+  (fn [_ [_ group-id]]
+    (let [contacts (if group-id
+                     (subscribe [:all-added-group-contacts group-id])
+                     (subscribe [:all-added-contacts]))]
+      (search-filter-reaction contacts))))
+
+(register-sub :all-group-not-added-contacts-filtered
+  (fn [db _]
+    (let [contact-group-id (:contact-group-id @db)
+          contacts (subscribe [:all-not-added-group-contacts contact-group-id])]
+      (search-filter-reaction contacts))))
+
+(register-sub :contacts-filtered
+  (fn [db [_ subscription-id]]
+    (let [contacts (subscribe [subscription-id])]
+      (search-filter-reaction contacts))))
+
 (register-sub :contacts-with-letters
   (fn [db _]
-    (let [contacts (reaction (:contacts @db))
-          pred     (subscribe [:get :contacts-filter])]
+    (let [contacts (reaction (:contacts @db))]
       (reaction
-        (let [ordered (sort-contacts @contacts)
-              ordered (if @pred (filter @pred ordered) ordered)]
+        (let [ordered (sort-contacts @contacts)]
           (reduce (fn [prev cur]
                     (let [prev-letter (get-contact-letter (last prev))
                           cur-letter  (get-contact-letter cur)]
@@ -103,6 +155,11 @@
 (register-sub :contact-by-identity
   (fn [db [_ identity]]
     (reaction (get-in @db [:contacts identity]))))
+
+(register-sub :contact-name-by-identity
+  (fn [db [_ identity]]
+    (let [contacts (subscribe [:get-contacts])]
+      (reaction (:name (@contacts identity))))))
 
 (register-sub :all-new-contacts
   (fn [db _]

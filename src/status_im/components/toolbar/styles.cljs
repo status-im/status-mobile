@@ -99,5 +99,5 @@
    :height 17})
 
 (def action-back
-  {:width  8
-   :height 14})
+  {:width  24
+   :height 24})

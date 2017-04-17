@@ -1,8 +1,11 @@
 (ns status-im.discover.styles
+  (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.components.styles :refer [color-white
                                                  color-light-gray
                                                  color-blue]]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]
+            [status-im.components.tabs.styles :as tabs-st]
+            [status-im.utils.platform :as p]))
 
 ;; Common
 
@@ -12,7 +15,7 @@
 
 (def row
   {:flex-direction :row
-   :margin-bottom 10})
+   :margin-bottom  10})
 
 (def column
   {:flex-direction :column})
@@ -72,7 +75,7 @@
 (def popular-list-item
   {:flex-direction :row
    :padding-bottom 16
-   :top 1})
+   :top            1})
 
 (def popular-list-item-name
   {:color          "black"
@@ -137,6 +140,10 @@
 (def discover-container
   {:flex            1
    :backgroundColor color-white})
+
+(defnstyle list-container [tabs-hidden?]
+  {:android {:margin-bottom 20}
+   :ios     {:margin-bottom (if tabs-hidden? 20 (+ 16 tabs-st/tabs-height))}})
 
 (def search-icon
   {:width  17

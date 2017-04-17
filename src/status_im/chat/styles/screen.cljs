@@ -1,9 +1,12 @@
 (ns status-im.chat.styles.screen
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :refer [chat-background
                                                  selected-message-color
                                                  separator-color
                                                  text1-color
-                                                 text2-color]]
+                                                 text2-color
+                                                 text4-color
+                                                 color-gray6]]
             [status-im.components.toolbar.styles :refer [toolbar-background1]]))
 
 (def chat-view
@@ -13,9 +16,9 @@
 (def toolbar-container
   {})
 
-(defn messages-container [bottom]
+(def messages-container
   {:flex           1
-   :padding-bottom bottom
+   :padding-bottom 0
    :margin-bottom  0})
 
 (def toolbar-view
@@ -41,16 +44,15 @@
    :width      8
    :height     14})
 
-(defn chat-name-view [show-actions]
+(defnstyle chat-name-view [show-actions]
   {:flex            1
-   :margin-bottom   2
    :margin-left     (if show-actions 16 0)
-   :align-items     :flex-start
-   :justify-content :center})
+   :justify-content :center
+   :android         {:align-items :flex-start}
+   :ios             {:align-items :center}})
 
 (def chat-name-text
-  {:color      text1-color
-   :margin-top 2
+  {:color      color-gray6
    :fontSize   16})
 
 (def group-icon
@@ -63,14 +65,17 @@
   {:width  14
    :height 8})
 
-(def members
-  {:marginTop  -0.5
-   :marginLeft 4
-   :fontSize   12
-   :color      text2-color})
+(defstyle members
+  {:color   text4-color
+   :ios     {:font-size  14
+             :margin-top 4}
+   :android {:font-size 13}})
 
-(def last-activity
-  {:height 18})
+(defstyle last-activity-text
+  {:color   text4-color
+   :ios     {:font-size  14
+             :margin-top 4}
+   :android {:font-size 13}})
 
 (defn actions-wrapper [status-bar-height]
   {:backgroundColor toolbar-background1

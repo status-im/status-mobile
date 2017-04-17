@@ -1,241 +1,226 @@
 (ns status-im.profile.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
+  (:require [re-frame.core :refer [dispatch]]
             [clojure.string :as str]
-            [cljs.spec :as s]
             [reagent.core :as r]
+            [status-im.contacts.styles :as cst]
+            [status-im.components.common.common :refer [separator
+                                                        form-spacer
+                                                        top-shaddow
+                                                        bottom-shaddow]]
+            [status-im.components.styles :refer [color-blue color-gray5]]
+            [status-im.components.context-menu :refer [context-menu]]
+            [status-im.components.action-button.action-button :refer [action-button
+                                                                      action-button-disabled
+                                                                      action-separator]]
+            [status-im.components.action-button.styles :refer [actions-list]]
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
                                                 image
                                                 icon
-                                                modal
                                                 scroll-view
-                                                touchable-highlight
-                                                touchable-opacity
-                                                touchable-without-feedback
-                                                show-image-picker
-                                                dismiss-keyboard!]]
-            [status-im.components.icons.custom-icons :refer [oct-icon]]
+                                                touchable-highlight]]
             [status-im.components.chat-icon.screen :refer [my-profile-icon]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.text-field.view :refer [text-field]]
-            [status-im.components.selectable-field.view :refer [selectable-field]]
-            [status-im.components.status-view.view :refer [status-view]]
-            [status-im.components.list-selection :refer [share]]
-            [status-im.utils.phone-number :refer [format-phone-number]]
-            [status-im.utils.image-processing :refer [img->base64]]
-            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.list-selection :refer [share-options]]
+            [status-im.utils.platform :refer [platform-specific android?]]
             [status-im.profile.handlers :refer [message-user]]
-            [status-im.profile.validations :as v]
             [status-im.profile.styles :as st]
-            [status-im.utils.random :refer [id]]
-            [status-im.utils.utils :refer [clean-text]]
-            [status-im.components.image-button.view :refer [show-qr-button]]
-            [status-im.i18n :refer [label
-                                    get-contact-translated]]
-            [status-im.constants :refer [console-chat-id wallet-chat-id]]))
+            [status-im.i18n :refer [label]]
+            [status-im.utils.datetime :as time]))
 
-(defn toolbar [{:keys [account edit?]}]
-  (let [profile-edit-data-valid? (s/valid? ::v/profile account)]
-    [view
-     [touchable-highlight {:style    st/back-btn-touchable
-                           :on-press (fn []
-                                       (dispatch [:set-in [:profile-edit :edit?] false])
-                                       (dispatch [:set-in [:profile-edit :name] nil])
-                                       (dispatch [:navigate-back]))}
-      [view st/back-btn-container
-       [icon :back st/back-btn-icon]]]
-     [touchable-highlight {:style    st/actions-btn-touchable
-                           :on-press (fn []
-                                       (if edit?
-                                         (when profile-edit-data-valid?
-                                           (dismiss-keyboard!)
-                                           (dispatch [:check-status-change (:status account)])
-                                           (dispatch [:account-update account])
-                                           (dispatch [:set-in [:profile-edit :edit?] false]))
-                                         (dispatch [:set :profile-edit (merge account {:edit? true})])))}
-      [view st/actions-btn-container
-       (if edit?
-         [oct-icon {:name  :check
-                    :style (st/ok-btn-icon profile-edit-data-valid?)}]
-         [icon :dots st/edit-btn-icon])]]]))
 
-(defn status-image-view [_]
-  (let [component         (r/current-component)
-        just-opened?      (r/atom true)
-        input-ref         (r/atom nil)
-        set-status-height #(let [height (-> (.-nativeEvent %)
-                                            (.-contentSize)
-                                            (.-height))]
-                            (r/set-state component {:height height}))]
-    (r/create-class
-      {:reagent-render
-       (fn [{{:keys [whisper-identity
-                     name
-                     status
-                     photo-path]} :account
-             edit?                :edit?}]
-         [view st/status-block
-          [view st/user-photo-container
+(defn my-profile-toolbar []
+  [toolbar {:actions [(act/opts [{:value #(dispatch [:open-edit-my-profile])
+                                  :text (label :t/edit)}])]}])
 
-           (if edit?
-             [touchable-highlight {:on-press (fn []
-                                               (let [list-selection-fn (:list-selection-fn platform-specific)]
-                                                 (dispatch [:open-image-source-selector list-selection-fn])))}
-              [view
-               [my-profile-icon {:account {:photo-path photo-path
-                                           :name       name}
-                                 :edit?   edit?}]]]
-             [my-profile-icon {:account {:photo-path photo-path
-                                         :name       name}
-                               :edit?   edit?}])]
-          [text-field
-           {:line-color       :white
-            :focus-line-color :white
-            :editable         edit?
-            :input-style      (st/username-input edit? (s/valid? ::v/name name))
-            :wrapper-style    st/username-wrapper
-            :value            (get-contact-translated whisper-identity :name name)
-            :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])}]
-          (if (or edit? @just-opened?)
-            [text-input {:ref                    #(reset! input-ref %)
-                         :style                  (st/status-input (:height (r/state component)))
-                         :multiline              true
-                         :editable               true
-                         :on-content-size-change #(do (set-status-height %)
-                                                      (reset! just-opened? false))
-                         :max-length             140
-                         :placeholder            (label :t/profile-no-status)
-                         :on-change-text         #(let [status (clean-text %)]
-                                                    (if (str/includes? % "\n")
-                                                      (.blur @input-ref)
-                                                      (dispatch [:set-in [:profile-edit :status] status])))
-                         :default-value          status}]
-            [status-view {:style  (st/status-text (:height (r/state component)))
-                          :status status}])])})))
+(defn profile-toolbar [contact]
+  [toolbar
+   (when-not (:pending? contact)
+     {:actions [(act/opts [{:value #(dispatch [:hide-contact contact])
+                            :text  (label :t/remove-from-contacts)}])]})])
 
-(defview profile []
-  [{whisper-identity :whisper-identity
-    address          :address
-    username         :name
-    photo-path       :photo-path
-    phone            :phone
-    status           :status
-    :as              contact} [:contact]]
-  [scroll-view {:style st/profile}
-   [status-bar]
-   [view
-    [touchable-highlight {:style    st/back-btn-touchable
-                          :on-press (fn []
-                                      (dispatch [:navigate-back]))}
-     [view (get-in platform-specific [:component-styles :toolbar-nav-action])
-      [icon :back st/back-btn-icon]]]
-    ;; TODO not implemented
-    #_[touchable-highlight {:style    st/actions-btn-touchable
-                            :on-press (fn []
-                                        (.log js/console "Dots pressed!"))}
-       [view st/actions-btn-container
-        [icon :dots st/edit-btn-icon]]]]
+(defn online-text [last-online]
+  (let [last-online-date (time/to-date last-online)
+        now-date         (time/now)]
+    (if (and (pos? last-online)
+             (<= last-online-date now-date))
+      (time/time-ago last-online-date)
+      (label :t/active-unknown))))
 
-   [status-image-view {:account    contact
-                       :photo-path photo-path
-                       :edit?      false}]
+(defn profile-bage [{:keys [name last-online] :as contact}]
+  [view st/profile-bage
+   [my-profile-icon {:account contact
+                     :edit?   false}]
+   [view st/profile-bage-name-container
+    [text {:style st/profile-name-text
+           :number-of-lines 1}
+      name]
+    (when-not (nil? last-online)
+      [view st/profile-activity-status-container
+       [text {:style st/profile-activity-status-text}
+        (online-text last-online)]])]])
 
-   [scroll-view (merge st/profile-properties-container {:keyboardShouldPersistTaps true
-                                                        :bounces                   false})
+(defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
+  [view actions-list
+   (if pending?
+     [action-button (label :t/add-to-contacts)
+                    :add_blue
+                    #(dispatch [:add-pending-contact chat-id])]
+     [action-button-disabled (label :t/in-contacts)
+                             :ok_dark])
+   [action-separator]
+   [action-button (label :t/start-conversation)
+                  :chats_blue
+                  #(message-user whisper-identity)]
+   (when-not dapp?
+     [view
+      [action-separator]
+      [action-button (label :t/send-transaction)
+                     :arrow_right_blue
+                     #(dispatch [:open-chat-with-the-send-transaction chat-id])]])])
 
-    [view st/status-block
-     [view st/btns-container
-      [touchable-highlight {:onPress #(message-user whisper-identity)}
-       [view st/message-btn
-        [text {:style st/message-btn-text} (label :t/message)]]]
-      ;; TODO not implemented
-      #_[touchable-highlight {:onPress #(.log js/console "Not yet implemented")}
-         [view st/more-btn
-          [icon :more_vertical_blue st/more-btn-image]]]]]
+(defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
+  [view st/profile-setting-item
+   [view (st/profile-info-text-container options)
+    [text {:style st/profile-setting-title}
+     label]
+    [view st/profile-setting-spacing]
+    [text {:style           (if empty-value?
+                              st/profile-setting-text-empty
+                              st/profile-setting-text)
+           :number-of-lines 1
+           :ellipsizeMode   text-mode}
+     value]]
+   (when options
+     [context-menu
+      [icon :options_gray]
+      options])])
 
-    [view st/profile-property-with-top-spacing
-     [selectable-field {:label     (label :t/phone-number)
-                        :editable? false
-                        :value     (if (and phone (not (str/blank? phone)))
-                                     (format-phone-number phone)
-                                     (label :t/not-specified))}]
-     [view st/underline-container]]
+(defn show-qr [contact qr-source]
+  #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
+                                                :qr-source qr-source}]))
 
-    (when address
-      [view st/profile-property
-       [view st/profile-property-row
-        [view st/profile-property-field
-         [selectable-field {:label     (label :t/address)
-                            :editable? false
-                            :value     address
-                            :on-press  #(share address (label :t/address))}]]
-        [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
-                                                                                :qr-source :whisper-identity}])}]]
-       [view st/underline-container]])
+(defn profile-info-address-item [{:keys [address] :as contact}]
+  [profile-info-item
+   {:label     (label :t/address)
+    :value     address
+    :options   (into []
+                 (concat [{:value (show-qr contact :address)
+                           :text (label :t/show-qr)}]
+                         (share-options address)))
+    :text-mode :middle}])
 
-    [view st/profile-property
-     [view st/profile-property-row
-      [view st/profile-property-field
-       [selectable-field {:label     (label :t/public-key)
-                          :editable? false
-                          :value     whisper-identity
-                          :on-press  #(share whisper-identity (label :t/public-key))}]]
-      [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
-                                                                              :qr-source :public-key}])}]]]
+(defn profile-info-public-key-item [public-key contact]
+  [profile-info-item
+   {:label     (label :t/public-key)
+    :value     public-key
+    :options   (into []
+                 (concat [{:value (show-qr contact :public-key)
+                           :text (label :t/show-qr)}]
+                         (share-options public-key)))
+    :text-mode :middle}])
 
-    [view st/underline-container]]])
+(defn info-item-separator []
+  [separator st/info-item-separator])
+
+(defn tag-view [tag]
+  [text {:style {:color color-blue}
+         :font :medium}
+   (str tag " ")])
+
+(defn colorize-status-hashtags [status]
+  (for [[i status] (map-indexed vector (str/split status #" "))]
+    (if (.startsWith status "#")
+      ^{:key (str "item-" i)}
+      [tag-view status]
+      ^{:key (str "item-" i)}
+      (str status " "))))
+
+(defn profile-info-phone-item [phone & [options]]
+  (let [phone-empty? (or (nil? phone) (str/blank? phone))
+        phone-text  (if phone-empty?
+                       (label :t/not-specified)
+                       phone)]
+    [profile-info-item {:label        (label :t/phone-number)
+                        :value        phone-text
+                        :options      options
+                        :empty-value? phone-empty?}]))
+
+(defn profile-info [{:keys [whisper-identity status phone] :as contact}]
+  [view
+   [profile-info-address-item contact]
+   [info-item-separator]
+   [profile-info-public-key-item whisper-identity contact]
+   [info-item-separator]
+   [profile-info-phone-item phone]])
+
+(defn my-profile-info [{:keys [public-key status phone] :as contact}]
+  [view
+   [profile-info-address-item contact]
+   [info-item-separator]
+   [profile-info-public-key-item public-key contact]
+   [info-item-separator]
+   [profile-info-phone-item
+    phone
+    [{:value #(dispatch [:phone-number-change-requested])
+      :text (label :t/edit)}]]])
+
+(defn- profile-status-on-press []
+  (dispatch [:set-in [:profile-edit :edit-status?] true])
+  (dispatch [:open-edit-my-profile]))
+
+(defn profile-status [status & [edit?]]
+  [view st/profile-status-container
+   (if (or (nil? status) (str/blank? status))
+     [touchable-highlight {:on-press profile-status-on-press}
+      [view
+       [text {:style st/add-a-status}
+        (label :t/add-a-status)]]]
+     [scroll-view
+      [touchable-highlight {:on-press (when edit? profile-status-on-press)}
+       [view
+        [text {:style st/profile-status-text}
+         (colorize-status-hashtags status)]]]])])
 
 (defview my-profile []
-  [edit? [:get-in [:profile-edit :edit?]]
-   qr [:get-in [:profile-edit :qr-code]]
-   current-account [:get-current-account]
-   changed-account [:get :profile-edit]]
-  (let [{:keys [phone
-                address
-                public-key]
-         :as account} (if edit?
-                        changed-account
-                        current-account)]
-    [scroll-view {:style   st/profile
-                  :bounces false}
-     [status-bar]
-     [toolbar {:account account
-               :edit?   edit?}]
+  [{:keys [status] :as current-account} [:get-current-account]]
+  [view st/profile
+   [status-bar]
+   [my-profile-toolbar]
+   [view st/profile-form
+    [profile-bage current-account]
+    [profile-status status true]]
+   [form-spacer]
+   [view actions-list
+    [action-button (label :t/show-qr)
+     :q_r_blue
+     (show-qr current-account :public-key)]]
+   [form-spacer]
+   [view st/profile-info-container
+    [my-profile-info current-account]
+    [bottom-shaddow]]])
 
-     [status-image-view {:account account
-                         :edit?   edit?}]
-
-     [scroll-view (merge st/my-profile-properties-container {:bounces false})
-      [view st/profile-property
-       [selectable-field {:label     (label :t/phone-number)
-                          :editable? edit?
-                          :value     (if (and phone (not (str/blank? phone)))
-                                       (format-phone-number phone)
-                                       (label :t/not-specified))
-                          :on-press  #(dispatch [:phone-number-change-requested])}]
-       [view st/underline-container]]
-
-      [view st/profile-property
-       [view st/profile-property-row
-        [view st/profile-property-field
-         [selectable-field {:label     (label :t/address)
-                            :editable? edit?
-                            :value     address
-                            :on-press  #(share address (label :t/address))}]]
-        [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   account
-                                                                                :qr-source :address}])}]]
-       [view st/underline-container]]
-
-      [view st/profile-property
-       [view st/profile-property-row
-        [view st/profile-property-field
-         [selectable-field {:label     (label :t/public-key)
-                            :editable? edit?
-                            :value     public-key
-                            :on-press  #(share public-key (label :t/public-key))}]]
-        [show-qr-button {:handler #(dispatch [:navigate-to-modal :qr-code-view {:contact   account
-                                                                                :qr-source :public-key}])}]]]
-
-      [view st/underline-container]]]))
+(defview profile []
+  [{:keys [pending?
+           status
+           whisper-identity]
+    :as contact} [:contact]
+   chat-id [:get :current-chat-id]]
+  [view st/profile
+   [status-bar]
+   [profile-toolbar contact]
+   [scroll-view
+    [view st/profile-form
+     [profile-bage contact]
+     (when (and (not (nil? status)) (not (str/blank? status)))
+       [profile-status status])]
+    [form-spacer]
+    [profile-actions contact chat-id]
+    [form-spacer]
+    [view st/profile-info-container
+     [profile-info contact]
+     [bottom-shaddow]]]])

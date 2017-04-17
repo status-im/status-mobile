@@ -1,5 +1,5 @@
 (ns status-im.utils.datetime
-  (:require [cljs-time.core :as t :refer [date-time now plus days hours before?]]
+  (:require [cljs-time.core :as t :refer [date-time plus days hours before?]]
             [cljs-time.coerce :refer [from-long to-long from-date]]
             [cljs-time.format :refer [formatters
                                       formatter
@@ -7,6 +7,9 @@
             [status-im.i18n :refer [label label-pluralize]]
             [goog.string :as gstring]
             goog.string.format))
+
+(defn now []
+  (t/now))
 
 (def hour (* 1000 60 60))
 (def day (* hour 24))
@@ -30,7 +33,7 @@
                                (t/day today-date))
          yesterday  (plus today (days -1))]
      (cond
-       (before? local yesterday) (unparse (formatter "dd MMM") local)
+       (before? local yesterday) (unparse (formatter "dd MMM hh:mm") local)
        (before? local today) (label :t/datetime-yesterday)
        :else (today-format-fn local)))))
 

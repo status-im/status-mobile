@@ -24,15 +24,14 @@
                      (get resources/contacts))
                 {:uri photo-path})]
     [image {:source photo
-            :style  (merge st/default-image-style
-                           (st/image-style size))}]))
+            :style  (st/image-style size)}]))
 
-(defn dapp-badge [styles]
-  [view (:online-view-wrapper styles)
-   [view (:online-view styles)
+(defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
+  [view online-view-wrapper
+   [view online-view
     [view
-     [view (:online-dot-left styles)]
-     [view (:online-dot-right styles)]]]])
+     [view online-dot-left]
+     [view online-dot-right]]]])
 
 (defn contact-badge [type styles]
   (when (= type :edit)
@@ -127,19 +126,19 @@
     :default-chat-icon      (st/default-chat-icon-message-status color)
     :default-chat-icon-text st/message-status-icon-text}])
 
-(defn contact-icon-view [contact styles]
-  (let [photo-path (:photo-path contact)
-        ;; TODO: stub
-        type       :online]
-    [view (:container styles)
+(defn contact-icon-view [{:keys [photo-path name dapp?]} {:keys [container] :as styles}]
+  (let [photo-path photo-path]
+    [view container
      (if-not (s/blank? photo-path)
        [chat-icon photo-path styles]
-       [default-chat-icon (:name contact) styles])
-     [contact-badge type styles]]))
+       [default-chat-icon name styles])
+     (when dapp?
+       [dapp-badge styles])]))
 
 (defn contact-icon-contacts-tab [contact]
   [contact-icon-view contact
    {:container              st/container-chat-list
+    :online-view-wrapper    st/online-view-wrapper
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
@@ -148,23 +147,30 @@
     :default-chat-icon      (st/default-chat-icon-chat-list default-chat-color)
     :default-chat-icon-text st/default-chat-icon-text}])
 
-(defn profile-icon-view [photo-path name color badge-type]
-  (let [styles {:container              st/container-profile
+(defn profile-icon-view [photo-path name color edit? size]
+  (let [styles {:container              {:width size :height size}
                 :online-view            st/online-view-profile
                 :online-dot-left        st/online-dot-left-profile
                 :online-dot-right       st/online-dot-right-profile
-                :size                   64
+                :size                   size
                 :chat-icon              st/chat-icon-profile
                 :default-chat-icon      (st/default-chat-icon-profile color)
                 :default-chat-icon-text st/default-chat-icon-text}]
     [view (:container styles)
+     (when edit?
+        [view (st/profile-icon-mask size)])
+     (when edit?
+        [view (st/profile-icon-edit-text-containter size)
+         [text {:style st/profile-icon-edit-text}
+          "Edit"]])
      (if (and photo-path (seq photo-path))
        [chat-icon photo-path styles]
-       [default-chat-icon name styles])
-     [contact-badge badge-type styles]]))
+       [default-chat-icon name styles])]))
+
+
 
 (defn my-profile-icon [{{:keys [photo-path name]} :account
                         edit?                     :edit?}]
-  (let [type  (if edit? :edit :blank)
-        color default-chat-color]
-    [profile-icon-view photo-path name color type]))
+  (let [color default-chat-color
+        size  (if edit? 70 56)]
+    [profile-icon-view photo-path name color edit? size]))

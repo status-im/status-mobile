@@ -20,6 +20,7 @@
 
              :new-contact-identity       ""
              :contacts                   {}
+             :contact-groups             {}
              :discoveries                {}
              :discover-search-tags       []
              :tags                       {}
@@ -32,16 +33,12 @@
              :contacts-ids               #{}
              :selected-contacts          #{}
              :chats-updated-signal       0
-             :chat-ui-props              {:show-actions?     false
-                                          :show-bottom-info? false}
              :selected-participants      #{}
              :view-id                    nil
              :navigation-stack           '()
              :current-tag                nil
              :qr-codes                   {}
              :keyboard-height            0
-             :animations                 {;; todo clear this
-                                          :tabs-bar-value (anim/create-value 0)}
              :loading-allowed            true
 
              :sync-state                 :done

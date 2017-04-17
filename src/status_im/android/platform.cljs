@@ -1,6 +1,5 @@
 (ns status-im.android.platform
-  (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+  (:require [status-im.components.styles :as styles]))
 
 (def component-styles
   {:status-bar            {:default     {:height    0
@@ -8,7 +7,10 @@
                                          :color     styles/color-white}
                            :main        {:height    0
                                          :bar-style "dark-content"
-                                         :color     toolbar-background2}
+                                         :color     styles/color-white}
+                           :gray        {:height    0
+                                         :bar-style "dark-content"
+                                         :color     styles/color-light-gray}
                            :transparent {:height       20
                                          :bar-style    "light-content"
                                          :translucent? true
@@ -16,8 +18,27 @@
                            :modal       {:height    0
                                          :bar-style "light-content"
                                          :color     styles/color-black}}
+   :toolbar-new           {:height         55
+                           :padding-top    15
+                           :padding-left   16
+                           :padding-right  16}
+   :toolbar-title-container {:padding-left   30}
+   :toolbar-with-search-content {:padding-left   30}
    :sized-text            {:margin-top        0
                            :additional-height 0}
+   :chat-list             {:list-container               {:background-color styles/color-light-gray}
+                           :chat-container               {:height 76}
+                           :chat-icon-container          {:height 76}
+                           :chat-info-container          {:margin-top 16}
+                           :chat-options-container       {:margin-top 16}
+                           :item-lower-container         {:margin-top 4}
+                           :chat-name                    {:height 24}
+                           :last-message                 {:font-size  14
+                                                          :height     24}
+                           :last-message-timestamp       {:font-size 14}
+                           :unread-count                 {:top 2}
+                           :public-group-icon-container  {:margin-top 4}
+                           :private-group-icon-container {:margin-top 4}}
    :chat                  {:new-message {:border-top-color styles/color-transparent
                                          :border-top-width 0.5}}
    :discover              {:subtitle {:color     styles/color-gray2
@@ -34,28 +55,23 @@
                            :item     {:status-text {:color       styles/color-black
                                                     :line-height 22
                                                     :font-size   14}}}
-   :contacts              {:subtitle {:color     styles/color-gray2
-                                      :font-size 14}}
+   :contacts              {:show-all-text-font :medium}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
    :input-error-text      {:margin-left 4}
-   :main-tab-list         {:margin-bottom 20}
    :toolbar-nav-action    {:width           56
                            :height          56
                            :align-items     :center
                            :justify-content :center}
-   :toolbar-last-activity {:color            styles/text2-color
-                           :background-color :transparent
-                           :top              0
-                           :font-size        12}})
+   :text-field-focus-line-height 2})
 
 (def fonts
-  {:light         {:font-family "sans-serif-light"}
-   :default       {:font-family "sans-serif"}
-   :medium        {:font-family "sans-serif-medium"}
+  {:light         {:font-family "Roboto-Light"}
+   :default       {:font-family "Roboto-Regular"}
+   :medium        {:font-family "Roboto-Medium"}
 
-   :toolbar-title {:font-family "sans-serif"}})
-
+   :toolbar-title {:font-family "Roboto-Regular"}
+   :roboto-mono   {:font-family "RobotoMono-Medium"}})
 
 ;; Dialogs
 
@@ -64,7 +80,7 @@
 (defn show-dialog [{:keys [title options callback]}]
   (let [dialog (new react-native-dialogs)]
     (.set dialog (clj->js {:title         title
-                           :items         options
+                           :items         (mapv :text options)
                            :itemsCallback callback}))
     (.show dialog)))
 
@@ -77,11 +93,12 @@
    :list-selection-fn            show-dialog
    :tabs                         {:tab-shadows? true}
    :chats                        {:action-button?       true
-                                  :new-chat-in-toolbar? false}
+                                  :new-chat-in-toolbar? false
+                                  :render-separator?    false}
+   :uppercase?                   true
    :contacts                     {:action-button?          true
-                                  :new-contact-in-toolbar? false
-                                  :uppercase-subtitles?    false
-                                  :group-block-shadows?    true}
+                                  :new-contact-in-toolbar? false}
+   :group-block-shadows?         true
    :discover                     {:uppercase-subtitles? false}
    :public-group-icon-container  {:margin-top 4}
    :private-group-icon-container {:margin-top 6}

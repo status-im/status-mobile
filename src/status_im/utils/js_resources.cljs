@@ -3,11 +3,12 @@
   (:require [status-im.utils.types :refer [json->clj]]))
 
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
+(def default-contact-groups (json->clj (slurp "resources/default_contact_groups.json")))
 
 (def commands-js (slurp "resources/commands.js"))
 (def console-js (slurp "resources/console.js"))
 (def status-js (slurp "resources/status.js"))
-(def wallet-js (str commands-js (slurp "resources/wallet.js")))
+(def wallet-js (slurp "resources/wallet.js"))
 (def dapp-js (str (slurp "resources/dapp.js")))
 
 (def webview-js (slurp "resources/webview.js"))

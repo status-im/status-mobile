@@ -57,17 +57,21 @@
                                                      :amount?   true}]))
       (dispatch [:chat-with-command whisper-identity action params]))))
 
+
 (register-handler ::send-command
   (u/side-effect!
-    (fn [db [_ command-key params]]
-      (let [command       (commands/get-response-or-command :commands db command-key)
-            command-input {:content       (str cu/command-prefix "0")
+    (fn [{:keys [current-chat-id] :as db} [_ command-key params]]
+      (let [command       (get-in db [:chats current-chat-id :commands command-key])
+            command-input {:content       "0"
                            :command       command
                            :parameter-idx 0
                            :params        {"amount" (:amount params)}
                            :to-message-id nil}]
-        (dispatch [:validate-command command-input command])))))
-
+        (dispatch [:proceed-command
+                   {:command  command,
+                    :metadata nil,
+                    :args     [(str (:amount params))]}
+                   current-chat-id])))))
 
 (defn chat-with-command
   [_ [_ whisper-identity command-key params]]
@@ -108,8 +112,7 @@
   [db [_ _ {:keys [handler action params]}]]
   (assoc db :contacts-click-handler handler
             :contacts-click-action action
-            :contacts-click-params params
-            :contacts-filter #(not (nil? (:address %)))))
+            :contacts-click-params params))
 
 (def qr-context {:toolbar-title (label :t/address)})
 

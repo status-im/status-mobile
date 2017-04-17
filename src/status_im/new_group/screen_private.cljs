@@ -1,74 +1,96 @@
 (ns status-im.new-group.screen-private
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.resources :as res]
+  (:require [re-frame.core :refer [dispatch]]
+            [status-im.components.contact.contact :refer [contact-view]]
+            [status-im.components.common.common :as common]
             [status-im.components.react :refer [view
-                                                text
-                                                image
-                                                icon
-                                                touchable-highlight
+                                                scroll-view
+                                                keyboard-avoiding-view
                                                 list-view
                                                 list-item]]
-            [status-im.components.text-field.view :refer [text-field]]
-            [status-im.components.styles :refer [color-blue
-                                                 separator-color]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.renderers.renderers :as renderers]
+            [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.utils.listview :refer [to-datasource]]
-            [status-im.new-group.views.contact :refer [new-group-contact]]
             [status-im.new-group.styles :as st]
+            [status-im.new-group.views.group :refer [group-toolbar
+                                                     group-chat-settings-btns
+                                                     group-name-view
+                                                     add-btn
+                                                     more-btn
+                                                     delete-btn]]
             [status-im.new-group.validations :as v]
             [status-im.i18n :refer [label]]
+            [status-im.utils.platform :refer [ios?]]
             [cljs.spec :as s]))
 
-(defview new-group-toolbar []
-  [new-chat-name [:get :new-chat-name]]
-  (let [create-btn-enabled? (s/valid? ::v/name new-chat-name)]
-    [view
-     [status-bar]
-     [toolbar
-      {:title   (label :t/new-group-chat)
-       :actions [{:image   {:source res/v                   ;; {:uri "icon_search"}
-                            :style  (st/toolbar-icon create-btn-enabled?)}
-                  :handler (when create-btn-enabled?
-                             #(dispatch [:create-new-group new-chat-name]))}]}]]))
+(def contacts-limit 3)
 
-(defview group-name-input []
-  [new-chat-name [:get :new-chat-name]]
+(defview group-contacts-view [group]
+  [contacts [:all-added-group-contacts-with-limit (:group-id group) contacts-limit]
+   contacts-count [:all-added-group-contacts-count (:group-id group)]]
   [view
-   [text-field
-    {:error          (cond
-                       (not (s/valid? ::v/not-empty-string new-chat-name))
-                       (label :t/empty-group-chat-name)
-                       (not (s/valid? ::v/not-illegal-name new-chat-name))
-                       (label :t/illegal-group-chat-name))
-     :wrapper-style  st/group-chat-name-wrapper
-     :error-color    color-blue
-     :line-color     separator-color
-     :label-hidden?  true
-     :input-style    st/group-chat-name-input
-     :auto-focus     true
-     :on-change-text #(dispatch [:set :new-chat-name %])
-     :value          new-chat-name}]])
+   (when (pos? contacts-count)
+     [common/list-separator])
+   [view
+    (doall
+      (map (fn [row]
+             ^{:key row}
+             [view
+              [contact-view
+               {:contact        row
+                :extend-options [{:value #(dispatch [:remove-contact-from-group
+                                                     (:whisper-identity row)
+                                                     (:group-id group)])
+                                  :text (label :t/remove-from-group)}]
+                :extended?      true}]
+              (when-not (= row (last contacts))
+                [common/list-separator])])
+           contacts))]
+   (when (< contacts-limit contacts-count)
+     [more-btn contacts-limit contacts-count #(dispatch [:navigate-to :edit-group-contact-list])])])
+
+(defview edit-group []
+  [group-name [:get :new-chat-name]
+   group [:get-contact-group]
+   type [:get :group-type]]
+  (let [save-btn-enabled? (and (s/valid? ::v/name group-name)
+                               (not= group-name (:name group)))]
+    [keyboard-avoiding-view {:style st/group-container}
+     [group-toolbar type true]
+     [group-name-view]
+     [view st/list-view-container
+      [add-btn #(dispatch [:navigate-to :add-contacts-toggle-list])]
+      [group-contacts-view group]
+      [view st/separator]
+      [delete-btn #(do
+                     (dispatch [:delete-group])
+                     (dispatch [:navigate-to-clean :contact-list]))]]
+     (when save-btn-enabled?
+       [sticky-button (label :t/save) #(dispatch [:set-group-name])])]))
+
+(defn render-row [row _ _]
+  (list-item
+    ^{:key row}
+    [contact-view {:contact row}]))
 
 (defview new-group []
-  [contacts [:all-added-contacts]]
-  [view st/new-group-container
-   [new-group-toolbar]
-   [view st/chat-name-container
-    [text {:style st/members-text
-           :font  :medium}
-     (label :t/group-chat-name)]
-    [group-name-input]
-    [text {:style st/members-text
-           :font  :medium}
-     (label :t/members-title)]
-    #_[touchable-highlight {:on-press (fn [])}
-     [view st/add-container
-      [icon :add_gray st/add-icon]
-      [text {:style st/add-text} (label :t/add-members)]]]
-    [list-view
-     {:dataSource (to-datasource contacts)
-      :renderRow  (fn [row _ _]
-                    (list-item [new-group-contact row]))
-      :style      st/contacts-list}]]])
+  [contacts [:selected-group-contacts]
+   group-name [:get :new-chat-name]
+   group-type [:get :group-type]]
+  (let [save-btn-enabled? (and (s/valid? ::v/name group-name) (pos? (count contacts)))]
+    [(if ios? keyboard-avoiding-view view) (merge {:behavior :padding}
+                                                  st/group-container)
+     [group-toolbar group-type false]
+     [group-name-view]
+     [view st/list-view-container
+      [list-view {:dataSource                (to-datasource contacts)
+                  :enableEmptySections       true
+                  :renderRow                 render-row
+                  :bounces                   false
+                  :keyboardShouldPersistTaps true
+                  :renderSeparator           renderers/list-separator-renderer}]]
+     (when save-btn-enabled?
+       [sticky-button (label :t/save)
+        (if (= group-type :contact-group)
+          #(dispatch [:create-new-group group-name])
+          #(dispatch [:create-new-group-chat group-name]))])]))

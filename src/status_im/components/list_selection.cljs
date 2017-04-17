@@ -10,10 +10,14 @@
 (defn open [opts]
   (.open class (clj->js opts)))
 
+(defn share-options [text]
+  [{:text (label :t/sharing-copy-to-clipboard) :value #(copy-to-clipboard text)}
+   {:text (label :t/sharing-share)             :value #(open {:message text})}])
+
 (defn share [text dialog-title]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       dialog-title
-                        :options     [(label :t/sharing-copy-to-clipboard) (label :t/sharing-share)]
+                        :options     (share-options text)
                         :callback    (fn [index]
                                        (case index
                                          0 (copy-to-clipboard text)
@@ -24,13 +28,14 @@
 (defn browse [link]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       (label :t/browsing-title)
-                        :options     [(label :t/browsing-browse) (label :t/browsing-open-in-web-browser)]
+                        :options     [{:text (label :t/browsing-browse)}
+                                      {:text (label :t/browsing-open-in-web-browser)}]
                         :callback    (fn [index]
                                        (case index
                                          0 (do
-                                             (dispatch [:set-chat-command :browse])
-                                             (dispatch [:fill-chat-command-content link])
-                                             (js/setTimeout #(dispatch [:send-command!]) 500))
+                                             (dispatch [:select-chat-input-command {:name    "browse"
+                                                                                    :prefill [link]}])
+                                             (js/setTimeout #(dispatch [:send-current-message]) 500))
                                          1 (.openURL linking link)
                                          :default))
                         :cancel-text (label :t/browsing-cancel)})))

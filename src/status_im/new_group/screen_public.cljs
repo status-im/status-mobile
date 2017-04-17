@@ -11,11 +11,10 @@
                                                 list-item]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.styles :refer [color-blue
-                                                 separator-color]]
+                                                 color-gray4]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.utils.listview :refer [to-datasource]]
-            [status-im.new-group.views.contact :refer [new-group-contact]]
             [status-im.new-group.styles :as st]
             [status-im.new-group.validations :as v]
             [status-im.i18n :refer [label]]
@@ -45,7 +44,7 @@
                         (label :t/topic-format))
      :wrapper-style   st/group-chat-name-wrapper
      :error-color     color-blue
-     :line-color      separator-color
+     :line-color      color-gray4
      :label-hidden?   true
      :input-style     st/group-chat-topic-input
      :auto-focus      true
@@ -56,7 +55,7 @@
    [text {:style st/topic-hash} "#"]])
 
 (defn new-public-group []
-  [view st/new-group-container
+  [view st/group-container
    [new-group-toolbar]
    [view st/chat-name-container
     [text {:style st/members-text

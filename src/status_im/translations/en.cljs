@@ -10,6 +10,9 @@
    :offline                               "Offline"
    :search-for                            "Search for..."
    :cancel                                "Cancel"
+   :next                                  "Next"
+   :type-a-message                        "Type a message..."
+   :type-a-command                        "Start typing a command..."
 
    ;drawer
    :invite-friends                        "Invite friends"
@@ -24,8 +27,8 @@
    :members                               {:one   "1 member"
                                            :other "{{count}} members"
                                            :zero  "no members"}
-   :members-active                        {:one   "1 member, 1 active"
-                                           :other "{{count}} members, {{count}} active"
+   :members-active                        {:one   "1 member"
+                                           :other "{{count}} members"
                                            :zero  "no members"}
    :public-group-status                   "Public"
    :active-online                         "Online"
@@ -67,6 +70,7 @@
 
    ;profile
    :profile                               "Profile"
+   :edit-profile                          "Edit profile"
    :report-user                           "REPORT USER"
    :message                               "Message"
    :username                              "Username"
@@ -75,7 +79,14 @@
    :phone-number                          "Phone number"
    :email                                 "Email"
    :profile-no-status                     "No status"
+   :add-a-status                          "Add a status..."
+   :status-prompt                         "Create a status to help people know about the things you are offering. You can use #hashtags too."
    :add-to-contacts                       "Add to contacts"
+   :in-contacts                           "In contacts"
+   :remove-from-contacts                  "Remove from contacts"
+   :start-conversation                    "Start conversation"
+   :send-transaction                      "Send transaction"
+   :share-qr                              "Share QR"
    :error-incorrect-name                  "Please select another name"
    :error-incorrect-email                 "Incorrect e-mail"
 
@@ -121,8 +132,11 @@
    ;chats
    :chats                                 "Chats"
    :new-chat                              "New chat"
+   :delete-chat                           "Delete chat"
    :new-group-chat                        "New group chat"
-   :new-public-group-chat                 "Join public group chat"
+   :new-public-group-chat                 "Join public chat"
+   :edit-chats                            "Edit chats"
+   :search-chats                          "Search chats"
    :empty-topic                           "Empty topic"
    :topic-format                          "Wrong format [a-z0-9\\-]+"
    :public-group-topic                    "Topic"
@@ -141,25 +155,32 @@
 
    ;contacts
    :contacts                              "Contacts"
-   :new-contact                           "New Contact"
-   :remove-contact                        "Remove contact"
+   :new-contact                           "New contact"
+   :delete-contact                        "Delete contact"
+   :remove-from-group                     "Remove from group"
+   :edit-contacts                         "Edit contacts"
+   :search-contacts                       "Search contacts"
    :show-all                              "SHOW ALL"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "People"
    :contacts-group-new-chat               "Start new chat"
+   :choose-from-contacts                  "Choose from contacts"
    :no-contacts                           "No contacts yet"
    :show-qr                               "Show QR"
    :enter-address                         "Enter address"
+   :more                                  "more"
 
    ;group-settings
    :remove                                "Remove"
    :save                                  "Save"
    :change-color                          "Change color"
    :clear-history                         "Clear history"
+   :mute-notifications                    "Mute notifications"
+   :leave-chat                            "Leave chat"
    :delete-and-leave                      "Delete and leave"
    :chat-settings                         "Chat settings"
    :edit                                  "Edit"
-   :add-members                           "Add Members"
+   :add-members                           "Add members"
    :blue                                  "Blue"
    :purple                                "Purple"
    :green                                 "Green"
@@ -185,7 +206,15 @@
    :group-chat-name                       "Chat name"
    :empty-group-chat-name                 "Please enter a name"
    :illegal-group-chat-name               "Please select another name"
-
+   :new-group                             "New group"
+   :reorder-groups                        "Reorder groups"
+   :group-name                            "Group name"
+   :edit-group                            "Edit group"
+   :delete-group                          "Delete group"
+   :delete-group-prompt                   "This will not affect contacts"
+   :group-members                         "Group members"
+   :contact-s                             {:one   "contact"
+                                           :other "contacts"}
    ;participants
    :add-participants                      "Add Participants"
    :remove-participants                   "Remove Participants"
@@ -242,15 +271,28 @@
    :not-enough-eth                        (str "Not enough ETH on balance "
                                                "({{balance}} ETH)")
    ;transactions
+   :confirm                               "Confirm"
    :confirm-transactions                  {:one   "Confirm transaction"
                                            :other "Confirm {{count}} transactions"
                                            :zero  "No transactions"}
+   :transactions-confirmed                {:one   "Transaction confirmed"
+                                           :other "{{count}} transactions confirmed"
+                                           :zero  "No transactions confirmed"}
+   :transaction                           "Transaction"
+   :unsigned-transactions                 "Unsigned transactions"
+   :enter-password-transactions           {:one   "Confirm transaction by entering your password"
+                                           :other "Confirm transactions by entering your password"}
    :status                                "Status"
    :pending-confirmation                  "Pending confirmation"
    :recipient                             "Recipient"
    :one-more-item                         "One more item"
    :fee                                   "Fee"
+   :estimated-fee                         "Est. fee"
    :value                                 "Value"
+   :to                                    "To"
+   :from                                  "From"
+   :data                                  "Data"
+   :got-it                                "Got it"
 
    ;:webview
    :web-view-error                        "oops, error"})

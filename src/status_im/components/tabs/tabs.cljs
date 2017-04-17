@@ -21,36 +21,13 @@
                           :prev-view-id     prev-view-id})]
     [tab data]))
 
-(defn animation-logic [{:keys [hidden? val]}]
-  (let [was-hidden? (atom (not @hidden?))]
-    (fn [_]
-      (when (not= @was-hidden? @hidden?)
-        (let [to-value (if @hidden? 0 (- st/tabs-height))]
-          (swap! was-hidden? not)
-          (anim/start
-            (anim/timing val {:toValue  to-value
-                              :duration 300})))))))
-
-(defn tabs-container [& _]
-  (let [chats-scrolled? (subscribe [:get :chats-scrolled?])
-        tabs-bar-value  (subscribe [:animations :tabs-bar-value])
-        shadows?        (get-in platform-specific [:tabs :tab-shadows?])
-        context         {:hidden? chats-scrolled?
-                         :val     @tabs-bar-value}
-        on-update       (animation-logic context)]
-    (anim/set-value @tabs-bar-value 0)
-    (r/create-class
-      {:component-did-mount
-       on-update
-       :component-did-update
-       on-update
-       :reagent-render
-       (fn [& children]
-         @chats-scrolled?
-         (into [animated-view {:style         (merge (st/tabs-container @chats-scrolled?)
-                                                     (if-not shadows? st/tabs-container-line))
-                               :pointerEvents (if @chats-scrolled? :none :auto)}]
-               children))})))
+(defn tabs-container [& children]
+  (let [tabs-hidden?    (subscribe [:tabs-hidden?])
+        shadows?        (get-in platform-specific [:tabs :tab-shadows?])]
+    (into [animated-view {:style         (merge (st/tabs-container @tabs-hidden?)
+                                                (if-not shadows? st/tabs-container-line))
+                          :pointerEvents (if @tabs-hidden? :none :auto)}]
+          children)))
 
 (defn tabs [{:keys [tab-list selected-view-id prev-view-id]}]
   [tabs-container

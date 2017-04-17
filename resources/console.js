@@ -10,7 +10,7 @@ I18n.translations = {
 
         password_description: 'Password',
         password_placeholder: 'Type your password',
-        password_placeholder2: 'Please re-enter password to confirm',
+        password_placeholder2: 'Confirm',
         password_error: 'Password should be not less then 6 symbols.',
         password_error1: 'Password confirmation doesn\'t match password.',
         password_validation_title: 'Password',
@@ -58,7 +58,7 @@ I18n.translations = {
         password_error1: 'Wagwoordbevestiging is nie dieselfde as wagwoord nie.',
         password_validation_title: 'Wagwoord'
 
-    }, 
+    },
     ar: {
         phone_title: 'أرسل رقم الهاتف',
         phone_description: 'ابحث عن الأصدقاء باستخدام رقمك',
@@ -107,7 +107,7 @@ I18n.translations = {
         password_placeholder2: '请重新输入密码以确认',
         password_error: '密码应不少于6个字符。',
         password_error1: '密码确认信息与密码不匹配。',
-        password_validation_title: '密码' 
+        password_validation_title: '密码'
 
     },
     'zh-yue': {
@@ -268,7 +268,7 @@ I18n.translations = {
         phone_description: '내 번호를 사용하여 친구 찾기',
         phone_placeholder: '전화번호',
 
-        confirm_description: '확인 코드', 
+        confirm_description: '확인 코드',
         confirm_validation_title: '확인 코드',
         confirm_validation_description: '잘못된 형식',
 
@@ -414,7 +414,7 @@ I18n.translations = {
         password_error: 'Nenosiri lisiwe chini ya alama 6.',
         password_error1: 'Uthibitisho wa nenosiri haulingani na nenosiri.',
         password_validation_title: 'Nenosiri'
-    
+
     },
     sv: {
         phone_title: 'Skicka telefonnummer',
@@ -587,7 +587,7 @@ var WEB3_UNIT = [
 // because web3 doesn't provide params or docs
 var DOC_MAP = {
     console: {
-        log : {
+        log: {
             desc: 'Outputs a message to chat context.',
             args: [{
                 name: 'text',
@@ -1198,6 +1198,7 @@ var jsBoldValueStyle = {
 
 var jsDescriptionStyle = {
     marginTop: 1.5,
+    paddingBottom: 9,
     fontSize: 14,
     fontFamily: "font",
     color: "#838c93de"
@@ -1206,9 +1207,9 @@ var jsDescriptionStyle = {
 var messages = [];
 
 
-console = (function(old){
+console = (function (old) {
     return {
-        log: function(text){
+        log: function (text) {
             old.log(text);
             var message = {
                 type: 'log',
@@ -1242,12 +1243,11 @@ console = (function(old){
 }(console));
 
 
-
 if (!String.prototype.startsWith) {
-    String.prototype.startsWith = function(searchString, position){
-      position = position || 0;
-      return this.substr(position, searchString.length) === searchString;
-  };
+    String.prototype.startsWith = function (searchString, position) {
+        position = position || 0;
+        return this.substr(position, searchString.length) === searchString;
+    };
 }
 
 function matchSubString(array, string) {
@@ -1314,16 +1314,16 @@ function getLastForm(code) {
     var form = '';
     var level = 0;
     var index = codeLength - 1;
-    while(index >= 0) {
+    while (index >= 0) {
         var char = code[index];
         if (level == 0 && (char == '(' || char == ',')) {
             break;
         }
         if (char == ')') {
-            level --;
+            level--;
         }
         if (char == '(') {
-            level ++;
+            level++;
         }
         form = char + form;
         index--;
@@ -1337,7 +1337,7 @@ function getLastLevel(code) {
     var index = codeLength - 1;
     var nested = false;
     var level = 0;
-    while(index >= 0) {
+    while (index >= 0) {
         var char = code[index];
         if (char == ')') {
             level--;
@@ -1510,9 +1510,6 @@ function createMarkupText(text) {
 }
 
 function jsSuggestions(params, context) {
-
-    console.log(context);
-
     var suggestions = getJsSuggestions(params.code, context);
     var sugestionsMarkup = [];
 
@@ -1532,7 +1529,8 @@ function jsSuggestions(params, context) {
                 ])]);
         if (suggestion.pressValue) {
             suggestionMarkup = status.components.touchable({
-                onPress: [status.events.SET_VALUE, suggestion.pressValue]},
+                    onPress: [status.events.SET_VALUE, suggestion.pressValue]
+                },
                 suggestionMarkup);
         }
         sugestionsMarkup.push(suggestionMarkup);
@@ -1547,7 +1545,6 @@ function jsSuggestions(params, context) {
 }
 
 
-
 function jsHandler(params, context) {
     var result = {
         err: null,
@@ -1558,7 +1555,7 @@ function jsHandler(params, context) {
     try {
         result.data = JSON.stringify(eval(params.code));
         localStorage.set(params.code);
-    } catch(e) {
+    } catch (e) {
         result.err = e;
     }
 
@@ -1566,25 +1563,6 @@ function jsHandler(params, context) {
 
     return result;
 }
-
-var phones = [ // TODO this is supposed to be regionalised
-    {
-        number: "89171111111",
-        description: "Number format 1"
-    },
-    {
-        number: "89371111111",
-        description: "Number format 1"
-    },
-    {
-        number: "+79171111111",
-        description: "Number format 2"
-    },
-    {
-        number: "9171111111",
-        description: "Number format 3"
-    }
-];
 
 function suggestionsContainerStyle(suggestionsCount) {
     return {
@@ -1644,7 +1622,7 @@ function phoneSuggestions(params, context) {
 
     suggestions = ph.map(function (phone) {
         return status.components.touchable(
-            {onPress: [status.events.SET_VALUE, phone.number]},
+            {onPress: [status.events.SET_COMMAND_ARGUMENT, [0, phone.number]]},
             status.components.view(suggestionContainerStyle,
                 [status.components.view(suggestionSubContainerStyle,
                     [
@@ -1660,14 +1638,6 @@ function phoneSuggestions(params, context) {
         );
     });
 
-    /*var view = status.components.view(
-        {style: {flex: 1, flexDirection: "column"}},
-        [status.components.scrollView(
-            suggestionsContainerStyle(ph.length),
-            suggestions
-        )]
-    );*/
-
     var view = status.components.scrollView(
         suggestionsContainerStyle(ph.length),
         suggestions
@@ -1680,9 +1650,10 @@ var phoneConfig = {
     name: "phone",
     registeredOnly: true,
     icon: "phone_white",
+    color: "#5bb2a2",
     title: I18n.t('phone_title'),
     description: I18n.t('phone_description'),
-    color: "#5bb2a2",
+    sequentialParams: true,
     validator: function (params) {
         return {
             validationHandler: "phone",
@@ -1711,9 +1682,9 @@ var faucets = [
 ];
 
 function faucetSuggestions(params) {
-    var suggestions = faucets.map(function(entry) {
+    var suggestions = faucets.map(function (entry) {
         return status.components.touchable(
-            {onPress: [status.events.SET_VALUE, entry.url]},
+            {onPress: [status.events.SET_COMMAND_ARGUMENT, [0, entry.url]]},
             status.components.view(
                 suggestionContainerStyle,
                 [status.components.view(
@@ -1754,16 +1725,20 @@ status.command({
         placeholder: I18n.t('faucet_placeholder')
     }],
     preview: function (params) {
-        return status.components.text(
-            {},
-            params.url
-        );
+        return {
+            markup: status.components.text(
+                {},
+                params.url
+            )
+        };
     },
     shortPreview: function (params) {
-        return status.components.text(
-            {},
-            I18n.t('faucet_title') + ": " + params.url
-        );
+        return {
+            markup: status.components.text(
+                {},
+                I18n.t('faucet_title') + ": " + params.url
+            )
+        };
     },
     validator: function (params, context) {
         var f = faucets.map(function (entry) {
@@ -1776,15 +1751,15 @@ status.command({
                 I18n.t('faucet_incorrect_description')
             );
 
-            return {errors: [error]};
+            return {markup: error};
         }
     }
 });
 
 function debugSuggestions(params) {
-    var suggestions = ["On", "Off"].map(function(entry) {
+    var suggestions = ["On", "Off"].map(function (entry) {
         return status.components.touchable(
-            {onPress: [status.events.SET_VALUE, entry]},
+            {onPress: [status.events.SET_COMMAND_ARGUMENT, [0, entry]]},
             status.components.view(
                 suggestionContainerStyle,
                 [status.components.view(
@@ -1820,42 +1795,45 @@ status.command({
         type: status.types.TEXT
     }],
     preview: function (params) {
-        return status.components.text(
-            {},
-            I18n.t('debug_mode_title') + ": " + params.mode
-        );
+        return {
+            markup: status.components.text(
+                {},
+                I18n.t('debug_mode_title') + ": " + params.mode
+            )
+        };
     },
     shortPreview: function (params) {
-        return status.components.text(
-            {},
-            I18n.t('debug_mode_title') + ": " + params.mode
-        );
+        return {
+            markup: status.components.text(
+                {},
+                I18n.t('debug_mode_title') + ": " + params.mode
+            )
+        };
     }
 });
 
-function browseSuggestions(params) {
-    if (params.url && params.url !== "undefined" && params.url != "") {
+status.command({
+    name: "browse",
+    title: "Browser",
+    registeredOnly: true,
+    description: "Open web browser",
+    params: [{
+        name: "url",
+        placeholder: "URL",
+        type: status.types.TEXT
+    }],
+    onSend: function (params, context) {
         var url = params.url;
         if (!/^[a-zA-Z-_]+:/.test(url)) {
             url = 'http://' + url;
         }
 
-        return {webViewUrl: url};
+        return {
+            title: "Browser",
+            dynamicTitle: true,
+            markup: status.components.bridgedWebView(url)
+        };
     }
-}
-
-status.command({
-    name: "browse",
-    registeredOnly: true,
-    color: "#ffa500",
-    hidden: true,
-    fullscreen: true,
-    suggestionsTrigger: 'on-send',
-    params: [{
-        name: "url",
-        suggestions: browseSuggestions,
-        type: status.types.TEXT
-    }]
 });
 
 
@@ -1874,6 +1852,7 @@ status.response({
     name: "confirmation-code",
     color: "#7099e6",
     description: I18n.t('confirm_description'),
+    sequentialParams: true,
     params: [{
         name: "code",
         type: status.types.NUMBER
@@ -1885,7 +1864,7 @@ status.response({
                 I18n.t('confirm_validation_description')
             );
 
-            return {errors: [error]}
+            return {markup: error};
         }
     }
 });
@@ -1895,48 +1874,40 @@ status.response({
     color: "#7099e6",
     description: I18n.t('password_description'),
     icon: "lock_white",
-    params: [{
-        name: "password",
-        type: status.types.PASSWORD,
-        placeholder: I18n.t('password_placeholder'),
-        hidden: true
-    }, {
-        name: "password-confirmation",
-        type: status.types.PASSWORD,
-        placeholder: I18n.t('password_placeholder2'),
-        hidden: true
-    }],
+    sequentialParams: true,
+    params: [
+        {
+            name: "password",
+            type: status.types.PASSWORD,
+            placeholder: I18n.t('password_placeholder'),
+            hidden: true
+        },
+        {
+            name: "password-confirmation",
+            type: status.types.PASSWORD,
+            placeholder: I18n.t('password_placeholder2'),
+            hidden: true
+        }
+    ],
     validator: function (params, context) {
-        var errorMessages = [];
-        var currentParameter = context["current-parameter"];
-
-        if (
-            currentParameter == "password" &&
-            params.password.length < 6
-        ) {
-            errorMessages.push(I18n.t('password_error'));
-        }
-
-        if (currentParameter == "password-confirmation" &&
-            params.password != params["password-confirmation"]) {
-            errorMessages.push(I18n.t('password_error1'));
-        }
-
-        if (errorMessages.length) {
-            var errors = [];
-            for (var idx in errorMessages) {
-                errors.push(
-                    status.components.validationMessage(
-                        I18n.t('password_validation_title'),
-                        errorMessages[idx]
-                    )
+        if (!params.hasOwnProperty("password-confirmation") || params["password-confirmation"].length === 0) {
+            if (params.password === null || params.password.length < 6) {
+                var error = status.components.validationMessage(
+                    I18n.t('password_validation_title'),
+                    I18n.t('password_error')
                 );
+                return {markup: error};
             }
-
-            return {errors: errors};
+        } else {
+            if (params.password !== params["password-confirmation"]) {
+                var error = status.components.validationMessage(
+                    I18n.t('password_validation_title'),
+                    I18n.t('password_error1')
+                );
+                return {markup: error};
+            }
         }
 
-        return {params: params, context: context};
     },
     preview: function (params, context) {
         var style = {
@@ -1953,14 +1924,14 @@ status.response({
             style.letterSpacing = 1;
         }
 
-        return status.components.text({style: style}, "●●●●●●●●●●");
+        return {markup: status.components.text({style: style}, "●●●●●●●●●●")};
     }
 });
 
-status.registerFunction("message-suggestions", function(params, context) {
+status.registerFunction("message-suggestions", function (params, context) {
     return jsSuggestions({code: params.message}, context);
 });
 
-status.registerFunction("message-handler", function(params, context) {
+status.registerFunction("message-handler", function (params, context) {
     return jsHandler({code: params.message}, context);
 });
