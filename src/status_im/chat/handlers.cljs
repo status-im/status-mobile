@@ -237,7 +237,6 @@
         commands-loaded? (if js/goog.DEBUG
                            false
                            (get-in db [:chats chat-id :commands-loaded]))]
-    (log/debug "ALWX chat-id" chat-id)
     (dispatch [:load-requests! chat-id])
     ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
     #_(dispatch [:load-commands! chat-id])
