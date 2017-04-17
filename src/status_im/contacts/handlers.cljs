@@ -383,7 +383,8 @@
 
 (register-handler :open-chat-with-contact
   (u/side-effect!
-    (fn [_ [_ {:keys [whisper-identity] :as contact}]]
-      (dispatch [:send-contact-request! contact])
+    (fn [_ [_ {:keys [whisper-identity dapp?] :as contact}]]
+      (when-not dapp?
+        (dispatch [:send-contact-request! contact]))
       (dispatch [:navigate-to-clean :chat-list])
       (dispatch [:start-chat whisper-identity {}]))))
