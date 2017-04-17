@@ -23,12 +23,13 @@
             [status-im.chat.utils :as utils]
             [status-im.chat.constants :as const]
             [status-im.components.animation :as anim]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.utils.platform :as platform]))
 
-(defn command-view [index {command-name :name :as command}]
+(defn command-view [first? {command-name :name :as command}]
   [touchable-highlight {:on-press #(dispatch [:select-chat-input-command command nil])}
    [view
-    [text {:style (style/command (= index 0))
+    [text {:style (style/command first?)
            :font  :roboto-mono}
      (str const/command-char) command-name]]])
 
@@ -48,30 +49,35 @@
    [scroll-view {:horizontal                     true
                  :showsHorizontalScrollIndicator false
                  :keyboardShouldPersistTaps      true}
-    (let [commands (map-indexed vector commands)
-          requests (map-indexed vector requests)]
+    (let [commands (mapv (fn [[_ command]] (select-keys command [:name :prefill])) commands)
+          requests (map (fn [request] (select-keys request [:name :prefill])) requests)
+          all      (->> (into commands requests)
+                        (distinct)
+                        (map-indexed vector))]
       [view style/commands
-       (for [[index [command-key command]] commands]
-         ^{:key command-key}
-         [command-view index command])
-       (for [[index command] requests]
-         ^{:key (str "request-" index)}
-         [command-view index command])])]])
+       (for [[index command] all]
+         ^{:key (str "command-" index)}
+         [command-view (= index 0) command])])]])
 
 (defn- basic-text-input [_]
   (let [input-text           (subscribe [:chat :input-text])
         command              (subscribe [:selected-chat-command])
-        sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])]
+        sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])
+        input-focused?       (subscribe [:chat-ui-props :input-focused?])]
     (fn [{:keys [set-layout-height height]}]
       [text-input
        {:ref                    #(dispatch [:set-chat-ui-props :input-ref %])
         :accessibility-label    id/chat-message-input
-        :blur-on-submit         false
         :multiline              true
         :default-value          (or @input-text "")
         :editable               (not @sending-in-progress?)
         :on-blur                #(do (dispatch [:set-chat-ui-props :input-focused? false])
                                      (set-layout-height 0))
+        :on-content-size-change (when-not @input-focused?
+                                  #(let [h (-> (.-nativeEvent %)
+                                               (.-contentSize)
+                                               (.-height))]
+                                     (set-layout-height h)))
         :on-change              #(let [h (-> (.-nativeEvent %)
                                              (.-contentSize)
                                              (.-height))]
@@ -87,7 +93,6 @@
                                    (when (and (= (.-end s) (+ 2 (count (get-in @command [:command :name]))))
                                               (get-in @command [:command :sequential-params]))
                                      (dispatch [:chat-input-focus :seq-input-ref])))
-        :on-submit-editing      #(dispatch [:send-current-message])
         :on-focus               #(do (dispatch [:set-chat-ui-props :input-focused? true])
                                      (dispatch [:set-chat-ui-props :show-emoji? false]))
         :style                  (style/input-view height)
