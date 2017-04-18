@@ -12,11 +12,9 @@
 (defstyle toolbar-title-container
   {:flex           1
    :flex-direction :row
-   :align-self     :stretch
    :padding-left   30
    :ios            {:align-items     :center
-                    :justify-content :center
-                    :padding-bottom  16}})
+                    :justify-content :center}})
 
 (def toolbar-title-text
   {:color     common/color-white

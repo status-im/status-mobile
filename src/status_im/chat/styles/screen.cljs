@@ -46,10 +46,12 @@
 
 (defnstyle chat-name-view [show-actions]
   {:flex            1
-   :margin-left     (if show-actions 16 0)
    :justify-content :center
-   :android         {:align-items :flex-start}
-   :ios             {:align-items :center}})
+   :android         {:align-items    :flex-start
+                     :margin-left    (if show-actions 56 32)
+                     :padding-bottom 6}
+   :ios             {:align-items :center
+                     :margin-left (if show-actions 40 16)}})
 
 (def chat-name-text
   {:color      color-gray6

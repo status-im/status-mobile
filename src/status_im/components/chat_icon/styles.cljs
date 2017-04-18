@@ -177,8 +177,8 @@
    :height 40})
 
 (def container-menu-item
-  {:width  32
-   :height 32})
+  {:width  24
+   :height 24})
 
 (def container-profile
   {:width  72
