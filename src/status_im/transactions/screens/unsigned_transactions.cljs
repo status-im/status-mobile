@@ -17,8 +17,7 @@
 (defn toolbar-view [transactions]
   [toolbar/toolbar
    {:background-color st/transactions-toolbar-background
-    :nav-action       (act/close-white #(do (rf/dispatch [:deny-transactions])
-                                            (rf/dispatch [:navigate-back])))
+    :nav-action       (act/close-white #(rf/dispatch [:navigate-back]))
     :border-style     st/toolbar-border
     :custom-content   [rn/view {:style st/toolbar-title-container}
                        [rn/text {:style st/toolbar-title-text
