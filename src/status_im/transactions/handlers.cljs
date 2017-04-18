@@ -194,7 +194,7 @@
 
 (register-handler :transaction-failed
   (u/side-effect!
-    (fn [_ [_ {:keys [id message_id error_code]}]]
+    (fn [_ [_ {:keys [id message_id error_code error_message] :as event}]]
       (cond
 
         (= error_code wrong-password-code)
@@ -204,9 +204,11 @@
         (do (when message_id
               (dispatch [::remove-pending-message message_id]))
             (dispatch [:clear-selected-transaction])
-            (dispatch [::remove-transaction id]))
+            (dispatch [::remove-transaction id])
+            (dispatch [:set-chat-ui-props :validation-messages error_message]))
 
-        :else nil))))
+        :else
+        (dispatch [:set-chat-ui-props :validation-messages nil])))))
 
 (register-handler :clear-selected-transaction
   (fn [db _]

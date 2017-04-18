@@ -13,6 +13,7 @@
    :next                                  "Next"
    :type-a-message                        "Type a message..."
    :type-a-command                        "Start typing a command..."
+   :error                                 "Error"
 
    ;drawer
    :invite-friends                        "Invite friends"

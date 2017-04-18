@@ -796,11 +796,7 @@ function sendTransaction(params, context) {
     try {
         return web3.eth.sendTransaction(data);
     } catch (err) {
-        var error = status.components.validationMessage(
-            "Error",
-            err.message
-        );
-        return {error: {markup: error}};
+        return {error: err.message};
     }
 }
 

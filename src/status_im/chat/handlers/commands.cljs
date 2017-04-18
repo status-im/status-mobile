@@ -10,9 +10,9 @@
 
 (handlers/register-handler :request-command-data
   (handlers/side-effect!
-    (fn [{:keys [chats] :as db}
+    (fn [{:keys [chats current-account-id] :as db}
          [_ {{:keys [command params content-command type]} :content
-             :keys [message-id chat-id address on-requested] :as message} data-type]]
+             :keys [message-id chat-id on-requested] :as message} data-type]]
       (if-not (get-in chats [chat-id :commands-loaded])
         (do (dispatch [:add-commands-loading-callback
                        chat-id
@@ -24,7 +24,7 @@
               to       (get-in db [:contacts chat-id :address])
               params   {:parameters params
                         :context    (merge {:platform   platform/platform
-                                            :from       address
+                                            :from       current-account-id
                                             :to         to}
                                            i18n/delimeters)}
               callback #(let [result (get-in % [:result :returned])
