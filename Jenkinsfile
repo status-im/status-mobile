@@ -40,16 +40,16 @@ node {
       apkUrl = 'http://artifacts.status.im:8081/artifactory/pull-requests/' + filename
     }
 
-    try {
-      stage('Test (Android)') {
-        sauce('b9aded57-5cc1-4f6b-b5ea-42d989987852') {
-            sh 'cd test/appium && mvn -DapkUrl=' + apkUrl + ' test'
-            saucePublisher()
-        }
-      }
-    } catch(e) {
-      testPassed = false
-    }
+    // try {
+    //   stage('Test (Android)') {
+    //     sauce('b9aded57-5cc1-4f6b-b5ea-42d989987852') {
+    //         sh 'cd test/appium && mvn -DapkUrl=' + apkUrl + ' test'
+    //         saucePublisher()
+    //     }
+    //   }
+    // } catch(e) {
+    //   testPassed = false
+    // }
 
     // iOS
     stage('Build (iOS)') {
