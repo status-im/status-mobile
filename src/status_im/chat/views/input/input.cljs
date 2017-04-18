@@ -35,6 +35,7 @@
 
 (defview commands-view []
   [commands [:chat :command-suggestions]
+   responses [:chat :responses]
    requests [:chat :request-suggestions]
    show-suggestions? [:show-suggestions?]]
   [view style/commands-root
@@ -49,13 +50,11 @@
    [scroll-view {:horizontal                     true
                  :showsHorizontalScrollIndicator false
                  :keyboardShouldPersistTaps      true}
-    (let [commands (mapv (fn [[_ command]] (select-keys command [:name :prefill])) commands)
-          requests (map (fn [request] (select-keys request [:name :prefill])) requests)
-          all      (->> (into commands requests)
-                        (distinct)
-                        (map-indexed vector))]
+    (let [requests-names (map :type requests)
+          all-commands (merge (into {} commands) (select-keys responses requests-names))
+          all-commands-indexed (map-indexed vector (vals all-commands))]
       [view style/commands
-       (for [[index command] all]
+       (for [[index command] all-commands-indexed]
          ^{:key (str "command-" index)}
          [command-view (= index 0) command])])]])
 
