@@ -158,3 +158,7 @@
 
 (def adjust-resize 16)
 (def adjust-pan 32)
+
+(defn call-web3 [host payload callback]
+  (when status
+    (call-module #(.sendWeb3Request status host payload callback))))
