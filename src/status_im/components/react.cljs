@@ -21,6 +21,7 @@
 ;; React Components
 
 (def app-registry (get-react-property "AppRegistry"))
+(def app-state (get-react-property "AppState"))
 (def navigator (get-class "Navigator"))
 (def view (get-class "View"))
 (def linear-gradient-class (adapt-class linear-gradient-module))
