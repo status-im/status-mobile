@@ -312,6 +312,39 @@ RCT_EXPORT_METHOD(clearStorageAPIs) {
     }
 }
 
+RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
+                  password:(NSString *)payload
+                  callback:(RCTResponseSenderBlock)callback) {
+    
+    NSData *postData = [payload dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setURL:[NSURL URLWithString:host]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    [request setTimeoutInterval:310];
+    
+    NSError *error;
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    
+    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSString *strResponse = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSString *trimmedResponse = [strResponse stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        callback(@[trimmedResponse]);
+    }];
+    
+    [postDataTask resume];
+}
+
+
+
 + (void)signalEvent:(const char *) signal
 {
     if(!signal){

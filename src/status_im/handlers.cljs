@@ -125,9 +125,9 @@
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
           "transaction.failed" (dispatch [:transaction-failed event])
-          "node.started"       (dispatch [:status-node-started!])
+          "node.started" (dispatch [:status-node-started!])
           "module.initialized" (dispatch [:status-module-initialized!])
-          "local_storage.set"  (dispatch [:set-local-storage event])
+          "local_storage.set" (dispatch [:set-local-storage event])
           (log/debug "Event " type " not handled"))))))
 
 (register-handler :status-module-initialized!
@@ -145,6 +145,16 @@
   (u/side-effect!
     (fn [_ _]
       (log/debug "crypt initialized"))))
+
+(register-handler :app-state-change
+  (u/side-effect!
+    (fn [{:keys [webview-bridge] :as db} [_ state]]
+      (case state
+        "background" (status/stop-rpc-server)
+        "active" (do (status/start-rpc-server)
+                     (when webview-bridge
+                       (.resetOkHttpClient webview-bridge)))
+        nil))))
 
 ;; -- User data --------------------------------------------------------------
 (register-handler :load-user-phone-number

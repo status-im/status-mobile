@@ -1,6 +1,7 @@
 (ns status-im.protocol.web3.utils
   (:require [cljs-time.core :refer [now]]
-            [cljs-time.coerce :refer [to-long]]))
+            [cljs-time.coerce :refer [to-long]]
+            [status-im.utils.web-provider :as w3]))
 
 (def web3 (js/require "web3"))
 
@@ -18,7 +19,7 @@
 
 (defn make-web3 [rpc-url]
   (->> rpc-url
-       web3.providers.HttpProvider.
+       w3/get-provider
        web3.))
 
 (defn timestamp []
