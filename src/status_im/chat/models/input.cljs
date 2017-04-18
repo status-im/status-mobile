@@ -13,16 +13,13 @@
        (dec (count text)))))
 
 (defn possible-chat-actions [db chat-id]
-  (let [{:keys [commands requests]} (get-in db [:chats chat-id])
-        commands  (mapv (fn [[_ command]]
-                          (vector command :any))
-                        commands)
-        responses (mapv (fn [{:keys [message-id type]}]
-                          (vector
-                            (get-in db [:chats chat-id :responses type])
-                            message-id))
-                        requests)]
-    (into commands responses)))
+  (let [{:keys [commands requests responses]} (get-in db [:chats chat-id])
+
+        commands'  (into {} (map (fn [[k v]] [k [v :any]]) commands))
+        responses' (into {} (map (fn [{:keys [message-id type]}]
+                                  [type [(get responses type) message-id]])
+                                requests))]
+    (vals (merge commands' responses'))))
 
 (defn split-command-args [command-text]
   (let [space?       (text-ends-with-space? command-text)
