@@ -2,7 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [status-im.components.react :as c]
             [status-im.chat.styles.input.validation-message :as style]
-            [status-im.utils.listview :as lw]))
+            [status-im.utils.listview :as lw]
+            [status-im.i18n :as i18n]))
 
 (defn validation-message [{:keys [title description]}]
   [c/view style/message-container
@@ -18,7 +19,10 @@
 (defview validation-messages-view []
   [chat-input-margin [:chat-input-margin]
    input-height [:chat-ui-props :input-height]
-   markup [:chat-ui-props :validation-messages]]
-  (when markup
+   messages [:chat-ui-props :validation-messages]]
+  (when messages
     [c/view (style/root (+ input-height chat-input-margin))
-     [messages-list markup]]))
+     (if (string? messages)
+       [messages-list [validation-message {:title       (i18n/label :t/error)
+                                           :description messages}]]
+       [messages-list messages])]))

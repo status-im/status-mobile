@@ -75,7 +75,7 @@
 (defn restart-rpc []
   (when-not @restarting-rpc
     (reset! restarting-rpc true)
-    (log/debug :restrt-rpc-on-post-error)
+    (log/debug :restart-rpc-on-post-error)
 
     ;; todo maybe it would be better to use something like
     ;; restart-rpc-server on status-go side
