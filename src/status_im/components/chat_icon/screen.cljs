@@ -52,14 +52,14 @@
      [view pending-outer-circle
       [view pending-inner-circle]]]))
 
-(defview chat-icon-view [chat-id group-chat name online styles]
+(defview chat-icon-view [chat-id group-chat name online styles & [hide-dapp?]]
   [photo-path [:chat-photo chat-id]
    dapp? [:get-in [:contacts chat-id :dapp?]]]
   [view (:container styles)
    (if-not (s/blank? photo-path)
      [chat-icon photo-path styles]
      [default-chat-icon name styles])
-   (when dapp?
+   (when (and dapp? (not hide-dapp?))
      [dapp-badge styles])
    [pending-contact-badge chat-id styles]])
 
@@ -81,17 +81,14 @@
 (defn chat-icon-view-action [chat-id group-chat name color online]
   ^{:key chat-id}
   [chat-icon-view chat-id group-chat name online
-   {:container              st/container
+   {:container              st/container-chat-list
     :online-view-wrapper    st/online-view-wrapper
     :online-view            st/online-view
     :online-dot-left        st/online-dot-left
     :online-dot-right       st/online-dot-right
-    :pending-wrapper        st/pending-wrapper
-    :pending-outer-circle   st/pending-outer-circle
-    :pending-inner-circle   st/pending-inner-circle
-    :size                   36
-    :chat-icon              st/chat-icon-view-action
-    :default-chat-icon      (st/default-chat-icon-view-action color)
+    :size                   40
+    :chat-icon              st/chat-icon-chat-list
+    :default-chat-icon      (st/default-chat-icon-chat-list default-chat-color)
     :default-chat-icon-text st/default-chat-icon-text}])
 
 (defn chat-icon-view-menu-item [chat-id group-chat name color online]
@@ -108,7 +105,8 @@
     :size                   24
     :chat-icon              st/chat-icon-menu-item
     :default-chat-icon      (st/default-chat-icon-view-action color)
-    :default-chat-icon-text st/default-chat-icon-text}])
+    :default-chat-icon-text st/default-chat-icon-text}
+   true])
 
 (defn chat-icon-message-status [chat-id group-chat name color online]
   ^{:key chat-id}

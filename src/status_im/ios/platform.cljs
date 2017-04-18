@@ -16,14 +16,6 @@
                            :modal       {:height    20
                                          :bar-style "light-content"
                                          :color     "#2f3031"}}
-   :toolbar               {:border-bottom-color styles/color-gray3
-                           :border-bottom-width 0.5}
-   :toolbar-new           {:height              56
-                           :padding-top         18
-                           :padding-left        16
-                           :padding-right       16}
-   :toolbar-title-container {:align-items    :center}
-   :toolbar-with-search-content {:align-items  :center}
    :sized-text            {:margin-top        -5
                            :additional-height 5}
    :actions-list-view     {:border-bottom-color styles/color-gray3
@@ -65,9 +57,6 @@
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
-   :toolbar-search-input  {:padding-left   8
-                           :padding-top    2
-                           :letter-spacing -0.2}
    :toolbar-nav-action    {:width           46
                            :height          56
                            :align-items     :center
@@ -120,5 +109,4 @@
    :group-block-shadows?         false
    :discover                     {:uppercase-subtitles? true}
    :public-group-icon-container  {:margin-top 2}
-   :private-group-icon-container {:margin-top 2}
-   :public-group-chat-hash-style {:top 6 :left 3}})
+   :private-group-icon-container {:margin-top 2}})

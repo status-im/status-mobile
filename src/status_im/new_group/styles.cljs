@@ -33,7 +33,11 @@
    :android {:padding-top 16}})
 
 (def chat-name-container
-  {:margin-top  10})
+  {:padding-left 16
+   :margin-top   10})
+
+(def group-name-container
+  {:margin-top 10})
 
 (def add-button-container
   {:margin-left 16})
@@ -44,20 +48,22 @@
    :letter-spacing -0.2
    :color          text1-color})
 
-(def group-chat-topic-input
-  {:font-size    14
-   :color        text1-color
-   :padding-left 13})
+(defstyle group-chat-topic-input
+  {:font-size      14
+   :line-height    16
+   :color          text1-color
+   :padding-left   13
+   :ios            {:padding-bottom 0}})
+
+(defstyle topic-hash-style
+  {:width    10
+   :position :absolute
+   :android  {:top 8 :left 3}
+   :ios      {:top 6 :left 3}})
 
 (def topic-hash
   (merge group-chat-name-input
-         {:width    10
-          :height   16
-          :position :absolute}
-         (get-in platform-specific [:public-group-chat-hash-style])))
-
-(def group-chat-focus-line-height
-  (get-in platform-specific [:component-styles :text-field-focus-line-height]))
+         topic-hash-style))
 
 (def group-chat-name-wrapper
   {:padding-top    0

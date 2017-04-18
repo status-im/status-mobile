@@ -18,12 +18,6 @@
                            :modal       {:height    0
                                          :bar-style "light-content"
                                          :color     styles/color-black}}
-   :toolbar-new           {:height         55
-                           :padding-top    15
-                           :padding-left   16
-                           :padding-right  16}
-   :toolbar-title-container {:padding-left   30}
-   :toolbar-with-search-content {:padding-left   30}
    :sized-text            {:margin-top        0
                            :additional-height 0}
    :chat-list             {:list-container               {:background-color styles/color-light-gray}
@@ -101,5 +95,4 @@
    :group-block-shadows?         true
    :discover                     {:uppercase-subtitles? false}
    :public-group-icon-container  {:margin-top 4}
-   :private-group-icon-container {:margin-top 6}
-   :public-group-chat-hash-style {:top 10 :left 4}})
+   :private-group-icon-container {:margin-top 6}})

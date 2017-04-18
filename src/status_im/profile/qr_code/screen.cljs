@@ -3,6 +3,7 @@
   (:require [status-im.components.react :refer [view
                                                 text
                                                 image
+                                                icon
                                                 touchable-highlight
                                                 get-dimensions]]
             [status-im.components.status-bar :refer [status-bar]]
@@ -31,8 +32,7 @@
      [view st/online-container
       [touchable-highlight {:onPress #(dispatch [:navigate-back])}
        [view st/online-image-container
-        [image {:source {:uri :icon_close_white}
-                :style  icon-close}]]]]]]
+        [icon :close_white]]]]]]
    [view {:style     st/qr-code
           :on-layout #(let [layout (.. % -nativeEvent -layout)]
                         (dispatch [:set-in [:qr-modal :dimensions] {:width  (.-width layout)

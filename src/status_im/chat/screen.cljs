@@ -18,7 +18,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
-            [status-im.components.toolbar.view :refer [toolbar]]
+            [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
             [status-im.chat.views.message.message :refer [chat-message]]
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
@@ -116,7 +116,6 @@
    [status-bar]
    [toolbar {:hide-nav?      (or (empty? accounts) show-actions? creating?)
              :custom-content [toolbar-content-view]
-             :style          (get-in platform-specific [:component-styles :toolbar])
              :custom-action  [toolbar-action]}]
    [add-contact-bar]])
 

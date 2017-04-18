@@ -30,7 +30,7 @@
 
 (defview group-name-view []
   [new-group-name [:get :new-chat-name]]
-  [view st/chat-name-container
+  [view st/group-name-container
    [text-input-with-label
     {:auto-focus        true
      :label             (label :t/name)
