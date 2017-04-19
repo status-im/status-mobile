@@ -3,7 +3,7 @@
             [status-im.components.toolbar-new.styles :as toolbar-st]
             [status-im.utils.platform :as p]))
 
-(def min-height     17)
+(def min-height     19)
 (def default-height 300)
 
 (defn default-container-area-height [bottom screen-height]
