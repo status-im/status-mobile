@@ -15,6 +15,10 @@
                                          :bar-style    "light-content"
                                          :translucent? true
                                          :color        styles/color-transparent}
+                           :overlay     {:height       25
+                                         :bar-style    "dark-content"
+                                         :translucent? true
+                                         :color        styles/color-transparent}
                            :modal       {:height    0
                                          :bar-style "light-content"
                                          :color     styles/color-black}}

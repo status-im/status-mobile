@@ -112,6 +112,26 @@
           nil)))))
 
 (register-sub
+ :show-parameter-box?
+ (fn [db _]
+   (let [chat-parameter-box  (subscribe [:chat-parameter-box])
+         show-suggestions?   (subscribe [:show-suggestions?])
+         input-text          (subscribe [:chat :input-text])
+         validation-messages (subscribe [:chat-ui-props :validation-messages])]
+     (reaction (and @chat-parameter-box
+                    (not (str/blank? @input-text))
+                    (not @validation-messages)
+                    (not @show-suggestions?))))))
+
+(register-sub
+ :show-chat-overlay?
+ (fn [db _]
+   (let [show-parameter-box? (subscribe [:show-parameter-box?])
+         result-box          (subscribe [:chat-ui-props :result-box])]
+     (reaction (or @show-parameter-box?
+                   @result-box)))))
+
+(register-sub
   :command-completion
   (fn [db [_ chat-id]]
     (reaction

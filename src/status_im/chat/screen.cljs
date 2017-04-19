@@ -110,10 +110,11 @@
 
 (defview chat-toolbar []
   [show-actions? [:chat-ui-props :show-actions?]
+   show-chat-overlay? [:show-chat-overlay?]
    accounts [:get :accounts]
    creating? [:get :creating-account?]]
-  [view
-   [status-bar]
+  [view (when show-chat-overlay? {:style {:zIndex 0}})
+   [status-bar {:type (if show-chat-overlay? :overlay :default)}]
    [toolbar {:hide-nav?      (or (empty? accounts) show-actions? creating?)
              :custom-content [toolbar-content-view]
              :custom-action  [toolbar-action]}]
@@ -175,6 +176,7 @@
    show-actions? [:chat-ui-props :show-actions?]
    show-bottom-info? [:chat-ui-props :show-bottom-info?]
    show-emoji? [:chat-ui-props :show-emoji?]
+   show-chat-overlay? [:show-chat-overlay?]
    layout-height [:get :layout-height]
    input-text [:chat :input-text]]
   {:component-did-mount    #(dispatch [:check-autorun])
@@ -186,6 +188,8 @@
                           (dispatch [:set-layout-height height]))))}
    [chat-toolbar]
    [messages-view group-chat]
+   (when show-chat-overlay?
+     [view {:style st/result-box-overlay}])
    [input/container {:text-empty? (str/blank? input-text)}]
    (when show-actions?
      [actions-view])

@@ -6,6 +6,7 @@
                                                  text1-color
                                                  text2-color
                                                  text4-color
+                                                 color-black
                                                  color-gray6]]
             [status-im.components.toolbar.styles :refer [toolbar-background1]]))
 
@@ -215,3 +216,12 @@
   {:text-align          :center
    :text-align-vertical :center
    :color               :#7099e6})
+
+(def result-box-overlay
+  {:background-color color-black
+   :opacity          0.6
+   :position         :absolute
+   :top              0
+   :bottom           0
+   :left             0
+   :right            0})
