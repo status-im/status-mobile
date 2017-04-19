@@ -163,11 +163,7 @@
         set-layout-height    #(r/set-state component {:height %})
         command              (subscribe [:selected-chat-command])]
     (r/create-class
-      {:component-will-mount
-       (fn []
-         (dispatch [:update-suggestions]))
-
-       :reagent-render
+      {:reagent-render
        (fn [{:keys [anim-margin]}]
          (let [{:keys [width height]} (r/state component)
                command @command]
