@@ -37,19 +37,22 @@
 (handlers/register-handler
   :select-chat-input-command
   (handlers/side-effect!
-    (fn [{:keys [current-chat-id chat-ui-props] :as db} [_ {:keys [name prefill] :as command} metadata]]
+    (fn [{:keys [current-chat-id chat-ui-props] :as db}
+         [_ {:keys [name prefill sequential-params] :as command} metadata]]
       (dispatch [:set-chat-input-text (str const/command-char
                                            name
                                            const/spacing-char
-                                           (input-model/join-command-args prefill))])
+                                           (when-not sequential-params
+                                             (input-model/join-command-args prefill)))])
       (dispatch [:set-chat-input-metadata metadata])
       (dispatch [:set-chat-ui-props :show-suggestions? false])
       (dispatch [:set-chat-ui-props :result-box nil])
       (dispatch [:set-chat-ui-props :validation-messages nil])
       (dispatch [:load-chat-parameter-box command 0])
-      (if (:sequential-params command)
+      (if sequential-params
         (js/setTimeout
-          #(dispatch [:chat-input-focus :seq-input-ref])
+          #(do (dispatch [:chat-input-focus :seq-input-ref])
+               (dispatch [:set-chat-seq-arg-input-text (str/join const/spacing-char prefill)]))
           100)
         (dispatch [:chat-input-focus :input-ref])))))
 

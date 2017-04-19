@@ -17,8 +17,7 @@
 
 (defn set-chat-command [message-id command]
   (let [command-key (keyword (:name command))
-        metadata    (-> (:set-params command)
-                        (assoc :to-message-id message-id))]
+        metadata    {:to-message-id message-id}]
     (dispatch [:select-chat-input-command command metadata])))
 
 (def min-scale 1)
@@ -79,7 +78,7 @@
             params   (:params content)
             {:keys [command content]} (parse-command-request commands content)
             command  (if (and params command)
-                       (merge command {:set-params params})
+                       (merge command {:prefill (vals params)})
                        command)]
         [view st/comand-request-view
          [touchable-highlight

@@ -1,5 +1,4 @@
 var TopLevel = {
-"abs" : function () {},
 "ActionSheetIOS" : function () {},
 "addEntropy" : function () {},
 "addEventListener" : function () {},
