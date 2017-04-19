@@ -83,6 +83,7 @@
                                            :chat-id from})]))))
 
 (register-handler :received-message
+  (after #(dispatch [:update-suggestions]))
   (u/side-effect!
     (fn [db [_ message]]
       (add-message db message))))
