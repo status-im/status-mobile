@@ -12,7 +12,8 @@
             [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]))
 
-(defn header [title]
+(defview header []
+  [{:keys [title]} [:chat-ui-props :result-box]]
   [view {:style style/header-container}
    [view style/header-title-container
     [text {:style style/header-title-text
@@ -28,10 +29,9 @@
    markup])
 
 (defview result-box-view []
-  [{:keys [markup title] :as result-box} [:chat-ui-props :result-box]]
+  [{:keys [markup] :as result-box} [:chat-ui-props :result-box]]
   (when result-box
-    [expandable-view {:key        :result-box
-                      :draggable? true}
-     [view {:flex 1}
-      [header title]
-      [result-box-container markup]]]))
+    [expandable-view {:key           :result-box
+                      :draggable?    true
+                      :custom-header header}
+     [result-box-container markup]]))

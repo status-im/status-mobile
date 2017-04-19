@@ -11,8 +11,9 @@
             [status-im.chat.styles.animations :as style]
             [taoensso.timbre :as log]))
 
-(defn header [key container-height]
-  (let [max-container-height (subscribe [:get-max-container-area-height])
+(defn header [key container-height custom-header]
+  (let [set-container-height (subscribe [:chat-animations key :height])
+        max-container-height (subscribe [:get-max-container-area-height])
         pan-responder        (resp/pan-responder container-height
                                                  max-container-height
                                                  :fix-expandable-height
@@ -20,7 +21,11 @@
     (fn [_]
       [view (merge (drag/pan-handlers pan-responder)
                    {:style style/header-container})
-       [view style/header-icon]])))
+       [view style/header-icon]
+       (when (and custom-header
+                  (or (= @set-container-height :max)
+                      (> @set-container-height (:min-height style/header-container))))
+         [custom-header])])))
 
 (defn expandable-view-on-update [{:keys [anim-value to-changed-height max-height chat-input-margin height]}]
   (let [to-default-height (subscribe [:get-default-container-area-height])
@@ -58,10 +63,10 @@
          #(dispatch [:set-expandable-height key height])
          #(dispatch [:choose-predefined-expandable-height key :default]))
        :reagent-render
-       (fn [{:keys [draggable?]} & elements]
+       (fn [{:keys [draggable? custom-header]} & elements]
          @to-changed-height @changes-counter @max-height
          (let [bottom (+ @input-height @chat-input-margin)]
            (into [animated-view {:style (style/expandable-container anim-value bottom)}
                   (when draggable?
-                    [header key anim-value])]
+                    [header key anim-value custom-header])]
                  elements)))})))

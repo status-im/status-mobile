@@ -16,13 +16,14 @@
    :position         :absolute})
 
 (def header-container
-  {:height           17
+  {:min-height       19
    :background-color common/color-white
-   :alignItems       :center
-   :justifyContent   :center})
+   :alignItems       :center})
 
 (def header-icon
   {:background-color header-draggable-icon
+   :margin-top       8
+   :margin-bottom    6
    :width            24
    :border-radius    1.5
    :height           3})
