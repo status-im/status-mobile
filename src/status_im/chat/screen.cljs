@@ -137,7 +137,9 @@
                             (sort-by :clock-value >)
                             (map #(assoc % :datemark (time/day-relative (:timestamp %))))
                             (group-by :datemark)
-                            (map (fn [[k v]] [v {:type :datemark :value k}]))
+                            (vals)
+                            (sort-by (comp :clock-value first) >)
+                            (map (fn [v] [v {:type :datemark :value (:datemark (first v))}]))
                             (flatten))
         remove-last?   (some (fn [{:keys [content-type]}]
                                (= content-type content-type-status))
