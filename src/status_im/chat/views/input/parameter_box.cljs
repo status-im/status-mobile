@@ -18,14 +18,8 @@
     (:hiccup parameter-box)))
 
 (defview parameter-box-view []
-  [chat-parameter-box [:chat-parameter-box]
-   show-suggestions? [:show-suggestions?]
-   input-text [:chat :input-text]
-   validation-messages [:chat-ui-props :validation-messages]]
-  (when (and chat-parameter-box
-             (not (str/blank? input-text))
-             (not validation-messages)
-             (not show-suggestions?))
+  [show-parameter-box? [:show-parameter-box?]]
+  (when show-parameter-box?
     [expandable-view {:key        :parameter-box
                       :draggable? true}
      [parameter-box-container]]))

@@ -4,8 +4,7 @@
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]))
 
-(def color-root-border "rgba(192, 198, 202, 0.28)")
-(def color-root-border-android "#e8eaeb")
+(def color-root-border "#e8eaeb")
 (def color-input "#edf1f3")
 (def color-input-helper-text "rgb(182, 189, 194)")
 (def color-input-helper-placeholder "rgb(182, 189, 194)")
@@ -22,8 +21,7 @@
    :elevation        2
    :margin-bottom    margin-bottom
    :border-top-width 1
-   :ios              {:border-top-color color-root-border}
-   :android          {:border-top-color color-root-border-android}})
+   :border-top-color color-root-border})
 
 (defn container [container-anim-margin bottom-anim-margin]
   {:background-color common/color-white

@@ -13,6 +13,9 @@
                            :transparent {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
+                           :overlay     {:height       20
+                                         :bar-style    "dark-content"
+                                         :color        styles/color-white}
                            :modal       {:height    20
                                          :bar-style "light-content"
                                          :color     "#2f3031"}}
