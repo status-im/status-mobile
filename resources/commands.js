@@ -17,6 +17,7 @@ I18n.translations = {
         validation_title: 'Amount',
         validation_amount_specified: 'Amount must be specified',
         validation_invalid_number: 'Amount is not valid number',
+        validation_amount_is_too_small: 'Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)',
         validation_insufficient_amount: 'Insufficient funds for gas * price + value (balance '
     },
     ru: {
@@ -37,6 +38,7 @@ I18n.translations = {
         validation_title: 'Сумма',
         validation_amount_specified: 'Необходимо указать сумму',
         validation_invalid_number: 'Сумма не является действительным числом',
+        validation_amount_is_too_small: 'Сумма излишне точная. Минимальная единица, которую можно отправить — 1 Wei (1x10^-18 ETH)',
         validation_insufficient_amount: 'Недостаточно ETH на балансе ('
     },
     af: {
@@ -753,8 +755,19 @@ function validateSend(params, context) {
         };
     }
 
+    var amount = params.amount.replace(",", ".");
+    var amountSplitted = amount.split(".");
+    if (amountSplitted.length === 2 && amountSplitted[1].length > 18) {
+        return {
+            markup: status.components.validationMessage(
+                I18n.t('validation_title'),
+                I18n.t('validation_amount_is_too_small')
+            )
+        };
+    }
+
     try {
-        var val = web3.toWei(params.amount.replace(",", "."), "ether");
+        var val = web3.toWei(amount, "ether");
         if (val <= 0) {
             throw new Error();
         }
