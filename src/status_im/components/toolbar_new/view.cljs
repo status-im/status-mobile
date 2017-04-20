@@ -34,10 +34,12 @@
       [view (st/toolbar-nav-actions-container actions)
        (when-not hide-nav?
          (if nav-action
-           [touchable-highlight {:on-press (:handler nav-action)}
+           [touchable-highlight {:style    st/toolbar-button
+                                 :on-press (:handler nav-action)}
             [view
              [image (:image nav-action)]]]
-           [touchable-highlight {:on-press            #(dispatch [:navigate-back])
+           [touchable-highlight {:style               st/toolbar-button
+                                 :on-press            #(dispatch [:navigate-back])
                                  :accessibility-label id/toolbar-back-button}
             [view
              [image {:source {:uri :icon_back_dark}
@@ -55,13 +57,17 @@
            (with-meta
              (cond (= action-image :blank)
                    [view st/toolbar-action]
+
                    action-options
                    [context-menu
-                    [view st/toolbar-action
-                     [image action-image]]
-                    action-options]
+                    [view st/toolbar-action [image action-image]]
+                    action-options
+                    nil
+                    st/toolbar-button]
+
                    :else
-                   [touchable-highlight {:on-press action-handler}
+                   [touchable-highlight {:style    st/toolbar-button
+                                         :on-press action-handler}
                     [view st/toolbar-action
                      [image action-image]]])
              {:key (str "action-" action-image)}))

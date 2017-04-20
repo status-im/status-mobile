@@ -12,7 +12,7 @@
 (defstyle toolbar-title-container
   {:flex           1
    :flex-direction :row
-   :padding-left   30
+   :padding-left   18
    :ios            {:align-items     :center
                     :justify-content :center}})
 

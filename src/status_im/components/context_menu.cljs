@@ -54,14 +54,14 @@
                                       (handler))))})
   nil)
 
-(defn context-menu [trigger options & [customStyles]]
+(defn context-menu [trigger options & customStyles trigger-style]
   (if ios?
-    [touchable-highlight
-     {:on-press #(open-ios-menu options)}
+    [touchable-highlight {:style    trigger-style
+                          :on-press #(open-ios-menu options)}
      [view
       trigger]]
     [menu {:onSelect #(when % (do (%) nil))}
-     [menu-trigger trigger]
+     [menu-trigger {:style trigger-style} trigger]
      [menu-options (context-menu-options customStyles)
       (for [{:keys [style value destructive?] :as option} options]
         ^{:key option}
