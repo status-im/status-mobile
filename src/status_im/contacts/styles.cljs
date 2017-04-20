@@ -50,10 +50,10 @@
    :ios             {:height       64}})
 
 (defstyle show-all-text
-  {:android {:fontSize       14
+  {:android {:font-size      14
              :color          common/color-blue
              :letter-spacing 0.5}
-   :ios     {:fontSize       16
+   :ios     {:font-size      16
              :color          common/color-gray4
              :letter-spacing -0.2}})
 

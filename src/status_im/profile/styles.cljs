@@ -70,14 +70,12 @@
    :android {:font-size 12}})
 
 (defstyle profile-name-text
-  {:ios      {:font-size      17
-              :line-height    20
-              :letter-spacing -0.2}
-   :android  {:color       color-black
-              :font-size   16
-              :line-height 24}})
+  {:ios     {:font-size      17
+             :letter-spacing -0.2}
+   :android {:color     color-black
+             :font-size 16}})
 
-(def profile-bage-name-container
+(def profile-badge-name-container
   {:flex            1
    :justify-content :center
    :padding-left    16})

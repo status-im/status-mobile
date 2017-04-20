@@ -51,11 +51,11 @@
       (time/time-ago last-online-date)
       (label :t/active-unknown))))
 
-(defn profile-bage [{:keys [name last-online] :as contact}]
+(defn profile-badge [{:keys [name last-online] :as contact}]
   [view st/profile-bage
    [my-profile-icon {:account contact
                      :edit?   false}]
-   [view st/profile-bage-name-container
+   [view st/profile-badge-name-container
     [text {:style st/profile-name-text
            :number-of-lines 1}
       name]
@@ -192,7 +192,7 @@
    [status-bar]
    [my-profile-toolbar]
    [view st/profile-form
-    [profile-bage current-account]
+    [profile-badge current-account]
     [profile-status status true]]
    [form-spacer]
    [view actions-list
@@ -215,7 +215,7 @@
    [profile-toolbar contact]
    [scroll-view
     [view st/profile-form
-     [profile-bage contact]
+     [profile-badge contact]
      (when (and (not (nil? status)) (not (str/blank? status)))
        [profile-status status])]
     [form-spacer]
