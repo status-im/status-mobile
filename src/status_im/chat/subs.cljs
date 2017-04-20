@@ -85,28 +85,27 @@
 
 (register-sub
   :current-chat-argument-position
-  (fn [db [_ chat-id]]
-    (let [chat-id       (or chat-id (@db :current-chat-id))
-          command       (subscribe [:selected-chat-command chat-id])
-          input-text    (subscribe [:chat :input-text chat-id])
-          seq-arguments (subscribe [:chat :seq-arguments chat-id])]
+  (fn [db]
+    (let [command       (subscribe [:selected-chat-command])
+          input-text    (subscribe [:chat :input-text])
+          seq-arguments (subscribe [:chat :seq-arguments])]
       (reaction
         (input-model/current-chat-argument-position @command @input-text @seq-arguments)))))
 
 (register-sub
   :chat-parameter-box
-  (fn [db [_ chat-id]]
-    (let [chat-id (or chat-id (@db :current-chat-id))
-          command (subscribe [:selected-chat-command chat-id])
-          index   (subscribe [:current-chat-argument-position chat-id])]
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])
+          command (subscribe [:selected-chat-command])
+          index   (subscribe [:current-chat-argument-position])]
       (reaction
         (cond
           (and @command (> @index -1))
           (let [command-name (get-in @command [:command :name])]
-            (get-in @db [:chats chat-id :parameter-boxes command-name @index]))
+            (get-in @db [:chats @chat-id :parameter-boxes command-name @index]))
 
           (not @command)
-          (get-in @db [:chats chat-id :parameter-boxes :message])
+          (get-in @db [:chats @chat-id :parameter-boxes :message])
 
           :default
           nil)))))
