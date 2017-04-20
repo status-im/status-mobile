@@ -155,7 +155,7 @@
 (defn add-memebers
   [{:keys [current-chat-id selected-participants] :as db} _]
   (let [new-identities (map #(hash-map :identity %) selected-participants)]
-    (update db [:chats current-chat-id :contacts] concat new-identities)))
+    (update-in db [:chats current-chat-id :contacts] concat new-identities)))
 
 (defn add-members-to-chat!
   [{:keys [current-chat-id selected-participants]} _]
