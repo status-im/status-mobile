@@ -31,14 +31,14 @@
 (defnstyle toolbar-nav-actions-container
   [actions]
   {:flex-direction :row
-   :margin-left    16
+   :margin-left    4
    :ios            {:width (when (and actions (pos? (count actions)))
                              (-> (+ toolbar-icon-width toolbar-icon-spacing)
                                  (* (count actions))))}})
 
 (defstyle toolbar-title-container
   {:flex       1
-   :android    {:padding-left 30}
+   :android    {:padding-left 18}
    :ios        {:align-items  :center}})
 
 (defstyle toolbar-title-text
@@ -54,14 +54,13 @@
 
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction :row}
-         (when-not custom {:margin-right 16})
+         (when-not custom {:margin-right 4})
          (when (and (zero? actions-count) (not custom))
            {:width (+ toolbar-icon-width toolbar-icon-spacing)})))
 
 (def toolbar-action
   {:width           toolbar-icon-width
    :height          toolbar-icon-height
-   :margin-left     toolbar-icon-spacing
    :align-items     :center
    :justify-content :center})
 
@@ -70,7 +69,7 @@
 
 (defstyle toolbar-with-search-content
   {:flex    1
-   :android {:padding-left 30}
+   :android {:padding-left 18}
    :ios     {:align-items :center}})
 
 (defstyle toolbar-search-input
@@ -90,3 +89,6 @@
   {:width  24
    :height 24})
 
+(def toolbar-button
+  {:paddingVertical   16
+   :paddingHorizontal 12})

@@ -49,10 +49,10 @@
   {:flex            1
    :justify-content :center
    :android         {:align-items    :flex-start
-                     :margin-left    (if show-actions 56 32)
+                     :margin-left    (if show-actions 66 18)
                      :padding-bottom 6}
    :ios             {:align-items :center
-                     :margin-left (if show-actions 40 16)}})
+                     :margin-left (if show-actions 54 6)}})
 
 (def chat-name-text
   {:color      color-gray6
