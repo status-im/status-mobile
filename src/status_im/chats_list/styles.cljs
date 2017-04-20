@@ -130,7 +130,7 @@
    :background-color new-messages-count-color
    :border-radius    50})
 
-(def new-messages-text
+(defstyle new-messages-text
   {:left       0
    :fontSize   12
    :color      color-blue
