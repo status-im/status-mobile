@@ -1,5 +1,5 @@
 (ns status-im.chats-list.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :refer [color-white
                                                  color-light-gray
                                                  color-blue
@@ -22,40 +22,45 @@
   {:border-bottom-width 1
    :border-bottom-color color-gray5})
 
-(def chat-container
-  (merge {:flex-direction   :row
-          :background-color color-white}
-         (get-in p/platform-specific [:component-styles :chat-list :chat-container])))
+(defstyle chat-container
+  {:flex-direction   :row
+   :background-color color-white
+   :android          {:height 76}
+   :ios              {:height 74}})
 
-(def chat-icon-container
-  (merge {:padding-top    18
-          :padding-bottom 18
-          :padding-left   12
-          :padding-right  20
-          :width          72}
-         (get-in p/platform-specific [:component-styles :chat-list :chat-icon-container])))
+(defstyle chat-icon-container
+  {:padding-top    18
+   :padding-bottom 18
+   :padding-left   12
+   :padding-right  20
+   :width          72
+   :android        {:height 76}
+   :ios            {:height 74}})
 
-(def chat-info-container
-  (merge {:margin-bottom   13
-          :justify-content :space-between
-          :flex            1
-          :flex-direction  :column}
-         (get-in p/platform-specific [:component-styles :chat-list :chat-info-container])))
+(defstyle chat-info-container
+  {:margin-bottom   13
+   :justify-content :space-between
+   :flex            1
+   :flex-direction  :column
+   :android         {:margin-top 16}
+   :ios             {:margin-top 14}})
 
-(def chat-options-container
-  (merge {:margin-right 16
-          :padding-top  10}
-         (get-in p/platform-specific [:component-styles :chat-list :chat-options-container])))
+(defstyle chat-options-container
+  {:margin-right 16
+   :padding-top  10
+   :android      {:margin-top 16}
+   :ios          {:margin-top 14}})
 
 (def item-upper-container
   {:flex            1
    :flex-direction  :row})
 
-(def item-lower-container
-  (merge {:flex            1
-          :flex-direction  :row
-          :justify-content :space-between}
-         (get-in p/platform-specific [:component-styles :chat-list :item-lower-container])))
+(defstyle item-lower-container
+  {:flex            1
+   :flex-direction  :row
+   :justify-content :space-between
+   :android         {:margin-top 4}
+   :ios             {:margin-top 6}})
 
 (def message-status-container
   {:flex-direction :row
@@ -67,25 +72,26 @@
    :margin-right   4})
 
 (def name-text
-  (merge {:color     text1-color
-          :font-size 16}
-         (get-in p/platform-specific [:component-styles :chat-list :chat-name])))
+  {:color     text1-color
+   :font-size 16})
 
-(def private-group-icon-container
-  (merge {:width        16
-          :height       12
-          :margin-right 6}
-         (get-in p/platform-specific [:component-styles :chat-list :private-group-icon-container])))
+(defstyle private-group-icon-container
+  {:width        16
+   :height       12
+   :margin-right 6
+   :android      {:margin-top 4}
+   :ios          {:margin-top 2}})
 
 (def private-group-icon
   {:width  16
    :height 16})
 
-(def public-group-icon-container
-  (merge {:width        16
-          :height       12
-          :margin-right 6}
-         (get-in p/platform-specific [:component-styles :chat-list :public-group-icon-container])))
+(defstyle public-group-icon-container
+  {:width        16
+   :height       12
+   :margin-right 6
+   :android      {:margin-top 4}
+   :ios          {:margin-top 2}})
 
 (def public-group-icon
   {:width  16
@@ -94,9 +100,12 @@
 (def last-message-container
   {:flex-shrink 1})
 
-(def last-message-text
-  (merge {:color text4-color}
-         (get-in p/platform-specific [:component-styles :chat-list :last-message])))
+(defstyle last-message-text
+  {:color   text4-color
+   :android {:font-size 14
+             :height    24}
+   :ios     {:font-size 15
+             :height    24}})
 
 (def status-container
   {:flex-direction :row
@@ -109,23 +118,25 @@
    :width        16
    :height       16})
 
-(def datetime-text
-  (merge {:color text4-color}
-         (get-in p/platform-specific [:component-styles :chat-list :last-message-timestamp])))
+(defstyle datetime-text
+  {:color   text4-color
+   :android {:font-size 14}
+   :ios     {:font-size 15}})
 
 (def new-messages-container
-  {:width           22
-   :height          22
-   :margin-left     15
-   :backgroundColor new-messages-count-color
-   :borderRadius    50})
+  {:width            22
+   :height           22
+   :margin-left      15
+   :background-color new-messages-count-color
+   :border-radius    50})
 
 (def new-messages-text
-  (merge {:left      0
-          :fontSize  12
-          :color     color-blue
-          :textAlign :center}
-         (get-in p/platform-specific [:component-styles :chat-list :unread-count])))
+  {:left       0
+   :fontSize   12
+   :color      color-blue
+   :text-align :center
+   :android    {:top 2}
+   :ios        {:top 3}})
 
 (def chats-container
   {:flex 1})
@@ -142,10 +153,10 @@
    :padding-right  14})
 
 (def opts-btn
-  {:width          24
-   :height         24
-   :alignItems     :center
-   :justifyContent :center})
+  {:width           24
+   :height          24
+   :align-items     :center
+   :justify-content :center})
 
 (def create-icon
   {:fontSize 20

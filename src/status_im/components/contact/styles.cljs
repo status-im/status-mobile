@@ -4,13 +4,13 @@
             [status-im.utils.platform]))
 
 (defstyle contact-inner-container
-  {:flex            1
-   :flexDirection   :row
-   :align-items     :center
-   :padding-left    16
-   :backgroundColor common/color-white
-   :android         {:height 56}
-   :ios             {:height 63}})
+  {:flex             1
+   :flex-direction   :row
+   :align-items      :center
+   :padding-left     16
+   :background-color common/color-white
+   :android          {:height 56}
+   :ios              {:height 63}})
 
 (def info-container
   {:flex            1
@@ -21,10 +21,8 @@
 
 (defstyle name-text
   {:color   common/text1-color
-   :android {:fontSize       16
-             :line-height    24}
-   :ios     {:fontSize       17
-             :line-height    20
+   :android {:font-size      16}
+   :ios     {:font-size      17
              :letter-spacing -0.2}})
 
 (def info-text

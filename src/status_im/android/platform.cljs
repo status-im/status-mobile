@@ -24,19 +24,6 @@
                                          :color     styles/color-black}}
    :sized-text            {:margin-top        0
                            :additional-height 0}
-   :chat-list             {:list-container               {:background-color styles/color-light-gray}
-                           :chat-container               {:height 76}
-                           :chat-icon-container          {:height 76}
-                           :chat-info-container          {:margin-top 16}
-                           :chat-options-container       {:margin-top 16}
-                           :item-lower-container         {:margin-top 4}
-                           :chat-name                    {:height 24}
-                           :last-message                 {:font-size  14
-                                                          :height     24}
-                           :last-message-timestamp       {:font-size 14}
-                           :unread-count                 {:top 2}
-                           :public-group-icon-container  {:margin-top 4}
-                           :private-group-icon-container {:margin-top 4}}
    :chat                  {:new-message {:border-top-color styles/color-transparent
                                          :border-top-width 0.5}}
    :discover              {:subtitle {:color     styles/color-gray2
