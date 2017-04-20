@@ -95,7 +95,8 @@
         :on-focus               #(do (dispatch [:set-chat-ui-props :input-focused? true])
                                      (dispatch [:set-chat-ui-props :show-emoji? false]))
         :style                  (style/input-view height)
-        :placeholder-text-color style/color-input-helper-placeholder}])))
+        :placeholder-text-color style/color-input-helper-placeholder
+        :auto-capitalize        :sentences}])))
 
 (defn- invisible-input [{:keys [set-layout-width value]}]
   (let [input-text    (subscribe [:chat :input-text])]
