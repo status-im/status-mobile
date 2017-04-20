@@ -154,6 +154,7 @@
                               :placeholder       placeholder
                               :blur-on-submit    false
                               :editable          (not @sending-in-progress?)
+                              :on-focus          #(dispatch [:set-chat-ui-props :show-emoji? false])
                               :on-submit-editing (fn []
                                                    (when-not (str/blank? @seq-arg-input-text)
                                                      (dispatch [:send-seq-argument]))
