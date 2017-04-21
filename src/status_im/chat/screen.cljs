@@ -90,11 +90,11 @@
     (fn []
       (if @show-actions
         [touchable-highlight
-         {:on-press #(dispatch [:set-chat-ui-props :show-actions? false])}
+         {:on-press #(dispatch [:set-chat-ui-props {:show-actions? false}])}
          [view st/action
           [icon :up st/up-icon]]]
         [touchable-highlight
-         {:on-press #(dispatch [:set-chat-ui-props :show-actions? true])}
+         {:on-press #(dispatch [:set-chat-ui-props {:show-actions? true}])}
          [view st/action
           [chat-icon]]]))))
 
@@ -184,7 +184,7 @@
    layout-height [:get :layout-height]
    input-text [:chat :input-text]]
   {:component-did-mount    #(dispatch [:check-autorun])
-   :component-will-unmount #(dispatch [:set-chat-ui-props :show-emoji? false])}
+   :component-will-unmount #(dispatch [:set-chat-ui-props {:show-emoji? false}])}
   [view {:style st/chat-view
          :on-layout (fn [event]
                       (let [height (.. event -nativeEvent -layout -height)]

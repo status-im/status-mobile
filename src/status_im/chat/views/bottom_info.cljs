@@ -78,7 +78,7 @@
                                                    :status           message-status}]))
                                  (into {}))
                statuses     (vals (merge participants user-statuses))]
-           [overlay {:on-click-outside #(dispatch [:set-chat-ui-props :show-bottom-info? false])}
+           [overlay {:on-click-outside #(dispatch [:set-chat-ui-props {:show-bottom-info? false}])}
             [container (* st/item-height (count statuses))
              [list-view {:dataSource            (lw/to-datasource statuses)
                          :enableEmptySections   true

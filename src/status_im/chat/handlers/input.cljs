@@ -45,9 +45,9 @@
                                            (when-not sequential-params
                                              (input-model/join-command-args prefill)))])
       (dispatch [:set-chat-input-metadata metadata])
-      (dispatch [:set-chat-ui-props :show-suggestions? false])
-      (dispatch [:set-chat-ui-props :result-box nil])
-      (dispatch [:set-chat-ui-props :validation-messages nil])
+      (dispatch [:set-chat-ui-props {:show-suggestions?   false
+                                     :result-box          nil
+                                     :validation-messages nil}])
       (dispatch [:load-chat-parameter-box command 0])
       (if sequential-params
         (js/setTimeout
@@ -145,7 +145,7 @@
                      :address  current-account-id}]
         (dispatch [:set-chat-input-text nil chat-id])
         (dispatch [:set-chat-input-metadata nil chat-id])
-        (dispatch [:set-chat-ui-props :sending-in-progress? false])
+        (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (cond
           command-message
           (dispatch [:check-commands-handlers! data])
@@ -173,15 +173,15 @@
   ::proceed-validation-messages
   (handlers/side-effect!
     (fn [db [_ command chat-id {:keys [markup validationHandler parameters] :as errors} proceed-fn]]
-      (let [set-errors #(do (dispatch [:set-chat-ui-props :validation-messages %])
-                            (dispatch [:set-chat-ui-props :sending-in-progress? false]))]
+      (let [set-errors #(do (dispatch [:set-chat-ui-props {:validation-messages  %
+                                                           :sending-in-progress? false}]))]
         (cond
           markup
           (set-errors markup)
 
           validationHandler
           (do (dispatch [::execute-validation-handler validationHandler parameters set-errors proceed-fn])
-              (dispatch [:set-chat-ui-props :sending-in-progress? false]))
+              (dispatch [:set-chat-ui-props {:sending-in-progress? false}]))
 
           :default
           (proceed-fn))))))
@@ -201,8 +201,8 @@
         (do
           (when fullscreen
             (dispatch [:choose-predefined-expandable-height :result-box :max]))
-          (dispatch [:set-chat-ui-props :result-box on-send])
-          (dispatch [:set-chat-ui-props :sending-in-progress? false])
+          (dispatch [:set-chat-ui-props {:result-box           on-send
+                                         :sending-in-progress? false}])
           (react-comp/dismiss-keyboard!))
         (dispatch [::request-command-data
                    {:command   command
@@ -241,7 +241,7 @@
   :send-current-message
   (handlers/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ chat-id]]
-      (dispatch [:set-chat-ui-props :sending-in-progress? true])
+      (dispatch [:set-chat-ui-props {:sending-in-progress? true}])
       (let [chat-id      (or chat-id current-chat-id)
             chat-command (input-model/selected-chat-command db chat-id)
             seq-command? (get-in chat-command [:command :sequential-params])
@@ -255,7 +255,7 @@
               (dispatch [:proceed-command chat-command chat-id])
               (dispatch [:clear-seq-arguments chat-id]))
             (let [text (get-in db [:chats chat-id :input-text])]
-              (dispatch [:set-chat-ui-props :sending-in-progress? false])
+              (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
               (when-not (input-model/text-ends-with-space? text)
                 (dispatch [:set-chat-input-text (str text const/spacing-char)]))))
           (dispatch [::send-message nil chat-id]))))))

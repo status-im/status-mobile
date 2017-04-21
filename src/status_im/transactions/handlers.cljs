@@ -205,10 +205,10 @@
               (dispatch [::remove-pending-message message_id]))
             (dispatch [:clear-selected-transaction])
             (dispatch [::remove-transaction id])
-            (dispatch [:set-chat-ui-props :validation-messages error_message]))
+            (dispatch [:set-chat-ui-props {:validation-messages error_message}]))
 
         :else
-        (dispatch [:set-chat-ui-props :validation-messages nil])))))
+        (dispatch [:set-chat-ui-props {:validation-messages nil}])))))
 
 (register-handler :clear-selected-transaction
   (fn [db _]

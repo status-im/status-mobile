@@ -47,9 +47,8 @@
     (assoc db :layout-height height)))
 
 (register-handler :set-chat-ui-props
-  (fn [{:keys [current-chat-id] :as db} [_ ui-element value chat-id]]
-    (let [chat-id (or chat-id current-chat-id)]
-      (assoc-in db [:chat-ui-props chat-id ui-element] value))))
+  (fn [{:keys [current-chat-id] :as db} [_ kvs]]
+    (update-in db [:chat-ui-props current-chat-id] merge kvs)))
 
 (register-handler :toggle-chat-ui-props
   (fn [{:keys [current-chat-id chat-ui-props] :as db} [_ ui-element chat-id]]
@@ -59,9 +58,9 @@
 (register-handler :show-message-details
   (u/side-effect!
     (fn [_ [_ details]]
-      (dispatch [:set-chat-ui-props :show-bottom-info? true])
-      (dispatch [:set-chat-ui-props :show-emoji? false])
-      (dispatch [:set-chat-ui-props :bottom-info details]))))
+      (dispatch [:set-chat-ui-props {:show-bottom-info? true
+                                     :show-emoji?       false
+                                     :bottom-info       details}]))))
 
 (register-handler :load-more-messages
   (fn [{:keys [current-chat-id loading-allowed] :as db} _]

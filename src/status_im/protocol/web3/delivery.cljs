@@ -77,7 +77,7 @@
   [web3 {:keys [message-id to] :as pending-message}]
   {:pre [(valid? :delivery/pending-message pending-message)]}
   (debug :add-prepeared-pending-message!)
-  (let [message (select-keys pending-message [:from :to :topics :payload])
+  (let [message          (select-keys pending-message [:from :to :topics :payload])
         pending-message' (assoc pending-message :message message
                                                 :id message-id)]
     (swap! messages assoc-in [web3 message-id to] pending-message')

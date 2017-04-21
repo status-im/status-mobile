@@ -16,7 +16,7 @@
       (when-not loading
         (dispatch [:set-command-argument [0 url]]))
       (when (and dynamicTitle (not (str/blank? title)))
-        (dispatch [:set-chat-ui-props :result-box (assoc result-box :title title)])))))
+        (dispatch [:set-chat-ui-props {:result-box (assoc result-box :title title)}])))))
 
 (defn web-view-error []
   (r/as-element

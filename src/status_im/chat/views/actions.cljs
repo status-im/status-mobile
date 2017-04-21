@@ -95,7 +95,7 @@
                                subtitle]
                     icon-name :icon}]
   [touchable-highlight {:on-press (fn []
-                                    (dispatch [:set-chat-ui-props :show-actions? false])
+                                    (dispatch [:set-chat-ui-props {:show-actions? false}])
                                     (when handler
                                       (handler)))}
    [view st/action-icon-row
@@ -132,5 +132,5 @@
               ^{:key action} [action-view action]))]]))))
 
 (defn actions-view []
-  [overlay {:on-click-outside #(dispatch [:set-chat-ui-props :show-actions? false])}
+  [overlay {:on-click-outside #(dispatch [:set-chat-ui-props {:show-actions? false}])}
    [actions-list-view]])

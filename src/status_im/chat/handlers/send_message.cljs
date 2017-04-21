@@ -62,7 +62,7 @@
 
             :else
             (dispatch [:prepare-command! chat-id params']))))
-      (dispatch [:set-chat-ui-props :sending-in-progress? false]))))
+      (dispatch [:set-chat-ui-props {:sending-in-progress? false}]))))
 
 (register-handler :prepare-command!
   (u/side-effect!
@@ -78,7 +78,7 @@
                                (cu/check-author-direction db chat-id))]
         (log/debug "Handler data: " request handler-data (dissoc params :commands :command-message))
         (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [:set-chat-ui-props :sending-in-progress? false])
+        (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
         (when (cu/console? chat-id)
           (dispatch [:console-respond-command params]))
