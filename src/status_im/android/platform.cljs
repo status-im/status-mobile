@@ -15,7 +15,7 @@
                                          :bar-style    "light-content"
                                          :translucent? true
                                          :color        styles/color-transparent}
-                           :overlay     {:height       25
+                           :overlay     {:height       0
                                          :bar-style    "dark-content"
                                          :translucent? true
                                          :color        styles/color-transparent}
