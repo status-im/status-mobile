@@ -21,7 +21,7 @@
     (cond
       handler-error
       (when-let [markup (:markup handler-error)]
-        (dispatch [:set-chat-ui-props :validation-messages (cu/generate-hiccup markup)]))
+        (dispatch [:set-chat-ui-props {:validation-messages (cu/generate-hiccup markup)}]))
 
       result
       (let [command'    (assoc command-message :handler-data returned)

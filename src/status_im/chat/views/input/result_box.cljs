@@ -20,7 +20,7 @@
            :number-of-lines 1
            :font :medium}
      title]
-    [touchable-highlight {:on-press #(dispatch [:set-chat-ui-props :result-box nil])}
+    [touchable-highlight {:on-press #(dispatch [:set-chat-ui-props {:result-box nil}])}
      [view style/header-close-container
       [icon :close_light_gray style/header-close-icon]]]]])
 
