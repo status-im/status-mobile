@@ -47,7 +47,7 @@
   {:component-did-update #(when-not (seq transactions) (rf/dispatch [:navigate-back]))
    :component-will-unmount #(rf/dispatch [:set-in [:transactions-list-ui-props :confirmed?] false])}
   [(if platform/ios? rn/keyboard-avoiding-view rn/view) (merge {:behavior :padding} st/transactions-screen)
-   [status-bar/status-bar {:type (if platform/ios? :transparent :main)}]
+   [status-bar/status-bar {:type :transaction}]
    [toolbar-view transactions]
    [rn/view {:style st/transactions-screen-content-container}
     [rn/list-view {:style           st/transactions-list

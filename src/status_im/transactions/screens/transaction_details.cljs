@@ -55,7 +55,7 @@
   {:component-did-update #(when-not transaction (rf/dispatch [:navigate-to-modal :unsigned-transactions]))
    :component-will-unmount #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] false])}
   [rn/keyboard-avoiding-view {:style st/transactions-screen}
-   [status-bar/status-bar {:type (if platform/ios? :transparent :main)}]
+   [status-bar/status-bar {:type :transaction}]
    [toolbar-view]
    [rn/scroll-view st/details-screen-content-container
     [transactions-list-item/view transaction #(rf/dispatch [:navigate-to-modal :unsigned-transactions])]

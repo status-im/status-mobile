@@ -14,6 +14,7 @@
     (when (enough-dy gesture)
       (let [to-value (- @layout-height (.-moveY gesture))]
         (when (> to-value input-utils/min-height)
+          (dispatch [:set :expandable-view-height-to-value to-value])
           (anim/start
             (anim/spring response-height {:toValue to-value})))))))
 

@@ -11,7 +11,7 @@
 (defview confirmation-success []
   [quantity [:get :confirmed-transactions-count]]
   [rn/view {:style st/success-screen}
-   [status-bar/status-bar {:type :transparent}]
+   [status-bar/status-bar {:type :transaction}]
    [rn/view {:style st/success-screen-content-container}
     [rn/view {:style st/success-icon-container}
      [rn/image {:source {:uri :icon_ok_white}

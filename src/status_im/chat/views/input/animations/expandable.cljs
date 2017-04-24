@@ -1,4 +1,5 @@
 (ns status-im.chat.views.input.animations.expandable
+  (:require-macros [status-im.utils.views :refer [defview]])
   (:require [reagent.core :as r]
             [reagent.impl.component :as rc]
             [re-frame.core :refer [dispatch subscribe]]
@@ -36,16 +37,25 @@
                                @to-changed-height)
             to-value         (min (or @to-changed-height (or height @to-default-height))
                                   @max-height)]
+        (dispatch [:set :expandable-view-height-to-value to-value])
         (anim/start
           (anim/spring anim-value {:toValue  to-value
                                    :friction 10
                                    :tension  60}))))))
 
-(defn expandable-view [{:keys [key height]} & _]
+(defview overlay-view []
+  [max-height     (subscribe [:get-max-container-area-height])
+   layout-height  (subscribe [:get :layout-height])
+   view-height-to (subscribe [:get :expandable-view-height-to-value])]
+  (let [related-height (/ @view-height-to @max-height)]
+    (when (> related-height 0.6)
+      [animated-view {:style (style/result-box-overlay @layout-height (- related-height (/ 0.4 related-height)))}])))
+
+(defn expandable-view [{:keys [key height hide-overlay?]} & _]
   (let [anim-value         (anim/create-value 0)
         input-height       (subscribe [:chat-ui-props :input-height])
-        chat-input-margin  (subscribe [:chat-input-margin])
         max-height         (subscribe [:get-max-container-area-height])
+        chat-input-margin  (subscribe [:chat-input-margin])
         to-changed-height  (subscribe [:chat-animations key :height])
         changes-counter    (subscribe [:chat-animations key :changes-counter])
         on-update          (expandable-view-on-update {:anim-value        anim-value
@@ -66,7 +76,10 @@
        (fn [{:keys [draggable? custom-header]} & elements]
          @to-changed-height @changes-counter @max-height
          (let [bottom (+ @input-height @chat-input-margin)]
-           (into [animated-view {:style (style/expandable-container anim-value bottom)}
-                  (when draggable?
-                    [header key anim-value custom-header])]
-                 elements)))})))
+           [view style/overlap-container
+            (when-not hide-overlay?
+              [overlay-view])
+            (into [animated-view {:style (style/expandable-container anim-value bottom)}
+                   (when draggable?
+                     [header key anim-value custom-header])]
+                  elements)]))})))

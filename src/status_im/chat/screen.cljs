@@ -108,17 +108,11 @@
       [text {:style st/add-contact-text}
        (label :t/add-to-contacts)]]]))
 
-(defview overlay-view []
-  [show-chat-overlay? [:show-chat-overlay?]]
-  (when show-chat-overlay?
-    [view {:style st/result-box-overlay}]))
-
 (defview chat-toolbar []
   [show-actions? [:chat-ui-props :show-actions?]
    accounts [:get :accounts]
-   show-chat-overlay? [:show-chat-overlay?]
    creating? [:get :creating-account?]]
-  [view ;(when show-chat-overlay? {:style {:zIndex 0}})  TODO we need implement animation and solve translucent? status-bar issue on android
+  [view
    [status-bar]
    [toolbar {:hide-nav?      (or (empty? accounts) show-actions? creating?)
              :custom-content [toolbar-content-view]
@@ -192,7 +186,6 @@
                           (dispatch [:set-layout-height height]))))}
    [chat-toolbar]
    [messages-view group-chat]
-   ;[overlay-view] TODO we need implement animation and solve translucent? status-bar issue on android
    [input/container {:text-empty? (str/blank? input-text)}]
    (when show-actions?
      [actions-view])

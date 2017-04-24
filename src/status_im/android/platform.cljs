@@ -2,26 +2,25 @@
   (:require [status-im.components.styles :as styles]))
 
 (def component-styles
-  {:status-bar            {:default     {:height    0
-                                         :bar-style "dark-content"
-                                         :color     styles/color-white}
-                           :main        {:height    0
-                                         :bar-style "dark-content"
-                                         :color     styles/color-white}
-                           :gray        {:height    0
-                                         :bar-style "dark-content"
-                                         :color     styles/color-light-gray}
+  {:status-bar            {:default     {:height       25
+                                         :bar-style    "dark-content"
+                                         :elevation    2
+                                         :translucent? true
+                                         :color        styles/color-white}
+                           :main        {:height       25
+                                         :bar-style    "dark-content"
+                                         :translucent? true
+                                         :color        styles/color-white}
                            :transparent {:height       25
                                          :bar-style    "light-content"
                                          :translucent? true
                                          :color        styles/color-transparent}
-                           :overlay     {:height       0
-                                         :bar-style    "dark-content"
-                                         :translucent? true
-                                         :color        styles/color-transparent}
-                           :modal       {:height    0
-                                         :bar-style "light-content"
-                                         :color     styles/color-black}}
+                           :modal       {:height       0
+                                         :bar-style    "light-content"
+                                         :color        styles/color-black}
+                           :transaction {:height       0
+                                         :bar-style    "light-content"
+                                         :color        styles/color-dark-blue-2}}
    :sized-text            {:margin-top        0
                            :additional-height 0}
    :chat                  {:new-message {:border-top-color styles/color-transparent
