@@ -162,3 +162,15 @@
 (defn call-web3 [host payload callback]
   (when status
     (call-module #(.sendWeb3Request status host payload callback))))
+
+(def reset-in-progress? (atom false))
+(defn reset-chain-data! [callback]
+  (swap! reset-in-progress?
+         (fn [in-progress?]
+           (when-not in-progress?
+             (call-module #(.resetChainData
+                             status
+                             (fn []
+                               (reset! reset-in-progress? false)
+                               (callback)))))
+           true)))

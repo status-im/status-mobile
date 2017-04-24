@@ -1,4 +1,4 @@
-(ns status-im.utils.web-provider
+(ns status-im.utils.web3-provider
   (:require [taoensso.timbre :as log]
             [status-im.components.status :as status]))
 

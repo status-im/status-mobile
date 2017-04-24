@@ -365,4 +365,17 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
     return;
 }
 
+//////////////////////////////////////////////////////////////////// resetChainData
+RCT_EXPORT_METHOD(resetChainData:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"ResetChainData() method called");
+#endif
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        char * result = ResetChainData();
+        dispatch_async( dispatch_get_main_queue(), ^{
+            callback(@[[NSString stringWithUTF8String: result]]);
+        });
+    });
+}
+
 @end
