@@ -95,7 +95,7 @@
                   :uppercase? (get-in platform-specific [:uppercase?])
                   :font (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
             (str (- contacts-count contacts-limit) " " (label :t/more))]]]]])
-     [common/bottom-shaddow]]))
+     [common/bottom-shadow]]))
 
 (defview contact-group-view [{:keys [group] :as params}]
   [contacts [:all-added-group-contacts-with-limit (:group-id group) contacts-limit]
@@ -105,10 +105,10 @@
 
 (defn contacts-action-button []
   [native-action-button {:button-color color-blue
-                         :offset-x            16
-                         :offset-y            22
-                         :hide-shadow         true
-                         :spacing             13}
+                         :offset-x     16
+                         :offset-y     22
+                         :hide-shadow  true
+                         :spacing      13}
    [native-action-button-item
     {:title       (label :t/new-contact)
      :buttonColor :#9b59b6

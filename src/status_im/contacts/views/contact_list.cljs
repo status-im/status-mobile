@@ -57,7 +57,7 @@
   [list-view {:dataSource                (lw/to-datasource contacts)
               :enableEmptySections       true
               :renderRow                 (render-row group edit?)
-              :keyboardShouldPersistTaps true
+              :keyboardShouldPersistTaps :always
               :renderHeader              renderers/list-header-renderer
               :renderFooter              renderers/list-footer-renderer
               :renderSeparator           renderers/list-separator-renderer

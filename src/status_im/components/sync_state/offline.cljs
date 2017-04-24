@@ -4,7 +4,6 @@
             [status-im.components.react :refer [view
                                                 text
                                                 animated-view
-                                                linear-gradient
                                                 get-dimensions]]
             [status-im.components.sync-state.styles :as st]
             [status-im.components.animation :as anim]

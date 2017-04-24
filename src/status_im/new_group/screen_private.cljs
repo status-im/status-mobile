@@ -87,7 +87,7 @@
                   :enableEmptySections       true
                   :renderRow                 render-row
                   :bounces                   false
-                  :keyboardShouldPersistTaps true
+                  :keyboardShouldPersistTaps :always
                   :renderSeparator           renderers/list-separator-renderer}]]
      (when save-btn-enabled?
        [sticky-button (label :t/save)

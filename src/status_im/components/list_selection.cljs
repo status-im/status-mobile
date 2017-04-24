@@ -1,18 +1,19 @@
 (ns status-im.components.list-selection
   (:require [re-frame.core :refer [dispatch]]
             [status-im.components.react :refer [copy-to-clipboard
+                                                sharing
                                                 linking]]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.i18n :refer [label]]))
 
-(def class (js/require "react-native-share"))
-
 (defn open [opts]
-  (.open class (clj->js opts)))
+  (.share sharing (clj->js opts)))
 
 (defn share-options [text]
-  [{:text (label :t/sharing-copy-to-clipboard) :value #(copy-to-clipboard text)}
-   {:text (label :t/sharing-share)             :value #(open {:message text})}])
+  [{:text  (label :t/sharing-copy-to-clipboard)
+    :value #(copy-to-clipboard text)}
+   {:text  (label :t/sharing-share)
+    :value #(open {:message text})}])
 
 (defn share [text dialog-title]
   (let [list-selection-fn (:list-selection-fn platform-specific)]

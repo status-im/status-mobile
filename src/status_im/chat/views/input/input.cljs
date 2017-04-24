@@ -49,7 +49,7 @@
         [icon :input_list style/commands-list-icon])]]]
    [scroll-view {:horizontal                     true
                  :showsHorizontalScrollIndicator false
-                 :keyboardShouldPersistTaps      true}
+                 :keyboardShouldPersistTaps      :always}
     (let [requests-names (map :type requests)
           all-commands (merge (into {} commands) (select-keys responses requests-names))
           all-commands-indexed (map-indexed vector (vals all-commands))]

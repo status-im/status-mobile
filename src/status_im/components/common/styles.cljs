@@ -13,9 +13,8 @@
    :backgroundColor color-light-gray})
 
 (def gradient-top-colors
-  ["rgba(24, 52, 76, 0.165)"
-   "rgba(24, 52, 76, 0.03)"
-   "rgba(24, 52, 76, 0.01)"])
+  ["rgba(25, 53, 76, 0.01)"
+   "rgba(25, 53, 76, 0.1)"])
 
 (def gradient-bottom
   {:flexDirection   :row
@@ -23,8 +22,8 @@
    :backgroundColor color-light-gray})
 
 (def gradient-bottom-colors
-  ["rgba(24, 52, 76, 0.01)"
-   "rgba(24, 52, 76, 0.05)"])
+  ["rgba(25, 53, 76, 0.1)"
+   "rgba(25, 53, 76, 0.01)"])
 
 (def separator-wrapper
   {:background-color color-white})

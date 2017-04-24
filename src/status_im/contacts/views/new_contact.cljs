@@ -5,7 +5,6 @@
             [status-im.components.react :refer [view
                                                 text
                                                 image
-                                                linear-gradient
                                                 touchable-highlight]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.utils.identicon :refer [identicon]]

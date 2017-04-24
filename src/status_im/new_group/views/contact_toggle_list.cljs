@@ -51,7 +51,7 @@
      :renderFooter              renderers/list-footer-renderer
      :renderHeader              renderers/list-header-renderer
      :style                     cst/contacts-list
-     :keyboardShouldPersistTaps true}]])
+     :keyboardShouldPersistTaps :always}]])
 
 (defview contact-toggle-list []
   [contacts [:all-added-group-contacts-filtered]
