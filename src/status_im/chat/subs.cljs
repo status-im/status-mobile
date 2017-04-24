@@ -123,18 +123,6 @@
                     (not @show-suggestions?))))))
 
 (register-sub
- :show-chat-overlay?
- (fn [db _]
-   (let [{:keys [current-chat-id]} @db
-         show-parameter-box?  (subscribe [:show-parameter-box?])
-         result-box           (subscribe [:chat-ui-props :result-box])
-         max-height           (subscribe [:get-max-container-area-height])
-         result-box-height    (subscribe [:get-in [:chat-animations current-chat-id :result-box :height]])
-         parameter-box-height (subscribe [:get-in [:chat-animations current-chat-id :parameter-box :height]])]
-     (reaction (or (and @show-parameter-box? (or (= @parameter-box-height :max) (< (- @max-height @parameter-box-height) 20)))
-                   (and @result-box (or (= @result-box-height :max) (< (- @max-height @result-box-height) 20))))))))
-
-(register-sub
   :command-completion
   (fn [db [_ chat-id]]
     (reaction

@@ -13,12 +13,12 @@
                            :transparent {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
-                           :overlay     {:height       20
-                                         :bar-style    "dark-content"
-                                         :color        styles/color-white}
                            :modal       {:height    20
                                          :bar-style "light-content"
-                                         :color     "#2f3031"}}
+                                         :color     "#2f3031"}
+                           :transaction {:height    20
+                                         :bar-style "light-content"
+                                         :color     styles/color-transparent}}
    :sized-text            {:margin-top        -5
                            :additional-height 5}
    :actions-list-view     {:border-bottom-color styles/color-gray3

@@ -4,6 +4,23 @@
 (def color-root-border "rgba(192, 198, 202, 0.28)")
 (def header-draggable-icon "rgba(73, 84, 93, 0.23)")
 
+(defn result-box-overlay [max-height opacity-anim-value]
+  {:background-color common/color-black
+   :position         :absolute
+   :opacity          opacity-anim-value
+   :height           max-height
+   :elevation        2
+   :bottom           0
+   :left             0
+   :right            0})
+
+(def overlap-container
+  {:position :absolute
+   :left     0
+   :top      0
+   :right    0
+   :bottom   0})
+
 (defn expandable-container [anim-value bottom]
   {:background-color common/color-white
    :border-top-color color-root-border
