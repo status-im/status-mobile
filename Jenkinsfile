@@ -72,7 +72,6 @@ node {
 
   stage('Slack Notification') {
     def c = (testPassed ? 'good' : 'warning' )
-    slackSend color: c, message: env.BRANCH_NAME + ' (Android, test: ' + (testPassed ? ':+1:' : ':-1:') + ') ' + apkUrl
-    slackSend color: c, message: env.BRANCH_NAME + ' (iOS) ' + ipaUrl
+    slackSend color: c, message: 'Branch: ' + env.BRANCH_NAME + '\nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl + '\n iOS: ' + ipaUrl
   }
 }
