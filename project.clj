@@ -13,7 +13,7 @@
                  [com.taoensso/timbre "4.7.4"]]
   :plugins [[lein-cljsbuild "1.1.4"]
             [lein-figwheel "0.5.8"]
-            [lein-re-frisk "0.4.6"]
+            [lein-re-frisk "0.4.7"]
             [rasom/lein-externs "0.1.7"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build" ^{:doc "Recompile code with prod profile."}
@@ -24,8 +24,8 @@
   :test-paths ["test/clj"]
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.8"]
-                                   [re-frisk-remote "0.4.1"]
-                                   [re-frisk-sidecar "0.4.4"]
+                                   [re-frisk-remote "0.4.2"]
+                                   [re-frisk-sidecar "0.4.5"]
                                    [com.cemerick/piggieback "0.2.1"]
                                    [io.appium/java-client "3.4.1"]
                                    [hawk "0.2.10"]]
