@@ -58,7 +58,7 @@
                       :draggable? false
                       :height     212}
      [view {:flex 1}
-      [scroll-view {:keyboardShouldPersistTaps true}
+      [scroll-view {:keyboardShouldPersistTaps :always}
        (when (seq requests)
          [view
           [item-title false (label :t/suggestions-requests)]

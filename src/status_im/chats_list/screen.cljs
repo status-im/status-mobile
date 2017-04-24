@@ -10,7 +10,6 @@
                                                 text
                                                 icon
                                                 image
-                                                linear-gradient
                                                 touchable-highlight]]
             [status-im.components.native-action-button :refer [native-action-button]]
             [status-im.components.drawer.view :refer [open-drawer]]
@@ -69,8 +68,8 @@
   [native-action-button {:button-color color-blue
                          :offset-x     16
                          :offset-y     22
-                         :hide-shadow  true
                          :spacing      13
+                         :hide-shadow  true
                          :on-press     #(dispatch [:navigate-to :new-chat])}])
 
 (defview chats-list []
@@ -89,7 +88,7 @@
                :renderHeader    renderers/list-header-renderer
                :renderFooter    #(list-item [view
                                              [common/list-footer]
-                                             [common/bottom-shaddow]])
+                                             [common/bottom-shadow]])
                :renderSeparator renderers/list-separator-renderer
                :style           (st/list-container tabs-hidden?)}]
    (when (and (not edit?)

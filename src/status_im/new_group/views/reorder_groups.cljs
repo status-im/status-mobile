@@ -38,8 +38,8 @@
   (fn [_ row-id _]
     (list-item
       (if (= row-id last)
-        ^{:key "bottom-shaddow"}
-        [common/bottom-shaddow]
+        ^{:key "bottom-shadow"}
+        [common/bottom-shadow]
         ^{:key row-id}
         [view st/order-item-separator-wrapper
          [view st/order-item-separator]]))))
@@ -52,7 +52,7 @@
      [status-bar]
      [toolbar-view]
      [view st/reorder-list-container
-      [common/top-shaddow]
+      [common/top-shadow]
       [sortable-list-view
        {:data             groups
         :order            order

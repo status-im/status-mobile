@@ -4,17 +4,17 @@
             [status-im.utils.platform :as p]
             [status-im.components.common.styles :as st]))
 
-(defn top-shaddow []
+(defn top-shadow []
   (when p/android?
     [linear-gradient
      {:style  st/gradient-bottom
-      :colors st/gradient-bottom-colors}]))
+      :colors st/gradient-top-colors}]))
 
-(defn bottom-shaddow []
+(defn bottom-shadow []
   (when p/android?
     [linear-gradient
      {:style  st/gradient-top
-      :colors st/gradient-top-colors}]))
+      :colors st/gradient-bottom-colors}]))
 
 (defn separator [style & [wrapper-style]]
   [view (merge st/separator-wrapper wrapper-style)
@@ -22,9 +22,9 @@
 
 (defn form-spacer []
   [view
-   [bottom-shaddow]
+   [bottom-shadow]
    [view st/form-spacer]
-   [top-shaddow]])
+   [top-shadow]])
 
 (defn list-separator []
   [separator st/list-separator])
@@ -54,4 +54,4 @@
        [context-menu
         [icon :options_gray]
         options]])]
-   [top-shaddow]])
+   [top-shadow]])

@@ -69,16 +69,16 @@
                 :enableEmptySections       true
                 :renderRow                 (render-row click-handler action params)
                 :bounces                   false
-                :keyboardShouldPersistTaps true
+                :keyboardShouldPersistTaps :always
                 :renderHeader              #(list-item
                                               [view
                                                [actions-view action click-handler]
-                                               [common/bottom-shaddow]
+                                               [common/bottom-shadow]
                                                [common/form-title (label :t/choose-from-contacts)
-                                                                  {:count-value (count contacts)}]
+                                                {:count-value (count contacts)}]
                                                [common/list-header]])
                 :renderFooter              #(list-item [view
                                                         [common/list-footer]
-                                                        [common/bottom-shaddow]])
+                                                        [common/bottom-shadow]])
                 :renderSeparator           renderers/list-separator-renderer
                 :style                     st/contacts-list-modal}]]])

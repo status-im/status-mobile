@@ -7,7 +7,6 @@
                                                                       action-separator]]
             [status-im.components.action-button.styles :refer [actions-list]]
             [status-im.components.react :refer [view text
-                                                linear-gradient
                                                 image
                                                 touchable-highlight
                                                 list-view
@@ -63,16 +62,16 @@
                   :enableEmptySections       true
                   :renderRow                 (contact-list-row)
                   :bounces                   false
-                  :keyboardShouldPersistTaps true
+                  :keyboardShouldPersistTaps :always
                   :renderHeader              #(list-item
-                                               [view
-                                                [options-list]
-                                                [common/bottom-shaddow]
-                                                [common/form-title (label :t/choose-from-contacts)
-                                                                   {:count-value (count contacts)}]
-                                                [common/list-header]])
+                                                [view
+                                                 [options-list]
+                                                 [common/bottom-shadow]
+                                                 [common/form-title (label :t/choose-from-contacts)
+                                                  {:count-value (count contacts)}]
+                                                 [common/list-header]])
                   :renderSeparator           renderers/list-separator-renderer
                   :renderFooter              #(list-item [view
                                                           [common/list-footer]
-                                                          [common/bottom-shaddow]])
+                                                          [common/bottom-shadow]])
                   :style                     st/contacts-list}])]])

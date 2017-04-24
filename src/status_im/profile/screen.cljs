@@ -6,8 +6,8 @@
             [status-im.contacts.styles :as cst]
             [status-im.components.common.common :refer [separator
                                                         form-spacer
-                                                        top-shaddow
-                                                        bottom-shaddow]]
+                                                        top-shadow
+                                                        bottom-shadow]]
             [status-im.components.styles :refer [color-blue color-gray5]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.action-button.action-button :refer [action-button
@@ -202,7 +202,7 @@
    [form-spacer]
    [view st/profile-info-container
     [my-profile-info current-account]
-    [bottom-shaddow]]])
+    [bottom-shadow]]])
 
 (defview profile []
   [{:keys [pending?
@@ -223,4 +223,4 @@
     [form-spacer]
     [view st/profile-info-container
      [profile-info contact]
-     [bottom-shaddow]]]])
+     [bottom-shadow]]]])

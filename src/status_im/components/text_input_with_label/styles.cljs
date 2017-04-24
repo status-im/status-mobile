@@ -19,7 +19,7 @@
                   :letter-spacing -0.2}})
 
 (defstyle component-container
-  {:padding-left 16
+  {:margin-left  16
    :android      {:min-height 76}
    :ios          {:min-height 78}})
 

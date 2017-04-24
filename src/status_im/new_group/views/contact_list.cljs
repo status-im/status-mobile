@@ -29,7 +29,7 @@
                :enableEmptySections       true
                :renderRow                 renderer-function
                :bounces                   false
-               :keyboardShouldPersistTaps true
+               :keyboardShouldPersistTaps :always
                :renderSeparator           renderers/list-separator-renderer
                :renderFooter              renderers/list-footer-renderer
                :renderHeader              renderers/list-header-renderer}]])

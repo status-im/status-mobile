@@ -6,8 +6,7 @@
                                                 text-input
                                                 text
                                                 image
-                                                touchable-highlight
-                                                linear-gradient]]
+                                                touchable-highlight]]
             [reagent.core :as r]
             [status-im.components.tabs.styles :as st]
             [status-im.components.tabs.tab :refer [tab]]

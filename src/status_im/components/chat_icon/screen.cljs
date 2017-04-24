@@ -5,7 +5,6 @@
                                                 text
                                                 image
                                                 icon]]
-            [status-im.components.icons.custom-icons :refer [oct-icon]]
             [status-im.components.chat-icon.styles :as st]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.resources :as resources]
@@ -32,17 +31,6 @@
     [view
      [view online-dot-left]
      [view online-dot-right]]]])
-
-(defn contact-badge [type styles]
-  (when (= type :edit)
-    [view (:online-view styles)
-     (case type
-       :online [view
-                [view (:online-dot-left styles)]
-                [view (:online-dot-right styles)]]
-       :edit [view
-              [oct-icon {:name  :pencil
-                         :style st/photo-pencil}]])]))
 
 (defview pending-contact-badge
   [chat-id {:keys [pending-wrapper pending-outer-circle pending-inner-circle]}]

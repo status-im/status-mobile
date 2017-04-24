@@ -9,8 +9,6 @@
 (def react-native (js/require "react-native"))
 (def native-modules (.-NativeModules react-native))
 (def device-event-emitter (.-DeviceEventEmitter react-native))
-
-(def linear-gradient-module (js/require "react-native-linear-gradient"))
 (def dismiss-keyboard! (js/require "dismissKeyboard"))
 (def orientation (js/require "react-native-orientation"))
 (def back-android (get-react-property "BackAndroid"))
@@ -23,7 +21,6 @@
 (def app-registry (get-react-property "AppRegistry"))
 (def navigator (get-class "Navigator"))
 (def view (get-class "View"))
-(def linear-gradient-class (adapt-class linear-gradient-module))
 
 (def status-bar (get-class "StatusBar"))
 (def drawer-layout (adapt-class drawer))
@@ -108,9 +105,10 @@
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))
 
-(defn linear-gradient
-  [props & children]
-  (vec (concat [linear-gradient-class (merge {:inverted true} props)] children)))
+(defn linear-gradient [props]
+  (let [class    (js/require "react-native-linear-gradient")
+        gradient (adapt-class (.-default class))]
+    [gradient props]))
 
 (defn list-item [component]
   (r/as-element component))
@@ -129,9 +127,11 @@
 
 ;; Clipboard
 
+(def sharing
+  (.-Share js/ReactNative))
+
 (defn copy-to-clipboard [text]
   (.setString (.-Clipboard react-native) text))
-
 
 ;; Emoji
 
