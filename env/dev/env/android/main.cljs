@@ -19,6 +19,6 @@
   :heads-up-display false
   :jsload-callback callback)
 
-(rr/enable-re-frisk-remote! {:host "10.0.2.2:4567"})
+(rr/enable-re-frisk-remote! {:host "10.0.3.2:4567" :pre-send (fn [db] (update db :chats #(into {} %)))})
 
 (core/init)
