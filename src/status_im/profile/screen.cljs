@@ -187,8 +187,8 @@
          (colorize-status-hashtags status)]]]])])
 
 (defview my-profile []
-         [{:keys [status] :as current-account} [:get-current-account]]
-         [view st/profile
+  [{:keys [status] :as current-account} [:get-current-account]]
+  [view st/profile
    [status-bar]
    [my-profile-toolbar]
    [view st/profile-form
