@@ -1163,11 +1163,11 @@ function jsSuggestionsContainerStyle(suggestionsCount) {
     return {
         marginVertical: 1,
         marginHorizontal: 0,
-        keyboardShouldPersistTaps: true,
+        keyboardShouldPersistTaps: "always",
         //height: Math.min(150, (56 * suggestionsCount)),
         backgroundColor: "white",
         borderRadius: 5,
-        keyboardShouldPersistTaps: true
+        keyboardShouldPersistTaps: "always"
     };
 }
 
@@ -1568,7 +1568,7 @@ function suggestionsContainerStyle(suggestionsCount) {
     return {
         marginVertical: 1,
         marginHorizontal: 0,
-        keyboardShouldPersistTaps: true,
+        keyboardShouldPersistTaps: "always",
         height: Math.min(150, (56 * suggestionsCount)),
         backgroundColor: "white",
         borderRadius: 5,
