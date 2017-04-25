@@ -38,27 +38,22 @@
              :wrong-password? false)
       (assoc-in [:confirm-transactions :password] "")))
 
-(defn on-unlock
-  [ids password]
-  (dispatch [:set :wrong-password? false])
-  (doseq [id ids]
-    (status/complete-transaction
-      id
-      password
-      #(dispatch [:transaction-completed
-                  {:id               id
-                   :response         %}]))))
+(defn on-transactions-completed [raw-results]
+  (let [results (:results (t/json->clj raw-results))]
+    (doseq [result results]
+      (dispatch [:transaction-completed {:id (name (key result)) :response (second result)}]))))
 
 (register-handler :accept-transactions
   (u/side-effect!
-    (fn [{:keys [transactions]} [_ password]]
-      (let [ids              (keys transactions)]
-        (on-unlock ids password)))))
+   (fn [{:keys [transactions]} [_ password]]
+     (dispatch [:set :wrong-password? false])
+     (status/complete-transactions (keys transactions) password on-transactions-completed))))
 
 (register-handler :accept-transaction
   (u/side-effect!
-   (fn [{:keys [transactions]} [_ password id]]
-     (on-unlock (list id) password))))
+   (fn [_ [_ password id]]
+     (dispatch [:set :wrong-password? false])
+     (status/complete-transactions (list id) password on-transactions-completed))))
 
 (register-handler :deny-transactions
   (u/side-effect!
@@ -146,16 +141,15 @@
 (register-handler :transaction-completed
   (u/side-effect!
     (fn [{:keys [transactions modal]} [_ {:keys [id response]}]]
-      (let [{:keys [hash error] :as parsed-response} (t/json->clj response)
+      (let [{:keys [hash error]} response
             {:keys [message-id]} (transactions id)]
-        (log/debug :parsed-response parsed-response)
+        (log/debug :parsed-response response)
         (when-not (and error (string? error) (not (s/blank? error)))
           (if (and message-id (not (s/blank? message-id)))
             (do (dispatch [::add-transactions-hash {:id         id
                                                     :hash       hash
                                                     :message-id message-id}])
-                (dispatch [::check-completed-transaction!
-                           {:message-id message-id}]))
+                (dispatch [::check-completed-transaction! {:message-id message-id}]))
             (dispatch [::remove-transaction id]))
           (when (#{:unsigned-transactions :transaction-details} modal)
             (dispatch [:navigate-to-modal :confirmation-success])))))))

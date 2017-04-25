@@ -277,8 +277,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void completeTransaction(final String hash, final String password, final Callback callback) {
-        Log.d(TAG, "completeTransaction");
+    public void completeTransactions(final String hashes, final String password, final Callback callback) {
+        Log.d(TAG, "completeTransactions");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -287,8 +287,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
             @Override
             public void run() {
-                String res = Statusgo.CompleteTransaction(hash, password);
-
+                String res = Statusgo.CompleteTransactions(hashes, password);
                 callback.invoke(res);
             }
         };
