@@ -249,21 +249,21 @@ RCT_EXPORT_METHOD(login:(NSString *)address
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Complete Transaction
-//////////////////////////////////////////////////////////////////// completeTransaction
-RCT_EXPORT_METHOD(completeTransaction:(NSString *)hash
+#pragma mark - Complete Transactions
+//////////////////////////////////////////////////////////////////// completeTransactions
+RCT_EXPORT_METHOD(completeTransactions:(NSString *)hashes
                   password:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
-    NSLog(@"CompleteTransaction() method called");
+    NSLog(@"CompleteTransactions() method called");
 #endif
-    char * result = CompleteTransaction((char *) [hash UTF8String], (char *) [password UTF8String]);
+    char * result = CompleteTransactions((char *) [hashes UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
 ////////////////////////////////////////////////////////////////////
 #pragma mark - Discard Transaction
-//////////////////////////////////////////////////////////////////// completeTransaction
+//////////////////////////////////////////////////////////////////// discardTransaction
 RCT_EXPORT_METHOD(discardTransaction:(NSString *)id) {
 #if DEBUG
     NSLog(@"DiscardTransaction() method called");

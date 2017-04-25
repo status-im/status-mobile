@@ -10,6 +10,9 @@
             [status-im.i18n :as i]
             [status-im.utils.platform :as p]))
 
+(defn cljs->json [data]
+  (.stringify js/JSON (clj->js data)))
+
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
 ;; this flag helps to handle this
@@ -108,11 +111,11 @@
   (when status
     (call-module #(.login status address password on-result))))
 
-(defn complete-transaction
-  [hash password callback]
-  (log/debug :complete-transaction (boolean status) hash password)
+(defn complete-transactions
+  [hashes password callback]
+  (log/debug :complete-transactions (boolean status) hashes password)
   (when status
-    (call-module #(.completeTransaction status (str hash) password callback))))
+    (call-module #(.completeTransactions status (cljs->json hashes) password callback))))
 
 (defn discard-transaction
   [id]
@@ -123,9 +126,6 @@
 (defn parse-jail [chat-id file callback]
   (when status
     (call-module #(.parseJail status chat-id file callback))))
-
-(defn cljs->json [data]
-  (.stringify js/JSON (clj->js data)))
 
 (defn call-jail [chat-id path params callback]
   (when status
