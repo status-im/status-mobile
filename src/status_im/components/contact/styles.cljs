@@ -33,14 +33,14 @@
 (def contact-container
   {:flex-direction   :row
    :align-items      :center
-   :background-color common/color-white
-   :padding-right    16})
+   :background-color common/color-white})
+
+(def more-btn-container
+  {:alignItems     :center
+   :justifyContent :center})
 
 (def more-btn
-  {:width          24
-   :height         24
-   :alignItems     :center
-   :justifyContent :center})
+  {:padding 16})
 
 (def selected-contact
   {:background-color common/selected-contact-color})
