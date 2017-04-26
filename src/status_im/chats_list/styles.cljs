@@ -46,19 +46,18 @@
    :ios             {:margin-top 14}})
 
 (defstyle chat-options-container
-  {:margin-right 16
-   :padding-top  10
-   :android      {:margin-top 16}
-   :ios          {:margin-top 14}})
+  {:padding-top 10})
 
-(def item-upper-container
-  {:flex            1
-   :flex-direction  :row})
+(defstyle item-upper-container
+  {:flex           1
+   :flex-direction :row
+   :padding-right  16})
 
 (defstyle item-lower-container
   {:flex            1
    :flex-direction  :row
    :justify-content :space-between
+   :padding-right   16
    :android         {:margin-top 4}
    :ios             {:margin-top 6}})
 
@@ -152,11 +151,12 @@
   {:flex-direction :row
    :padding-right  14})
 
-(def opts-btn
-  {:width           24
-   :height          24
-   :align-items     :center
+(def opts-btn-container
+  {:align-items     :center
    :justify-content :center})
+
+(def opts-btn
+  {:padding 16})
 
 (def create-icon
   {:fontSize 20

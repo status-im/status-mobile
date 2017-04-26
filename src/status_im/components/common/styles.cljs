@@ -55,12 +55,13 @@
                     :margin-top       8}})
 
 (defstyle form-title-extend-container
-  {:padding-right 16
-   :ios          {:margin-top 16
-                  :padding-top 16
+  {:ios          {:margin-top 16
                   :background-color color-white}
-   :android      {:margin-top 24
+   :android      {:margin-top 8
                   :background-color color-light-gray}})
+
+(def form-title-extend-button
+  {:padding 16})
 
 (defstyle form-title
   {:flex-shrink 1

@@ -26,6 +26,9 @@
 (defstyle profile-info-container
   {:background-color color-white})
 
+(def profile-info-item-button
+  {:padding 16})
+
 (def status-prompt
   {:padding-left  16
    :padding-right 16
@@ -95,7 +98,6 @@
   {:flex-direction :row
    :align-items    :center
    :padding-left   16
-   :padding-right  16
    :ios            {:height 73}
    :android        {:height 72}})
 

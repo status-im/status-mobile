@@ -98,7 +98,9 @@
    (when options
      [context-menu
       [icon :options_gray]
-      options])])
+      options
+      nil
+      st/profile-info-item-button])])
 
 (defn show-qr [contact qr-source]
   #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact

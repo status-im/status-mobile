@@ -33,10 +33,12 @@
     [view st/contact-container
      [contact-inner-view {:contact contact :info info}]
      (when extended?
-       [view st/more-btn
+       [view st/more-btn-container
         [context-menu
          [icon :options_gray]
-         extend-options]])]]])
+         extend-options
+         nil
+         st/more-btn]])]]])
 
 (defview toogle-contact-view [{:keys [whisper-identity] :as contact} selected-key on-toggle-handler]
   [checked [selected-key whisper-identity]]

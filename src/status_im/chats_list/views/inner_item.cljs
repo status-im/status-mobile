@@ -90,10 +90,12 @@
   (let [options [{:value        #(dispatch [:remove-chat chat-id])
                   :text         (label :t/delete-chat)
                   :destructive? true}]]
-    [view st/opts-btn
+    [view st/opts-btn-container
      [context-menu
       [icon :options_gray]
-      options]]))
+      options
+      nil
+      st/opts-btn]]))
 
 (defn chat-list-item-name [name group-chat? public?]
   (let [private-group? (and group-chat? (not public?))

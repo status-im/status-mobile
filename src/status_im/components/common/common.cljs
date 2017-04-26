@@ -53,5 +53,7 @@
       [view st/form-title-extend-container
        [context-menu
         [icon :options_gray]
-        options]])]
+        options
+        nil
+        st/form-title-extend-button]])]
    [top-shadow]])
