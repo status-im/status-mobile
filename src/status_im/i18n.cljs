@@ -11,6 +11,7 @@
     [status-im.translations.fr-ch :as fr-ch]
     [status-im.translations.hi :as hi]
     [status-im.translations.hu :as hu]
+    [status-im.translations.id :as id]
     [status-im.translations.it :as it]
     [status-im.translations.it-ch :as it-ch]
     [status-im.translations.ja :as ja]
@@ -52,6 +53,7 @@
                                       :fr-ch   fr-ch/translations
                                       :hi      hi/translations
                                       :hu      hu/translations
+                                      :id      id/translations
                                       :it      it/translations
                                       :it-ch   it-ch/translations
                                       :ja      ja/translations
