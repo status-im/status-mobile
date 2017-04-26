@@ -206,8 +206,10 @@
                  chats
                  (->> loaded-chats
                       (map (fn [{:keys [chat-id] :as chat}]
-                             (let [last-message (messages/get-last-message chat-id)]
-                               [chat-id (assoc chat :last-message last-message)])))
+                             (let [last-message (messages/get-last-message chat-id)
+                                   prev-chat    (get chats chat-id)
+                                   new-chat     (assoc chat :last-message last-message)]
+                               [chat-id (merge prev-chat new-chat)])))
                       (into (priority-map-by compare-chats))))]
 
     (-> db
