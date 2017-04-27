@@ -75,16 +75,14 @@ function superSuggestion(params, context) {
 status.addListener("on-message-input-change", superSuggestion);
 status.addListener("on-message-send", function (params, context) {
     if (isNaN(params.message)) {
-        status.sendMessage("Seems that you don't want to send money :(");
-        return;
+        return {"text-message": "Seems that you don't want to send money :("};
     }
 
     var balance = web3.eth.getBalance(context.from);
     var value = parseFloat(params.message);
     var weiValue = web3.toWei(value, "ether");
     if (bn(weiValue).greaterThan(bn(balance))) {
-        status.sendMessage("No way man, you don't have enough money! :)");
-        return;
+        return {"text-message": "No way man, you don't have enough money! :)"};
     }
     try {
         web3.eth.sendTransaction({
@@ -92,8 +90,8 @@ status.addListener("on-message-send", function (params, context) {
             to: context.from,
             value: weiValue
         });
-        status.sendMessage("You are the hero, you sent " + value + " ETH to yourself!");
+        return {"text-message": "You are the hero, you sent " + value + " ETH to yourself!"};
     } catch (err) {
-        status.sendMessage("Something went wrong :(")
+        return {"text-message": "Something went wrong :("};
     }
 });
