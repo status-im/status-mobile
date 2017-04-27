@@ -129,11 +129,11 @@
             (status/call-jail jail-id
                               path
                               params
-                              #(dispatch [:suggestions-handler
+                              #(dispatch [:received-bot-response
                                           {:chat-id         current-chat-id
                                            :command         command
-                                           :parameter-index parameter-index
-                                           :result          %}]))))))))
+                                           :parameter-index parameter-index}
+                                          %]))))))))
 
 (handlers/register-handler
   ::send-message
@@ -278,16 +278,14 @@
   (handlers/side-effect!
     (fn [db [_ chat-id text]]
       (let [data   (get-in db [:local-storage chat-id])
-            path   [:functions
-                    :message-suggestions]
+            path   [:functions :on-message-input-change]
             params {:parameters {:message text}
                     :context    {:data data}}]
         (status/call-jail chat-id
                           path
                           params
-                          (fn [{:keys [result] :as data}]
-                            (dispatch [:suggestions-handler {:chat-id chat-id
-                                                             :result  data}])))))))
+                          #(dispatch [:received-bot-response
+                                      {:chat-id chat-id} %]))))))
 
 (handlers/register-handler
   :clear-seq-arguments
