@@ -150,9 +150,6 @@ var status = {
     registerFunction: function (name, fn) {
         _status_catalog.functions[name] = fn;
     },
-    autorun: function (commandName) {
-        _status_catalog.autorun = commandName;
-    },
     localizeNumber: function (num, del, sep) {
         return I18n.toNumber(
             num.replace(",", "."),

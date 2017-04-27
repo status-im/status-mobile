@@ -240,7 +240,7 @@
         db'              (assoc db :current-chat-id chat-id)
         commands-loaded? (if js/goog.DEBUG
                            false
-                           (get-in db [:chats chat-id :commands-loaded]))]
+                           (get-in db [:contacts chat-id :commands-loaded]))]
     (dispatch [:load-requests! chat-id])
     ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
     #_(dispatch [:load-commands! chat-id])
@@ -442,13 +442,14 @@
       (let [{:keys [clock-value]} (messages/get-by-id message-id)]
         (send-clock-value! db to message-id clock-value)))))
 
-(register-handler :check-autorun
+(register-handler :check-and-open-dapp!
   (u/side-effect!
-    (fn [{:keys [current-chat-id contacts] :as db}]
-      (let [autorun (get-in db [:chats current-chat-id :autorun])]
-        (when autorun
+    (fn [{:keys [current-chat-id global-commands contacts] :as db}]
+      (let [dapp-url (get-in db [:contacts current-chat-id :dapp-url])]
+        (when dapp-url
           (am/go
-            (dispatch [:select-chat-input-command {:name autorun}])
+            (dispatch [:select-chat-input-command
+                       (assoc (:browse global-commands) :prefill [dapp-url])])
             (a/<! (a/timeout 100))
             (dispatch [:send-current-message])))))))
 

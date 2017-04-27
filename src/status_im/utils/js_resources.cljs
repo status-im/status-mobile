@@ -34,8 +34,6 @@
 (def status-js (str (slurp "resources/status.js")
                     (slurp "resources/i18n.js")))
 
-(def dapp-js (str (slurp "resources/dapp.js")))
-
 (def webview-js (slurp "resources/webview.js"))
 (def jquery (str
               " if (typeof jQuery2 == 'undefined') {"

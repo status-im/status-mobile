@@ -39,14 +39,15 @@
     (dispatch [::validate-hash params (js-res/get-resource bot-url)])
 
     (and dapp? dapp-url)
-    (http-get (s/join "/" [dapp-url "commands.js"])
-              (fn [response]
-                (and
-                  (string? (.text response))
-                  (when-let [content-type (.. response -headers (get "Content-Type"))]
-                    (s/includes? "application/javascript" content-type))))
-              #(dispatch [::validate-hash whisper-identity %])
-              #(dispatch [::validate-hash whisper-identity js-res/dapp-js]))
+    (let [url (s/join "/" [dapp-url "commands.js"])]
+      (http-get url
+                (fn [response]
+                  (and
+                    (string? (.text response))
+                    (when-let [content-type (.. response -headers (get "Content-Type"))]
+                      (s/includes? "application/javascript" content-type))))
+                #(dispatch [::validate-hash whisper-identity %])
+                #(log/debug (str "command.js wasn't found at " url))))
 
     :else
     (dispatch [::validate-hash params js-res/commands-js])))
@@ -107,7 +108,7 @@
        (into {})))
 
 (defn add-commands
-  [db [id _ {:keys [commands responses autorun]}]]
+  [db [id _ {:keys [commands responses]}]]
   (let [account        @(subscribe [:get-current-account])
         commands'      (filter-forbidden-names account id commands)
         global-command (:global commands')
@@ -115,12 +116,14 @@
         responses'     (filter-forbidden-names account id responses)]
     (cond-> db
 
+            true
+            (update-in [:contacts id] assoc
+                       :commands-loaded true)
+
             (get-in db [:chats id])
             (update-in [:chats id] assoc
                        :commands (mark-as :command commands'')
                        :responses (mark-as :response responses')
-                       :commands-loaded true
-                       :autorun autorun
                        :global-command global-command)
 
             global-command
@@ -152,8 +155,8 @@
 
 (reg-handler :check-and-load-commands!
   (u/side-effect!
-    (fn [{:keys [chats]} [identity callback]]
-      (if (get-in chats [identity :commands-loaded])
+    (fn [{:keys [contacts]} [identity callback]]
+      (if (get-in contacts [identity :commands-loaded])
         (callback)
         (dispatch [:load-commands! identity callback])))))
 
@@ -169,8 +172,8 @@
 (reg-handler ::add-commands
   [(after save-commands-js!)
    (after save-global-command!)
-   (after #(dispatch [:check-autorun]))
-   (after #(dispatch [:update-suggestions]))
+   ;;(after #(dispatch [:check-and-open-dapp!]))
+   ;;(after #(dispatch [:update-suggestions]))
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
             (dispatch [:invoke-chat-loaded-callbacks id])))]
