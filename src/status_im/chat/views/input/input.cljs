@@ -36,7 +36,7 @@
 
 (defview commands-view []
   [commands [:chat :command-suggestions]
-   responses [:chat :responses]
+   responses [:get-responses]
    requests [:chat :request-suggestions]
    show-suggestions? [:show-suggestions?]]
   [view style/commands-root

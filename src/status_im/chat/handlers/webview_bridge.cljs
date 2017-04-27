@@ -61,7 +61,7 @@
 (register-handler ::send-command
   (u/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ command-key params]]
-      (let [command       (get-in db [:chats current-chat-id :commands command-key])
+      (let [command       (get-in db [:contacts current-chat-id :commands command-key])
             command-input {:content       "0"
                            :command       command
                            :parameter-idx 0

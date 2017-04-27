@@ -47,3 +47,7 @@ status.command({
     type: status.types.TEXT,
     placeholder: I18n.t('location_address')
 });
+
+status.addListener("init", function (params, context) {
+    return {"text-message": "Hello, man!"};
+});

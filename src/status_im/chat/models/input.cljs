@@ -14,7 +14,8 @@
        (dec (count text)))))
 
 (defn possible-chat-actions [{:keys [global-commands] :as db} chat-id]
-  (let [{:keys [commands requests responses]} (get-in db [:chats chat-id])
+  (let [{:keys [requests]} (get-in db [:chats chat-id])
+        {:keys [commands responses]} (get-in db [:contacts chat-id])
 
         commands'  (into {} (map (fn [[k v]] [k [v :any]]) (merge global-commands commands)))
         responses' (into {} (map (fn [{:keys [message-id type]}]

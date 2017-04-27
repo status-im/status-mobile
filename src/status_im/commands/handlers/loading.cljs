@@ -21,8 +21,8 @@
 (defn load-commands!
   [{:keys [current-chat-id contacts]} [identity callback]]
   (let [identity' (or identity current-chat-id)
-        contact  (or (get contacts identity')
-                     sign-up/console-contact)]
+        contact   (or (get contacts identity')
+                      sign-up/console-contact)]
     (when identity'
       (dispatch [::fetch-commands! {:contact  contact
                                     :callback callback}])))
@@ -118,10 +118,7 @@
 
             true
             (update-in [:contacts id] assoc
-                       :commands-loaded true)
-
-            (get-in db [:chats id])
-            (update-in [:chats id] assoc
+                       :commands-loaded true
                        :commands (mark-as :command commands'')
                        :responses (mark-as :response responses')
                        :global-command global-command)
