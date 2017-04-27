@@ -27,7 +27,7 @@
 (defn context-menu-options [custom-styles]
   {:customStyles {:optionsContainer
                   (merge {:elevation      2
-                          :margin-top     30
+                          :margin-top     0
                           :padding-top    8
                           :width          164
                           :padding-bottom 8}
