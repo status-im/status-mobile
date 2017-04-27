@@ -33,7 +33,7 @@
                                (t/day today-date))
          yesterday  (plus today (days -1))]
      (cond
-       (before? local yesterday) (unparse (formatter "dd MMM hh:mm") local)
+       (before? local yesterday) (unparse (formatter "dd MMM hh:mm a") local)
        (before? local today) (label :t/datetime-yesterday)
        :else (today-format-fn local)))))
 
