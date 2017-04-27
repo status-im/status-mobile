@@ -51,10 +51,15 @@ Response.prototype.onReceiveResponse = function (handler) {
     this.onReceive = handler;
 };
 
-var context = {}
+var context = {};
 
-function addContext(ns, key, value) {
-    context[ns][key] = value;
+
+function addContext(key, value) {
+    context[status.message_id][key] = value;
+}
+
+function getContext(key) {
+    return context[status.message_id][key];
 }
 
 function call(pathStr, paramsStr) {
@@ -147,7 +152,7 @@ var status = {
         var response = new Response();
         return response.create(h);
     },
-    registerFunction: function (name, fn) {
+    addListener: function (name, fn) {
         _status_catalog.functions[name] = fn;
     },
     localizeNumber: function (num, del, sep) {
@@ -179,5 +184,49 @@ var status = {
         webView: webView,
         validationMessage: validationMessage,
         bridgedWebView: bridgedWebView
+    },
+    setSuggestions: function (view) {
+        addContext("suggestions", view);
+    },
+    sendMessage: function (text) {
+        addContext("text-message", text);
+    },
+    addLogMessage: function (type, message) {
+        var message = {
+            type: type,
+            message: JSON.stringify(message)
+        };
+        var logMessages = getContext("log-messages");
+        if (!logMessages) {
+            logMessages = [];
+        }
+        logMessages.push(message);
+        addContext("log-messages", logMessages);
     }
 };
+
+
+console = (function (old) {
+    return {
+        log: function (text) {
+            old.log(text);
+            status.addLogMessage('log', text);
+        },
+        debug: function (text) {
+            old.debug(text);
+            status.addLogMessage('debug', text);
+        },
+        info: function (text) {
+            old.info(text);
+            status.addLogMessage('info', text);
+        },
+        warn: function (text) {
+            old.warn(text);
+            status.addLogMessage('warn', text);
+        },
+        error: function (text) {
+            old.error(text);
+            status.addLogMessage('error', text);
+        }
+    };
+}(console));

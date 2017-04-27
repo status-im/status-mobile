@@ -192,36 +192,40 @@
   (u/side-effect!
     (fn [db [_ chat-id {:keys [content]}]]
       (let [data   (get-in db [:local-storage chat-id])
-            path   [:functions
-                    :message-handler]
+            path   [:functions :on-message-send]
             params {:parameters {:message content}
                     :context    {:data data}}]
         (status/call-jail chat-id
                           path
                           params
-                          (fn [{:keys [result]}]
-                            (log/debug "Message handler result: " result)
-                            (dispatch [::received-dapp-message chat-id result])))))))
+                          (fn [resp]
+                            (log/debug "Message handler result: " resp)
+                            (dispatch [:received-bot-response
+                                       {:chat-id chat-id} resp])))))))
 
-(register-handler ::received-dapp-message
+(register-handler :received-bot-response
   (u/side-effect!
-    (fn [_ [_ chat-id {:keys [returned]}]]
-      (let [{:keys [data messages err]} returned
-            content (or err data)]
-        (doseq [message messages]
+    (fn [_ [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
+      (let [{:keys [returned context]} result
+            {:keys [markup text-message]} returned
+            {:keys [log-messages]} context]
+        (when markup
+          (dispatch [:suggestions-handler (assoc params :result data)]))
+        (doseq [message log-messages]
           (let [{:keys [message type]} message]
-            (dispatch [:received-message
-                       {:message-id   (random/id)
-                        :content      (str type ": " message)
-                        :content-type text-content-type
-                        :outgoing     false
-                        :chat-id      chat-id
-                        :from         chat-id
-                        :to           "me"}])))
-        (when content
+            (when (or (not= type "debug") js/goog.DEBUG)
+              (dispatch [:received-message
+                         {:message-id   (random/id)
+                          :content      (str type ": " message)
+                          :content-type text-content-type
+                          :outgoing     false
+                          :chat-id      chat-id
+                          :from         chat-id
+                          :to           "me"}]))))
+        (when text-message
           (dispatch [:received-message
                      {:message-id   (random/id)
-                      :content      (str content)
+                      :content      (str text-message)
                       :content-type text-content-type
                       :outgoing     false
                       :chat-id      chat-id
