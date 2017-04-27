@@ -277,15 +277,12 @@
   ::check-dapp-suggestions
   (handlers/side-effect!
     (fn [db [_ chat-id text]]
-      (let [data   (get-in db [:local-storage chat-id])
-            path   [:functions :on-message-input-change]
-            params {:parameters {:message text}
-                    :context    {:data data}}]
-        (status/call-jail chat-id
-                          path
-                          params
-                          #(dispatch [:received-bot-response
-                                      {:chat-id chat-id} %]))))))
+      (let [data (get-in db [:local-storage chat-id])]
+        (status/call-function!
+          {:chat-id    chat-id
+           :function   :on-message-input-change
+           :parameters {:message text}
+           :context    {:data data}})))))
 
 (handlers/register-handler
   :clear-seq-arguments

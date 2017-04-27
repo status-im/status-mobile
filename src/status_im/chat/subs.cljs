@@ -62,13 +62,13 @@
 (register-sub :get-commands
   (fn [db [_ chat-id]]
     (let [current-chat (or chat-id (@db :current-chat-id))]
-      (reaction (or (get-in @db [:chats current-chat :commands]) {})))))
+      (reaction (or (get-in @db [:contacts current-chat :commands]) {})))))
 
 (register-sub
   :get-responses
   (fn [db [_ chat-id]]
     (let [current-chat (or chat-id (@db :current-chat-id))]
-      (reaction (or (get-in @db [:chats current-chat :responses]) {})))))
+      (reaction (or (get-in @db [:contacts current-chat :responses]) {})))))
 
 (register-sub
   :possible-chat-actions
@@ -159,7 +159,7 @@
 (register-sub :get-response
   (fn [db [_ n]]
     (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:chats @chat-id :responses n])))))
+      (reaction (get-in @db [:contacts @chat-id :responses n])))))
 
 (register-sub :is-request-answered?
   (fn [_ [_ message-id]]

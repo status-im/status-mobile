@@ -234,25 +234,33 @@
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]
-  (let [chat-id          (or id current-chat-id)
-        messages         (get-in db [:chats chat-id :messages])
-        command?         (= :command (get-in db [:edit-mode chat-id]))
-        db'              (assoc db :current-chat-id chat-id)
-        commands-loaded? (if js/goog.DEBUG
-                           false
-                           (get-in db [:contacts chat-id :commands-loaded]))]
-    (dispatch [:load-requests! chat-id])
-    ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
-    #_(dispatch [:load-commands! chat-id])
-    (if-not commands-loaded?
-      (dispatch [:load-commands! chat-id])
-      (dispatch [:invoke-chat-loaded-callbacks chat-id]))
-    (if (and (seq messages)
-             (not= (count messages) 1))
-      db'
-      (-> db'
-          load-messages!
-          init-chat))))
+  (let [chat-id           (or id current-chat-id)
+        messages          (get-in db [:chats chat-id :messages])
+        command?          (= :command (get-in db [:edit-mode chat-id]))
+        db'               (-> db
+                              (assoc :current-chat-id chat-id)
+                              (assoc-in [:chats chat-id :was-opened?] true))
+        commands-loaded?  (get-in db [:contacts chat-id :commands-loaded])
+        bot-url           (get-in db [:contacts chat-id :bot-url])
+        was-opened?       (get-in db [:chats chat-id :was-opened?])
+        call-init-command #(when (and (not was-opened?) bot-url)
+                             (status/call-function!
+                               {:chat-id  chat-id
+                                :function :init}))]
+        (dispatch [:load-requests! chat-id])
+        ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
+        #_(dispatch [:load-commands! chat-id])
+        (if-not commands-loaded?
+          (dispatch [:load-commands! chat-id call-init-command])
+          (do
+            (call-init-command)
+            (dispatch [:invoke-chat-loaded-callbacks chat-id])))
+        (if (and (seq messages)
+                 (not= (count messages) 1))
+          db'
+          (-> db'
+              load-messages!
+              init-chat))))
 
 (register-handler :add-chat-loaded-callback
   (fn [db [_ chat-id callback]]

@@ -191,17 +191,12 @@
 (register-handler ::send-dapp-message
   (u/side-effect!
     (fn [db [_ chat-id {:keys [content]}]]
-      (let [data   (get-in db [:local-storage chat-id])
-            path   [:functions :on-message-send]
-            params {:parameters {:message content}
-                    :context    {:data data}}]
-        (status/call-jail chat-id
-                          path
-                          params
-                          (fn [resp]
-                            (log/debug "Message handler result: " resp)
-                            (dispatch [:received-bot-response
-                                       {:chat-id chat-id} resp])))))))
+      (let [data (get-in db [:local-storage chat-id])]
+        (status/call-function!
+          {:chat-id    chat-id
+           :function   :on-message-send
+           :parameters {:message content}
+           :context    {:data data}})))))
 
 (register-handler :received-bot-response
   (u/side-effect!
