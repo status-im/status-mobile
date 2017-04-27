@@ -110,22 +110,23 @@
 (handlers/register-handler
   :load-chat-parameter-box
   (handlers/side-effect!
-    (fn [{:keys [current-chat-id] :as db} [_ {:keys [name type] :as command}]]
+    (fn [{:keys [current-chat-id] :as db} [_ {:keys [name type bot] :as command}]]
       (let [parameter-index (input-model/argument-position db current-chat-id)]
         (when (and command (> parameter-index -1))
-          (let [data   (get-in db [:local-storage current-chat-id])
-                path   [(if (= :command type) :commands :responses)
-                        name
-                        :params
-                        parameter-index
-                        :suggestions]
-                args   (-> (get-in db [:chats current-chat-id :input-text])
-                           (input-model/split-command-args)
-                           (rest))
-                params {:parameters {:args args}
-                        :context    (merge {:data data}
-                                           (input-model/command-dependent-context-params command))}]
-            (status/call-jail current-chat-id
+          (let [jail-id (or bot current-chat-id)
+                data    (get-in db [:local-storage current-chat-id])
+                path    [(if (= :command type) :commands :responses)
+                         name
+                         :params
+                         parameter-index
+                         :suggestions]
+                args    (-> (get-in db [:chats jail-id :input-text])
+                            (input-model/split-command-args)
+                            (rest))
+                params  {:parameters {:args args}
+                         :context    (merge {:data data}
+                                            (input-model/command-dependent-context-params command))}]
+            (status/call-jail jail-id
                               path
                               params
                               #(dispatch [:suggestions-handler

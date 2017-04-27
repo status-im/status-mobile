@@ -10,11 +10,11 @@
 
 (handlers/register-handler :request-command-data
   (handlers/side-effect!
-    (fn [{:keys [chats current-account-id] :as db}
+    (fn [{:keys [contacts current-account-id] :as db}
          [_ {{:keys [command params content-command type]} :content
              :keys [message-id chat-id on-requested jail-id] :as message} data-type]]
       (let [jail-id (or jail-id chat-id)]
-        (if-not (get-in chats [jail-id :commands-loaded])
+        (if-not (get-in contacts [jail-id :commands-loaded])
           (do (dispatch [:add-commands-loading-callback
                          jail-id
                          #(dispatch [:request-command-data message data-type])])
@@ -22,7 +22,7 @@
           (let [path     [(if (= :response (keyword type)) :responses :commands)
                           (if content-command content-command command)
                           data-type]
-                to       (get-in db [:contacts chat-id :address])
+                to       (get-in contacts [chat-id :address])
                 params   {:parameters params
                           :context    (merge {:platform platform/platform
                                               :from     current-account-id
