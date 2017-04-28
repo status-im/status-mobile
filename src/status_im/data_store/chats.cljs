@@ -43,9 +43,7 @@
 (defn add-contacts
   [chat-id identities]
   (data-store/add-contacts chat-id identities)
-  ; TODO: move this somewhere else
-  ; TODO: temp. Update chat in db atom
-  (dispatch [:initialize-chats]))
+  (dispatch [:reload-chats]))
 
 (defn remove-contacts
   [chat-id identities]

@@ -6,6 +6,7 @@
             [taoensso.timbre :as log]
             [status-im.accessibility-ids :as id]
             [status-im.components.react :refer [view
+                                                autogrow-text-input
                                                 animated-view
                                                 text
                                                 scroll-view
@@ -64,41 +65,45 @@
         command              (subscribe [:selected-chat-command])
         sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])
         input-focused?       (subscribe [:chat-ui-props :input-focused?])]
-    (fn [{:keys [set-layout-height height]}]
+    (fn [{:keys [set-layout-height set-container-width height]}]
       [text-input
        {:ref                    #(when %
                                    (dispatch [:set-chat-ui-props {:input-ref %}]))
         :accessibility-label    id/chat-message-input
         :multiline              true
         :default-value          (or @input-text "")
-        :editable               (not @sending-in-progress?)
-        :on-blur                #(do (dispatch [:set-chat-ui-props {:input-focused? false}])
-                                     (set-layout-height 0))
-        :on-content-size-change (when-not @input-focused?
+        :editable               true
+        :blur-on-submit         false
+        :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
+                                                                :show-emoji?    false}])
+        :on-blur                #(do (dispatch [:set-chat-ui-props {:input-focused? false}]))
+        :on-layout              (fn [e]
+                                  (set-container-width (.-width (.-layout (.-nativeEvent e)))))
+        :on-change              (fn [e]
+                                  (let [native-event (.-nativeEvent e)
+                                        height       (.. native-event -contentSize -height)
+                                        text         (.-text native-event)]
+                                    (set-layout-height height)
+                                    (when (not= text @input-text)
+                                      (dispatch [:set-chat-input-text text])
+                                      (if @command
+                                        (do
+                                          (dispatch [:load-chat-parameter-box (:command @command)])
+                                          (dispatch [:set-chat-ui-props {:validation-messages nil}]))
+                                        (do
+                                          (dispatch [:set-chat-input-metadata nil])
+                                          (dispatch [:set-chat-ui-props {:result-box          nil
+                                                                         :validation-messages nil}]))))))
+        :on-content-size-change (when-not input-focused?
                                   #(let [h (-> (.-nativeEvent %)
                                                (.-contentSize)
                                                (.-height))]
                                      (set-layout-height h)))
-        :on-change              #(let [h (-> (.-nativeEvent %)
-                                             (.-contentSize)
-                                             (.-height))]
-                                   (set-layout-height h))
-        :on-change-text         #(do (dispatch [:set-chat-input-text %])
-                                     (if @command
-                                       (do
-                                         (dispatch [:load-chat-parameter-box (:command @command)])
-                                         (dispatch [:set-chat-ui-props {:validation-messages nil}]))
-                                       (do
-                                         (dispatch [:set-chat-input-metadata nil])
-                                         (dispatch [:set-chat-ui-props {:result-box          nil
-                                                                        :validation-messages nil}]))))
         :on-selection-change    #(let [s (-> (.-nativeEvent %)
                                              (.-selection))]
                                    (when (and (= (.-end s) (+ 2 (count (get-in @command [:command :name]))))
                                               (get-in @command [:command :sequential-params]))
                                      (dispatch [:chat-input-focus :seq-input-ref])))
-        :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
-                                                                :show-emoji?    false}])
         :style                  (style/input-view height)
         :placeholder-text-color style/color-input-helper-placeholder
         :auto-capitalize        :sentences}])))
@@ -168,16 +173,18 @@
   (let [component            (r/current-component)
         set-layout-width     #(r/set-state component {:width %})
         set-layout-height    #(r/set-state component {:height %})
+        set-container-width  #(r/set-state component {:container-width %})
         command              (subscribe [:selected-chat-command])]
     (r/create-class
       {:reagent-render
        (fn [{:keys [anim-margin]}]
-         (let [{:keys [width height]} (r/state component)
+         (let [{:keys [width height container-width]} (r/state component)
                command @command]
            [animated-view {:style (style/input-root height anim-margin)}
-            [basic-text-input {:set-layout-height set-layout-height
-                               :height            height}]
             [invisible-input {:set-layout-width set-layout-width}]
+            [basic-text-input {:set-layout-height   set-layout-height
+                               :set-container-width set-container-width
+                               :height              height}]
             [input-helper {:command command
                            :width   width}]
             [seq-input {:command-width width}]
