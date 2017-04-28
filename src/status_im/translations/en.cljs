@@ -124,6 +124,7 @@
    :account-generation-message            "Gimmie a sec, I gotta do some crazy math to generate your account!"
    :move-to-internal-failure-message      "We need to move some important files from external to internal storage. To do this, we need your permission. We won't be using external storage in future versions."
    :debug-enabled                         "Debug server has been launched! Your IP address is {{ip}}. You can now add your DApp by running *status-dev-cli add-dapp --ip {{ip}}* from your computer"
+   :debug-enabled-no-ip                   "Debug server has been launched! You can now add your DApp by running *status-dev-cli add-dapp --ip [your ip]* from your computer"
 
    ;phone types
    :phone-e164                            "International 1"

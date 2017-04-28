@@ -36,7 +36,9 @@
            (get-ip (fn [ip]
                      (dispatch [:received-message
                                 {:message-id   (random/id)
-                                 :content      (label :t/debug-enabled {:ip ip})
+                                 :content      (if ip
+                                                 (label :t/debug-enabled {:ip ip})
+                                                 (label :t/debug-enabled-no-ip))
                                  :content-type text-content-type
                                  :outgoing     false
                                  :chat-id      console-chat-id
