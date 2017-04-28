@@ -63,7 +63,7 @@
     "react-native-invertible-scroll-view": "^1.0.0",
     "react-native-level-fs": "^2.0.1",
     "react-native-linear-gradient": "2.0.0",
-    "react-native-network-info": "github:alwx/react-native-network-info",
+    "react-native-network-info": "2.0.0",
     "react-native-orientation": "github:youennPennarun/react-native-orientation",
     "react-native-popup-menu": "^0.7.1",
     "react-native-qrcode": "^0.2.2",
