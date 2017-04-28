@@ -2,6 +2,7 @@
   (:require [re-frame.core :refer [after dispatch debug enrich]]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.navigation.handlers :as nav]
+            [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]
             [status-im.utils.hex :refer [valid-hex?]]
@@ -134,6 +135,7 @@
                            :data       data
                            :gas        (.toDecimal js/Web3.prototype gas)
                            :gas-price  (.toDecimal js/Web3.prototype gasPrice)
+                           :timestamp  (time/now-ms)
                            :message-id message_id}]
           (assoc-in db [:transactions-queue id] transaction))
         db))))

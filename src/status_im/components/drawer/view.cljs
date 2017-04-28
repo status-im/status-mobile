@@ -1,130 +1,176 @@
 (ns status-im.components.drawer.view
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [reagent.core :as r]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+  (:require [cljs.spec :as s]
             [clojure.string :as str]
-            [cljs.spec :as s]
+            [reagent.core :as r]
+            [re-frame.core :as rf]
+            [status-im.accessibility-ids :as id]
+            [status-im.components.chat-icon.screen :as ci]
+            [status-im.components.common.common :as common]
+            [status-im.components.context-menu :as context-menu]
+            [status-im.components.drawer.styles :as st]
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
-                                                image
+                                                icon
+                                                list-item
+                                                list-view
                                                 drawer-layout
                                                 touchable-without-feedback
-                                                touchable-opacity]]
-            [status-im.components.text-field.view :refer [text-field]]
-            [status-im.components.status-view.view :refer [status-view]]
-            [status-im.components.drawer.styles :as st]
+                                                touchable-highlight
+                                                touchable-opacity
+                                                dismiss-keyboard!]]
+            [status-im.components.status-view.view :as status-view]
+            [status-im.i18n :as i18n]
             [status-im.profile.validations :as v]
-            [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.utils.utils :refer [clean-text]]
-            [status-im.i18n :refer [label]]
-            [status-im.accessibility-ids :as id]
-            [status-im.components.react :refer [dismiss-keyboard!]]
-            [clojure.string :as str]
-            [status-im.components.chat-icon.screen :as ci]))
+            [status-im.utils.datetime :as time]
+            [status-im.utils.gfycat.core :as gfycat]
+            [status-im.utils.listview :as lw]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]))
 
 (defonce drawer-atom (atom))
-
-(defn open-drawer []
-  (.openDrawer @drawer-atom))
-
-(defn close-drawer []
-  (.closeDrawer @drawer-atom))
-
-(defn menu-item [{:keys [name handler]}]
-  [touchable-opacity {:style   st/menu-item-touchable
-                      :onPress (fn []
-                                 (close-drawer)
-                                 (handler))}
-   [text {:style st/menu-item-text
-          :font  :default}
-    name]])
+(defn open-drawer [] (.openDrawer @drawer-atom))
+(defn close-drawer [] (.closeDrawer @drawer-atom))
 
 (defn- update-status [new-status]
   (when-not (str/blank? new-status)
-    (dispatch [:check-status-change new-status])
-    (dispatch [:account-update {:status new-status}])
-    (dispatch [:set-in [:profile-edit :status] new-status])))
+    (rf/dispatch [:check-status-change new-status])
+    (rf/dispatch [:account-update {:status new-status}])
+    (rf/dispatch [:set-in [:profile-edit :status] new-status])))
 
-(defn drawer-menu []
-  (let
-    [account         (subscribe [:get-current-account])
-     profile         (subscribe [:get :profile-edit])
-     keyboard-height (subscribe [:get :keyboard-height])
-     placeholder     (generate-gfy)
-     status-edit?    (r/atom false)
-     status-text     (r/atom nil)]
+(defview profile-picture []
+  [account [:get-current-account]]
+  [touchable-opacity {:on-press #(rf/dispatch [:navigate-to :my-profile])
+                      :style    st/user-photo-container}
+   [view
+    [ci/chat-icon (:photo-path account) {:size 52}]]])
+
+(defview name-input [placeholder]
+  [account [:get-current-account]
+   new-name [:get-in [:profile-edit :name]]]
+  (let [current-name (:name account)]
+    [view {:style st/name-input-wrapper}
+     [text-input
+      {:placeholder    placeholder
+       :style          (st/name-input-text (s/valid? ::v/name (or new-name current-name)))
+       :font           (if platform/ios? :medium :default)
+       :default-value  (or new-name current-name)
+       :on-change-text #(rf/dispatch [:set-in [:profile-edit :name] %])
+       :on-end-editing #(do
+                          (rf/dispatch [:set-in [:profile-edit :name] nil])
+                          (when (s/valid? ::v/name new-name)
+                            (rf/dispatch [:account-update {:name (utils/clean-text new-name)}])))}]]))
+
+(defview status-input []
+  [account      [:get-current-account]
+   status-edit? (r/atom false)
+   status-text  (r/atom nil)]
+  (let [status      (:status account)
+        placeholder (i18n/label :t/update-status)]
+    [view st/status-container
+     (if @status-edit?
+       [text-input {:style               st/status-input-view
+                    :multiline           true
+                    :auto-focus          true
+                    :focus               @status-edit?
+                    :max-length          140
+                    :accessibility-label id/drawer-status-input
+                    :placeholder         placeholder
+                    :default-value       status
+                    :on-blur             #(do
+                                            (reset! status-edit? false)
+                                            (update-status @status-text))
+                    :on-change-text      #(let [new-status (utils/clean-text %)]
+                                            (reset! status-text new-status)
+                                            (if (str/includes? % "\n")
+                                              (do
+                                                (reset! status-edit? false)
+                                                (update-status new-status))
+                                              (rf/dispatch [:set-in [:profile-edit :status] new-status])))}]
+       [status-view/status-view {:style           (st/status-view (str/blank? status))
+                                 :on-press        #(reset! status-edit? true)
+                                 :number-of-lines 3
+                                 :status          (if (str/blank? status) placeholder status)}])]))
+
+(defview transaction-list-item [{:keys [to value timestamp] :as transaction}]
+  [recipient [:contact-by-address to]]
+  (let [eth-value (.fromWei js/Web3.prototype value "ether")
+        value     (i18n/label-number eth-value)
+        recipient-name (or (:name recipient) to)]
+    [touchable-highlight {:on-press #(rf/dispatch [:navigate-to-modal :transaction-details transaction])}
+     [view {:style st/transaction}
+      [icon :arrow_right_gray st/transaction-icon]
+      [view {:style st/transaction-info}
+       [view {:style st/transaction-value-container}
+        [text {:style st/transaction-value :font :medium} value]
+        [text {:style st/transaction-unit} "ETH"]]
+       [view {:style st/transaction-details-container}
+        [text {:style st/transaction-to} (i18n/label :t/to)]
+        [text {:style st/transaction-recipient :number-of-lines 1} recipient-name]
+        [text {:style st/transaction-time} (time/format-date "dd MMM hh:mm" (time/to-date timestamp))]]]
+      [view {:style st/transaction-picture}
+       (when recipient
+         [ci/chat-icon (:photo-path recipient) {:size 40}])]]]))
+
+(defn render-separator-fn [transactions-count]
+  (fn [_ row-id _]
+    (when (< row-id (dec transactions-count))
+      (list-item
+       ^{:key row-id}
+       [common/separator {} st/transactions-list-separator]))))
+
+(defview unsigned-transactions []
+  [all-transactions [:transactions]]
+  (let [transactions (take 2 (sort-by :timestamp > all-transactions))]
+    (if (empty? transactions)
+      [view {:style st/empty-transactions-title-container}
+       [text {:style st/transactions-title} (i18n/label :t/no-unsigned-transactions)]]
+
+      [view
+       [view {:style st/transactions-title-container}
+        [text {:style st/transactions-title} (i18n/label :t/unsigned-transactions)]]
+       [list-view {:dataSource      (lw/to-datasource transactions)
+                   :renderSeparator (render-separator-fn (count transactions))
+                   :renderRow       (fn [row _ _] (list-item [transaction-list-item row]))}]
+       [touchable-opacity {:style    st/view-all-transactions-button
+                           :on-press #(rf/dispatch [:navigate-to-modal :unsigned-transactions])}
+        [text {:style      st/view-all-transactions-text
+               :font       (if platform/android? :medium :default)
+               :uppercase? platform/android?}
+         (i18n/label :t/view-all)]]])))
+
+(defn current-network []
+  [view {:style st/network-label-container}
+   [text {:style st/network-label} (i18n/label :t/current-network)]
+   [text {:style st/network-title} "Ropsten"]])
+
+(defn options-btn []
+  (let [options [{:value (fn []
+                           (close-drawer)
+                           (rf/dispatch [:set-in [:profile-edit :name] nil])
+                           (rf/dispatch [:navigate-to :accounts]))
+                  :text  (i18n/label :t/switch-users)}]]
+    [view {:style st/options-button}
+     [context-menu/context-menu [icon :options_gray] options]]))
+
+(defn drawer []
+  (let [placeholder (gfycat/generate-gfy)]
     (fn []
-      (let [{:keys [name photo-path status]} @account
-            {new-name   :name} @profile]
-        [view st/drawer-menu
-         [touchable-without-feedback {:on-press #(dismiss-keyboard!)}
-          [view st/drawer-menu
-           [touchable-opacity {:on-press #(dispatch [:navigate-to :my-profile])}
-            [view st/user-photo-container
-             [ci/chat-icon photo-path {:size 64}]]]
-           [view st/name-container
-            [text-field
-             {:line-color       :white
-              :focus-line-color :white
-              :placeholder      placeholder
-              :editable         true
-              :input-style      (st/name-input-text (s/valid? ::v/name (or new-name name)))
-              :wrapper-style    st/name-input-wrapper
-              :value            (or new-name name)
-              :on-change-text   #(dispatch [:set-in [:profile-edit :name] %])
-              :on-end-editing   #(do
-                                   (dispatch [:set-in [:profile-edit :name] nil])
-                                   (when (s/valid? ::v/name new-name)
-                                     (dispatch [:account-update {:name (clean-text new-name)}])))}]]
-           [view st/status-container
-            (if @status-edit?
-              [text-input {:style               st/status-input
-                           :editable            true
-                           :multiline           true
-                           :auto-focus          true
-                           :focus               status-edit?
-                           :max-length          140
-                           :accessibility-label id/drawer-status-input
-                           :placeholder         (label :t/profile-no-status)
-                           :default-value       status
-                           :on-blur             #(do
-                                                   (reset! status-edit? false)
-                                                   (update-status @status-text))
-                           :on-change-text      #(let [status (clean-text %)]
-                                                   (reset! status-text status)
-                                                   (if (str/includes? % "\n")
-                                                     (do
-                                                       (reset! status-edit? false)
-                                                       (update-status status))
-                                                     (dispatch [:set-in [:profile-edit :status] status])))}]
-              [status-view {:style           st/status-text
-                            :on-press        #(reset! status-edit? true)
-                            :number-of-lines 3
-                            :status          status}])]
-           [view st/menu-items-container
-            [menu-item {:name    (label :t/profile)
-                        :handler #(dispatch [:navigate-to :my-profile])}]
-            [menu-item {:name    (label :t/discover)
-                        :handler #(dispatch [:navigate-to-tab :discover])}]
-            [menu-item {:name    (label :t/contacts)
-                        :handler #(dispatch [:navigate-to-tab :contact-list])}]]
-           (when (zero? @keyboard-height)
-             [text {:style st/feedback
-                    :font  :default} (label :t/feedback)])
-           (when (zero? @keyboard-height)
-             [view st/switch-users-container
-              [touchable-opacity {:onPress (fn []
-                                             (close-drawer)
-                                             (dispatch [:set-in [:profile-edit :name] nil])
-                                             (dispatch [:navigate-to :accounts]))}
-               [text {:style st/switch-users-text
-                      :font  :default}
-                (label :t/switch-users)]]])]]]))))
+      [touchable-without-feedback {:on-press #(dismiss-keyboard!)}
+       [view st/drawer
+        [view st/upper-container
+         [view st/profile-container
+          [profile-picture]
+          [name-input placeholder]
+          [status-input]
+          [options-btn]]
+         [current-network]]
+        [unsigned-transactions]]])))
 
 (defn drawer-view [items]
-  [drawer-layout {:drawerWidth          260
-                  :renderNavigationView #(r/as-element [drawer-menu])
+  [drawer-layout {:drawerWidth          300
+                  :renderNavigationView #(r/as-element [drawer])
                   :onDrawerSlide        dismiss-keyboard!
                   :ref                  (fn [drawer]
                                           (reset! drawer-atom drawer))}
