@@ -67,7 +67,7 @@
 (defn chats-action-button []
   [native-action-button {:button-color color-blue
                          :offset-x     16
-                         :offset-y     22
+                         :offset-y     40
                          :spacing      13
                          :hide-shadow  true
                          :on-press     #(dispatch [:navigate-to :new-chat])}])
