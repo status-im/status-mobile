@@ -225,10 +225,8 @@
                  chats
                  (->> loaded-chats
                       (map (fn [{:keys [chat-id] :as chat}]
-                             (let [last-message (messages/get-last-message chat-id)
-                                   prev-chat    (get chats chat-id)
-                                   new-chat     (assoc chat :last-message last-message)]
-                               [chat-id (merge prev-chat new-chat)])))
+                             (let [last-message (messages/get-last-message chat-id)]
+                               [chat-id (assoc chat :last-message last-message)])))
                       (into (priority-map-by compare-chats))))]
 
     (-> db
@@ -242,11 +240,22 @@
     db
     (assoc db :loaded-chats (chats/get-all))))
 
-;TODO: check if its new account / signup status / create console chat
 (register-handler :initialize-chats
   [(after #(dispatch [:load-unviewed-messages!]))
    (after #(dispatch [:load-default-contacts!]))]
   ((enrich initialize-chats) load-chats!))
+
+(register-handler :reload-chats
+  (fn [{:keys [chats] :as db} _]
+    (let [chats' (->> (chats/get-all)
+                      (map (fn [{:keys [chat-id] :as chat}]
+                             (let [last-message (messages/get-last-message chat-id)
+                                   prev-chat    (get chats chat-id)
+                                   new-chat     (assoc chat :last-message last-message)]
+                               [chat-id (merge prev-chat new-chat)])))
+                      (into (priority-map-by compare-chats)))]
+      (-> (assoc db :chats chats')
+          (init-console-chat true)))))
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :as db} [_ _ id]]

@@ -13,8 +13,8 @@
 
 (def max-input-height 66)
 (def min-input-height 38)
-(def input-spacing-top 5)
-(def input-spacing-bottom 8)
+(def input-spacing-top 3)
+(def input-spacing-bottom 5)
 
 (defnstyle root [margin-bottom]
   {:flex-direction   :column
@@ -50,12 +50,17 @@
    :android          {:border-radius 4}
    :ios              {:border-radius 8}})
 
+(defnstyle input-touch-handler-view [container-width]
+  {:position :absolute
+   :width    container-width
+   :height   min-input-height})
+
 (defnstyle input-view [content-height]
   {:flex           1
    :font-size      14
    :padding-top    input-spacing-top
    :padding-bottom input-spacing-bottom
-   :height         (min (max min-input-height content-height) max-input-height)})
+   :height (+ (min (max min-input-height content-height) max-input-height))})
 
 (def invisible-input-text
   {:font-size        14
