@@ -48,3 +48,4 @@
 (defn web3-init [provider-address]
   (str "var providerAddress = \"" provider-address "\";"
        (slurp "resources/web3_init.js")))
+ ;;
