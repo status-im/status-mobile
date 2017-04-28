@@ -21,6 +21,7 @@
 (def color-light-blue-transparent "#628fe333")
 (def color-light-blue2 "#eff3fc")
 (def color-light-blue3 "#a0bcf0")
+(def color-light-blue4 "#f1f4f5")
 (def color-dark-blue-1 "#252c4a")
 (def color-dark-blue-2 "#1f253f")
 (def color-dark-blue-3 "#191f37")

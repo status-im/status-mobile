@@ -1,92 +1,166 @@
 (ns status-im.components.drawer.styles
-  (:require [status-im.components.styles :refer [color-white
-                                                 text1-color
-                                                 text2-color
-                                                 text3-color
-                                                 color-red]]
-            [status-im.utils.platform :as p]))
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
+  (:require [status-im.components.styles :as common]))
 
-(def drawer-menu
+(def drawer
   {:flex             1
-   :background-color color-white
-   :flex-direction   :column})
+   :background-color common/color-white
+   :justify-content  :space-between})
+
+;; profile
+
+(def upper-container
+  {:margin     16
+   :margin-top 0})
+
+(def profile-container
+  {:padding          16
+   :border-radius    8
+   :background-color common/color-light-blue4})
 
 (def user-photo-container
-  {:margin-top      40
-   :align-items     :center
-   :justify-content :center})
-
-(def user-photo
-  {:border-radius 32
-   :width         64
-   :height        64})
-
-(def name-container
-  {:margin-top    (if p/ios? -13 -19)
-   :margin-bottom -16
-   :margin-left   16
-   :margin-right  16})
+  {:height 52
+   :width  52})
 
 (def name-input-wrapper
-  {})
+  {:margin-top 24
+   :padding    0
+   :height     20})
 
-(defn name-input-text [valid?]
-  {:color      (if valid? text1-color
-                          color-red)
-   :text-align :center})
+(defnstyle name-input-text [valid?]
+  {:line-height 24
+   :height      20
+   :padding     0
+   :color       (if valid? common/color-black common/color-red)
+   :android     {:font-size 16}
+   :ios         {:font-size 17}})
 
 (def status-container
-  {:margin-left     16
-   :margin-right    16
-   :flex-direction  :row
-   :margin-top      5
-   :justify-content :center})
+  {:flex-direction :row
+   :margin-top     3})
 
-(def status-view
-  {:min-height          56
-   :width               200
-   :font-size           14
-   :text-align          :center
+(defstyle status-input-view
+  {:min-height          67
+   :width               236
+   :font-size           15
+   :line-height         21
+   :padding-left        0
+   :padding-top         5
+   :padding-bottom      0
+   :margin-bottom       0
    :text-align-vertical :top
-   :color               text2-color})
+   :color               common/color-black})
 
-(def status-input
-  (merge status-view
-         {:padding-left 4
-          :padding-top  (if p/ios? 0 5)}))
+(defnstyle status-view [placeholder?]
+  (merge status-input-view
+         {:color      (if placeholder? common/color-gray common/color-black)
+          :min-height 0
+          :ios        {:padding-top 10}}))
 
-(def status-text
-  (merge status-view
-         {:padding-left 0
-          :padding-top  5}))
+(def options-button
+  {:position :absolute
+   :top      16
+   :right    16})
 
-(def menu-items-container
-  {:flex           1
-   :margin-top     20
-   :align-items    :stretch
-   :flex-direction :column})
+;; network
 
-(def menu-item-touchable
-  {:height      48
-   :paddingLeft 16
-   :paddingTop  14})
+(def network-label-container
+  {:margin-top 16})
 
-(def menu-item-text
-  {:font-size   14
-   :line-height 21
-   :color       text1-color})
+(defstyle network-label
+  {:color   common/color-gray4
+   :android {:font-size 12}
+   :ios     {:font-size 14}})
 
-(def name-text
-  {:color     text1-color
+(def network-title
+  {:color     common/color-gray6
    :font-size 16})
 
-(def switch-users-container
-  {:padding-vertical 36
-   :align-items      :center})
+;; transactions
 
-(def switch-users-text
-  {:font-size   14
-   :line-height 21
-   :color       text3-color})
+(def transactions-list-separator
+  {:margin-left 48})
 
-(def feedback {:text-align :center})
+(def empty-transactions-title-container
+  {:margin-bottom 32
+   :align-items   :center})
+
+(defstyle transactions-title-container
+  {:margin-left 16
+   :android     {:margin-bottom 16}
+   :ios         {:margin-bottom 8}})
+
+(defstyle transactions-title
+  {:color   common/color-gray4
+   :android {:font-size 12}
+   :ios     {:font-size 14}})
+
+(def transaction
+  {:padding        16
+   :flex-direction :row})
+
+(defstyle transaction-icon
+  {:width        24
+   :height       24
+   :margin-right 8
+   :android      {:margin-top 2}})
+
+(def transaction-info
+  {:width 180})
+
+(def transaction-value-container
+  {:flex-direction :row})
+
+(def transaction-value
+  {:font-size   20
+   :line-height 22
+   :color       common/color-black})
+
+(def transaction-unit
+  {:font-size   20
+   :line-height 22
+   :color       common/color-gray
+   :margin-left 8})
+
+(def transaction-details-container
+  {:margin-top     8
+   :flex-direction :row})
+
+(defstyle transaction-to
+  {:line-height 16
+   :color       common/color-gray4
+   :android     {:font-size 12}
+   :ios         {:font-size 14}})
+
+(defstyle transaction-recipient
+  {:line-height 16
+   :margin-left 4
+   :color       common/color-black
+   :flex-shrink 1
+   :android     {:font-size 12}
+   :ios         {:font-size 14}})
+
+(defstyle transaction-time
+  {:line-height 16
+   :color       common/color-gray4
+   :margin-left 8
+   :android     {:font-size 12}
+   :ios         {:font-size 14}})
+
+(def transaction-picture
+  {:margin-top  3
+   :margin-left 16
+   :min-width   40
+   :min-height  40})
+
+(def view-all-transactions-button
+  {:height           52
+   :justify-content  :center
+   :align-items      :center
+   :border-top-width 1
+   :border-top-color common/color-light-gray2})
+
+(defstyle view-all-transactions-text
+  {:color   common/color-light-blue
+   :android {:font-size 14}
+   :ios     {:font-size 17}})

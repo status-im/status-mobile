@@ -22,6 +22,8 @@
    :faq                                   "FAQ"
    :switch-users                          "Switch users"
    :feedback                              "Got feedback?\nShake your phone!"
+   :view-all                              "View all"
+   :current-network                       "Current network"
 
    ;chat
    :is-typing                             "is typing"
@@ -81,7 +83,7 @@
    :public-key                            "Public key"
    :phone-number                          "Phone number"
    :email                                 "Email"
-   :profile-no-status                     "No status"
+   :update-status                         "Update your status..."
    :add-a-status                          "Add a status..."
    :status-prompt                         "Create a status to help people know about the things you are offering. You can use #hashtags too."
    :add-to-contacts                       "Add to contacts"
@@ -292,6 +294,7 @@
                                            :zero  "No transactions confirmed"}
    :transaction                           "Transaction"
    :unsigned-transactions                 "Unsigned transactions"
+   :no-unsigned-transactions              "No unsigned transactions"
    :enter-password-transactions           {:one   "Confirm transaction by entering your password"
                                            :other "Confirm transactions by entering your password"}
    :status                                "Status"
