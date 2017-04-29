@@ -7,10 +7,11 @@
                                          :elevation    2
                                          :translucent? true
                                          :color        styles/color-white}
-                           :main        {:height       25
-                                         :bar-style    "dark-content"
-                                         :translucent? true
-                                         :color        styles/color-white}
+                           :main        {:height            25
+                                         :bar-style         "dark-content"
+                                         :translucent?      true
+                                         :color             styles/color-white
+                                         :expandable-offset 3}
                            :transparent {:height       25
                                          :bar-style    "light-content"
                                          :translucent? true

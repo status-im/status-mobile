@@ -5,18 +5,23 @@
             [status-im.components.webview-bridge :refer [webview-bridge]]
             [status-im.components.react :refer [view
                                                 text]]
+            [status-im.components.status :as status]
             [status-im.i18n :refer [label]]
             [status-im.utils.js-resources :as js-res]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [taoensso.timbre :as log]))
 
 (defn on-navigation-change
-  [event {:keys [dynamicTitle] :as result-box}]
-  (let [{:strs [loading url title]} (js->clj event)]
+  [event {:keys [dynamicTitle actions] :as result-box}]
+  (let [{:strs [loading url title canGoBack canGoForward]} (js->clj event)]
     (when-not (= "about:blank" url)
       (when-not loading
         (dispatch [:set-command-argument [0 url]]))
-      (when (and dynamicTitle (not (str/blank? title)))
-        (dispatch [:set-chat-ui-props {:result-box (assoc result-box :title title)}])))))
+      (let [result-box (assoc result-box :can-go-back? canGoBack :can-go-forward? canGoForward)
+            result-box (if (and dynamicTitle (not (str/blank? title)))
+                         (assoc result-box :title title)
+                         result-box)]
+        (dispatch [:set-chat-ui-props {:result-box result-box}])))))
 
 (defn web-view-error []
   (r/as-element
