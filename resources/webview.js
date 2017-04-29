@@ -19,7 +19,10 @@
     WebViewBridge.onMessage = function (messageString) {
         console.log("received from react-native: " + messageString);
         var message = JSON.parse(messageString);
-        if (statusAPI.callbacks[message.event]) {
+
+        if (message.event === "actions-execute-js") {
+            eval(message.js);
+        } else if (statusAPI.callbacks[message.event]) {
             statusAPI.callbacks[message.event](message.params);
         }
     };

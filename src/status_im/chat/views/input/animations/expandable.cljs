@@ -10,7 +10,8 @@
             [status-im.chat.views.input.animations.responder :as resp]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.chat.styles.animations :as style]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.platform :as p]))
 
 (defn header [key container-height custom-header]
   (let [set-container-height (subscribe [:chat-animations key :height])
@@ -55,6 +56,7 @@
   (let [anim-value         (anim/create-value 0)
         input-height       (subscribe [:chat-ui-props :input-height])
         max-height         (subscribe [:get-max-container-area-height])
+        fullscreen?        (subscribe [:chat-ui-props :fullscreen?])
         chat-input-margin  (subscribe [:chat-input-margin])
         to-changed-height  (subscribe [:chat-animations key :height])
         changes-counter    (subscribe [:chat-animations key :changes-counter])
@@ -69,17 +71,26 @@
        :component-did-update
        on-update
        :component-will-unmount
-       (if height
-         #(dispatch [:set-expandable-height key height])
-         #(dispatch [:choose-predefined-expandable-height key :default]))
+       (fn []
+         (dispatch [:set-chat-ui-props {:fullscreen? false}])
+         (if height
+           (dispatch [:set-expandable-height key height])
+           (dispatch [:choose-predefined-expandable-height key :default])))
        :reagent-render
        (fn [{:keys [draggable? custom-header]} & elements]
          @to-changed-height @changes-counter @max-height
-         (let [bottom (+ @input-height @chat-input-margin)]
+         (let [{expandable-offset :expandable-offset
+                status-bar-height :height} (get-in p/platform-specific [:component-styles :status-bar :main])
+               bottom (+ @input-height @chat-input-margin)
+               height (if @fullscreen?
+                        (+ @max-height status-bar-height expandable-offset)
+                        anim-value)]
            [view style/overlap-container
-            (when-not hide-overlay?
+            (when (and (not hide-overlay?)
+                       (not @fullscreen?))
               [overlay-view])
-            (into [animated-view {:style (style/expandable-container anim-value bottom)}
-                   (when draggable?
+            (into [animated-view {:style (style/expandable-container height bottom)}
+                   (when (and draggable?
+                              (not @fullscreen?))
                      [header key anim-value custom-header])]
                   elements)]))})))

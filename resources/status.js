@@ -36,6 +36,7 @@ Command.prototype.create = function (com) {
     this["short-preview"] = com.shortPreview;
     this["on-send"] = com.onSend;
     this.fullscreen = com.fullscreen;
+    this.actions = com.actions;
     this.request = com.request;
     this["execute-immediately?"] = com.executeImmediately;
     this["sequential-params"] = com.sequentialParams;
@@ -188,6 +189,12 @@ var status = {
     events: {
         SET_VALUE: 'set-value',
         SET_COMMAND_ARGUMENT: 'set-command-argument'
+    },
+    actions: {
+        WEB_VIEW_BACK: 'web-view-back',
+        WEB_VIEW_FORWARD: 'web-view-forward',
+        FULLSCREEN: 'fullscreen',
+        CUSTOM: 'custom',
     },
     components: {
         view: view,

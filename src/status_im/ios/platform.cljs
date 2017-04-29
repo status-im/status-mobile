@@ -7,9 +7,10 @@
   {:status-bar            {:default     {:height    20
                                          :bar-style "default"
                                          :color     styles/color-white}
-                           :main        {:height    20
-                                         :bar-style "default"
-                                         :color     styles/color-white}
+                           :main        {:height            20
+                                         :bar-style         "default"
+                                         :color             styles/color-white
+                                         :expandable-offset 8}
                            :transparent {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
