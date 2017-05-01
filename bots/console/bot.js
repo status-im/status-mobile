@@ -560,7 +560,7 @@ status.command({
 function debugSuggestions(params) {
     var suggestions = ["On", "Off"].map(function (entry) {
         return status.components.touchable(
-            {onPress: status.components.dispatch([status.events.SET_VALUE, entry])},
+            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT, [0, entry]])},
             status.components.view(
                 suggestionContainerStyle,
                 [status.components.view(
