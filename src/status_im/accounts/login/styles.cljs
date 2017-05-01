@@ -32,3 +32,12 @@
    :height           52
    :ios              {:border-radius 8}
    :android          {:border-radius 4}})
+
+(def processing-view
+  {:position         :absolute
+   :top              0
+   :bottom           0
+   :right            0
+   :left             0
+   :background-color common/color-black
+   :opacity          0.1})

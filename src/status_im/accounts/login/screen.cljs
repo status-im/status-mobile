@@ -21,8 +21,10 @@
             :actions          [{:image :blank}]
             :title            (i18n/label :t/sign-in-to-status)}])
 
+(def password-text-input (atom nil))
+
 (defview login []
-  [{:keys [address photo-path name password error]} [:get :login]]
+  [{:keys [address photo-path name password error processing]} [:get :login]]
   [view ast/accounts-container
    [status-bar {:type :transparent}]
    [login-toolbar]
@@ -30,7 +32,8 @@
     [view st/login-badge-container
      [account-bage address photo-path name]
      [view {:height 8}]
-     [text-input-with-label {:label             (i18n/label :t/password)
+     [text-input-with-label {:ref               #(reset! password-text-input %)
+                             :label             (i18n/label :t/password)
                              :auto-capitalize   :none
                              :hide-underline?   true
                              :on-change-text    #(do
@@ -40,6 +43,10 @@
                              :secure-text-entry true
                              :error             (when (pos? (count error)) (i18n/label :t/wrong-password))}]]
     [view {:margin-top 16}
-     [touchable-highlight {:on-press #(dispatch [:login-account address password])}
+     [touchable-highlight {:on-press #(do
+                                        (.blur @password-text-input)
+                                        (dispatch [:login-account address password]))}
       [view st/sign-in-button
-       [text {:style st/sign-it-text} (i18n/label :t/sign-in)]]]]]])
+       [text {:style st/sign-it-text} (i18n/label :t/sign-in)]]]]]
+   (when processing
+     [view st/processing-view])])
