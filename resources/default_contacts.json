@@ -256,5 +256,19 @@
             "en": "http://test.etherplay.io"
         },
         "groups": ["dapps"]
+    },
+	"DaoCasino":
+    {
+        "name":
+        {
+            "en": "Dao Casino"
+        },
+        "photo-path": "contacts://daocasino",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://platform.dao.casino"
+        },
+        "groups": ["dapps"]
     }
 }
