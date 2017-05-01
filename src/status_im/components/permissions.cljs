@@ -1,5 +1,6 @@
 (ns status-im.components.permissions
-  (:require [taoensso.timbre :as log]))
+  (:require [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]))
 
 (def permissions-class (.-PermissionsAndroid js/ReactNative))
 
@@ -16,9 +17,11 @@
          (not= (first permission-vals) "denied"))))
 
 (defn request-permissions [permissions then else]
-  (let [permissions (mapv #(get permissions-map %) permissions)
-        result      (.requestMultiple permissions-class (clj->js permissions))
-        result      (.then result #(if (all-granted? (js->clj %))
-                                     (then)
-                                     (when else (else))))
-        result      (.catch result #(else))]))
+  (if platform/android?
+    (let [permissions (mapv #(get permissions-map %) permissions)
+          result      (.requestMultiple permissions-class (clj->js permissions))
+          result      (.then result #(if (all-granted? (js->clj %))
+                                       (then)
+                                       (when else (else))))
+          result      (.catch result #(else))])
+    (then)))
