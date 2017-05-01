@@ -29,4 +29,14 @@
                                              :default false}}})
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating contact schema v6"))
+  (log/debug "migrating contact schema v6")
+  (let [new-contacts (.objects new-realm "contact")]
+    (dotimes [i (.-length new-contacts)]
+      (let [contact (aget new-contacts i)
+            id (aget contact "whisper-identity")]
+        (when (= id "console")
+          (log/debug (js->clj contact))
+          (aset contact "dapp-url" nil)
+          (aset contact  "bot-url" "local://console-bot"))
+        (when (= id "wallet")
+          (aset contact "dapp-url" "https://status.im/dapps/wallet/"))))))

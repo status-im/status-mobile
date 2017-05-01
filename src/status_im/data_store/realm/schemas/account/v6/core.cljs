@@ -33,6 +33,6 @@
              group-contact/schema])
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating v5 account database: " old-realm new-realm)
+  (log/debug "migrating v6 account database: " old-realm new-realm)
   (chat/migration old-realm new-realm)
   (contact/migration old-realm new-realm))

@@ -18,5 +18,5 @@
                           :suggestions-trigger {:type    :string
                                                 :default "on-change"}}})
 
-(defn migration [_ _]
-  (log/debug "migrating chat-contact schema"))
+(defn migration [old-realm new-realm]
+  (log/debug "migrating chat-contact schema v6"))
