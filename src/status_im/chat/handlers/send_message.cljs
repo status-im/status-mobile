@@ -203,8 +203,9 @@
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
       (let [{:keys [returned context]} result
-            {:keys [markup text-message]} returned
-            {:keys [log-messages update-db default-db]} context]
+            {:keys [markup text-message err]} returned
+            {:keys [log-messages update-db default-db]} context
+            content (or err text-message)]
         (when update-db
           (dispatch [:update-bot-db {:bot chat-id
                                      :db  update-db}]))
@@ -223,10 +224,10 @@
                           :chat-id      chat-id
                           :from         chat-id
                           :to           "me"}]))))
-        (when text-message
+        (when content
           (dispatch [:received-message
                      {:message-id   (random/id)
-                      :content      (str text-message)
+                      :content      (str content)
                       :content-type text-content-type
                       :outgoing     false
                       :chat-id      chat-id
