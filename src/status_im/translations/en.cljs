@@ -103,7 +103,7 @@
    :sharing-cancel                        "Cancel"
 
    :browsing-title                        "Browse"
-   :browsing-browse                       "/browse"
+   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "Open in web browser"
    :browsing-cancel                       "Cancel"
 

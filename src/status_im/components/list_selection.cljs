@@ -34,8 +34,9 @@
                         :callback    (fn [index]
                                        (case index
                                          0 (do
-                                             (dispatch [:select-chat-input-command {:name    "browse"
-                                                                                    :prefill [link]}])
+                                             (dispatch [:select-chat-input-command
+                                                        {:bot     "browse"
+                                                         :prefill [link]}])
                                              (js/setTimeout #(dispatch [:send-current-message]) 500))
                                          1 (.openURL linking link)
                                          :default))
