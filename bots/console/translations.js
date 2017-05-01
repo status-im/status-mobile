@@ -10,7 +10,7 @@ I18n.translations = {
 
         password_description: 'Password',
         password_placeholder: 'Type your password',
-        password_placeholder2: 'Please re-enter password to confirm',
+        password_placeholder2: 'Confirm',
         password_error: 'Password should be not less then 6 symbols.',
         password_error1: 'Password confirmation doesn\'t match password.',
         password_validation_title: 'Password',
