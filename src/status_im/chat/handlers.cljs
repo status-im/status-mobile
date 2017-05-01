@@ -415,9 +415,9 @@
       ((after delete-chat!))))
 
 (defn send-seen!
-  [{:keys [web3 current-public-key chats]}
+  [{:keys [web3 current-public-key chats contacts]}
    [_ {:keys [from chat-id message-id]}]]
-  (when-not (console? chat-id)
+  (when-not (get-in contacts [chat-id :dapp?])
     (let [{:keys [group-chat public?]} (chats chat-id)]
       (when-not public?
         (protocol/send-seen! {:web3    web3
@@ -435,11 +435,13 @@
   (u/side-effect! send-seen!))
 
 (defn send-clock-value-request!
-  [{:keys [web3 current-public-key]} [_ {:keys [message-id from]}]]
-  (protocol/send-clock-value-request! {:web3    web3
-                                       :message {:from       current-public-key
-                                                 :to         from
-                                                 :message-id message-id}}))
+  [{:keys [web3 current-public-key contacts]} [_ {:keys [message-id from]}]]
+  (when-not (get-in contacts [from :dapp?])
+    (protocol/send-clock-value-request!
+      {:web3    web3
+       :message {:from       current-public-key
+                 :to         from
+                 :message-id message-id}})))
 
 (register-handler :send-clock-value-request! (u/side-effect! send-clock-value-request!))
 

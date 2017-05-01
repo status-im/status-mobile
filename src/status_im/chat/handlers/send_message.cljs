@@ -272,10 +272,10 @@
 (register-handler ::send-command-protocol!
   (u/side-effect!
     (fn [{:keys [web3 current-public-key chats network-status
-                 current-account-id accounts] :as db}
+                 current-account-id accounts contacts] :as db}
          [_ {:keys [chat-id command]}]]
       (log/debug "sending command: " command)
-      (when (cu/not-console? chat-id)
+      (when (not (get-in contacts [chat-id :dapp?]))
         (let [{:keys [public-key private-key]} (chats chat-id)
               {:keys [group-chat public?]} (get-in db [:chats chat-id])
 
