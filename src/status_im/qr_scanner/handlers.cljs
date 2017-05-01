@@ -13,7 +13,9 @@
 
 (defn navigate-to-scanner
   [_ [_ identifier]]
-  (dispatch [:navigate-to :qr-scanner identifier]))
+  (dispatch [:request-permissions
+             [:camera]
+             #(dispatch [:navigate-to :qr-scanner identifier])]))
 
 (register-handler :scan-qr-code
   (after navigate-to-scanner)
