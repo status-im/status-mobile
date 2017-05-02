@@ -209,10 +209,9 @@
         (when update-db
           (dispatch [:update-bot-db {:bot chat-id
                                      :db  update-db}]))
-        (when markup
-          (dispatch [:suggestions-handler (assoc params
-                                            :result data
-                                            :default-db default-db)]))
+        (dispatch [:suggestions-handler (assoc params
+                                          :result data
+                                          :default-db default-db)])
         (doseq [message log-messages]
           (let [{:keys [message type]} message]
             (when (or (not= type "debug") js/goog.DEBUG)

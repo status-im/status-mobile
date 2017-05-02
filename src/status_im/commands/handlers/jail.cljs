@@ -40,10 +40,10 @@
   (let [{:keys [markup]} (get-in result [:result :returned])
         {:keys [dapp? dapp-url]} (get contacts chat-id)
         path (if command
-               [:chats chat-id :parameter-boxes (:name command) parameter-index :hiccup]
-               [:chats chat-id :parameter-boxes :message :hiccup])]
+               [:chats chat-id :parameter-boxes (:name command) parameter-index]
+               [:chats chat-id :parameter-boxes :message])]
     (when-not (= (get-in db path) markup)
-      (dispatch [:set-in path markup])
+      (dispatch [:set-in path (when markup {:hiccup markup})])
       (when default-db
         (dispatch [:update-bot-db {:bot chat-id
                                    :db  default-db}])))))
