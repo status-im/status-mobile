@@ -5,7 +5,6 @@
             [status-im.components.react :refer [view image icon text]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
             [status-im.components.context-menu :refer [context-menu]]
-            [status-im.models.commands :refer [parse-command-message-content]]
             [status-im.chats-list.styles :as st]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.i18n :refer [get-contact-translated label label-pluralize]]

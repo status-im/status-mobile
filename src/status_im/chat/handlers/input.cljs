@@ -122,7 +122,7 @@
                          :params
                          parameter-index
                          :suggestions]
-                args    (-> (get-in db [:chats jail-id :input-text])
+                args    (-> (get-in db [:chats current-chat-id :input-text])
                             (input-model/split-command-args)
                             (rest))
                 params  {:parameters {:args args}
@@ -221,6 +221,7 @@
         (dispatch [::request-command-data
                    {:command   command
                     :chat-id   chat-id
+                    :jail-id   (get-in command [:command :bot])
                     :data-type :preview
                     :after     #(dispatch [::send-message % chat-id])}])))))
 
@@ -278,7 +279,7 @@
 (handlers/register-handler
   ::check-dapp-suggestions
   (handlers/side-effect!
-    (fn [{:keys [current-account-id] :as db}  [_ chat-id text]]
+    (fn [{:keys [current-account-id] :as db} [_ chat-id text]]
       (let [data (get-in db [:local-storage chat-id])]
         (status/call-function!
           {:chat-id    chat-id

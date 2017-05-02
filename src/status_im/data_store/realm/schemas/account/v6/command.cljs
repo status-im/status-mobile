@@ -7,6 +7,8 @@
                           :color               {:type     :string
                                                 :optional true}
                           :name                {:type :string}
+                          :icon                {:type     :string
+                                                :optional true}
                           :params              {:type       :list
                                                 :objectType :command-parameter}
                           :title               {:type     :string
@@ -16,7 +18,9 @@
                           :fullscreen          {:type    :bool
                                                 :default true}
                           :suggestions-trigger {:type    :string
-                                                :default "on-change"}}})
+                                                :default "on-change"}
+                          :sequential-params   {:type    :bool
+                                                :default false}}})
 
 (defn migration [old-realm new-realm]
   (log/debug "migrating chat-contact schema v6"))

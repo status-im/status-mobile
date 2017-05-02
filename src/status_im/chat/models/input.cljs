@@ -6,7 +6,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.phone-number :as phone-number]
             [taoensso.timbre :as log]
-            [status-im.chat.utils :as chat-utils]))
+            [status-im.chat.utils :as chat-utils]
+            [status-im.bots.constants :as bots-constants]))
 
 (defn text-ends-with-space? [text]
   (when text
@@ -19,8 +20,8 @@
 
         commands'  (into {} (map (fn [[k v]] [k [v :any]]) (merge global-commands commands)))
         responses' (into {} (map (fn [{:keys [message-id type]}]
-                                  [type [(get responses type) message-id]])
-                                requests))]
+                                   [type [(get responses type) message-id]])
+                                 requests))]
     (vals (merge commands' responses'))))
 
 (defn split-command-args [command-text]
@@ -63,10 +64,12 @@
          command-args     (split-command-args input-text)
          command-name     (first command-args)]
      (when (chat-utils/starts-as-command? (or command-name ""))
-       (when-let [[command to-message-id] (-> (filter (fn [[{:keys [name bot]} message-id]]
-                                                        (= (or bot name) (subs command-name 1)))
-                                                      possible-actions)
-                                              (first))]
+       (when-let [[command to-message-id]
+                  (-> (filter (fn [[{:keys [name bot]} message-id]]
+                                (= (or (when-not (bots-constants/mailman-bot? bot) bot) name)
+                                   (subs command-name 1)))
+                              possible-actions)
+                      (first))]
          {:command  command
           :metadata (if (not= :any to-message-id)
                       (assoc input-metadata :to-message-id to-message-id)
@@ -75,7 +78,7 @@
                       (rest command-args)
                       seq-arguments)}))))
   ([{:keys [current-chat-id] :as db} chat-id]
-    (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
+   (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
 
 (defn current-chat-argument-position
   [{:keys [args] :as command} input-text seq-arguments]
@@ -93,17 +96,17 @@
     -1))
 
 (defn argument-position [{:keys [current-chat-id] :as db} chat-id]
-  (let [chat-id          (or chat-id current-chat-id)
-        input-text       (get-in db [:chats chat-id :input-text])
-        seq-arguments    (get-in db [:chats chat-id :seq-arguments])
-        chat-command     (selected-chat-command db chat-id)]
+  (let [chat-id       (or chat-id current-chat-id)
+        input-text    (get-in db [:chats chat-id :input-text])
+        seq-arguments (get-in db [:chats chat-id :seq-arguments])
+        chat-command  (selected-chat-command db chat-id)]
     (current-chat-argument-position chat-command input-text seq-arguments)))
 
 (defn command-completion
   ([{:keys [current-chat-id] :as db} chat-id]
-   (let [chat-id             (or chat-id current-chat-id)
-         input-text          (get-in db [:chats chat-id :input-text])
-         chat-command        (selected-chat-command db chat-id)]
+   (let [chat-id      (or chat-id current-chat-id)
+         input-text   (get-in db [:chats chat-id :input-text])
+         chat-command (selected-chat-command db chat-id)]
      (command-completion chat-command)))
   ([{:keys [args] :as chat-command}]
    (let [args            (remove str/blank? args)

@@ -5,6 +5,12 @@ status.command({
     description: I18n.t('location_description'),
     color: "#a187d5",
     sequentialParams: true,
+    registeredOnly: true,
+    params: [{
+        name: "address",
+        type: status.types.TEXT,
+        placeholder: I18n.t('location_address')
+    }],
     preview: function (params) {
         var text = status.components.text(
             {
@@ -42,8 +48,4 @@ status.command({
             )
         };
     }
-}).param({
-    name: "address",
-    type: status.types.TEXT,
-    placeholder: I18n.t('location_address')
 });
