@@ -249,7 +249,7 @@
 
        :reagent-render
        (fn []
-         [view
+         [view style/input-container-view
           [parameter-box/parameter-box-view]
           [result-box/result-box-view]
           [suggestions/suggestions-view]

@@ -1,5 +1,5 @@
 (ns status-im.chat.styles.input.input
-  (:require-macros [status-im.utils.styles :refer [defnstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :as common]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]))
@@ -30,6 +30,9 @@
    :padding-right    container-anim-margin
    :padding-top      8
    :padding-bottom   bottom-anim-margin})
+
+(defstyle input-container-view
+  {:ios {:z-index 1}})
 
 (def input-container
   {:flex-direction :row
