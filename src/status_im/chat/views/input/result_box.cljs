@@ -9,6 +9,7 @@
             [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
             [status-im.chat.styles.input.result-box :as style]
             [status-im.chat.views.input.utils :as input-utils]
+            [status-im.components.sync-state.offline :refer [offline-view]]
             [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]))
 
@@ -34,4 +35,5 @@
     [expandable-view {:key           :result-box
                       :draggable?    true
                       :custom-header header}
-     [result-box-container markup]]))
+     [result-box-container markup]
+     [offline-view]]))
