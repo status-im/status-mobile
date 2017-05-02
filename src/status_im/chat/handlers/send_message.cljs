@@ -31,7 +31,8 @@
      :timestamp    (time/now-ms)
      :content      (assoc content :handler-data handler-data
                                   :type (name (:type command))
-                                  :content-command (:name command))
+                                  :content-command (:name command)
+                                  :bot (:bot command))
      :content-type (or content-type
                        (if request
                          content-type-command-request

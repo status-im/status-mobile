@@ -2,7 +2,8 @@
   (:require [status-im.constants :refer [console-chat-id
                                          wallet-chat-id]]
             [clojure.string :as str]
-            [status-im.chat.constants :as const]))
+            [status-im.chat.constants :as const]
+            [status-im.bots.constants :as bots-constants]))
 
 (defn console? [s]
   (= console-chat-id s))
@@ -48,9 +49,13 @@
     (pos? (count message))))
 
 (defn command-name [{:keys [bot name]}]
-  (if bot
-    (str const/bot-char bot)
-    (str const/command-char name)))
+  (cond
+    (bots-constants/mailman-bot? bot)
+    (str const/command-char name)
+
+    bot (str const/bot-char bot)
+
+    :else (str const/command-char name)))
 
 (defn starts-as-command? [text]
   (and (not (nil? text))

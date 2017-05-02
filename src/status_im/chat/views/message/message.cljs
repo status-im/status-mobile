@@ -127,10 +127,12 @@
                :get-responses
                :get-commands)
              chat-id]
+   global-commands [:get :global-commands]
    current-chat-id [:get-current-chat-id]
    contact-chat [:get-in [:chats (if outgoing to from)]]
    preview [:get-in [:message-data :preview message-id :markup]]]
-  (let [{:keys [command params]} (parse-command-message-content commands content)
+  (let [{:keys [command params]}
+        (parse-command-message-content commands global-commands content)
         {:keys     [name type]
          icon-path :icon} command]
     [view st/content-command-view
@@ -370,15 +372,16 @@
     (into [view] children)))
 
 (defn chat-message [{:keys [outgoing message-id chat-id user-statuses from] :as message}]
-  (let [my-identity  (subscribe [:get :current-public-key])
-        status       (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
-        preview      (subscribe [:get-in [:message-data :preview message-id :markup]])]
+  (let [my-identity (subscribe [:get :current-public-key])
+        status      (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
+        preview     (subscribe [:get-in [:message-data :preview message-id :markup]])]
     (r/create-class
       {:component-will-mount
        (fn []
-         (when (and (get-in message [:content :command])
-                    (not @preview))
-           (dispatch [:request-command-data message :preview])))
+         (let [{:keys [bot] :as command} (get-in message [:content])
+               message' (assoc message :jail-id bot)]
+           (when (and command (not @preview))
+             (dispatch [:request-command-data message' :preview]))))
 
        :component-did-mount
        (fn []

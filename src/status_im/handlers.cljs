@@ -49,6 +49,7 @@
                network-status network first-run]} _]
     (data-store/init)
     (assoc app-db :current-account-id nil
+                  :contacts {}
                   :network-status network-status
                   :status-module-initialized? (or p/ios? js/goog.DEBUG status-module-initialized?)
                   :status-node-started? status-node-started?
@@ -97,7 +98,6 @@
         (dispatch [:set :first-run false]))
       (when (or (not first-run) (empty? accounts))
         (dispatch [:init-console-chat])
-        (dispatch [:load-default-contacts!])
         (dispatch [:load-commands!])
         (when callback (callback))))))
 

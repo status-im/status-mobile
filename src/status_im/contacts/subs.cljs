@@ -2,7 +2,8 @@
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [re-frame.core :refer [register-sub subscribe]]
             [status-im.utils.identicon :refer [identicon]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [status-im.bots.constants :as bots-constants]))
 
 (register-sub :current-contact
   (fn [db [_ k]]
@@ -23,10 +24,13 @@
                      (clojure.string/lower-case name2))))
         (vals contacts)))
 
+
 (register-sub :all-added-contacts
   (fn [db _]
     (let [contacts (reaction (:contacts @db))]
-      (->> (remove #(true? (:pending? (second %))) @contacts)
+      (->> (remove (fn [[_ {:keys [pending? whisper-identity]}]]
+                     (or (true? pending?)
+                         (bots-constants/hidden-bots whisper-identity))) @contacts)
            (sort-contacts)
            (reaction)))))
 
