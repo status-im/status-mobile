@@ -16,7 +16,7 @@
             [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.utils.datetime :as time]
-            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.utils.platform :as platform :refer [platform-specific]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
@@ -167,7 +167,7 @@
                 :renderScrollComponent     #(invertible-scroll-view (js->clj %))
                 :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
                 :enableEmptySections       true
-                :keyboardShouldPersistTaps :always
+                :keyboardShouldPersistTaps (if platform/android? :always :never)
                 :dataSource                (to-datasource-inverted messages)}]))
 
 (defview chat []
