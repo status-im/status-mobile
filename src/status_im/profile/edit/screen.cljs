@@ -1,15 +1,19 @@
 (ns status-im.profile.edit.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [status-im.profile.styles :as st]
+  (:require [cljs.spec :as s]
+            [clojure.string :as str]
+            [reagent.core :as r]
+            [re-frame.core :refer [dispatch]]
+            [status-im.profile.styles :as st]
             [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.styles :refer [color-blue color-gray5]]
-            [re-frame.core :refer [dispatch]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :refer [label]]
             [status-im.profile.screen :refer [colorize-status-hashtags]]
             [status-im.components.sticky-button :refer [sticky-button]]
+            [status-im.components.camera :as camera]
             [status-im.components.chat-icon.screen :refer [my-profile-icon]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.profile.validations :as v]
@@ -19,11 +23,8 @@
                                                 text
                                                 touchable-highlight
                                                 text-input]]
-            [status-im.utils.utils :refer [clean-text]]
-            [cljs.spec :as s]
-            [clojure.string :as str]
-            [status-im.utils.platform :refer [ios?]]
-            [reagent.core :as r]))
+            [status-im.utils.utils :as utils :refer [clean-text]]
+            [status-im.utils.platform :refer [ios?]]))
 
 (defn edit-my-profile-toolbartoolbar []
   [toolbar {:title   (label :t/edit-profile)
@@ -43,7 +44,11 @@
     :value (fn []
              (dispatch [:request-permissions
                         [:camera :write-external-storage]
-                        #(dispatch [:navigate-to :profile-photo-capture])]))}])
+                        (fn []
+                          (camera/request-access
+                            #(if % (dispatch [:navigate-to :profile-photo-capture])
+                                   (utils/show-popup (label :t/error)
+                                                     (label :t/camera-access-error)))))]))}])
 
 (defn edit-profile-bage [contact]
   [view st/edit-profile-bage

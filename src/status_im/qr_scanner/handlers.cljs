@@ -1,8 +1,10 @@
 (ns status-im.qr-scanner.handlers
   (:require [re-frame.core :refer [after dispatch debug enrich]]
-            [status-im.utils.handlers :refer [register-handler]]
+            [status-im.components.camera :as camera]
             [status-im.navigation.handlers :as nav]
-            [status-im.utils.handlers :as u]))
+            [status-im.utils.handlers :as u :refer [register-handler]]
+            [status-im.utils.utils :as utils]
+            [status-im.i18n :as i18n]))
 
 (defmethod nav/preload-data! :qr-scanner
   [db [_ _ identifier]]
@@ -15,7 +17,11 @@
   [_ [_ identifier]]
   (dispatch [:request-permissions
              [:camera]
-             #(dispatch [:navigate-to :qr-scanner identifier])]))
+             (fn []
+               (camera/request-access
+                 #(if % (dispatch [:navigate-to :qr-scanner identifier])
+                        (utils/show-popup (i18n/label :t/error)
+                                          (i18n/label :t/camera-access-error)))))]))
 
 (register-handler :scan-qr-code
   (after navigate-to-scanner)

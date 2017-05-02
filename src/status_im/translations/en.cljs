@@ -15,6 +15,8 @@
    :type-a-command                        "Start typing a command..."
    :error                                 "Error"
 
+   :camera-access-error                   "To grant the required camera permission, please, go to your system settings and make sure that Status > Camera is selected."
+
    ;drawer
    :invite-friends                        "Invite friends"
    :faq                                   "FAQ"
