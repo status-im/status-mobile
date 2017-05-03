@@ -55,6 +55,7 @@
   {:background-color (if checked common/color-light-blue common/color-gray5)
    :alignItems     :center
    :justifyContent :center
+   :margin-right   16
    :android        {:border-radius 2
                     :width         17
                     :height        17}
