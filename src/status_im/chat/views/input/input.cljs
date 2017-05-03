@@ -156,7 +156,6 @@
                               :default-value     (or @seq-arg-input-text "")
                               :on-change-text    #(do (dispatch [:set-chat-seq-arg-input-text %])
                                                       (dispatch [:set-chat-ui-props {:validation-messages nil}]))
-                              :secure-text-entry hidden
                               :placeholder       placeholder
                               :blur-on-submit    false
                               :editable          (not @sending-in-progress?)
