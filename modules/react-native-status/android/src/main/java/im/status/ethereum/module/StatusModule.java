@@ -107,7 +107,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         Activity currentActivity = getCurrentActivity();
 
-        String dataFolder = currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
+        String root = currentActivity.getApplicationInfo().dataDir;
+        String dataFolder = root + "/ethereum/testnet";
         Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
 
         try {
@@ -118,7 +119,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Log.e(TAG, "error making folder: " + dataFolder, e);
         }
 
-        final String ropstenFlagPath = dataFolder + "/ropsten_flag";
+        final String ropstenFlagPath = root + "/ropsten_flag";
         final File ropstenFlag = new File(ropstenFlagPath);
         if (!ropstenFlag.exists()) {
             try {
