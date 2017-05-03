@@ -23,6 +23,8 @@
 
 (defn valid-mobile-number? [number]
   (when (string? number)
-    (let [number-obj (awesome-phonenumber. number country-code)]
-      (and (.isValid number-obj)
-           (.isMobile number-obj)))))
+    (let [{:keys [valid type]} (-> (awesome-phonenumber. number country-code)
+                                   (.toJSON)
+                                   (js->clj :keywordize-keys true))]
+      (and valid
+           (some #{(keyword type)} '(:mobile :fixed-line-or-mobile :pager))))))

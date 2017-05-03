@@ -186,7 +186,7 @@
 (handlers/register-handler
   ::proceed-validation-messages
   (handlers/side-effect!
-    (fn [db [_ command chat-id {:keys [markup validationHandler parameters] :as errors} proceed-fn]]
+    (fn [db [_ command chat-id {:keys [markup validationHandler parameters]} proceed-fn]]
       (let [set-errors #(do (dispatch [:set-chat-ui-props {:validation-messages  %
                                                            :sending-in-progress? false}]))]
         (cond
@@ -321,9 +321,8 @@
                    {:command   command
                     :chat-id   chat-id
                     :data-type :validator
-                    :after     #(do
-                                  (dispatch [::proceed-validation-messages
-                                             command chat-id %2 after-validation]))}])))))
+                    :after     #(dispatch [::proceed-validation-messages
+                                           command chat-id %2 after-validation])}])))))
 
 (handlers/register-handler
   :set-chat-seq-arg-input-text
