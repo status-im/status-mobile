@@ -167,7 +167,7 @@
                 :renderScrollComponent     #(invertible-scroll-view (js->clj %))
                 :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
                 :enableEmptySections       true
-                :keyboardShouldPersistTaps (if platform/android? :always :never)
+                :keyboardShouldPersistTaps (if platform/android? :always :handled)
                 :dataSource                (to-datasource-inverted messages)}]))
 
 (defview chat []

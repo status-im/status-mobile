@@ -11,7 +11,8 @@
                                                 touchable-without-feedback
                                                 touchable-highlight
                                                 autolink
-                                                get-dimensions]]
+                                                get-dimensions
+                                                dismiss-keyboard!]]
             [status-im.components.animation :as anim]
             [status-im.chat.constants :as chat-consts]
             [status-im.components.list-selection :refer [share browse]]
@@ -31,6 +32,7 @@
             [status-im.components.chat-icon.screen :refer [chat-icon-message-status]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
+            [status-im.utils.platform :as platform]
             [status-im.i18n :refer [label
                                     get-contact-translated]]
             [status-im.chat.utils :as cu]
@@ -389,7 +391,8 @@
        :reagent-render
        (fn [{:keys [outgoing group-chat content-type content] :as message}]
          [message-container message
-          [touchable-highlight {:on-long-press (when (= content-type text-content-type)
+          [touchable-highlight {:on-press #(when platform/ios? (dismiss-keyboard!))
+                                :on-long-press (when (= content-type text-content-type)
                                                  #(share content (label :t/message)))}
            [view
             (let [incoming-group (and group-chat (not outgoing))]
