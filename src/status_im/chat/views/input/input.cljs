@@ -64,16 +64,19 @@
   (let [input-text           (subscribe [:chat :input-text])
         command              (subscribe [:selected-chat-command])
         sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])
-        input-focused?       (subscribe [:chat-ui-props :input-focused?])]
+        input-focused?       (subscribe [:chat-ui-props :input-focused?])
+        input-ref            (atom nil)]
     (fn [{:keys [set-layout-height set-container-width height]}]
       [text-input
        {:ref                    #(when %
-                                   (dispatch [:set-chat-ui-props {:input-ref %}]))
+                                   (dispatch [:set-chat-ui-props {:input-ref %}])
+                                   (reset! input-ref %))
         :accessibility-label    id/chat-message-input
         :multiline              true
         :default-value          (or @input-text "")
         :editable               true
         :blur-on-submit         false
+        :on-submit-editing      #(.setNativeProps @input-ref (clj->js {:text (str @input-text "\n")})) ;because of bug on Android, next line is not inserted
         :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
                                                                 :show-emoji?    false}])
         :on-blur                #(do (dispatch [:set-chat-ui-props {:input-focused? false}]))
