@@ -74,7 +74,7 @@
         :multiline              (not single-line-input?)
         :default-value          (or @input-text "")
         :editable               (not @sending-in-progress?)
-        :blur-on-submit         single-line-input?
+        :blur-on-submit         false
         :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
                                                                 :show-emoji?    false}])
         :on-blur                #(do (dispatch [:set-chat-ui-props {:input-focused? false}]))
