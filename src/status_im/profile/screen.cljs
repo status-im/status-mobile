@@ -193,18 +193,19 @@
   [view st/profile
    [status-bar]
    [my-profile-toolbar]
-   [view st/profile-form
-    [profile-badge current-account]
-    [profile-status status true]]
-   [form-spacer]
-   [view actions-list
-    [action-button (label :t/show-qr)
-     :q_r_blue
-     (show-qr current-account :public-key)]]
-   [form-spacer]
-   [view st/profile-info-container
-    [my-profile-info current-account]
-    [bottom-shadow]]])
+   [scroll-view
+    [view st/profile-form
+     [profile-badge current-account]
+     [profile-status status true]]
+    [form-spacer]
+    [view actions-list
+     [action-button (label :t/show-qr)
+      :q_r_blue
+      (show-qr current-account :public-key)]]
+    [form-spacer]
+    [view st/profile-info-container
+     [my-profile-info current-account]
+     [bottom-shadow]]]])
 
 (defview profile []
   [{:keys [pending?
