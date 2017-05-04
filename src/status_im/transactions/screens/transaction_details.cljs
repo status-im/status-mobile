@@ -5,6 +5,7 @@
             [status-im.components.common.common :as common]
             [status-im.components.sticky-button :as sticky-button]
             [status-im.components.status-bar :as status-bar]
+            [status-im.components.sync-state.offline :as offline-view]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :as i18n]
@@ -51,22 +52,28 @@
 (defview transaction-details []
   [{:keys [id] :as transaction} [:get :selected-transaction]
    {:keys [password]}           [:get :confirm-transactions]
-   confirmed?                   [:get-in [:transaction-details-ui-props :confirmed?]]]
-  {:component-did-update #(when-not transaction (rf/dispatch [:navigate-to-modal :unsigned-transactions]))
+   confirmed?                   [:get-in [:transaction-details-ui-props :confirmed?]]
+   sync-state                   [:get :sync-state]
+   network-status               [:get :network-status]]
+  {:component-did-update   #(when-not transaction (rf/dispatch [:navigate-to-modal :unsigned-transactions]))
    :component-will-unmount #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] false])}
-  [rn/keyboard-avoiding-view {:style st/transactions-screen}
-   [status-bar/status-bar {:type :transaction}]
-   [toolbar-view]
-   [rn/scroll-view st/details-screen-content-container
-    [transactions-list-item/view transaction #(rf/dispatch [:navigate-to-modal :unsigned-transactions])]
-    [common/separator st/details-separator st/details-separator-wrapper]
-    [details transaction]]
-   (when confirmed? [password-form/view 1])
-   (let [confirm-text (if confirmed?
-                        (i18n/label :t/confirm)
-                        (i18n/label-pluralize 1 :t/confirm-transactions))
-         confirm-fn   (if confirmed?
-                        #(do (rf/dispatch [:accept-transaction password id])
-                             (rf/dispatch [:set :confirmed-transactions-count 1]))
-                        #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] true]))]
-     [sticky-button/sticky-button confirm-text confirm-fn])])
+  (let [offline? (or (= network-status :offline) (= sync-state :offline))]
+    [rn/keyboard-avoiding-view {:style st/transactions-screen}
+     [status-bar/status-bar {:type :transaction}]
+     [toolbar-view]
+     [rn/scroll-view st/details-screen-content-container
+      [transactions-list-item/view transaction #(rf/dispatch [:navigate-to-modal :unsigned-transactions])]
+      [common/separator st/details-separator st/details-separator-wrapper]
+      [details transaction]]
+     (when (and confirmed? (not offline?))
+       [password-form/view 1])
+     (when-not offline?
+       (let [confirm-text (if confirmed?
+                            (i18n/label :t/confirm)
+                            (i18n/label-pluralize 1 :t/confirm-transactions))
+             confirm-fn   (if confirmed?
+                            #(do (rf/dispatch [:accept-transaction password id])
+                                 (rf/dispatch [:set :confirmed-transactions-count 1]))
+                            #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] true]))]
+         [sticky-button/sticky-button confirm-text confirm-fn]))
+     [offline-view/offline-view {:top (if platform/ios? 21 0)}]]))
