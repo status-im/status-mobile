@@ -209,9 +209,22 @@
   [command-completion [:command-completion]
    selected-command [:selected-chat-command]
    input-text [:chat :input-text]
-   seq-arg-input-text [:chat :seq-argument-input-text]]
+   seq-arg-input-text [:chat :seq-argument-input-text]
+   webview-bridge [:get :webview-bridge]]
   [view style/input-container
    [input-view {:anim-margin anim-margin}]
+
+   (when (= "browse" (get-in selected-command [:command :name]))
+     [view {:style {:padding-bottom 7 :flex-direction :row}}
+
+      [touchable-highlight {:on-press #(.goBack webview-bridge)}
+       [view
+        [icon :arrow_left_gray {:width 24 :height 24 :margin-left 10 :margin-right 10}]]]
+
+      [touchable-highlight {:on-press #(.goForward webview-bridge)}
+       [view
+        [icon :arrow_right_gray {:width 24 :height 24 :margin-left 10 :margin-right 10}]]]])
+
    (when (and (not (str/blank? input-text))
               (or (not selected-command)
                   (some #{:complete :less-than-needed} [command-completion])))
