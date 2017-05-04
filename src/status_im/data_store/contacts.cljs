@@ -6,6 +6,13 @@
   [[_ {:keys [name] :as command}]]
   [(keyword name) command])
 
+(defn- commands-map->commands-list
+  [commands-map]
+  (or (if (and commands-map (map? commands-map))
+        (vals commands-map)
+        commands-map)
+      '()))
+
 (defn get-all
   []
   (map
@@ -23,11 +30,13 @@
   [{:keys [whisper-identity pending?] :as contact}]
   (let [{pending-db? :pending?
          :as         contact-db} (data-store/get-by-id whisper-identity)
-        contact (assoc contact :pending?
-                               (boolean (if contact-db
-                                          (if (nil? pending?) pending-db? pending?)
-                                          pending?)))]
-    (data-store/save contact (if contact-db true false))))
+        contact' (-> contact
+                     (assoc :pending? (boolean (if contact-db
+                                                 (if (nil? pending?) pending-db? pending?)
+                                                 pending?)))
+                     (update :commands commands-map->commands-list)
+                     (update :responses commands-map->commands-list))]
+    (data-store/save contact' (boolean contact-db))))
 
 (defn save-all
   [contacts]
