@@ -53,12 +53,14 @@
    :width    container-width
    :height   min-input-height})
 
-(defnstyle input-view [content-height]
+(defnstyle input-view [content-height single-line-input?]
   {:flex           1
    :font-size      14
    :padding-top    5
    :padding-bottom 5
-   :height         (+ (min (max min-input-height content-height) max-input-height))
+   :height         (if single-line-input?
+                     min-input-height
+                     (+ (min (max min-input-height content-height) max-input-height)))
    :android        {:padding-top 3}})
 
 (def invisible-input-text

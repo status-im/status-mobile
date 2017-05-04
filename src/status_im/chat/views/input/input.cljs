@@ -79,7 +79,7 @@
                                                                 :show-emoji?    false}])
         :on-blur                #(do (dispatch [:set-chat-ui-props {:input-focused? false}]))
         :on-submit-editing      (fn [e]
-                                  (when single-line-input?
+                                  (if single-line-input?
                                     (dispatch [:send-current-message])
                                     (.setNativeProps @input-ref (clj->js {:text (str @input-text "\n")}))))
         :on-layout              (fn [e]
@@ -111,7 +111,7 @@
                                    (when (and (= (.-end s) (+ 2 (count (get-in @command [:command :name]))))
                                               (get-in @command [:command :sequential-params]))
                                      (dispatch [:chat-input-focus :seq-input-ref])))
-        :style                  (style/input-view height)
+        :style                  (style/input-view height single-line-input?)
         :placeholder-text-color style/color-input-helper-placeholder
         :auto-capitalize        :sentences}])))
 
