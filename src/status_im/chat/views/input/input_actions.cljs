@@ -29,11 +29,12 @@
   (let [result-box (subscribe [:chat-ui-props :result-box])
         webview    (subscribe [:get :webview-bridge])]
     (fn []
-      (if (:can-go-back? @result-box)
-        [touchable-highlight
-         {:on-press #(.goBack @webview)}
-         [view (style/action-view true)
-          [icon :action_back style/action-view-icon-tinted]]]
+      [touchable-highlight
+       {:on-press #(.goBack @webview)}
+       [view (style/action-view true)
+        [icon :action_back style/action-view-icon-tinted]]]
+      #_(if (:can-go-back? @result-box)
+
         [view (style/action-view false)
          [icon :action_back style/action-view-icon]]))))
 
@@ -42,11 +43,12 @@
   (let [result-box (subscribe [:chat-ui-props :result-box])
         webview    (subscribe [:get :webview-bridge])]
     (fn []
-      (if (:can-go-forward? @result-box)
-        [touchable-highlight
-         {:on-press #(.goForward @webview)}
-         [view (style/action-view true)
-          [icon :action_forward style/action-view-icon-tinted]]]
+      [touchable-highlight
+       {:on-press #(.goForward @webview)}
+       [view (style/action-view true)
+        [icon :action_forward style/action-view-icon-tinted]]]
+      #_(if (:can-go-forward? @result-box)
+
         [view (style/action-view false)
          [icon :action_forward style/action-view-icon]]))))
 
