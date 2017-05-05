@@ -3,8 +3,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch]]
             [status-im.components.webview-bridge :refer [webview-bridge]]
-            [status-im.components.react :refer [view
-                                                text]]
+            [status-im.components.react :refer [view text] :as components]
             [status-im.components.status :as status]
             [status-im.i18n :refer [label]]
             [status-im.utils.js-resources :as js-res]
@@ -47,4 +46,6 @@
       :injected-java-script                  (str js-res/webview-js extra-js)
       :bounces                               false
       :on-navigation-state-change            #(on-navigation-change % result-box)
-      :local-storage-enabled                 true}]))
+      :local-storage-enabled                 true
+      :start-in-loading-state                true
+      :render-loading                        #(r/as-element [components/activity-indicator {:animating true}])}]))

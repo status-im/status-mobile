@@ -38,6 +38,7 @@
 (def touchable-without-feedback (get-class "TouchableWithoutFeedback"))
 (def touchable-highlight-class (get-class "TouchableHighlight"))
 (def touchable-opacity (get-class "TouchableOpacity"))
+(def activity-indicator (get-class "ActivityIndicator"))
 
 (def modal (get-class "Modal"))
 (def picker (get-class "Picker"))
