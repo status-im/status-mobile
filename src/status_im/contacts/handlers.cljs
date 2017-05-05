@@ -271,7 +271,7 @@
 
 (defn add-new-contact [db [_ {:keys [whisper-identity] :as contact}]]
   (-> db
-      (update :contacts assoc whisper-identity contact)
+      (update-in [:contacts whisper-identity] merge contact)
       (assoc :new-contact-identity "")))
 
 (register-handler :add-new-contact
@@ -297,7 +297,8 @@
       (let [contact  (if-let [contact-info (get-in chats [chat-id :contact-info])]
                        (read-string contact-info)
                        (assoc (get contacts chat-id) :pending? false))
-            contact' (assoc contact :address (public-key->address chat-id))]
+            contact' (assoc contact :address (public-key->address chat-id)
+                                    :pending? false)]
         (dispatch [::prepare-contact contact'])
         (dispatch [:watch-contact contact'])
         (dispatch [:discoveries-send-portions chat-id])))))
