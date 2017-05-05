@@ -16,8 +16,7 @@
 (handlers/register-handler
   :set-chat-input-text
   (fn [{:keys [current-chat-id chats chat-ui-props] :as db} [_ text chat-id]]
-    (let [chat-id          (or chat-id current-chat-id)
-          ends-with-space? (input-model/text-ends-with-space? text)]
+    (let [chat-id (or chat-id current-chat-id)]
       (dispatch [:update-suggestions chat-id text])
 
       (if-let [{command :command} (input-model/selected-chat-command db chat-id text)]
