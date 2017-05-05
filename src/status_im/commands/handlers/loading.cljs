@@ -17,7 +17,6 @@
             [status-im.chat.sign-up :as sign-up]
             [status-im.bots.constants :as bots-constants]))
 
-(def commands-js "commands.js")
 
 (defn load-commands!
   [{:keys [current-chat-id contacts]} [contact callback]]
@@ -49,17 +48,11 @@
 (defn fetch-commands!
   [_ [{{:keys [dapp? dapp-url bot-url whisper-identity]} :contact
        :as                                               params}]]
-  (cond
+  (if
     bot-url
-    (if-let [url (js-res/get-resource bot-url)]
-      (dispatch [::validate-hash params url])
+    (if-let [resource (js-res/get-resource bot-url)]
+      (dispatch [::validate-hash params resource])
       (http-get-commands params bot-url))
-
-    dapp-url
-    (let [url (s/join "/" [dapp-url "commands.js"])]
-      (http-get-commands params url))
-
-    :else
     (dispatch [::validate-hash params js-res/commands-js])))
 
 (defn dispatch-loaded!
