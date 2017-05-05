@@ -17,7 +17,7 @@
 (defn request-access [callback]
   (if platform/android?
       (callback true)
-      (let [result (.checkDeviceAuthorizationStatus camera-default)
+      (let [result (.checkVideoAuthorizationStatus camera-default)
             result (.then result #(callback %))
             result (.catch result #(callback false))])))
 
