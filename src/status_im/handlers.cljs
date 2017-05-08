@@ -142,6 +142,11 @@
                        #(dispatch [:move-to-internal-failure-message])])
             (status/start-node (fn [result] (node-started db result)))))))))
 
+(register-handler :webview-geo-permissions-granted
+  (u/side-effect!
+    (fn [{:keys [webview-bridge]}]
+      (.geoPermissionsGranted webview-bridge))))
+
 (register-handler :signal-event
   (u/side-effect!
     (fn [_ [_ event-str]]
@@ -154,6 +159,8 @@
           "node.started" (dispatch [:status-node-started!])
           "module.initialized" (dispatch [:status-module-initialized!])
           "local_storage.set" (dispatch [:set-local-storage event])
+          "request_geo_permissions" (dispatch [:request-permissions [:geolocation]
+                                               #(dispatch [:webview-geo-permissions-granted])])
           (log/debug "Event " type " not handled"))))))
 
 (register-handler :status-module-initialized!
