@@ -272,9 +272,9 @@
                              (status/call-function!
                                {:chat-id  chat-id
                                 :function :init}))]
-        (dispatch [:load-requests! chat-id])
+       (dispatch [:load-requests! chat-id])
         ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
-        #_(dispatch [:load-commands! chat-id])
+       #_(dispatch [:load-commands! chat-id])
         (if-not commands-loaded?
           (dispatch [:load-commands! chat-id call-init-command])
           (do
@@ -389,10 +389,11 @@
 
 (defn delete-chat!
   [_ [_ chat-id]]
-  (let [{:keys [debug?]} (chats/get-by-id chat-id)]
-    (if debug?
-      (chats/delete chat-id)
-      (chats/set-inactive chat-id))))
+  (let [{:keys [debug? group-chat]} (chats/get-by-id chat-id)]
+    (when group-chat
+      (if debug?
+        (chats/delete chat-id)
+        (chats/set-inactive chat-id)))))
 
 (defn remove-pending-messages!
   [_ [_ chat-id]]
