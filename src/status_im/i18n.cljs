@@ -2,6 +2,7 @@
   (:require
     [status-im.translations.af :as af]
     [status-im.translations.ar :as ar]
+    [status-im.translations.da :as da]
     [status-im.translations.de :as de]
     [status-im.translations.de-ch :as de-ch]
     [status-im.translations.en :as en]
@@ -44,6 +45,7 @@
 
 (set! (.-translations i18n) (clj->js {:af      af/translations
                                       :ar      ar/translations
+                                      :da      da/translations
                                       :de      de/translations
                                       :de-ch   de-ch/translations
                                       :en      en/translations
