@@ -28,6 +28,7 @@
    :gnosis (js/require "./images/contacts/gnosis.png")
    :melonport (js/require "./images/contacts/melonport.png")
    :bchat (js/require "./images/contacts/bchat.png")
+   :winsome (js/require "./images/contacts/winsome.png")
    :dentacoin (js/require "./images/contacts/Dentacoin.png")
    :augur (js/require "./images/contacts/augur.png")
    :ethlance (js/require "./images/contacts/ethlance.png")
