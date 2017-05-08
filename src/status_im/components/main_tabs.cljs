@@ -4,7 +4,7 @@
                    [cljs.core.async.macros :as am])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
-            [status-im.components.react :refer [view swiper]]
+            [status-im.components.react :refer [view swiper get-dimensions]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.components.tabs.bottom-shadow :refer [bottom-shadow-view]]
@@ -15,7 +15,8 @@
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
             [status-im.i18n :refer [label]]
-            [cljs.core.async :as a]))
+            [cljs.core.async :as a]
+            [status-im.utils.platform :refer [ios?]]))
 
 (def tab-list
   [{:view-id       :chat-list
@@ -52,6 +53,8 @@
     (- n p)))
 
 (defonce scrolling? (atom false))
+;;Resized state
+(defonce resized? (atom true))
 
 (defn on-scroll-end [swiped? scroll-ended view-id]
   (fn [_ state]
@@ -69,7 +72,14 @@
   (am/go-loop [[swiper to] (a/<! scroll-start)]
     ;; start scrolling
     (reset! scrolling? true)
-    (.scrollBy swiper to)
+    ;;When the android activity is restarted we get an extra 'on-scroll-end' event.
+    ;;This causes the swiper to enter an inconsistent state if it is not prevented,
+    ;;and this is the most robust way I've found to deal with it.
+    (if
+      ios?
+      (.scrollBy swiper to)
+      (when-not @resized? (.scrollBy swiper to)))
+    (reset! resized? false)
     ;; lock loop until scroll ends
     (a/alts! [scroll-ended (a/timeout 2000)])
     (reset! scrolling? false)
@@ -81,6 +91,7 @@
         tabs-hidden?      (subscribe [:tabs-hidden?])
         main-swiper       (r/atom nil)
         swiped?           (r/atom false)
+        dims              (r/atom (get-dimensions "window"))
         scroll-start      (a/chan 10)
         scroll-ended      (a/chan 10)
         tabs-were-hidden? (atom @tabs-hidden?)]
@@ -101,13 +112,26 @@
           [status-bar {:type :main}]
           [view common-st/flex
            [drawer-view
-            [view {:style common-st/flex}
+            [view {:style common-st/flex
+                   ;;Detecting when the layout changes size, perhaps this should be an event
+                   ;;that hooks into re-frame?
+                   :onLayout (fn [e]
+                               (when-not ios?
+                                 (let [{new-width :width, new-height :height} (js->clj
+                                                                                (-> e .-nativeEvent .-layout)
+                                                                                :keywordize-keys true)
+                                       {:keys [width height]} @dims]
+                                   (when-not (or (= new-width width) (= new-height height))
+                                     (reset! resized? true)
+                                     (reset! dims {:width new-width :height new-height})))))}
              [swiper (merge
-                      (st/main-swiper @tabs-hidden?)
+                       (st/main-swiper @tabs-hidden?)
                        {:index                  (get-tab-index @view-id)
                         :loop                   false
                         :ref                    #(reset! main-swiper %)
-                        :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)})
+                        :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)}
+                       ;;Adjust the dimensions dynamically, Android only
+                       (when-not ios? (update @dims :height #(- % 30))))
               [chats-list]
               [discover (= @view-id :discover)]
               [contact-list (= @view-id :contact-list)]]
