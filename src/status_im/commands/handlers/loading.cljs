@@ -199,7 +199,6 @@
 (reg-handler ::add-commands
   [(after save-commands-js!)
    (after save-commands!)
-   (after #(dispatch [:check-and-open-dapp!]))
    (after #(dispatch [:update-suggestions]))
    (after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])

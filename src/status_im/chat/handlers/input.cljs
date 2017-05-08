@@ -164,7 +164,8 @@
         ;:check-and-load-commands!
         (let [params
               {:command command
-               :chat-id jail-id}
+               :chat-id chat-id
+               :jail-id jail-id}
 
               on-send-params
               (merge params
@@ -230,7 +231,7 @@
   (handlers/side-effect!
     (fn [{:keys [contacts] :as db}
          [_ {{:keys [command metadata args] :as c} :command
-             :keys                                 [message-id chat-id data-type after]}]]
+             :keys                                 [message-id chat-id jail-id data-type after]}]]
       (let [{:keys [dapp? dapp-url name]} (get contacts chat-id)
             message-id      (random/id)
             metadata        (merge metadata
@@ -244,9 +245,10 @@
                              :created-at (time/now-ms)
                              :id         message-id
                              :chat-id    chat-id
-                             :jail-id    (or (:bot command) chat-id)}
+                             :jail-id    jail-id}
             request-data    {:message-id   message-id
                              :chat-id      chat-id
+                             :jail-id      jail-id
                              :content      {:command (:name command)
                                             :params  (assoc params :metadata metadata)
                                             :type    (:type command)}

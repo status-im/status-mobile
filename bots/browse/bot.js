@@ -1,11 +1,17 @@
 function browse(params, context) {
     var url;
 
+    if (params.metadata && params.metadata.url
+        && params.metadata.url !== "undefined" && params.metadata.url != "") {
+        url = params.metadata.url;
+    }
+
     if (params.url && params.url !== "undefined" && params.url != "") {
         url = params.url;
-        if (!/^[a-zA-Z-_]+:/.test(url)) {
-            url = 'http://' + url;
-        }
+    }
+
+    if (url && !/^[a-zA-Z-_]+:/.test(url)) {
+        url = 'http://' + url;
     }
 
     return {
