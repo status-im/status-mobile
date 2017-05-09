@@ -62,7 +62,7 @@ public class MainApplication extends Application implements ReactApplication {
               new ReactNativeDialogsPackage(),
               new ImageResizerPackage(),
               new PickerPackage(),
-              new WebViewBridgePackage()
+              new WebViewBridgePackage(BuildConfig.DEBUG)
       );
     }
   };
