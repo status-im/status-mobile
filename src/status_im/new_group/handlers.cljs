@@ -116,7 +116,8 @@
 
 (register-handler :create-new-public-group
   (after (fn [_ [_ topic]]
-           (dispatch [:navigation-replace :chat topic])))
+           (dispatch [:navigate-to-clean :chat-list])
+           (dispatch [:navigate-to :chat topic])))
   (u/side-effect!
     (fn [db [_ topic]]
       (let [exists? (boolean (get-in db [:chats topic]))
