@@ -180,6 +180,7 @@ dependencies {
     compile project(':react-native-fs')
     compile project(':react-native-image-crop-picker')
     compile project(':react-native-webview-bridge')
+    compile 'testfairy:testfairy-android-sdk:1.+@aar'
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }

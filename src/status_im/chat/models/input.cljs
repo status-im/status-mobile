@@ -26,29 +26,35 @@
        (dec (count text)))))
 
 (defn possible-chat-actions [{:keys [global-commands] :as db} chat-id]
-  (let [{:keys [requests]} (get-in db [:chats chat-id])
-        {:keys [commands responses]} (get-in db [:contacts chat-id])
-
-        commands'  (into {} (map (fn [[k v]] [k [v :any]]) (merge global-commands commands)))
-        responses' (into {} (map (fn [{:keys [message-id type]}]
-                                   [type [(get responses type) message-id]])
-                                 requests))]
-    (vals (merge commands' responses'))))
+  (let [{:keys [contacts requests]} (get-in db [:chats chat-id])]
+    (->> contacts
+         (map (fn [{:keys [identity]}]
+                (let [{:keys [commands responses]} (get-in db [:contacts identity])]
+                  (let [commands'  (mapv (fn [[k v]] [k [v :any]]) (merge global-commands commands))
+                        responses' (mapv (fn [{:keys [message-id type]}]
+                                           [type [(get responses type) message-id]])
+                                         requests)]
+                    (into commands' responses')))))
+         (reduce (fn [m cur] (into (or m {}) cur)))
+         (into {})
+         (vals))))
 
 (defn split-command-args [command-text]
-  (let [space?       (text-ends-with-space? command-text)
-        command-text (if space?
-                       (str command-text ".")
-                       command-text)
-        command-text-normalized (if command-text (str/replace (str/trim command-text) #" +" " ") command-text)
-        splitted     (cond-> (str/split command-text-normalized const/spacing-char)
-                             space? (drop-last))]
+  (let [space?                  (text-ends-with-space? command-text)
+        command-text            (if space?
+                                  (str command-text ".")
+                                  command-text)
+        command-text-normalized (if command-text
+                                  (str/replace (str/trim command-text) #" +" " ")
+                                  command-text)
+        splitted                (cond-> (str/split command-text-normalized const/spacing-char)
+                                        space? (drop-last))]
     (->> splitted
          (reduce (fn [[list command-started?] arg]
                    (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
                          has-quote?         (and (= quotes-count 1)
                                                  (str/index-of arg const/arg-wrapping-char))
-                         arg                (str/replace arg #"\"" "")
+                         arg                (str/replace arg (re-pattern const/arg-wrapping-char) "")
                          new-list           (if command-started?
                                               (let [index (dec (count list))]
                                                 (update list index str const/spacing-char arg))
@@ -92,27 +98,35 @@
   ([{:keys [current-chat-id] :as db} chat-id]
    (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
 
+(def *no-argument-error* -1)
+
 (defn current-chat-argument-position
-  [{:keys [args] :as command} input-text seq-arguments]
+  [{:keys [args] :as command} input-text selection seq-arguments]
   (if command
-    (let [args-count (count args)]
-      (cond
-        (:sequential-params command)
-        (count seq-arguments)
-
-        (= (last input-text) const/spacing-char)
-        args-count
-
-        :default
-        (dec args-count)))
-    -1))
+    (if (get-in command [:command :sequential-params])
+      (count seq-arguments)
+      (let [subs-input-text (subs input-text 0 selection)]
+        (if subs-input-text
+          (let [args               (split-command-args subs-input-text)
+                argument-index     (dec (count args))
+                ends-with-space?   (text-ends-with-space? subs-input-text)
+                arg-wrapping-count (-> (frequencies subs-input-text)
+                                       (get const/arg-wrapping-char)
+                                       (or 0))]
+            (if (and ends-with-space?
+                     (even? arg-wrapping-count))
+              argument-index
+              (dec argument-index)))
+          *no-argument-error*)))
+    *no-argument-error*))
 
 (defn argument-position [{:keys [current-chat-id] :as db} chat-id]
   (let [chat-id       (or chat-id current-chat-id)
         input-text    (get-in db [:chats chat-id :input-text])
         seq-arguments (get-in db [:chats chat-id :seq-arguments])
+        selection     (get-in db [:chat-ui-props chat-id :selection])
         chat-command  (selected-chat-command db chat-id)]
-    (current-chat-argument-position chat-command input-text seq-arguments)))
+    (current-chat-argument-position chat-command input-text selection seq-arguments)))
 
 (defn command-completion
   ([{:keys [current-chat-id] :as db} chat-id]
@@ -189,4 +203,4 @@
     (str
       command
       const/spacing-char
-      (str/join const/spacing-char new-args))))
+      (join-command-args new-args))))

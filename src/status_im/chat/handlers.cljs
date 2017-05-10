@@ -265,7 +265,7 @@
         db'               (-> db
                               (assoc :current-chat-id chat-id)
                               (assoc-in [:chats chat-id :was-opened?] true))
-        commands-loaded?  (get-in db [:contacts chat-id :commands-loaded])
+        commands-loaded?  (get-in db [:contacts chat-id :commands-loaded?])
         bot-url           (get-in db [:contacts chat-id :bot-url])
         was-opened?       (get-in db [:chats chat-id :was-opened?])
         call-init-command #(when (and (not was-opened?) bot-url)

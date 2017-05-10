@@ -7,19 +7,6 @@
             [status-im.constants :as c])
   (:refer-clojure :exclude [update]))
 
-(defn- map-to-str
-  [m]
-  (join ";" (map #(join "=" %) (stringify-keys m))))
-
-(defn- str-to-map
-  [s]
-  (->> (keywordize-keys (apply hash-map (split s #"[;=]")))
-       (map (fn [[k v]]
-              [k (if (= k :params)
-                   (keywordize-keys (read-string v))
-                   v)]))
-       (into {})))
-
 (defn- user-statuses-to-map
   [user-statuses]
   (->> (vals user-statuses)
@@ -49,7 +36,7 @@
 (defn get-message-content-by-id [message-id]
   (when-let [{:keys [content-type content] :as message} (get-by-id message-id)]
     (when (command-type? content-type)
-      (str-to-map content))))
+      (read-string content))))
 
 (defn get-messages
   [messages]
@@ -59,7 +46,7 @@
        reverse
        (keep (fn [{:keys [content-type] :as message}]
                (if (command-type? content-type)
-                 (clojure.core/update message :content str-to-map)
+                 (clojure.core/update message :content read-string)
                  message)))))
 
 (defn get-count-by-chat-id
@@ -76,7 +63,7 @@
         reverse
         (keep (fn [{:keys [content-type preview] :as message}]
                 (if (command-type? content-type)
-                  (clojure.core/update message :content str-to-map)
+                  (clojure.core/update message :content read-string)
                   message))))))
 
 (defn get-log-messages
@@ -89,7 +76,7 @@
   [chat-id]
   (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
     (if (command-type? content-type)
-      (clojure.core/update message :content str-to-map)
+      (clojure.core/update message :content read-string)
       message)))
 
 (defn get-last-outgoing
@@ -116,7 +103,7 @@
   (when-not (data-store/exists? message-id)
     (let [content' (if (string? content)
                      content
-                     (map-to-str content))
+                     (pr-str content))
           message' (merge default-values
                           message
                           {:chat-id   chat-id

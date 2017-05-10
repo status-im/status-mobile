@@ -28,10 +28,16 @@
 
 (defn get-command-suggestions
   [{:keys [current-chat-id] :as db} text]
-  (let [commands (get-in db [:contacts current-chat-id :commands])]
-    (filter (fn [[_ v]] ((can-be-suggested? text) v)) commands)))
+  (->> (get-in db [:chats current-chat-id :contacts])
+       (map (fn [{:keys [identity]}]
+              (let [commands (get-in db [:contacts identity :commands])]
+                (->> commands
+                     (filter (fn [[_ v]] ((can-be-suggested? text) v)))))))
+       (reduce (fn [m cur] (into (or m {}) cur)))
+       (into {})))
 
 (defn get-global-command-suggestions
   [{:keys [global-commands] :as db} text]
-  (filter (fn [[_ v]] ((can-be-suggested? chat-consts/bot-char :bot text) v))
-          global-commands))
+  (->> global-commands
+       (filter (fn [[_ v]] ((can-be-suggested? chat-consts/bot-char :bot text) v)))
+       (into {})))

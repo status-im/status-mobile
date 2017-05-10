@@ -15,7 +15,7 @@
   (let [{:strs [loading url title canGoBack canGoForward]} (js->clj event)]
     (when-not (= "about:blank" url)
       (when-not loading
-        (dispatch [:set-command-argument [0 url]]))
+        (dispatch [:set-command-argument [0 url false]]))
       (let [result-box (assoc result-box :can-go-back? canGoBack :can-go-forward? canGoForward)
             result-box (if (and dynamicTitle (not (str/blank? title)))
                          (assoc result-box :title title)
@@ -48,4 +48,5 @@
       :on-navigation-state-change            #(on-navigation-change % result-box)
       :local-storage-enabled                 true
       :start-in-loading-state                true
-      :render-loading                        #(r/as-element [components/activity-indicator {:animating true}])}]))
+      :render-loading                        #(r/as-element [view {:padding-top 16}
+                                                             [components/activity-indicator {:animating true}]])}]))
