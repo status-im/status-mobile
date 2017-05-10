@@ -6,6 +6,10 @@
   [[_ {:keys [name] :as command}]]
   [(keyword name) command])
 
+(defn- enrich-with-owner-id [owner-id]
+  (fn [[k v]]
+    [k (assoc v :owner-id owner-id)]))
+
 (defn- commands-map->commands-list
   [commands-map]
   (or (if (and commands-map (map? commands-map))
@@ -16,9 +20,12 @@
 (defn get-all
   []
   (map
-    (fn [{:keys [commands responses] :as contact}]
+    (fn [{:keys [commands responses whisper-identity] :as contact}]
       (assoc contact
-        :commands (into {} (map command->map-item commands))
+        :commands (->> commands
+                       (map command->map-item)
+                       (map (enrich-with-owner-id whisper-identity))
+                       (into {}))
         :responses (into {} (map command->map-item responses))))
     (data-store/get-all-as-list)))
 

@@ -64,6 +64,7 @@
         command              (subscribe [:selected-chat-command])
         sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])
         input-focused?       (subscribe [:chat-ui-props :input-focused?])
+        prev-command         (subscribe [:chat-ui-props :prev-command])
         input-ref            (atom nil)]
     (fn [{:keys [set-layout-height set-container-width height single-line-input?]}]
       [text-input
@@ -94,23 +95,26 @@
                                       (dispatch [:set-chat-input-text text])
                                       (if @command
                                         (do
+                                          (when (not= @prev-command (-> @command :command :name))
+                                            (dispatch [:clear-bot-db @command]))
                                           (dispatch [:load-chat-parameter-box (:command @command)])
                                           (dispatch [:set-chat-ui-props {:validation-messages nil}]))
                                         (do
                                           (dispatch [:set-chat-input-metadata nil])
-                                          (dispatch [:set-chat-ui-props {:result-box          nil
-                                                                         :validation-messages nil}]))))))
+                                          (dispatch [:set-chat-ui-props
+                                                     {:result-box          nil
+                                                      :validation-messages nil
+                                                      :prev-command        (-> @command :command :name)}]))))))
         :on-content-size-change (when (and (not @input-focused?)
                                            (not single-line-input?))
                                   #(let [h (-> (.-nativeEvent %)
                                                (.-contentSize)
                                                (.-height))]
                                      (set-layout-height h)))
-        :on-selection-change    #(let [s (-> (.-nativeEvent %)
-                                             (.-selection))]
-                                   (when (and (= (.-end s) (+ 2 (count (get-in @command [:command :name]))))
-                                              (get-in @command [:command :sequential-params]))
-                                     (dispatch [:chat-input-focus :seq-input-ref])))
+        :on-selection-change    #(let [s   (-> (.-nativeEvent %)
+                                               (.-selection))
+                                       end (.-end s)]
+                                   (dispatch [:update-text-selection end]))
         :style                  (style/input-view height single-line-input?)
         :placeholder-text-color style/color-input-helper-placeholder
         :auto-capitalize        :sentences}])))

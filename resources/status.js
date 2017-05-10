@@ -178,6 +178,14 @@ function validationMessage(titleText, descriptionText) {
     }];
 }
 
+function chooseContact(titleText, botDbKey, argumentIndex) {
+    return ['choose-contact', {
+        title: titleText,
+        "bot-db-key": botDbKey,
+        index: argumentIndex
+    }];
+}
+
 var status = {
     command: function (h) {
         var command = new Command();
@@ -208,7 +216,11 @@ var status = {
     },
     events: {
         SET_VALUE: 'set-value',
-        SET_COMMAND_ARGUMENT: 'set-command-argument'
+        SET_COMMAND_ARGUMENT: 'set-command-argument',
+        UPDATE_DB: 'set',
+        SET_COMMAND_ARGUMENT_FROM_DB: 'set-command-argument-from-db',
+        SET_VALUE_FROM_DB: 'set-value-from-db',
+        FOCUS_INPUT: 'focus-input'
     },
     actions: {
         WEB_VIEW_BACK: 'web-view-back',
@@ -220,6 +232,7 @@ var status = {
         view: view,
         text: text,
         textInput: textInput,
+        slider: slider,
         image: image,
         qrCode: qrCode,
         linking: linking,
@@ -230,6 +243,7 @@ var status = {
         webView: webView,
         validationMessage: validationMessage,
         bridgedWebView: bridgedWebView,
+        chooseContact: chooseContact,
         subscribe: subscribe,
         dispatch: dispatch
     },

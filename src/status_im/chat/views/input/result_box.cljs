@@ -7,23 +7,8 @@
                                                 text
                                                 icon]]
             [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
-            [status-im.chat.styles.input.result-box :as style]
-            [status-im.chat.views.input.utils :as input-utils]
-            [status-im.components.sync-state.offline :refer [offline-view]]
-            [status-im.i18n :refer [label]]
-            [taoensso.timbre :as log]))
-
-(defview header []
-  [{:keys [title]} [:chat-ui-props :result-box]]
-  [view {:style style/header-container}
-   [view style/header-title-container
-    [text {:style style/header-title-text
-           :number-of-lines 1
-           :font :medium}
-     title]
-    [touchable-highlight {:on-press #(dispatch [:set-chat-ui-props {:result-box nil}])}
-     [view style/header-close-container
-      [icon :close_light_gray style/header-close-icon]]]]])
+            [status-im.chat.views.input.box-header :as box-header]
+            [status-im.components.sync-state.offline :refer [offline-view]]))
 
 (defview result-box-container [markup]
   [view {:flex 1}
@@ -34,6 +19,6 @@
   (when result-box
     [expandable-view {:key           :result-box
                       :draggable?    true
-                      :custom-header header}
+                      :custom-header (box-header/get-header :result-box)}
      [result-box-container markup]
      [offline-view]]))

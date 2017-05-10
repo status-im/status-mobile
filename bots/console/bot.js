@@ -486,7 +486,7 @@ var faucets = [
 function faucetSuggestions(params) {
     var suggestions = faucets.map(function (entry) {
         return status.components.touchable(
-            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT, [0, entry.url]])},
+            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT, [0, entry.url, false]])},
             status.components.view(
                 suggestionContainerStyle,
                 [status.components.view(
@@ -561,7 +561,7 @@ status.command({
 function debugSuggestions(params) {
     var suggestions = ["On", "Off"].map(function (entry) {
         return status.components.touchable(
-            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT, [0, entry]])},
+            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT, [0, entry, false]])},
             status.components.view(
                 suggestionContainerStyle,
                 [status.components.view(

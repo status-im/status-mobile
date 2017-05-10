@@ -262,7 +262,7 @@
                      :dapp-hash        dapp-hash}]
                 (dispatch [:add-contacts [contact]])
                 (when bot-url
-                  (dispatch [:load-commands! contact]))))))))))
+                  (dispatch [:load-commands! id']))))))))))
 
 
 (register-handler :add-contacts

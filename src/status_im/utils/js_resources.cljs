@@ -21,8 +21,6 @@
 
 (def demo-bot-js (slurp-bot :demo_bot))
 
-(def commands-js wallet-js)
-
 (def resources
   {:wallet-bot  wallet-js
    :console-bot console-js

@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.cboy.rn.splashscreen.SplashScreen;
+import com.testfairy.TestFairy;
 
 import java.util.Properties;
 
@@ -26,6 +27,7 @@ public class MainActivity extends ReactActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
+        TestFairy.begin(this, "33e4bd97daaaacf3b1b6425096fb65186248fe44");
 
         if (!RootUtil.isDeviceRooted()) {
             configureStatus();

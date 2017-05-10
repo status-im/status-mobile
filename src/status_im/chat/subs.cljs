@@ -71,6 +71,18 @@
       (reaction (or (get-in @db [:contacts current-chat :responses]) {})))))
 
 (register-sub
+  :get-commands-and-responses
+  (fn [db [_ chat-id]]
+    (reaction
+      (let [{:keys [chats contacts]} @db]
+        (->> (get-in chats [chat-id :contacts])
+             (filter :is-in-chat)
+             (mapv (fn [{:keys [identity]}]
+                     (let [{:keys [commands responses]} (get contacts identity)]
+                       (merge responses commands))))
+             (apply merge))))))
+
+(register-sub
   :possible-chat-actions
   (fn [db [_ chat-id]]
     "Returns a vector of [command message-id] values. `message-id` can be `:any`.
@@ -92,9 +104,10 @@
   (fn [db]
     (let [command       (subscribe [:selected-chat-command])
           input-text    (subscribe [:chat :input-text])
-          seq-arguments (subscribe [:chat :seq-arguments])]
+          seq-arguments (subscribe [:chat :seq-arguments])
+          selection     (subscribe [:chat-ui-props :selection])]
       (reaction
-        (input-model/current-chat-argument-position @command @input-text @seq-arguments)))))
+        (input-model/current-chat-argument-position @command @input-text @selection @seq-arguments)))))
 
 (register-sub
   :chat-parameter-box
@@ -104,7 +117,7 @@
           index   (subscribe [:current-chat-argument-position])]
       (reaction
         (cond
-          (and @command (> @index -1))
+          (and @command (not= @index input-model/*no-argument-error*))
           (let [command-name (get-in @command [:command :name])]
             (get-in @db [:chats @chat-id :parameter-boxes command-name @index]))
 
@@ -188,8 +201,10 @@
   (fn [db [_ chat-id]]
     (reaction
       (let [{:keys [last-message messages]} (get-in @db [:chats chat-id])]
-        (first
-          (sort-by :clock-value > (conj messages last-message)))))))
+        (->> (conj messages last-message)
+             (sort-by :clock-value >)
+             (filter :show?)
+             (first))))))
 
 (register-sub :get-last-message-short-preview
   (fn [db [_ chat-id]]

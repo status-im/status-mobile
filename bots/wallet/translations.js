@@ -1,7 +1,20 @@
 I18n.translations = {
     en: {
-        send_title: 'Send ETH',
+        send_title: 'Send transaction',
         send_description: 'Send a payment',
+        send_choose_recipient: 'Choose recipient',
+        send_specify_amount: 'Specify amount',
+        send_fee: 'Fee',
+        send_cheaper: 'Cheaper',
+        send_faster: 'Faster',
+        send_explanation: 'This is the most amount of money that might be used to process this transaction. Your transaction will be mined ',
+        send_explanation_0: 'in a few minutes or more.',
+        send_explanation_1: 'likely within a few minutes.',
+        send_explanation_2: 'usually within a minute.',
+        send_explanation_3: 'probably within 30 seconds.',
+        send_explanation_4: 'probably within a few seconds.',
+
+        eth: 'ETH',
 
         request_title: 'Request ETH',
         request_description: 'Request a payment',
@@ -14,7 +27,7 @@ I18n.translations = {
         validation_insufficient_amount: 'Insufficient funds for gas * price + value (balance '
     },
     ru: {
-        send_title: 'Отправить ETH',
+        send_title: 'Отправить транзакцию',
         send_description: 'Отправить платеж',
 
         request_title: 'Запросить ETH',

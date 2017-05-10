@@ -5,8 +5,10 @@
             [status-im.components.react :as components]
             [status-im.chat.views.input.web-view :as chat-web-view]
             [status-im.chat.views.input.validation-messages :as chat-validation-messages]
+            [status-im.chat.views.choosers.choose-contact :as choose-contact]
             [status-im.components.qr-code :as qr]
-            [status-im.utils.handlers :refer [register-handler]]))
+            [status-im.utils.handlers :refer [register-handler]]
+            [taoensso.timbre :as log]))
 
 (defn json->clj [json]
   (when-not (= json "undefined")
@@ -25,7 +27,8 @@
    :touchable          components/touchable-highlight
    :activity-indicator components/activity-indicator
    :bridged-web-view   chat-web-view/bridged-web-view
-   :validation-message chat-validation-messages/validation-message})
+   :validation-message chat-validation-messages/validation-message
+   :choose-contact     choose-contact/choose-contact-view})
 
 (defn get-element [n]
   (elements (keyword (.toLowerCase n))))

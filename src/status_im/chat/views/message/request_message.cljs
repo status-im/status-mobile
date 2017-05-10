@@ -70,19 +70,20 @@
                [icon command-icon st/command-request-image])]]))})))
 
 (defn message-content-command-request
-  [{:keys [message-id _ _ _]}]
-  (let [commands-atom       (subscribe [:get-responses])
+  [{:keys [message-id chat-id]}]
+  (let [commands-atom       (subscribe [:get-commands-and-responses chat-id])
         answered?           (subscribe [:is-request-answered? message-id])
         status-initialized? (subscribe [:get :status-module-initialized?])
         markup              (subscribe [:get-in [:message-data :preview message-id :markup]])]
     (fn [{:keys [message-id content from incoming-group]}]
-      (let [commands     @commands-atom
-            params       (:params content)
-            text-content (:text content)
+      (let [commands @commands-atom
+            {:keys        [prefill prefillBotDb params]
+             text-content :text} content
             {:keys [command content]} (parse-command-request commands content)
-            command      (if (and params command)
-                           (merge command {:prefill (vals params)})
-                           command)]
+            command  (if (and params command)
+                       (merge command {:prefill        prefill
+                                       :prefill-bot-db prefillBotDb})
+                       command)]
         [view st/comand-request-view
          [touchable-highlight
           {:on-press (when (and (not @answered?) @status-initialized?)
