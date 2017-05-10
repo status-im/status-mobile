@@ -11,7 +11,8 @@
             [status-im.components.react :refer [view
                                                 text
                                                 touchable-highlight]]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.components.react :as components]))
 
 (defn login-toolbar []
   [toolbar {:background-color :transparent
@@ -49,4 +50,5 @@
       [view st/sign-in-button
        [text {:style st/sign-it-text} (i18n/label :t/sign-in)]]]]]
    (when processing
-     [view st/processing-view])])
+     [view st/processing-view
+      [components/activity-indicator {:animating true}]])])
