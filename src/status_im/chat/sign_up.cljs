@@ -198,5 +198,6 @@
    :name             (s/capitalize console-chat-id)
    :photo-path       console-chat-id
    :dapp?            true
+   :unremovable?     true
    :bot-url          "local://console-bot"
    :dapp-hash        858845357})
