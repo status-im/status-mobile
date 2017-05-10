@@ -47,10 +47,11 @@
             :actions        [{:image :blank}]
             :title          (label :t/edit-contacts)}])
 
-(defn contact-options [contact group]
-  (let [options [{:value        #(dispatch [:hide-contact contact])
-                  :text         (label :t/delete-contact)
-                  :destructive? true}]]
+(defn contact-options [{:keys [unremovable?] :as contact} group]
+  (let [delete-contact-opt {:value        #(dispatch [:hide-contact contact])
+                            :text         (label :t/delete-contact)
+                            :destructive? true}
+        options            (if unremovable? [] [delete-contact-opt])]
     (if group
       (conj options
             {:value #(dispatch [:remove-contact-from-group

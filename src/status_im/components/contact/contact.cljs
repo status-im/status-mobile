@@ -32,7 +32,7 @@
    [view
     [view st/contact-container
      [contact-inner-view {:contact contact :info info}]
-     (when extended?
+     (when (and extended? (not (empty? extend-options)))
        [view st/more-btn-container
         [context-menu
          [icon :options_gray]

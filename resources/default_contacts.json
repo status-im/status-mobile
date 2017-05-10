@@ -20,7 +20,8 @@
           "registered-only":true,
           "has-handler": false,
           "fullscreen":true
-        }
+        },
+        "unremovable?": true
     },
     "wallet":
     {
@@ -40,7 +41,8 @@
         {
           "en": "https://status.im/dapps/wallet/"
         },
-        "bot-url": "local://wallet-bot"
+        "bot-url": "local://wallet-bot",
+        "unremovable?": true
     },
 
     "mailman":
