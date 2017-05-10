@@ -39,5 +39,6 @@
    :bottom           0
    :right            0
    :left             0
-   :background-color common/color-black
-   :opacity          0.1})
+   :align-items      :center
+   :justify-content  :center
+   :background-color (str common/color-black "1A")})
