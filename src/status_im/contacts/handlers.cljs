@@ -359,7 +359,8 @@
   (after stop-watching-contact)
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
-      (dispatch [:update-contact! (assoc contact :pending? true)])
+      (dispatch [:update-contact! {:whisper-identity whisper-identity
+                                   :pending?         true}])
       (dispatch [:account-update-keys]))))
 
 (defn remove-contact-from-group [whisper-identity]
