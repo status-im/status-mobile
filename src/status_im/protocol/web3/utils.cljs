@@ -24,6 +24,3 @@
 
 (defn timestamp []
   (to-long (now)))
-
-(def status-key-data (.toHex web3.prototype "status-key-data"))
-

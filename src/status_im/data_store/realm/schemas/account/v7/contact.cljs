@@ -16,7 +16,7 @@
                           :private-key      {:type     :string
                                              :optional true}
                           :unremovable?     {:type    :bool
-                                             :default :false}
+                                             :default false}
                           :dapp?            {:type    :bool
                                              :default false}
                           :dapp-url         {:type     :string

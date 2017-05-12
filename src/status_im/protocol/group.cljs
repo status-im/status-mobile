@@ -7,7 +7,8 @@
     [status-im.protocol.validation :refer-macros [valid?]]
     [status-im.protocol.web3.filtering :as f]
     [status-im.protocol.listeners :as l]
-    [clojure.string :as str]))
+    [clojure.string :as str]
+    [status-im.protocol.web3.keys :as shh-keys]))
 
 (defn prepare-mesage
   [{:keys [message group-id keypair new-keypair type username requires-ack?]}]
@@ -17,7 +18,8 @@
                              :group-id group-id
                              :type type
                              :timestamp (u/timestamp))
-                     (assoc :topics [group-id]
+                     (assoc :topics [f/status-topic]
+                            :key-password group-id
                             :requires-ack? (or (nil? requires-ack?) requires-ack?)
                             :type type))]
     (cond-> message'
@@ -25,9 +27,10 @@
             new-keypair (assoc :new-keypair keypair))))
 
 (defn- send-group-message!
-  [{:keys [web3] :as opts} type]
+  [{:keys [web3 group-id] :as opts} type]
   (let [message (-> opts
-                    (assoc :type type)
+                    (assoc :type type
+                           :key-password group-id)
                     (prepare-mesage))]
     (debug :send-group-message message)
     (d/add-pending-message! web3 message)))
@@ -116,14 +119,28 @@
 (defn stop-watching-group!
   [{:keys [web3 group-id]}]
   {:pre [(valid? :message/chat-id group-id)]}
-  (f/remove-filter! web3 {:topics [group-id]}))
+  (shh-keys/get-sym-key
+    web3
+    group-id
+    (fn [key-id]
+      (f/remove-filter!
+        web3
+        {:topics [f/status-topic]
+         :key    key-id
+         :type   :sym}))))
 
 (defn start-watching-group!
   [{:keys [web3 group-id keypair callback identity]}]
-  (f/add-filter!
+  (shh-keys/get-sym-key
     web3
-    {:topics [group-id]}
-    (l/message-listener {:web3     web3
-                         :identity identity
-                         :callback callback
-                         :keypair  keypair})))
+    group-id
+    (fn [key-id]
+      (f/add-filter!
+        web3
+        {:topics [f/status-topic]
+         :key    key-id
+         :type   :sym}
+        (l/message-listener {:web3     web3
+                             :identity identity
+                             :callback callback
+                             :keypair  keypair})))))

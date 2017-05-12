@@ -39,7 +39,7 @@
       (debug :listener-error error))
     (when-not error
       (debug :message-received (js->clj js-message))
-      (let [{:keys [from payload to] :as message}
+      (let [{:keys [sig payload recipientPublicKey] :as message}
             (js->clj js-message :keywordize-keys true)
 
             {{:keys [type ack?] :as payload'} :payload
@@ -47,18 +47,20 @@
             (parse-payload payload)]
         (when (and (not payload-error)
                    (or (not= (i/normalize-hex identity)
-                             (i/normalize-hex from))
+                             (i/normalize-hex sig))
                        ;; allow user to receive his own discoveries
                        (= type :discover)))
           (let [{:keys [content error]} (parse-content (:private keypair)
                                                        payload'
-                                                       (and (not= "0x0" to)
-                                                            (not= "" to)
-                                                            (not (nil? to))))]
+                                                       (and (not= "0x0" recipientPublicKey)
+                                                            (not= "" recipientPublicKey)
+                                                            (not (nil? recipientPublicKey))))]
             (if error
               (debug :failed-to-handle-message error)
               (let [payload'' (assoc payload' :content content)
-                    message'  (assoc message :payload payload'')]
+                    message'  (assoc message :payload payload''
+                                             :to recipientPublicKey
+                                             :from sig)]
                 (callback (if ack? :ack type) message')
-                (ack/check-ack! web3 from payload'' identity)))))))))
+                (ack/check-ack! web3 sig payload'' identity)))))))))
 

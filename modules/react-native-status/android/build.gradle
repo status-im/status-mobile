@@ -14,5 +14,5 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile(group: 'status-im', name: 'status-go', version: '0.9.6-unstable-59-g1b31a5c', ext: 'aar')
+    compile(group: 'status-im', name: 'status-go', version: '0.9.8-g311f2b8', ext: 'aar')
 }

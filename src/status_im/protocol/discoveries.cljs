@@ -7,10 +7,11 @@
     [status-im.protocol.listeners :as l]
     [cljs.spec :as s]
     [status-im.protocol.validation :refer-macros [valid?]]
-    [status-im.utils.random :as random]))
+    [status-im.utils.random :as random]
+    [status-im.protocol.web3.keys :as shh-keys]))
 
 (def discover-topic-prefix "status-discover-")
-(def discover-hashtag-prefix "status-hashtag-")
+(def discover-topic "0xbeefdead")
 
 (defn- make-discover-topic [identity]
   (str discover-topic-prefix identity))
@@ -21,6 +22,8 @@
 (s/def :send-online/options
   (s/keys :req-un [:options/web3 :send-online/message]))
 
+(def discovery-key-password "status-discovery")
+
 (defn send-online!
   [{:keys [web3 message] :as options}]
   {:pre [(valid? :send-online/options options)]}
@@ -29,8 +32,9 @@
                    message
                    {:requires-ack? false
                     :type          :online
+                    :key-password  discovery-key-password
                     :payload       {:content {:timestamp (u/timestamp)}}
-                    :topics        [(make-discover-topic (:from message))]})]
+                    :topics        [f/status-topic]})]
     (d/add-pending-message! web3 message')))
 
 (s/def ::identity :message/from)
@@ -40,18 +44,30 @@
 (defn watch-user!
   [{:keys [web3 identity] :as options}]
   {:pre [(valid? :watch-user/options options)]}
-  (f/add-filter!
+  (shh-keys/get-sym-key
     web3
-    {:from   identity
-     :topics [(make-discover-topic identity)]}
-    (l/message-listener (dissoc options :identity))))
+    discovery-key-password
+    (fn [key-id]
+      (f/add-filter!
+        web3
+        {:sig    identity
+         :topics [f/status-topic]
+         :key    key-id
+         :type   :sym}
+        (l/message-listener (dissoc options :identity))))))
 
 (defn stop-watching-user!
   [{:keys [web3 identity]}]
-  (f/remove-filter!
+  (shh-keys/get-sym-key
     web3
-    {:from   identity
-     :topics [(make-discover-topic identity)]}))
+    discovery-key-password
+    (fn [key-id]
+      (f/remove-filter!
+        web3
+        {:sig    identity
+         :topics [f/status-topic]
+         :key    key-id
+         :type   :sym}))))
 
 (s/def :contact-request/contact map?)
 
@@ -99,7 +115,8 @@
     web3
     (-> message
         (assoc :type :profile
-               :topics [(make-discover-topic (:from message))])
+               :topics [f/status-topic]
+               :key-password discovery-key-password)
         (assoc-in [:payload :timestamp] (u/timestamp))
         (assoc-in [:payload :content :profile]
                   (get-in message [:payload :profile]))
@@ -121,7 +138,8 @@
   (let [message (-> message
                     (assoc :type :update-keys
                            :requires-ack? false
-                           :topics [(make-discover-topic (:from message))])
+                           :key-password discovery-key-password
+                           :topics [f/status-topic])
                     (assoc-in [:payload :timestamp] (u/timestamp)))]
     (d/add-pending-message! web3 message)))
 
@@ -136,7 +154,8 @@
   [{:keys [web3 message]}]
   (debug :broadcasting-status)
   (let [message (assoc message :type :discover
-                               :topics [(make-discover-topic (:from message))])]
+                               :key-password discovery-key-password
+                               :topics [f/status-topic])]
     (d/add-pending-message! web3 message)))
 
 (defn send-discoveries-request!
@@ -145,7 +164,8 @@
   (d/add-pending-message!
     web3
     (assoc message :type :discoveries-request
-                   :topics [(make-discover-topic (:from message))])))
+                   :key-password discovery-key-password
+                   :topics [f/status-topic])))
 
 (defn send-discoveries-response!
   [{:keys [web3 discoveries message]}]
@@ -156,6 +176,7 @@
     (d/add-pending-message!
       web3
       (assoc message :type :discoveries-response
-                     :topics [(make-discover-topic (:from message))]
+                     :key-password discovery-key-password
+                     :topics [f/status-topic]
                      :message-id (random/id)
                      :payload {:data (into [] portion)}))))

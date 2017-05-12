@@ -76,15 +76,16 @@
   [{:keys [current-account-id current-public-key web3 accounts]} _]
   (let [{:keys [name photo-path status]} (get accounts current-account-id)
         {:keys [updates-public-key updates-private-key]} (accounts current-account-id)]
-    (protocol/broadcast-profile!
-      {:web3    web3
-       :message {:from       current-public-key
-                 :message-id (random/id)
-                 :keypair    {:public  updates-public-key
-                              :private updates-private-key}
-                 :payload    {:profile {:name          name
-                                        :status        status
-                                        :profile-image photo-path}}}})))
+    (when web3
+      (protocol/broadcast-profile!
+        {:web3    web3
+         :message {:from       current-public-key
+                   :message-id (random/id)
+                   :keypair    {:public  updates-public-key
+                                :private updates-private-key}
+                   :payload    {:profile {:name          name
+                                          :status        status
+                                          :profile-image photo-path}}}}))))
 
 (defn send-keys-update
   [{:keys [current-account-id current-public-key web3 accounts contacts]} _]
@@ -92,12 +93,12 @@
         {:keys [updates-public-key updates-private-key]} (accounts current-account-id)]
     (doseq [id (u/identities contacts)]
       (protocol/update-keys!
-       {:web3    web3
-        :message {:from       current-public-key
-                  :to         id
-                  :message-id (random/id)
-                  :payload    {:keypair {:public  updates-public-key
-                                         :private updates-private-key}}}}))))
+        {:web3    web3
+         :message {:from       current-public-key
+                   :to         id
+                   :message-id (random/id)
+                   :payload    {:keypair {:public  updates-public-key
+                                          :private updates-private-key}}}}))))
 
 (register-handler
   :check-status-change
@@ -118,20 +119,20 @@
     (assoc-in db [:accounts current-account-id] account)))
 
 (register-handler
- :account-update
- (-> (fn [db [_ data]]
-       (account-update db data))
-     ((after save-account!))
-     ((after broadcast-account-update))))
+  :account-update
+  (-> (fn [db [_ data]]
+        (account-update db data))
+      ((after save-account!))
+      ((after broadcast-account-update))))
 
 (register-handler
- :account-update-keys
- (-> (fn [db]
-       (let [{:keys [public private]} (protocol/new-keypair!)]
-         (account-update db {:updates-public-key  public
-                             :updates-private-key private})))
-     ((after save-account!))
-     ((after send-keys-update))))
+  :account-update-keys
+  (-> (fn [db]
+        (let [{:keys [public private]} (protocol/new-keypair!)]
+          (account-update db {:updates-public-key  public
+                              :updates-private-key private})))
+      ((after save-account!))
+      ((after send-keys-update))))
 
 (register-handler
   :send-account-update-if-needed
@@ -157,9 +158,9 @@
                       (map (fn [{:keys [address] :as account}]
                              [address account]))
                       (into {}))
-        view (if (empty? accounts)
-               :chat
-               :accounts)]
+        view     (if (empty? accounts)
+                   :chat
+                   :accounts)]
     (assoc db :accounts accounts
               :view-id view
               :navigation-stack (list view))))
