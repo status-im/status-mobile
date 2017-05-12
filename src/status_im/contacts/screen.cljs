@@ -20,6 +20,7 @@
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.contact.contact :refer [contact-view]]
             [status-im.utils.platform :refer [platform-specific ios? android?]]
+            [status-im.utils.utils :as u]
             [status-im.i18n :refer [label]]
             [status-im.contacts.styles :as st]
             [status-im.components.styles :refer [color-blue
@@ -48,7 +49,10 @@
             :title          (label :t/edit-contacts)}])
 
 (defn contact-options [{:keys [unremovable?] :as contact} group]
-  (let [delete-contact-opt {:value        #(dispatch [:hide-contact contact])
+  (let [delete-contact-opt {:value        #(u/show-confirmation
+                                             (str (label :t/delete-contact) "?") (label :t/delete-contact-confirmation)
+                                             (label :t/delete)
+                                             (fn[] (dispatch [:hide-contact contact])))
                             :text         (label :t/delete-contact)
                             :destructive? true}
         options            (if unremovable? [] [delete-contact-opt])]
