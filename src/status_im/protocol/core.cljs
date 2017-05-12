@@ -6,9 +6,9 @@
             [taoensso.timbre :refer-macros [debug]]
             [status-im.protocol.validation :refer-macros [valid?]]
             [status-im.protocol.web3.utils :as u]
+            [status-im.protocol.web3.keys :as shh-keys]
             [status-im.protocol.chat :as chat]
             [status-im.protocol.group :as group]
-            [status-im.protocol.web3.public-group :as public-group]
             [status-im.protocol.listeners :as l]
             [status-im.protocol.encryption :as e]
             [status-im.protocol.discoveries :as discoveries]
@@ -91,7 +91,7 @@
     ;; start listening to user's inbox
     (f/add-filter!
       web3
-      {:to     identity
+      {:key    identity
        :topics [f/status-topic]}
       (l/message-listener listener-options))
     ;; start listening to profiles
