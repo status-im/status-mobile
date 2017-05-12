@@ -1,5 +1,6 @@
 (ns status-im.utils.utils
   (:require [status-im.constants :as const]
+            [status-im.i18n :refer [label]]
             [reagent.core :as r]
             [clojure.string :as str]))
 
@@ -17,6 +18,21 @@
   (.alert (.-Alert react-native)
           title
           content))
+
+(defn show-confirmation
+  ([title content on-accept]
+   (show-confirmation title content nil on-accept))
+  ([title content s on-accept]
+   (show-confirmation title content s on-accept nil))
+  ([title content s on-accept on-cancel]
+   (.alert (.-Alert react-native)
+           title
+           content
+           ; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
+           (clj->js
+             (vector (merge {:text (label :t/cancel) :style "cancel"}
+                            (when on-cancel {:onPress on-cancel}))
+                     {:text (or s "OK") :onPress on-accept :style "destructive"})))))
 
 (defn http-post
   ([action data on-success]

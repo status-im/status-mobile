@@ -10,6 +10,7 @@
                                                 list-item]]
             [status-im.components.renderers.renderers :as renderers]
             [status-im.components.sticky-button :refer [sticky-button]]
+            [status-im.utils.utils :as u]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.new-group.styles :as st]
             [status-im.new-group.views.group :refer [group-toolbar
@@ -62,9 +63,11 @@
       [add-btn #(dispatch [:navigate-to :add-contacts-toggle-list])]
       [group-contacts-view group]
       [view st/separator]
-      [delete-btn #(do
-                     (dispatch [:delete-group])
-                     (dispatch [:navigate-to-clean :contact-list]))]]
+      [delete-btn #(u/show-confirmation
+                     (str (label :t/delete-group) "?") (label :t/delete-group-confirmation) (label :t/delete)
+                     (fn[]
+                       (dispatch [:delete-group])
+                       (dispatch [:navigate-to-clean :contact-list])))]]
      (when save-btn-enabled?
        [sticky-button (label :t/save) #(dispatch [:set-group-name])])]))
 

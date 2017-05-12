@@ -162,6 +162,7 @@
    :contacts                              "Contacts"
    :new-contact                           "New contact"
    :delete-contact                        "Delete contact"
+   :delete-contact-confirmation           "This contact will be removed from your contacts"
    :remove-from-group                     "Remove from group"
    :edit-contacts                         "Edit contacts"
    :search-contacts                       "Search contacts"
@@ -178,6 +179,7 @@
    ;group-settings
    :remove                                "Remove"
    :save                                  "Save"
+   :delete                                "Delete"
    :change-color                          "Change color"
    :clear-history                         "Clear history"
    :mute-notifications                    "Mute notifications"
@@ -216,6 +218,7 @@
    :group-name                            "Group name"
    :edit-group                            "Edit group"
    :delete-group                          "Delete group"
+   :delete-group-confirmation             "This group will be removed from your groups. This will not affect contacts"
    :delete-group-prompt                   "This will not affect contacts"
    :group-members                         "Group members"
    :contact-s                             {:one   "contact"
