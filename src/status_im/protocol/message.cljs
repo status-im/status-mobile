@@ -6,6 +6,7 @@
 (s/def :message/to (s/nilable string?))
 (s/def :message/message-id string?)
 (s/def :message/requires-ack? boolean?)
+(s/def :message/signature string?)
 (s/def :keypair/private string?)
 (s/def :keypair/public string?)
 (s/def :message/keypair (s/keys :req-un [:keypair/private
