@@ -162,7 +162,7 @@
    [profile-info-phone-item phone]])
 
 (defn my-profile-info [{:keys [public-key status phone] :as contact}]
-  [view
+  [view st/profile-info-container
    [profile-info-address-item contact]
    [info-item-separator]
    [profile-info-public-key-item public-key contact]
@@ -189,6 +189,13 @@
         [text {:style st/profile-status-text}
          (colorize-status-hashtags status)]]]])])
 
+(defn network-settings []
+  [touchable-highlight {:on-press #(dispatch [:navigate-to :network-settings])}
+   [view st/network-settings
+    [text {:style st/network-settings-text}
+      (label :t/network-settings)]
+    [icon :forward_gray]]])
+
 (defview my-profile []
   [{:keys [status] :as current-account} [:get-current-account]]
   [view st/profile
@@ -205,7 +212,10 @@
       (show-qr current-account :public-key)]]
     [form-spacer]
     [view st/profile-info-container
-     [my-profile-info current-account]
+     [my-profile-info current-account]]
+    [form-spacer]
+    [view
+     [network-settings]
      [bottom-shadow]]]])
 
 (defview profile []

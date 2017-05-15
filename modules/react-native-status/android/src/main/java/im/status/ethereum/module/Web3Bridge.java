@@ -30,7 +30,7 @@ public class Web3Bridge {
 
             callback.invoke(rpcResponse);
         } catch (IOException e) {
-            e.printStackTrace();
+            callback.invoke("");
         }
     }
 }

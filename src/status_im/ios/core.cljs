@@ -35,6 +35,10 @@
                                                                    add-participants-toggle-list]]
             [status-im.new-group.views.reorder-groups :refer [reorder-groups]]
             [status-im.new-group.screen-public :refer [new-public-group]]
+            [status-im.network-settings.screen :refer [network-settings]]
+            [status-im.network-settings.screens.paste-json-text :refer [paste-json-text]]
+            [status-im.network-settings.screens.add-rpc-url :refer [add-rpc-url]]
+            [status-im.network-settings.screens.network-details :refer [network-details]]
             [status-im.participants.views.add :refer [new-participants]]
             [status-im.participants.views.remove :refer [remove-participants]]
             [status-im.profile.screen :refer [profile my-profile]]
@@ -119,8 +123,11 @@
                                :profile-photo-capture profile-photo-capture
                                :accounts accounts
                                :login login
-                               :recover recover)]
-
+                               :recover recover
+                               :network-settings network-settings
+                               :paste-json-text paste-json-text
+                               :add-rpc-url add-rpc-url
+                               :network-details network-details)]
                [view
                 {:flex 1}
                 [component]

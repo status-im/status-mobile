@@ -4,7 +4,7 @@
             [status-im.components.react :refer [show-image-picker]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
-            [status-im.utils.handlers :as u :refer [get-hashtags]]
+            [status-im.utils.handlers :as u :refer [register-handler]]
             [taoensso.timbre :as log]
             [status-im.constants :refer [console-chat-id]]
             [status-im.navigation.handlers :as nav]))

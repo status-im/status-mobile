@@ -69,29 +69,25 @@
   (when status
     (call-module #(.moveToInternalStorage status on-result))))
 
-(defn start-node [on-result]
+(defn start-node [config on-result]
   (when status
-    (call-module #(.startNode status on-result))))
+    (call-module #(.startNode status (or config "{}") on-result))))
 
-(defn stop-rpc-server []
+(defn stop-node []
   (when status
-    (call-module #(.stopNodeRPCServer status))))
-
-(defn start-rpc-server []
-  (when status
-    (call-module #(.startNodeRPCServer status))))
+    (call-module #(.stopNode status))))
 
 (defonce restarting-rpc (atom false))
 
-(defn restart-rpc []
+(defn restart-rpc [config]
   (when-not @restarting-rpc
     (reset! restarting-rpc true)
     (log/debug :restart-rpc-on-post-error)
 
     ;; todo maybe it would be better to use something like
     ;; restart-rpc-server on status-go side
-    (stop-rpc-server)
-    (start-rpc-server)
+    (stop-node)
+    (start-node config (fn []))
 
     (go (<! (timeout 3000))
         (reset! restarting-rpc false))))
@@ -115,9 +111,23 @@
   (when status
     (call-module #(.recoverAccount status passphrase password on-result))))
 
-(defn login [address password on-result]
+(defn wrap-callback-with-stopwatch
+  [message callback]
+  (let [start (.now js/Date)]
+    (fn [& args]
+      (let [stop (.now js/Date)]
+        (log/debug :stopwatch message (str (- stop start) "ms")))
+      (apply callback args))))
+
+(defn login [address password config restart? on-result]
   (when status
-    (call-module #(.login status address password on-result))))
+    (let [callback (wrap-callback-with-stopwatch :login on-result)]
+      (call-module #(.login status address password callback)))))
+
+(defn verify-account [address password callback]
+  (let [callback' (wrap-callback-with-stopwatch :verify-account callback)]
+    (when status
+      (call-module (.verifyAccountPassword status address password callback')))))
 
 (defn complete-transactions
   [hashes password callback]

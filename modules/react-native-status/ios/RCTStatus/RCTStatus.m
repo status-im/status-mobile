@@ -45,6 +45,47 @@
 }
 @end
 
+@interface NSDictionary (BVJSONString)
+-(NSString*) bv_jsonStringWithPrettyPrint:(BOOL) prettyPrint;
+@end
+
+@implementation NSDictionary (BVJSONString)
+
+-(NSString*) bv_jsonStringWithPrettyPrint:(BOOL) prettyPrint {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self
+                                                       options:(NSJSONWritingOptions)    (prettyPrint ? NSJSONWritingPrettyPrinted : 0)
+                                                         error:&error];
+    
+    if (! jsonData) {
+        NSLog(@"bv_jsonStringWithPrettyPrint: error: %@", error.localizedDescription);
+        return @"{}";
+    } else {
+        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+}
+@end
+
+@interface NSArray (BVJSONString)
+- (NSString *)bv_jsonStringWithPrettyPrint:(BOOL)prettyPrint;
+@end
+
+@implementation NSArray (BVJSONString)
+-(NSString*) bv_jsonStringWithPrettyPrint:(BOOL) prettyPrint {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self
+                                                       options:(NSJSONWritingOptions) (prettyPrint ? NSJSONWritingPrettyPrinted : 0)
+                                                         error:&error];
+    
+    if (! jsonData) {
+        NSLog(@"bv_jsonStringWithPrettyPrint: error: %@", error.localizedDescription);
+        return @"[]";
+    } else {
+        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
+}
+@end
+
 static bool isStatusInitialized;
 static RCTBridge *bridge;
 @implementation Status{
@@ -166,73 +207,102 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 ////////////////////////////////////////////////////////////////////
 #pragma mark - startNode
 //////////////////////////////////////////////////////////////////// startNode
-RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
+RCT_EXPORT_METHOD(startNode:(NSString *)configString
+                  callback:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"StartNode() method called");
 #endif
-    if (!isStatusInitialized){
-        isStatusInitialized = true;
-        
-        NSError *error = nil;
-        NSURL *folderName =[[[[NSFileManager defaultManager]
-                              URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
-                             lastObject]
-                            URLByAppendingPathComponent:@"ethereum/testnet"];
-        
-        if (![[NSFileManager defaultManager] fileExistsAtPath:folderName.path])
-            [[NSFileManager defaultManager] createDirectoryAtPath:folderName.path withIntermediateDirectories:NO attributes:nil error:&error];
-        NSURL *flagFolderUrl = [[[[NSFileManager defaultManager]
-                                URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
-                               lastObject]
-                              URLByAppendingPathComponent:@"ropsten_flag"];
-        
-        if(![[NSFileManager defaultManager] fileExistsAtPath:flagFolderUrl.path]){
-            NSURL *lightChainData = [folderName URLByAppendingPathComponent:@"StatusIM/lightchaindata"];
-            [[NSFileManager defaultManager] removeItemAtPath:lightChainData.path
-                                                       error:nil];
-            NSString *content = @"";
-            NSData *fileContents = [content dataUsingEncoding:NSUTF8StringEncoding];
-            [[NSFileManager defaultManager] createDirectoryAtPath:flagFolderUrl.path
-                                      withIntermediateDirectories:NO
-                                                       attributes:nil
-                                                            error:&error];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error = nil;
+    NSURL *rootUrl =[[fileManager
+                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                     lastObject];
+    NSURL *testnetFolderName = [rootUrl URLByAppendingPathComponent:@"ethereum/testnet"];
+    
+    if (![fileManager fileExistsAtPath:testnetFolderName.path])
+        [fileManager createDirectoryAtPath:testnetFolderName.path withIntermediateDirectories:YES attributes:nil error:&error];
+    
+    NSURL *flagFolderUrl = [rootUrl URLByAppendingPathComponent:@"ropsten_flag"];
+    
+    if(![fileManager fileExistsAtPath:flagFolderUrl.path]){
+        NSLog(@"remove lightchaindata");
+        NSURL *lightChainData = [testnetFolderName URLByAppendingPathComponent:@"StatusIM/lightchaindata"];
+        if([fileManager fileExistsAtPath:lightChainData.path]) {
+            [fileManager removeItemAtPath:lightChainData.path
+                                    error:nil];
         }
-        
-        if (error){
-            NSLog(@"error %@", error);
-        }else
-            NSLog(@"folderName: %@", folderName);
-
-        char *configChars = GenerateConfig([folderName.path UTF8String], 3);
-        NSString *config = [NSString stringWithUTF8String: configChars];
-        NSData *configData = [config dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *resultingConfigJson = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
-        [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKey:@"LogEnabled"];
-        [resultingConfigJson setValue:@"geth.log" forKey:@"LogFile"];
-        [resultingConfigJson setValue:@"DEBUG" forKey:@"LogLevel"];
-        NSString *resultingConfig = [resultingConfigJson bv_jsonStringWithPrettyPrint:NO];
-        NSURL *logUrl = [folderName URLByAppendingPathComponent:@"geth.log"];
-        NSFileManager *manager = [NSFileManager defaultManager];
-        if([[NSFileManager defaultManager] fileExistsAtPath:logUrl.path]) {
-            [manager removeItemAtPath:logUrl.path error:nil];
+        [fileManager createDirectoryAtPath:flagFolderUrl.path
+               withIntermediateDirectories:NO
+                                attributes:nil
+                                     error:&error];
+    }
+    
+    NSLog(@"after remove lightchaindata");
+    
+    NSURL *oldKeystoreUrl = [testnetFolderName URLByAppendingPathComponent:@"keystore"];
+    NSURL *newKeystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    if([fileManager fileExistsAtPath:oldKeystoreUrl.path]){
+        NSLog(@"copy keystore");
+        if(![fileManager fileExistsAtPath:newKeystoreUrl.path]) {
+            [fileManager createDirectoryAtURL:newKeystoreUrl
+                  withIntermediateDirectories:NO
+                                   attributes:nil
+                                        error:nil];
         }
-        
-        if(![manager fileExistsAtPath:folderName.path]) {
-            [manager createDirectoryAtPath:folderName.path withIntermediateDirectories:YES attributes:nil error:nil];
-        }
-        
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
-        [manager createFileAtPath:logUrl.path contents:nil attributes:dict];
+        [fileManager copyItemAtURL:oldKeystoreUrl toURL:newKeystoreUrl error:nil];
+        [fileManager removeItemAtPath:oldKeystoreUrl.path error:nil];
+    }
+    
+    NSLog(@"after lightChainData");
+    
+    if (error){
+        NSLog(@"error %@", error);
+    }else
+        NSLog(@"folderName: %@", testnetFolderName);
+    
+    NSLog(@"preconfig: %@", configString);
+    NSData *configData = [configString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *configJSON = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    int networkId = [configJSON[@"NetworkId"] integerValue];
+    NSString *dataDir = [configJSON objectForKey:@"DataDir"];
+    NSString *networkDir = [rootUrl.path stringByAppendingString:dataDir];
+    int dev = 0;
+    if (DEBUG) {dev = 1;}
+    char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId, dev);
+    NSString *config = [NSString stringWithUTF8String: configChars];
+    configData = [config dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *resultingConfigJson = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    [resultingConfigJson setValue:newKeystoreUrl.path forKey:@"KeyStoreDir"];
+    [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKey:@"LogEnabled"];
+    [resultingConfigJson setValue:@"geth.log" forKey:@"LogFile"];
+    [resultingConfigJson setValue:@"DEBUG" forKey:@"LogLevel"];
+    NSString *resultingConfig = [resultingConfigJson bv_jsonStringWithPrettyPrint:NO];
+    NSLog(@"node config %@", resultingConfig);
+    NSURL *logUrl = [folderName URLByAppendingPathComponent:@"geth.log"];
+    if([fileManager fileExistsAtPath:logUrl.path]) {
+        [fileManager removeItemAtPath:logUrl.path error:nil];
+    }
+    
+    if(![fileManager fileExistsAtPath:folderName.path]) {
+        [fileManager createDirectoryAtPath:folderName.path withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
+    [manager createFileAtPath:logUrl.path contents:nil attributes:dict];
 #ifndef DEBUG
-        [Instabug addFileAttachmentWithURL:[folderName URLByAppendingPathComponent:@"geth.log"]];
+    [Instabug addFileAttachmentWithURL:[folderName URLByAppendingPathComponent:@"geth.log"]];
 #endif
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                       ^(void) {
-            StartNode((char *) [resultingConfig UTF8String]);
-        });
-        onResultCallback(@[[NSNull null]]);
-        //Screen lock notifications
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   ^(void)
+                   {
+                       StopNode();
+                       StartNode((char *) [resultingConfig UTF8String]);
+                   });
+    callback(@[[NSNull null]]);
+    //Screen lock notifications
+    if(!isStatusInitialized){
+        isStatusInitialized = TRUE;
         CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
                                         NULL, // observer
                                         displayStatusChanged, // callback
@@ -248,6 +318,16 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
                                         CFNotificationSuspensionBehaviorDeliverImmediately);
         return;
     }
+}
+
+////////////////////////////////////////////////////////////////////
+#pragma mark - StopNode method
+//////////////////////////////////////////////////////////////////// StopNode
+RCT_EXPORT_METHOD(stopNode) {
+#if DEBUG
+    NSLog(@"StopNode() method called");
+#endif
+    StopNode();
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -268,7 +348,7 @@ RCT_EXPORT_METHOD(moveToInternalStorage:(RCTResponseSenderBlock)onResultCallback
 
 ////////////////////////////////////////////////////////////////////
 #pragma mark - StartNodeRPCServer method
-//////////////////////////////////////////////////////////////////// createAccount
+//////////////////////////////////////////////////////////////////// startNodeRPCServer
 RCT_EXPORT_METHOD(startNodeRPCServer) {
 #if DEBUG
     NSLog(@"StartNodeRPCServer() method called");
@@ -278,7 +358,7 @@ RCT_EXPORT_METHOD(startNodeRPCServer) {
 
 ////////////////////////////////////////////////////////////////////
 #pragma mark - StopNodeRPCServer method
-//////////////////////////////////////////////////////////////////// createAccount
+//////////////////////////////////////////////////////////////////// StopNodeRPCServer
 RCT_EXPORT_METHOD(stopNodeRPCServer) {
 #if DEBUG
     NSLog(@"StopNodeRPCServer() method called");
@@ -326,6 +406,24 @@ RCT_EXPORT_METHOD(login:(NSString *)address
     NSLog(@"Login() method called");
 #endif
     char * result = Login((char *) [address UTF8String], (char *) [password UTF8String]);
+    NSLog([NSString stringWithUTF8String: result]);
+    
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
+//////////////////////////////////////////////////////////////////// verifyAccountPassword
+RCT_EXPORT_METHOD(verifyAccountPassword:(NSString *)address
+                  password:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"VerifyAccountPassword() method called");
+#endif
+    NSFileManager *fileManager = [NSFileManager defaultManager];    NSURL *rootUrl =[[fileManager
+                                                                                      URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask]
+                                                                                     lastObject];
+    NSURL *keystoreUrl = [rootUrl URLByAppendingPathComponent:@"keystore"];
+    
+    char * result = VerifyAccountPassword((char *) [keystoreUrl.path UTF8String], (char *) [address UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
@@ -383,13 +481,13 @@ RCT_EXPORT_METHOD(clearCookies) {
 
 RCT_EXPORT_METHOD(clearStorageAPIs) {
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
-
+    
     NSString *path = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
     NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil];
     for (NSString *string in array) {
         NSLog(@"Removing %@", [path stringByAppendingPathComponent:string]);
-    if ([[string pathExtension] isEqualToString:@"localstorage"])
-        [[NSFileManager defaultManager] removeItemAtPath:[path stringByAppendingPathComponent:string] error:nil];
+        if ([[string pathExtension] isEqualToString:@"localstorage"])
+            [[NSFileManager defaultManager] removeItemAtPath:[path stringByAppendingPathComponent:string] error:nil];
     }
 }
 
@@ -430,7 +528,7 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
 {
     if(!signal){
 #if DEBUG
-    NSLog(@"SignalEvent nil");
+        NSLog(@"SignalEvent nil");
 #endif
         return;
     }

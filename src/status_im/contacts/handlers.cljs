@@ -243,7 +243,7 @@
                                     :contacts  (mapv #(hash-map :identity %) contacts)})
                                  default-groups)])
         (doseq [[id {:keys [name photo-path public-key add-chat? global-command
-                            dapp? dapp-url dapp-hash bot-url unremovable?]}] default-contacts]
+                            dapp? dapp-url dapp-hash bot-url networks unremovable?]}] default-contacts]
           (let [id' (clojure.core/name id)]
             (when-not (get contacts id')
               (when add-chat?
@@ -263,7 +263,6 @@
                 (dispatch [:add-contacts [contact]])
                 (when bot-url
                   (dispatch [:load-commands! contact]))))))))))
-
 
 (register-handler :add-contacts
   [(after save-contacts!)

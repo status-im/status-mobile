@@ -105,7 +105,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
     }
 
-    private void doStartNode() {
+    private void doStartNode(final String defaultConfig) {
+
+        Statusgo.StopNode();
 
         Activity currentActivity = getCurrentActivity();
 
@@ -140,14 +142,43 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         }
 
-        String config;
-        String defaultConfig = Statusgo.GenerateConfig(dataFolder, 3);
+        String testnetDataDir = root + "/ethereum/testnet";
+        String oldKeystoreDir = testnetDataDir + "/keystore";
+        String newKeystoreDir = root + "/keystore";
+        final File oldKeystore = new File(oldKeystoreDir);
+        if (!oldKeystore.exists()) {
+            try {
+                final File newKeystore = new File(newKeystoreDir);
+                copyDirectory(oldKeystore, newKeystore);
+
+                if (oldKeystore.isDirectory()) {
+                    String[] children = oldKeystore.list();
+                    for (int i = 0; i < children.length; i++) {
+                        new File(oldKeystoreDir, children[i]).delete();
+                    }
+                }
+                oldKeystore.delete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int dev = 0;
+        if (this.debug) {
+            dev = 1;
+        }
+
+        String config = Statusgo.GenerateConfig(testnetDataDir, 3, dev);
         try {
-            JSONObject jsonConfig = new JSONObject(defaultConfig);
+            JSONObject customConfig = new JSONObject(defaultConfig);
+            JSONObject jsonConfig = new JSONObject(config);
             String gethLogFileName = "geth.log";
             jsonConfig.put("LogEnabled", true);
             jsonConfig.put("LogFile", gethLogFileName);
             jsonConfig.put("LogLevel", "DEBUG");
+            jsonConfig.put("DataDir", root + customConfig.get("DataDir"));
+            jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
+            jsonConfig.put("KeyStoreDir", newKeystoreDir);
             String gethLogPath = dataFolder + "/" + gethLogFileName;
             File logFile = new File(gethLogPath);
             if (logFile.exists()) {
@@ -176,9 +207,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         } catch (JSONException e) {
             Log.d(TAG, "Something went wrong " + e.getMessage());
             Log.d(TAG, "Default configuration will be used");
-
-            config = defaultConfig;
         }
+
+        Log.d(TAG, "Node config " + config);
 
         Statusgo.StartNode(config);
         Log.d(TAG, "Geth node started");
@@ -265,7 +296,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void startNode(Callback callback) {
+    public void startNode(final String config, Callback callback) {
         Log.d(TAG, "startNode");
         status.sendMessage();
         if (!checkAvailability()) {
@@ -273,10 +304,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
+        this.w3Bridge = new Web3Bridge();
         Thread thread = new Thread() {
             @Override
             public void run() {
-                doStartNode();
+                doStartNode(config);
             }
         };
 
@@ -286,40 +318,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void startNodeRPCServer() {
-        Log.d(TAG, "startNodeRPCServer");
-        final Activity activity = getCurrentActivity();
-        if (activity == null) {
-            return;
-        }
-
-        this.w3Bridge = new Web3Bridge();
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                Statusgo.StartNodeRPCServer();
-            }
-        };
-
-        thread.start();
-    }
-
-    @ReactMethod
-    public void stopNodeRPCServer() {
-        Log.d(TAG, "stopNodeRPCServer");
-        final Activity activity = getCurrentActivity();
-        if (activity == null) {
-            return;
-        }
-
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                Statusgo.StopNodeRPCServer();
-            }
-        };
-
-        thread.start();
+    public void stopNode() {
+        Log.d(TAG, "stopNode");
+        Statusgo.StopNode();
     }
 
     @ReactMethod
@@ -333,12 +334,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 String result = Statusgo.Login(address, password);
-
                 callback.invoke(result);
             }
         };
 
         thread.start();
+    }
+
+    @ReactMethod
+    public void verifyAccountPassword(String address, String password, Callback callback) {
+        Log.d(TAG, "VerifyAccountPassword");
+        String root = getCurrentActivity().getApplicationInfo().dataDir;
+        String keystore = root + "/keystore";
+
+        long start = System.currentTimeMillis();
+        String res = Statusgo.VerifyAccountPassword(keystore, address, password);
+        long end = System.currentTimeMillis();
+        long diff = end - start;
+
+        Log.d(TAG, "VerifyAccountPassword result: " + res + " time " + diff);
+
+        callback.invoke(res);
     }
 
     @ReactMethod

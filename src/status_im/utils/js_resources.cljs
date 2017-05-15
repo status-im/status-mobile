@@ -10,6 +10,7 @@
 
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
 (def default-contact-groups (json->clj (slurp "resources/default_contact_groups.json")))
+(def default-networks (json->clj (slurp "resources/default_networks.json")))
 
 (def wallet-js (slurp-bot :wallet))
 

@@ -29,6 +29,10 @@
             [status-im.chats-list.screen :refer [chats-list]]
             [status-im.new-chat.screen :refer [new-chat]]
             [status-im.new-group.screen-public :refer [new-public-group]]
+            [status-im.network-settings.screen :refer [network-settings]]
+            [status-im.network-settings.screens.paste-json-text :refer [paste-json-text]]
+            [status-im.network-settings.screens.add-rpc-url :refer [add-rpc-url]]
+            [status-im.network-settings.screens.network-details :refer [network-details]]
             [status-im.new-group.screen-private :refer [new-group
                                                         edit-group]]
             [status-im.new-group.views.chat-group-settings :refer [chat-group-settings]]
@@ -144,7 +148,11 @@
                                :profile-photo-capture profile-photo-capture
                                :accounts accounts
                                :login login
-                               :recover recover)]
+                               :recover recover
+                               :network-settings network-settings
+                               :paste-json-text paste-json-text
+                               :add-rpc-url add-rpc-url
+                               :network-details network-details)]
 
                [menu-context st/flex
                 [view st/flex
