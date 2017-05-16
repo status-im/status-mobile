@@ -38,48 +38,53 @@
 (register-handler :debug-request
   (u/side-effect!
     (fn [{:keys [web3]} [_ {url               :url
-                            {:keys [encoded]} :postData :as d}]]
+                            {:keys [encoded]} :postData}]]
       (try
         (let [json (->> (.toAscii web3 encoded)
                         (.parse js/JSON))
               obj  (js->clj json :keywordize-keys true)]
           (case url
-            "/add-dapp"     (dispatch [:debug-add-dapp obj])
-            "/remove-dapp"  (dispatch [:debug-remove-dapp obj])
-            "/dapp-changed" (dispatch [:debug-dapp-changed obj])
-            "/switch-node"  (dispatch [:debug-switch-node obj])
+            "/add-dapp" (dispatch [:debug-add-contact obj])
+            "/remove-dapp" (dispatch [:debug-remove-contact obj])
+            "/dapp-changed" (dispatch [:debug-contact-changed obj])
+            "/switch-node" (dispatch [:debug-switch-node obj])
             :default))
         (catch js/Error e
           (log/debug "Error: " e))))))
 
-(register-handler :debug-add-dapp
+(register-handler :debug-add-contact
   (u/side-effect!
-    (fn [{:keys [contacts]} [_ {:keys [name whisper-identity dapp-url] :as dapp-data}]]
+    (fn [{:keys [contacts]} [_ {:keys [name whisper-identity dapp-url bot-url] :as dapp-data}]]
       (when (and name
                  whisper-identity
-                 dapp-url
+                 (or dapp-url bot-url)
                  (or (not (get contacts whisper-identity))
                      (get-in contacts [whisper-identity :debug?])))
         (let [dapp (merge dapp-data {:dapp?  true
                                      :debug? true})]
-          (dispatch [:add-chat whisper-identity {:name   name
-                                                 :debug? true}])
-          (dispatch [:add-contacts [dapp]]))))))
+          (dispatch [:upsert-chat! {:chat-id whisper-identity
+                                    :name    name
+                                    :debug?  true}])
+          (if (get contacts whisper-identity)
+            (dispatch [:update-contact! dapp])
+            (dispatch [:add-contacts [dapp]])))))))
 
-(register-handler :debug-remove-dapp
+(register-handler :debug-remove-contact
   (u/side-effect!
     (fn [{:keys [chats]} [_ {:keys [whisper-identity]}]]
       (when (get-in chats [whisper-identity :debug?])
         (dispatch [:remove-chat whisper-identity]))
       (dispatch [:remove-contact whisper-identity #(and (:dapp? %) (:debug? %))]))))
 
-(register-handler :debug-dapp-changed
+(register-handler :debug-contact-changed
   (u/side-effect!
-    (fn [{:keys [webview-bridge current-chat-id chats]} [_ {:keys [whisper-identity]}]]
-      (when (and (= current-chat-id whisper-identity)
-                 (get-in chats [whisper-identity :debug?])
-                 webview-bridge)
-        (.reload webview-bridge)))))
+    (fn [{:keys [webview-bridge current-chat-id contacts]} [_ {:keys [whisper-identity] :as dapp-data}]]
+      (when (get-in contacts [whisper-identity :debug?])
+        (when (and (= current-chat-id whisper-identity)
+                   webview-bridge)
+          (.reload webview-bridge))
+        (when (get-in contacts [whisper-identity :bot-url])
+          (dispatch [:load-commands! whisper-identity]))))))
 
 (register-handler :debug-switch-node
   (u/side-effect!

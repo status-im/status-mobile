@@ -43,7 +43,8 @@
   ([url on-success on-error]
     (http-get url nil on-success on-error))
   ([url valid-response? on-success on-error]
-   (-> (.fetch js/window url (clj->js {:method "GET"}))
+   (-> (.fetch js/window url (clj->js {:method  "GET"
+                                       :headers {"Cache-Control" "no-cache"}}))
        (.then (fn [response]
                 (log response)
                 (let [ok?  (.-ok response)

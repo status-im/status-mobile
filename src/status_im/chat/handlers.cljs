@@ -372,8 +372,9 @@
 (register-handler :upsert-chat!
   (fn [db [_ {:keys [chat-id] :as opts}]]
     (let [chat (if (chats/exists? chat-id)
-                 (let [chat (chats/get-by-id chat-id)]
-                   (assoc chat :timestamp (random/timestamp)))
+                 (-> (chats/get-by-id chat-id)
+                     (assoc :timestamp (random/timestamp))
+                     (merge opts))
                  (prepare-chat db chat-id opts))]
       (chats/save chat)
       (update-in db [:chats chat-id] merge chat))))
