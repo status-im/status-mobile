@@ -15,7 +15,8 @@
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up]
-            [status-im.bots.constants :as bots-constants]))
+            [status-im.bots.constants :as bots-constants]
+            [status-im.utils.datetime :as time]))
 
 
 (defn load-commands!
