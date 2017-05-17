@@ -1,5 +1,9 @@
-(ns status-im.utils.instabug)
+(ns status-im.utils.instabug
+  (:require [taoensso.timbre :as log]))
 
 (def instabug-rn (js/require "instabug-reactnative"))
 
-(defn log [str] (.IBGLog instabug-rn str))
+(defn log [str]
+  (if js/goog.DEBUG
+    (log/debug str)
+    (.IBGLog instabug-rn str)))
