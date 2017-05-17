@@ -91,7 +91,7 @@
   {:pre [(valid? :delivery/pending-message pending-message)]}
   (debug :add-prepeared-pending-message!)
   (let [message          (-> pending-message
-                             (select-keys [:sig :key :topics :payload])
+                             (select-keys [:sig :key :topic :payload])
                              (assoc :type key-type))
         pending-message' (assoc pending-message :message message
                                                 :id message-id)]
