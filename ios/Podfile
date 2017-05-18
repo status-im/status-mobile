@@ -6,7 +6,7 @@ target 'StatusIm' do
   # use_frameworks!
 
   # Pods for StatusIm
-  pod 'Instabug', '~> 6.0.0'
+  pod 'Instabug', '~> 7.0'
 
   target 'StatusImTests' do
     inherit! :search_paths

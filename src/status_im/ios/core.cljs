@@ -44,7 +44,8 @@
             [taoensso.timbre :as log]
             [status-im.chat.styles.screen :as st]
             [status-im.profile.qr-code.screen :refer [qr-code-view]]
-            [status-im.components.status :as status]))
+            [status-im.components.status :as status]
+            [status-im.utils.instabug :as instabug]))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
@@ -140,6 +141,7 @@
                       [component])]])]))))})))
 
 (defn init []
+  (instabug/init-instabug)
   (status/call-module status/init-jail)
   (dispatch-sync [:reset-app])
   (dispatch [:listen-to-network-status!])

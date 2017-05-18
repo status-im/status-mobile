@@ -26,6 +26,7 @@ import im.status.ethereum.module.StatusPackage;
 import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected List<ReactPackage> getPackages() {
-            List<ReactPackage> packages = Arrays.asList(
+            List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
                     new RNNetworkInfoPackage(),
                     new HttpServerReactPackage(),
@@ -60,7 +61,7 @@ public class MainApplication extends Application implements ReactApplication {
                     new ImageResizerPackage(),
                     new PickerPackage(),
                     new WebViewBridgePackage(BuildConfig.DEBUG)
-            );
+            ));
 
             if (!BuildConfig.DEBUG) {
                 packages.add(new RNInstabugReactnativePackage("b239f82a9cb00464e4c72cc703e6821e", MainApplication.this, "shake"));
