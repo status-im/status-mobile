@@ -17,9 +17,9 @@
 (defn request-access [callback]
   (if platform/android?
       (callback true)
-      (let [result (.checkVideoAuthorizationStatus camera-default)
-            result (.then result #(callback %))
-            result (.catch result #(callback false))])))
+      (-> (.checkVideoAuthorizationStatus camera-default)
+          (.then #(callback %))
+          (.catch #(callback false)))))
 
 (defn camera [props]
   (r/create-element camera-default (clj->js (merge {:inverted true} props))))

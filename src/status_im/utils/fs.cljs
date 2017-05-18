@@ -3,10 +3,9 @@
 (def fs (js/require "react-native-fs"))
 
 (defn move-file [src dst handler]
-  (let [result (.moveFile fs src dst)
-        result (.then result #(handler nil %))
-        result (.catch result #(handler % nil))]
-    result))
+  (-> (.moveFile fs src dst)
+      (.then #(handler nil %))
+      (.catch #(handler % nil))))
 
 (defn read-file [path encoding on-read on-error]
   (-> (.readFile fs path encoding)

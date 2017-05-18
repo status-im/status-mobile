@@ -19,10 +19,12 @@
 
 (defn request-permissions [permissions then else]
   (if platform/android?
-    (let [permissions (mapv #(get permissions-map %) permissions)
-          result      (.requestMultiple permissions-class (clj->js permissions))
-          result      (.then result #(if (all-granted? (js->clj %))
-                                       (then)
-                                       (when else (else))))
-          result      (.catch result #(else))])
+    (letfn [(else-fn [] (when else (else)))]
+      (let [permissions (mapv #(get permissions-map %) permissions)]
+        (-> (.requestMultiple permissions-class (clj->js permissions))
+            (.then #(if (all-granted? (js->clj %))
+                      (then)
+                      (else-fn)))
+            (.catch else-fn))))
+
     (then)))

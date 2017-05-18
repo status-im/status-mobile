@@ -120,11 +120,17 @@
 
 (def image-picker-class (js/require "react-native-image-crop-picker"))
 
+(defn show-access-error [o]
+  (when (= "ERROR_PICKER_UNAUTHORIZED_KEY" (aget o "code")) ; Do not show error when user cancel selection
+    (u/show-popup (i18n/label :t/error)
+                  (i18n/label :t/photos-access-error))))
+
 (defn show-image-picker [images-fn]
   (let [image-picker (.-default image-picker-class)]
     (-> image-picker
         (.openPicker (clj->js {:multiple false}))
-        (.then images-fn))))
+        (.then images-fn)
+        (.catch show-access-error))))
 
 (def swiper (adapt-class (js/require "react-native-swiper")))
 
