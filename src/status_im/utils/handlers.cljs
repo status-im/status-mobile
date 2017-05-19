@@ -1,7 +1,7 @@
 (ns status-im.utils.handlers
   (:require [re-frame.core :refer [after dispatch debug] :as re-core]
-            [re-frame.utils :refer [log]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [taoensso.timbre :as log]))
 
 (defn side-effect!
   "Middleware for handlers that will not affect db."
@@ -17,7 +17,7 @@
   [handler]
   (fn debug-handler
     [db v]
-    (log "Handling re-frame event: " (first v))
+    (log/debug "Handling re-frame event: " (first v))
     (let [new-db  (handler db v)]
       new-db)))
 

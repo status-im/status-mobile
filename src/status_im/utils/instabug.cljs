@@ -3,13 +3,25 @@
 
 (def instabug-rn (js/require "instabug-reactnative"))
 
-(defn init-instabug []
-  (when-not js/goog.DEBUG
-    (.startWithToken instabug-rn
-                     "b239f82a9cb00464e4c72cc703e6821e"
-                     (.. instabug-rn -invocationEvent -shake))))
-
 (defn log [str]
   (if js/goog.DEBUG
     (log/debug str)
-    (.IBGLog instabug-rn str)))
+    (let [a nil]
+      (.IBGLog instabug-rn str))))
+
+(defn instabug-appender []
+  {:enabled?   true
+   :async?     false
+   :min-level  nil
+   :rate-limit nil
+   :output-fn  :inherit
+
+   :fn
+               (fn [data]
+                 (let [{:keys [level ?ns-str ?err output_]} data]
+                   (log (force output_))))})
+
+(log/merge-config! {:appenders {:instabug (instabug-appender)
+                                ;; useful for local debug
+                                ;; :print    (log/println-appender)
+                                }})

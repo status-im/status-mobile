@@ -40,6 +40,7 @@
 (register-handler :set set-el)
 
 (defn set-in [db [_ path v]]
+  (log/debug :set-in {:apth path :value v})
   (assoc-in db path v))
 
 (register-handler :set-in set-in)
