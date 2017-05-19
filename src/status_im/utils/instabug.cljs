@@ -12,4 +12,5 @@
 (defn log [str]
   (if js/goog.DEBUG
     (log/debug str)
-    (.IBGLog nil #_instabug-rn str)))
+    (let [a nil]
+      (.IBGLog a #_instabug-rn str))))
