@@ -57,7 +57,7 @@
     "react-native-emoji-picker": "git+https://github.com/alwx/react-native-emoji-picker.git",
     "react-native-fs": "2.1.0-rc.1",
     "react-native-http": "github:tradle/react-native-http#834492d",
-    "react-native-http-bridge": "^0.3.0",
+    "react-native-http-bridge": "^0.4.1",
     "react-native-i18n": "0.0.8",
     "react-native-image-crop-picker": "^0.12.10",
     "react-native-image-resizer": "^0.1.0",

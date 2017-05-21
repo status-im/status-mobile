@@ -10,6 +10,7 @@
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
                                          text-content-type
+                                         content-type-log-message
                                          content-type-command
                                          content-type-command-request
                                          default-number-of-messages] :as c]
@@ -202,7 +203,7 @@
 
 (register-handler :received-bot-response
   (u/side-effect!
-    (fn [_ [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
+    (fn [{:keys [contacts]} [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
       (let [{:keys [returned context]} result
             {:keys [markup text-message err]} returned
             {:keys [log-messages update-db default-db]} context
@@ -215,11 +216,13 @@
                                           :default-db default-db)])
         (doseq [message log-messages]
           (let [{:keys [message type]} message]
-            (when (or (not= type "debug") js/goog.DEBUG)
+            (when (or (not= type "debug")
+                      js/goog.DEBUG
+                      (get-in contacts [chat-id :debug?]))
               (dispatch [:received-message
                          {:message-id   (random/id)
                           :content      (str type ": " message)
-                          :content-type text-content-type
+                          :content-type content-type-log-message
                           :outgoing     false
                           :chat-id      chat-id
                           :from         chat-id
