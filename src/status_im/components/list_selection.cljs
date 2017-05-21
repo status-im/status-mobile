@@ -6,14 +6,16 @@
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.i18n :refer [label]]))
 
-(defn open [opts]
-  (.share sharing (clj->js opts)))
+(defn open-share [content]
+  (when (or (:message content)
+            (:url content))
+    (.share sharing (clj->js content))))
 
 (defn share-options [text]
   [{:text  (label :t/sharing-copy-to-clipboard)
     :value #(copy-to-clipboard text)}
    {:text  (label :t/sharing-share)
-    :value #(open {:message text})}])
+    :value #(open-share {:message text})}])
 
 (defn share [text dialog-title]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
@@ -22,7 +24,7 @@
                         :callback    (fn [index]
                                        (case index
                                          0 (copy-to-clipboard text)
-                                         1 (open {:message text})
+                                         1 (open-share {:message text})
                                          :default))
                         :cancel-text (label :t/sharing-cancel)})))
 

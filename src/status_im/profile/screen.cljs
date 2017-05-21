@@ -106,24 +106,25 @@
   #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
                                                 :qr-source qr-source}]))
 
+(defn profile-options [contact k text]
+  (into []
+        (concat [{:value (show-qr contact k)
+                  :text (label :t/show-qr)}]
+                (when text
+                  (share-options text)))))
+
 (defn profile-info-address-item [{:keys [address] :as contact}]
   [profile-info-item
    {:label     (label :t/address)
     :value     address
-    :options   (into []
-                 (concat [{:value (show-qr contact :address)
-                           :text (label :t/show-qr)}]
-                         (share-options address)))
+    :options   (profile-options contact :address address)
     :text-mode :middle}])
 
 (defn profile-info-public-key-item [public-key contact]
   [profile-info-item
    {:label     (label :t/public-key)
     :value     public-key
-    :options   (into []
-                 (concat [{:value (show-qr contact :public-key)
-                           :text (label :t/show-qr)}]
-                         (share-options public-key)))
+    :options   (profile-options contact :public-key public-key)
     :text-mode :middle}])
 
 (defn info-item-separator []
