@@ -26,6 +26,7 @@
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
                                          text-content-type
+                                         content-type-log-message
                                          content-type-status
                                          content-type-command
                                          content-type-command-request] :as c]
@@ -222,6 +223,10 @@
    [message-view message [message-content-command-request message]]])
 
 (defmethod message-content text-content-type
+  [wrapper message]
+  [wrapper message [text-message message]])
+
+(defmethod message-content content-type-log-message
   [wrapper message]
   [wrapper message [text-message message]])
 

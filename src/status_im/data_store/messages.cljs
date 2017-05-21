@@ -79,6 +79,12 @@
                   (clojure.core/update message :content str-to-map)
                   message))))))
 
+(defn get-log-messages
+  [chat-id]
+  (->> (data-store/get-by-chat-id chat-id 0 100)
+       (filter #(= (:content-type %) c/content-type-log-message))
+       (map #(select-keys % [:content :timestamp]))))
+
 (defn get-last-message
   [chat-id]
   (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
