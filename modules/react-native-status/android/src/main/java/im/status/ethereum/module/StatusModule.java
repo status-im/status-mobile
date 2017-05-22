@@ -1,6 +1,7 @@
 package im.status.ethereum.module;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.*;
 import android.view.WindowManager;
 import android.util.Log;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+import com.instabug.library.Instabug;
 
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
@@ -125,11 +127,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             try {
                 final String chaindDataFolderPath = dataFolder + "/StatusIM/lightchaindata";
                 final File lightChainFolder = new File(chaindDataFolderPath);
-                if (lightChainFolder.isDirectory())
-                {
+                if (lightChainFolder.isDirectory()) {
                     String[] children = lightChainFolder.list();
-                    for (int i = 0; i < children.length; i++)
-                    {
+                    for (int i = 0; i < children.length; i++) {
                         new File(lightChainFolder, children[i]).delete();
                     }
                 }
@@ -144,9 +144,33 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         String defaultConfig = Statusgo.GenerateConfig(dataFolder, 3);
         try {
             JSONObject jsonConfig = new JSONObject(defaultConfig);
-            jsonConfig.put("LogEnabled", this.debug);
-            jsonConfig.put("LogFile", "geth.log");
+            String gethLogFileName = "geth.log";
+            jsonConfig.put("LogEnabled", true);
+            jsonConfig.put("LogFile", gethLogFileName);
             jsonConfig.put("LogLevel", "DEBUG");
+            String gethLogPath = dataFolder + "/" + gethLogFileName;
+            File logFile = new File(gethLogPath);
+            if (logFile.exists()) {
+                logFile.delete();
+            }
+            try {
+                logFile.setReadable(true);
+                File parent = logFile.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                logFile.createNewFile();
+                logFile.setReadable(true);
+            } catch (Exception e) {
+                Log.d(TAG, "Can't create geth.log file!");
+            }
+            Uri gethLogUri = Uri.fromFile(logFile);
+            try {
+                Log.d(TAG, "Attach to geth.log to instabug " + gethLogUri.getPath());
+                Instabug.setFileAttachment(gethLogUri, gethLogFileName);
+            } catch (NullPointerException e) {
+                Log.d(TAG, "Instabug is not initialized!");
+            }
 
             config = jsonConfig.toString();
         } catch (JSONException e) {
