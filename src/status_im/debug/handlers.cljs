@@ -67,7 +67,8 @@
                                     :debug?  true}])
           (if (get contacts whisper-identity)
             (dispatch [:update-contact! dapp])
-            (dispatch [:add-contacts [dapp]])))))))
+            (dispatch [:add-contacts [dapp]])
+            (dispatch [:open-chat-with-contact dapp])))))))
 
 (register-handler :debug-remove-contact
   (u/side-effect!
