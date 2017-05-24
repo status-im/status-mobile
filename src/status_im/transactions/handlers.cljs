@@ -4,7 +4,7 @@
             [status-im.navigation.handlers :as nav]
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]
-            [status-im.utils.hex :refer [valid-hex?]]
+            [status-im.utils.hex :refer [valid-hex? normalize-hex]]
             [status-im.components.status :as status]
             [clojure.string :as s]
             [taoensso.timbre :as log]))
@@ -189,21 +189,24 @@
 
 (register-handler :transaction-failed
   (u/side-effect!
-    (fn [_ [_ {:keys [id message_id error_code error_message] :as event}]]
-      (cond
+    (fn [{:keys [current-account-id accounts]} [_ {:keys [id args message_id error_code error_message] :as event}]]
+      (let [current-account-address       (:address (get accounts current-account-id))
+            transaction-initiator-address (normalize-hex (:from args))]
+        (cond
 
-        (= error_code wrong-password-code)
-        (dispatch [:set-wrong-password!])
+          (= error_code wrong-password-code)
+          (dispatch [:set-wrong-password!])
 
-        (not= discard-code error_code)
-        (do (when message_id
-              (dispatch [::remove-pending-message message_id]))
-            (dispatch [:clear-selected-transaction])
-            (dispatch [::remove-transaction id])
-            (dispatch [:set-chat-ui-props {:validation-messages error_message}]))
+          (not= discard-code error_code)
+          (do (when message_id
+                (dispatch [::remove-pending-message message_id]))
+              (dispatch [:clear-selected-transaction])
+              (dispatch [::remove-transaction id])
+              (when (= current-account-address transaction-initiator-address)
+                (dispatch [:set-chat-ui-props {:validation-messages error_message}])))
 
-        :else
-        (dispatch [:set-chat-ui-props {:validation-messages nil}])))))
+          :else
+          (dispatch [:set-chat-ui-props {:validation-messages nil}]))))))
 
 (register-handler :clear-selected-transaction
   (fn [db _]
