@@ -31,7 +31,8 @@
     [status-im.constants :refer [console-chat-id]]
     [status-im.utils.ethereum-network :as enet]
     [status-im.utils.instabug :as inst]
-    [status-im.utils.platform :as p]))
+    [status-im.utils.platform :as p]
+    [status-im.utils.platform :as platform]))
 
 ;; -- Common --------------------------------------------------------------
 
@@ -158,7 +159,7 @@
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
           "transaction.failed" (dispatch [:transaction-failed event])
-          "node.started" (dispatch [:status-node-started!])
+          "node.ready" (dispatch [:status-node-started!])
           "module.initialized" (dispatch [:status-module-initialized!])
           "local_storage.set" (dispatch [:set-local-storage event])
           "request_geo_permissions" (dispatch [:request-permissions [:geolocation]
@@ -187,13 +188,19 @@
 
 (register-handler :app-state-change
   (u/side-effect!
-    (fn [{:keys [webview-bridge network networks] :as db} [_ state]]
+    (fn [{:keys [webview-bridge network networks
+                 was-first-state-active-ios?] :as db}
+         [_ state]]
+      (println :STATE state)
       (case state
         "background" (status/stop-node)
-        "active" (let [config (get-in networks [network :config])]
-                   (status/start-node config (fn []))
-                   (when webview-bridge
-                     (.resetOkHttpClient webview-bridge)))
+        "active" (if (or (and was-first-state-active-ios? platform/ios?)
+                         platform/android?)
+                   (let [config (get-in networks [network :config])]
+                     (status/start-node config (fn []))
+                     (when webview-bridge
+                       (.resetOkHttpClient webview-bridge)))
+                   (dispatch [:set :was-first-state-active-ios? true]))
         nil))))
 
 (register-handler :request-permissions

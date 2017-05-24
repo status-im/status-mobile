@@ -142,68 +142,6 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
     });
 }
 
-
-const int STATE_ACTIVE = 0;
-const int STATE_LOCKED_WITH_ACTIVE_APP = 1;
-const int STATE_BACKGROUND = 2;
-const int STATE_LOCKED_WITH_INACTIVE_APP = 3;
-int wozniakConstant = STATE_ACTIVE;
-
-
-static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
-{
-    // the "com.apple.springboard.lockcomplete" notification will always come after the "com.apple.springboard.lockstate" notification
-    CFStringRef nameCFString = (CFStringRef)name;
-    NSString *lockState = (__bridge NSString*)nameCFString;
-    NSLog(@"Darwin notification NAME = %@",name);
-    
-    NSString* sm = [NSString stringWithFormat:@"%i", wozniakConstant];
-    NSString *s1 = [NSString stringWithFormat:@"%@ %@", @"LOCK MAGIC", sm];
-    NSLog(s1);
-    if([lockState isEqualToString:@"com.apple.springboard.lockcomplete"])
-    {
-        NSLog(@"DEVICE LOCKED");
-        // User locks phone when application is active
-        if(wozniakConstant == STATE_ACTIVE){
-            wozniakConstant = STATE_LOCKED_WITH_ACTIVE_APP;
-            StopNodeRPCServer();
-        }
-        
-        // Here lockcomplete event comes when app is unlocked
-        // because it couldn't come when locking happened
-        // as application was not active (it could not handle callback)
-        if (wozniakConstant == STATE_LOCKED_WITH_INACTIVE_APP) {
-            wozniakConstant = STATE_ACTIVE;
-            StopNodeRPCServer();
-            StartNodeRPCServer();
-        }
-    }
-    else
-    {
-        NSLog(@"LOCK STATUS CHANGED");
-        NSString *s = [NSString stringWithFormat:@"%@ %@", @"LOCK", lockState];
-        NSLog(s);
-        
-        // if lockstate happens before lockcomplete it means
-        // that phone was locked when application was not active
-        if(wozniakConstant == STATE_ACTIVE){
-            wozniakConstant = STATE_LOCKED_WITH_INACTIVE_APP;
-        }
-        
-        if(wozniakConstant == STATE_BACKGROUND){
-            wozniakConstant = STATE_ACTIVE;
-            StartNodeRPCServer();
-        }
-        
-        // one more lockstate event comes along with lockcomplete
-        // when phone is locked with active application
-        if(wozniakConstant == STATE_LOCKED_WITH_ACTIVE_APP){
-            wozniakConstant = STATE_BACKGROUND;
-        }
-        
-    }
-}
-
 ////////////////////////////////////////////////////////////////////
 #pragma mark - startNode
 //////////////////////////////////////////////////////////////////// startNode
@@ -278,20 +216,21 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     [resultingConfigJson setValue:@"DEBUG" forKey:@"LogLevel"];
     NSString *resultingConfig = [resultingConfigJson bv_jsonStringWithPrettyPrint:NO];
     NSLog(@"node config %@", resultingConfig);
-    NSURL *logUrl = [folderName URLByAppendingPathComponent:@"geth.log"];
+    NSURL *dataDirUrl = [NSURL fileURLWithPath:dataDir];
+    NSURL *logUrl = [dataDirUrl URLByAppendingPathComponent:@"geth.log"];
     if([fileManager fileExistsAtPath:logUrl.path]) {
         [fileManager removeItemAtPath:logUrl.path error:nil];
     }
     
-    if(![fileManager fileExistsAtPath:folderName.path]) {
-        [fileManager createDirectoryAtPath:folderName.path withIntermediateDirectories:YES attributes:nil error:nil];
+    if(![fileManager fileExistsAtPath:dataDirUrl.path]) {
+        [fileManager createDirectoryAtPath:dataDirUrl.path withIntermediateDirectories:YES attributes:nil error:nil];
     }
     
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
     [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
-    [manager createFileAtPath:logUrl.path contents:nil attributes:dict];
+    [fileManager createFileAtPath:logUrl.path contents:nil attributes:dict];
 #ifndef DEBUG
-    [Instabug addFileAttachmentWithURL:[folderName URLByAppendingPathComponent:@"geth.log"]];
+    [Instabug addFileAttachmentWithURL:logUrl];
 #endif
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)
@@ -300,24 +239,6 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
                        StartNode((char *) [resultingConfig UTF8String]);
                    });
     callback(@[[NSNull null]]);
-    //Screen lock notifications
-    if(!isStatusInitialized){
-        isStatusInitialized = TRUE;
-        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-                                        NULL, // observer
-                                        displayStatusChanged, // callback
-                                        CFSTR("com.apple.springboard.lockcomplete"), // event name
-                                        NULL, // object
-                                        CFNotificationSuspensionBehaviorDeliverImmediately);
-        
-        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-                                        NULL, // observer
-                                        displayStatusChanged, // callback
-                                        CFSTR("com.apple.springboard.lockstate"), // event name
-                                        NULL, // object
-                                        CFNotificationSuspensionBehaviorDeliverImmediately);
-        return;
-    }
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -344,35 +265,6 @@ RCT_EXPORT_METHOD(shouldMoveToInternalStorage:(RCTResponseSenderBlock)onResultCa
 RCT_EXPORT_METHOD(moveToInternalStorage:(RCTResponseSenderBlock)onResultCallback) {
     // Android only
     onResultCallback(@[[NSNull null]]);
-}
-
-////////////////////////////////////////////////////////////////////
-#pragma mark - StartNodeRPCServer method
-//////////////////////////////////////////////////////////////////// startNodeRPCServer
-RCT_EXPORT_METHOD(startNodeRPCServer) {
-#if DEBUG
-    NSLog(@"StartNodeRPCServer() method called");
-#endif
-    StartNodeRPCServer();
-}
-
-////////////////////////////////////////////////////////////////////
-#pragma mark - StopNodeRPCServer method
-//////////////////////////////////////////////////////////////////// StopNodeRPCServer
-RCT_EXPORT_METHOD(stopNodeRPCServer) {
-#if DEBUG
-    NSLog(@"StopNodeRPCServer() method called");
-#endif
-    StopNodeRPCServer();
-}
-
-RCT_EXPORT_METHOD(stopNode:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"stopNode() method called");
-#endif
-    // TODO: stop node
-    
-    callback(@[[NSNull null]]);
 }
 
 ////////////////////////////////////////////////////////////////////

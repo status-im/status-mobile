@@ -6,6 +6,7 @@
             [status-im.components.react :refer [view
                                                 modal
                                                 app-registry
+                                                app-state
                                                 keyboard
                                                 orientation
                                                 splash-screen
@@ -60,6 +61,9 @@
     current-view
     :chat))
 
+(defn app-state-change-handler [state]
+  (dispatch [:app-state-change state]))
+
 (defn app-root []
   (let [signed-up?      (subscribe [:signed-up?])
         modal-view      (subscribe [:get :modal])
@@ -87,10 +91,12 @@
                        "keyboardWillHide"
                        #(when-not (= 0 @keyboard-height)
                           (dispatch [:set :keyboard-height 0])))
-         (.hide splash-screen))
+         (.hide splash-screen)
+         (.addEventListener app-state "change" app-state-change-handler))
        :component-will-unmount
        (fn []
-         (.stop http-bridge))
+         (.stop http-bridge)
+         (.removeEventListener app-state "change" app-state-change-handler))
        :render
        (fn []
          (when @view-id
