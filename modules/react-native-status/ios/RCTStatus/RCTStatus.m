@@ -204,8 +204,11 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     int networkId = [configJSON[@"NetworkId"] integerValue];
     NSString *dataDir = [configJSON objectForKey:@"DataDir"];
     NSString *networkDir = [rootUrl.path stringByAppendingString:dataDir];
+#ifdef DEBUG
+    int dev = 1;
+#else
     int dev = 0;
-    if (DEBUG) {dev = 1;}
+#endif
     char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId, dev);
     NSString *config = [NSString stringWithUTF8String: configChars];
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];
