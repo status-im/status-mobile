@@ -108,7 +108,7 @@
        [view {:style st/transaction-details-container}
         [text {:style st/transaction-to} (i18n/label :t/to)]
         [text {:style st/transaction-recipient :number-of-lines 1} recipient-name]
-        [text {:style st/transaction-time} (time/format-date "dd MMM hh:mm" (time/to-date timestamp))]]]
+        [text {:style st/transaction-time} (time/format-date "dd MMM HH:mm" (time/to-date timestamp))]]]
       [view {:style st/transaction-picture}
        (when recipient
          [ci/chat-icon (:photo-path recipient) {:size 40}])]]]))
