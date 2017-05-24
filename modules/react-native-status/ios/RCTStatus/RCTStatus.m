@@ -221,17 +221,18 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     NSLog(@"node config %@", resultingConfig);
     NSURL *dataDirUrl = [NSURL fileURLWithPath:dataDir];
     NSURL *logUrl = [dataDirUrl URLByAppendingPathComponent:@"geth.log"];
-    if([fileManager fileExistsAtPath:logUrl.path]) {
+    /*if([fileManager fileExistsAtPath:logUrl.path]) {
         [fileManager removeItemAtPath:logUrl.path error:nil];
     }
     
     if(![fileManager fileExistsAtPath:dataDirUrl.path]) {
         [fileManager createDirectoryAtPath:dataDirUrl.path withIntermediateDirectories:YES attributes:nil error:nil];
+    }*/
+    if(![fileManager fileExistsAtPath:logUrl.path]) {
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
+        [fileManager createFileAtPath:logUrl.path contents:nil attributes:dict];
     }
-    
-    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
-    [fileManager createFileAtPath:logUrl.path contents:nil attributes:dict];
 #ifndef DEBUG
     [Instabug addFileAttachmentWithURL:logUrl];
 #endif
