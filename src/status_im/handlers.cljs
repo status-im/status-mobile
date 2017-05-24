@@ -191,7 +191,6 @@
     (fn [{:keys [webview-bridge network networks
                  was-first-state-active-ios?] :as db}
          [_ state]]
-      (println :STATE state)
       (case state
         "background" (status/stop-node)
         "active" (if (or (and was-first-state-active-ios? platform/ios?)
