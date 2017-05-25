@@ -219,15 +219,17 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     [resultingConfigJson setValue:@"DEBUG" forKey:@"LogLevel"];
     NSString *resultingConfig = [resultingConfigJson bv_jsonStringWithPrettyPrint:NO];
     NSLog(@"node config %@", resultingConfig);
-    NSURL *dataDirUrl = [NSURL fileURLWithPath:dataDir];
-    NSURL *logUrl = [dataDirUrl URLByAppendingPathComponent:@"geth.log"];
-    /*if([fileManager fileExistsAtPath:logUrl.path]) {
+    NSURL *networkDirUrl = [NSURL fileURLWithPath:networkDir];
+    NSURL *logUrl = [networkDirUrl URLByAppendingPathComponent:@"geth.log"];
+    if([fileManager fileExistsAtPath:logUrl.path]) {
         [fileManager removeItemAtPath:logUrl.path error:nil];
     }
     
-    if(![fileManager fileExistsAtPath:dataDirUrl.path]) {
-        [fileManager createDirectoryAtPath:dataDirUrl.path withIntermediateDirectories:YES attributes:nil error:nil];
-    }*/
+    if(![fileManager fileExistsAtPath:networkDirUrl.path]) {
+        [fileManager createDirectoryAtPath:networkDirUrl.path withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    NSLog(@"logUrlPath %@", logUrl.path);
     if(![fileManager fileExistsAtPath:logUrl.path]) {
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
         [dict setObject:[NSNumber numberWithInt:511] forKey:NSFilePosixPermissions];
