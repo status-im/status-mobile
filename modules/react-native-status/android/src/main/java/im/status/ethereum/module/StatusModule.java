@@ -107,8 +107,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     private void doStartNode(final String defaultConfig) {
 
-        Statusgo.StopNode();
-
         Activity currentActivity = getCurrentActivity();
 
         String root = currentActivity.getApplicationInfo().dataDir;
@@ -318,9 +316,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void stopNode() {
+    public void stopNode(final Callback callback) {
         Log.d(TAG, "stopNode");
         Statusgo.StopNode();
+        callback.invoke();
     }
 
     @ReactMethod

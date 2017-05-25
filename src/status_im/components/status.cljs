@@ -73,24 +73,9 @@
   (when status
     (call-module #(.startNode status (or config "{}") on-result))))
 
-(defn stop-node []
+(defn stop-node [callback]
   (when status
-    (call-module #(.stopNode status))))
-
-(defonce restarting-rpc (atom false))
-
-(defn restart-rpc [config]
-  (when-not @restarting-rpc
-    (reset! restarting-rpc true)
-    (log/debug :restart-rpc-on-post-error)
-
-    ;; todo maybe it would be better to use something like
-    ;; restart-rpc-server on status-go side
-    (stop-node)
-    (start-node config (fn []))
-
-    (go (<! (timeout 3000))
-        (reset! restarting-rpc false))))
+    (call-module #(.stopNode status callback))))
 
 (defonce account-creation? (atom false))
 

@@ -4,7 +4,8 @@
             [status-im.utils.handlers :as u]
             [status-im.data-store.networks :as networks]
             [status-im.utils.js-resources :as js-res]
-            [status-im.utils.types :as t]))
+            [status-im.utils.types :as t]
+            [status-im.components.status :as status]))
 
 (defn save-networks! [{:keys [new-networks]} _]
   (networks/save-all new-networks))
@@ -42,6 +43,10 @@
 
 (register-handler :connect-network
   (u/side-effect!
-    (fn [{:keys [current-account-id]} [_ network]]
+    (fn [{:keys [current-account-id networks]} [_ network]]
       (dispatch [:account-update {:network network}])
+      (status/stop-node
+        (fn []
+          (let [config (get-in networks [network :config])]
+            (status/start-node config (fn [])))))
       (dispatch [:navigate-to-clean :accounts]))))

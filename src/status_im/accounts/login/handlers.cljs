@@ -80,7 +80,9 @@
                                    (dispatch [:set-in [:login :error] error])))))]
         (if restart-node?
           (do (dispatch [:set :on-node-started do-login])
-              (status/start-node config (fn [])))
+              (status/stop-node
+                (fn []
+                  (status/start-node config (fn [])))))
           (do-login)))))
   (fn [db [_ _ _ account-creation?]]
     (-> db

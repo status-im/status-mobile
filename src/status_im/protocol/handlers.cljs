@@ -74,18 +74,18 @@
         (when (and (not= sync-data state) (= :in-progress new-state))
           (dispatch [:set :sync-data state]))
         (when (not= sync-state new-state)
-          (dispatch [:set :sync-state new-state]))
-        (let [timeout (if (#{:done :synced} new-state) 60 10)]
-          (s/execute-later #(dispatch [:check-sync]) (s/s->ms timeout)))))))
+          (dispatch [:set :sync-state new-state]))))))
 
 (register-handler :check-sync
   (u/side-effect!
     (fn [{:keys [web3] :as db}]
       (if web3
-        (.getSyncing
-          (.-eth web3)
-          (fn [error sync]
-            (dispatch [:update-sync-state error sync])))
+        (do (.getSyncing
+              (.-eth web3)
+              (fn [error sync]
+                (dispatch [:update-sync-state error sync])))
+            (let [timeout 5]
+              (s/execute-later #(dispatch [:check-sync]) (s/s->ms timeout))))
         (s/execute-later #(dispatch [:check-sync]) (s/s->ms 10))))))
 
 (register-handler :initialize-sync-listener
@@ -429,5 +429,4 @@
             android-error? (re-find (re-pattern "Failed to connect") message)]
         (when (or ios-error? android-error?)
           (when android-error? (status/init-jail))
-          (status/restart-rpc config)
           (dispatch [:load-commands!]))))))

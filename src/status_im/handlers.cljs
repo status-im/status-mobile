@@ -188,15 +188,19 @@
 
 (register-handler :app-state-change
   (u/side-effect!
-    (fn [{:keys [webview-bridge network networks
+    (fn [{:keys [webview-bridge current-network networks
                  was-first-state-active-ios?] :as db}
          [_ state]]
       (case state
-        "background" (status/stop-node)
+        "background" (when platform/android? (status/stop-node (fn [])))
         "active" (if (or (and was-first-state-active-ios? platform/ios?)
                          platform/android?)
-                   (let [config (get-in networks [network :config])]
-                     (status/start-node config (fn []))
+                   (let [config (get-in networks [current-network :config])
+                         start-node (fn []
+                                      (status/start-node config (fn [])))]
+                     (if platform/ios?
+                       (status/stop-node start-node)
+                       (start-node))
                      (when webview-bridge
                        (.resetOkHttpClient webview-bridge)))
                    (dispatch [:set :was-first-state-active-ios? true]))

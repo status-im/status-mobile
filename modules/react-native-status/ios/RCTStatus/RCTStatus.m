@@ -193,11 +193,6 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     
     NSLog(@"after lightChainData");
     
-    if (error){
-        NSLog(@"error %@", error);
-    }else
-        NSLog(@"folderName: %@", testnetFolderName);
-    
     NSLog(@"preconfig: %@", configString);
     NSData *configData = [configString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *configJSON = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
@@ -241,8 +236,8 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)
                    {
-                       StopNode();
-                       StartNode((char *) [resultingConfig UTF8String]);
+                       char *res = StartNode((char *) [resultingConfig UTF8String]);
+                       NSLog(@"StartNode result %@", [NSString stringWithUTF8String: res]);
                    });
     callback(@[[NSNull null]]);
 }
@@ -250,11 +245,13 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
 ////////////////////////////////////////////////////////////////////
 #pragma mark - StopNode method
 //////////////////////////////////////////////////////////////////// StopNode
-RCT_EXPORT_METHOD(stopNode) {
+RCT_EXPORT_METHOD(stopNode:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"StopNode() method called");
 #endif
-    StopNode();
+     char *res = StopNode();
+     NSLog(@"StopNode result %@", [NSString stringWithUTF8String: res]);
+     callback(@[[NSNull null]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -405,16 +402,20 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
     [request setHTTPBody:postData];
     [request setTimeoutInterval:310];
     
-    NSError *error;
-    
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
     
     NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSString *strResponse = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSString *trimmedResponse = [strResponse stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if(error) {
+            NSLog(@"NSURLSessionDataTask error");
+
+            //callback(@[@""]);
+        } else {
+            NSString *strResponse = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            NSString *trimmedResponse = [strResponse stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         
-        callback(@[trimmedResponse]);
+            callback(@[trimmedResponse]);
+        }
     }];
     
     [postDataTask resume];
