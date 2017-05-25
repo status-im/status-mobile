@@ -110,7 +110,7 @@
                              (filter (fn [[_ c]] (:global-command c)))
                              (map (fn [[id {:keys [global-command]}]]
                                     [(keyword id) (-> global-command
-                                                      (update :params vals)
+                                                      (update :params (comp vec vals))
                                                       (assoc :bot id
                                                              :type :command))]))
                              (into {}))
