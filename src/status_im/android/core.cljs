@@ -55,10 +55,15 @@
                        ;; todo: it might be better always return false from
                        ;; this listener and handle application's closing
                        ;; in handlers
-                       (let [stack (subscribe [:get :navigation-stack])
-                             creating? (subscribe [:get :creating-account?])]
+                       (let [stack      (subscribe [:get :navigation-stack])
+                             creating?  (subscribe [:get :creating-account?])
+                             result-box (subscribe [:chat-ui-props :result-box])
+                             webview    (subscribe [:get :webview-bridge])]
                          (cond
                            @creating? true
+
+                           (and @webview (:can-go-back? @result-box))
+                           (do (.goBack @webview) true)
 
                            (< 1 (count @stack))
                            (do (dispatch [:navigate-back]) true)
