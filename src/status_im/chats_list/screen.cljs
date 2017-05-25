@@ -85,10 +85,11 @@
    [list-view {:dataSource      (to-datasource chats)
                :renderRow       (fn [[id :as row] _ _]
                                   (list-item ^{:key id} [chat-list-item row edit?]))
-               :renderHeader    renderers/list-header-renderer
-               :renderFooter    #(list-item [view
-                                             [common/list-footer]
-                                             [common/bottom-shadow]])
+               :renderHeader    (when-not (empty? chats) renderers/list-header-renderer)
+               :renderFooter    (when-not (empty? chats)
+                                  #(list-item [view
+                                               [common/list-footer]
+                                               [common/bottom-shadow]]))
                :renderSeparator renderers/list-separator-renderer
                :style           (st/list-container tabs-hidden?)}]
    (when (and (not edit?)
