@@ -15,5 +15,5 @@ android {
 dependencies {
     compile 'com.facebook.react:react-native:+'
     compile 'com.instabug.library:instabug:3+'
-    compile(group: 'status-im', name: 'status-go', version: 'node-races', ext: 'aar')
+    compile(group: 'status-im', name: 'status-go', version: 'node-races-g35eb15f', ext: 'aar')
 }
