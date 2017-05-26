@@ -120,17 +120,11 @@
                                         (.addEntropy (.. ecc -sjcl -random)))
                                    (dispatch [:crypt-initialized]))))))))
 
-(defn node-started [network result]
-  (log/debug "Started Node")
-  (dispatch [:set :current-network network]))
-
 (defn move-to-internal-storage [network config]
   (status/move-to-internal-storage
     (fn []
-      (status/start-node
-        config
-        (fn [result]
-          (node-started network result))))))
+      (dispatch [:set :current-network network])
+      (status/start-node config))))
 
 (register-handler :initialize-geth
   (u/side-effect!
@@ -143,7 +137,8 @@
                          [:read-external-storage]
                          #(move-to-internal-storage network config')
                          #(dispatch [:move-to-internal-failure-message])])
-              (status/start-node config' #(node-started network %)))))))))
+              (do (dispatch [:set :current-network network])
+                  (status/start-node config')))))))))
 
 (register-handler :webview-geo-permissions-granted
   (u/side-effect!
@@ -159,7 +154,8 @@
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
           "transaction.failed" (dispatch [:transaction-failed event])
-          "node.ready" (dispatch [:status-node-started!])
+          "node.ready" (do (status/after-start!) (dispatch [:status-node-started!]))
+          "node.stopped" (status/after-stop!)
           "module.initialized" (dispatch [:status-module-initialized!])
           "local_storage.set" (dispatch [:set-local-storage event])
           "request_geo_permissions" (dispatch [:request-permissions [:geolocation]
@@ -192,15 +188,13 @@
                  was-first-state-active-ios?] :as db}
          [_ state]]
       (case state
-        "background" (when platform/android? (status/stop-node (fn [])))
+        "background" (when platform/android? (status/stop-node))
         "active" (if (or (and was-first-state-active-ios? platform/ios?)
                          platform/android?)
-                   (let [config (get-in networks [current-network :config])
-                         start-node (fn []
-                                      (status/start-node config (fn [])))]
-                     (if platform/ios?
-                       (status/stop-node start-node)
-                       (start-node))
+                   (let [config (get-in networks [current-network :config])]
+                     (when platform/ios?
+                       (status/stop-node))
+                     (status/start-node config)
                      (when webview-bridge
                        (.resetOkHttpClient webview-bridge)))
                    (dispatch [:set :was-first-state-active-ios? true]))

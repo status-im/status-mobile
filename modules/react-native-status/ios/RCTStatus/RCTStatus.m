@@ -238,8 +238,8 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
                    {
                        char *res = StartNode((char *) [resultingConfig UTF8String]);
                        NSLog(@"StartNode result %@", [NSString stringWithUTF8String: res]);
+                       callback(@[[NSString stringWithUTF8String: res]]);
                    });
-    callback(@[[NSNull null]]);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -251,7 +251,7 @@ RCT_EXPORT_METHOD(stopNode:(RCTResponseSenderBlock)callback) {
 #endif
      char *res = StopNode();
      NSLog(@"StopNode result %@", [NSString stringWithUTF8String: res]);
-     callback(@[[NSNull null]]);
+     callback(@[[NSString stringWithUTF8String: res]]);
 }
 
 ////////////////////////////////////////////////////////////////////

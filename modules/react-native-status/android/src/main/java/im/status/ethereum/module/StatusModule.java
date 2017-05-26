@@ -105,7 +105,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
     }
 
-    private void doStartNode(final String defaultConfig) {
+    private void doStartNode(final String defaultConfig, final Callback callback) {
 
         Activity currentActivity = getCurrentActivity();
 
@@ -144,7 +144,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         String oldKeystoreDir = testnetDataDir + "/keystore";
         String newKeystoreDir = root + "/keystore";
         final File oldKeystore = new File(oldKeystoreDir);
-        if (!oldKeystore.exists()) {
+        if (oldKeystore.exists()) {
             try {
                 final File newKeystore = new File(newKeystoreDir);
                 copyDirectory(oldKeystore, newKeystore);
@@ -209,7 +209,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         Log.d(TAG, "Node config " + config);
 
-        Statusgo.StartNode(config);
+        String res = Statusgo.StartNode(config);
+        Log.d(TAG, "StartNode result: " + res);
+        callback.invoke(res);
         Log.d(TAG, "Geth node started");
     }
 
@@ -294,32 +296,22 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void startNode(final String config, Callback callback) {
+    public void startNode(final String config, final Callback callback) {
         Log.d(TAG, "startNode");
         status.sendMessage();
         if (!checkAvailability()) {
-            callback.invoke(false);
             return;
         }
 
         this.w3Bridge = new Web3Bridge();
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                doStartNode(config);
-            }
-        };
-
-        thread.start();
-
-        callback.invoke(false);
+        doStartNode(config, callback);
     }
 
     @ReactMethod
     public void stopNode(final Callback callback) {
         Log.d(TAG, "stopNode");
-        Statusgo.StopNode();
-        callback.invoke();
+        String res = Statusgo.StopNode();
+        callback.invoke(res);
     }
 
     @ReactMethod

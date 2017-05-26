@@ -45,8 +45,7 @@
   (u/side-effect!
     (fn [{:keys [current-account-id networks]} [_ network]]
       (dispatch [:account-update {:network network}])
-      (status/stop-node
-        (fn []
-          (let [config (get-in networks [network :config])]
-            (status/start-node config (fn [])))))
+      (status/stop-node)
+      (let [config (get-in networks [network :config])]
+        (status/start-node config))
       (dispatch [:navigate-to-clean :accounts]))))

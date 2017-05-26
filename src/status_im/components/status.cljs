@@ -69,13 +69,62 @@
   (when status
     (call-module #(.moveToInternalStorage status on-result))))
 
-(defn start-node [config on-result]
-  (when status
-    (call-module #(.startNode status (or config "{}") on-result))))
+(defonce starting-in-process? (atom false))
+(defonce stopping-in-process? (atom false))
+(defonce postponed-stop-request (atom nil))
+(defonce postponed-start-request (atom nil))
 
-(defn stop-node [callback]
-  (when status
-    (call-module #(.stopNode status callback))))
+(declare after-stop! after-start!)
+
+(defn start-node [config]
+  (log/debug :START-NODE)
+  (cond
+    @stopping-in-process? (reset! postponed-start-request
+                                  {:config config})
+    @starting-in-process? (reset! postponed-stop-request false)
+    :else (when status
+            (reset! postponed-stop-request false)
+            (reset! starting-in-process? true)
+            (call-module
+              #(.startNode
+                 status
+                 (or config "{}")
+                 (fn [result]
+                   (log/debug :start-node-res result)
+                   (let [json (.parse js/JSON result)
+                         {:keys [error]} (js->clj json :keywordize-keys true)]
+                     (when-not (= "" error)
+                       (after-start!)))))))))
+
+(defn stop-node []
+  (log/debug :STOP-NODE)
+  (cond
+    @starting-in-process? (reset! postponed-stop-request true)
+    @stopping-in-process? (reset! postponed-start-request nil)
+    :else (when status
+            (reset! postponed-start-request nil)
+            (reset! stopping-in-process? true)
+            (call-module
+              #(.stopNode
+                 status
+                 (fn [result]
+                   (log/debug :stop-node-res result)
+                   (let [json (.parse js/JSON result)
+                         {:keys [error]} (js->clj json :keywordize-keys true)]
+                     (when-not (= "" error)
+                       (after-stop!)))))))))
+
+(defn after-start! []
+  (log/debug :AFTER-START-NODE)
+  (reset! starting-in-process? false)
+  (when @postponed-stop-request
+    (stop-node)))
+
+(defn after-stop! []
+  (log/debug :AFTER-STOP-NODE)
+  (reset! stopping-in-process? false)
+  (when-let [{:keys [config]} @postponed-start-request]
+    (start-node config)))
 
 (defonce account-creation? (atom false))
 
