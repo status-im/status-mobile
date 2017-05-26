@@ -54,7 +54,7 @@
      [text-input
       {:placeholder    placeholder
        :style          (st/name-input-text (s/valid? ::v/name (or new-name current-name)))
-       :font           (if platform/ios? :medium :default)
+       :font           :medium
        :default-value  (or new-name current-name)
        :on-change-text #(rf/dispatch [:set-in [:profile-edit :name] %])
        :on-end-editing #(do
