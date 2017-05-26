@@ -16,15 +16,16 @@
 (defn get-all
   []
   (map
-    (fn [{:keys [commands responses] :as contact}]
+    (fn [{:keys [commands responses networks] :as contact}]
       (assoc contact
         :commands (into {} (map command->map-item commands))
-        :responses (into {} (map command->map-item responses))))
+        :responses (into {} (map command->map-item responses))
+        :networks (map :value (vals networks))))
     (data-store/get-all-as-list)))
 
 (defn get-by-id
   [whisper-identity]
-  (data-store/get-by-id-cljs whisper-identity))
+  (update (data-store/get-by-id-cljs whisper-identity) :networks #(map :value %)))
 
 (defn save
   [{:keys [whisper-identity pending?] :as contact}]
@@ -34,6 +35,7 @@
                      (assoc :pending? (boolean (if contact-db
                                                  (if (nil? pending?) pending-db? pending?)
                                                  pending?)))
+                     (update :networks (fn [networks] (into [] (map #(hash-map :value %) networks))))
                      (update :commands commands-map->commands-list)
                      (update :responses commands-map->commands-list))]
     (data-store/save contact' (boolean contact-db))))

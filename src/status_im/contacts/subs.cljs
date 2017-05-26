@@ -27,8 +27,9 @@
 
 (register-sub :all-added-contacts
   (fn [db _]
-    (let [contacts (reaction (:contacts @db))]
-      (->> (remove (fn [[_ {:keys [pending? whisper-identity]}]]
+    (let [contacts (reaction (:contacts @db))
+          current-account (subscribe [:get-current-account])]
+      (->> (remove (fn [[_ {:keys [pending? whisper-identity dapp? networks]}]]
                      (or (true? pending?)
                          (bots-constants/hidden-bots whisper-identity))) @contacts)
            (sort-contacts)

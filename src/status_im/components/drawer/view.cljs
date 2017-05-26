@@ -117,7 +117,7 @@
               [touchable-opacity {:onPress (fn []
                                              (close-drawer)
                                              (dispatch [:set-in [:profile-edit :name] nil])
-                                             (dispatch [:navigate-to :accounts]))}
+                                             (dispatch [:navigate-to-clean :accounts]))}
                [text {:style st/switch-users-text
                       :font  :default}
                 (label :t/switch-users)]]])]]]))))

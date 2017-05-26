@@ -6,14 +6,18 @@
                                                 icon
                                                 touchable-highlight]]))
 
-(defn action-button [label icon-key on-press & [{:keys [label-style cyrcle-color]}]]
+(defn action-button-view [label icon-key & [{:keys [label-style cyrcle-color]}]]
+  [view st/action-button
+   [view (st/action-button-icon-container cyrcle-color)
+    [icon icon-key]]
+   [view st/action-button-label-container
+    [text {:style (merge st/action-button-label label-style)}
+     label]]])
+
+(defn action-button [label icon-key on-press & [opts]]
   [touchable-highlight {:on-press on-press}
-   [view st/action-button
-    [view (st/action-button-icon-container cyrcle-color)
-     [icon icon-key]]
-    [view st/action-button-label-container
-     [text {:style (merge st/action-button-label label-style)}
-      label]]]])
+   [view
+    [action-button-view label icon-key opts]]])
 
 (defn action-button-disabled [label icon-key]
   [view st/action-button

@@ -1,10 +1,11 @@
 (ns status-im.protocol.web3.keys)
 
-(defonce status-sym-key-id (atom nil))
 (def status-key-password "status-key-password")
 (def status-group-key-password "status-public-group-key-password")
 
 (defonce password->keys (atom {}))
+(defn reset-keys! []
+  (reset! password->keys {}))
 
 (defn- add-sym-key-from-password
   [web3 password callback]

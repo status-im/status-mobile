@@ -24,7 +24,8 @@
    :flex             1})
 
 (defstyle profile-info-container
-  {:background-color color-white})
+  {:background-color color-white
+   :android          {:padding-vertical 8}})
 
 (def profile-info-item-button
   {:padding 16})
@@ -128,28 +129,17 @@
 (def info-item-separator
   {:margin-left      16})
 
-(def edit-line-color
-  (if p/ios?
-    (str color-gray5 "80")
-    color-gray5))
+(defstyle network-settings
+  {:padding-horizontal 16
+   :flex-direction     :row
+   :align-items        :center
+   :background-color   color-white
+   :android            {:height 72}
+   :ios                {:height 64}})
 
-(def profile-focus-line-color
-  color-light-blue)
-
-(def profile-focus-line-height
-  (get-in p/platform-specific [:component-styles :text-field-focus-line-height]))
-
-(defstyle profile-name-input
-  {:color   text1-color
-   :ios     {:font-size      17
-             :padding-bottom 0
-             :line-height    17
-             :letter-spacing -0.2}
-   :android {:font-size      16
-             :line-height    16
-             :padding-top    5
-             :height         30
-             :padding-bottom 0}})
+(def network-settings-text
+  (merge {:flex 1}
+         profile-setting-text))
 
 (defstyle profile-status-input
   {:line-height  24;;TODO doesnt' work for multiline because a bug in the RN

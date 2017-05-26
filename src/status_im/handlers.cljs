@@ -23,6 +23,7 @@
     status-im.protocol.handlers
     status-im.transactions.handlers
     status-im.network.handlers
+    status-im.network-settings.handlers
     status-im.debug.handlers
     status-im.bots.handlers
     [status-im.utils.types :as t]
@@ -30,7 +31,8 @@
     [status-im.constants :refer [console-chat-id]]
     [status-im.utils.ethereum-network :as enet]
     [status-im.utils.instabug :as inst]
-    [status-im.utils.platform :as p]))
+    [status-im.utils.platform :as p]
+    [status-im.utils.platform :as platform]))
 
 ;; -- Common --------------------------------------------------------------
 
@@ -46,14 +48,13 @@
 
 (register-handler :initialize-db
   (fn [{:keys [status-module-initialized? status-node-started?
-               network-status network first-run]} _]
+               network-status first-run]} _]
     (data-store/init)
     (assoc app-db :current-account-id nil
                   :contacts {}
                   :network-status network-status
                   :status-module-initialized? (or p/ios? js/goog.DEBUG status-module-initialized?)
                   :status-node-started? status-node-started?
-                  :network (or network :testnet)
                   :first-run (or (nil? first-run) first-run))))
 
 (register-handler :initialize-account-db
@@ -87,8 +88,8 @@
   (u/side-effect!
     (fn [{:keys [first-run] :as db} [_ callback]]
       (dispatch [:initialize-db])
+      (dispatch [:load-default-networks!])
       (dispatch [:load-accounts])
-
       (dispatch [::init-chats! callback]))))
 
 (register-handler ::init-chats!
@@ -119,28 +120,25 @@
                                         (.addEntropy (.. ecc -sjcl -random)))
                                    (dispatch [:crypt-initialized]))))))))
 
-(defn node-started [_ _]
-  (log/debug "Started Node")
-  (enet/get-network #(dispatch [:set :network %])))
-
-(defn move-to-internal-storage [db]
+(defn move-to-internal-storage [network config]
   (status/move-to-internal-storage
     (fn []
-      (status/start-node
-        (fn [result]
-          (node-started db result))))))
+      (dispatch [:set :current-network network])
+      (status/start-node config))))
 
 (register-handler :initialize-geth
   (u/side-effect!
-    (fn [db _]
-      (status/should-move-to-internal-storage?
-        (fn [should-move?]
-          (if should-move?
-            (dispatch [:request-permissions
-                       [:read-external-storage]
-                       #(move-to-internal-storage db)
-                       #(dispatch [:move-to-internal-failure-message])])
-            (status/start-node (fn [result] (node-started db result)))))))))
+    (fn [{:keys [network networks] :as db} [_ config]]
+      (let [config' (or config (get-in networks [network :config]))]
+        (status/should-move-to-internal-storage?
+          (fn [should-move?]
+            (if should-move?
+              (dispatch [:request-permissions
+                         [:read-external-storage]
+                         #(move-to-internal-storage network config')
+                         #(dispatch [:move-to-internal-failure-message])])
+              (do (dispatch [:set :current-network network])
+                  (status/start-node config')))))))))
 
 (register-handler :webview-geo-permissions-granted
   (u/side-effect!
@@ -156,7 +154,8 @@
         (case type
           "transaction.queued" (dispatch [:transaction-queued event])
           "transaction.failed" (dispatch [:transaction-failed event])
-          "node.started" (dispatch [:status-node-started!])
+          "node.ready" (do (status/after-start!) (dispatch [:status-node-started!]))
+          "node.stopped" (status/after-stop!)
           "module.initialized" (dispatch [:status-module-initialized!])
           "local_storage.set" (dispatch [:set-local-storage event])
           "request_geo_permissions" (dispatch [:request-permissions [:geolocation]
@@ -171,8 +170,12 @@
     (assoc db :status-module-initialized? true)))
 
 (register-handler :status-node-started!
-  (fn [db]
-    (assoc db :status-node-started? true)))
+  (fn [{:keys [on-node-started current-account-id] :as db}]
+    (when current-account-id
+      (dispatch [:initialize-protocol current-account-id]))
+    (when on-node-started (on-node-started))
+    (assoc db :status-node-started? true
+              :on-node-started nil)))
 
 (register-handler :crypt-initialized
   (u/side-effect!
@@ -181,12 +184,20 @@
 
 (register-handler :app-state-change
   (u/side-effect!
-    (fn [{:keys [webview-bridge] :as db} [_ state]]
+    (fn [{:keys [webview-bridge current-network networks
+                 was-first-state-active-ios?] :as db}
+         [_ state]]
       (case state
-        "background" (status/stop-rpc-server)
-        "active" (do (status/start-rpc-server)
+        "background" (when platform/android? (status/stop-node))
+        "active" (if (or (and was-first-state-active-ios? platform/ios?)
+                         platform/android?)
+                   (let [config (get-in networks [current-network :config])]
+                     (when platform/ios?
+                       (status/stop-node))
+                     (status/start-node config)
                      (when webview-bridge
                        (.resetOkHttpClient webview-bridge)))
+                   (dispatch [:set :was-first-state-active-ios? true]))
         nil))))
 
 (register-handler :request-permissions

@@ -74,18 +74,18 @@
         (when (and (not= sync-data state) (= :in-progress new-state))
           (dispatch [:set :sync-data state]))
         (when (not= sync-state new-state)
-          (dispatch [:set :sync-state new-state]))
-        (let [timeout (if (#{:done :synced} new-state) 60 10)]
-          (s/execute-later #(dispatch [:check-sync]) (s/s->ms timeout)))))))
+          (dispatch [:set :sync-state new-state]))))))
 
 (register-handler :check-sync
   (u/side-effect!
     (fn [{:keys [web3] :as db}]
       (if web3
-        (.getSyncing
-          (.-eth web3)
-          (fn [error sync]
-            (dispatch [:update-sync-state error sync])))
+        (do (.getSyncing
+              (.-eth web3)
+              (fn [error sync]
+                (dispatch [:update-sync-state error sync])))
+            (let [timeout 5]
+              (s/execute-later #(dispatch [:check-sync]) (s/s->ms timeout))))
         (s/execute-later #(dispatch [:check-sync]) (s/s->ms 10))))))
 
 (register-handler :initialize-sync-listener
@@ -109,33 +109,33 @@
             (cache/add! processed-message)
             (processed-messages/save processed-message))
           (case type
-            :message               (dispatch [:received-protocol-message! message])
-            :group-message         (dispatch [:received-protocol-message! message])
-            :public-group-message  (dispatch [:received-protocol-message! message])
-            :ack                   (if (#{:message :group-message} (:type payload))
-                                     (dispatch [:message-delivered message])
-                                     (dispatch [:pending-message-remove message]))
-            :seen                  (dispatch [:message-seen message])
-            :clock-value-request   (dispatch [:message-clock-value-request message])
-            :clock-value           (dispatch [:message-clock-value message])
-            :group-invitation      (dispatch [:group-chat-invite-received message])
-            :update-group          (dispatch [:update-group-message message])
-            :add-group-identity    (dispatch [:participant-invited-to-group message])
+            :message (dispatch [:received-protocol-message! message])
+            :group-message (dispatch [:received-protocol-message! message])
+            :public-group-message (dispatch [:received-protocol-message! message])
+            :ack (if (#{:message :group-message} (:type payload))
+                   (dispatch [:message-delivered message])
+                   (dispatch [:pending-message-remove message]))
+            :seen (dispatch [:message-seen message])
+            :clock-value-request (dispatch [:message-clock-value-request message])
+            :clock-value (dispatch [:message-clock-value message])
+            :group-invitation (dispatch [:group-chat-invite-received message])
+            :update-group (dispatch [:update-group-message message])
+            :add-group-identity (dispatch [:participant-invited-to-group message])
             :remove-group-identity (dispatch [:participant-removed-from-group message])
-            :leave-group           (dispatch [:participant-left-group message])
-            :contact-request       (dispatch [:contact-request-received message])
-            :discover              (dispatch [:status-received message])
-            :discoveries-request   (dispatch [:discoveries-request-received message])
-            :discoveries-response  (dispatch [:discoveries-response-received message])
-            :profile               (dispatch [:contact-update-received message])
-            :update-keys           (dispatch [:update-keys-received message])
-            :online                (dispatch [:contact-online-received message])
-            :pending               (dispatch [:pending-message-upsert message])
-            :sent                  (let [{:keys [to id group-id]} message
-                                         message' {:from    to
-                                                   :payload {:message-id id
-                                                             :group-id   group-id}}]
-                                     (dispatch [:message-sent message']))
+            :leave-group (dispatch [:participant-left-group message])
+            :contact-request (dispatch [:contact-request-received message])
+            :discover (dispatch [:status-received message])
+            :discoveries-request (dispatch [:discoveries-request-received message])
+            :discoveries-response (dispatch [:discoveries-response-received message])
+            :profile (dispatch [:contact-update-received message])
+            :update-keys (dispatch [:update-keys-received message])
+            :online (dispatch [:contact-online-received message])
+            :pending (dispatch [:pending-message-upsert message])
+            :sent (let [{:keys [to id group-id]} message
+                        message' {:from    to
+                                  :payload {:message-id id
+                                            :group-id   group-id}}]
+                    (dispatch [:message-sent message']))
             (debug "Unknown message type" type)))))))
 
 (defn system-message
@@ -421,12 +421,12 @@
 
 (register-handler ::post-error
   (u/side-effect!
-    (fn [_ [_ error]]
+    (fn [{:keys [network networks]} [_ error]]
       (.log js/console error)
-      (let [message        (.-message error)
+      (let [config         (get-in networks [network :config])
+            message        (.-message error)
             ios-error?     (re-find (re-pattern "Could not connect to the server.") message)
             android-error? (re-find (re-pattern "Failed to connect") message)]
         (when (or ios-error? android-error?)
           (when android-error? (status/init-jail))
-          (status/restart-rpc)
           (dispatch [:load-commands!]))))))

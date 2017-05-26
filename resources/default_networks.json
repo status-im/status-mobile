@@ -1,0 +1,17 @@
+{
+  "mainnet": {
+    "network-id": 1,
+    "name": "Mainnet",
+    "data-dir": "/ethereum/mainnet"
+  },
+  "testnet": {
+    "network-id": 3,
+    "name": "Ropsten",
+    "data-dir": "/ethereum/testnet"
+  },
+  "rinkeby": {
+    "network-id": 4,
+    "name": "Rinkeby",
+    "data-dir": "/ethereum/rinkeby"
+  }
+}

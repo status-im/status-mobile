@@ -80,6 +80,7 @@
   (debug :init-whisper)
   (stop-watching-all!)
   (d/reset-all-pending-messages!)
+  (shh-keys/reset-keys!)
   (let [web3             (u/make-web3 rpc-url)
         listener-options {:web3     web3
                           :identity identity

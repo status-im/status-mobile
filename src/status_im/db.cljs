@@ -45,7 +45,8 @@
              :sync-listening-started     nil
              :status-module-initialized? (or p/ios? js/goog.DEBUG)
              :edit-mode                  {}
-             :network                    :testnet})
+             :network                    "testnet"
+             :networks                   {}})
 
 (defn chat-command-path [chat-id]
   [:chats chat-id :command-input :command])

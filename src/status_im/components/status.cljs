@@ -69,32 +69,62 @@
   (when status
     (call-module #(.moveToInternalStorage status on-result))))
 
-(defn start-node [on-result]
-  (when status
-    (call-module #(.startNode status on-result))))
+(defonce starting-in-process? (atom false))
+(defonce stopping-in-process? (atom false))
+(defonce postponed-stop-request (atom nil))
+(defonce postponed-start-request (atom nil))
 
-(defn stop-rpc-server []
-  (when status
-    (call-module #(.stopNodeRPCServer status))))
+(declare after-stop! after-start!)
 
-(defn start-rpc-server []
-  (when status
-    (call-module #(.startNodeRPCServer status))))
+(defn start-node [config]
+  (log/debug :START-NODE)
+  (cond
+    @stopping-in-process? (reset! postponed-start-request
+                                  {:config config})
+    @starting-in-process? (reset! postponed-stop-request false)
+    :else (when status
+            (reset! postponed-stop-request false)
+            (reset! starting-in-process? true)
+            (call-module
+              #(.startNode
+                 status
+                 (or config "{}")
+                 (fn [result]
+                   (log/debug :start-node-res result)
+                   (let [json (.parse js/JSON result)
+                         {:keys [error]} (js->clj json :keywordize-keys true)]
+                     (when-not (= "" error)
+                       (after-start!)))))))))
 
-(defonce restarting-rpc (atom false))
+(defn stop-node []
+  (log/debug :STOP-NODE)
+  (cond
+    @starting-in-process? (reset! postponed-stop-request true)
+    @stopping-in-process? (reset! postponed-start-request nil)
+    :else (when status
+            (reset! postponed-start-request nil)
+            (reset! stopping-in-process? true)
+            (call-module
+              #(.stopNode
+                 status
+                 (fn [result]
+                   (log/debug :stop-node-res result)
+                   (let [json (.parse js/JSON result)
+                         {:keys [error]} (js->clj json :keywordize-keys true)]
+                     (when-not (= "" error)
+                       (after-stop!)))))))))
 
-(defn restart-rpc []
-  (when-not @restarting-rpc
-    (reset! restarting-rpc true)
-    (log/debug :restart-rpc-on-post-error)
+(defn after-start! []
+  (log/debug :AFTER-START-NODE)
+  (reset! starting-in-process? false)
+  (when @postponed-stop-request
+    (stop-node)))
 
-    ;; todo maybe it would be better to use something like
-    ;; restart-rpc-server on status-go side
-    (stop-rpc-server)
-    (start-rpc-server)
-
-    (go (<! (timeout 3000))
-        (reset! restarting-rpc false))))
+(defn after-stop! []
+  (log/debug :AFTER-STOP-NODE)
+  (reset! stopping-in-process? false)
+  (when-let [{:keys [config]} @postponed-start-request]
+    (start-node config)))
 
 (defonce account-creation? (atom false))
 
@@ -115,9 +145,23 @@
   (when status
     (call-module #(.recoverAccount status passphrase password on-result))))
 
-(defn login [address password on-result]
+(defn wrap-callback-with-stopwatch
+  [message callback]
+  (let [start (.now js/Date)]
+    (fn [& args]
+      (let [stop (.now js/Date)]
+        (log/debug :stopwatch message (str (- stop start) "ms")))
+      (apply callback args))))
+
+(defn login [address password config restart? on-result]
   (when status
-    (call-module #(.login status address password on-result))))
+    (let [callback (wrap-callback-with-stopwatch :login on-result)]
+      (call-module #(.login status address password callback)))))
+
+(defn verify-account [address password callback]
+  (let [callback' (wrap-callback-with-stopwatch :verify-account callback)]
+    (when status
+      (call-module (.verifyAccountPassword status address password callback')))))
 
 (defn complete-transactions
   [hashes password callback]

@@ -55,25 +55,35 @@
 (defn logged-in
   [db address]
   (let [is-login-screen? (= (:view-id db) :login)
-        new-account? (not is-login-screen?)]
+        new-account?     (not is-login-screen?)]
     (log/debug "Logged in: " (:view-id db) is-login-screen? new-account?)
     (dispatch [:change-account address new-account? on-account-changed])))
 
 (register-handler
   :login-account
   (after
-    (fn [db [_ address password]]
-      (status/login address password
-                    (fn [result]
-                      (let [data (json->clj result)
-                            error (:error data)
-                            success (zero? (count error))]
-                        (log/debug "Logged in account: ")
-                        (dispatch [:set-in [:login :processing] false])
-                        (if success
-                          (logged-in db address)
-                          (dispatch [:set-in [:login :error] error])))))))
+    (fn [{:keys [current-network] :as db} [_ address password]]
+      (let [{:keys [network networks]} (get-in db [:accounts address])
+            config        (get-in networks [network :config])
+            restart-node? (not= network current-network)
+            do-login      #(status/login
+                             address password config restart-node?
+                             (fn [result]
+                               (let [data    (json->clj result)
+                                     error   (:error data)
+                                     success (zero? (count error))]
+                                 (log/debug "Logged in account: ")
+                                 (dispatch [:set :current-network network])
+                                 (dispatch [:set-in [:login :processing] false])
+                                 (if success
+                                   (logged-in db address)
+                                   (dispatch [:set-in [:login :error] error])))))]
+        (if restart-node?
+          (do (dispatch [:set :on-node-started do-login])
+              (status/stop-node)
+              (status/start-node config))
+          (do-login)))))
   (fn [db [_ _ _ account-creation?]]
     (-> db
-      (assoc :account-creation? account-creation?)
-      (assoc-in [:login :processing] true))))
+        (assoc :account-creation? account-creation?)
+        (assoc-in [:login :processing] true))))
