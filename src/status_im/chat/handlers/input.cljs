@@ -128,14 +128,15 @@
                 params  {:parameters {:args args}
                          :context    (merge {:data data}
                                             (input-model/command-dependent-context-params command))}]
-            (status/call-jail jail-id
-                              path
-                              params
-                              #(dispatch [:received-bot-response
-                                          {:chat-id         current-chat-id
-                                           :command         command
-                                           :parameter-index parameter-index}
-                                          %]))))))))
+            (status/call-jail
+              {:jail-id  jail-id
+               :path     path
+               :params   params
+               :callback #(dispatch [:received-bot-response
+                                     {:chat-id         current-chat-id
+                                      :command         command
+                                      :parameter-index parameter-index}
+                                     %])})))))))
 
 (handlers/register-handler
   ::send-message

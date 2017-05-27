@@ -143,11 +143,11 @@
           [:check-and-load-commands!
            identity
            #(status/call-jail
-              identity
-              path
-              params
-              (fn [res]
-                (dispatch [:command-handler! chat-id parameters res])))])))))
+              {:jail-id  identity
+               :path     path
+               :params   params
+               :callback (fn [res]
+                           (dispatch [:command-handler! chat-id parameters res]))})])))))
 
 (register-handler :prepare-message
   (u/side-effect!
