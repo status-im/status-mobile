@@ -34,7 +34,11 @@
                                          result)]
                             (dispatch [:set-in [:message-data data-type message-id] result])
                             (when on-requested (on-requested result)))]
-            (status/call-jail jail-id path params callback)))))))
+            ;chat-id path params callback lock? type
+            (status/call-jail {:jail-id  jail-id
+                               :path     path
+                               :params   params
+                               :callback callback})))))))
 
 (handlers/register-handler :execute-command-immediately
   (handlers/side-effect!

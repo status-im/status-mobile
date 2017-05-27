@@ -72,10 +72,13 @@ function superSuggestion(params, context) {
     return {markup: view};
 };
 
+var cnt = 0;
+
 status.addListener("on-message-input-change", superSuggestion);
 status.addListener("on-message-send", function (params, context) {
+    cnt++;
     if (isNaN(params.message)) {
-        return {"text-message": "Seems that you don't want to send money :("};
+        return {"text-message": "Seems that you don't want to send money :(. cnt = " + cnt};
     }
 
     var balance = web3.eth.getBalance(context.from);

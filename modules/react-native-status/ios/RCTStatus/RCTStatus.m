@@ -202,7 +202,6 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
             NSLog(@"error %@", error);
         }else
             NSLog(@"folderName: %@", folderName);
-
         char *configChars = GenerateConfig([folderName.path UTF8String], 3);
         NSString *config = [NSString stringWithUTF8String: configChars];
         NSData *configData = [config dataUsingEncoding:NSUTF8StringEncoding];

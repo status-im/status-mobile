@@ -8,7 +8,8 @@
             [cljs.core.async :refer [<! timeout]]
             [status-im.utils.js-resources :as js-res]
             [status-im.i18n :as i]
-            [status-im.utils.platform :as p]))
+            [status-im.utils.platform :as p]
+            [status-im.utils.scheduler :as scheduler]))
 
 (defn cljs->json [data]
   (.stringify js/JSON (clj->js data)))
@@ -135,11 +136,11 @@
   (when status
     (call-module #(.parseJail status chat-id file callback))))
 
-(defn call-jail [chat-id path params callback]
+(defn call-jail [{:keys [jail-id path params callback]}]
   (when status
     (call-module
       #(do
-         (log/debug :call-jail :chat-id chat-id)
+         (log/debug :call-jail :jail-id jail-id)
          (log/debug :call-jail :path path)
          (log/debug :call-jail :params params)
          (let [params' (update params :context assoc
@@ -152,17 +153,17 @@
                            (doseq [{:keys [type message]} messages]
                              (log/debug (str "VM console(" type ") - " message)))
                            (callback r')))]
-           (.callJail status chat-id (cljs->json path) (cljs->json params') cb))))))
+           (.callJail status jail-id (cljs->json path) (cljs->json params') cb))))))
 
 (defn call-function!
   [{:keys [chat-id function callback] :as opts}]
   (let [path   [:functions function]
         params (select-keys opts [:parameters :context])]
     (call-jail
-      chat-id
-      path
-      params
-      (or callback #(dispatch [:received-bot-response {:chat-id chat-id} %])))))
+      {:jail-id  chat-id
+       :path     path
+       :params   params
+       :callback (or callback #(dispatch [:received-bot-response {:chat-id chat-id} %]))})))
 
 (defn set-soft-input-mode [mode]
   (when status
