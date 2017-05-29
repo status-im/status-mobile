@@ -215,7 +215,7 @@
      [my-profile-info current-account]]
     [form-spacer]
     [view
-     [network-settings]
+     #_[network-settings]
      [bottom-shadow]]]])
 
 (defview profile []
