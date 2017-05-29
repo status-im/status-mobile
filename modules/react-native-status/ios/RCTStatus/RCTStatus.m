@@ -389,8 +389,13 @@ RCT_EXPORT_METHOD(clearStorageAPIs) {
 RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
                   password:(NSString *)payload
                   callback:(RCTResponseSenderBlock)callback) {
-    char * result = CallRPC((char *) [payload UTF8String]);
-    callback(@[[NSString stringWithUTF8String: result]]);
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   ^(void)
+                   {
+                       char * result = CallRPC((char *) [payload UTF8String]);
+                       callback(@[[NSString stringWithUTF8String: result]]);
+                   });
 }
 
 
