@@ -189,14 +189,9 @@
          [_ state]]
       (case state
         "background" (when platform/android? (status/stop-node))
-        "active" (if (or (and was-first-state-active-ios? platform/ios?)
-                         platform/android?)
+        "active" (if platform/android?
                    (let [config (get-in networks [current-network :config])]
-                     (when platform/ios?
-                       (status/stop-node))
-                     (status/start-node config)
-                     (when webview-bridge
-                       (.resetOkHttpClient webview-bridge)))
+                     (status/start-node config))
                    (dispatch [:set :was-first-state-active-ios? true]))
         nil))))
 
