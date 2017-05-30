@@ -3,7 +3,6 @@
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.constants :refer [console-chat-id
                                          text-content-type]]
-            [status-im.components.network-info :refer [get-ip]]
             [status-im.data-store.messages :as messages]
             [status-im.i18n :refer [label]]
             [status-im.utils.random :as random]
@@ -33,17 +32,14 @@
        (if debug-on?
          (do
            (dispatch [:debug-server-start])
-           (get-ip (fn [ip]
-                     (dispatch [:received-message
-                                {:message-id   (random/id)
-                                 :content      (if ip
-                                                 (label :t/debug-enabled {:ip ip})
-                                                 (label :t/debug-enabled-no-ip))
-                                 :content-type text-content-type
-                                 :outgoing     false
-                                 :chat-id      console-chat-id
-                                 :from         console-chat-id
-                                 :to           "me"}]))))
+           (dispatch [:received-message
+                      {:message-id   (random/id)
+                       :content      (label :t/debug-enabled)
+                       :content-type text-content-type
+                       :outgoing     false
+                       :chat-id      console-chat-id
+                       :from         console-chat-id
+                       :to           "me"}]))
          (dispatch [:debug-server-stop]))))})
 
 (def commands-names (set (keys console-commands)))
