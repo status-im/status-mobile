@@ -39,7 +39,7 @@
 (defview details [{:keys [to data gas gas-price] :as transaction}]
   [current-account [:get-current-account]
    recipient       [:contact-by-address to]]
-  (let [recipient-name (or (:name recipient) to)
+  (let [recipient-name (or (:name recipient) to (i18n/label :t/contract-creation))
         gas-price      (.fromWei js/Web3.prototype gas-price "ether")
         fee-value      (* gas gas-price)
         estimated-fee  (str fee-value " ETH")]

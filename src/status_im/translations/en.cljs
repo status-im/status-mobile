@@ -309,6 +309,7 @@
    :from                                  "From"
    :data                                  "Data"
    :got-it                                "Got it"
+   :contract-creation                     "Contract Creation"
 
    ;:webview
    :web-view-error                        "oops, error"})

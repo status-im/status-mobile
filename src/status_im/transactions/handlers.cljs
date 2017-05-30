@@ -116,18 +116,21 @@
   (fn [db [_ message-id]]
     (remove-pending-message db message-id)))
 
+(defn transaction-valid? [{{:keys [to data]} :args}]
+  (or (and to (valid-hex? to)) (and data (not= data "0x"))))
+
 (register-handler :transaction-queued
   (u/side-effect!
-    (fn [_ [_ {:keys [id args] :as transaction}]]
-      (if (:to args)
+    (fn [_ [_ {:keys [id] :as transaction}]]
+      (if (transaction-valid? transaction)
         (dispatch [::transaction-queued transaction])
         (status/discard-transaction id)))))
 
 (register-handler ::transaction-queued
   (after #(dispatch [:navigate-to-modal :unsigned-transactions]))
-  (fn [db [_ {:keys [id message_id args]}]]
+  (fn [db [_ {:keys [id message_id args] :as transaction}]]
     (let [{:keys [from to value data gas gasPrice]} args]
-      (if (valid-hex? to)
+      (if (transaction-valid? transaction)
         (let [transaction {:id         id
                            :from       from
                            :to         to
