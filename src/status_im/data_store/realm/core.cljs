@@ -197,11 +197,6 @@
           (js->clj res :keywordize-keys true))
       res)))
 
-(defn get-by-filter [realm schema-name filter]
-  (-> realm
-      (.objects (name schema-name))
-      (.filtered filter)))
-
 (defn- get-schema-by-name [opts]
   (->> opts
        (mapv (fn [{:keys [name] :as schema}]
