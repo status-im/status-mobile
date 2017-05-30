@@ -16,7 +16,6 @@ import com.i18n.reactnativei18n.ReactNativeI18n;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
-import com.pusherman.networkinfo.RNNetworkInfoPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.rnfs.RNFSPackage;
 import com.rt2zz.reactnativecontacts.ReactNativeContacts;
@@ -42,7 +41,6 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
-                    new RNNetworkInfoPackage(),
                     new HttpServerReactPackage(),
                     new NfcReactNativePackage(),
                     new SplashScreenReactPackage(),
