@@ -10,10 +10,9 @@
 (register-sub :contacts-by-address
   (fn [db]
     (reaction (into {} (map (fn [[_ {:keys [address] :as contact}]]
-                              [address contact])
-
-                            (:contacts @db)
-                            )))))
+                              (when address
+                                [address contact]))
+                            (:contacts @db))))))
 
 (register-sub :contact-by-address
   (fn [_ [_ address]]

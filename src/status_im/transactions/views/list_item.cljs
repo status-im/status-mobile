@@ -32,7 +32,7 @@
   [recipient [:contact-by-address to]]
   (let [eth-value      (.fromWei js/Web3.prototype value "ether")
         value          (str (i18n/label-number eth-value) " ETH")
-        recipient-name (or (:name recipient) to)]
+        recipient-name (or (:name recipient) to (i18n/label :t/contract-creation))]
     [rn/view {:style st/item}
      [item-image recipient]
      [item-info recipient-name value]
