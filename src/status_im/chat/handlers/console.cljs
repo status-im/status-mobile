@@ -36,7 +36,7 @@
            (get-ip (fn [ip]
                      (dispatch [:received-message
                                 {:message-id   (random/id)
-                                 :content      (if ip
+                                 :content      (if (and ip (not= ip "error"))
                                                  (label :t/debug-enabled {:ip ip})
                                                  (label :t/debug-enabled-no-ip))
                                  :content-type text-content-type
