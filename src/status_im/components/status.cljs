@@ -50,6 +50,9 @@
   (when (exists? (.-NativeModules r/react-native))
     (.-Status (.-NativeModules r/react-native))))
 
+(when status
+  (.startAPI status))
+
 (defn init-jail []
   (let [init-js (str js-res/status-js "I18n.locale = '" i/i18n.locale "';")]
     (.initJail status init-js #(log/debug "jail initialized"))))

@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import org.json.JSONObject;
 import org.json.JSONException;
 import com.instabug.library.Instabug;
+import java.util.concurrent.ThreadLocalRandom;
 
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
@@ -303,15 +304,30 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        this.w3Bridge = new Web3Bridge();
-        doStartNode(config, callback);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                doStartNode(config, callback);
+            }
+        };
+
+        thread.start();
+
     }
 
     @ReactMethod
     public void stopNode(final Callback callback) {
-        Log.d(TAG, "stopNode");
-        String res = Statusgo.StopNode();
-        callback.invoke(res);
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Log.d(TAG, "stopNode");
+                String res = Statusgo.StopNode();
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
@@ -599,7 +615,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void sendWeb3Request(final String host, final String payload, final Callback callback) {
-        Log.d(TAG, "sendWeb3Request");
 
         Thread thread = new Thread() {
             @Override
@@ -611,4 +626,12 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         thread.start();
     }
+
+    @ReactMethod
+    public void startAPI() {
+        int randInt = ThreadLocalRandom.current().nextInt(1000, 10000);
+        String hostname = "test" + randInt;
+        Statusgo.StartAPI(hostname, "DEBUG");
+    }
+
 }

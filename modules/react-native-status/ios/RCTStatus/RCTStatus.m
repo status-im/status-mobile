@@ -249,9 +249,13 @@ RCT_EXPORT_METHOD(stopNode:(RCTResponseSenderBlock)callback) {
 #if DEBUG
     NSLog(@"StopNode() method called");
 #endif
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   ^(void)
+                   {
      char *res = StopNode();
      NSLog(@"StopNode result %@", [NSString stringWithUTF8String: res]);
      callback(@[[NSString stringWithUTF8String: res]]);
+   });
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -398,6 +402,9 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
                    });
 }
 
+RCT_EXPORT_METHOD(startAPI) {
+    char * result = StartAPI((char *) [@"ios_test" UTF8String], (char *) [@"DEBUG" UTF8String]);
+}
 
 
 + (void)signalEvent:(const char *) signal
