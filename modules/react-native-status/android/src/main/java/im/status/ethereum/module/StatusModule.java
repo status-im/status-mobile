@@ -175,7 +175,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             JSONObject customConfig = new JSONObject(defaultConfig);
             JSONObject jsonConfig = new JSONObject(config);
             String gethLogFileName = "geth.log";
-            jsonConfig.put("LogEnabled", true);
+            jsonConfig.put("LogEnabled", false);
             jsonConfig.put("LogFile", gethLogFileName);
             jsonConfig.put("LogLevel", "DEBUG");
             jsonConfig.put("DataDir", root + customConfig.get("DataDir"));

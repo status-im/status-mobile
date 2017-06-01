@@ -209,7 +209,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *resultingConfigJson = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
     [resultingConfigJson setValue:newKeystoreUrl.path forKey:@"KeyStoreDir"];
-    [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKey:@"LogEnabled"];
+    [resultingConfigJson setValue:[NSNumber numberWithBool:NO] forKey:@"LogEnabled"];
     [resultingConfigJson setValue:@"geth.log" forKey:@"LogFile"];
     [resultingConfigJson setValue:@"DEBUG" forKey:@"LogLevel"];
     NSString *resultingConfig = [resultingConfigJson bv_jsonStringWithPrettyPrint:NO];

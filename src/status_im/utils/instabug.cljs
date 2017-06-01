@@ -19,5 +19,5 @@
                  (let [{:keys [level ?ns-str ?err output_]} data]
                    (log (force output_))))})
 
-(when-not js/goog.DEBUG
+#_(when-not js/goog.DEBUG
   (log/merge-config! {:appenders {:instabug (instabug-appender)}}))
