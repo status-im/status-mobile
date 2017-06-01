@@ -200,7 +200,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             Uri gethLogUri = Uri.fromFile(logFile);
             try {
                 Log.d(TAG, "Attach to geth.log to instabug " + gethLogUri.getPath());
-                Instabug.setFileAttachment(gethLogUri, gethLogFileName);
+                //Instabug.setFileAttachment(gethLogUri, gethLogFileName);
             } catch (NullPointerException e) {
                 Log.d(TAG, "Instabug is not initialized!");
             }

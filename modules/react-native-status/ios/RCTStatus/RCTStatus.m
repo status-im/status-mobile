@@ -231,7 +231,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString
         [fileManager createFileAtPath:logUrl.path contents:nil attributes:dict];
     }
 #ifndef DEBUG
-    [Instabug addFileAttachmentWithURL:logUrl];
+    //[Instabug addFileAttachmentWithURL:logUrl];
 #endif
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
                    ^(void)

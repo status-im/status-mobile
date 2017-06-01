@@ -36,7 +36,7 @@
   [self.window makeKeyAndVisible];
   [SplashScreen show];
 #ifndef DEBUG
-  [Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
+  //[Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
 #endif
   return YES;
 }
