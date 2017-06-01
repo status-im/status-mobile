@@ -417,7 +417,7 @@ RCT_EXPORT_METHOD(startAPI) {
     
     NSString *hostName = [deviceId stringByAppendingString:(NSString*)dateString];
     NSLog(@"hostname  %@", hostName);
-    char * result = StartAPI((char *) [@"ios_test" UTF8String], (char *) [@"DEBUG" UTF8String]);
+    char * result = StartAPI((char *) [hostName UTF8String], (char *) [@"DEBUG" UTF8String]);
 }
 
 
