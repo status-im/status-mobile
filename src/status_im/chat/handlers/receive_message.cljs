@@ -49,7 +49,7 @@
         (dispatch [:upsert-chat! {:chat-id    chat-id'
                                   :group-chat group-chat?}])
         (when (get-in message [:content :command])
-          (dispatch [:request-command-data message :preview]))
+          (dispatch [:request-command-preview  message]))
         (dispatch [::add-message chat-id' message'])
         (dispatch [::set-last-message message'])
         (when (= (:content-type message') content-type-command-request)
