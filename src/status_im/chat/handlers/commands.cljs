@@ -45,3 +45,10 @@
                    [:read-external-storage]
                    #(dispatch [:initialize-geth])])
         (log/debug "ignoring command: " command)))))
+
+(handlers/register-handler :request-command-preview
+  (handlers/side-effect!
+    (fn [db [_ {:keys [message-id] :as message}]]
+      (let [previews (get-in db [:message-data :preview])]
+        (when-not (contains? previews message-id)
+          (dispatch [:request-command-data message :preview]))))))

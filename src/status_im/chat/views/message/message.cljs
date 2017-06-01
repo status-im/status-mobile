@@ -383,10 +383,10 @@
     (r/create-class
       {:component-will-mount
        (fn []
-         (let [{:keys [bot] :as command} (get-in message [:content])
+         (let [{:keys [bot command] :as content} (get-in message [:content])
                message' (assoc message :jail-id bot)]
            (when (and command (not @preview))
-             (dispatch [:request-command-data message' :preview]))))
+             (dispatch [:request-command-preview message']))))
 
        :component-did-mount
        (fn []
