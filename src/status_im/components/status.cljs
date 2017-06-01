@@ -53,6 +53,13 @@
 (when status
   (.startAPI status))
 
+(defonce device-id (atom ""))
+
+(when status
+  (.getDeviceId status (fn [id] (reset! device-id id))))
+
+(defn get-device-id [] @device-id)
+
 (defn init-jail []
   (let [init-js (str js-res/status-js "I18n.locale = '" i/i18n.locale "';")]
     (.initJail status init-js #(log/debug "jail initialized"))))

@@ -3,6 +3,7 @@ package im.status.ethereum.module;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.*;
+import android.provider.Settings;
 import android.view.WindowManager;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -19,6 +20,8 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -627,11 +630,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         thread.start();
     }
 
+    private String getDeviceId() {
+        final Activity activity = getCurrentActivity();
+        return Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
     @ReactMethod
     public void startAPI() {
-        int randInt = ThreadLocalRandom.current().nextInt(1000, 10000);
-        String hostname = "test" + randInt;
+        String deviceId = getDeviceId();
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMMyy_:mm:ss");
+        String datetime = dateFormat.format(date);
+
+        String hostname = deviceId + "_" + datetime;
+        Log.d(TAG, "hostname: " + hostname);
         Statusgo.StartAPI(hostname, "DEBUG");
+    }
+
+    @ReactMethod
+    public void getDeviceId(final Callback callback) {
+        callback.invoke(getDeviceId());
     }
 
 }

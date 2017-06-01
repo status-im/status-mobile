@@ -30,12 +30,13 @@
             [status-im.profile.handlers :refer [message-user]]
             [status-im.profile.styles :as st]
             [status-im.i18n :refer [label]]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im.components.status :as status]))
 
 
 (defn my-profile-toolbar []
   [toolbar {:actions [(act/opts [{:value #(dispatch [:open-edit-my-profile])
-                                  :text (label :t/edit)}])]}])
+                                  :text  (label :t/edit)}])]}])
 
 (defn profile-toolbar [contact]
   [toolbar
@@ -56,9 +57,9 @@
    [my-profile-icon {:account contact
                      :edit?   false}]
    [view st/profile-badge-name-container
-    [text {:style st/profile-name-text
+    [text {:style           st/profile-name-text
            :number-of-lines 1}
-      name]
+     name]
     (when-not (nil? last-online)
       [view st/profile-activity-status-container
        [text {:style st/profile-activity-status-text}
@@ -68,20 +69,20 @@
   [view actions-list
    (if pending?
      [action-button (label :t/add-to-contacts)
-                    :add_blue
-                    #(dispatch [:add-pending-contact chat-id])]
+      :add_blue
+      #(dispatch [:add-pending-contact chat-id])]
      [action-button-disabled (label :t/in-contacts)
-                             :ok_dark])
+      :ok_dark])
    [action-separator]
    [action-button (label :t/start-conversation)
-                  :chats_blue
-                  #(message-user whisper-identity)]
+    :chats_blue
+    #(message-user whisper-identity)]
    (when-not dapp?
      [view
       [action-separator]
       [action-button (label :t/send-transaction)
-                     :arrow_right_blue
-                     #(dispatch [:open-chat-with-the-send-transaction chat-id])]])])
+       :arrow_right_blue
+       #(dispatch [:open-chat-with-the-send-transaction chat-id])]])])
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [view st/profile-setting-item
@@ -109,7 +110,7 @@
 (defn profile-options [contact k text]
   (into []
         (concat [{:value (show-qr contact k)
-                  :text (label :t/show-qr)}]
+                  :text  (label :t/show-qr)}]
                 (when text
                   (share-options text)))))
 
@@ -127,12 +128,19 @@
     :options   (profile-options contact :public-key public-key)
     :text-mode :middle}])
 
+(defn device-id []
+  [profile-info-item
+   {:label     "Device id"
+    :value     (status/get-device-id)
+    :options   (share-options (status/get-device-id))
+    :text-mode :middle}])
+
 (defn info-item-separator []
   [separator st/info-item-separator])
 
 (defn tag-view [tag]
   [text {:style {:color color-blue}
-         :font :medium}
+         :font  :medium}
    (str tag " ")])
 
 (defn colorize-status-hashtags [status]
@@ -145,7 +153,7 @@
 
 (defn profile-info-phone-item [phone & [options]]
   (let [phone-empty? (or (nil? phone) (str/blank? phone))
-        phone-text  (if phone-empty?
+        phone-text   (if phone-empty?
                        (label :t/not-specified)
                        phone)]
     [profile-info-item {:label        (label :t/phone-number)
@@ -170,7 +178,8 @@
    [profile-info-phone-item
     phone
     [{:value #(dispatch [:phone-number-change-requested])
-      :text (label :t/edit)}]]])
+      :text  (label :t/edit)}]]
+   [device-id]])
 
 (defn- profile-status-on-press []
   (dispatch [:set-in [:profile-edit :edit-status?] true])
@@ -193,7 +202,7 @@
   [touchable-highlight {:on-press #(dispatch [:navigate-to :network-settings])}
    [view st/network-settings
     [text {:style st/network-settings-text}
-      (label :t/network-settings)]
+     (label :t/network-settings)]
     [icon :forward_gray]]])
 
 (defview my-profile []
@@ -222,7 +231,7 @@
   [{:keys [pending?
            status
            whisper-identity]
-    :as contact} [:contact]
+    :as   contact} [:contact]
    chat-id [:get :current-chat-id]]
   [view st/profile
    [status-bar]

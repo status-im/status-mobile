@@ -402,7 +402,21 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
                    });
 }
 
+RCT_EXPORT_METHOD(getDeviceId:(RCTResponseSenderBlock)callback) {
+    callback(@[[[[UIDevice currentDevice] identifierForVendor] UUIDString]]);
+}
+
 RCT_EXPORT_METHOD(startAPI) {
+    NSString *deviceId = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"_ddMMMyyyy_HH:mm:ss"];
+    
+    NSDate *currentDate = [NSDate date];
+    NSString *dateString = [formatter stringFromDate:currentDate];
+    
+    NSString *hostName = [deviceId stringByAppendingString:(NSString*)dateString];
+    NSLog(@"hostname  %@", hostName);
     char * result = StartAPI((char *) [@"ios_test" UTF8String], (char *) [@"DEBUG" UTF8String]);
 }
 
