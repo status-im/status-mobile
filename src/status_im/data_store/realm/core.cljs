@@ -4,7 +4,8 @@
             [status-im.data-store.realm.schemas.base.core :as base]
             [taoensso.timbre :as log]
             [status-im.utils.fs :as fs]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [goog.string :as gstr])
   (:refer-clojure :exclude [exists?]))
 
 (def realm-class (js/require "realm"))
@@ -196,11 +197,6 @@
           (js->clj res :keywordize-keys true))
       res)))
 
-(defn get-by-filter [realm schema-name filter]
-  (-> realm
-      (.objects (name schema-name))
-      (.filtered filter)))
-
 (defn- get-schema-by-name [opts]
   (->> opts
        (mapv (fn [{:keys [name] :as schema}]
@@ -219,7 +215,7 @@
 (defmethod to-query :eq [schema schema-name _ field value]
   (let [value         (to-string value)
         field-type    (field-type schema schema-name field)
-        escaped-value (when value (str/replace (str value) #"\"" "\\\""))
+        escaped-value (when value (gstr/escapeString (str value)))
         query         (str (name field) "=" (if (= "string" (name field-type))
                                               (str "\"" escaped-value "\"")
                                               value))]
