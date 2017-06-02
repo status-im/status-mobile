@@ -95,8 +95,8 @@
 
 (defview transaction-list-item [{:keys [to value timestamp] :as transaction}]
   [recipient [:contact-by-address to]]
-  (let [eth-value (.fromWei js/Web3.prototype value "ether")
-        value     (i18n/label-number eth-value)
+  (let [eth-value      (.fromWei js/Web3.prototype value "ether")
+        value          (i18n/label-number eth-value)
         recipient-name (or (:name recipient) to)]
     [touchable-highlight {:on-press #(rf/dispatch [:navigate-to-modal :transaction-details transaction])}
      [view {:style st/transaction}
@@ -117,8 +117,8 @@
   (fn [_ row-id _]
     (when (< row-id (dec transactions-count))
       (list-item
-       ^{:key row-id}
-       [common/separator {} st/transactions-list-separator]))))
+        ^{:key row-id}
+        [common/separator {} st/transactions-list-separator]))))
 
 (defview unsigned-transactions []
   [all-transactions [:transactions]]
@@ -146,13 +146,26 @@
    [text {:style st/network-title} "Ropsten"]])
 
 (defn options-btn []
-  (let [options [{:value (fn []
-                           (close-drawer)
-                           (rf/dispatch [:set-in [:profile-edit :name] nil])
-                           (rf/dispatch [:navigate-to :accounts]))
-                  :text  (i18n/label :t/switch-users)}]]
-    [view {:style st/options-button}
-     [context-menu/context-menu [icon :options_gray] options]]))
+  [view {:style st/options-button}
+   [touchable-highlight
+    {:on-press (fn []
+                 (close-drawer)
+                 (rf/dispatch [:set-in [:profile-edit :name] nil])
+                 (rf/dispatch [:navigate-to :my-profile]))}
+    [view [icon :options_gray]]]])
+
+(defn switch-account []
+  [view st/switch-account-container
+   [touchable-highlight
+    {:on-press (fn []
+                 (close-drawer)
+                 (rf/dispatch [:set-in [:profile-edit :name] nil])
+                 (rf/dispatch [:navigate-to :accounts]))}
+    [view
+     [text {:style      st/switch-account-text
+            :font       (if platform/android? :medium :default)
+            :uppercase? platform/android?}
+      (i18n/label :t/switch-users)]]]])
 
 (defn drawer []
   (let [placeholder (gfycat/generate-gfy)]
@@ -166,7 +179,9 @@
           [status-input]
           [options-btn]]
          [current-network]]
-        [unsigned-transactions]]])))
+        [view
+         [unsigned-transactions]
+         [switch-account]]]])))
 
 (defn drawer-view [items]
   [drawer-layout {:drawerWidth          300

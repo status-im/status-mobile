@@ -82,8 +82,7 @@
   {:margin-left 48})
 
 (def empty-transactions-title-container
-  {:margin-bottom 32
-   :align-items   :center})
+  {:align-items :center})
 
 (defstyle transactions-title-container
   {:margin-left 16
@@ -161,6 +160,16 @@
    :border-top-color common/color-light-gray2})
 
 (defstyle view-all-transactions-text
+  {:color   common/color-light-blue
+   :android {:font-size 14}
+   :ios     {:font-size 17}})
+
+(def switch-account-container
+  {:align-items   :center
+   :margin-bottom 10
+   :margin-top    10})
+
+(defstyle switch-account-text
   {:color   common/color-light-blue
    :android {:font-size 14}
    :ios     {:font-size 17}})
