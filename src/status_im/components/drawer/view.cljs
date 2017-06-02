@@ -63,9 +63,9 @@
                             (rf/dispatch [:account-update {:name (utils/clean-text new-name)}])))}]]))
 
 (defview status-input []
-  [account [:get-current-account]
+  [account      [:get-current-account]
    status-edit? (r/atom false)
-   status-text (r/atom nil)]
+   status-text  (r/atom nil)]
   (let [status      (:status account)
         placeholder (i18n/label :t/update-status)]
     [view st/status-container
