@@ -258,7 +258,7 @@
           (init-console-chat true)))))
 
 (defmethod nav/preload-data! :chat
-  [{:keys [current-chat-id] :as db} [_ _ id]]
+  [{:keys [current-chat-id current-account-id] :as db} [_ _ id]]
   (let [chat-id           (or id current-chat-id)
         messages          (get-in db [:chats chat-id :messages])
         command?          (= :command (get-in db [:edit-mode chat-id]))
@@ -271,7 +271,8 @@
         call-init-command #(when (and (not was-opened?) bot-url)
                              (status/call-function!
                                {:chat-id  chat-id
-                                :function :init}))]
+                                :function :init
+                                :context  {:from current-account-id}}))]
        (dispatch [:load-requests! chat-id])
         ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
        #_(dispatch [:load-commands! chat-id])
