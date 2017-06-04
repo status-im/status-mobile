@@ -150,7 +150,7 @@
         {
             "en": "http://waterflowdapp.projectoaken.com"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps", "state-of-dapps"]
     },
 
     "gnosis":
@@ -180,7 +180,7 @@
         {
             "en": "https://portal.melonport.com/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps", "state-of-dapps"]
     },
 
     "bchat":
@@ -210,7 +210,7 @@
         {
             "en": "http://dentacoin.com/testnet/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps", "state-of-dapps"]
     },
 
     "Augur":
@@ -225,7 +225,7 @@
         {
           "en": "https://app.augur.net"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps", "state-of-dapps"]
     },
 
     "Ethlance":
@@ -240,7 +240,7 @@
         {
           "en": "https://madvas.github.io/ethlance/resources/public/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps", "state-of-dapps"]
     },
     
     "Commiteth":
@@ -255,7 +255,7 @@
         {
             "en": "https://commiteth.com"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps", "state-of-dapps"]
     },
 
     "Etherplay":
@@ -270,6 +270,6 @@
         {
             "en": "http://test.etherplay.io"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps", "state-of-dapps"]
     }
 }
