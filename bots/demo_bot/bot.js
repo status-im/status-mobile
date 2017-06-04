@@ -56,14 +56,15 @@ function superSuggestion(params, context) {
 
     var validationText = "";
 
-    if (isNaN(params.message)) {
-        validationText = "That's not a float number!";
-    } else if (parseFloat(params.message) > balance) {
-        validationText =
-            "Input value is too big!" +
-            " You have only " + balance + " ETH on your balance!";
+    if (typeof params !== 'undefined') {
+        if (isNaN(params.message)) {
+            validationText = "That's not a float number!";
+        } else if (parseFloat(params.message) > balance) {
+            validationText =
+                "Input value is too big!" +
+                " You have only " + balance + " ETH on your balance!";
+        }
     }
-
     status.updateDb({
         balance: balance,
         validationText: validationText
@@ -75,6 +76,7 @@ function superSuggestion(params, context) {
 var cnt = 0;
 
 status.addListener("on-message-input-change", superSuggestion);
+status.addListener("init", superSuggestion);
 status.addListener("on-message-send", function (params, context) {
     cnt++;
     if (isNaN(params.message)) {

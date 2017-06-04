@@ -103,7 +103,8 @@
           suggestions     (suggestions/get-command-suggestions db chat-text)
           global-commands (suggestions/get-global-command-suggestions db chat-text)
           {:keys [dapp?]} (get-in db [:contacts chat-id])]
-      (when (and dapp? (every? empty? [requests suggestions]))
+      (if (and dapp? (str/blank? chat-text))
+        (dispatch [:set-in [:chats chat-id :parameter-boxes :message] nil])
         (dispatch [::check-dapp-suggestions chat-id chat-text]))
       (-> db
           (assoc-in [:chats chat-id :request-suggestions] requests)

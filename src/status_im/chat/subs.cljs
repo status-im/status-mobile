@@ -122,7 +122,6 @@
          input-text          (subscribe [:chat :input-text])
          validation-messages (subscribe [:chat-ui-props :validation-messages])]
      (reaction (and @chat-parameter-box
-                    (not (str/blank? @input-text))
                     (not @validation-messages)
                     (not @show-suggestions?))))))
 
