@@ -161,6 +161,8 @@
           "local_storage.set" (dispatch [:set-local-storage event])
           "request_geo_permissions" (dispatch [:request-permissions [:geolocation]
                                                #(dispatch [:webview-geo-permissions-granted])])
+          "jail.send_message" (dispatch [:send-message-from-jail event])
+          "jail.show_suggestions" (dispatch [:show-suggestions-from-jail event])
           (log/debug "Event " type " not handled"))))))
 
 (register-handler :status-module-initialized!

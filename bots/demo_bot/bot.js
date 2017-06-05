@@ -28,7 +28,7 @@ status.defineSubscription(
     }
 );
 
-function superSuggestion(params, context) {
+function demoSuggestions(params, context) {
     var balance = parseFloat(web3.fromWei(web3.eth.getBalance(context.from), "ether"));
     var defaultSliderValue = balance / 2;
 
@@ -73,10 +73,10 @@ function superSuggestion(params, context) {
     return {markup: view};
 };
 
-status.addListener("on-message-input-change", superSuggestion);
-status.addListener("init", superSuggestion);
+status.addListener("on-message-input-change", demoSuggestions);
+status.addListener("init", demoSuggestions);
 status.addListener("on-message-send", function (params, context) {
-    cnt = localStorage.getItem("cnt");
+    var cnt = localStorage.getItem("cnt");
     if(!cnt) {
         cnt = 0;
     }
@@ -85,7 +85,6 @@ status.addListener("on-message-send", function (params, context) {
 
     localStorage.setItem("cnt", cnt);
     if (isNaN(params.message)) {
-
         return {"text-message": "Seems that you don't want to send money :(. cnt = " + cnt};
     }
 
@@ -95,14 +94,16 @@ status.addListener("on-message-send", function (params, context) {
     if (bn(weiValue).greaterThan(bn(balance))) {
         return {"text-message": "No way man, you don't have enough money! :)"};
     }
-    try {
-        web3.eth.sendTransaction({
-            from: context.from,
-            to: context.from,
-            value: weiValue
-        });
-        return {"text-message": "You are the hero, you sent " + value + " ETH to yourself!"};
-    } catch (err) {
-        return {"text-message": "Something went wrong :("};
-    }
+    web3.eth.sendTransaction({
+        from: context.from,
+        to: context.from,
+        value: weiValue
+    }, function (error, hash) {
+        if (error) {
+            status.sendMessage("Something went wrong, try again :(");
+            status.showSuggestions(demoSuggestions(params, context).markup);
+        } else {
+            status.sendMessage("You are the hero, you sent " + value + " ETH to yourself!")
+        }
+    });
 });
