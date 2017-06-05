@@ -73,13 +73,19 @@ function superSuggestion(params, context) {
     return {markup: view};
 };
 
-var cnt = 0;
-
 status.addListener("on-message-input-change", superSuggestion);
 status.addListener("init", superSuggestion);
 status.addListener("on-message-send", function (params, context) {
+    cnt = localStorage.getItem("cnt");
+    if(!cnt) {
+        cnt = 0;
+    }
+
     cnt++;
+
+    localStorage.setItem("cnt", cnt);
     if (isNaN(params.message)) {
+
         return {"text-message": "Seems that you don't want to send money :(. cnt = " + cnt};
     }
 

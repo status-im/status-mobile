@@ -16,7 +16,8 @@
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up]
             [status-im.bots.constants :as bots-constants]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im.data-store.local-storage :as local-storage]))
 
 
 (defn load-commands!
@@ -76,16 +77,18 @@
   [_ [{{:keys [whisper-identity]} :contact
        :keys                      [callback]}
       file]]
-  (status/parse-jail
-    whisper-identity file
-    (fn [result]
-      (let [{:keys [error result]} (json->clj result)]
-        (log/debug "Parsing commands results: " error result)
-        (if error
-          (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
-          (do
-            (dispatch [::add-commands whisper-identity file result])
-            (when callback (callback))))))))
+  (let [data             (local-storage/get-data whisper-identity)
+        local-storage-js (js-res/local-storage-data data)]
+    (status/parse-jail
+      whisper-identity (str local-storage-js file)
+      (fn [result]
+        (let [{:keys [error result]} (json->clj result)]
+          (log/debug "Parsing commands results: " error result)
+          (if error
+            (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
+            (do
+              (dispatch [::add-commands whisper-identity file result])
+              (when callback (callback)))))))))
 
 (defn validate-hash
   [db [_ file]]
