@@ -18,7 +18,8 @@
             [status-im.utils.datetime :as datetime]
             [status-im.protocol.core :as protocol]
             [taoensso.timbre :refer-macros [debug] :as log]
-            [status-im.chat.handlers.console :as console]))
+            [status-im.chat.handlers.console :as console]
+            [status-im.utils.types :as types]))
 
 (defn prepare-command
   [identity chat-id clock-value request
@@ -236,6 +237,27 @@
                       :chat-id      chat-id
                       :from         chat-id
                       :to           "me"}]))))))
+
+(register-handler :send-message-from-jail
+  (u/side-effect!
+    (fn [_ [_ {:keys [chat_id message]}]]
+      (dispatch [:received-message
+                 {:message-id   (random/id)
+                  :content      (str message)
+                  :content-type text-content-type
+                  :outgoing     false
+                  :chat-id      chat_id
+                  :from         chat_id
+                  :to           "me"}]))))
+
+(register-handler :show-suggestions-from-jail
+  (u/side-effect!
+    (fn [_ [_ {:keys [chat_id markup]}]]
+      (let [markup' (types/json->clj markup)
+            result  (assoc-in {} [:result :returned :markup] markup')]
+        (dispatch [:suggestions-handler
+                   {:result  result
+                    :chat-id chat_id}])))))
 
 (register-handler ::send-message!
   (u/side-effect!

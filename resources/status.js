@@ -209,8 +209,8 @@ var status = {
         subscribe: subscribe,
         dispatch: dispatch
     },
-    setSuggestions: function (view) {
-        addContext("suggestions", view);
+    showSuggestions: function (view) {
+        statusSignals.showSuggestions(JSON.stringify(view));
     },
     setDefaultDb: function (db) {
         addContext("default-db", db);
@@ -219,7 +219,7 @@ var status = {
         addContext("update-db", db)
     },
     sendMessage: function (text) {
-        addContext("text-message", text);
+        statusSignals.sendMessage(text);
     },
     addLogMessage: function (type, message) {
         var message = {
@@ -278,10 +278,18 @@ console = (function (old) {
 }(console));
 
 localStorage.setItem = function(key, value) {
-    localStorageData[key] = value;
+    if(value === null) {
+        delete localStorageData[key];
+    } else {
+        localStorageData[key] = value;
+    }
+
     localStorage.set(JSON.stringify(localStorageData));
 };
 
-localStorage.getItem = function(key) {
+localStorage.getItem = function (key) {
+    if (typeof localStorageData[key] === "undefined") {
+        return null;
+    }
     return localStorageData[key];
 };

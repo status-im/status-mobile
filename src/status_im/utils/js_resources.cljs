@@ -50,8 +50,4 @@
        (slurp "resources/web3_init.js")))
 
 (defn local-storage-data [data]
-  (str "var localStorageData = "
-       (if data
-         data
-         "{}")
-       ";"))
+  (str "var localStorageData = " (or data "{}") ";"))
