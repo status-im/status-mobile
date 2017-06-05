@@ -276,3 +276,12 @@ console = (function (old) {
         }
     };
 }(console));
+
+localStorage.setItem = function(key, value) {
+    localStorageData[key] = value;
+    localStorage.set(JSON.stringify(localStorageData));
+};
+
+localStorage.getItem = function(key) {
+    return localStorageData[key];
+};

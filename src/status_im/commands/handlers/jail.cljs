@@ -10,7 +10,8 @@
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log]
-            [status-im.commands.utils :as cu]))
+            [status-im.commands.utils :as cu]
+            [status-im.data-store.local-storage :as local-storage]))
 
 (defn command-handler!
   [_ [chat-id
@@ -86,6 +87,7 @@
   (handlers/side-effect! suggestions-events-handler!))
 
 (reg-handler :set-local-storage
-  (fn [{:keys [current-chat-id] :as db} [{:keys [data] :as event}]]
-    (log/debug "Got event: " event)
-    (assoc-in db [:local-storage current-chat-id] data)))
+  (handlers/side-effect!
+    (fn [{:keys [current-chat-id] :as db} [{:keys [data chat_id] :as event}]]
+      (local-storage/set-data {:chat-id chat_id
+                               :data    data}))))

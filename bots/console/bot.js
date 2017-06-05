@@ -227,14 +227,15 @@ function getJsSuggestions(code, context) {
     var doc = DOC_MAP;
     // TODO: what's /c / doing there ???
     //console.debug(code);
+    var previousMessage = localStorage.getItem("previousMessage");
     if (!code || code == "" || code == "c ") {
         code = "";
         //console.debug("Last message: " + context.data);
-        if (context.data != null) {
+        if (previousMessage != null) {
             suggestions.push({
                 title: 'Last command used:',
-                desc: context.data,
-                pressValue: context.data
+                desc: previousMessage,
+                pressValue: previousMessage
             });
         }
         var keys = Object.keys(doc);
@@ -250,13 +251,13 @@ function getJsSuggestions(code, context) {
         if (code.startsWith("c ")) {
             code = code.substring(2);
         }
-        if (context.data != null &&
-            (typeof context.data === 'string' || context.data instanceof String) &&
-            context.data.startsWith(code)) {
+        if (previousMessage != null &&
+            (typeof previousMessage === 'string' || previousMessage instanceof String) &&
+            previousMessage.startsWith(code)) {
             suggestions.unshift({
                 title: 'Last command used:',
-                desc: context.data,
-                pressValue: context.data
+                desc: previousMessage,
+                pressValue: previousMessage
             });
         }
         var originalCode = code;
@@ -355,7 +356,7 @@ function jsHandler(params, context) {
     messages = [];
     try {
         result["text-message"] = JSON.stringify(eval(params.code));
-        localStorage.set(params.code);
+        localStorage.setItem("previousMessage", params.code);
     } catch (e) {
         result.err = e;
     }
