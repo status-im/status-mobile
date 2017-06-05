@@ -58,42 +58,39 @@ Currently the fastest way to get your hands on a binary is to join our Early Acc
 
 ## Core Contributors
 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/jarrad.png" width="80px"></img>
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/jarrad.png" width="80px"></img>
 Jarrad ([@jarradh](https://github.com/jarradh)) - Cofounder and Thought Leader.
- 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/carl.png" width="80px"></img>
+
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/carl.png" width="80px"></img>
 Carl ([@carlbennetts](https://github.com/carlbennetts)) - Cofounder and Communications & Marketing.
- 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/roman.png" width="80px"></img>
+
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/roman.png" width="80px"></img>
 Roman ([@rasom](https://github.com/rasom)) - Clojure and project lead.
 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/alexander.png" width="80px"></img>
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/alexander.png" width="80px"></img>
 Alexander ([@alwx](https://github.com/alwx)) - Clojure ninja!
 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/andrey.png" width="80px"></img>
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/andrey.png" width="80px"></img>
 Andrey ([@flexsurfer](https://github.com/flexsurfer)) - Clojure.
 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/gustavo.png" width="80px"></img>
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/gustavo.png" width="80px"></img>
 Gustavo ([@GustavoNunes](https://github.com/GustavoNunes)) - Clojure.
 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/victor.png" width="80px"></img>
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/victor.png" width="80px"></img>
 Victor ([@farazdagi](https://github.com/farazdagi)) - Golang one-man-army.
 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/andrei.png" width="80px"></img>
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/andrei.png" width="80px"></img>
 Andrei ([@andmironov](https://github.com/andmironov)) - Visual design and user experience conjurer.
 
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/anna.jpg" width="80px"></img>
+<img src="https://github.com/status-im/status-react/blob/develop/images/contacts/anna.png" width="80px"></img>
 Anna ([@annadanchenko](https://github.com/annadanchenko)) - Head of QA.
-
-<img src="https://github.com/status-im/wiki.status.im/blob/master/docs/contributing/img/tatu.jpg" width="80px"></img>
-Tatu ([@smokyish](https://github.com/smokyish)) - Community Manager.
 
 Special thanks to [@adrian-tiberius](https://github.com/adrian-tiberius).
 Without the dedication of these fine gentleman, Status would not exist.
 
 ## Contact us
 
-Feel free to email us at [support@status.im](mailto:support@status.im) or better yet, [join our Slack](http://slack.status.im). 
+Feel free to email us at [support@status.im](mailto:support@status.im) or better yet, [join our Slack](http://slack.status.im).
 
 Got a feature request or suggestion, download Status and shake your phone, failing that search our [Github Issues](http://github.com/status-im/status-react/issues).
 
