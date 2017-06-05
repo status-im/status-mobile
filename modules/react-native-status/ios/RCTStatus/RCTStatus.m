@@ -202,7 +202,12 @@ RCT_EXPORT_METHOD(startNode:(RCTResponseSenderBlock)onResultCallback) {
             NSLog(@"error %@", error);
         }else
             NSLog(@"folderName: %@", folderName);
-        char *configChars = GenerateConfig([folderName.path UTF8String], 3);
+#if DEBUG
+        int devCluster = 1;
+#else
+        int devCluster = 0;
+#endif
+        char *configChars = GenerateConfig([folderName.path UTF8String], 3, devCluster);
         NSString *config = [NSString stringWithUTF8String: configChars];
         NSData *configData = [config dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *resultingConfigJson = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
