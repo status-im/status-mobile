@@ -71,13 +71,12 @@ function demoSuggestions(params, context) {
     });
 
     return {markup: view};
-};
+}
 
 status.addListener("on-message-input-change", demoSuggestions);
-status.addListener("init", demoSuggestions);
 status.addListener("on-message-send", function (params, context) {
     var cnt = localStorage.getItem("cnt");
-    if(!cnt) {
+    if (!cnt) {
         cnt = 0;
     }
 
@@ -106,4 +105,42 @@ status.addListener("on-message-send", function (params, context) {
             status.sendMessage("You are the hero, you sent " + value + " ETH to yourself!")
         }
     });
+});
+
+status.command({
+    name: "init-request",
+    description: "send-request",
+    color: "#a187d5",
+    sequentialParams: true,
+    params: [{
+        name: "address",
+        type: status.types.TEXT,
+        placeholder: "address"
+    }],
+    handler: function (params) {
+        return {
+            "text-message": {
+                type: "request",
+                content: {
+                    command: "response",
+                    params: {first: "123"},
+                    text: "That's request's content! It works!"
+                }
+            }
+        };
+    }
+});
+
+status.response({
+    name: "response",
+    color: "#a187d5",
+    sequentialParams: true,
+    params: [{
+        name: "first",
+        type: status.types.TEXT,
+        placeholder: "first"
+    }],
+    handler: function (params) {
+        return {"text-message": "ok"};
+    }
 });

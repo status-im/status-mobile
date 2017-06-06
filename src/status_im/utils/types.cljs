@@ -13,4 +13,6 @@
 
 (defn json->clj [json]
   (when-not (= json "undefined")
-    (js->clj (.parse js/JSON json) :keywordize-keys true)))
+    (try
+      (js->clj (.parse js/JSON json) :keywordize-keys true)
+      (catch js/Error _ (when (string? json) json)))))
