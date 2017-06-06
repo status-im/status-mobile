@@ -70,16 +70,17 @@
 (register-handler :prepare-command!
   (u/side-effect!
     (fn [{:keys [current-public-key network-status] :as db}
-         [_ add-to-chat-id {:keys [chat-id command-message command handler-data] :as params}]]
+         [_ add-to-chat-id {:keys [chat-id command-message command] :as params}]]
       (let [clock-value   (messages/get-last-clock-value chat-id)
             request       (:request (:handler-data command))
+            handler-data  (:handler-data command)
             hidden-params (->> (:params (:command command))
                                (filter #(= (:hidden %) true))
                                (map :name))
             command'      (->> (assoc command-message :handler-data handler-data)
                                (prepare-command current-public-key chat-id clock-value request)
                                (cu/check-author-direction db chat-id))]
-        (log/debug "Handler data: " request handler-data (dissoc params :commands :command-message))
+        (log/debug "Handler data: " request (:handler-data command) (dissoc params :commands :command-message))
         (dispatch [:update-message-overhead! chat-id network-status])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
@@ -238,17 +239,29 @@
                       :from         chat-id
                       :to           "me"}]))))))
 
+(defn handle-message-from-bot [{:keys [message chat-id]}]
+  (cond
+    (string? message)
+    (dispatch [:received-message
+               {:message-id   (random/id)
+                :content      (str message)
+                :content-type text-content-type
+                :outgoing     false
+                :chat-id      chat-id
+                :from         chat-id
+                :to           "me"}])
+
+    (= "request" (:type message))
+    (dispatch [:add-request-message!
+               {:content (:content message)
+                :chat-id chat-id}])))
+
 (register-handler :send-message-from-jail
   (u/side-effect!
     (fn [_ [_ {:keys [chat_id message]}]]
-      (dispatch [:received-message
-                 {:message-id   (random/id)
-                  :content      (str message)
-                  :content-type text-content-type
-                  :outgoing     false
-                  :chat-id      chat_id
-                  :from         chat_id
-                  :to           "me"}]))))
+      (let [parsed-message (types/json->clj message)]
+        (handle-message-from-bot {:message parsed-message
+                                  :chat-id chat_id})))))
 
 (register-handler :show-suggestions-from-jail
   (u/side-effect!
@@ -301,7 +314,10 @@
                  current-account-id accounts contacts] :as db}
          [_ {:keys [chat-id command]}]]
       (log/debug "sending command: " command)
-      (when (not (get-in contacts [chat-id :dapp?]))
+      (if (get-in contacts [chat-id :dapp?])
+        (when-let [text-message (get-in command [:content :handler-data :text-message])]
+          (handle-message-from-bot {:message text-message
+                                    :chat-id chat-id}))
         (let [{:keys [public-key private-key]} (chats chat-id)
               {:keys [group-chat public?]} (get-in db [:chats chat-id])
 
@@ -332,3 +348,15 @@
             :else
             (protocol/send-message! (assoc-in options
                                               [:message :to] chat-id))))))))
+
+(register-handler :add-request-message!
+  (u/side-effect!
+    (fn [_ [_ {:keys [content chat-id]}]]
+      (dispatch [:received-message
+                 {:message-id   (random/id)
+                  :content      (assoc content :bot chat-id)
+                  :content-type content-type-command-request
+                  :outgoing     false
+                  :chat-id      chat-id
+                  :from         chat-id
+                  :to           "me"}]))))

@@ -76,12 +76,13 @@
         status-initialized? (subscribe [:get :status-module-initialized?])
         markup              (subscribe [:get-in [:message-data :preview message-id :markup]])]
     (fn [{:keys [message-id content from incoming-group]}]
-      (let [commands @commands-atom
-            params   (:params content)
+      (let [commands     @commands-atom
+            params       (:params content)
+            text-content (:text content)
             {:keys [command content]} (parse-command-request commands content)
-            command  (if (and params command)
-                       (merge command {:prefill (vals params)})
-                       command)]
+            command      (if (and params command)
+                           (merge command {:prefill (vals params)})
+                           command)]
         [view st/comand-request-view
          [touchable-highlight
           {:on-press (when (and (not @answered?) @status-initialized?)
@@ -90,9 +91,9 @@
            (if (and @markup
                     (not (string? @markup)))
              [view @markup]
-             [text {:style     st/style-message-text
-                    :font      :default}
-              (or @markup content)])]]
+             [text {:style st/style-message-text
+                    :font  :default}
+              (or text-content @markup content)])]]
          (when (:request-text command)
            [view st/command-request-text-view
             [text {:style st/style-sub-text
