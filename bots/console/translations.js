@@ -248,20 +248,29 @@ I18n.translations = {
     },
     ja: {
         phone_title: '電話番号を送信',
-        phone_description: 'あなたの番号を使用している友人を検索',
+        phone_description: '電話番号から友人を検索',
         phone_placeholder: '携帯電話番号',
 
         confirm_description: '確認コード',
         confirm_validation_title: '確認コード',
-        confirm_validation_description: '間違った形式',
+        confirm_validation_description: '誤った形式です',
 
         password_description: 'パスワード',
         password_placeholder: 'パスワードを入力してください',
         password_placeholder2: '確認のためにパスワードを再入力してください',
-        password_error: 'パスワードは6文字以下でなければなりません.',
-        password_error1: 'パスワードの確認がパスワードと一致しません。',
+        password_error: 'パスワードは6文字以上にしてください。',
+        password_error1: 'パスワードが一致しません。',
         password_validation_title: 'パスワード'
 
+        faucet_incorrect_title: 'フォーセットが違います',
+        faucet_incorrect_description: '一覧の中から一つだけ選択してください',
+
+        debug_mode_title: 'デバッグモード',
+        debug_mode_description: 'デバッグモードを開始/停止します',
+
+        faucet_title: 'フォーセット',
+        faucet_description: 'ETHを取得する',
+        faucet_placeholder: 'フォーセットURL'
     },
     ko: {
         phone_title: '전화번호 보내기',
