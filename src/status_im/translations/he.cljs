@@ -27,49 +27,49 @@
    :current-network                       "Current network"
 
    ;chat
-   :is-typing                             "is typing"
-   :and-you                               "and you"
-   :search-chat                           "Search chat"
-   :members                               {:one   "1 member"
-                                           :other "{{count}} members"
-                                           :zero  "no members"}
-   :members-active                        {:one   "1 member"
-                                           :other "{{count}} members"
-                                           :zero  "no members"}
-   :public-group-status                   "Public"
-   :active-online                         "Online"
-   :active-unknown                        "Unknown"
-   :available                             "Available"
-   :no-messages                           "No messages"
-   :suggestions-requests                  "Requests"
-   :suggestions-commands                  "Commands"
-   :faucet-success                        "Faucet request has been received"
-   :faucet-error                          "Faucet request error"
+   :is-typing                             "מקליד"
+   :and-you                               "גם אתה"
+   :search-chat                           "חפש בצ'אט"
+   :members                               {:one   "חבר אחד"
+                                           :other "{{count}} חברים"
+                                           :zero  "אין חברים"}
+   :members-active                        {:one   "חבר אחד"
+                                           :other "{{count}} חברים"
+                                           :zero  "אין חברים"}
+   :public-group-status                   "פומבי"
+   :active-online                         "מחובר"
+   :active-unknown                        "לא ידוע"
+   :available                             "זמין"
+   :no-messages                           "אין הודעות"
+   :suggestions-requests                  "בקשות"
+   :suggestions-commands                  "פקודות"
+   :faucet-success                        "בקשת הברז התקבלה"
+   :faucet-error                          "שגיאה בבקשת הברז"
 
    ;sync
-   :sync-in-progress                      "Syncing..."
-   :sync-synced                           "In sync"
+   :sync-in-progress                      "...מסנכרן"
+   :sync-synced                           "מסונכרן"
 
    ;messages
-   :status-sending                        "Sending"
-   :status-pending                        "Pending"
-   :status-sent                           "Sent"
-   :status-seen-by-everyone               "Seen by everyone"
-   :status-seen                           "Seen"
-   :status-delivered                      "Delivered"
-   :status-failed                         "Failed"
+   :status-sending                        "שולח"
+   :status-pending                        "ממתין"
+   :status-sent                           "נשלחה"
+   :status-seen-by-everyone               "פומבי"
+   :status-seen                           "נראה"
+   :status-delivered                      "התקבל"
+   :status-failed                         "נכשל"
 
    ;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
-   :datetime-second                       {:one   "second"
-                                           :other "seconds"}
-   :datetime-minute                       {:one   "minute"
-                                           :other "minutes"}
-   :datetime-hour                         {:one   "hour"
-                                           :other "hours"}
-   :datetime-day                          {:one   "day"
-                                           :other "days"}
+   :datetime-second                       {:one   "שניה"
+                                           :other "שניות"}
+   :datetime-minute                       {:one   "דקה"
+                                           :other "דקות"}
+   :datetime-hour                         {:one   "שעה"
+                                           :other "שעות"}
+   :datetime-day                          {:one   "יום"
+                                           :other "ימים"}
    :datetime-multiple                     "s"
-   :datetime-ago                          "ago"
-   :datetime-yesterday                    "yesterday"
-   :datetime-today                        "today"
+   :datetime-ago                          "לפני"
+   :datetime-yesterday                    "אתמול"
+   :datetime-today                        "היום"
