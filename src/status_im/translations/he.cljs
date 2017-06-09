@@ -298,17 +298,17 @@
    :enter-password-transactions           {:one   "אשר העברה אל ידי הקשת סיסמתך"
                                            :other "אשר העברות על ידי הקשת סיסמתך"}
    :status                                "סטטוס"
-   :pending-confirmation                  "Pending confirmation"
-   :recipient                             "Recipient"
-   :one-more-item                         "One more item"
-   :fee                                   "Fee"
-   :estimated-fee                         "Est. fee"
-   :value                                 "Value"
-   :to                                    "To"
-   :from                                  "From"
-   :data                                  "Data"
-   :got-it                                "Got it"
-   :contract-creation                     "Contract Creation"
+   :pending-confirmation                  "ממתיך לאישור העברה"
+   :recipient                             "מקבל"
+   :one-more-item                         "עוד פריט אחד"
+   :fee                                   "עמלה"
+   :estimated-fee                         "עמלה מעורכת"
+   :value                                 "שווי"
+   :to                                    "ל"
+   :from                                  "מ"
+   :data                                  "נתונים"
+   :got-it                                "קיבלתי"
+   :contract-creation                     "יצירת חוזה"
 
    ;:webview
-   :web-view-error                        "oops, error"})
+   :web-view-error                        "אופס,טעות"})
