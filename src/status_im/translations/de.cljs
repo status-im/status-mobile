@@ -8,6 +8,12 @@
    :chat-name                             "Chatname"
    :notifications-title                   "Benachrichtigungen und Sounds"
    :offline                               "Offline"
+   :search-for                            "Suche nach..."
+   :cancel                                "Abbrechen"
+   :next                                  "Weiter"
+   :type-a-message                        "Schreibe eine Nachricht..."
+   :type-a-command                        "Tippe ein Kommando..."
+   :error                                 "Fehler"
 
    ;drawer
    :invite-friends                        "Freunde einladen"
@@ -81,6 +87,16 @@
    :image-source-make-photo               "Fotografieren"
    :image-source-gallery                  "Aus Galerie auswählen"
    :image-source-cancel                   "Abbrechen"
+    
+   ;;sharing
+   :sharing-copy-to-clipboard             "In Zwischenablage kopieren"
+   :sharing-share                         "Teilen..."
+   :sharing-cancel                        "Abbrechen"
+    
+   :browsing-title                        "Browse"
+   :browsing-browse                       "@browse"
+   :browsing-open-in-web-browser          "In Webbrowser öffnen"
+   :browsing-cancel                       "Abbrechen"
 
    ;sign-up
    :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
