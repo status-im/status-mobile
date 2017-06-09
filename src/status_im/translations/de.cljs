@@ -13,6 +13,9 @@
    :invite-friends                        "Freunde einladen"
    :faq                                   "FAQ"
    :switch-users                          "Benutzer wechseln"
+   :feedback                              "Haben Sie Feedback? Schütteln Sie einfach Ihr Mobilgerät."
+   :view-all                              "Alle ansehen"
+   :current-network                       "Aktuelles Netzwerk"
 
    ;chat
    :is-typing                             "gibt ein"
