@@ -117,6 +117,12 @@
    :chats                                 "Chats"
    :new-chat                              "Neuer Chat"
    :new-group-chat                        "Neuer Gruppenchat"
+   :new-public-group-chat                 "Öffentlichem Gruppenchat beitreten"
+   :edit-chats                            "Chats bearbeiten"
+   :search-chats                          "Chats durchsuchen"
+   :empty-topic                           "Leeres Thema"
+   :topic-format                          "Falsches Format[a-z0-9\\-]+"
+   :public-group-topic                    "Thema"
 
    ;discover
    :discover                             "Entdecken"
