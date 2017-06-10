@@ -39,7 +39,7 @@
    :public-group-status                   "Offentlig"
    :active-online                         "Online"
    :active-unknown                        "Ukendt"
-   :available                             "Til stede"
+   :available                             "Aktiv"
    :no-messages                           "Ingen beskeder"
    :suggestions-requests                  "Anmodninger"
    :suggestions-commands                  "Kommandoer"
@@ -119,7 +119,7 @@
                                                "Vær venlig at indtaste koden for at bekræfte dit telefonnummer")
    :incorrect-code                        (str "Koden var desværre forkert. Prøv venligst igen")
    :generate-passphrase                   (str "Jeg vil generere en kodesætning (passphrase) til dig, så du kan gendanne din adgang eller logge ind fra en anden enhed")
-   :phew-here-is-your-passphrase          "*Pust* det var svært, her er din kodesætning (passphrase), *skriv den ned og gem den sikkert!* Du behøver den for at gendanne din konto."
+   :phew-here-is-your-passphrase          "*Puha* det var hårdt, her er din kodesætning (passphrase), *skriv den ned og gem den sikkert!* Du skal bruge den for at kunne gendanne din konto."
    :here-is-your-passphrase               "Her er din kodesætning (passphrase), *skriv den ned og gem den sikkert!* Du behøver den for at gendanne din konto."
    :written-down                          "Sørg for at du har skrevet den sikkert ned"
    :phone-number-required                 "Klik her for at indtaste dit telefonnummer, så vil jeg finde dine venner"
@@ -137,7 +137,7 @@
    :phone-significant                     "Significant"
 
    ;chats
-   :chats                                 "Samtale"
+   :chats                                 "Samtaler"
    :new-chat                              "Ny samtale"
    :delete-chat                           "Fjern samtale"
    :new-group-chat                        "Ny gruppsamtale"
@@ -171,7 +171,7 @@
    :show-all                              "Vis alle"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Mennesker"
-   :contacts-group-new-chat               "Start en ny chat"
+   :contacts-group-new-chat               "Start en ny samtale"
    :choose-from-contacts                  "Vælg fra kontakter"
    :no-contacts                           "Ingen kontakter endnu"
    :show-qr                               "Vis QR-kode"
@@ -273,7 +273,7 @@
    ;accounts
    :recover-access                        "Gendan adgang"
    :add-account                           "Tilføj konto"
-   :create-new-account                    "Lav ny konto"
+   :create-new-account                    "Opret en ny konto"
 
    ;wallet-qr-code
    :done                                  "Klar"
