@@ -11,8 +11,8 @@
    :search-for                            "Rechercher..."
    :cancel                                "Annuler"
    :next                                  "Suivant"
-   :type-a-message                        "Tapez un message..."
-   :type-a-command                        "Tapez une commande..."
+   :type-a-message                        "Saisissez un message..."
+   :type-a-command                        "Saisissez une commande..."
    :error                                 "Erreur"
 
    :camera-access-error                   "Merci d'aller dans vos paramètres système et de vous assurer que Status > Caméra est sélectionné afin d'accorder la permission d'utiliser votre caméra."
