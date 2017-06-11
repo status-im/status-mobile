@@ -4,7 +4,7 @@
   {
    ;common
    :members-title                         "Mitglieder"
-   :not-implemented                       "!nicht implementiert"
+   :not-implemented                       "nicht implementiert"
    :chat-name                             "Chatname"
    :notifications-title                   "Benachrichtigungen und Sounds"
    :offline                               "Offline"
@@ -151,7 +151,7 @@
    :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Chatname"
+   :group-chat-name                       "Gruppenchatname"
    :empty-group-chat-name                 "Bitte geben Sie einen Namen ein"
    :illegal-group-chat-name               "Bitte wählen Sie einen anderen Namen"
 
@@ -173,7 +173,7 @@
    :scan-qr                               "QR-Code scannen"
    :name                                  "Name"
    :whisper-identity                      "Identität flüstern"
-   :address-explication                   "Vielleicht sollte hier ein Text stehen, der erklärt, was eine Adresse ist und wo man danach sucht"
+   :address-explication                   "Die Adresse ist vergleichbar mit einer Kontonummer. Sie brauchen die Adresse um ETH zu senden und zu empfangen. Die eigene Adresse finden Sie, indem Sie auf Ihr Profilbild drücken. Die Adresse von Freunden finden Sie auf deren Profil."
    :enter-valid-address                   "Bitte geben Sie eine gültige Adresse ein oder scannen Sie einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
    :can-not-add-yourself                  "Sie können sich selbst nicht hinzufügen"
