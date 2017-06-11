@@ -4,7 +4,7 @@
   {
    ;common
    :members-title                         "Üyeler"
-   :not-implemented                       "!uygulanmadı"
+   :not-implemented                       "Uygulanmadı!"
    :chat-name                             "Sohbet adı"
    :notifications-title                   "Bildirimler ve sesler"
    :offline                               "Çevrimdışı"
@@ -33,10 +33,10 @@
 
    ;sync
    :sync-in-progress                      "Eşitleniyor..."
-   :sync-synced                           "Eşitleme"
+   :sync-synced                           "Eşitlendi"
 
    ;messages
-   :status-sending                        "Gönderiliyor"
+   :status-sending                        "Gönderiliyor..."
    :status-pending                        "Beklemede"
    :status-sent                           "Gönderildi"
    :status-seen-by-everyone               "Herkes tarafından görüldü"
@@ -62,18 +62,18 @@
    :profile                               "Profil"
    :report-user                           "KULLANICIYI ŞİKAYET ET"
    :message                               "Mesaj"
-   :username                              "Kullanıcı adı"
+   :username                              "Kullanıcı Adı"
    :not-specified                         "Belirtilmemiş"
    :public-key                            "Ortak Anahtar"
-   :phone-number                          "Telefon numarası'"
+   :phone-number                          "Telefon Numarası'"
    :email                                 "E-posta"
    :profile-no-status                     "Durum yok"
    :add-to-contacts                       "Kişi listesine ekle"
-   :error-incorrect-name                  "Lütfen başka bir isim seçin"
+   :error-incorrect-name                  "Hatalı isim"
    :error-incorrect-email                 "Hatalı e-posta adresi"
 
-   ;;make_photo
-   :image-source-title                    "Profil resmi"
+   ;make_photo
+   :image-source-title                    "Profil Fotoğrafı"
    :image-source-make-photo               "Çek"
    :image-source-gallery                  "Galeriden seç"
    :image-source-cancel                   "İptal"
@@ -81,17 +81,17 @@
    ;sign-up
    :contacts-syncronized                  "Kişi listeniz eşitlendi"
    :confirmation-code                     (str "Teşekkürler! Size onay kodunu içeren bir kısa mesaj "
-                                               "gönderdik. Telefon numaranızı onaylamak için lütfen bu kodu girin")
-   :incorrect-code                        (str "Üzgünüz kod hatalıydı, lütfen yeniden girin")
+                                               "gönderdim. Telefon numaranızı onaylamak için lütfen bu kodu girin")
+   :incorrect-code                        (str "Üzgünüm kod hatalıydı, lütfen yeniden girin")
    :generate-passphrase                   (str "sizin için bir parola oluşturacağım, böylece başka bir cihazdan "
-                                               "erişim ya da girişinizi kurtarabileceksiniz")
+                                               "erişebilecek ya da girişinizi kurtarabileceksiniz")
    :phew-here-is-your-passphrase          "*Oh* bu oldukça zor oldu işte parolanız, *bu parolayı bir yere not ederek saklayın!* Hesabınızı kurtarmak için bu parolaya ihtiyacınız olacaktır."
    :here-is-your-passphrase               "İşte parolanız, *bu parolayı bir yere not ederek saklayın!* Hesabınızı kurtarmak için bu parolaya ihtiyacınız olacaktır."
    :written-down                          "Güvenli bir şekilde not ettiğinizden emin olun"
    :phone-number-required                 "Telefon numaranızı girmek için buraya dokunun, arkadaşlarınızı ben bulacağım"
    :intro-status                          "Hesabınızı kurmak ve ayarlarınızı değiştirmek için benimle sohbet edin!"
    :intro-message1                        "Status'e hoş geldiniz\nŞifrenizi oluşturmak ve hemen başlamak için bu mesaja dokunun!"
-   :account-generation-message            "Bana birkaç saniye ayırın, hesabınızı oluşturmak için biraz matematik yapmam gerekecek!"
+   :account-generation-message            "Bana birkaç saniye ayırın, hesabınızı oluşturmak için biraz matematik hesabı yapmam gerekecek!"
 
    ;chats
    :chats                                 "Sohbetler"
@@ -99,9 +99,9 @@
    :new-group-chat                        "Yeni grup sohbeti"
 
    ;discover
-   :discover                             "Keşfet"
+   :discover                              "Keşfet"
    :none                                  "Hiçbiri"
-   :search-tags                           "Arama etiketlerinizi buraya girin"
+   :search-tags                           "Aramak istediğiniz etiketleri buraya girin"
    :popular-tags                          "Popüler etiketler"
    :recent                                "Güncel"
    :no-statuses-discovered                "Herhangi bir durum keşfedilmedi"
@@ -127,7 +127,7 @@
    :delete-and-leave                      "Sil ve ayrıl"
    :chat-settings                         "Sohbet ayarları"
    :edit                                  "Düzenle"
-   :add-members                           "Üye Ekle"
+   :add-members                           "Üye ekle"
    :blue                                  "Mavi"
    :purple                                "Mor"
    :green                                 "Yeşil"
@@ -142,7 +142,7 @@
    :confirmation-code-request-text        "Onay kodu iste"
    :send-command-description              "Konum gönder"
    :request-command-description           "İstek gönder"
-   :keypair-password-command-description  ""
+   :keypair-password-command-description  "Şifre gönder"
    :help-command-description              "Yardım"
    :request                               "İstek"
    :chat-send-eth                         "{{amount}} ETH"
@@ -159,7 +159,7 @@
    :remove-participants                   "Katılımcıları Sil"
 
    ;protocol
-   :received-invitation                   "grup sohbeti daveti alındı"
+   :received-invitation                   "sohbet daveti alındı"
    :removed-from-chat                     "sizi grup sohbetinden sildi"
    :left                                  "ayrıldı"
    :invited                               "davet edildi"
@@ -168,7 +168,7 @@
 
    ;new-contact
    :add-new-contact                       "Yeni kişi ekle"
-   :import-qr                             "İçe¨aktar"
+   :import-qr                             "İçe aktar"
    :scan-qr                               "Kare Kod tara"
    :name                                  "İsim"
    :whisper-identity                      "Whisper Kimliği"
@@ -184,15 +184,15 @@
    :address                               "Adres"
    :password                              "Şifre"
    :login                                 "Oturum Aç"
-   :wrong-password                        "Hatalı şifre"
+   :wrong-password                        "Hatalı Şifre"
 
    ;recover
    :recover-from-passphrase               "Parolayı kullanarak kurtar"
    :recover-explain                       "Erişimi kurtarmak için lütfen şifreniz için parolanızı girin"
    :passphrase                            "Parola"
    :recover                               "Kurtar"
-   :enter-valid-passphrase                "Lütfen bir parola girin"
-   :enter-valid-password                  "Lütfen bir şifre girin"
+   :enter-valid-passphrase                "Lütfen geçerli bir parola girin"
+   :enter-valid-password                  "Lütfen geçerli bir şifre girin"
 
    ;accounts
    :recover-access                        "Erişimi kurtar"
