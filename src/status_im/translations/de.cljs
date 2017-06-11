@@ -36,8 +36,8 @@
    :sync-synced                           "Synchronisiert"
 
    ;messages
-   :status-sending                        "Absenden"
-   :status-pending                        "In Bearbeitung"
+   :status-sending                        "sendet..."
+   :status-pending                        "wird zugestellt"
    :status-sent                           "Verschickt"
    :status-seen-by-everyone               "Von allen gesehen"
    :status-seen                           "Gesehen"
@@ -102,7 +102,7 @@
    ;discover
    :discover                              "Entdecken"
    :none                                  "Nichts"
-   :search-tags                           "Geben Sie hier Ihre Suchbegriffe ein"
+   :search-tags                           "Suchbegriffe"
    :popular-tags                          "Beliebte Begriffe"
    :recent                                "Kürzlich"
    :no-statuses-discovered                "Kein Status gefunden"
@@ -113,10 +113,10 @@
    ;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
-   :show-all                              "ALLE ANZEIGEN"
+   :show-all                              "Alle anzeigen"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Leute"
-   :contacts-group-new-chat               "Neuen Chat beginnen"
+   :contacts-group-new-chat               "Neuen Chat starten"
    :no-contacts                           "Noch keine Kontakte"
    :show-qr                               "QR-Code anzeigen"
 
@@ -147,8 +147,8 @@
    :help-command-description              "Hilfe"
    :request                               "Anfrage"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH an {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}}"
+   :chat-send-eth-to                      "{{amount}} ETH an {{chat-name}} senden"
+   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}} empfangen"
 
    ;new-group
    :group-chat-name                       "Gruppen-Chatname"
@@ -176,7 +176,7 @@
    :address-explication                   "Vielleicht sollte hier ein Text stehen, der erklärt, was eine Adresse ist und wo man danach sucht"
    :enter-valid-address                   "Bitte geben Sie eine gültige Adresse ein oder scannen Sie einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
-   :can-not-add-yourself                  "Sie können sich selbst nicht hinzufügen"
+   :can-not-add-yourself                  "Sie können sich nicht selber hinzufügen"
    :unknown-address                       "Unbekannte Adresse"
 
 
@@ -213,7 +213,7 @@
                                            :other "{{count}} Transaktionen bestätigen"
                                            :zero  "Keine Transaktionen"}
    :status                                "Status"
-   :pending-confirmation                  "Bestätigung in Bearbeitung"
+   :pending-confirmation                  "Bestätigung ausstehend"
    :recipient                             "Empfänger"
    :one-more-item                         "Noch ein weiteres Objekt"
    :fee                                   "Gebühr"
