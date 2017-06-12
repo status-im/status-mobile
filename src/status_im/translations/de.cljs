@@ -162,7 +162,7 @@
    ;protocol
    :received-invitation                   "Chateinladung erhalten"
    :removed-from-chat                     "Aus dem Gruppenchat entfernt"
-   :left                                  "Links"
+   :left                                  "Verlassen"
    :invited                               "Eingeladen"
    :removed                               "Entfernt"
    :You                                   "Sie"
