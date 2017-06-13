@@ -60,7 +60,7 @@
 
    ;profile
    :profile                               "Profil"
-   :report-user                           "BENUTZER MELDEN"
+   :report-user                           "Benutzer melden"
    :message                               "Nachricht"
    :username                              "Benutzername"
    :not-specified                         "Nicht spezifiziert"
@@ -68,7 +68,7 @@
    :phone-number                          "Telefonnummer"
    :email                                 "Email"
    :profile-no-status                     "Kein Status"
-   :add-to-contacts                       "Zu den Kontakten hinzufügen"
+   :add-to-contacts                       "Zu Kontakten hinzufügen"
    :error-incorrect-name                  "Bitte wähle einen anderen Namen"
    :error-incorrect-email                 "Inkorrekte E-mail"
 
@@ -80,17 +80,17 @@
 
    ;sign-up
    :contacts-syncronized                  "Deine Kontakte wurden synchronisiert"
-   :confirmation-code                     (str "Vielen Dank! Wir haben Dir eine SMS mit einer Bestätigung zugesandt"
-                                               "code. Bitte gebe diesen Code zur Bestätigung deiner Telefonnummer an")
+   :confirmation-code                     (str "Vielen Dank! Wir haben Dir eine SMS mit einem Bestätigungcode"
+                                               "zugesandt. Bitte gebe diesen Code zur Bestätigung deiner Telefonnummer ein")
    :incorrect-code                        (str "Leider ist der Code nicht korrekt. Bitte versuche es nochmals")
-   :generate-passphrase                   (str "Ich generiere eine Passphrase für dich, so dass du deine wiederherstellen kannst "
-                                               "Zugriff oder Anmelden von einem anderen Gerät")
+   :generate-passphrase                   (str "Ich generiere eine Passphrase für dich, so dass du dein Zugriff wiederherstellen kannst "
+                                               "Zugriff und Anmeldung von einem anderen Gerät")
    :phew-here-is-your-passphrase          "*Phew* das war hart, hier ist deine Passphrase, *Schreibe diese auf und bewahre diese sicher auf!* Du benötigst diese, um dein Konto wiederherzustellen."
    :here-is-your-passphrase               "Hier ist deine Passphrase, *Schreibe diese auf und bewahre diese sicher auf!* Du benötigst diese, um dein Konto wiederherzustellen."
    :written-down                          "Stelle sicher, dass du diese aufgeschrieben hast!"
    :phone-number-required                 "Klicke hier, um deine Telefonnummer einzugeben & Ich finde deine Freunde für dich"
    :intro-status                          "Chat mit mir, damit ich dein Konto einrichten und deine Einstellungen ändern kann!"
-   :intro-message1                        "Willkommen zu Status\nTap diese Nachricht um Passwort einzurichten & loszulegen!"
+   :intro-message1                        "Willkommen zu Status\nTap diese Nachricht um dein Passwort einzurichten & loszulegen!"
    :account-generation-message            "Gib mir eine Sekunde, Ich muss wie verrückt etwas berechnen um dein Konto zu generieren!"
 
    ;chats
@@ -99,7 +99,7 @@
    :new-group-chat                        "Neuer Gruppenchat"
 
    ;discover
-   :discover                             "Entdeckung"
+   :discover                             "Entdecken"
    :none                                  "Keine"
    :search-tags                           "Gebe hier deine Suchbegriffe ein"
    :popular-tags                          "Beliebte Suchbegriffe"
@@ -112,15 +112,15 @@
    ;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
-   :show-all                              "ZEIGE ALLES"
+   :show-all                              "Alle Kontakte anzeigen"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Leute"
-   :contacts-group-new-chat               "Starte neuer Chat"
+   :contacts-group-new-chat               "Starte neuen Gruppenchat"
    :no-contacts                           "Noch keine Kontakte"
-   :show-qr                               "Zeige QR"
+   :show-qr                               "QR-Code anzeigen"
 
    ;group-settings
-   :remove                                "Entferne"
+   :remove                                "Entfernen"
    :save                                  "Speichern"
    :change-color                          "Farbe ändern"
    :clear-history                         "Verlauf löschen"
@@ -173,7 +173,7 @@
    :name                                  "Name"
    :whisper-identity                      "Identität flüstern" 
    :address-explication                   "Vielleicht sollte hier ein Text stehen der erklärt, was eine Adresse ist und wo man suchen soll"
-   :enter-valid-address                   "Bitte gebe eine gültige Adresse ein oder scannen den QR-Code"
+   :enter-valid-address                   "Bitte gebe eine gültige Adresse ein oder scanne den QR-Code"
    :contact-already-added                 "Der Kontakt wurde bereits hinzugefügt"
    :can-not-add-yourself                  "Du kannst dich nicht selbst hinzufügen"
    :unknown-address                       "Unbekannte Adresse"
@@ -215,7 +215,7 @@
    :pending-confirmation                  "Konfirmation ausstehend"
    :recipient                             "Empfänger"
    :one-more-item                         "Noch ein Element"
-   :fee                                   "Gebühr"
+   :fee                                   "Gebühren"
    :value                                 "Valuta"
 
    ;:webview
