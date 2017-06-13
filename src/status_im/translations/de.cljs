@@ -78,7 +78,17 @@
    :image-source-make-photo               "Fotografieren"
    :image-source-gallery                  "Aus Galerie auswählen"
    :image-source-cancel                   "Abbrechen"
+    
+   ;;sharing
+   :sharing-copy-to-clipboard             "In die Ablage kopieren"
+   :sharing-share                         "Teilen..."
+   :sharing-cancel                        "Abbrechen"
 
+   :browsing-title                        "Durchsuchen"
+   :browsing-browse                       "@durchsuchen"
+   :browsing-open-in-web-browser          "Im Web Browser öffnen"
+   :browsing-cancel                       "Abbrechen"
+    
    ;sign-up
    :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
    :confirmation-code                     (str "Danke! Wir haben Ihnen eine Textnachricht mit einem Bestätigungscode "
