@@ -61,7 +61,7 @@
 
    ;profile
    :profile                               "Profil"
-   :report-user                           "BENUTZER MELDEN"
+   :report-user                           "Benutzer melden"
    :message                               "Nachricht"
    :username                              "Benutzername"
    :not-specified                         "Nicht angegeben"
@@ -83,7 +83,7 @@
    :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
    :confirmation-code                     (str "Danke! Wir haben Ihnen eine Textnachricht mit einem Bestätigungscode "
                                                "geschickt. Bitte geben Sie den Code ein, damit wir Ihre Telefonnummer verifizieren können.")
-   :incorrect-code                        (str "Tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
+   :incorrect-code                        (str "Es tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
    :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren"
                                                "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können")
    :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen dies, um Ihren Account wiederherzustellen."
@@ -91,7 +91,7 @@
    :written-down                          "Stellen Sie sicher, dass Sie es sicher aufgeschrieben haben"
    :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden"
    :intro-status                          "Chatten Sie mit mir, um Ihren Account einzurichten und Ihre Einstellungen zu ändern!"
-   :intro-message1                        "Willkommen beim Status.\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
+   :intro-message1                        "Willkommen bei Status.\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
    :account-generation-message            "Eine Sekunde, ich muss wahnsinnig schwierige Berechnungen durchführen, um Ihr Konto zu generieren!"
 
    ;chats
@@ -113,7 +113,7 @@
    ;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
-   :show-all                              "ALLE ANZEIGEN"
+   :show-all                              "Alle Kontakte anzeigen"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Leute"
    :contacts-group-new-chat               "Neuen Chat beginnen"
@@ -136,7 +136,7 @@
 
    ;commands
    :money-command-description             "Geld senden"
-   :location-command-description          "Position senden"
+   :location-command-description          "Standort senden"
    :phone-command-description             "Telefonnummer senden"
    :phone-request-text                    "Telefonnummer anfragen"
    :confirmation-code-command-description "Bestätitungscode senden"
@@ -201,12 +201,12 @@
 
    ;wallet-qr-code
    :done                                  "Fertig"
-   :main-wallet                           "Haupt-Konto"
+   :main-wallet                           "Hauptkonto"
 
    ;validation
    :invalid-phone                         "Ungültige Telefonnummer"
    :amount                                "Betrag"
-   :not-enough-eth                        (str "Nicht genug EHT auf dem Konto"
+   :not-enough-eth                        (str "Nicht genug ETH auf dem Konto"
                                                "({{balance}} ETH)")
    ;transactions
    :confirm-transactions                  {:one   "Transaktion bestätigen"
@@ -216,7 +216,7 @@
    :pending-confirmation                  "Bestätigung in Bearbeitung"
    :recipient                             "Empfänger"
    :one-more-item                         "Noch ein Objekt"
-   :fee                                   "Gebühr"
+   :fee                                   "Gebühren"
    :value                                 "Wert"
 
    ;:webview
