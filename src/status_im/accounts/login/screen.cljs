@@ -24,6 +24,10 @@
 
 (def password-text-input (atom nil))
 
+(defn login-account [password-text-input address password]
+  (.blur @password-text-input)
+  (dispatch [:login-account address password]))
+
 (defview login []
   [{:keys [address photo-path name password error processing]} [:get :login]]
   [view ast/accounts-container
@@ -40,13 +44,12 @@
                              :on-change-text    #(do
                                                    (dispatch [:set-in [:login :password] %])
                                                    (dispatch [:set-in [:login :error] ""]))
+                             :on-submit-editing #(login-account password-text-input address password)
                              :auto-focus        true
                              :secure-text-entry true
                              :error             (when (pos? (count error)) (i18n/label :t/wrong-password))}]]
     [view {:margin-top 16}
-     [touchable-highlight {:on-press #(do
-                                        (.blur @password-text-input)
-                                        (dispatch [:login-account address password]))}
+     [touchable-highlight {:on-press #(login-account password-text-input address password)}
       [view st/sign-in-button
        [text {:style st/sign-it-text} (i18n/label :t/sign-in)]]]]]
    (when processing
