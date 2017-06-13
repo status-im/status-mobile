@@ -33,11 +33,11 @@
 
    ;sync
    :sync-in-progress                      "Synchronisation en cours..."
-   :sync-synced                           "En synchronisation"
+   :sync-synced                           "Synchronisé"
 
    ;messages
    :status-sending                        "Envoi en cours..."
-   :status-pending                        "En attendant..."
+   :status-pending                        "En attente..."
    :status-sent                           "Envoyé"
    :status-seen-by-everyone               "Vu par tout le monde"
    :status-seen                           "Vu"
@@ -60,7 +60,7 @@
 
    ;profile
    :profile                               "Profil"
-   :report-user                           "DÉNONCER UN UTILISATEUR"
+   :report-user                           "Signaler un utilisateur"
    :message                               "Message"
    :username                              "Nom d'utilisateur"
    :not-specified                         "Non spécifié"
@@ -94,12 +94,12 @@
    :account-generation-message            "Donnez-moi une seconde, je dois faire quelques calculs de ouf pour générer votre compte !"
 
    ;chats
-   :chats                                 "Chats"
-   :new-chat                              "Nouveau chat"
-   :new-group-chat                        "Nouveau chat de groupe"
+   :chats                                 "Discussions"
+   :new-chat                              "Nouvelle discussion"
+   :new-group-chat                        "Nouvelle discussion de groupe"
 
    ;discover
-   :discover                             "Découverte"
+   :discover                             "Découvrire"
    :none                                  "Aucun"
    :search-tags                           "Entrez vos mots clés de"
    :popular-tags                          "Mots-clés populaires"
@@ -115,8 +115,8 @@
    :show-all                              "TOUT AFFICHER"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Personnes"
-   :contacts-group-new-chat               "Démarrer un nouveau chat"
-   :no-contacts                           "Pas de contacts encore"
+   :contacts-group-new-chat               "Démarrer une nouvelle discussion"
+   :no-contacts                           "Pas de contacts"
    :show-qr                               "Afficher le QR"
 
    ;group-settings
@@ -171,7 +171,7 @@
    :import-qr                             "Importer"
    :scan-qr                               "Scanner le QR"
    :name                                  "Nom"
-   :whisper-identity                      "Murmurer l'identité"
+   :whisper-identity                      "Chuchoter l'identité"
    :address-explication                   "Peut-être qu'ici devrait se trouver un texte expliquant ce qu'est une adresse et où la chercher"
    :enter-valid-address                   "Veuillez saisir une adresse valide ou scanner un code QR"
    :contact-already-added                 "Le contact a déjà été ajouté"
@@ -187,7 +187,7 @@
    :wrong-password                        "Mot de passe incorrect"
 
    ;recover
-   :recover-from-passphrase               "Récupérer avec la phrase secrète"
+   :recover-from-passphrase               "Récupérer à l'aide la phrase secrète"
    :recover-explain                       "Veuillez saisir la phrase secrète de votre mot de passe pour restaurer votre accès"
    :passphrase                            "Phrase secrète"
    :recover                               "Récupérer"
