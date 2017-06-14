@@ -487,7 +487,9 @@
         (when dapp-url
           (am/go
             (dispatch [:select-chat-input-command
-                       (assoc (:browse global-commands) :prefill [dapp-url])])
+                       (assoc (:browse global-commands) :prefill [dapp-url])
+                       nil
+                       true])
             (a/<! (a/timeout 100))
             (dispatch [:send-current-message])))))))
 
