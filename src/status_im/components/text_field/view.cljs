@@ -118,6 +118,7 @@
                 auto-focus on-change-text on-change on-end-editing editable placeholder
                 placeholder-text-color auto-capitalize multiline number-of-lines]}
         (merge default-props (r/props component))
+        valid-value      (or valid-value "")
         line-color       (if error error-color line-color)
         focus-line-color (if error error-color focus-line-color)
         label-color      (if (and error (not float-label?)) error-color label-color)
@@ -164,7 +165,7 @@
                                                 (on-change-text text))
                                               (r/set-state component {:temp-value valid-value
                                                                       :max-length (count valid-value)})))
-                  :on-change              #(on-change %)
+                  :on-change              on-change
                   :default-value          value
                   :value                  temp-value
                   :max-length             max-length
