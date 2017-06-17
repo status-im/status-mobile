@@ -33,8 +33,8 @@
    :members                               {:one "१ सदस्य"}
    :other                                 "{{count}} सदस्यहरु"
    :zero                                  "सदस्यहीन"
-   :members-active                        {:one "१ सदस्य"}
-   :other                                 "{{count}} सदस्यहरु"
+   :members-active                        {:one   "१ सदस्य"
+                                           :other "{{count}} सदस्यहरु"}
    :zero                                  "सदस्यहीन"
    :public-group-status                   "सार्वजनिक"
    :active-online                         "अनलाइन"
