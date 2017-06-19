@@ -1,7 +1,6 @@
 (ns status-im.protocol.web3.utils
   (:require [cljs-time.core :refer [now]]
-            [cljs-time.coerce :refer [to-long]]
-            [status-im.utils.web-provider :as w3]))
+            [cljs-time.coerce :refer [to-long]]))
 
 (def web3 (js/require "web3"))
 
@@ -17,10 +16,12 @@
 (defn shh [web3]
   (.-shh web3))
 
-(defn make-web3 [rpc-url]
-  (->> rpc-url
-       w3/get-provider
-       web3.))
-
 (defn timestamp []
   (to-long (now)))
+
+(def Chance (js/require "chance"))
+(def chance (Chance.))
+
+(defn id []
+  (str (timestamp) "-" (.guid chance)))
+

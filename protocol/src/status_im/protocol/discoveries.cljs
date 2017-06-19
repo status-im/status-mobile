@@ -7,7 +7,6 @@
     [status-im.protocol.listeners :as l]
     [cljs.spec.alpha :as s]
     [status-im.protocol.validation :refer-macros [valid?]]
-    [status-im.utils.random :as random]
     [status-im.protocol.web3.keys :as shh-keys]))
 
 (def discover-topic-prefix "status-discover-")
@@ -178,5 +177,5 @@
       (assoc message :type :discoveries-response
                      :key-password discovery-key-password
                      :topics [f/status-topic]
-                     :message-id (random/id)
+                     :message-id (u/id)
                      :payload {:data (into [] portion)}))))

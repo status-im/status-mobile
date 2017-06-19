@@ -4,11 +4,6 @@
             [reagent.core :as r]
             [clojure.string :as str]))
 
-(defn require [module]
-  (if (exists? js/window)
-    (js/require module)
-    #js {}))
-
 (defn log [obj]
   (.log js/console obj))
 

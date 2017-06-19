@@ -6,7 +6,7 @@
             [taoensso.timbre :refer-macros [debug]]
             [status-im.utils.hex :as i]))
 
-(defn- parse-payload [payload]
+(defn- parse-payload [web3 payload]
   (debug :parse-payload)
   (try
     ;; todo figure why we have to call to-utf8 twice
@@ -44,7 +44,7 @@
 
             {{:keys [type ack?] :as payload'} :payload
              payload-error                    :error}
-            (parse-payload payload)]
+            (parse-payload web3 payload)]
         (when (and (not payload-error)
                    (or (not= (i/normalize-hex identity)
                              (i/normalize-hex sig))

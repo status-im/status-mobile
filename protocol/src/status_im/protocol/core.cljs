@@ -12,8 +12,7 @@
             [status-im.protocol.listeners :as l]
             [status-im.protocol.encryption :as e]
             [status-im.protocol.discoveries :as discoveries]
-            [cljs.spec.alpha :as s]
-            [status-im.utils.random :as random]))
+            [cljs.spec.alpha :as s]))
 
 ;; user
 (def send-message! chat/send!)
@@ -50,7 +49,6 @@
 (def message-pending? d/message-pending?)
 
 ;; initialization
-(s/def ::rpc-url string?)
 (s/def ::identity string?)
 (s/def :message/chat-id string?)
 (s/def ::public? (s/and boolean? true?))
@@ -65,7 +63,7 @@
 (s/def ::profile-keypair :message/keypair)
 (s/def ::options
   (s/merge
-    (s/keys :req-un [::rpc-url ::identity ::groups ::profile-keypair
+    (s/keys :req-un [::identity ::groups ::profile-keypair
                      ::callback :discoveries/hashtags ::contacts])
     ::d/delivery-options))
 
@@ -73,15 +71,14 @@
 (def reset-all-pending-messages! d/reset-all-pending-messages!)
 
 (defn init-whisper!
-  [{:keys [rpc-url identity groups callback
+  [{:keys [identity groups callback web3
            contacts profile-keypair pending-messages]
     :as   options}]
   {:pre [(valid? ::options options)]}
   (debug :init-whisper)
   (stop-watching-all!)
   (d/reset-all-pending-messages!)
-  (let [web3             (u/make-web3 rpc-url)
-        listener-options {:web3     web3
+  (let [listener-options {:web3     web3
                           :identity identity
                           :callback callback}]
     ;; start listening to groups
@@ -104,11 +101,10 @@
     (let [online-message #(discoveries/send-online!
                             {:web3    web3
                              :message {:from       identity
-                                       :message-id (random/id)
+                                       :message-id (u/id)
                                        :keypair    profile-keypair}})]
       (d/run-delivery-loop!
         web3
         (assoc options :online-message online-message)))
     (doseq [pending-message pending-messages]
-      (d/add-prepeared-pending-message! web3 pending-message))
-    web3))
+      (d/add-prepeared-pending-message! web3 pending-message))))
