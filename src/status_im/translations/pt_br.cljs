@@ -4,8 +4,8 @@
   {
    ;common
    :members-title                         "Membros"
-   :not-implemented                       "!não implementado"
-   :chat-name                             "Nome do bate-papo"
+   :not-implemented                       "não implementado"
+   :chat-name                             "Nome do chat"
    :notifications-title                   "Notificações e sons"
    :offline                               "Offline"
 
@@ -17,7 +17,7 @@
    ;chat
    :is-typing                             "está digitando"
    :and-you                               "e você"
-   :search-chat                           "Pesquisar bate-papo"
+   :search-chat                           "Pesquisar chat"
    :members                               {:one   "1 membro"
                                            :other "{{count}} membros"
                                            :zero  "nenhum membro"}
@@ -36,7 +36,7 @@
    :sync-synced                           "Sincronizado"
 
    ;messages
-   :status-sending                        "Enviando"
+   :status-sending                        "Enviando..."
    :status-pending                        "Pendente"
    :status-sent                           "Enviado"
    :status-seen-by-everyone               "Visto por todos"
@@ -60,16 +60,16 @@
 
    ;profile
    :profile                               "Perfil"
-   :report-user                           "DENUNCIAR USUÁRIO"
+   :report-user                           "Denunciar usuário"
    :message                               "Mensagem"
    :username                              "Nome de usuário"
-   :not-specified                         "Não especificao"
+   :not-specified                         "Não especificado"
    :public-key                            "Chave pública"
    :phone-number                          "Número de telefone"
    :email                                 "E-mail"
    :profile-no-status                     "Nenhum status"
    :add-to-contacts                       "Adicionar aos contatos"
-   :error-incorrect-name                  "Por favor, selecione outro nome"
+   :error-incorrect-name                  "Nome incorreto"
    :error-incorrect-email                 "E-mail incorreto"
 
    ;;make_photo
@@ -94,12 +94,12 @@
    :account-generation-message            "Mê dê um segundinho. Tenho de fazer uns cálculos malucos para gerar a sua conta!"
 
    ;chats
-   :chats                                 "Bate-papos"
-   :new-chat                              "Novo bate-papo"
-   :new-group-chat                        "Novo bate-papo em grupo"
+   :chats                                 "Chats"
+   :new-chat                              "Novo chat"
+   :new-group-chat                        "Novo grupo de chat"
 
    ;discover
-   :discover                             "Descoberta"
+   :discover                             "Descobrir"
    :none                                  "Nenhum(a)"
    :search-tags                           "Digite suas tags de pesquisa aqui"
    :popular-tags                          "Tags populares"
@@ -112,10 +112,10 @@
    ;contacts
    :contacts                              "Contatos"
    :new-contact                           "Novo contato"
-   :show-all                              "MOSTRAR TODOS"
-   :contacts-group-dapps                  "ÐApps"
+   :show-all                              "Mostrar Todos"
+   :contacts-group-dapps                  "DApps"
    :contacts-group-people                 "Pessoas"
-   :contacts-group-new-chat               "Iniciar novo bate-papo"
+   :contacts-group-new-chat               "Iniciar novo chat"
    :no-contacts                           "Você ainda não tem contatos"
    :show-qr                               "Mostrar QR"
 
@@ -125,7 +125,7 @@
    :change-color                          "Alterar cor"
    :clear-history                         "Apagar histórico"
    :delete-and-leave                      "Excluir e sair"
-   :chat-settings                         "Configurações de bate-papo"
+   :chat-settings                         "Configurações do chat"
    :edit                                  "Editar"
    :add-members                           "Adicionar membros"
    :blue                                  "Azul"
@@ -150,7 +150,7 @@
    :chat-send-eth-from                    "{{amount}} ETH de {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Nome do bate-papo"
+   :group-chat-name                       "Nome do chat"
    :empty-group-chat-name                 "Por favor, informe um nome"
    :illegal-group-chat-name               "Por favor, selecione outro nome"
 
@@ -159,8 +159,8 @@
    :remove-participants                   "Remover participantes"
 
    ;protocol
-   :received-invitation                   "recebeu o convite para o bate-papo"
-   :removed-from-chat                     "removeu você do bate-papo em grupo"
+   :received-invitation                   "recebeu o convite para o chat"
+   :removed-from-chat                     "removeu você do grupo"
    :left                                  "saiu"
    :invited                               "convidou"
    :removed                               "removeu"
@@ -219,4 +219,4 @@
    :value                                 "Valor"
 
    ;:webview
-   :web-view-error                        "Opa, erro"})
+   :web-view-error                        "Ops, erro"})
