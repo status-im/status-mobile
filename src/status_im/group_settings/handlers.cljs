@@ -56,7 +56,9 @@
 
 (defn clear-messages
   [{:keys [current-chat-id] :as db} _]
-  (assoc-in db [:chats current-chat-id :messages] '()))
+  (-> db
+      (assoc-in [:chats current-chat-id :messages] '())
+      (assoc-in [:chats current-chat-id :last-message] nil)))
 
 (register-handler :clear-history
   (after delete-messages!)
