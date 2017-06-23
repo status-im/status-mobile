@@ -30,12 +30,12 @@
    :is-typing                             "ले टाइप गर्दै हुनुहुन्छ"
    :and-you                               "अनि तपाईं"
    :search-chat                           "च्याटमा खोजौं"
-   :members                               {:one "१ सदस्य"}
-   :other                                 "{{count}} सदस्यहरु"
-   :zero                                  "सदस्यहीन"
+   :members                               {:one   "१ सदस्य"
+                                           :other "{{count}} सदस्यहरु"
+                                           :zero  "सदस्यहीन"}
    :members-active                        {:one   "१ सदस्य"
-                                           :other "{{count}} सदस्यहरु"}
-   :zero                                  "सदस्यहीन"
+                                           :other "{{count}} सदस्यहरु"
+                                           :zero  "सदस्यहीन"}
    :public-group-status                   "सार्वजनिक"
    :active-online                         "अनलाइन"
    :active-unknown                        "अज्ञात"
