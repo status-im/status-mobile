@@ -15,8 +15,8 @@
    :type-a-command                        "typ een commando..."
    :error                                 "Error"
 
-   :camera-access-error                   "Om camera toegang te geven, ga je naar systeem instellingen en zorg je dat Status > Camera geselecteerd is."
-   :photos-access-error                   "Om foto toegang te geven, ga je naar systeem instellingen en zorg je dat Status > Foto's geselecteerd is."
+   :camera-access-error                   "Om cameratoegang te geven, ga je naar systeem instellingen en zorg je dat Status > Camera geselecteerd is."
+   :photos-access-error                   "Om fototoegang te geven, ga je naar systeem instellingen en zorg je dat Status > Foto's geselecteerd is."
 
    ;drawer
    :invite-friends                        "Nodig vrienden uit"
@@ -82,7 +82,7 @@
    :public-key                            "Openbare sleutel"
    :phone-number                          "Telefoonnummer"
    :email                                 "E-mailadres"
-   :update-status                         "Weizig je status..."
+   :update-status                         "Wijzig je status..."
    :add-a-status                          "Voeg een status toe..."
    :status-prompt                         "Maak een status aan om mensen te laten weten wat je te bieden hebt. Je kan ook #hashtags gebruiken."
    :add-to-contacts                       "Aan contactpersonen toevoegen"
@@ -198,7 +198,7 @@
    :clear-history                         "Wis geschiedenis"
    :mute-notifications                    "Stille notificaties"
    :leave-chat                            "Verlaat chat"
-   :delete-and-leave                      "Verwijderen en verlaaten"
+   :delete-and-leave                      "Verwijderen en verlaten"
    :chat-settings                         "Chatinstellingen"
    :edit                                  "Bewerken"
    :add-members                           "Voeg leden toe"
@@ -232,7 +232,7 @@
    :group-name                            "Groepsnaam"
    :edit-group                            "Bewerk groep"
    :delete-group                          "Verwijder groep"
-   :delete-group-confirmation             "Deze groep zal worden verwijderd van jou groepen. Dit heeft geen effect op je contacten."
+   :delete-group-confirmation             "Deze groep zal worden verwijderd van jouw groepen. Dit heeft geen effect op je contacten."
    :delete-group-prompt                   "This will not affect contacts"
    :group-members                         "Groepsleden"
    :contact-s                             {:one   "contact"
