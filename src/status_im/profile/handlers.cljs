@@ -37,6 +37,7 @@
 (register-handler :open-chat-with-the-send-transaction
   (u/side-effect!
     (fn [db [_ chat-id]]
+      (dispatch [:clear-seq-arguments])
       (dispatch [:navigate-to :chat chat-id])
       (js/setTimeout #(dispatch [:select-chat-input-command {:name "send"}]) 500))))
 
