@@ -8,11 +8,20 @@
    :chat-name                             "Chatname"
    :notifications-title                   "Benachrichtigungen und Sounds"
    :offline                               "Offline"
+   :search-for                            "Suche nach..."
+   :cancel                                "Abbrechen"
+   :next                                  "Weiter"
+   :type-a-message                        "Schreibe eine Nachricht..."
+   :type-a-command                        "Tippe ein Kommando..."
+   :error                                 "Fehler"
 
    ;drawer
    :invite-friends                        "Freunde einladen"
    :faq                                   "FAQ"
    :switch-users                          "Benutzer wechseln"
+   :feedback                              "Haben Sie Feedback? Schütteln Sie einfach Ihr Mobilgerät."
+   :view-all                              "Alle ansehen"
+   :current-network                       "Aktuelles Netzwerk"
 
    ;chat
    :is-typing                             "tippt"
@@ -78,6 +87,16 @@
    :image-source-make-photo               "Foto machen"
    :image-source-gallery                  "Aus Galerie auswählen"
    :image-source-cancel                   "Abbrechen"
+    
+   ;;sharing
+   :sharing-copy-to-clipboard             "In Zwischenablage kopieren"
+   :sharing-share                         "Teilen..."
+   :sharing-cancel                        "Abbrechen"
+    
+   :browsing-title                        "Browse"
+   :browsing-browse                       "@browse"
+   :browsing-open-in-web-browser          "In Webbrowser öffnen"
+   :browsing-cancel                       "Abbrechen"
 
    ;sign-up
    :contacts-syncronized                  "Deine Kontakte wurden synchronisiert."
@@ -97,6 +116,12 @@
    :chats                                 "Chats"
    :new-chat                              "Neuer Chat"
    :new-group-chat                        "Neuer Gruppenchat"
+   :new-public-group-chat                 "Öffentlichem Gruppenchat beitreten"
+   :edit-chats                            "Chats bearbeiten"
+   :search-chats                          "Chats durchsuchen"
+   :empty-topic                           "Leeres Thema"
+   :topic-format                          "Falsches Format[a-z0-9\\-]+"
+   :public-group-topic                    "Thema"
 
    ;discover
    :discover                             "Entdecken"
