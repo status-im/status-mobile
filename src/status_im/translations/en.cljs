@@ -225,6 +225,7 @@
    :group-members                         "Group members"
    :contact-s                             {:one   "contact"
                                            :other "contacts"}
+
    ;participants
    :add-participants                      "Add Participants"
    :remove-participants                   "Remove Participants"
@@ -250,7 +251,6 @@
    :contact-already-added                 "The contact has already been added"
    :can-not-add-yourself                  "You can't add yourself"
    :unknown-address                       "Unknown address"
-
 
    ;login
    :connect                               "Connect"
@@ -284,6 +284,7 @@
    :amount                                "Amount"
    :not-enough-eth                        (str "Not enough ETH on balance "
                                                "({{balance}} ETH)")
+
    ;transactions
    :confirm                               "Confirm"
    :confirm-transactions                  {:one   "Confirm transaction"
