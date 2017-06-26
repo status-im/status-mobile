@@ -141,7 +141,7 @@
           requests          (subscribe [:chat :request-suggestions chat-id])
           commands          (subscribe [:chat :command-suggestions chat-id])]
       (reaction
-        (and (or @show-suggestions? (chat-utils/starts-as-command? @input-text))
+        (and (or @show-suggestions? (chat-utils/starts-as-command? (str/trim (or @input-text ""))))
              (not (:command @selected-command))
              (or (not-empty @requests)
                  (not-empty @commands)))))))

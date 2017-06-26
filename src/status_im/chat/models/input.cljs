@@ -29,7 +29,8 @@
         command-text (if space?
                        (str command-text ".")
                        command-text)
-        splitted     (cond-> (str/split command-text const/spacing-char)
+        command-text-normalized (if command-text (str/replace (str/trim command-text) #" +" " ") command-text)
+        splitted     (cond-> (str/split command-text-normalized const/spacing-char)
                              space? (drop-last))]
     (->> splitted
          (reduce (fn [[list command-started?] arg]

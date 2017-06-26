@@ -128,9 +128,10 @@
   (let [input-text (subscribe [:chat :input-text])]
     (fn [{:keys [command width]}]
       (when-not (get-in command [:command :sequential-params])
-        (let [real-args (remove str/blank? (:args command))]
+        (let [input (str/trim (or @input-text ""))
+              real-args (remove str/blank? (:args command))]
           (when-let [placeholder (cond
-                                   (#{const/command-char const/bot-char} @input-text)
+                                   (#{const/command-char const/bot-char} input)
                                    (i18n/label :t/type-a-command)
 
                                    (and command (empty? real-args))
@@ -138,7 +139,7 @@
 
                                    (and command
                                         (= (count real-args) 1)
-                                        (input-model/text-ends-with-space? @input-text))
+                                        (input-model/text-ends-with-space? input))
                                    (get-in command [:command :params 1 :placeholder]))]
             [text {:style (style/input-helper-text width)}
              placeholder]))))))

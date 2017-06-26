@@ -98,7 +98,7 @@
   :update-suggestions
   (fn [{:keys [current-chat-id] :as db} [_ chat-id text]]
     (let [chat-id         (or chat-id current-chat-id)
-          chat-text       (or text (get-in db [:chats chat-id :input-text]) "")
+          chat-text       (str/trim (or text (get-in db [:chats chat-id :input-text]) ""))
           requests        (->> (suggestions/get-request-suggestions db chat-text)
                                (remove (fn [{:keys [type]}]
                                          (= type :grant-permissions))))
