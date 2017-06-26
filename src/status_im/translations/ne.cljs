@@ -225,6 +225,7 @@
    :group-members                         "समूहको सदस्यहरु"
    :contact-s                             {:one   "सम्पर्क"
                                            :other "सम्पर्कहरु"}
+
    ;;participants
    :add-participants                      "सहभागीहरु जोड्नुहोस्"
    :remove-participants                   "सहभागीहरु हटाउनुहोस्"
@@ -250,7 +251,6 @@
    :contact-already-added                 "यो सम्पर्क पहिल्यै जोडीसकिएको छ"
    :can-not-add-yourself                  "आफुले आफुलाइनै जोड्न मिल्दैन"
    :unknown-address                       "अज्ञात ठेगाना"
-
 
    ;;login
    :connect                               "कनेक्ट"
@@ -282,7 +282,8 @@
    ;;validation
    :invalid-phone                         "नमिल्ने फोन नम्बर"
    :amount                                "रकम"
-   :not-enough-eth                        (str "ब्यालेन्समा अपर्याप्त ETH")
+   :not-enough-eth                        (str "ब्यालेन्समा अपर्याप्त ETH "
+                                               "({{balance}} ETH)")
 
    ;;transactions
    :confirm                               "पुष्टि गर्नुहोस्"
