@@ -392,7 +392,7 @@
 (defn delete-chat!
   [_ [_ chat-id]]
   (let [{:keys [debug? group-chat]} (chats/get-by-id chat-id)]
-    (when (and (not debug?) group-chat)
+    (if (and (not debug?) group-chat)
       (chats/set-inactive chat-id)
       (chats/delete chat-id))))
 
