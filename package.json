@@ -83,7 +83,7 @@
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
     "vm-browserify": "0.0.4",
-    "web3": "github:farazdagi/web3.js#geth/1.6.1-unstable"
+    "web3": "github:shayanb/web3.js#develop"
   },
   "browser": {
     "crypto": "react-native-crypto",
