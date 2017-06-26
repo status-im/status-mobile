@@ -8,11 +8,23 @@
    :chat-name                             "Pseudo"
    :notifications-title                   "Notifications et sons"
    :offline                               "Hors ligne"
+   :search-for                            "Chercher pour..."
+   :cancel                                "Annuler" 
+   :next                                  "Suivant"
+   :type-a-message                        "Ecrire un message..."
+   :type-a-command                        "Commencer à écrire une commande..."
+   :error                                 "Erreur"
+
+   :camera-access-error                   "Pour accorder l'accées l'appareil photo, veuillez aller dans vos réglages et assurez vous que Status > App. Photo soit activé."
+   :photos-access-error                   "Pour accorder l'accées photos, veuillez aller dans vos réglages et assurez vous que Status > Photos soit activé."
 
    ;drawer
    :invite-friends                        "Inviter des amis"
    :faq                                   "FAQ"
    :switch-users                          "Changer d'utilisateur"
+   :feedback                              "Vous avez des remarques?\nSecouez votre téléphone!"
+   :view-all                              "Voir tout"
+   :current-network                       "Réseau actuel"
 
    ;chat
    :is-typing                             "écrit..."
@@ -24,6 +36,7 @@
    :members-active                        {:one   "1 membre, 1 actif"
                                            :other "{{count}} membres, {{count}} actifs"
                                            :zero  "Aucun membre"}
+   :public-group-status                   "Publique"
    :active-online                         "En ligne"
    :active-unknown                        "Inconnu"
    :available                             "Disponible"
