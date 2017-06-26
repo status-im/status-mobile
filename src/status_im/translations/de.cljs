@@ -70,7 +70,7 @@
 
    ;profile
    :profile                               "Profil"
-   :report-user                           "BENUTZER MELDEN"
+   :report-user                           "Benutzer melden"
    :message                               "Nachricht"
    :username                              "Benutzername"
    :not-specified                         "Nicht angegeben"
@@ -99,18 +99,20 @@
    :browsing-cancel                       "Abbrechen"
 
    ;sign-up
-   :contacts-syncronized                  "Deine Kontakte wurden synchronisiert."
-   :confirmation-code                     (str "Danke! Wir haben dir eine Textnachricht mit einem Bestätigungscode "
-                                               "geschickt. Bitte gib den Code ein, damit wir deine Telefonnummer verifizieren können.")
-   :incorrect-code                        (str "Tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
-   :generate-passphrase                   (str "Ich werde eine Passphrase für dich generieren, damit du deinen Zugriff wiederherstellen oder dich von einem anderen Gerät aus einloggen kannst")
-   :phew-here-is-your-passphrase          "*Puh* So das wars, hier ist deine Passphrase, *bitte schreib sie auf und verwahre sie sicher! *Du benötigen diese, um deinen Account wiederherzustellen."
-   :here-is-your-passphrase               "Hier ist deine Passphrase, *Bitte aufschreiben und sicher verwahren!*Du benötigst diese, um deinen Account wiederherzustellen."
-   :written-down                          "Stell sicher, dass du sie sicher aufgeschrieben hast"
-   :phone-number-required                 "Tippe hier, um deine Telefonnummer einzugeben"
-   :intro-status                          "Chatte mit mir, um deinen Account einzurichten und deine Einstellungen zu ändern!"
-   :intro-message1                        "Willkommen beim Status.\nTippe bitte auf diese Nachricht, um dein Passwort einzurichten und loszulegen!"
-   :account-generation-message            "Eine Sekunde, ich generiere gerade dein Konto!"
+
+   :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
+   :confirmation-code                     (str "Danke! Wir haben Ihnen eine Textnachricht mit einem Bestätigungscode "
+                                               "geschickt. Bitte geben Sie den Code ein, damit wir Ihre Telefonnummer verifizieren können.")
+   :incorrect-code                        (str "Es tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
+   :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren"
+                                               "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können")
+   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen dies, um Ihren Account wiederherzustellen."
+   :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!*Sie benötigen dies, um Ihren Account wiederherzustellen."
+   :written-down                          "Stellen Sie sicher, dass Sie es sicher aufgeschrieben haben"
+   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden"
+   :intro-status                          "Chatten Sie mit mir, um Ihren Account einzurichten und Ihre Einstellungen zu ändern!"
+   :intro-message1                        "Willkommen bei Status.\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
+   :account-generation-message            "Eine Sekunde, ich muss wahnsinnig schwierige Berechnungen durchführen, um Ihr Konto zu generieren!"
 
    ;chats
    :chats                                 "Chats"
@@ -137,7 +139,9 @@
    ;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
-   :show-all                              "Alle anzeigen"
+
+   :show-all                              "Alle Kontakte anzeigen"
+
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Leute"
    :contacts-group-new-chat               "Neuen Chat starten"
@@ -160,7 +164,7 @@
 
    ;commands
    :money-command-description             "Geld senden"
-   :location-command-description          "Position senden"
+   :location-command-description          "Standort senden"
    :phone-command-description             "Telefonnummer senden"
    :phone-request-text                    "Telefonnummer anfragen"
    :confirmation-code-command-description "Bestätitungscode senden"
@@ -225,12 +229,12 @@
 
    ;wallet-qr-code
    :done                                  "Fertig"
-   :main-wallet                           "Haupt-Konto"
+   :main-wallet                           "Hauptkonto"
 
    ;validation
    :invalid-phone                         "Ungültige Telefonnummer"
    :amount                                "Betrag"
-   :not-enough-eth                        (str "Nicht genug EHT auf dem Konto"
+   :not-enough-eth                        (str "Nicht genug ETH auf dem Konto"
                                                "({{balance}} ETH)")
    ;transactions
    :confirm-transactions                  {:one   "Transaktion bestätigen"
@@ -239,8 +243,10 @@
    :status                                "Status"
    :pending-confirmation                  "Bestätigung ausstehend"
    :recipient                             "Empfänger"
-   :one-more-item                         "Noch eine Sache"
-   :fee                                   "Gebühr"
+
+   :one-more-item                         "Noch ein Objekt"
+   :fee                                   "Gebühren"
+
    :value                                 "Wert"
 
    ;:webview
