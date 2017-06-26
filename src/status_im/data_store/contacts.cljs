@@ -29,7 +29,7 @@
 (defn save
   [{:keys [whisper-identity pending?] :as contact}]
   (let [{pending-db? :pending?
-         :as         contact-db} (data-store/get-by-id whisper-identity)
+         :as         contact-db} (get-by-id whisper-identity)
         contact' (-> contact
                      (assoc :pending? (boolean (if contact-db
                                                  (if (nil? pending?) pending-db? pending?)

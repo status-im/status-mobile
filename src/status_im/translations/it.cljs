@@ -62,19 +62,19 @@
    :profile                               "Profilo"
    :report-user                           "SEGNALA UTENTE"
    :message                               "Messaggio"
-   :username                              "Username"
+   :username                              "Nome dell'utente"
    :not-specified                         "Non specificato"
    :public-key                            "Chiave pubblica"
    :phone-number                          "Numero di telefono"
    :email                                 "Email"
    :profile-no-status                     "Nessuno stato"
-   :add-to-contacts                       "Aggiunto ai contatti"
+   :add-to-contacts                       "Aggiungere ai contatti"
    :error-incorrect-name                  "Seleziona un altro nome"
    :error-incorrect-email                 "e-mail non valida"
 
    ;;make_photo
    :image-source-title                    "Immagine del profilo"
-   :image-source-make-photo               "Acquisisci"
+   :image-source-make-photo               "Catturare"
    :image-source-gallery                  "Scegli dalla galleria"
    :image-source-cancel                   "Elimina"
 
@@ -99,7 +99,7 @@
    :new-group-chat                        "Nuova chat di gruppo"
 
    ;discover
-   :discover                             "Scopri"
+   :discover                              "Scopri"
    :none                                  "Nessuno"
    :search-tags                           "Digita qui le tue etichette di ricerca"
    :popular-tags                          "Tag popolari"
@@ -112,7 +112,7 @@
    ;contacts
    :contacts                              "Contatti"
    :new-contact                           "Nuovo contatto"
-   :show-all                              "MOSTRA TUTTI"
+   :show-all                              "Mostra tutti"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Persone"
    :contacts-group-new-chat               "Comincia una nuova chat"

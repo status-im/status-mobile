@@ -4,19 +4,28 @@
   {
    ;common
    :members-title                         "Mitglieder"
-   :not-implemented                       "!nicht implementiert"
+   :not-implemented                       "nicht implementiert"
    :chat-name                             "Chatname"
    :notifications-title                   "Benachrichtigungen und Sounds"
    :offline                               "Offline"
+   :search-for                            "Suche nach..."
+   :cancel                                "Abbrechen"
+   :next                                  "Weiter"
+   :type-a-message                        "Schreibe eine Nachricht..."
+   :type-a-command                        "Tippe ein Kommando..."
+   :error                                 "Fehler"
 
    ;drawer
    :invite-friends                        "Freunde einladen"
    :faq                                   "FAQ"
    :switch-users                          "Benutzer wechseln"
+   :feedback                              "Haben Sie Feedback? Schütteln Sie einfach Ihr Mobilgerät."
+   :view-all                              "Alle ansehen"
+   :current-network                       "Aktuelles Netzwerk"
 
    ;chat
-   :is-typing                             "gibt ein"
-   :and-you                               "und Sie"
+   :is-typing                             "tippt"
+   :and-you                               "und du"
    :search-chat                           "Chat durchsuchen"
    :members                               {:one   "1 Mitglied"
                                            :other "{{count}} Mitglieder"
@@ -32,14 +41,14 @@
    :suggestions-commands                  "Befehle"
 
    ;sync
-   :sync-in-progress                      "Synchronisiere..."
+   :sync-in-progress                      "synchronisiere..."
    :sync-synced                           "Synchronisiert"
 
    ;messages
-   :status-sending                        "Absenden"
-   :status-pending                        "In Bearbeitung"
+   :status-sending                        "sendet..."
+   :status-pending                        "wird zugestellt"
    :status-sent                           "Verschickt"
-   :status-seen-by-everyone               "Von allen gesehen"
+   :status-seen-by-everyone               "Von Allen gesehen"
    :status-seen                           "Gesehen"
    :status-delivered                      "Zugestellt"
    :status-failed                         "Fehlgeschlagen"
@@ -54,7 +63,7 @@
                                            :other "Stunden"}
    :datetime-day                          {:one   "Tag"
                                            :other "Tage"}
-   :datetime-multiple                     "s"
+   :datetime-multiple                     "mehrere"
    :datetime-ago                          "vor"
    :datetime-yesterday                    "Gestern"
    :datetime-today                        "Heute"
@@ -69,17 +78,28 @@
    :phone-number                          "Telefonnumer"
    :email                                 "E-Mail"
    :profile-no-status                     "Kein Status"
-   :add-to-contacts                       "Zu Kontakte hinzufügen"
+   :add-to-contacts                       "Zu Kontakten hinzufügen"
    :error-incorrect-name                  "Bitte wählen Sie einen anderen Namen"
    :error-incorrect-email                 "Inkorrekte E-Mail"
 
    ;;make_photo
    :image-source-title                    "Profilfoto"
-   :image-source-make-photo               "Fotografieren"
+   :image-source-make-photo               "Foto machen"
    :image-source-gallery                  "Aus Galerie auswählen"
    :image-source-cancel                   "Abbrechen"
+    
+   ;;sharing
+   :sharing-copy-to-clipboard             "In Zwischenablage kopieren"
+   :sharing-share                         "Teilen..."
+   :sharing-cancel                        "Abbrechen"
+    
+   :browsing-title                        "Browse"
+   :browsing-browse                       "@browse"
+   :browsing-open-in-web-browser          "In Webbrowser öffnen"
+   :browsing-cancel                       "Abbrechen"
 
    ;sign-up
+
    :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
    :confirmation-code                     (str "Danke! Wir haben Ihnen eine Textnachricht mit einem Bestätigungscode "
                                                "geschickt. Bitte geben Sie den Code ein, damit wir Ihre Telefonnummer verifizieren können.")
@@ -98,11 +118,17 @@
    :chats                                 "Chats"
    :new-chat                              "Neuer Chat"
    :new-group-chat                        "Neuer Gruppenchat"
+   :new-public-group-chat                 "Öffentlichem Gruppenchat beitreten"
+   :edit-chats                            "Chats bearbeiten"
+   :search-chats                          "Chats durchsuchen"
+   :empty-topic                           "Leeres Thema"
+   :topic-format                          "Falsches Format[a-z0-9\\-]+"
+   :public-group-topic                    "Thema"
 
    ;discover
    :discover                             "Entdecken"
    :none                                  "Nichts"
-   :search-tags                           "Geben Sie Ihre Suchbegriffe hier ein"
+   :search-tags                           "Suchbegriffe"
    :popular-tags                          "Beliebte Begriffe"
    :recent                                "Kürzlich"
    :no-statuses-discovered                "Kein Status gefunden"
@@ -113,10 +139,12 @@
    ;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
+
    :show-all                              "Alle Kontakte anzeigen"
+
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Leute"
-   :contacts-group-new-chat               "Neuen Chat beginnen"
+   :contacts-group-new-chat               "Neuen Chat starten"
    :no-contacts                           "Noch keine Kontakte"
    :show-qr                               "QR-Code anzeigen"
 
@@ -141,17 +169,17 @@
    :phone-request-text                    "Telefonnummer anfragen"
    :confirmation-code-command-description "Bestätitungscode senden"
    :confirmation-code-request-text        "Bestätigungscode anfragen"
-   :send-command-description              "Position senden"
+   :send-command-description              "Senden"
    :request-command-description           "Anfrage senden"
    :keypair-password-command-description  ""
    :help-command-description              "Hilfe"
    :request                               "Anfrage"
-   :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH an {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}}"
+   :chat-send-eth                         "{{amount}} ETH senden"
+   :chat-send-eth-to                      "{{amount}} ETH an {{chat-name}} senden"
+   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}} empfangen"
 
    ;new-group
-   :group-chat-name                       "Chatname"
+   :group-chat-name                       "Gruppenname"
    :empty-group-chat-name                 "Bitte geben Sie einen Namen ein"
    :illegal-group-chat-name               "Bitte wählen Sie einen anderen Namen"
 
@@ -160,23 +188,23 @@
    :remove-participants                   "Teilnehmer entfernen"
 
    ;protocol
-   :received-invitation                   "Chateinladung erhalten"
+   :received-invitation                   "Gruppenchateinladung erhalten"
    :removed-from-chat                     "Aus dem Gruppenchat entfernt"
    :left                                  "Links"
    :invited                               "Eingeladen"
    :removed                               "Entfernt"
-   :You                                   "Sie"
+   :You                                   "Du"
 
    ;new-contact
    :add-new-contact                       "Neuen Kontakt hinzufügen"
-   :import-qr                             "Import"
+   :import-qr                             "Importeren anhang QR-Code"
    :scan-qr                               "QR-Code scannen"
    :name                                  "Name"
    :whisper-identity                      "Identität flüstern"
-   :address-explication                   "Vielleicht sollte hier ein Text stehen, der erklärt, was eine Adresse ist und wo man danach sucht"
+   :address-explication                   "Deine Adresse findest du in deinem Benutzerprofil"
    :enter-valid-address                   "Bitte geben Sie eine gültige Adresse ein oder scannen Sie einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
-   :can-not-add-yourself                  "Sie können sich selbst nicht hinzufügen"
+   :can-not-add-yourself                  "Du kannst dich nicht selbst hinzufügen"
    :unknown-address                       "Unbekannte Adresse"
 
 
@@ -189,10 +217,10 @@
 
    ;recover
    :recover-from-passphrase               "Mittels Passphrase wiederherstellen"
-   :recover-explain                       "Bitte geben Sie die Passphrase für Ihr Passwort ein, um den Zugriff wiederherzustellen"
+   :recover-explain                       "Bitte gib die Passphrase für deinen Account ein, um den Zugriff wiederherzustellen"
    :passphrase                            "Passphrase"
    :recover                               "Wiederherstellen"
-   :enter-valid-passphrase                "Bitte geben Sie einen Passphrase ein"
+   :enter-valid-passphrase                "Bitte geben Sie eine gültige Passphrase ein"
    :enter-valid-password                  "Bitte geben Sie ein Passwort ein"
 
    ;accounts
@@ -213,10 +241,12 @@
                                            :other "{{count}} Transaktionen bestätigen"
                                            :zero  "Keine Transaktionen"}
    :status                                "Status"
-   :pending-confirmation                  "Bestätigung in Bearbeitung"
+   :pending-confirmation                  "Bestätigung ausstehend"
    :recipient                             "Empfänger"
+
    :one-more-item                         "Noch ein Objekt"
    :fee                                   "Gebühren"
+
    :value                                 "Wert"
 
    ;:webview
