@@ -15,9 +15,9 @@
    :switch-users                          "Schakel tussen gebruikers"
 
    ;chat
-   :is-typing                             "typt"
-   :and-you                               "en jij"
-   :search-chat                           "Zoek in de chat"
+   :is-typing                             "is aan het typen"
+   :and-you                               "en u"
+   :search-chat                           "Chat doorzoeken"
    :members                               {:one   "1 lid"
                                            :other "{{count}} leden"
                                            :zero  "geen leden"}
@@ -37,7 +37,7 @@
 
    ;messages
    :status-sending                        "Wordt verstuurd"
-   :status-pending                        "Hangende"
+   :status-pending                        "In behandeling"
    :status-sent                           "Verstuurd"
    :status-seen-by-everyone               "Door iedereen gezien"
    :status-seen                           "Gezien"
@@ -60,7 +60,7 @@
 
    ;profile
    :profile                               "Profiel"
-   :report-user                           "MELD GEBRUIKER"
+   :report-user                           "Gebruiker rapporteren"
    :message                               "Bericht"
    :username                              "Gebruikersnaam"
    :not-specified                         "Niet opgegeven"
@@ -79,19 +79,19 @@
    :image-source-cancel                   "Annuleren"
 
    ;sign-up
-   :contacts-syncronized                  "Jouw contactpersonen zijn gesynchroniseerd"
-   :confirmation-code                     (str "Bedankt! We hebben je een sms gestuurd met een bevestigingscode"
-                                               ". Geef die code op om jouw telefoonnummer te bevestigen")
+   :contacts-syncronized                  "Uw contactpersonen zijn gesynchroniseerd"
+   :confirmation-code                     (str "Bedankt! We hebben u een sms gestuurd met een bevestigingscode"
+                                               ". Geef die code op om uw telefoonnummer te bevestigen")
    :incorrect-code                        (str "Sorry, de code was onjuist, voer hem opnieuw in")
-   :generate-passphrase                   (str "Ik zal een wachtzin maken, zodat je jouw"
-                                               "toegang kunt herstellen of vanaf een ander apparaat kunt inloggen")
-   :phew-here-is-your-passphrase          "*Foei* dat was moeilijk, hier is jouw wachtzin, *schrijf deze op en bewaar hem goed!* Je zult hem nodig hebben om jouw account te herstellen."
-   :here-is-your-passphrase               "Hier is jouw wachtzin, * schrijf deze op en bewaar hem goed!* Je zult hem nodig hebben om jouw account te herstellen."
-   :written-down                          "Zorg ervoor dat je hem veilig hebt opgeschreven"
-   :phone-number-required                 "Tik hier om je telefoonnummer in te voeren, dan zoek ik jouw vrienden"
-   :intro-status                          "Chat met me om jouw account in te stellen en jouw instellingen te wijzigen!"
-   :intro-message1                        "Welkom bij Status\nTik op dit bericht om jouw wachtwoord in te stellen en aan de slag te gaan!"
-   :account-generation-message            "Geef me een momentje, ik moet wat ingewikkelde berekeningen doen om jouw account aan te maken!"
+   :generate-passphrase                   (str "Ik zal een wachtzin maken, zodat uw"
+                                               "toegang herstelt kan worden of u vanaf een ander apparaat kunt inloggen")
+   :phew-here-is-your-passphrase          "*Foei* dat was moeilijk, hier is uw wachtzin, *schrijf deze op en bewaar hem goed!* U zult hem nodig hebben om jouw account te herstellen."
+   :here-is-your-passphrase               "Hier is uw wachtzin, * schrijf deze alstublieft op en bewaar hem goed!* U zult hem nodig hebben om uw account te herstellen."
+   :written-down                          "Zorg ervoor dat u hem veilig hebt opgeschreven"
+   :phone-number-required                 "Tik hier om uw telefoonnummer in te voeren, dan zoek ik uw vrienden"
+   :intro-status                          "Chat met me om uw account in te stellen en uw instellingen te wijzigen!"
+   :intro-message1                        "Welkom bij Status\nTik op dit bericht om uw wachtwoord in te stellen en aan de slag te gaan!"
+   :account-generation-message            "Geef me een momentje aub, ik moet wat ingewikkelde berekeningen doen om uw account aan te maken!"
 
    ;chats
    :chats                                 "Chats"
@@ -101,7 +101,7 @@
    ;discover
    :discover                             "Ontdekking"
    :none                                  "Geen"
-   :search-tags                           "Typ hier jouw zoektags"
+   :search-tags                           "Typ hier uw zoekwoorden"
    :popular-tags                          "Populaire tags"
    :recent                                "Recent"
    :no-statuses-discovered                "Geen statussen ontdekt"
@@ -117,7 +117,7 @@
    :contacts-group-people                 "Mensen"
    :contacts-group-new-chat               "Start nieuwe chat"
    :no-contacts                           "Nog geen contactpersonen"
-   :show-qr                               "Toon QR"
+   :show-qr                               "Toon QR-code"
 
    ;group-settings
    :remove                                "Verwijderen"
@@ -137,11 +137,11 @@
    :money-command-description             "Stuur geld"
    :location-command-description          "Stuur locatie"
    :phone-command-description             "Stuur telefoonnummer"
-   :phone-request-text                    "Telefoonnummer aanvraag"
+   :phone-request-text                    "Telefoonnummer aanvragen"
    :confirmation-code-command-description "Stuur bevestigingscode"
-   :confirmation-code-request-text        "Bevestigingscode aanvraag"
+   :confirmation-code-request-text        "Bevestigingscode aanvragen"
    :send-command-description              "Stuur locatie"
-   :request-command-description           "Stuur aanvraag"
+   :request-command-description           "Aanvragen"
    :keypair-password-command-description  ""
    :help-command-description              "Help"
    :request                               "Aanvraag"
@@ -150,32 +150,32 @@
    :chat-send-eth-from                    "{{amount}} ETH van {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Chatnaam"
-   :empty-group-chat-name                 "Voer een naam in"
-   :illegal-group-chat-name               "Kies een andere naam"
+   :group-chat-name                       "Groepsnaam"
+   :empty-group-chat-name                 "Voer een groepsnaam in"
+   :illegal-group-chat-name               "Kies een andere groepsnaam"
 
    ;participants
    :add-participants                      "Voeg deelnemers toe"
    :remove-participants                   "Verwijder deelnemers"
 
    ;protocol
-   :received-invitation                   "ontving chatuitnodiging"
+   :received-invitation                   "Uitnodiging voor groepschat ontvangen"
    :removed-from-chat                     "verwijderde jou van groepchat"
-   :left                                  "ging weg"
-   :invited                               "uitgenodigd"
+   :left                                  "heeft verlaten"
+   :invited                               "is uitgenodigd"
    :removed                               "verwijderd"
-   :You                                   "Jou"
+   :You                                   "U"
 
    ;new-contact
    :add-new-contact                       "Voeg nieuwe contactpersoon toe"
-   :import-qr                             "Importeren"
-   :scan-qr                               "QR scannen"
+   :import-qr                             "Importeer QR code"
+   :scan-qr                               "QR code scannen"
    :name                                  "Naam"
    :whisper-identity                      "Fluister identiteit"
    :address-explication                   "Misschien zou hier wat tekst moeten staan waarin wordt uitgelegd wat een adres is en waar je deze kunt vinden"
    :enter-valid-address                   "Voer een geldig adres in of scan een QR-code"
    :contact-already-added                 "De contactpersoon is al toegevoegd"
-   :can-not-add-yourself                  "Je kunt niet zelf toevoegen"
+   :can-not-add-yourself                  "U kunt niet uzelf toevoegen"
    :unknown-address                       "Onbekend adres"
 
 
@@ -188,7 +188,7 @@
 
    ;recover
    :recover-from-passphrase               "Herstellen met wachtzin"
-   :recover-explain                       "Voer de wachtzin in voor jouw wachtwoord om toegang te herstellen"
+   :recover-explain                       "Voer de wachtzin in voor uw wachtwoord om toegang te herstellen"
    :passphrase                            "Wachtzin"
    :recover                               "Herstellen"
    :enter-valid-passphrase                "Voer een wachtzin in"
