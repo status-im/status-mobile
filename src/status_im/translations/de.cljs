@@ -4,7 +4,7 @@
   {
    ;common
    :members-title                         "Mitglieder"
-   :not-implemented                       "!nicht implementiert"
+   :not-implemented                       "nicht implementiert"
    :chat-name                             "Chatname"
    :notifications-title                   "Benachrichtigungen und Sounds"
    :offline                               "Offline"
@@ -36,8 +36,8 @@
    :sync-synced                           "Synchronisiert"
 
    ;messages
-   :status-sending                        "Absenden"
-   :status-pending                        "In Bearbeitung"
+   :status-sending                        "sendet..."
+   :status-pending                        "wird zugestellt"
    :status-sent                           "Verschickt"
    :status-seen-by-everyone               "Von allen gesehen"
    :status-seen                           "Gesehen"
@@ -69,7 +69,7 @@
    :phone-number                          "Telefonnumer"
    :email                                 "E-Mail"
    :profile-no-status                     "Kein Status"
-   :add-to-contacts                       "Zu Kontakte hinzufügen"
+   :add-to-contacts                       "Zu Kontakten hinzufügen"
    :error-incorrect-name                  "Bitte wählen Sie einen anderen Namen"
    :error-incorrect-email                 "Inkorrekte E-Mail"
 
@@ -89,7 +89,7 @@
    :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen dies, um Ihren Account wiederherzustellen."
    :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!*Sie benötigen dies, um Ihren Account wiederherzustellen."
    :written-down                          "Stellen Sie sicher, dass Sie es sicher aufgeschrieben haben"
-   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden"
+   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben, damit ich Ihre Freunde finden kann"
    :intro-status                          "Chatten Sie mit mir, um Ihren Account einzurichten und Ihre Einstellungen zu ändern!"
    :intro-message1                        "Willkommen beim Status.\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
    :account-generation-message            "Eine Sekunde, ich muss wahnsinnig schwierige Berechnungen durchführen, um Ihr Konto zu generieren!"
@@ -100,9 +100,9 @@
    :new-group-chat                        "Neuer Gruppenchat"
 
    ;discover
-   :discover                             "Entdecken"
+   :discover                              "Entdecken"
    :none                                  "Nichts"
-   :search-tags                           "Geben Sie Ihre Suchbegriffe hier ein"
+   :search-tags                           "Suchbegriffe"
    :popular-tags                          "Beliebte Begriffe"
    :recent                                "Kürzlich"
    :no-statuses-discovered                "Kein Status gefunden"
@@ -113,10 +113,10 @@
    ;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
-   :show-all                              "ALLE ANZEIGEN"
+   :show-all                              "Alle anzeigen"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Leute"
-   :contacts-group-new-chat               "Neuen Chat beginnen"
+   :contacts-group-new-chat               "Neuen Chat starten"
    :no-contacts                           "Noch keine Kontakte"
    :show-qr                               "QR-Code anzeigen"
 
@@ -143,16 +143,16 @@
    :confirmation-code-request-text        "Bestätigungscode anfragen"
    :send-command-description              "Position senden"
    :request-command-description           "Anfrage senden"
-   :keypair-password-command-description  ""
+   :keypair-password-command-description  "Passwort Schlüsselpaar"
    :help-command-description              "Hilfe"
    :request                               "Anfrage"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH an {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}}"
+   :chat-send-eth-to                      "{{amount}} ETH an {{chat-name}} senden"
+   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}} empfangen"
 
    ;new-group
-   :group-chat-name                       "Chatname"
-   :empty-group-chat-name                 "Bitte geben Sie einen Namen ein"
+   :group-chat-name                       "Gruppen-Chatname"
+   :empty-group-chat-name                 "Bitte geben Sie einen Gruppennamen ein"
    :illegal-group-chat-name               "Bitte wählen Sie einen anderen Namen"
 
    ;participants
@@ -169,14 +169,14 @@
 
    ;new-contact
    :add-new-contact                       "Neuen Kontakt hinzufügen"
-   :import-qr                             "Import"
+   :import-qr                             "Importiere QR-Code"
    :scan-qr                               "QR-Code scannen"
    :name                                  "Name"
    :whisper-identity                      "Identität flüstern"
    :address-explication                   "Vielleicht sollte hier ein Text stehen, der erklärt, was eine Adresse ist und wo man danach sucht"
    :enter-valid-address                   "Bitte geben Sie eine gültige Adresse ein oder scannen Sie einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
-   :can-not-add-yourself                  "Sie können sich selbst nicht hinzufügen"
+   :can-not-add-yourself                  "Sie können sich nicht selber hinzufügen"
    :unknown-address                       "Unbekannte Adresse"
 
 
@@ -197,7 +197,7 @@
 
    ;accounts
    :recover-access                        "Zugriff wiederherstellen"
-   :add-account                           "Konto hinzufügen"
+   :add-account                           "Account hinzufügen"
 
    ;wallet-qr-code
    :done                                  "Fertig"
@@ -206,18 +206,18 @@
    ;validation
    :invalid-phone                         "Ungültige Telefonnummer"
    :amount                                "Betrag"
-   :not-enough-eth                        (str "Nicht genug EHT auf dem Konto"
+   :not-enough-eth                        (str "Sie haben nicht genug ETH auf Ihrem Konto"
                                                "({{balance}} ETH)")
    ;transactions
    :confirm-transactions                  {:one   "Transaktion bestätigen"
                                            :other "{{count}} Transaktionen bestätigen"
                                            :zero  "Keine Transaktionen"}
    :status                                "Status"
-   :pending-confirmation                  "Bestätigung in Bearbeitung"
+   :pending-confirmation                  "Bestätigung ausstehend"
    :recipient                             "Empfänger"
-   :one-more-item                         "Noch ein Objekt"
+   :one-more-item                         "Noch ein weiteres Objekt"
    :fee                                   "Gebühr"
    :value                                 "Wert"
 
    ;:webview
-   :web-view-error                        "Ups, Fehler"})
+   :web-view-error                        "Es ist leider zu einem Fehler bei der Darstellung der Web-Ansicht gekommen"
