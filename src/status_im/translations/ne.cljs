@@ -311,5 +311,5 @@
    :got-it                                "पाइयो"
    :contract-creation                     "सम्झौता सिर्जना"
 
-   ;:webview
+   ;;webview
    :web-view-error                        "ओहोऽऽऽ, त्रुटि"})
