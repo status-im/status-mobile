@@ -85,7 +85,7 @@
                                                "transcribe notam, ut nummerum telefonicum possimus verificare.")
    :incorrect-code                        (str "nos paenite, nota falsa, perscribe denuo")
    :generate-passphrase                   (str "computo phrasis arcana pro suo, ut "
-                                               "arripiens recreare aut arripere alii instrumento profiteri potest.”)
+                                               "arripiens recreare aut arripere alii instrumento profiteri potest.")
    :phew-here-is-your-passphrase          "*uph* erat gravor. hic phrasis arcana sui est, *exscribe et adserva!* necesse est, ut benificium sui recreare."
    :here-is-your-passphrase               "hic phrasis arcana sui est, *exscribe et adserva!* necesse est, ut benificium sui recreare."
    :written-down                          "exscribere omnes? nisi exscribe nunc"
