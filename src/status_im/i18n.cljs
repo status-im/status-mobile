@@ -90,8 +90,19 @@
                                       :uk      uk/translations
                                       :ur      ur/translations
                                       :vi      vi/translations
+                                      :zh      zh-hans/translations
                                       :zh-hans zh-hans/translations
+                                      :zh-hans-tw zh-hans/translations
+                                      :zh-hans-sg zh-hans/translations
+                                      :zh-hans-hk zh-hans/translations
+                                      :zh-hans-cn zh-hans/translations
+                                      :zh-hans-mo zh-hans/translations
                                       :zh-hant zh-hant/translations
+                                      :zh-hant-tw zh-hant/translations
+                                      :zh-hant-sg zh-hant/translations
+                                      :zh-hant-hk zh-hant/translations
+                                      :zh-hant-cn zh-hant/translations
+                                      :zh-hant-mo zh-hant/translations
                                       :zh-wuu  zh-wuu/translations
                                       :zh-yue  zh-yue/translations}))
 
