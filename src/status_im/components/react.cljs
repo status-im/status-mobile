@@ -134,12 +134,6 @@
 
 (def swiper (adapt-class (js/require "react-native-swiper")))
 
-;; Autogrow text input
-
-(def autogrow-class (js/require "react-native-autogrow-textinput"))
-
-(def autogrow-text-input (r/adapt-react-class (.-AutoGrowingTextInput autogrow-class)))
-
 ;; Clipboard
 
 (def sharing
