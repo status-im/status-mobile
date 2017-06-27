@@ -179,20 +179,6 @@
    ;group-settings
    :remove                                "Verwijderen"
    :save                                  "Opslaan"
-   :change-color                          "Wijzig kleur"
-   :clear-history                         "Wis geschiedenis"
-   :delete-and-leave                      "Verwijderen en afsluiten"
-   :chat-settings                         "Chatinstellingen"
-   :edit                                  "Bewerken"
-   :add-members                           "Voeg leden toe"
-   :blue                                  "Blauw"
-   :purple                                "Paars"
-   :green                                 "Groen"
-   :red                                   "Rood"
-
-   ;group-settings
-   :remove                                "Verwijderen"
-   :save                                  "Opslaan"
    :delete                                "Delete"
    :change-color                          "Wijzig kleur"
    :clear-history                         "Wis geschiedenis"

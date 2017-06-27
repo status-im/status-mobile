@@ -15,20 +15,20 @@
    :type-a-command                        "Ievadi komandu..."
    :error                                 "Kļūda"
 
-   :camera-access-error                   "Kļūda, nav atļaujas piekļūt kamerai. Lūdzu, iestatījumos pārliecinies, ka  "Status > Camera" ir izvēlēts."
-   :photos-access-error                   "Kļūda, nav atļaujas piekļūt fotogrāfijām. Lūdzu, iestatījumos pārliecinies, ka "Status > Photos" ir izvēlēts."
+   :camera-access-error                   "Kļūda, nav atļaujas piekļūt kamerai. Lūdzu, iestatījumos pārliecinies, ka  Status > Camera ir izvēlēts."
+   :photos-access-error                   "Kļūda, nav atļaujas piekļūt fotogrāfijām. Lūdzu, iestatījumos pārliecinies, ka Status > Photos ir izvēlēts."
 
    ;drawer
    :invite-friends                        "Uzaicināt draugus"
    :faq                                   "FAQ un biežāk uzdotie jautājumi"
    :switch-users                          "Mainīt lietotāju"
-   :feedback                              "Gribi atstāt atsauksmi?\Krati telefonu!"
+   :feedback                              "Gribi atstāt atsauksmi? Krati telefonu!"
    :view-all                              "Skatīt visu"
    :current-network                       "Tīkls"
 
    ;chat
    :is-typing                             "raksta"
-   :and-you                               "un tu
+   :and-you                               "un tu"
    :search-chat                           "Meklēt čatu"
    :members                               {:one   "1 dalībnieks"
                                            :other "{{count}} dalībnieki"
@@ -118,10 +118,10 @@
    :confirmation-code                     (str "Paldies! Mēs nosūtijām tev īsziņu ar apstiprinājuma kodu"
                                                "code. Lūdzu ievadi apstiprinājuma kodu lai verificētu savu telefona numuru")
    :incorrect-code                        (str "Nepareizs kods, mēģiniet vēlreiz")
-   :generate-passphrase                   (str "Tu saņemsi jaunu "passphrase" lai"
+   :generate-passphrase                   (str "Tu saņemsi jaunu passphrase lai"
                                                "tu varētu ieiet no cita telefona")
-   :phew-here-is-your-passphrase          "*Fuh* tas bija grūti, re, te ir tavs jauns "passphrase", *pieraksti un sargā to!* Tev viņš būs vajadzīgs lai atgūtu pieju."
-   :here-is-your-passphrase               "Te ir tavs jauns "passphrase", *pieraksti un sargā to!* Tev viņš būs vajadzīgs lai atgūtu pieju savam kontam."
+   :phew-here-is-your-passphrase          "*Fuh* tas bija grūti, re, te ir tavs jauns passphrase, *pieraksti un sargā to!* Tev viņš būs vajadzīgs lai atgūtu pieju."
+   :here-is-your-passphrase               "Te ir tavs jauns passphrase, *pieraksti un sargā to!* Tev viņš būs vajadzīgs lai atgūtu pieju savam kontam."
    :written-down                          "Pārliecinies, ka pareizi pierakstīji to."
    :phone-number-required                 "Ievadi savu telefonu un es atradīšu tavus draugus."
    :shake-your-phone                      "Atradi kļūdu? Pastāsti mums par to! Krati telefonu!"
@@ -258,16 +258,16 @@
    :address                               "Adrese"
    :password                              "Parole"
    :login                                 "Lietotājvārds"
-   :sign-in-to-status                     "Ieiet "Status""
+   :sign-in-to-status                     "Ieiet Status"
    :sign-in                               "Ieiet"
    :wrong-password                        "Parole ievadīta nepareizi"
 
    ;recover
-   :recover-from-passphrase               "Atgūt no "passphrase""
-   :recover-explain                       "Ievadi "passphrase" lai atgūtu pieeju"
-   :passphrase                            ""Passphrase""
+   :recover-from-passphrase               "Atgūt no passphrase"
+   :recover-explain                       "Ievadi passphrase lai atgūtu pieeju"
+   :passphrase                            "Passphrase"
    :recover                               "Atgūt"
-   :enter-valid-passphrase                "Ievadi "passphrase""
+   :enter-valid-passphrase                "Ievadi passphrase"
    :enter-valid-password                  "Ievadi paroli"
    :twelve-words-in-correct-order         "12 vārdi"
 

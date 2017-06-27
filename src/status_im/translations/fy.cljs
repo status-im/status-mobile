@@ -224,7 +224,7 @@
    :delete-group-prompt                   "Dit sil gjin ynfloed ha mei jo kontakten"
    :group-members                         "Groep leden"
    :contact-s                             {:one   "kontakt"
-                                          :other "kontakten"}
+                                           :other "kontakten"}
    ;participants
    :add-participants                      "Foegje dielnimmers ta"
    :remove-participants                   "Ferwiderje dielnimmers"
@@ -296,7 +296,7 @@
    :unsigned-transactions                 "Net-ûndertekene transaksjes"
    :no-unsigned-transactions              "Gjin unsigned transaksjes"
    :enter-password-transactions           {:one   "Befêstigje transaksje mei jo wachtwurd"
-                                          :other "Befêstigje transaksjes mei jo wachtwurd"}
+                                           :other "Befêstigje transaksjes mei jo wachtwurd"}
    :status                                "Status"
    :pending-confirmation                  "Yn ôfwachting fan bevestiging"
    :recipient                             "Ûntfanger"
