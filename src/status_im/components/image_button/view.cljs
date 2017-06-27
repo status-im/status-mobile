@@ -23,9 +23,3 @@
                             (label :t/scan-qr))
                  :style   st/scan-button-text
                  :handler handler}])
-
-(defn show-qr-button [{:keys [handler]}]
-  [image-button {:icon    :icon_qr_gray
-                 :value   (label :t/show-qr)
-                 :style   st/show-qr-button-text
-                 :handler handler}])
