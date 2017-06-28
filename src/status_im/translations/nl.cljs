@@ -310,4 +310,6 @@
    :contract-creation                     "Contract Aanmaak"
 
    ;:webview
-   :web-view-error                        "oeps, fout"})
+   :web-view-error                        "oeps, fout"
+
+   :public-group-status                   "Publiek"})

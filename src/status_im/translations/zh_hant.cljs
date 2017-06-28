@@ -149,7 +149,7 @@
    :public-group-topic                    "主題"
 
    ;discover
-   :discover                             "發現"
+   :discover                              "發現"
    :none                                  "無"
    :search-tags                           "在這裡輸入搜尋標籤"
    :popular-tags                          "熱門標籤"

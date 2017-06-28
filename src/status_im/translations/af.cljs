@@ -53,7 +53,7 @@
                                            :other "ure"}
    :datetime-day                          {:one   "dag"
                                            :other "dae"}
-   :datetime-multiple                     "e" ; TODO probably wrong
+   :datetime-multiple                     "e"               ; TODO probably wrong
    :datetime-ago                          "gelede"
    :datetime-yesterday                    "gister"
    :datetime-today                        "vandag"
@@ -99,7 +99,7 @@
    :new-group-chat                        "Nuwe groepgeselsie"
 
    ;discover
-   :discover                             "Ontdekking"
+   :discover                              "Ontdekking"
    :none                                  "Geen"
    :search-tags                           "Tik jou soek-oortjies hier in"
    :popular-tags                          "Gewilde oortjies"
@@ -219,4 +219,88 @@
    :value                                 "Waarde"
 
    ;:webview
-   :web-view-error                        "oepsie, fout"})
+   :web-view-error                        "oepsie, fout"
+
+   :confirm                               "Bevestig"
+   :phone-national                        "Nasionaal"
+   :transactions-confirmed                {:one   "Transaksie bevestig"
+                                           :other "{{count}} transaksies bevestig"
+                                           :zero  "Geen transaksies bevestig"}
+   :public-group-topic                    "Onderwerp"
+   :debug-enabled                         "Ontfout-bediener is bekendgestel! U IP-adres is {{ip}}. U kan nou u DApp byvoeg deur *status-dev-cli add-dapp --ip {{ip}}* te hardloop vanaf u rekenaar"
+   :new-public-group-chat                 "Sluit aan by openbare klets"
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
+   :sharing-cancel                        "Kanselleer"
+   :share-qr                              "Deel QR"
+   :feedback                              "Terugvoer ontvang?\nSkud u foon!"
+   :twelve-words-in-correct-order         "12 woorde in korrekte volgorde"
+   :remove-from-contacts                  "Verwyder van kontakte"
+   :delete-chat                           "Skrap klets"
+   :edit-chats                            "Redigeer kletse"
+   :sign-in                               "Teken aan"
+   :create-new-account                    "Skep nuwe rekening"
+   :sign-in-to-status                     "Teken aan op Status"
+   :got-it                                "Het dit"
+   :move-to-internal-failure-message      "Ons moet ‘n paar belangrike lêers skuif van eksterne na interne berging. Om dit te doen, het ons u toestemming nodig. Ons sal nie eksterne berging gebruik in toekomstige weergawes nie."
+   :edit-group                            "Redigeer groep"
+   :delete-group                          "Skrap groep"
+   :browsing-title                        "Blaai"
+   :reorder-groups                        "Herrangskik groepe"
+   :debug-enabled-no-ip                   "Ontfout-bediener is bekendgestel! U kan nou u DApp byvoeg deur *status-dev-cli add-dapp --ip [your ip]* te hardloop vanaf u rekenaar"
+   :browsing-cancel                       "Kanselleer"
+   :faucet-success                        "Kraan versoek is ontvang"
+   :choose-from-contacts                  "Kies uit kontakte"
+   :new-group                             "Nuwe groep"
+   :phone-e164                            "Internasionaal 1"
+   :remove-from-group                     "Verwyder van groep"
+   :search-contacts                       "Soek kontakte"
+   :transaction                           "Transaksie"
+   :public-group-status                   "Openbaar"
+   :leave-chat                            "Verlaat klets"
+   :start-conversation                    "Begin gesprek"
+   :topic-format                          "Verkeerde formaat [a-z0-9\\-]+"
+   :enter-valid-public-key                "Voer asseblief ‘n geldige openbare sleutel in of skandeer ‘n QR-kode in"
+   :faucet-error                          "Kraan versoek fout"
+   :phone-significant                     "Aansienlik"
+   :search-for                            "Soek vir..."
+   :sharing-copy-to-clipboard             "Kopieer na knipbord"
+   :phone-international                   "Internasionaal 2"
+   :enter-address                         "Voeg ‘n adres in"
+   :send-transaction                      "Stuur transaksie"
+   :delete-contact                        "Skrap kontak"
+   :mute-notifications                    "Demp kennisgewings"
+
+
+   :contact-s                             {:one   "kontak"
+                                           :other "kontakte"}
+   :group-name                            "Groepnaam"
+   :next                                  "Volgende"
+   :from                                  "Van"
+   :search-chats                          "Soek kletse"
+   :in-contacts                           "In kontakte"
+
+   :sharing-share                         "Deel..."
+   :type-a-message                        "Tik ‘n boodskap..."
+   :type-a-command                        "Begin ‘n opdrag tik..."
+   :shake-your-phone                      "Vind ‘n fout of het ‘n voorstel? Skud ~net~ u foon!"
+   :status-prompt                         "Skep ‘n status om te help dat mense weet oor die goed wat u aanbied. U kan #hutsmerke ook gebruik."
+   :add-a-status                          "Voeg ‘n status by..."
+   :error                                 "Fout"
+   :edit-contacts                         "Redigeer kontakte"
+   :more                                  "meer"
+   :cancel                                "Kanselleer"
+   :no-statuses-found                     "Geen statusse gevind nie"
+   :swow-qr                               "Wys QR"
+   :browsing-open-in-web-browser          "Maak oop in webblaaier"
+   :delete-group-prompt                   "Dit sal nie kontakte affekteer nie"
+   :edit-profile                          "Redigeer profiel"
+
+
+   :enter-password-transactions           {:one   "Bevestig transaksie deur u wagwoord te verskaf"
+                                           :other "Bevestig transaksies deur u wagwoord te verskaf"}
+   :unsigned-transactions                 "Ongetekende transaksies"
+   :empty-topic                           "Leë onderwerp"
+   :to                                    "Aan"
+   :group-members                         "Groeplede"
+   :estimated-fee                         "Geraamde fooi"
+   :data                                  "Data"})

@@ -87,12 +87,12 @@
    :image-source-make-photo               "Foto machen"
    :image-source-gallery                  "Aus Galerie auswählen"
    :image-source-cancel                   "Abbrechen"
-    
+
    ;;sharing
    :sharing-copy-to-clipboard             "In Zwischenablage kopieren"
    :sharing-share                         "Teilen..."
    :sharing-cancel                        "Abbrechen"
-    
+
    :browsing-title                        "Browse"
    :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "In Webbrowser öffnen"
@@ -126,7 +126,7 @@
    :public-group-topic                    "Thema"
 
    ;discover
-   :discover                             "Entdecken"
+   :discover                              "Entdecken"
    :none                                  "Nichts"
    :search-tags                           "Suchbegriffe"
    :popular-tags                          "Beliebte Begriffe"
@@ -250,4 +250,68 @@
    :value                                 "Wert"
 
    ;:webview
-   :web-view-error                        "Ups, Fehler"})
+   :web-view-error                        "Ups, Fehler"
+
+   :confirm                               "Bestätigen"
+   :phone-national                        "National"
+   :transactions-confirmed                {:one   "Transaktion bestätigt"
+                                           :other "{{count}} Transaktionen bestätigt"
+                                           :zero  "Keine Transaktion bestätigt"}
+   :debug-enabled                         "Debug-Server wurde eingeführt! Ihre IP-Adresse ist {{ip}}. Sie können nun Ihre DApp hinzufügen, indem Sie *status-dev-cli add-dapp --ip {{ip}}* von Ihrem Computer starten"
+   :share-qr                              "QR teilen"
+   :twelve-words-in-correct-order         "12 Wörter in richtiger Reihenfolge"
+   :remove-from-contacts                  "Von Kontakten entfernen"
+   :delete-chat                           "Chat löschen"
+   :sign-in                               "Anmelden"
+   :create-new-account                    "Neues Konto erstellen"
+   :sign-in-to-status                     "Zum Status anmelden"
+   :got-it                                "Verstanden"
+   :move-to-internal-failure-message      "Wir müssen ein paar wichtige Dateien vom externen auf den internen Speicher verschieben. Um dies tun zu können, brauchen wir Ihre Genehmigung. Wir werden in zukünftige Versionen keinen externen Speicher nutzen."
+   :edit-group                            "Gruppe bearbeiten"
+   :delete-group                          "Gruppe löschen"
+   :reorder-groups                        "Gruppen wieder ordnen"
+   :debug-enabled-no-ip                   "Debug-Server wurde eingeführt! Sie können nun Ihre DApp hinzufügen, indem Sie *status-dev-cli add-dapp --ip [your ip]* von Ihrem Computer starten"
+   :faucet-success                        "Absperranfrage wurde erhalten"
+   :choose-from-contacts                  "Aus Kontakten wählen"
+   :new-group                             "Neue Gruppe"
+   :phone-e164                            "International 1"
+   :remove-from-group                     "Von Gruppe entfernen"
+   :search-contacts                       "Kontakte durchsuchen"
+   :transaction                           "Transaktion"
+   :public-group-status                   "Öffentlich"
+   :leave-chat                            "Chat verlassen"
+   :start-conversation                    "Konversation beginnen"
+   :enter-valid-public-key                "Bitte geben Sie einen gültigen öffentlichen Schlüssel ein oder scannen Sie einen QR-Code"
+   :faucet-error                          "Absperranfrage-Fehler"
+   :phone-significant                     "Signifikant"
+   :phone-international                   "International 2"
+   :enter-address                         "Adresse eingeben"
+   :send-transaction                      "Transaktion senden"
+   :delete-contact                        "Kontakt löschen"
+   :mute-notifications                    "Benachrichtigungen stummschalten"
+
+
+   :contact-s                             {:one   "Kontakt"
+                                           :other "Kontakte"}
+   :group-name                            "Gruppenname"
+   :from                                  "Von"
+   :in-contacts                           "In Kontakte"
+
+   :shake-your-phone                      "Haben Sie einen Fehler gefunden oder einen Vorschlag? ~Schütteln~ Sie einfach Ihr Telefon!"
+   :status-prompt                         "Erstellen Sie einen Status, um anderen Menschen zu helfen, über die Dinge zu erfahren, die Sie anbieten. Sie können auch #hashtags nutzen."
+   :add-a-status                          "Einen Status hinzufügen ..."
+   :edit-contacts                         "Kontakte bearbeiten"
+   :more                                  "Mehr"
+   :no-statuses-found                     "Keine Status gefunden"
+   :swow-qr                               "QR anzeigen"
+   :delete-group-prompt                   "Dies wird Kontakte nicht beeinträchtigen"
+   :edit-profile                          "Profil bearbeiten"
+
+
+   :enter-password-transactions           {:one   "Bestätigen Sie die Transaktion durch Eingabe Ihres Passworts"
+                                           :other "Bestätigen Sie die Transaktionen durch Eingabe Ihres Passworts"}
+   :unsigned-transactions                 "Unsignierte Transaktion"
+   :to                                    "An"
+   :group-members                         "Gruppenmitglieder"
+   :estimated-fee                         "Geschätzte Gebühr"
+   :data                                  "Daten"})

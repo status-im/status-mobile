@@ -25,7 +25,7 @@
    :feedback                              "Des remarques?\nSecouez votre téléphone!"
    :view-all                              "Voir tout"
    :current-network                       "Le réseau actuel"
-    
+
    ;chat
    :is-typing                             "écrit..."
    :and-you                               "et vous"
@@ -111,7 +111,7 @@
    :browsing-browse                       "@naviguer"
    :browsing-open-in-web-browser          "Ouvrir dans le navigateur"
    :browsing-cancel                       "Annuler"
-    
+
    ;sign-up
    :contacts-syncronized                  "Vos contacts ont été synchronisés"
    :confirmation-code                     (str "Merci ! Nous vous avons envoyé un message texte contenant le code "
@@ -129,7 +129,7 @@
    :account-generation-message            "Donnez-moi une seconde, je dois faire quelques calculs de ouf pour générer votre compte !"
    :move-to-internal-failure-message      "Nous devons déplacer des fichiers importants depuis un stockage extérieur vers un stockage local. Afin de faire cela, nous avons besoin de votre permission. Nous n'utiliserons plus de stockage extérieur dans nos futures versions."
    :debug-enabled                         "Le serveur Debug a été lancé! Vous pouvez désormais utiliser *status-dev-cli scan* pour trouver le serveur depuis votre ordinateur sur le même réseau."
-    
+
    ;phone types
    :phone-e164                            "International 1"
    :phone-international                   "International 2"
@@ -156,7 +156,7 @@
    :recent                                "Récent"
    :no-statuses-discovered                "Aucun statut découvert"
    :no-statuses-found                     "Aucun statut trouvé"
-   
+
    ;settings
    :settings                              "Paramètres"
 
@@ -177,7 +177,7 @@
    :show-qr                               "Afficher le QR"
    :enter-address                         "Entrez Addresse"
    :more                                  "plus"
-   
+
    ;group-settings
    :remove                                "Retirer"
    :save                                  "Sauvegarder"
@@ -269,7 +269,7 @@
    :enter-valid-passphrase                "Veuillez saisir une phrase secrète"
    :enter-valid-password                  "Veuillez saisir un mot de passe"
    :twelve-words-in-correct-order         "12 mots dans l'ordre"
-    
+
    ;accounts
    :recover-access                        "Restaurer l'accès"
    :add-account                           "Ajouter un compte"
@@ -309,6 +309,6 @@
    :data                                  "Données"
    :got-it                                "Compris"
    :contract-creation                     "Création du contrat"
-    
+
    ;:webview
    :web-view-error                        "Oops, erreur"})

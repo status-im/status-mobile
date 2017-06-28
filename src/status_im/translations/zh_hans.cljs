@@ -149,7 +149,7 @@
    :public-group-topic                    "主题"
 
    ;discover
-   :discover                             "发现"
+   :discover                              "发现"
    :none                                  "无"
    :search-tags                           "在此处输入搜索标签"
    :popular-tags                          "热门标签"
