@@ -90,7 +90,17 @@ I18n.translations = {
         password_placeholder2: '重新鍵入您的密碼',
         password_error: '密碼不得短於6個字元。',
         password_error1: '確認密碼與鍵入的密碼不一致。',
-        password_validation_title: '密碼'
+        password_validation_title: '密碼',
+
+        faucet_incorrect_title: '不正確的水龍頭',
+        faucet_incorrect_description: '請從列表中選擇一個',
+
+        debug_mode_title: '調試模式',
+        debug_mode_description: '開始/停止調試模式',
+
+        faucet_title: '水龍頭',
+        faucet_description: '獲取一些以太幣',
+        faucet_placeholder: '水龍頭網址'
 
     },
     'zh-hans': {
@@ -107,7 +117,17 @@ I18n.translations = {
         password_placeholder2: '请重新输入密码以确认',
         password_error: '密码应不少于6个字符。',
         password_error1: '密码确认信息与密码不匹配。',
-        password_validation_title: '密码'
+        password_validation_title: '密码',
+
+        faucet_incorrect_title: '不正确的水龙头',
+        faucet_incorrect_description: '请从列表中选择一个',
+
+        debug_mode_title: '调试模式',
+        debug_mode_description: '开始/停止调试模式',
+
+        faucet_title: '水龙头',
+        faucet_description: '获取一些以太币',
+        faucet_placeholder: '水龙头网址'
 
     },
     'zh-yue': {
@@ -124,7 +144,17 @@ I18n.translations = {
         password_placeholder2: '請重新輸入密碼確認',
         password_error: '密碼不能短於6個字符.',
         password_error1: '確認密碼與輸入密碼不符.',
-        password_validation_title: '密碼'
+        password_validation_title: '密碼',
+
+        faucet_incorrect_title: '不正確的水龍頭',
+        faucet_incorrect_description: '請從列表中選擇一個',
+
+        debug_mode_title: '調試模式',
+        debug_mode_description: '開始/停止調試模式',
+
+        faucet_title: '水龍頭',
+        faucet_description: '獲取一些以太幣',
+        faucet_placeholder: '水龍頭網址'
 
     },
     'zh-wuu': {
@@ -141,7 +171,17 @@ I18n.translations = {
         password_placeholder2: '请重新输入密码确认',
         password_error: '密码应不小于6个字符。',
         password_error1: '密码确认不匹配。',
-        password_validation_title: '密码'
+        password_validation_title: '密码',
+
+        faucet_incorrect_title: '不正確的水龍頭',
+        faucet_incorrect_description: '請從列表中選擇一個',
+
+        debug_mode_title: '調試模式',
+        debug_mode_description: '開始/停止調試模式',
+
+        faucet_title: '水龍頭',
+        faucet_description: '獲取一些以太幣',
+        faucet_placeholder: '水龍頭網址'
 
     },
     nl: {
@@ -248,20 +288,29 @@ I18n.translations = {
     },
     ja: {
         phone_title: '電話番号を送信',
-        phone_description: 'あなたの番号を使用している友人を検索',
+        phone_description: '電話番号から友人を検索',
         phone_placeholder: '携帯電話番号',
 
         confirm_description: '確認コード',
         confirm_validation_title: '確認コード',
-        confirm_validation_description: '間違った形式',
+        confirm_validation_description: '誤った形式です',
 
         password_description: 'パスワード',
         password_placeholder: 'パスワードを入力してください',
         password_placeholder2: '確認のためにパスワードを再入力してください',
-        password_error: 'パスワードは6文字以下でなければなりません.',
-        password_error1: 'パスワードの確認がパスワードと一致しません。',
+        password_error: 'パスワードは6文字以上にしてください。',
+        password_error1: 'パスワードが一致しません。',
         password_validation_title: 'パスワード'
 
+        faucet_incorrect_title: 'フォーセットが違います',
+        faucet_incorrect_description: '一覧の中から一つだけ選択してください',
+
+        debug_mode_title: 'デバッグモード',
+        debug_mode_description: 'デバッグモードを開始/停止します',
+
+        faucet_title: 'フォーセット',
+        faucet_description: 'ETHを取得する',
+        faucet_placeholder: 'フォーセットURL'
     },
     ko: {
         phone_title: '전화번호 보내기',
