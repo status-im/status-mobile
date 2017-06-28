@@ -106,6 +106,8 @@
                                       :zh-wuu  zh-wuu/translations
                                       :zh-yue  zh-yue/translations}))
 
+;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed https://github.com/fnando/i18n-js/issues/460
+
 (def delimeters
   "This function is a hack: mobile Safari doesn't support toLocaleString(), so we need to pass
   this map to WKWebView to make number formatting work."
