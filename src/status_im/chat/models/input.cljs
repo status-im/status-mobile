@@ -9,6 +9,17 @@
             [status-im.chat.utils :as chat-utils]
             [status-im.bots.constants :as bots-constants]))
 
+(def emojis (js/require "emojilib"))
+
+(defn text->emoji [text]
+  (when text
+    (str/replace text
+                 #":([a-z_\-+0-9]*):"
+                 (fn [[original emoji-id]]
+                   (if-let [emoji-map (aget emojis "lib" emoji-id)]
+                     (aget emoji-map "char")
+                     original)))))
+
 (defn text-ends-with-space? [text]
   (when text
     (= (str/last-index-of text const/spacing-char)

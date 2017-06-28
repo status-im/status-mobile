@@ -14,10 +14,10 @@
             [clojure.string :as str]))
 
 (handlers/register-handler
-  :set-chat-input-text
-  (fn [{:keys [current-chat-id chats chat-ui-props] :as db} [_ text chat-id]]
-    (let [chat-id          (or chat-id current-chat-id)
-          ends-with-space? (input-model/text-ends-with-space? text)]
+ :set-chat-input-text
+ (fn [{:keys [current-chat-id chats chat-ui-props] :as db} [_ text chat-id]]
+   (let [chat-id          (or chat-id current-chat-id)
+         ends-with-space? (input-model/text-ends-with-space? text)]
       (dispatch [:update-suggestions chat-id text])
 
       (if-let [{command :command} (input-model/selected-chat-command db chat-id text)]
@@ -26,7 +26,9 @@
               new-args       (rest text-splitted)
               new-input-text (input-model/make-input-text text-splitted old-args)]
           (assoc-in db [:chats chat-id :input-text] new-input-text))
-        (assoc-in db [:chats chat-id :input-text] text)))))
+        (->> text
+             (input-model/text->emoji)
+             (assoc-in db [:chats chat-id :input-text]))))))
 
 (handlers/register-handler
   :add-to-chat-input-text

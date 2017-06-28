@@ -40,7 +40,8 @@
     "react-native-autolink",
     "instabug-reactnative",
     "nfc-react-native",
-    "react-native-http-bridge"
+    "react-native-http-bridge",
+    "emojilib"
   ],
   "imageDirs": [
     "images"
