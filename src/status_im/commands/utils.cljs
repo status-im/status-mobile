@@ -1,31 +1,29 @@
 (ns status-im.commands.utils
   (:require [clojure.set :as set]
             [clojure.walk :as w]
-            [status-im.components.react :refer [text
-                                                scroll-view
-                                                view
-                                                slider
-                                                web-view
-                                                image
-                                                touchable-highlight]]
+            [re-frame.core :refer [dispatch trim-v debug]]
+            [status-im.components.react :as components]
             [status-im.chat.views.input.web-view :as chat-web-view]
             [status-im.chat.views.input.validation-messages :as chat-validation-messages]
-            [re-frame.core :refer [dispatch trim-v debug]]
-            [status-im.utils.handlers :refer [register-handler]]
-            [taoensso.timbre :as log]))
+            [status-im.components.qr-code :as qr]
+            [status-im.utils.handlers :refer [register-handler]]))
 
 (defn json->clj [json]
   (when-not (= json "undefined")
     (js->clj (.parse js/JSON json) :keywordize-keys true)))
 
 (def elements
-  {:text               text
-   :view               view
-   :slider             slider
-   :scroll-view        scroll-view
-   :web-view           web-view
-   :image              image
-   :touchable          touchable-highlight
+  {:view               components/view
+   :text               components/text
+   :text-input         components/text-input
+   :image              components/image
+   :qr-code            qr/qr-code
+   :linking            components/linking
+   :slider             components/slider
+   :scroll-view        components/scroll-view
+   :web-view           components/web-view
+   :touchable          components/touchable-highlight
+   :activity-indicator components/activity-indicator
    :bridged-web-view   chat-web-view/bridged-web-view
    :validation-message chat-validation-messages/validation-message})
 
@@ -60,7 +58,7 @@
              (update 0 get-element)
              (update 1 check-events))
 
-         :esle el))
+         :else el))
      markup)))
 
 (defn reg-handler
