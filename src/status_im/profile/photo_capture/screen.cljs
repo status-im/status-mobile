@@ -40,6 +40,7 @@
                :background-color toolbar-background1}]
      [camera {:style         {:flex 1}
               :aspect        (:fill aspects)
+              :captureQuality "480p"
               :captureTarget (:disk capture-targets)
               :type          "front"
               :ref           #(reset! camera-ref %)}]
