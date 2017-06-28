@@ -129,12 +129,11 @@
                 args    (-> (get-in db [:chats current-chat-id :input-text])
                             (input-model/split-command-args)
                             (rest))
-                to       (get-in db [:contacts current-chat-id :address])
-                from (get-in db [])
+                to      (get-in db [:contacts current-chat-id :address])
                 params  {:parameters {:args args}
                          :context    (merge {:data data
-                                             :from       current-account-id
-                                             :to         to}
+                                             :from current-account-id
+                                             :to   to}
                                             (input-model/command-dependent-context-params command))}]
             (status/call-jail
               {:jail-id  jail-id

@@ -80,7 +80,7 @@
             command'      (->> (assoc command-message :handler-data handler-data)
                                (prepare-command current-public-key chat-id clock-value request)
                                (cu/check-author-direction db chat-id))]
-        (log/debug "Handler data: " request (:handler-data command) (dissoc params :commands :command-message))
+        (log/debug "Handler data: " request handler-data (dissoc params :commands :command-message))
         (dispatch [:update-message-overhead! chat-id network-status])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
