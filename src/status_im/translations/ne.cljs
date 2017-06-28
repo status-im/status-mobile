@@ -47,15 +47,15 @@
    :faucet-error                          "धारा अनुरोध त्रुटि"
 
    ;;sync
-   :sync-in-progress                      "मिलान भइरहेको छ ॰॰॰"
-   :sync-synced                           "मिलान मा छ"
+   :sync-in-progress                      "एकनास बनाइंदै छ ॰॰॰"
+   :sync-synced                           "एकनास छ"
 
    ;;messages
    :status-sending                        "पठाउंदै"
    :status-pending                        "बाँकी छ"
-   :status-sent                           "पठाइ सकेको"
+   :status-sent                           "पठाइसकेको"
    :status-seen-by-everyone               "सबैले हेरिसकेको"
-   :status-seen                           "देखि सकेको"
+   :status-seen                           "देखिसकेको"
    :status-delivered                      "बुझाइएको"
    :status-failed                         "असफल"
 
@@ -113,14 +113,14 @@
    :browsing-cancel                       "रद्द गर्नुहोस्"
 
    ;;sign-up
-   :contacts-syncronized                  "तपाईंको सम्पर्कहरु मिलान भयो"
+   :contacts-syncronized                  "तपाईंको सम्पर्कहरु एकनास भयो"
    :confirmation-code                     (str "धन्यवाद! हामीले तपाईंलाई पुष्टि कोड सहितको सन्देश पठाएका छौं । "
                                                "कृपया आफ्नो फोन नम्बर पुष्टि गर्न त्यो कोड प्रस्तुत गर्नुहोस् ।")
    :incorrect-code                        (str "माफ गर्नुहोस्, त्यो कोड गलत रहेछ, कृपया पुनः प्रविष्ट गर्नुहोस्")
    :generate-passphrase                   (str "तपाईंकोलागि म एउट गुप्तवाक्यांश उन्पन्न गर्छु, ताकि तपाईंले आफ्नो "
                                                "पहुँच पुनर्स्थापना गर्न सक्नुहुन्छ, अथवा अर्को यन्त्रबाट लग इन गर्न सक्नुहुन्छ ।")
-   :phew-here-is-your-passphrase          "*उफऽऽऽ* त्यो कठिन थियो, तपाईंको गुप्तवाक्यांश प्रस्तुत छ, *यसलाई लेखेर सुरक्षित राख्नुहोस्* आफ्नो खात पुनर्स्थापना गर्न यो अति आवश्यक छ ।"
-   :here-is-your-passphrase               "तपाईंको गुप्तवाक्यांश प्रस्तुत छ, *यसलाई लेखेर सुरक्षित राख्नुहोस्* आफ्नो खात पुनर्स्थापना गर्न यो अति आवश्यक छ ।"
+   :phew-here-is-your-passphrase          "*उफऽऽऽ* त्यो कठिन थियो, तपाईंको गुप्तवाक्यांश प्रस्तुत छ, *यसलाई लेखेर सुरक्षित राख्नुहोस्* आफ्नो खाता पुनर्स्थापना गर्न यो अति आवश्यक छ ।"
+   :here-is-your-passphrase               "तपाईंको गुप्तवाक्यांश प्रस्तुत छ, *यसलाई लेखेर सुरक्षित राख्नुहोस्* आफ्नो खाता पुनर्स्थापना गर्न यो अति आवश्यक छ ।"
    :written-down                          "निश्चित गर्नुहोस् कि तपाईंले त्यो सुरक्षित हिसाबले लेखेर राख्नुभयो ।"
    :phone-number-required                 "यहाँ ट्याप गरेर तपाईंको फोन नम्बर प्रविष्ट गर्नुहोस् अनि म तपाईंको साथीहरु भेट्टाइ दिन्छु ।"
    :shake-your-phone                      "त्रुटि फेलापार्नुभयो, अथवा सुझाव दिनु छ? बस फोन ~हल्लाउनुहोस्~!"
@@ -155,7 +155,7 @@
    :popular-tags                          "लोकप्रिय ट्यागहरु"
    :recent                                "भर्खरको"
    :no-statuses-discovered                "कुनैपनि स्टेटस भेट्टाइएन"
-   :no-statuses-found                     "कुनैपनि स्टेटस फेलापारिएन "
+   :no-statuses-found                     "कुनैपनि स्टेटस फेलापारिएन"
 
    ;;settings
    :settings                              "सेटिङ्गहरु"
@@ -225,6 +225,7 @@
    :group-members                         "समूहको सदस्यहरु"
    :contact-s                             {:one   "सम्पर्क"
                                            :other "सम्पर्कहरु"}
+
    ;;participants
    :add-participants                      "सहभागीहरु जोड्नुहोस्"
    :remove-participants                   "सहभागीहरु हटाउनुहोस्"
@@ -232,7 +233,7 @@
    ;;protocol
    :received-invitation                   "च्याट निमन्त्रणा पाइयो"
    :removed-from-chat                     "तपाईंलाई सामूहिक च्याटबाट हटाइयो"
-   :left                                  "बांया"
+   :left                                  "बाहिरियो"
    :invited                               "आमन्त्रित"
    :removed                               "हटाइयो"
    :You                                   "तपाईं"
@@ -251,14 +252,13 @@
    :can-not-add-yourself                  "आफुले आफुलाइनै जोड्न मिल्दैन"
    :unknown-address                       "अज्ञात ठेगाना"
 
-
    ;;login
    :connect                               "कनेक्ट"
    :address                               "ठेगाना"
    :password                              "पासवर्ड"
    :login                                 "लगइन"
-   :sign-in-to-status                     "स्टेटसमा साइन इन गर्नुहोस्"
-   :sign-in                               "साइन इन"
+   :sign-in-to-status                     "स्टेटसमा साइन-इन गर्नुहोस्"
+   :sign-in                               "साइन-इन"
    :wrong-password                        "गलत पासवर्ड"
 
    ;;recover
@@ -282,7 +282,8 @@
    ;;validation
    :invalid-phone                         "नमिल्ने फोन नम्बर"
    :amount                                "रकम"
-   :not-enough-eth                        (str "ब्यालेन्समा अपर्याप्त ETH")
+   :not-enough-eth                        (str "ब्यालेन्समा अपर्याप्त ETH "
+                                               "({{balance}} ETH)")
 
    ;;transactions
    :confirm                               "पुष्टि गर्नुहोस्"
@@ -293,8 +294,8 @@
                                            :other "{{count}} कारोबारहरु पुष्टि भए"
                                            :zero  "कुनैपनि कारोबारहरु पुष्टि भएका छैन"}
    :transaction                           "कारोबार"
-   :unsigned-transactions                 "हस्ताक्षर नभएको कारोबारहरु"
-   :no-unsigned-transactions              "हस्ताक्षर नभएको कारोबारहरु छैनन्"
+   :unsigned-transactions                 "हस्ताक्षर नभएका कारोबारहरु"
+   :no-unsigned-transactions              "हस्ताक्षर नभएका कारोबारहरु छैनन्"
    :enter-password-transactions           {:one   "तपाईंको पास्वर्ड प्रविष्ट गरेर कारोबार पुष्टि गर्नुहोस्"
                                            :other "तपाईंको पास्वर्ड प्रविष्ट गरेर कारोबारहरु पुष्टि गर्नुहोस्"}
    :status                                "स्टेटस"
@@ -310,5 +311,5 @@
    :got-it                                "पाइयो"
    :contract-creation                     "सम्झौता सिर्जना"
 
-   ;:webview
+   ;;webview
    :web-view-error                        "ओहोऽऽऽ, त्रुटि"})
