@@ -59,17 +59,36 @@
          ^{:key (str "command-" index)}
          [command-view (= index 0) command])])]])
 
+(defn- add-line-break! [input-text props]
+  (let [{:keys [can-submit? selection ref]} @props]
+    (when can-submit?
+      (let [text          (or @input-text "")
+            text          (str (subs @input-text 0 selection)
+                               "\n"
+                               (subs @input-text selection))
+            new-selection (inc selection)]
+        (dispatch [:set-chat-input-text text])
+        (js/setTimeout
+          (fn []
+            (.setNativeProps ref (clj->js {:selection {:start new-selection
+                                                       :end   new-selection}}))
+            (swap! props assoc :can-submit? true))
+          100)
+        (swap! props assoc :can-submit? false)))))
+
 (defn- basic-text-input [_]
   (let [input-text           (subscribe [:chat :input-text])
         command              (subscribe [:selected-chat-command])
         sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])
         input-focused?       (subscribe [:chat-ui-props :input-focused?])
-        input-ref            (atom nil)]
+        props                (atom {:ref         nil
+                                    :selection   0
+                                    :can-submit? true})]
     (fn [{:keys [set-layout-height set-container-width height single-line-input?]}]
       [text-input
        {:ref                    #(when %
                                    (dispatch [:set-chat-ui-props {:input-ref %}])
-                                   (reset! input-ref %))
+                                   (swap! props assoc :ref %))
         :accessibility-label    id/chat-message-input
         :multiline              (not single-line-input?)
         :default-value          (or @input-text "")
@@ -77,11 +96,11 @@
         :blur-on-submit         false
         :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
                                                                 :show-emoji?    false}])
-        :on-blur                #(do (dispatch [:set-chat-ui-props {:input-focused? false}]))
+        :on-blur                #(dispatch [:set-chat-ui-props {:input-focused? false}])
         :on-submit-editing      (fn [e]
                                   (if single-line-input?
                                     (dispatch [:send-current-message])
-                                    (.setNativeProps @input-ref (clj->js {:text (str @input-text "\n")}))))
+                                    (add-line-break! input-text props)))
         :on-layout              (fn [e]
                                   (set-container-width (.-width (.-layout (.-nativeEvent e)))))
         :on-change              (fn [e]
@@ -108,6 +127,7 @@
                                      (set-layout-height h)))
         :on-selection-change    #(let [s (-> (.-nativeEvent %)
                                              (.-selection))]
+                                   (swap! props assoc :selection (.-end s))
                                    (when (and (= (.-end s) (+ 2 (count (get-in @command [:command :name]))))
                                               (get-in @command [:command :sequential-params]))
                                      (dispatch [:chat-input-focus :seq-input-ref])))
