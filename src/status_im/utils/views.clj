@@ -38,9 +38,11 @@
 
 (defmacro defview
   [n params & rest-body]
-  (let [rest-body' (if (= (ffirst rest-body) 'letsubs)
-                     (rest (first rest-body))
-                     rest-body)
+  (let [first-symbol (ffirst rest-body)
+        rest-body'   (if (and (symbol? first-symbol)
+                              (= (name first-symbol) "letsubs"))
+                       (rest (first rest-body))
+                       rest-body)
         [subs component-map body] (case (count rest-body')
                                     1 [nil {} (first rest-body')]
                                     2 [(first rest-body') {} (second rest-body')]
