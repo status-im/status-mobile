@@ -1,5 +1,5 @@
 (ns status-im.chat.views.input.input
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as str]
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
@@ -213,30 +213,30 @@
                   [icon :close_gray style/input-clear-icon]]]))]))})))
 
 (defview input-container [{:keys [anim-margin]}]
-  [command-completion [:command-completion]
-   selected-command [:selected-chat-command]
-   input-text [:chat :input-text]
-   seq-arg-input-text [:chat :seq-argument-input-text]
-   result-box [:chat-ui-props :result-box]]
-  (let [single-line-input? (:singleLineInput result-box)]
-    [view style/input-container
-     [input-view {:anim-margin        anim-margin
-                  :single-line-input? single-line-input?}]
-     (if (:actions result-box)
-       [input-actions/input-actions-view]
-       (when (and (not (str/blank? input-text))
-                  (or (not selected-command)
-                      (some #{:complete :less-than-needed} [command-completion])))
-         [touchable-highlight {:on-press #(if (get-in selected-command [:command :sequential-params])
-                                            (do
-                                              (when-not (str/blank? seq-arg-input-text)
-                                                (dispatch [:send-seq-argument]))
-                                              (js/setTimeout
-                                                (fn [] (dispatch [:chat-input-focus :seq-input-ref]))
-                                                100))
-                                            (dispatch [:send-current-message]))}
-          [view style/send-message-container
-           [icon :arrow_top style/send-message-icon]]]))]))
+  (letsubs [command-completion [:command-completion]
+            selected-command   [:selected-chat-command]
+            input-text         [:chat :input-text]
+            seq-arg-input-text [:chat :seq-argument-input-text]
+            result-box         [:chat-ui-props :result-box]]
+    (let [single-line-input? (:singleLineInput result-box)]
+      [view style/input-container
+       [input-view {:anim-margin        anim-margin
+                    :single-line-input? single-line-input?}]
+       (if (:actions result-box)
+         [input-actions/input-actions-view]
+         (when (and (not (str/blank? input-text))
+                    (or (not selected-command)
+                        (some #{:complete :less-than-needed} [command-completion])))
+           [touchable-highlight {:on-press #(if (get-in selected-command [:command :sequential-params])
+                                              (do
+                                                (when-not (str/blank? seq-arg-input-text)
+                                                  (dispatch [:send-seq-argument]))
+                                                (js/setTimeout
+                                                  (fn [] (dispatch [:chat-input-focus :seq-input-ref]))
+                                                  100))
+                                              (dispatch [:send-current-message]))}
+            [view style/send-message-container
+             [icon :arrow_top style/send-message-icon]]]))])))
 
 (defn container []
   (let [margin                (subscribe [:chat-input-margin])
