@@ -34,12 +34,19 @@
                              [form `(deref ~sym)]))
                          pairs))]))
 
+(defmacro letsubs [args body])
+
 (defmacro defview
-  [n params & rest]
-  (let [[subs component-map body] (case (count rest)
-                                    1 [nil {} (first rest)]
-                                    2 [(first rest) {} (second rest)]
-                                    3 rest)
+  [n params & rest-body]
+  (let [first-symbol (ffirst rest-body)
+        rest-body'   (if (and (symbol? first-symbol)
+                              (= (name first-symbol) "letsubs"))
+                       (rest (first rest-body))
+                       rest-body)
+        [subs component-map body] (case (count rest-body')
+                                    1 [nil {} (first rest-body')]
+                                    2 [(first rest-body') {} (second rest-body')]
+                                    3 rest-body')
         [subs-bindings vars-bindings] (prepare-subs subs)]
     `(defn ~n ~params
        (let [~@subs-bindings]
