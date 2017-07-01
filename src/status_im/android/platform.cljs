@@ -37,8 +37,7 @@
                                       :background-color "#7099e619"
                                       :border-radius    5
                                       :padding          4}
-                           :item     {:status-text {:color       styles/color-black
-                                                    :line-height 22
+                           :item     {:status-text {:line-height 22
                                                     :font-size   14}}}
    :contacts              {:show-all-text-font :medium}
    :bottom-gradient       {:height 3}

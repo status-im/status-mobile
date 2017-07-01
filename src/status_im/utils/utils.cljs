@@ -110,3 +110,6 @@
 
 (defn get-class [name]
   (adapt-class (get-react-property name)))
+
+(defn hash-tag? [s]
+  (= \# (first s)))
