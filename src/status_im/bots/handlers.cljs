@@ -37,15 +37,13 @@
                                                           :path   [name]
                                                           :result %}])))})))))
 
-(u/register-handler
-  :set-in-bot-db
+(u/register-handler :set-in-bot-db
   (re-frame/after check-subscriptions)
   (fn [{:keys [current-chat-id] :as db} [_ {:keys [bot path value]}]]
     (let [bot (or bot current-chat-id)]
       (assoc-in db (concat [:bot-db bot] path) value))))
 
-(u/register-handler
-  :register-bot-subscription
+(u/register-handler :register-bot-subscription
   (fn [db [_ {:keys [bot subscriptions] :as opts}]]
     (reduce
       (fn [db [sub-name sub-path]]
@@ -56,8 +54,7 @@
       db
       subscriptions)))
 
-(u/register-handler
-  ::calculated-subscription
+(u/register-handler ::calculated-subscription
   (u/side-effect!
     (fn [_ [_ {:keys                  [bot path]
                {:keys [error result]} :result
@@ -69,14 +66,12 @@
                     :value returned}]
           (re-frame/dispatch [:set-in-bot-db opts]))))))
 
-(u/register-handler
-  :update-bot-db
+(u/register-handler :update-bot-db
   (fn [{:keys [current-chat-id] :as app-db} [_ {:keys [bot db]}]]
     (let [bot (or bot current-chat-id)]
       (update-in app-db [:bot-db bot] merge db))))
 
-(u/register-handler
-  :clear-bot-db
+(u/register-handler :clear-bot-db
   (fn [{:keys [current-chat-id] :as app-db} [_ {:keys [bot]}]]
     (let [bot (or bot current-chat-id)]
       (assoc-in app-db [:bot-db bot] nil))))

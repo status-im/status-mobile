@@ -53,22 +53,22 @@
     [text {:style st/author} name]))
 
 (defn message-content-status [_]
-  (let [{:keys [chat-id group-chat name color]} (subscribe [:chat-properties [:chat-id :group-chat :name :color]])
+  (let [{:keys [chat-id group-chat name color]} @(subscribe [:chat-properties [:chat-id :group-chat :name :color]])
         members (subscribe [:current-chat-contacts])]
     (fn [{:keys [messages-count content datemark]}]
-      (let [{:keys [status]} (if @group-chat
+      (let [{:keys [status]} (if group-chat
                                {:photo-path  nil
                                 :status      nil
                                 :last-online 0}
                                (first @members))]
         [view st/status-container
-         [chat-icon-message-status @chat-id @group-chat @name @color false]
+         [chat-icon-message-status chat-id group-chat name color false]
          [text {:style           st/status-from
                 :font            :default
                 :number-of-lines 1}
-          (if (str/blank? @name)
+          (if (str/blank? name)
             (generate-gfy)
-            (or (get-contact-translated @chat-id :name @name)
+            (or (get-contact-translated chat-id :name name)
                 (label :t/chat-name)))]
          (when (or status content)
            [text {:style st/status-text

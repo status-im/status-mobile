@@ -1,6 +1,5 @@
 (ns status-im.components.main-tabs
-  (:require-macros [reagent.ratom :refer [reaction]]
-                   [status-im.utils.views :refer [defview]]
+  (:require-macros [status-im.utils.views :refer [defview]]
                    [cljs.core.async.macros :as am])
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]

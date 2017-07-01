@@ -67,29 +67,29 @@
                 contacts
                 chat-id
                 public?]}
-        (subscribe [:chat-properties [:group-chat :name :contacts :chat-id :public?]])
+        @(subscribe [:chat-properties [:group-chat :name :contacts :chat-id :public?]])
         show-actions? (subscribe [:chat-ui-props :show-actions?])
         accounts      (subscribe [:get :accounts])
-        contact       (subscribe [:get-in [:contacts @chat-id]])
+        contact       (subscribe [:get-in [:contacts chat-id]])
         sync-state    (subscribe [:get :sync-state])
         creating?     (subscribe [:get :creating-account?])]
     (fn []
       [view (st/chat-name-view (or (empty? @accounts)
                                    @show-actions?
                                    @creating?))
-       (let [chat-name (if (str/blank? @name)
+       (let [chat-name (if (str/blank? name)
                          (generate-gfy)
-                         (or (get-contact-translated @chat-id :name @name)
+                         (or (get-contact-translated chat-id :name name)
                              (label :t/chat-name)))]
          [text {:style           st/chat-name-text
                 :number-of-lines 1
                 :font            :toolbar-title}
-          (if @public?
+          (if public?
             (str "#" chat-name)
             chat-name)])
-       (if @group-chat
-         [group-last-activity {:contacts   @contacts
-                               :public?    @public?
+       (if group-chat
+         [group-last-activity {:contacts   contacts
+                               :public?    public?
                                :sync-state @sync-state}]
-         [last-activity {:online-text (online-text @contact @chat-id)
+         [last-activity {:online-text (online-text @contact chat-id)
                          :sync-state  @sync-state}])])))

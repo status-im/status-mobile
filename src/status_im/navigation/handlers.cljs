@@ -1,6 +1,6 @@
 (ns status-im.navigation.handlers
   (:require [re-frame.core :refer [dispatch subscribe debug enrich after]]
-            [status-im.utils.handlers :refer [register-handler]]
+            [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.constants :refer [console-chat-id]]))
 
 (defn push-view [db view-id]
@@ -81,14 +81,17 @@
 
 (register-handler :navigate-to-clean navigate-to-clean)
 
+(defn store-prev-tab
+  [db [_ view-id]]
+  (-> db
+      (assoc :prev-tab-view-id (:view-id db))
+      (assoc :prev-view-id (:view-id db))))
+
 (register-handler :navigate-to-tab
-  (->
-    (fn [db [_ view-id]]
-      (-> db
-          (assoc :prev-tab-view-id (:view-id db))
-          (assoc :prev-view-id (:view-id db))))
-    ((enrich navigate-to-clean))
-    ((enrich preload-data!))))
+  (u/handlers->
+    store-prev-tab
+    navigate-to-clean
+    preload-data!))
 
 (register-handler :on-navigated-to-tab
   (enrich preload-data!)

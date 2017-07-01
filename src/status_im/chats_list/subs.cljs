@@ -1,6 +1,5 @@
 (ns status-im.chats-list.subs
-  (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub subscribe]]
+  (:require [re-frame.core :refer [reg-sub subscribe]]
             [clojure.string :as str]))
 
 (defn search-filter [text item]
@@ -9,11 +8,10 @@
         text (str/lower-case text)]
     (not= (str/index-of name text) nil)))
 
-(register-sub :filtered-chats
-  (fn [_ _]
-    (let [chats       (subscribe [:get :chats])
-          search-text (subscribe [:get-in [:toolbar-search :text]])]
-      (reaction
-       (if @search-text
-         (filter #(search-filter @search-text (second %)) @chats)
-         @chats)))))
+(reg-sub :filtered-chats
+  :<- [:get :chats]
+  :<- [:get-in [:toolbar-search :text]]
+  (fn [[chats search-text]]
+    (if search-text
+      (filter #(search-filter search-text (second %)) chats)
+      chats)))

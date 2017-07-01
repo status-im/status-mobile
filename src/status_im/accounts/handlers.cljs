@@ -1,7 +1,7 @@
 (ns status-im.accounts.handlers
   (:require [status-im.data-store.accounts :as accounts-store]
             [status-im.data-store.processed-messages :as processed-messages]
-            [re-frame.core :refer [register-handler after dispatch dispatch-sync debug]]
+            [re-frame.core :refer [reg-event-db after dispatch dispatch-sync debug]]
             [taoensso.timbre :as log]
             [status-im.protocol.core :as protocol]
             [status-im.components.status :as status]
@@ -22,18 +22,20 @@
             [status-im.protocol.message-cache :as cache]
             [status-im.navigation.handlers :as nav]))
 
-
 (defn save-account
-  [{:keys [network]}
-   [_ account]]
+  [{:keys [network]} [_ account]]
   (accounts-store/save (assoc account :network network) true))
 
-(register-handler
+(defn update-account
+  [{:keys [network] :as db} [_ {:keys [address] :as account}]]
+  (let [account' (assoc account :network network)]
+    (update db :accounts assoc address account')))
+
+(reg-event-db
   :add-account
-  ((after save-account)
-   (fn [{:keys [network] :as db} [_ {:keys [address] :as account}]]
-     (let [account' (assoc account :network network)]
-       (update db :accounts assoc address account')))))
+  (u/handlers->
+    update-account
+      save-account ))
 
 (defn account-created [result password]
   (let [data       (json->clj result)
@@ -55,7 +57,7 @@
       (dispatch [:add-account account])
       (dispatch [:login-account address password true]))))
 
-(register-handler :create-account
+(reg-event-db :create-account
   (u/side-effect!
     (fn [_ [_ password]]
       (dispatch [:set :creating-account? true])
@@ -100,7 +102,7 @@
                    :payload    {:keypair {:public  updates-public-key
                                           :private updates-private-key}}}}))))
 
-(register-handler
+(reg-event-db
   :check-status-change
   (u/side-effect!
     (fn [{:keys [current-account-id accounts]} [_ status]]
@@ -118,23 +120,27 @@
         account (merge (get accounts current-account-id) data)]
     (assoc-in db [:accounts current-account-id] account)))
 
-(register-handler
+(defn account-update-keys
+  [db _]
+  (let [{:keys [public private]} (protocol/new-keypair!)]
+    (account-update db {:updates-public-key  public
+                        :updates-private-key private})))
+
+(reg-event-db
   :account-update
-  (-> (fn [db [_ data]]
-        (account-update db data))
-      ((after save-account!))
-      ((after broadcast-account-update))))
+  (u/handlers->
+    account-update
+    save-account!
+    broadcast-account-update))
 
-(register-handler
+(reg-event-db
   :account-update-keys
-  (-> (fn [db]
-        (let [{:keys [public private]} (protocol/new-keypair!)]
-          (account-update db {:updates-public-key  public
-                              :updates-private-key private})))
-      ((after save-account!))
-      ((after send-keys-update))))
+  (u/handlers->
+    save-account!
+    send-keys-update
+    account-update-keys))
 
-(register-handler
+(reg-event-db
   :send-account-update-if-needed
   (u/side-effect!
     (fn [{:keys [current-account-id accounts]} _]
@@ -151,7 +157,7 @@
     (assoc db :current-account-id address
               :current-public-key key)))
 
-(register-handler :set-current-account set-current-account)
+(reg-event-db :set-current-account set-current-account)
 
 (defn load-accounts! [db _]
   (let [accounts (->> (accounts-store/get-all)
@@ -165,7 +171,7 @@
               :view-id view
               :navigation-stack (list view))))
 
-(register-handler :load-accounts load-accounts!)
+(reg-event-db :load-accounts load-accounts!)
 
 (defn console-create-account [db _]
   (let [message-id (random/id)]
@@ -179,9 +185,9 @@
                 :to           "me"}])
     db))
 
-(register-handler :console-create-account console-create-account)
+(reg-event-db :console-create-account console-create-account)
 
-(register-handler
+(reg-event-db
   :load-processed-messages
   (u/side-effect!
     (fn [_]

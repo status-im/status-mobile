@@ -1,15 +1,14 @@
 (ns status-im.bots.subs
-  (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :as re-frame]))
+  (:require [re-frame.core :refer [reg-sub subscribe]]))
 
-(re-frame/register-sub
+(reg-sub
   :bot-subscription
   (fn [db [_ path]]
-    (let [chat-id (re-frame/subscribe [:get-current-chat-id])]
-      (reaction (get-in @db (concat [:bot-db @chat-id] path))))))
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (get-in db (concat [:bot-db @chat-id] path)))))
 
-(re-frame/register-sub
+(reg-sub
   :current-bot-db
   (fn [db]
-    (let [chat-id (re-frame/subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:bot-db @chat-id])))))
+    (let [chat-id (subscribe [:get-current-chat-id])]
+      (get-in db [:bot-db @chat-id]))))

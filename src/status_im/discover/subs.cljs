@@ -1,6 +1,5 @@
 (ns status-im.discover.subs
-  (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub]]
+  (:require [re-frame.core :refer [reg-sub]]
             [status-im.utils.datetime :as time]))
 
 (defn- calculate-priority [{:keys [chats contacts current-public-key]}
@@ -24,31 +23,28 @@
                      tags')
             (vals discoveries))))
 
-(register-sub :get-popular-discoveries
+(reg-sub :get-popular-discoveries
   (fn [db [_ limit tags]]
-    (let [discoveries (reaction (:discoveries @db))
-          current-tag (reaction (:current-tag @db))
-          search-tags (reaction (:discover-search-tags @db))]
-      (reaction
-        (let [discoveries (->> (get-discoveries-by-tags @discoveries @current-tag (or tags @search-tags))
-                               (map #(assoc % :priority (calculate-priority @db %)))
-                               (sort-by :priority >))]
-          {:discoveries (take limit discoveries)
-           :total       (count discoveries)})))))
+    (let [discoveries (:discoveries db)
+          current-tag (:current-tag db)
+          search-tags (:discover-search-tags db)]
+      (let [discoveries (->> (get-discoveries-by-tags discoveries current-tag (or tags search-tags))
+                             (map #(assoc % :priority (calculate-priority db %)))
+                             (sort-by :priority >))]
+        {:discoveries (take limit discoveries)
+         :total       (count discoveries)}))))
 
-(register-sub :get-recent-discoveries
+(reg-sub :get-recent-discoveries
   (fn [db]
-    (->> (:discoveries @db)
-         (vals)
-         (reaction))))
+    (vals (:discoveries db))))
 
-(register-sub :get-popular-tags
+(reg-sub :get-popular-tags
   (fn [db [_ limit]]
-    (reaction (take limit (:tags @db)))))
+    (take limit (:tags db))))
 
-(register-sub :get-discover-search-results
-  (fn [db _]
-    (let [discoveries (reaction (:discoveries @db))
-          current-tag (reaction (:current-tag @db))
-          tags        (reaction (:discover-search-tags @db))]
-      (reaction (get-discoveries-by-tags @discoveries @current-tag @tags)))))
+(reg-sub :get-discover-search-results
+  (fn [db]
+    (let [discoveries (:discoveries db)
+          current-tag (:current-tag db)
+          tags        (:discover-search-tags db)]
+      (get-discoveries-by-tags discoveries current-tag tags))))

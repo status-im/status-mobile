@@ -115,13 +115,13 @@
 
 (defn actions-list-view []
   (let [{:keys [group-chat chat-id public?]}
-        (subscribe [:chat-properties [:group-chat :chat-id :public?]])
+        @(subscribe [:chat-properties [:group-chat :chat-id :public?]])
         members (subscribe [:current-chat-contacts])
         status-bar-height (get-in platform-specific [:component-styles :status-bar :default :height])]
     (fn []
-      (when-let [actions (if @group-chat
-                           (group-chat-items @members @public?)
-                           (user-chat-items @chat-id))]
+      (when-let [actions (if group-chat
+                           (group-chat-items @members public?)
+                           (user-chat-items chat-id))]
         [view (merge
                 (st/actions-wrapper status-bar-height)
                 (get-in platform-specific [:component-styles :actions-list-view]))

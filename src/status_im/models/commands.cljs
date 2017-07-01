@@ -1,7 +1,5 @@
 (ns status-im.models.commands
-  (:require [status-im.db :as db]
-            [tailrecursion.priority-map :refer [priority-map-by]]
-            [status-im.bots.constants :as bots-constants]))
+  (:require [status-im.bots.constants :as bots-constants]))
 
 (defn parse-command-message-content
   [commands global-commands content]

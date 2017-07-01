@@ -1,6 +1,6 @@
 (ns status-im.profile.handlers
   (:require [re-frame.core :refer [subscribe dispatch after]]
-            [status-im.utils.handlers :refer [register-handler]]
+            [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.components.react :refer [show-image-picker]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
@@ -14,17 +14,17 @@
     (dispatch [:navigation-replace :chat identity])))
 
 (register-handler :open-image-picker
-   (u/side-effect!
-     (fn [_ _]
-       (show-image-picker
-         (fn [image]
-           (let [path       (get (js->clj image) "path")
-                 _ (log/debug path)
-                 on-success (fn [base64]
-                              (dispatch [:set-in [:profile-edit :photo-path] (str "data:image/jpeg;base64," base64)]))
-                 on-error   (fn [type error]
-                              (.log js/console type error))]
-             (img->base64 path on-success on-error)))))))
+  (u/side-effect!
+    (fn [_ _]
+      (show-image-picker
+        (fn [image]
+          (let [path       (get (js->clj image) "path")
+                _ (log/debug path)
+                on-success (fn [base64]
+                             (dispatch [:set-in [:profile-edit :photo-path] (str "data:image/jpeg;base64," base64)]))
+                on-error   (fn [type error]
+                             (.log js/console type error))]
+            (img->base64 path on-success on-error)))))))
 
 (register-handler :phone-number-change-requested
   ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
@@ -50,10 +50,10 @@
 (defn open-edit-profile [_ _]
   (dispatch [:navigate-to :edit-my-profile]))
 
-(register-handler
-  :open-edit-my-profile
-  (-> prepare-edit-profile
-      ((after open-edit-profile))))
+(register-handler :open-edit-my-profile
+  (u/handlers->
+    prepare-edit-profile
+    open-edit-profile))
 
 (defmethod nav/preload-data! :qr-code-view
   [{:keys [current-account-id] :as db} [_ _ {:keys [contact qr-source amount?]}]]

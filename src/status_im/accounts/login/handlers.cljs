@@ -18,8 +18,7 @@
 
 (register-handler :set-login-from-qr set-login-from-qr)
 
-(register-handler
-  :open-login
+(register-handler :open-login
   (after #(dispatch [:navigate-to :login]))
   (fn [db [_ address photo-path name]]
     (update db :login assoc :address address :photo-path photo-path :name name)))
@@ -38,8 +37,7 @@
       (dispatch [:navigate-to-clean :chat-list])
       (dispatch [:navigate-to :chat-list]))))
 
-(register-handler
-  :change-account
+(register-handler :change-account
   (u/side-effect!
     (fn [_ [_ address new-account? callback]]
       (status/clear-web-data)
@@ -59,8 +57,7 @@
     (log/debug "Logged in: " (:view-id db) is-login-screen? new-account?)
     (dispatch [:change-account address new-account? on-account-changed])))
 
-(register-handler
-  :login-account
+(register-handler :login-account
   (after
     (fn [db [_ address password]]
       (status/login address password

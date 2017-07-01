@@ -13,8 +13,7 @@
             [status-im.i18n :as i18n]
             [clojure.string :as str]))
 
-(handlers/register-handler
-  :set-chat-input-text
+(handlers/register-handler :set-chat-input-text
   (fn [{:keys [current-chat-id chats chat-ui-props] :as db} [_ text chat-id]]
     (let [chat-id          (or chat-id current-chat-id)
           ends-with-space? (input-model/text-ends-with-space? text)]
@@ -34,15 +33,13 @@
               (input-model/text->emoji)
               (assoc-in db [:chats chat-id :input-text]))))))
 
-(handlers/register-handler
-  :add-to-chat-input-text
+(handlers/register-handler :add-to-chat-input-text
   (handlers/side-effect!
     (fn [{:keys [chats current-chat-id]} [_ text-to-add]]
       (let [input-text (get-in chats [current-chat-id :input-text])]
         (dispatch [:set-chat-input-text (str input-text text-to-add)])))))
 
-(handlers/register-handler
-  :select-chat-input-command
+(handlers/register-handler :select-chat-input-command
   (handlers/side-effect!
     (fn [{:keys [current-chat-id chat-ui-props] :as db}
          [_ {:keys [prefill prefill-bot-db sequential-params name] :as command} metadata prevent-auto-focus?]]
@@ -69,14 +66,12 @@
         (when-not prevent-auto-focus?
           (dispatch [:chat-input-focus :input-ref]))))))
 
-(handlers/register-handler
-  :set-chat-input-metadata
+(handlers/register-handler :set-chat-input-metadata
   (fn [{:keys [current-chat-id] :as db} [_ data chat-id]]
     (let [chat-id (or chat-id current-chat-id)]
       (assoc-in db [:chats chat-id :input-metadata] data))))
 
-(handlers/register-handler
-  :set-command-argument
+(handlers/register-handler :set-command-argument
   (handlers/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ [index arg move-to-next?]]]
       (let [command     (-> (get-in db [:chats current-chat-id :input-text])
@@ -98,8 +93,7 @@
                                                             (= index (dec (count command-args))))
                                                    const/spacing-char))])))))))
 
-(handlers/register-handler
-  :chat-input-focus
+(handlers/register-handler :chat-input-focus
   (handlers/side-effect!
     (fn [{:keys [current-chat-id chat-ui-props] :as db} [_ ref]]
       (try
@@ -108,8 +102,7 @@
         (catch :default e
           (log/debug "Cannot focus the reference"))))))
 
-(handlers/register-handler
-  :chat-input-blur
+(handlers/register-handler :chat-input-blur
   (handlers/side-effect!
     (fn [{:keys [current-chat-id chat-ui-props] :as db} [_ ref]]
       (try
@@ -118,8 +111,7 @@
         (catch :default e
           (log/debug "Cannot blur the reference"))))))
 
-(handlers/register-handler
-  :update-suggestions
+(handlers/register-handler :update-suggestions
   (fn [{:keys [current-chat-id] :as db} [_ chat-id text]]
     (let [chat-id         (or chat-id current-chat-id)
           chat-text       (str/trim (or text (get-in db [:chats chat-id :input-text]) ""))
@@ -139,8 +131,7 @@
           (assoc-in [:chats chat-id :request-suggestions] requests)
           (assoc-in [:chats chat-id :command-suggestions] all-commands)))))
 
-(handlers/register-handler
-  :load-chat-parameter-box
+(handlers/register-handler :load-chat-parameter-box
   (handlers/side-effect!
     (fn [{:keys [current-chat-id bot-db current-account-id] :as db}
          [_ {:keys [name type bot owner-id] :as command}]]
@@ -175,8 +166,7 @@
                                       :parameter-index parameter-index}
                                      %])})))))))
 
-(handlers/register-handler
-  ::send-message
+(handlers/register-handler ::send-message
   (handlers/side-effect!
     (fn [{:keys [current-public-key current-account-id] :as db} [_ command-message chat-id]]
       (let [text (get-in db [:chats chat-id :input-text])
@@ -194,8 +184,7 @@
           (not (str/blank? text))
           (dispatch [:prepare-message data]))))))
 
-(handlers/register-handler
-  :proceed-command
+(handlers/register-handler :proceed-command
   (handlers/side-effect!
     (fn [db [_ command chat-id]]
       (let [jail-id (or (get-in command [:command :bot]) chat-id)]
@@ -222,8 +211,7 @@
 
           (dispatch [::request-command-data validation-params]))))))
 
-(handlers/register-handler
-  ::proceed-validation-messages
+(handlers/register-handler ::proceed-validation-messages
   (handlers/side-effect!
     (fn [db [_ command chat-id {:keys [markup validationHandler parameters]} proceed-fn]]
       (let [set-errors #(do (dispatch [:set-chat-ui-props {:validation-messages  %
@@ -239,15 +227,13 @@
           :default
           (proceed-fn))))))
 
-(handlers/register-handler
-  ::execute-validation-handler
+(handlers/register-handler ::execute-validation-handler
   (handlers/side-effect!
     (fn [_ [_ name params set-errors proceed]]
       (when-let [validator (input-model/validation-handler name)]
         (validator params set-errors proceed)))))
 
-(handlers/register-handler
-  ::send-command
+(handlers/register-handler ::send-command
   (handlers/side-effect!
     (fn [db [_ on-send {{:keys [fullscreen]} :command :as command} chat-id]]
       (if on-send
@@ -264,8 +250,7 @@
                     :data-type :preview
                     :after     #(dispatch [::send-message % chat-id])}])))))
 
-(handlers/register-handler
-  ::request-command-data
+(handlers/register-handler ::request-command-data
   (handlers/side-effect!
     (fn [{:keys [contacts bot-db] :as db}
          [_ {{:keys [command
@@ -298,8 +283,7 @@
                              :on-requested #(after command-message %)}]
         (dispatch [:request-command-data request-data data-type])))))
 
-(handlers/register-handler
-  :send-current-message
+(handlers/register-handler :send-current-message
   (handlers/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ chat-id]]
       (dispatch [:set-chat-ui-props {:sending-in-progress? true}])
@@ -321,8 +305,7 @@
                 (dispatch [:set-chat-input-text (str text const/spacing-char)]))))
           (dispatch [::send-message nil chat-id]))))))
 
-(handlers/register-handler
-  ::check-dapp-suggestions
+(handlers/register-handler ::check-dapp-suggestions
   (handlers/side-effect!
     (fn [{:keys [current-account-id] :as db} [_ chat-id text]]
       (let [data (get-in db [:local-storage chat-id])]
@@ -333,16 +316,14 @@
            :context    {:data data
                         :from current-account-id}})))))
 
-(handlers/register-handler
-  :clear-seq-arguments
+(handlers/register-handler :clear-seq-arguments
   (fn [{:keys [current-chat-id chats] :as db} [_ chat-id]]
     (let [chat-id (or chat-id current-chat-id)]
       (-> db
           (assoc-in [:chats chat-id :seq-arguments] [])
           (assoc-in [:chats chat-id :seq-argument-input-text] nil)))))
 
-(handlers/register-handler
-  :update-seq-arguments
+(handlers/register-handler :update-seq-arguments
   (fn [{:keys [current-chat-id chats] :as db} [_ chat-id]]
     (let [chat-id (or chat-id current-chat-id)
           text    (get-in chats [chat-id :seq-argument-input-text])]
@@ -350,8 +331,7 @@
           (update-in [:chats chat-id :seq-arguments] #(into [] (conj % text)))
           (assoc-in [:chats chat-id :seq-argument-input-text] nil)))))
 
-(handlers/register-handler
-  :send-seq-argument
+(handlers/register-handler :send-seq-argument
   (handlers/side-effect!
     (fn [{:keys [current-chat-id chats] :as db} [_ chat-id]]
       (let [chat-id          (or chat-id current-chat-id)
@@ -370,14 +350,12 @@
                     :after     #(dispatch [::proceed-validation-messages
                                            command chat-id %2 after-validation])}])))))
 
-(handlers/register-handler
-  :set-chat-seq-arg-input-text
+(handlers/register-handler :set-chat-seq-arg-input-text
   (fn [{:keys [current-chat-id] :as db} [_ text chat-id]]
     (let [chat-id (or chat-id current-chat-id)]
       (assoc-in db [:chats chat-id :seq-argument-input-text] text))))
 
-(handlers/register-handler
-  :update-text-selection
+(handlers/register-handler :update-text-selection
   (handlers/side-effect!
     (fn [{:keys [current-chat-id] :as db} [_ selection]]
       (let [input-text (get-in db [:chats current-chat-id :input-text])
@@ -390,8 +368,7 @@
         (dispatch [:set-chat-ui-props {:selection selection}])
         (dispatch [:load-chat-parameter-box (:command command)])))))
 
-(handlers/register-handler
-  :select-prev-argument
+(handlers/register-handler :select-prev-argument
   (handlers/side-effect!
     (fn [{:keys [chat-ui-props current-chat-id] :as db} _]
       (let [input-text (get-in db [:chats current-chat-id :input-text])
@@ -412,8 +389,7 @@
                 (.setNativeProps ref (clj->js {:selection {:start new-sel :end new-sel}}))
                 (dispatch [:update-text-selection new-sel])))))))))
 
-(handlers/register-handler
-  :select-next-argument
+(handlers/register-handler :select-next-argument
   (handlers/side-effect!
     (fn [{:keys [chat-ui-props current-chat-id] :as db} _]
       (let [arg-pos (input-model/argument-position db current-chat-id)]
