@@ -52,10 +52,12 @@
    :color               common/color-black})
 
 (defnstyle status-view [placeholder?]
-  (merge status-input-view
-         {:color      (if placeholder? common/color-gray common/color-black)
-          :min-height 0
-          :ios        {:padding-top 10}}))
+  (-> (dissoc status-input-view :color)
+      (cond-> placeholder?
+        (assoc :color common/color-gray))
+      (merge
+       {:min-height 0
+        :ios        {:padding-top 10}})))
 
 (def options-button
   {:position :absolute

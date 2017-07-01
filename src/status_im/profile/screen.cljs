@@ -30,7 +30,8 @@
             [status-im.profile.handlers :refer [message-user]]
             [status-im.profile.styles :as st]
             [status-im.i18n :refer [label]]
-            [status-im.utils.datetime :as time]))
+            [status-im.utils.datetime :as time]
+            [status-im.utils.utils :refer [hash-tag?]]))
 
 
 (defn my-profile-toolbar []
@@ -137,7 +138,7 @@
 
 (defn colorize-status-hashtags [status]
   (for [[i status] (map-indexed vector (str/split status #" "))]
-    (if (.startsWith status "#")
+    (if (hash-tag? status)
       ^{:key (str "item-" i)}
       [tag-view status]
       ^{:key (str "item-" i)}
