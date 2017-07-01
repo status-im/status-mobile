@@ -284,9 +284,10 @@
         (dispatch [:start-chat whisper-identity {} :navigation-replace])))))
 
 (register-handler ::prepare-contact
-  (-> add-new-contact
-      ((after save-contact))
-      ((after send-contact-request))))
+  (u/handlers->
+    add-new-contact
+    save-contact
+    send-contact-request))
 
 (register-handler ::update-pending-contact
   (after save-contact)
@@ -310,8 +311,7 @@
 
 (register-handler :set-contact-identity-from-qr set-contact-identity-from-qr)
 
-(register-handler
-  :contact-update-received
+(register-handler :contact-update-received
   (u/side-effect!
     (fn [{:keys [chats current-public-key] :as db} [_ {:keys [from payload]}]]
       (when (not= current-public-key from)
@@ -329,8 +329,7 @@
                 (dispatch [:update-chat! {:chat-id from
                                           :name    name}])))))))))
 
-(register-handler
-  :update-keys-received
+(register-handler :update-keys-received
   (u/side-effect!
     (fn [db [_ {:keys [from payload]}]]
       (let [{{:keys [public private]} :keypair
@@ -345,8 +344,7 @@
                          :keys-last-updated timestamp}]
             (dispatch [:update-contact! contact])))))))
 
-(register-handler
-  :contact-online-received
+(register-handler :contact-online-received
   (u/side-effect!
     (fn [db [_ {:keys                          [from]
                 {{:keys [timestamp]} :content} :payload}]]
@@ -384,8 +382,7 @@
         db)
       db)))
 
-(register-handler
-  :open-contact-menu
+(register-handler :open-contact-menu
   (u/side-effect!
     (fn [_ [_ list-selection-fn {:keys [name] :as contact}]]
       (list-selection-fn {:title       name
@@ -396,8 +393,7 @@
                                            :default))
                           :cancel-text (label :t/cancel)}))))
 
-(register-handler
-  :open-contact-toggle-list
+(register-handler :open-contact-toggle-list
   (after #(dispatch [:navigate-to :contact-toggle-list]))
   (fn [db [_ group-type]]
     (->

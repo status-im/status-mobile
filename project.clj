@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha13"]
                  [org.clojure/clojurescript "1.9.671"]
                  [reagent "0.6.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server]]
-                 [re-frame "0.7.0"]
+                 [re-frame "0.9.4"]
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]

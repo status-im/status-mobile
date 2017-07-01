@@ -41,9 +41,13 @@
       (update :qr-codes dissoc context)
       (dissoc :current-qr-context)))
 
+(defn navigate-back!
+  [{:keys [view-id]} _]
+  (when (= :qr-scanner view-id)
+    (dispatch [:navigate-back])))
+
 (register-handler :set-qr-code
-  (-> (u/side-effect! handle-qr-request)
-      ((enrich clear-qr-request))
-      ((after (fn [{:keys [view-id]}]
-                (when (= :qr-scanner view-id)
-                  (dispatch [:navigate-back])))))))
+  (u/handlers->
+    handle-qr-request
+    clear-qr-request
+    navigate-back!))

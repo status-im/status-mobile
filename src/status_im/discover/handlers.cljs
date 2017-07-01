@@ -125,12 +125,12 @@
                               (into {}))))
 
 (register-handler :add-discover
-  (-> add-discover
-      ((after save-discover!))
-      ((enrich reload-tags!))))
+  (u/handlers->
+    add-discover
+    save-discover!
+    reload-tags!))
 
-(register-handler
-  :remove-old-discoveries!
+(register-handler :remove-old-discoveries!
   (u/side-effect!
     (fn [_ _]
       (discoveries/delete :created-at :asc 1000 200))))

@@ -204,14 +204,16 @@
        (dissoc :messages))))
 
 (defn load-commands!
-  [{:keys [current-chat-id]}]
+  [{:keys [current-chat-id]} _]
   (dispatch [:load-commands! current-chat-id]))
 
 (register-handler :init-chat
   (after #(dispatch [:load-requests!]))
-  (-> load-messages!
-      ((enrich init-chat))
-      ((after load-commands!))))
+
+  (u/handlers->
+    load-messages!
+    init-chat
+    load-commands!))
 
 (defn compare-chats
   [{timesatmp1 :timestamp} {timestamp2 :timestamp}]
@@ -241,7 +243,9 @@
 (register-handler :initialize-chats
   [(after #(dispatch [:load-unviewed-messages!]))
    (after #(dispatch [:load-default-contacts!]))]
-  ((enrich initialize-chats) load-chats!))
+  (u/handlers->
+    initialize-chats
+    load-chats!))
 
 (register-handler :reload-chats
   (fn [{:keys [chats] :as db} _]
@@ -335,10 +339,11 @@
   (dispatch [(or navigation-type :navigate-to) :chat chat-id]))
 
 (register-handler ::start-chat!
-  (-> add-new-chat
-      ((enrich add-chat))
-      ((after save-new-chat!))
-      ((after open-chat!))))
+  (u/handlers->
+    add-new-chat
+    add-chat
+    save-new-chat!
+    open-chat!))
 
 (register-handler :start-chat
   (u/side-effect!
@@ -350,9 +355,10 @@
           (dispatch [::start-chat! contact-id options navigation-type]))))))
 
 (register-handler :add-chat
-  (-> add-new-chat
-      ((enrich add-chat))
-      ((after save-new-chat!))))
+  (u/handlers->
+    add-new-chat
+    add-chat
+    save-new-chat!))
 
 (defn update-chat!
   [_ [_ {:keys [name] :as chat}]]
@@ -417,10 +423,11 @@
       (dispatch [:remove-chat current-chat-id]))))
 
 (register-handler :remove-chat
-  (-> remove-chat
-      ((after delete-messages!))
-      ((after remove-pending-messages!))
-      ((after delete-chat!))))
+  (u/handlers->
+    remove-chat
+    delete-messages!
+    remove-pending-messages!
+    delete-chat!))
 
 (defn send-seen!
   [{:keys [web3 current-public-key chats contacts]}

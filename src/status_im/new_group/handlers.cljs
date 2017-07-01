@@ -1,7 +1,7 @@
 (ns status-im.new-group.handlers
   (:require [status-im.protocol.core :as protocol]
             [re-frame.core :refer [after dispatch debug enrich]]
-            [status-im.utils.handlers :refer [register-handler]]
+            [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.data-store.chats :as chats]
             [status-im.data-store.contact-groups :as groups]
@@ -85,7 +85,7 @@
   (dispatch [:navigate-to :chat (:chat-id new-chat)]))
 
 (defn start-listen-group!
-  [{:keys [new-chat web3 current-public-key]}]
+  [{:keys [new-chat web3 current-public-key]} _]
   (let [{:keys [chat-id public-key private-key contacts name]} new-chat
         identities (mapv :identity contacts)]
     (protocol/invite-to-group!
@@ -108,11 +108,12 @@
        :callback #(dispatch [:incoming-message %1 %2])})))
 
 (register-handler :create-new-group-chat
-  (-> prepare-chat
-      ((enrich add-chat))
-      ((after create-chat!))
-      ((after show-chat!))
-      ((after start-listen-group!))))
+  (u/handlers->
+    prepare-chat
+    add-chat
+    create-chat!
+    show-chat!
+    start-listen-group!))
 
 (register-handler :create-new-public-group
   (after (fn [_ [_ topic]]
@@ -200,31 +201,30 @@
   [{:keys [new-group] :as db} _]
   (update db :contact-groups merge {(:group-id new-group) new-group}))
 
-(defn create-group!
+(defn save-group!
   [{:keys [new-group]} _]
-  (groups/save new-group))
-
-(defn update-group!
-  [{:keys [new-group] :as db} _]
   (groups/save new-group))
 
 (defn show-contact-list!
   [_ _]
   (dispatch [:navigate-to-clean :contact-list]))
 
-(register-handler
-  :create-new-group
-  (-> prepare-group
-      ((enrich add-group))
-      ((after create-group!))
-      ((after show-contact-list!))))
+(register-handler :create-new-group
+  (u/handlers->
+    prepare-group
+    add-group
+    save-group!
+    show-contact-list!))
 
-(register-handler
-  :update-group
-  (-> (fn [db [_ new-group]]
-          (assoc db :new-group new-group))
-      ((enrich update-group))
-      ((after update-group!))))
+(defn update-new-group
+  [db [_ new-group]]
+  (assoc db :new-group new-group))
+
+(register-handler :update-group
+  (u/handlers->
+    update-new-group
+    update-group
+    save-group!))
 
 (defn save-groups! [{:keys [new-groups]} _]
   (groups/save-all new-groups))
@@ -326,8 +326,7 @@
   [{:keys [contact-group-id selected-contacts]} _]
   (groups/add-contacts contact-group-id selected-contacts))
 
-(register-handler
-  :add-selected-contacts-to-group
+(register-handler :add-selected-contacts-to-group
   (after add-selected-contacts-to-group!)
   add-selected-contacts-to-group)
 
@@ -343,8 +342,7 @@
   (when (get-in db [:contact-groups group-id])
     (groups/add-contacts group-id contacts)))
 
-(register-handler
-  :add-contacts-to-group
+(register-handler :add-contacts-to-group
   (after add-contacts-to-group!)
   add-contacts-to-group)
 

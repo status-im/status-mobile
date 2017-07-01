@@ -1,6 +1,6 @@
 (ns status-im.group-settings.handlers
-  (:require [re-frame.core :refer [debug dispatch after enrich]]
-            [status-im.utils.handlers :refer [register-handler]]
+  (:require [re-frame.core :refer [dispatch after enrich]]
+            [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.chat.handlers :refer [delete-messages!]]
             [status-im.protocol.core :as protocol]
             [status-im.utils.random :as random]
@@ -133,18 +133,15 @@
 
 (register-handler :remove-participants
   ;; todo check if user have rights to add/remove participants
-  ;; todo order of operations tbd
-  (-> remove-members
-      ;; todo shouldn't this be done only after receiving of the "ack message"
-      ;; about the api call that removes participants from the group?
-      ((after remove-members-from-chat!))
-      ;; todo uncomment
-      ((after notify-about-removing!))
-      ((after create-removing-messages!))
-      ((enrich deselect-members))
-      debug))
+  ;; todo order of operations tb
+  (u/handlers->
+    remove-members
+    remove-members-from-chat!
+    notify-about-removing!
+    create-removing-messages!
+    deselect-members))
 
-(defn add-memebers
+(defn add-members
   [{:keys [current-chat-id selected-participants] :as db} _]
   (let [new-identities (map #(hash-map :identity %) selected-participants)]
     (update-in db [:chats current-chat-id :contacts] concat new-identities)))
@@ -194,8 +191,8 @@
                                           :message-id (random/id)}}))))
 
 (register-handler :add-new-participants
-  ;; todo order of operations tbd
-  (-> add-memebers
-      ((after add-members-to-chat!))
-      ((after notify-about-new-members!))
-      ((enrich deselect-members))))
+  (u/handlers->
+    add-members
+    add-members-to-chat!
+    notify-about-new-members!
+    deselect-members))

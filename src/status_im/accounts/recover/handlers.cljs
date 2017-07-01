@@ -1,5 +1,5 @@
 (ns status-im.accounts.recover.handlers
-  (:require [re-frame.core :refer [register-handler after dispatch dispatch-sync]]
+  (:require [re-frame.core :refer [reg-event-db after dispatch dispatch-sync]]
             [status-im.components.status :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.utils.identicon :refer [identicon]]
@@ -37,7 +37,7 @@
     password
     account-recovered))
 
-(register-handler :recover-account (u/side-effect! recover-account))
+(reg-event-db :recover-account (u/side-effect! recover-account))
 
 (defmethod nav/preload-data! :recover
   [db]

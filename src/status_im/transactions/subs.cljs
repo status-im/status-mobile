@@ -1,25 +1,24 @@
 (ns status-im.transactions.subs
-  (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub subscribe]]
+  (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.hex :as i]))
 
-(register-sub :transactions
+(reg-sub :transactions
   (fn [db]
-    (reaction (vals (:transactions @db)))))
+    (vals (:transactions db))))
 
-(register-sub :contacts-by-address
+(reg-sub :contacts-by-address
   (fn [db]
-    (reaction (into {} (map (fn [[_ {:keys [address] :as contact}]]
-                              (when address
-                                [address contact]))
-                            (:contacts @db))))))
+    (into {} (map (fn [[_ {:keys [address] :as contact}]]
+                    (when address
+                      [address contact]))
+                  (:contacts db)))))
 
-(register-sub :contact-by-address
-  (fn [_ [_ address]]
-    (let [contacts (subscribe [:contacts-by-address])
-          address' (when address
+(reg-sub :contact-by-address
+  :<- [:contacts-by-address]
+  (fn [contacts [_ address]]
+    (let [address' (when address
                      (i/normalize-hex address))]
-      (reaction (@contacts address')))))
+      (contacts address'))))
 
-(register-sub :wrong-password?
-  (fn [db] (reaction (:wrong-password? @db))))
+(reg-sub :wrong-password?
+  (fn [db] (:wrong-password? db)))

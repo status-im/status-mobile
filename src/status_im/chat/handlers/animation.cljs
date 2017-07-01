@@ -5,21 +5,18 @@
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]))
 
-(handlers/register-handler
-  :set-expandable-height
+(handlers/register-handler :set-expandable-height
   (fn [{:keys [current-chat-id] :as db} [_ key value]]
     (-> db
         (assoc-in [:chat-animations current-chat-id key :height] value)
         (update-in [:chat-animations current-chat-id key :changes-counter] inc))))
 
-(handlers/register-handler
-  :hide-expandable
+(handlers/register-handler :hide-expandable
   (handlers/side-effect!
     (fn [_ [_ key]]
       (dispatch [:set-expandable-height key 1]))))
 
-(handlers/register-handler
-  :choose-predefined-expandable-height
+(handlers/register-handler :choose-predefined-expandable-height
   (handlers/side-effect!
     (fn [{:keys [current-chat-id chat-ui-props layout-height] :as db} [_ key preset]]
       (if (= preset :max)
@@ -34,8 +31,7 @@
                                   (input-utils/default-container-area-height bottom layout-height))]
           (dispatch [:set-expandable-height key height]))))))
 
-(handlers/register-handler
-  :fix-expandable-height
+(handlers/register-handler :fix-expandable-height
   (handlers/side-effect!
     (fn [{:keys [current-chat-id chats chat-ui-props layout-height] :as db} [_ vy current key]]
       (let [input-height      (get-in chat-ui-props [current-chat-id :input-height])
