@@ -1,5 +1,5 @@
 (ns status-im.protocol.message
-  (:require [cljs.spec :as s]))
+  (:require [cljs.spec.alpha :as s]))
 
 (s/def :message/ttl (s/and int? pos?))
 (s/def :message/from string?)

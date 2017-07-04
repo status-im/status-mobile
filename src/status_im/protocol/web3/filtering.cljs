@@ -1,6 +1,6 @@
 (ns status-im.protocol.web3.filtering
   (:require [status-im.protocol.web3.utils :as u]
-            [cljs.spec :as s]
+            [cljs.spec.alpha :as s]
             [taoensso.timbre :as log]))
 
 (def status-topic "0xaabb11ee")

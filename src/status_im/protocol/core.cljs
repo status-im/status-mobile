@@ -12,7 +12,7 @@
             [status-im.protocol.listeners :as l]
             [status-im.protocol.encryption :as e]
             [status-im.protocol.discoveries :as discoveries]
-            [cljs.spec :as s]
+            [cljs.spec.alpha :as s]
             [status-im.utils.random :as random]))
 
 ;; user

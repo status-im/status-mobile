@@ -4,13 +4,14 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha13"]
-                 [org.clojure/clojurescript "1.9.456"]
+                 [org.clojure/clojurescript "1.9.671"]
                  [reagent "0.6.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server]]
                  [re-frame "0.7.0"]
                  [natal-shell "0.3.0"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]
-                 [com.taoensso/timbre "4.7.4"]]
+                 [com.taoensso/timbre "4.7.4"]
+                 [com.google.guava/guava "21.0"]]
   :plugins [[lein-cljsbuild "1.1.4"]
             [lein-figwheel "0.5.8"]
             [lein-re-frisk "0.4.7"]
@@ -35,14 +36,14 @@
                     :cljsbuild    {:builds [{:id           :ios
                                              :source-paths ["src" "env/dev"]
                                              :figwheel     true
-                                             :compiler     {:output-to     "target/ios/not-used.js"
+                                             :compiler     {:output-to     "target/ios/app.js"
                                                             :main          "env.ios.main"
                                                             :output-dir    "target/ios"
                                                             :optimizations :none}}
                                             {:id           :android
                                              :source-paths ["src" "env/dev"]
                                              :figwheel     true
-                                             :compiler     {:output-to     "target/android/not-used.js"
+                                             :compiler     {:output-to     "target/android/app.js"
                                                             :main          "env.android.main"
                                                             :output-dir    "target/android"
                                                             :optimizations :none}}
@@ -64,7 +65,8 @@
                                                          :optimize-constants true
                                                          :optimizations      :advanced
                                                          :externs            ["externs/externs.js"]
-                                                         :closure-defines    {"goog.DEBUG" false}}}
+                                                         :closure-defines    {"goog.DEBUG" false}
+                                                         :parallel-build true}}
                                          {:id           "android"
                                           :source-paths ["src" "env/prod"]
                                           :compiler     {:output-to          "index.android.js"
@@ -74,4 +76,5 @@
                                                          :optimize-constants true
                                                          :optimizations      :advanced
                                                          :externs            ["externs/externs.js"]
-                                                         :closure-defines    {"goog.DEBUG" false}}}]}}})
+                                                         :closure-defines    {"goog.DEBUG" false}
+                                                         :parallel-build true}}]}}})

@@ -18,7 +18,7 @@
             [status-im.new-group.styles :as st]
             [status-im.new-group.validations :as v]
             [status-im.i18n :refer [label]]
-            [cljs.spec :as s]))
+            [cljs.spec.alpha :as s]))
 
 (defview new-group-toolbar []
   [topic [:get :public-group/topic]]

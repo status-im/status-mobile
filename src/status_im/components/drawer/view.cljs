@@ -1,6 +1,6 @@
 (ns status-im.components.drawer.view
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [cljs.spec :as s]
+  (:require [cljs.spec.alpha :as s]
             [clojure.string :as str]
             [reagent.core :as r]
             [re-frame.core :as rf]
@@ -29,7 +29,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]))
 
-(defonce drawer-atom (atom))
+(defonce drawer-atom (atom nil))
 (defn open-drawer [] (.openDrawer @drawer-atom))
 (defn close-drawer [] (.closeDrawer @drawer-atom))
 

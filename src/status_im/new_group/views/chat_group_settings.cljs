@@ -19,7 +19,7 @@
             [status-im.new-group.validations :as v]
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [ios?]]
-            [cljs.spec :as s]))
+            [cljs.spec.alpha :as s]))
 
 (def contacts-limit 3)
 

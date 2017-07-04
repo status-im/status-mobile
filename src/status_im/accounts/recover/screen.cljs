@@ -14,7 +14,7 @@
             [status-im.i18n :as i18n]
             [status-im.accounts.recover.styles :as st]
             [status-im.accounts.recover.validations :as v]
-            [cljs.spec :as spec]
+            [cljs.spec.alpha :as spec]
             [clojure.string :as str]))
 
 (defview passphrase-input [passphrase]
