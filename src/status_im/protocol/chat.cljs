@@ -1,5 +1,5 @@
 (ns status-im.protocol.chat
-  (:require [cljs.spec :as s]
+  (:require [cljs.spec.alpha :as s]
             [status-im.protocol.web3.filtering :as f]
             [status-im.protocol.web3.delivery :as d]
             [taoensso.timbre :refer-macros [debug]]

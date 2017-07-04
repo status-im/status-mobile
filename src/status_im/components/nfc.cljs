@@ -1,5 +1,5 @@
 (ns status-im.components.nfc
-  (:require [cljs.spec :as s]
+  (:require [cljs.spec.alpha :as s]
             [status-im.utils.platform :as platform]))
 
 (def class

@@ -5,7 +5,7 @@
     [status-im.protocol.web3.delivery :as d]
     [status-im.protocol.web3.filtering :as f]
     [status-im.protocol.listeners :as l]
-    [cljs.spec :as s]
+    [cljs.spec.alpha :as s]
     [status-im.protocol.validation :refer-macros [valid?]]
     [status-im.utils.random :as random]
     [status-im.protocol.web3.keys :as shh-keys]))

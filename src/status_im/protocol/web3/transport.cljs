@@ -1,6 +1,6 @@
 (ns status-im.protocol.web3.transport
   (:require [status-im.protocol.web3.utils :as u]
-            [cljs.spec :as s]
+            [cljs.spec.alpha :as s]
             [status-im.protocol.validation :refer-macros [valid?]]
             [taoensso.timbre :refer-macros [debug]]))
 

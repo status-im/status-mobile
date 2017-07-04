@@ -2,7 +2,7 @@
   (:require
     [status-im.protocol.web3.delivery :as d]
     [status-im.protocol.web3.utils :as u]
-    [cljs.spec :as s]
+    [cljs.spec.alpha :as s]
     [taoensso.timbre :refer-macros [debug]]
     [status-im.protocol.validation :refer-macros [valid?]]
     [status-im.protocol.web3.filtering :as f]

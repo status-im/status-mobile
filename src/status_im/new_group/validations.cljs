@@ -1,5 +1,5 @@
 (ns status-im.new-group.validations
-  (:require [cljs.spec :as s]
+  (:require [cljs.spec.alpha :as s]
             [status-im.utils.phone-number :refer [valid-mobile-number?]]
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [clojure.string :as str]

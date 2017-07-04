@@ -21,7 +21,7 @@
                                                  color-blue]]
             [status-im.components.image-button.view :refer [scan-button]]
             [status-im.i18n :refer [label]]
-            [cljs.spec :as s]
+            [cljs.spec.alpha :as s]
             [status-im.contacts.validations :as v]
             [status-im.contacts.styles :as st]
             [status-im.data-store.contacts :as contacts]

@@ -1,5 +1,5 @@
 (ns status-im.contacts.validations
-  (:require [cljs.spec :as s]
+  (:require [cljs.spec.alpha :as s]
             [clojure.string :as str]
             [status-im.data-store.contacts :as contacts]))
 

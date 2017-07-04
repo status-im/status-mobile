@@ -4,7 +4,7 @@
             [status-im.protocol.web3.transport :as t]
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
-            [cljs.spec :as s]
+            [cljs.spec.alpha :as s]
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
             [clojure.set :as set]

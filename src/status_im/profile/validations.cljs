@@ -1,5 +1,5 @@
 (ns status-im.profile.validations
-  (:require [cljs.spec :as s]
+  (:require [cljs.spec.alpha :as s]
             [status-im.constants :refer [console-chat-id wallet-chat-id]]
             [status-im.chat.constants :as chat-consts]
             [clojure.string :as str]

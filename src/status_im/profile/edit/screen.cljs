@@ -1,6 +1,6 @@
 (ns status-im.profile.edit.screen
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [cljs.spec :as s]
+  (:require [cljs.spec.alpha :as s]
             [clojure.string :as str]
             [reagent.core :as r]
             [re-frame.core :refer [dispatch]]
