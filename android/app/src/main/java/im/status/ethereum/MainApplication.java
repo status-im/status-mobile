@@ -39,7 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected List<ReactPackage> getPackages() {
-            List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
+            List<ReactPackage> packages = Arrays.asList(
                     new MainReactPackage(),
                     new HttpServerReactPackage(),
                     new NfcReactNativePackage(),
@@ -59,7 +59,7 @@ public class MainApplication extends Application implements ReactApplication {
                     new ImageResizerPackage(),
                     new PickerPackage(),
                     new WebViewBridgePackage(BuildConfig.DEBUG)
-            ));
+            );
 
             if (!BuildConfig.DEBUG) {
                 packages.add(new RNInstabugReactnativePackage("b239f82a9cb00464e4c72cc703e6821e", MainApplication.this, "shake"));

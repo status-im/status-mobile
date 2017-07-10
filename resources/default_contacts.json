@@ -39,7 +39,7 @@
         "has-global-command?": true,
         "dapp-url":
         {
-          "en": "https://status.im/dapps/wallet/"
+            "en": "https://status.im/dapps/wallet/"
         },
         "bot-url": "local://wallet-bot",
         "unremovable?": true
@@ -197,7 +197,7 @@
         },
         "groups": ["dapps"]
     },
-    
+
     "Dentacoin":
     {
         "name":
@@ -242,7 +242,7 @@
         },
         "groups": ["dapps"]
     },
-    
+
     "Commiteth":
     {
         "name":
@@ -269,6 +269,21 @@
         "dapp-url":
         {
             "en": "http://test.etherplay.io"
+        },
+        "groups": ["dapps"]
+    },
+
+    "Blockjack":
+    {
+        "name":
+        {
+            "en":"Blockjack"
+        },
+        "photo-path": "contacts://blockjack",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://winsome.io/blockjack"
         },
         "groups": ["dapps"]
     }
