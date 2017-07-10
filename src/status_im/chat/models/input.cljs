@@ -158,7 +158,7 @@
   (let [params (:params command)]
     (->> args
          (map-indexed (fn [i value]
-                        (vector (get-in params [i :name]) value)))
+                        [(keyword (get-in params [i :name])) value]))
          (into {}))))
 
 (defn command-dependent-context-params

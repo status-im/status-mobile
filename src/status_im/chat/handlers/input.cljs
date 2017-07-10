@@ -168,10 +168,10 @@
 
 (handlers/register-handler ::send-message
   (handlers/side-effect!
-    (fn [{:keys [current-public-key current-account-id] :as db} [_ command-message chat-id]]
+    (fn [{:keys [current-public-key current-account-id] :as db} [_ command chat-id]]
       (let [text (get-in db [:chats chat-id :input-text])
             data {:message  text
-                  :command  command-message
+                  :command  command
                   :chat-id  chat-id
                   :identity current-public-key
                   :address  current-account-id}]
@@ -179,41 +179,30 @@
         (dispatch [:set-chat-input-metadata nil chat-id])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (cond
-          command-message
+          command
           (dispatch [:check-commands-handlers! data])
           (not (str/blank? text))
           (dispatch [:prepare-message data]))))))
 
 (handlers/register-handler :proceed-command
   (handlers/side-effect!
-    (fn [db [_ command chat-id]]
-      (let [jail-id (or (get-in command [:command :bot]) chat-id)]
-        ;:check-and-load-commands!
-        (let [params
-              {:command command
-               :chat-id chat-id
-               :jail-id jail-id}
+    (fn [db [_ {{:keys [bot]} :command :as content} chat-id]]
+      (let [params            {:content content
+                               :chat-id chat-id
+                               :jail-id (or bot chat-id)}
+            on-send-params    (merge params
+                                     {:data-type :on-send
+                                      :after     #(dispatch [::send-command %2 content chat-id])})
+            after-validation  #(dispatch [::request-command-data on-send-params])
+            validation-params (merge params
+                                     {:data-type :validator
+                                      :after     #(dispatch [::proceed-validation %2 after-validation])})]
 
-              on-send-params
-              (merge params
-                     {:data-type :on-send
-                      :after     (fn [_ res]
-                                   (dispatch [::send-command res command chat-id]))})
+        (dispatch [::request-command-data validation-params])))))
 
-              after-validation
-              #(dispatch [::request-command-data on-send-params])
-
-              validation-params
-              (merge params
-                     {:data-type :validator
-                      :after     #(dispatch [::proceed-validation-messages
-                                             command chat-id %2 after-validation])})]
-
-          (dispatch [::request-command-data validation-params]))))))
-
-(handlers/register-handler ::proceed-validation-messages
+(handlers/register-handler ::proceed-validation
   (handlers/side-effect!
-    (fn [db [_ command chat-id {:keys [markup validationHandler parameters]} proceed-fn]]
+    (fn [db [_ {:keys [markup validationHandler parameters]} proceed-fn]]
       (let [set-errors #(do (dispatch [:set-chat-ui-props {:validation-messages  %
                                                            :sending-in-progress? false}]))]
         (cond
@@ -235,7 +224,7 @@
 
 (handlers/register-handler ::send-command
   (handlers/side-effect!
-    (fn [db [_ on-send {{:keys [fullscreen]} :command :as command} chat-id]]
+    (fn [db [_ on-send {{:keys [fullscreen bot]} :command :as content} chat-id]]
       (if on-send
         (do
           (when fullscreen
@@ -244,9 +233,9 @@
                                          :sending-in-progress? false}])
           (react-comp/dismiss-keyboard!))
         (dispatch [::request-command-data
-                   {:command   command
+                   {:content   content
                     :chat-id   chat-id
-                    :jail-id   (get-in command [:command :bot])
+                    :jail-id   (or bot chat-id)
                     :data-type :preview
                     :after     #(dispatch [::send-message % chat-id])}])))))
 
@@ -256,8 +245,8 @@
          [_ {{:keys [command
                      metadata
                      args]
-              :as   c} :command
-             :keys     [message-id chat-id jail-id data-type after]}]]
+              :as   content} :content
+             :keys     [chat-id jail-id data-type after]}]]
       (let [{:keys [dapp? dapp-url name]} (get contacts chat-id)
             message-id      (random/id)
             metadata        (merge metadata
@@ -266,7 +255,10 @@
                                       :name (i18n/get-contact-translated chat-id :name name)}))
             owner-id        (:owner-id command)
             bot-db          (get bot-db chat-id)
-            params          (assoc (input-model/args->params c) :bot-db bot-db)
+            params          (merge (input-model/args->params content)
+                                   {:bot-db   bot-db
+                                    :metadata metadata})
+
             command-message {:command    command
                              :params     params
                              :to-message (:to-message-id metadata)
@@ -274,11 +266,12 @@
                              :id         message-id
                              :chat-id    chat-id
                              :jail-id    (or owner-id jail-id)}
+
             request-data    {:message-id   message-id
                              :chat-id      chat-id
                              :jail-id      (or owner-id jail-id)
                              :content      {:command (:name command)
-                                            :params  (assoc params :metadata metadata :bot-db bot-db)
+                                            :params  params
                                             :type    (:type command)}
                              :on-requested #(after command-message %)}]
         (dispatch [:request-command-data request-data data-type])))))
@@ -344,11 +337,11 @@
                                 (dispatch [:update-seq-arguments chat-id])
                                 (dispatch [:send-current-message]))]
         (dispatch [::request-command-data
-                   {:command   command
+                   {:content   command
                     :chat-id   chat-id
+                    ;;TODO(alwx): jail-id ?
                     :data-type :validator
-                    :after     #(dispatch [::proceed-validation-messages
-                                           command chat-id %2 after-validation])}])))))
+                    :after     #(dispatch [::proceed-validation %2 after-validation])}])))))
 
 (handlers/register-handler :set-chat-seq-arg-input-text
   (fn [{:keys [current-chat-id] :as db} [_ text chat-id]]

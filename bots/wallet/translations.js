@@ -13,12 +13,14 @@ I18n.translations = {
         send_explanation_2: 'usually within a minute.',
         send_explanation_3: 'probably within 30 seconds.',
         send_explanation_4: 'probably within a few seconds.',
+        send_sending_to: 'to ',
 
         eth: 'ETH',
 
         request_title: 'Request ETH',
         request_description: 'Request a payment',
         request_requesting: 'Requesting ',
+        request_requesting_from: 'from ',
 
         validation_title: 'Amount',
         validation_amount_specified: 'Amount must be specified',

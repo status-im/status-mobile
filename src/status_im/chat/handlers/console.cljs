@@ -10,24 +10,24 @@
 
 (def console-commands
   {:password
-   (fn [params _]
-     (dispatch [:create-account (params "password")]))
+   (fn [{:keys [password]} _]
+     (dispatch [:create-account password]))
 
    :phone
-   (fn [params id]
-     (dispatch [:sign-up (params "phone") id]))
+   (fn [{:keys [phone]} id]
+     (dispatch [:sign-up phone id]))
 
    :confirmation-code
-   (fn [params id]
-     (dispatch [:sign-up-confirm (params "code") id]))
+   (fn [{:keys [code]} id]
+     (dispatch [:sign-up-confirm code id]))
 
    :faucet
-   (fn [params id]
-     (dispatch [:open-faucet (params "url") id]))
+   (fn [{:keys [url]} id]
+     (dispatch [:open-faucet url id]))
 
    :debug
-   (fn [params id]
-     (let [debug-on? (= (params "mode") "On")]
+   (fn [{:keys [mode]} id]
+     (let [debug-on? (= mode "On")]
        (dispatch [:account-update {:debug? debug-on?}])
        (if debug-on?
          (do
@@ -49,10 +49,14 @@
 
 (register-handler :invoke-console-command-handler!
   (u/side-effect!
-    (fn [_ [_ {:keys [chat-id command-message] :as parameters}]]
-      (let [{:keys [id command params]} command-message
-            {:keys [name]} command]
-        (dispatch [:prepare-command! chat-id parameters])
+    (fn [_ [_ {{:keys [command
+                       params
+                       id]
+                :as   content} :command
+               chat-id         :chat-id
+               :as             all-params}]]
+      (let [{:keys [name]} command]
+        (dispatch [:prepare-command! chat-id all-params])
         ((console-commands (keyword name)) params id)))))
 
 (register-handler :set-message-status

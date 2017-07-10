@@ -21,7 +21,7 @@
   (handlers/side-effect!
     (fn [{:keys [contacts current-account-id chats] :as db}
          [_ {{:keys [command params content-command type]} :content
-             :keys [message-id from chat-id on-requested jail-id] :as message} data-type]]
+             :keys [message-id chat-id jail-id on-requested from] :as message} data-type]]
       (let [jail-id  (or jail-id chat-id)
             jail-id' (if (get-in chats [jail-id :group-chat])
                        (get-in chats [jail-id :command-suggestions (keyword command) :owner-id])
