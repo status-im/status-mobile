@@ -1,8 +1,9 @@
 I18n.translations = {
     en: {
         location_title: 'Location',
+        location_suggestions_title: 'Send location',
         location_description: 'Share your location',
-        location_address: 'Address'
+        location_address: 'address'
     },
     ru: {
         location_title: 'Местоположение',

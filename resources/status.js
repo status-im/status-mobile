@@ -40,6 +40,7 @@ Command.prototype.create = function (com) {
     this.request = com.request;
     this["execute-immediately?"] = com.executeImmediately;
     this["sequential-params"] = com.sequentialParams;
+    this["hide-send-button"] = com.hideSendButton;
     this.addToCatalog();
 
     return this;
@@ -186,6 +187,30 @@ function chooseContact(titleText, botDbKey, argumentIndex) {
     }];
 }
 
+function droppedPin() {
+    return ['dropped-pin'];
+}
+
+function placesSearch() {
+    return ['places-search'];
+}
+
+function currentLocationMap() {
+    return ['current-location-map'];
+}
+
+function currentLocation() {
+    return ['current-location'];
+}
+
+function placesNearby() {
+    return ['places-nearby'];
+}
+
+function separator() {
+    return ['separator'];
+}
+
 var status = {
     command: function (h) {
         var command = new Command();
@@ -245,7 +270,13 @@ var status = {
         bridgedWebView: bridgedWebView,
         chooseContact: chooseContact,
         subscribe: subscribe,
-        dispatch: dispatch
+        dispatch: dispatch,
+        droppedPin: droppedPin,
+        placesSearch: placesSearch,
+        currentLocationMap: currentLocationMap,
+        currentLocation: currentLocation,
+        placesNearby: placesNearby,
+        separator: separator
     },
     showSuggestions: function (view) {
         statusSignals.showSuggestions(JSON.stringify(view));

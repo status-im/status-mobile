@@ -34,7 +34,7 @@
                              [form `(deref ~sym)]))
                          pairs))]))
 
-(defmacro letsubs [args body])
+(defmacro letsubs [args & body])
 
 (defmacro defview
   [n params & rest-body]

@@ -260,9 +260,9 @@
                      :bot-url          bot-url
                      :global-command   global-command
                      :dapp-hash        dapp-hash}]
-                (dispatch [:add-contacts [contact]])
-                (when bot-url
-                  (dispatch [:load-commands! id']))))))))))
+                (dispatch [:add-contacts [contact]])))
+            (when bot-url
+              (dispatch [:load-commands! id']))))))))
 
 
 (register-handler :add-contacts

@@ -38,12 +38,12 @@
 
 (defn suggestions-handler!
   [{:keys [contacts chats] :as db} [{:keys [chat-id default-db command parameter-index result]}]]
-  (let [{:keys [markup] :as returned} (get-in result [:result :returned])
+  (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
         contains-markup? (contains? returned :markup)
         path (if command
                [:chats chat-id :parameter-boxes (:name command) parameter-index]
                [:chats chat-id :parameter-boxes :message])]
-    (dispatch [:choose-predefined-expandable-height :parameter-box :default])
+    (dispatch [:choose-predefined-expandable-height :parameter-box (or (keyword height) :default)])
     (when (and contains-markup? (not= (get-in db path) markup))
       (dispatch [:set-in path returned])
       (when default-db

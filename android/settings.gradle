@@ -41,3 +41,6 @@ project(':react-native-image-crop-picker').projectDir = new File(settingsDir, '.
 
 include ':react-native-webview-bridge'
 project(':react-native-webview-bridge').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-webview-bridge/android')
+
+include ':reactnativemapboxgl'
+project(':reactnativemapboxgl').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-mapbox-gl/android')

@@ -211,6 +211,16 @@
    :chat-send-eth-to                      "{{amount}} ETH to {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH from {{chat-name}}"
 
+   ;location command
+   :your-current-location                 "Your current location"
+   :places-nearby                         "Places nearby"
+   :search-results                        "Search results"
+   :dropped-pin                           "Dropped pin"
+   :location                              "Location"
+   :open-map                              "Open Map"
+   :sharing-copy-to-clipboard-address     "Copy the Address"
+   :sharing-copy-to-clipboard-coordinates "Copy coordinates"
+
    ;new-group
    :group-chat-name                       "Chat name"
    :empty-group-chat-name                 "Please enter a name"
