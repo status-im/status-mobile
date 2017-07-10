@@ -13,8 +13,8 @@
     (+ created-at                                           ;; message is newer => priority is higher
        (if (or me? contact) time/day 0)                     ;; user exists in contact list => increase priority
        (if (or me? chat) time/day 0)                        ;; chat with this user exists => increase priority
-       (if (or me? seen-online-recently?) time/hour 0)      ;; the user was online recently => increase priority
-       )))
+       (if (or me? seen-online-recently?) time/hour 0))))      ;; the user was online recently => increase priority
+
 
 (defn- get-discoveries-by-tags [discoveries current-tag tags]
   (let [tags' (or tags [current-tag])]

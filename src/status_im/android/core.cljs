@@ -3,6 +3,7 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
+            [status-im.specs]
             [status-im.components.react :refer [app-registry
                                                 app-state
                                                 keyboard
@@ -176,5 +177,4 @@
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
   (status/set-soft-input-mode status/adjust-resize)
-  (dispatch [:load-user-phone-number])
   (init-back-button-handler!))

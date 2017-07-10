@@ -4,7 +4,7 @@
             [status-im.data-store.messages :as messages]))
 
 (defn set-unviewed-messages [db]
-  (let [messages (->> (::raw-unviewed-messages db)
+  (let [messages (->> (:raw-unviewed-messages db)
                       (group-by :chat-id)
                       (map (fn [[id messages]]
                              [id {:messages-ids (map :message-id messages)
@@ -12,11 +12,11 @@
                       (into {}))]
     (-> db
         (assoc :unviewed-messages messages)
-        (dissoc ::raw-unviewed-messages))))
+        (dissoc :raw-unviewed-messages))))
 
 (defn load-messages! [db]
   (let [messages (messages/get-unviewed)]
-    (assoc db ::raw-unviewed-messages messages)))
+    (assoc db :raw-unviewed-messages messages)))
 
 (register-handler ::set-unviewed-messages set-unviewed-messages)
 

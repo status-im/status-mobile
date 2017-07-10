@@ -60,8 +60,7 @@
   (fn [db _]
     (-> db
         (assoc :current-chat-id console-chat-id)
-        (dissoc :edit-mode
-                :transactions
+        (dissoc :transactions
                 :transactions-queue
                 :new-contact-identity))))
 
@@ -224,9 +223,3 @@
 (register-handler :update-geolocation
   (fn [db [_ geolocation]]
     (assoc db :geolocation geolocation)))
-
-;; -- User data --------------------------------------------------------------
-(register-handler :load-user-phone-number
-  (fn [db [_]]
-    ;; todo fetch phone number from db
-    (assoc db :user-phone-number "123")))

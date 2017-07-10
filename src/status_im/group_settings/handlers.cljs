@@ -10,10 +10,6 @@
             [status-im.constants :refer [text-content-type]]
             [status-im.navigation.handlers :as nav]))
 
-(defmethod nav/preload-data! :group-settings
-  [db _]
-  (assoc db :selected-participants #{}))
-
 (defn save-property!
   [current-chat-id property-name value]
   (chats/save-property current-chat-id property-name value))
@@ -32,13 +28,11 @@
 
 (defn prepare-chat-settings
   [{:keys [current-chat-id] :as db}]
-  (let [{:keys [name color]} (-> db
-                                 (get-in [:chats current-chat-id])
-                                 (select-keys [:name :color]))]
+  (let [{:keys [name]} (-> db
+                           (get-in [:chats current-chat-id])
+                           (select-keys [:name :color]))]
     (assoc db :new-chat-name name
-              :new-chat-color color
-              :group-type :chat-group
-              :group-settings {})))
+              :group-type :chat-group)))
 
 (register-handler :show-group-settings
   (after (fn [_ _] (dispatch [:navigate-to :chat-group-settings])))
@@ -63,10 +57,6 @@
 (register-handler :clear-history
   (after delete-messages!)
   clear-messages)
-
-(register-handler :group-settings
-  (fn [db [_ k v]]
-    (assoc-in db [:group-settings k] v)))
 
 (defn remove-identities [collection identities]
   (remove #(identities (:identity %)) collection))

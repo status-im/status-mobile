@@ -9,10 +9,6 @@
       (let [identity (first (:selected-participants @db))]
         (get-in @db [:contacts identity])))))
 
-(register-sub :group-settings
-  (fn [db [_ k]]
-    (reaction (get-in @db [:group-settings k]))))
-
 (defn get-chat-name-validation-messages [chat-name]
   (filter some?
           (list (when (zero? (count chat-name))

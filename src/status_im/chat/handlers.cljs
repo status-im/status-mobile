@@ -100,7 +100,6 @@
 (register-handler :cancel-command
   (fn [{:keys [current-chat-id] :as db} _]
     (-> db
-        (dissoc :canceled-command)
         (assoc-in [:chats current-chat-id :command-input] {})
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
@@ -154,11 +153,10 @@
   (fn [db [_ phone-number message-id]]
     (sign-up-service/start-listening-confirmation-code-sms)
     (let [formatted (format-phone-number phone-number)]
-      (-> db
-          (assoc :user-phone-number formatted)
-          (server/sign-up formatted
-                          message-id
-                          sign-up-service/on-sign-up-response)))))
+      (server/sign-up db
+                      formatted
+                      message-id
+                      sign-up-service/on-sign-up-response))))
 
 (register-handler :start-listening-confirmation-code-sms
   (fn [db [_ listener]]
@@ -261,7 +259,6 @@
   [{:keys [current-chat-id current-account-id] :as db} [_ _ id]]
   (let [chat-id           (or id current-chat-id)
         messages          (get-in db [:chats chat-id :messages])
-        command?          (= :command (get-in db [:edit-mode chat-id]))
         db'               (-> db
                               (assoc :current-chat-id chat-id)
                               (assoc-in [:chats chat-id :was-opened?] true))
@@ -291,18 +288,18 @@
 (register-handler :add-chat-loaded-callback
   (fn [db [_ chat-id callback]]
     (log/debug "Add chat loaded callback: " chat-id callback)
-    (update-in db [::chat-loaded-callbacks chat-id] conj callback)))
+    (update-in db [:chat-loaded-callbacks chat-id] conj callback)))
 
 (register-handler ::clear-chat-loaded-callbacks
   (fn [db [_ chat-id]]
     (log/debug "Clear chat loaded callback: " chat-id)
-    (assoc-in db [::chat-loaded-callbacks chat-id] nil)))
+    (assoc-in db [:chat-loaded-callbacks chat-id] nil)))
 
 (register-handler :invoke-chat-loaded-callbacks
   (u/side-effect!
     (fn [db [_ chat-id]]
       (log/debug "Invoking chat loaded callbacks: " chat-id)
-      (let [callbacks (get-in db [::chat-loaded-callbacks chat-id])]
+      (let [callbacks (get-in db [:chat-loaded-callbacks chat-id])]
         (log/debug "Invoking chat loaded callbacks: " callbacks)
         (doseq [callback callbacks]
           (callback))

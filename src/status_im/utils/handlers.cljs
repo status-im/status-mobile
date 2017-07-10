@@ -1,7 +1,8 @@
 (ns status-im.utils.handlers
   (:require [re-frame.core :refer [after dispatch debug] :as re-core]
             [clojure.string :as str]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [cljs.spec.alpha :as s]))
 
 (defn side-effect!
   "Middleware for handlers that will not affect db."
@@ -21,10 +22,20 @@
     (let [new-db  (handler db v)]
       new-db)))
 
+(defn check-spec
+  "throw an exception if db doesn't match the spec"
+  [handler]
+  (fn check-handler
+    [db v]
+    (let [new-db  (handler db v)]
+      (when-not (s/valid? :status-im.specs/db new-db)
+        (throw (ex-info (str "spec check failed on: " (first v) "\n " (s/explain-str :status-im.specs/db new-db)) {})))
+      new-db)))
+
 (defn register-handler
   ([name handler] (register-handler name nil handler))
   ([name middleware handler]
-   (re-core/register-handler name [debug-handlers-names middleware] handler)))
+   (re-core/register-handler name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
 
 (defn get-hashtags [status]
   (if status
