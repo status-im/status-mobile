@@ -16,7 +16,7 @@
                                                 dismiss-keyboard!]]
             [status-im.components.animation :as anim]
             [status-im.chat.constants :as chat-consts]
-            [status-im.components.list-selection :refer [share browse]]
+            [status-im.components.list-selection :refer [share browse share-or-open-map]]
             [status-im.chat.views.message.request-message :refer [message-content-command-request]]
             [status-im.chat.styles.message.message :as st]
             [status-im.chat.styles.message.command-pill :as pill-st]
@@ -139,11 +139,12 @@
         {:keys     [name type]
          icon-path :icon} command]
     [view st/content-command-view
-     [view st/command-container
-      [view (pill-st/pill command)
-       [text {:style pill-st/pill-text
-              :font  :default}
-        (str (if (= :command type) chat-consts/command-char "?") name)]]]
+     (when (:color command)
+       [view st/command-container
+        [view (pill-st/pill command)
+         [text {:style pill-st/pill-text
+                :font  :default}
+          (str (if (= :command type) chat-consts/command-char "?") name)]]])
      (when icon-path
        [view st/command-image-view
         [icon icon-path st/command-image]])
@@ -402,8 +403,12 @@
        (fn [{:keys [outgoing group-chat content-type content] :as message}]
          [message-container message
           [touchable-highlight {:on-press #(when platform/ios? (dismiss-keyboard!))
-                                :on-long-press (when (= content-type text-content-type)
-                                                 #(share content (label :t/message)))}
+                                :on-long-press #(cond (= content-type text-content-type)
+                                                      (share content (label :t/message))
+                                                      (and (= content-type content-type-command) (= "location" (:content-command content)))
+                                                      (let [params (str/split (get-in content [:params "address"]) #"&amp;")
+                                                            latlong (rest params)]
+                                                        (share-or-open-map (first params) (first latlong) (second latlong))))}
            [view
             (let [incoming-group (and group-chat (not outgoing))]
               [message-content message-body (merge message

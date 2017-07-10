@@ -167,13 +167,15 @@
                               :style             (style/seq-input-text command-width)
                               :default-value     (or @seq-arg-input-text "")
                               :on-change-text    #(do (dispatch [:set-chat-seq-arg-input-text %])
+                                                      (dispatch [:load-chat-parameter-box (:command @command)])
                                                       (dispatch [:set-chat-ui-props {:validation-messages nil}]))
                               :placeholder       placeholder
                               :blur-on-submit    false
                               :editable          (not @sending-in-progress?)
                               :on-focus          #(dispatch [:set-chat-ui-props {:show-emoji? false}])
                               :on-submit-editing (fn []
-                                                   (when-not (str/blank? @seq-arg-input-text)
+                                                   (when-not (or (str/blank? @seq-arg-input-text)
+                                                                 (get-in @command [:command :hide-send-button]))
                                                      (dispatch [:send-seq-argument]))
                                                    (js/setTimeout
                                                      #(dispatch [:chat-input-focus :seq-input-ref])
@@ -222,7 +224,8 @@
             input-text         [:chat :input-text]
             seq-arg-input-text [:chat :seq-argument-input-text]
             result-box         [:chat-ui-props :result-box]]
-    (let [single-line-input? (:singleLineInput result-box)]
+    (let [single-line-input? (:singleLineInput result-box)
+          {:keys [hide-send-button sequential-params]} (:command selected-command)]
       [view style/input-container
        [input-view {:anim-margin        anim-margin
                     :single-line-input? single-line-input?}]
@@ -230,8 +233,9 @@
          [input-actions/input-actions-view]
          (when (and (not (str/blank? input-text))
                     (or (not selected-command)
-                        (some #{:complete :less-than-needed} [command-completion])))
-           [touchable-highlight {:on-press #(if (get-in selected-command [:command :sequential-params])
+                        (some #{:complete :less-than-needed} [command-completion]))
+                    (not hide-send-button))
+           [touchable-highlight {:on-press #(if sequential-params
                                               (do
                                                 (when-not (str/blank? seq-arg-input-text)
                                                   (dispatch [:send-seq-argument]))

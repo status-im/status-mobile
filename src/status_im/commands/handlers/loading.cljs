@@ -140,16 +140,16 @@
         commands'        (filter-commands account chat commands)
         responses'       (filter-commands account chat responses)
         global-command   (:global commands')
-        commands''       (apply dissoc commands' [:init :global])
+        commands''       (each-merge (apply dissoc commands' [:init :global])
+                                     {:type     :command
+                                      :owner-id id})
         mailman-commands (get-mailmans-commands db)]
     (cond-> db
 
             true
             (update-in [:contacts id] assoc
                        :commands-loaded? true
-                       :commands (-> (merge mailman-commands commands'')
-                                     (each-merge {:type     :command
-                                                  :owner-id id}))
+                       :commands (merge mailman-commands commands'')
                        :responses (each-merge responses' {:type     :response
                                                           :owner-id id})
                        :subscriptions subscriptions)

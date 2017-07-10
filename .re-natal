@@ -41,7 +41,8 @@
     "instabug-reactnative",
     "nfc-react-native",
     "react-native-http-bridge",
-    "emojilib"
+    "emojilib",
+    "react-native-mapbox-gl"
   ],
   "imageDirs": [
     "images"

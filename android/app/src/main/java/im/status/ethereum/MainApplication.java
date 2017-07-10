@@ -24,6 +24,7 @@ import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import im.status.ethereum.module.StatusPackage;
 import io.realm.react.RealmReactPackage;
 import me.alwx.HttpServer.HttpServerReactPackage;
+import com.mapbox.reactnativemapboxgl.ReactNativeMapboxGLPackage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +59,8 @@ public class MainApplication extends Application implements ReactApplication {
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG)
+                    new WebViewBridgePackage(BuildConfig.DEBUG),
+                    new ReactNativeMapboxGLPackage()
             ));
 
             if (!BuildConfig.DEBUG) {

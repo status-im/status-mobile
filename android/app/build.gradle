@@ -107,6 +107,7 @@ android {
         applicationId "im.status.ethereum"
         minSdkVersion 18
         targetSdkVersion 23
+        multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
         ndk {
@@ -115,6 +116,7 @@ android {
     }
     dexOptions {
         jumboMode true
+        javaMaxHeapSize "4g"
     }
     signingConfigs {
         release {
@@ -180,6 +182,7 @@ dependencies {
     compile project(':react-native-fs')
     compile project(':react-native-image-crop-picker')
     compile project(':react-native-webview-bridge')
+    compile project(':reactnativemapboxgl')
     compile 'testfairy:testfairy-android-sdk:1.+@aar'
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
