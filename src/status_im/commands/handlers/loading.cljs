@@ -61,7 +61,7 @@
 (defn dispatch-loaded!
   [db [{{:keys [whisper-identity]} :contact
         :as                        params} file]]
-  (if (::valid-hash db)
+  (if (:command-hash-valid? db)
     (dispatch [::parse-commands! params file])
     (dispatch [::loading-failed! whisper-identity ::wrong-hash])))
 
@@ -97,7 +97,7 @@
         ;; todo check
         #_(= (get-hash-by-identity db identity)
              (get-hash-by-file file))]
-    (assoc db ::valid-hash valid?)))
+    (assoc db :command-hash-valid? valid?)))
 
 (defn each-merge [coll with]
   (->> coll
@@ -160,13 +160,13 @@
                                           :type :command))
 
             (= id bots-constants/mailman-bot)
-            (update db :contacts (fn [contacts]
-                                   (reduce (fn [contacts [k _]]
-                                             (update-in contacts [k :commands]
-                                                        (fn [c]
-                                                          (merge mailman-commands c))))
-                                           contacts
-                                           contacts))))))
+            (update :contacts (fn [contacts]
+                                (reduce (fn [contacts [k _]]
+                                          (update-in contacts [k :commands]
+                                                     (fn [c]
+                                                       (merge mailman-commands c))))
+                                        contacts
+                                        contacts))))))
 
 (defn save-commands-js!
   [_ [id file]]
@@ -229,16 +229,16 @@
 
 (reg-handler :add-commands-loading-callback
   (fn [db [chat-id callback]]
-    (update-in db [::commands-callbacks chat-id] conj callback)))
+    (update-in db [:commands-callbacks chat-id] conj callback)))
 
 (reg-handler :invoke-commands-loading-callbacks
   (u/side-effect!
     (fn [db [chat-id]]
-      (let [callbacks (get-in db [::commands-callbacks chat-id])]
+      (let [callbacks (get-in db [:commands-callbacks chat-id])]
         (doseq [callback callbacks]
           (callback))
         (dispatch [::clear-commands-callbacks chat-id])))))
 
 (reg-handler ::clear-commands-callbacks
   (fn [db [chat-id]]
-    (assoc-in db [::commands-callbacks chat-id] nil)))
+    (assoc-in db [:commands-callbacks chat-id] nil)))

@@ -246,7 +246,7 @@
                            (into {}))]
     (-> db
         (update :contact-groups merge new-groups')
-        (assoc :new-groups (vals new-groups')))))
+        (assoc :new-groups (into [] (vals new-groups'))))))
 
 (register-handler :add-groups
   (after save-groups!)
@@ -263,7 +263,7 @@
 
 (defmethod nav/preload-data! :new-public-group
   [db]
-  (dissoc db :public-group/topic))
+  (dissoc db :public-group-topic))
 
 (defn move-item [v from to]
   (if (< from to)

@@ -3,6 +3,7 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.handlers]
             [status-im.subs]
+            [status-im.specs]
             [status-im.components.react :refer [view
                                                 modal
                                                 app-registry
@@ -145,5 +146,4 @@
   (dispatch [:listen-to-network-status!])
   (dispatch [:initialize-crypt])
   (dispatch [:initialize-geth])
-  (dispatch [:load-user-phone-number])
   (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root)))

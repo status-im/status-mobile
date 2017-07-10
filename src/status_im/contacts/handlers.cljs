@@ -401,8 +401,7 @@
   (after #(dispatch [:navigate-to :contact-toggle-list]))
   (fn [db [_ group-type]]
     (->
-      (assoc db :contact-group nil
-                :group-type group-type
+      (assoc db :group-type group-type
                 :selected-contacts #{}
                 :new-chat-name "")
       (assoc-in [:toolbar-search :show] nil)
