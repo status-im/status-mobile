@@ -15,7 +15,7 @@
 
 (defn command-handler!
   [_ [chat-id
-      {:keys [command-message] :as parameters}
+      {:keys [command] :as params}
       {:keys [result error]}]]
   (let [{:keys [context returned]} result
         {handler-error :error} returned]
@@ -25,14 +25,14 @@
         (dispatch [:set-chat-ui-props {:validation-messages (cu/generate-hiccup markup)}]))
 
       result
-      (let [command'    (assoc command-message :handler-data returned)
-            parameters' (assoc parameters :command command')]
+      (let [command' (assoc command :handler-data returned)
+            params'  (assoc params :command command')]
         (if (:eth_sendTransaction context)
-          (dispatch [:wait-for-transaction (:id command-message) parameters'])
-          (dispatch [:prepare-command! chat-id parameters'])))
+          (dispatch [:wait-for-transaction (:id command) params'])
+          (dispatch [:prepare-command! chat-id params'])))
 
       (not (or error handler-error))
-      (dispatch [:prepare-command! chat-id parameters])
+      (dispatch [:prepare-command! chat-id params])
 
       :else nil)))
 

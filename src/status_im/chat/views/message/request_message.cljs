@@ -77,12 +77,12 @@
         markup              (subscribe [:get-in [:message-data :preview message-id :markup]])]
     (fn [{:keys [message-id content from incoming-group]}]
       (let [commands @commands-atom
-            {:keys        [prefill prefillBotDb params]
+            {:keys        [prefill prefill-bot-db prefillBotDb params]
              text-content :text} content
             {:keys [command content]} (parse-command-request commands content)
             command  (if (and params command)
                        (merge command {:prefill        prefill
-                                       :prefill-bot-db prefillBotDb})
+                                       :prefill-bot-db (or prefill-bot-db prefillBotDb)})
                        command)]
         [view st/comand-request-view
          [touchable-highlight
