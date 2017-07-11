@@ -80,33 +80,35 @@
                            :group/contacts-group
                            :group/selected-contacts
                            :group/groups-order
-                           :chats/chats
-                           :chats/current-chat-id
-                           :chats/chat-id
-                           :chats/new-chat
-                           :chats/new-chat-name
-                           :chats/chat-animations
-                           :chats/chat-ui-props
-                           :chats/chat-list-ui-props
-                           :chats/layout-height
-                           :chats/expandable-view-height-to-value
-                           :chats/global-commands
-                           :chats/loading-allowed
-                           :chats/message-data
-                           :chats/message-id->transaction-id
-                           :chats/message-status
-                           :chats/unviewed-messages
-                           :chats/selected-participants
-                           :chats/chat-loaded-callbacks
-                           :chats/commands-callbacks
-                           :chats/command-hash-valid?
-                           :chats/public-group-topic
-                           :chats/confirmation-code-sms-listener
-                           :chats/messages
-                           :chats/loaded-chats
-                           :chats/bot-subscriptions
-                           :chats/new-request
-                           :chats/raw-unviewed-messages
+                           :chat/chats
+                           :chat/current-chat-id
+                           :chat/chat-id
+                           :chat/new-chat
+                           :chat/new-chat-name
+                           :chat/chat-animations
+                           :chat/chat-ui-props
+                           :chat/chat-list-ui-props
+                           :chat/layout-height
+                           :chat/expandable-view-height-to-value
+                           :chat/global-commands
+                           :chat/loading-allowed
+                           :chat/message-data
+                           :chat/message-id->transaction-id
+                           :chat/message-status
+                           :chat/unviewed-messages
+                           :chat/selected-participants
+                           :chat/chat-loaded-callbacks
+                           :chat/commands-callbacks
+                           :chat/command-hash-valid?
+                           :chat/public-group-topic
+                           :chat/confirmation-code-sms-listener
+                           :chat/messages
+                           :chat/loaded-chats
+                           :chat/bot-subscriptions
+                           :chat/new-request
+                           :chat/raw-unviewed-messages
+                           :chat/bot-db
+                           :chat/geolocation
                            :profile/profile-edit
                            :transactions/transactions
                            :transactions/transactions-queue
@@ -121,4 +123,5 @@
                            :discoveries/discover-search-tags
                            :discoveries/tags
                            :discoveries/current-tag
-                           :discoveries/request-discoveries-timer]))
+                           :discoveries/request-discoveries-timer
+                           :discoveries/new-discover]))

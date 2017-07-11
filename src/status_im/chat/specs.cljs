@@ -28,3 +28,5 @@
 (s/def :chat/bot-subscriptions map?)
 (s/def :chat/new-request map?)
 (s/def :chat/raw-unviewed-messages vector?)
+(s/def :chat/bot-db map?)
+(s/def :chat/geolocation map?)
