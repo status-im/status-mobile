@@ -129,7 +129,8 @@
 (reg-event-db
   :account-update
   (u/handlers->
-    account-update
+    (fn [db [_ data]]
+      (account-update db data))
     save-account!
     broadcast-account-update))
 
