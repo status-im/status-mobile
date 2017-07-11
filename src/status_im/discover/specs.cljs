@@ -6,3 +6,4 @@
 (s/def :discoveries/tags vector?)
 (s/def :discoveries/current-tag map?)
 (s/def :discoveries/request-discoveries-timer int?)
+(s/def :discoveries/new-discover map?)
