@@ -2,4 +2,4 @@
   (:require [cljs.spec.alpha :as s]))
 
 ;EDIT PROFILE
-(s/def :profile/profile-edit map?)
+(s/def :profile/profile-edit (s/nilable map?))
