@@ -28,6 +28,7 @@
 ;NODE
 (s/def ::sync-listening-started (s/nilable boolean?))
 (s/def ::sync-state (s/nilable keyword?))
+(s/def ::sync-data (s/nilable map?))
 ;NETWORK
 (s/def ::network (s/nilable keyword?))                                  ;;network name :testnet
 
@@ -48,6 +49,7 @@
                            ::network-status
                            ::sync-listening-started
                            ::sync-state
+                           ::sync-data
                            ::network
                            :accounts/accounts
                            :accounts/account-creation?
