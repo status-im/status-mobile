@@ -12,24 +12,24 @@
             [status-im.discover.specs]))
 
 ;GLOBAL
-(s/def ::current-public-key string?)                        ;;public key of current logged in account
-(s/def ::first-run boolean?)                                ;;true when application running at first time
-(s/def ::was-modal? boolean?)
-(s/def ::rpc-url string?)                                   ;;"http://localhost:8545"
-(s/def ::web3 any?)                                         ;;object? doesn't work
-(s/def ::webview-bridge any?)                               ;;object?
-(s/def ::status-module-initialized? boolean?)
+(s/def ::current-public-key (s/nilable string?))                        ;;public key of current logged in account
+(s/def ::first-run (s/nilable boolean?))                                ;;true when application running at first time
+(s/def ::was-modal? (s/nilable boolean?))
+(s/def ::rpc-url (s/nilable string?))                                   ;;"http://localhost:8545"
+(s/def ::web3 (s/nilable any?))                                         ;;object? doesn't work
+(s/def ::webview-bridge (s/nilable any?))                               ;;object?
+(s/def ::status-module-initialized? (s/nilable boolean?))
 (s/def ::status-node-started? (s/nilable boolean?))
-(s/def ::toolbar-search map?)
-(s/def ::keyboard-height number?)                           ;;height of native keyboard if shown
-(s/def ::keyboard-max-height number?)
-(s/def ::orientation keyword?)                              ;;:unknown - not used
+(s/def ::toolbar-search (s/nilable map?))
+(s/def ::keyboard-height (s/nilable number?))                           ;;height of native keyboard if shown
+(s/def ::keyboard-max-height (s/nilable number?))
+(s/def ::orientation (s/nilable keyword?))                              ;;:unknown - not used
 (s/def ::network-status (s/nilable keyword?))               ;;:online - presence of internet connection in the phone
 ;NODE
-(s/def ::sync-listening-started boolean?)
-(s/def ::sync-state keyword?)
+(s/def ::sync-listening-started (s/nilable boolean?))
+(s/def ::sync-state (s/nilable keyword?))
 ;NETWORK
-(s/def ::network keyword?)                                  ;;network name :testnet
+(s/def ::network (s/nilable keyword?))                                  ;;network name :testnet
 
 (s/def ::db (allowed-keys :opt-un
                           [::current-public-key
