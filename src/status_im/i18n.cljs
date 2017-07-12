@@ -9,7 +9,7 @@
     [status-im.translations.en :as en]
     [status-im.translations.es :as es]
     [status-im.translations.es-ar :as es-ar]
-    [status-im.translations.es-ar :as es-mx]
+    [status-im.translations.es-mx :as es-mx]
     [status-im.translations.fi :as fi]
     [status-im.translations.fr :as fr]
     [status-im.translations.fr-ch :as fr-ch]
