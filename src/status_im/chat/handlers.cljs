@@ -244,8 +244,8 @@
   [(after #(dispatch [:load-unviewed-messages!]))
    (after #(dispatch [:load-default-contacts!]))]
   (u/handlers->
-    initialize-chats
-    load-chats!))
+    load-chats!
+    initialize-chats))
 
 (register-handler :reload-chats
   (fn [{:keys [chats] :as db} _]
