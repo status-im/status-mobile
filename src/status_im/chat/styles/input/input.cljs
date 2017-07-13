@@ -82,8 +82,8 @@
    :ios                 {:line-height min-input-height
                          :left        (+ 10 left)}})
 
-(defnstyle seq-input-text [left]
-  {:min-width           200
+(defnstyle seq-input-text [left container-width]
+  {:min-width           (- container-width left)
    :font-size           14
    :position            :absolute
    :text-align-vertical :center
