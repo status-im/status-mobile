@@ -47,7 +47,8 @@
   (fn [db [_ bridge]]
     (assoc db :webview-bridge bridge)))
 
-(defn contacts-click-handler [{:keys [whisper-identity] :as contact} action params]
+(defn contacts-click-handler
+  [{:keys [whisper-identity] :as contact} action params]
   (dispatch [:navigate-back])
   (when action
     (if (= contact :qr-scan)
@@ -55,22 +56,20 @@
         (dispatch [:show-scan-qr :webview-address-from-qr])
         (dispatch [:navigate-to-modal :qr-code-view {:qr-source :whisper-identity
                                                      :amount?   true}]))
-      (dispatch [:chat-with-command whisper-identity action params]))))
+      (dispatch [:chat-with-command whisper-identity action
+                 (assoc params :contact contact)]))))
 
 
 (register-handler ::send-command
   (u/side-effect!
-    (fn [{:keys [current-chat-id] :as db} [_ command-key params]]
-      (let [command       (get-in db [:contacts current-chat-id :commands command-key])
-            command-input {:content       "0"
-                           :command       command
-                           :parameter-idx 0
-                           :params        {"amount" (:amount params)}
-                           :to-message-id nil}]
+    (fn [{:keys [current-chat-id] :as db}
+         [_ command-key {:keys [contact amount]}]]
+      (let [command (get-in db [:contacts current-chat-id :commands command-key])]
+        (dispatch [:set-in [:bot-db current-chat-id :public :recipient] contact])
         (dispatch [:proceed-command
                    {:command  command,
                     :metadata nil,
-                    :args     [(str (:amount params))]}
+                    :args     [(get contact :name) amount]}
                    current-chat-id])))))
 
 (defn chat-with-command
