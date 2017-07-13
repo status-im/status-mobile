@@ -1,5 +1,5 @@
 (ns status-im.chat.views.toolbar-content
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
             [cljs-time.core :as t]
@@ -61,35 +61,33 @@
           (let [cnt (inc (count contacts))]
             (label-pluralize cnt :t/members-active)))]])))
 
-(defn toolbar-content-view []
-  (let [{:keys [group-chat
-                name
-                contacts
-                chat-id
-                public?]}
-        @(subscribe [:chat-properties [:group-chat :name :contacts :chat-id :public?]])
-        show-actions? (subscribe [:chat-ui-props :show-actions?])
-        accounts      (subscribe [:get :accounts])
-        contact       (subscribe [:get-in [:contacts chat-id]])
-        sync-state    (subscribe [:get :sync-state])
-        creating?     (subscribe [:get :creating-account?])]
-    (fn []
-      [view (st/chat-name-view (or (empty? @accounts)
-                                   @show-actions?
-                                   @creating?))
-       (let [chat-name (if (str/blank? name)
-                         (generate-gfy)
-                         (or (get-contact-translated chat-id :name name)
-                             (label :t/chat-name)))]
-         [text {:style           st/chat-name-text
-                :number-of-lines 1
-                :font            :toolbar-title}
-          (if public?
-            (str "#" chat-name)
-            chat-name)])
-       (if group-chat
-         [group-last-activity {:contacts   contacts
-                               :public?    public?
-                               :sync-state @sync-state}]
-         [last-activity {:online-text (online-text @contact chat-id)
-                         :sync-state  @sync-state}])])))
+(defview toolbar-content-view []
+  (letsubs [group-chat    [:chat :group-chat]
+            name          [:chat :name]
+            chat-id       [:chat :chat-id]
+            contacts      [:chat :contacts]
+            public?       [:chat :public?]
+            show-actions? [:chat-ui-props :show-actions?]
+            accounts      [:get :accounts]
+            contact       [:get-in [:contacts @chat-id]]
+            sync-state    [:get :sync-state]
+            creating?     [:get :creating-account?]]
+    [view (st/chat-name-view (or (empty? accounts)
+                                 show-actions?
+                                 creating?))
+     (let [chat-name (if (str/blank? name)
+                       (generate-gfy)
+                       (or (get-contact-translated chat-id :name name)
+                           (label :t/chat-name)))]
+       [text {:style           st/chat-name-text
+              :number-of-lines 1
+              :font            :toolbar-title}
+        (if public?
+          (str "#" chat-name)
+          chat-name)])
+     (if group-chat
+       [group-last-activity {:contacts   contacts
+                             :public?    public?
+                             :sync-state sync-state}]
+       [last-activity {:online-text (online-text contact chat-id)
+                       :sync-state  sync-state}])]))
