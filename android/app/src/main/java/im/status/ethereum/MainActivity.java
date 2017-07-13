@@ -27,7 +27,7 @@ public class MainActivity extends ReactActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
-        TestFairy.begin(this, "33e4bd97daaaacf3b1b6425096fb65186248fe44");
+        TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
 
         if (!RootUtil.isDeviceRooted()) {
             configureStatus();
