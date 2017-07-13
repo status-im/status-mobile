@@ -160,11 +160,11 @@
         arg-pos              (subscribe [:current-chat-argument-position])
         seq-arg-input-text   (subscribe [:chat :seq-argument-input-text])
         sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])]
-    (fn [{:keys [command-width]}]
+    (fn [{:keys [command-width container-width]}]
       (when (get-in @command [:command :sequential-params])
         (let [{:keys [placeholder hidden type]} (get-in @command [:command :params @arg-pos])]
           [text-input (merge {:ref               #(dispatch [:set-chat-ui-props {:seq-input-ref %}])
-                              :style             (style/seq-input-text command-width)
+                              :style             (style/seq-input-text command-width container-width)
                               :default-value     (or @seq-arg-input-text "")
                               :on-change-text    #(do (dispatch [:set-chat-seq-arg-input-text %])
                                                       (dispatch [:load-chat-parameter-box (:command @command)])
@@ -201,7 +201,8 @@
                                :single-line-input?  single-line-input?}]
             [input-helper {:command command
                            :width   width}]
-            [seq-input {:command-width width}]
+            [seq-input {:command-width width
+                        :container-width container-width}]
             (if-not command
               [touchable-highlight
                {:on-press #(do (dispatch [:toggle-chat-ui-props :show-emoji?])
