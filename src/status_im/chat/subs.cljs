@@ -14,15 +14,6 @@
             [clojure.string :as str]))
 
 (reg-sub
-  :chat-properties
-  (fn [db [_ properties]]
-    (->> properties
-           (map (fn [k]
-                  [k (get-in db[:chats (:current-chat-id db) k])
-                         ]))
-           (into {}))))
-
-(reg-sub
   :chat-ui-props
   (fn [db [_ ui-element chat-id]]
     (let [current-chat-id (subscribe [:get-current-chat-id])]
@@ -35,9 +26,16 @@
     (if ios? kb-height 0)))
 
 (reg-sub
+  :chats
+  (fn [db ]
+    (:chats db)))
+
+(reg-sub
   :chat
-  (fn [db [_ k chat-id]]
-    (get-in db [:chats (or chat-id (:current-chat-id db)) k])))
+  :<- [:chats]
+  :<- [:get-current-chat-id]
+  (fn [[chats id] [_ k chat-id]]
+    (get-in chats [(or chat-id id) k])))
 
 (reg-sub
   :get-current-chat-id

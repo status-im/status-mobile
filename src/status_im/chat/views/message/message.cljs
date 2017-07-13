@@ -1,5 +1,5 @@
 (ns status-im.chat.views.message.message
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.walk :as walk]
             [reagent.core :as r]
@@ -52,32 +52,35 @@
                   (or incoming-name "Unknown contact"))]
     [text {:style st/author} name]))
 
-(defn message-content-status [_]
-  (let [{:keys [chat-id group-chat name color]} @(subscribe [:chat-properties [:chat-id :group-chat :name :color]])
-        members (subscribe [:current-chat-contacts])]
-    (fn [{:keys [messages-count content datemark]}]
-      (let [{:keys [status]} (if group-chat
-                               {:photo-path  nil
-                                :status      nil
-                                :last-online 0}
-                               (first @members))]
-        [view st/status-container
-         [chat-icon-message-status chat-id group-chat name color false]
-         [text {:style           st/status-from
-                :font            :default
-                :number-of-lines 1}
-          (if (str/blank? name)
-            (generate-gfy)
-            (or (get-contact-translated chat-id :name name)
-                (label :t/chat-name)))]
-         (when (or status content)
-           [text {:style st/status-text
-                  :font  :default}
-            (or status content)])
-         (if (> messages-count 1)
-           [view st/message-datemark
-            [chat-datemark datemark]]
-           [view st/message-empty-spacing])]))))
+(defview message-content-status
+  [{:keys [messages-count content datemark]}]
+  (letsubs [chat-id    [:chat :chat-id]
+            group-chat [:chat :group-id]
+            name       [:chat :name]
+            color      [:chat :color]
+            members    [:current-chat-contacts]]
+    (let [{:keys [status]} (if group-chat
+                             {:photo-path  nil
+                              :status      nil
+                              :last-online 0}
+                             (first members))]
+      [view st/status-container
+       [chat-icon-message-status chat-id group-chat name color false]
+       [text {:style           st/status-from
+              :font            :default
+              :number-of-lines 1}
+        (if (str/blank? name)
+          (generate-gfy)
+          (or (get-contact-translated chat-id :name name)
+              (label :t/chat-name)))]
+       (when (or status content)
+         [text {:style st/status-text
+                :font  :default}
+          (or status content)])
+       (if (> messages-count 1)
+         [view st/message-datemark
+          [chat-datemark datemark]]
+         [view st/message-empty-spacing])])))
 
 (defn message-content-audio [_]
   [view st/audio-container
