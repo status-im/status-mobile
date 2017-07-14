@@ -88,13 +88,13 @@
                                    (subs command-name 1)))
                               possible-actions)
                       (first))]
-         {:command  command
-          :metadata (if (not= :any to-message-id)
-                      (assoc input-metadata :to-message-id to-message-id)
-                      input-metadata)
-          :args     (if (empty? seq-arguments)
-                      (rest command-args)
-                      seq-arguments)}))))
+           {:command  command
+            :metadata (if (and (nil? (:to-message-id input-metadata)) (not= :any to-message-id))
+                        (assoc input-metadata :to-message-id to-message-id)
+                        input-metadata)
+            :args     (if (empty? seq-arguments)
+                        (rest command-args)
+                        seq-arguments)}))))
   ([{:keys [current-chat-id] :as db} chat-id]
    (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
 

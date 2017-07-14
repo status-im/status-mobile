@@ -56,13 +56,10 @@
        :component-will-unmount
        #(reset! loop? false)
        :reagent-render
-       (fn [message-id {:keys [execute-immediately?] command-icon :icon :as command} status-initialized?]
+       (fn [message-id {command-icon :icon :as command} on-press-handler]
          (when command
            [touchable-highlight
-            {:on-press            (if execute-immediately?
-                                    #(dispatch [:execute-command-immediately command])
-                                    (when (and (not @answered?) status-initialized?)
-                                      #(set-chat-command message-id command)))
+            {:on-press            on-press-handler
              :style               (st/command-request-image-touchable)
              :accessibility-label (id/chat-request-message-button (:name command))}
             [animated-view {:style (st/command-request-image-view command scale-anim-val)}
@@ -83,11 +80,14 @@
             command  (if (and params command)
                        (merge command {:prefill        prefill
                                        :prefill-bot-db (or prefill-bot-db prefillBotDb)})
-                       command)]
+                       command)
+            on-press-handler  (if (:execute-immediately? command)
+                                #(dispatch [:execute-command-immediately command])
+                                (when (and (not @answered?) @status-initialized?)
+                                  #(set-chat-command message-id command)))]
         [view st/comand-request-view
          [touchable-highlight
-          {:on-press (when (and (not @answered?) @status-initialized?)
-                       #(set-chat-command message-id command))}
+          {:on-press on-press-handler}
           [view st/command-request-message-view
            (if (and @markup
                     (not (string? @markup)))
@@ -100,4 +100,4 @@
             [text {:style st/style-sub-text
                    :font  :default}
              (:request-text command)]])
-         [request-button message-id command @status-initialized?]]))))
+         [request-button message-id command on-press-handler]]))))
