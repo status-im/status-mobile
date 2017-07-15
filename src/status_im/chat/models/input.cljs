@@ -1,32 +1,52 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as str]
             [status-im.components.react :as rc]
+            [status-im.components.status :as status]
             [status-im.chat.constants :as const]
             [status-im.chat.views.input.validation-messages :refer [validation-message]]
             [status-im.i18n :as i18n]
             [status-im.utils.phone-number :as phone-number]
-            [taoensso.timbre :as log]
             [status-im.chat.utils :as chat-utils]
-            [status-im.bots.constants :as bots-constants]))
+            [status-im.bots.constants :as bots-constants]
+            [taoensso.timbre :as log]))
 
-(def emojis (js/require "emojilib"))
-
-(defn text->emoji [text]
+(defn text->emoji
+  "Replaces emojis in a specified `text`"
+  [text]
   (when text
     (str/replace text
                  #":([a-z_\-+0-9]*):"
                  (fn [[original emoji-id]]
-                   (if-let [emoji-map (aget emojis "lib" emoji-id)]
+                   (if-let [emoji-map (aget rc/emojilib "lib" emoji-id)]
                      (aget emoji-map "char")
                      original)))))
 
-(defn text-ends-with-space? [text]
+(defn text-ends-with-space?
+  "Returns true if the last symbol of `text` is space"
+  [text]
   (when text
     (= (str/last-index-of text const/spacing-char)
        (dec (count text)))))
 
-(defn possible-chat-actions [{:keys [global-commands] :as db} chat-id]
-  (let [{:keys [contacts requests]} (get-in db [:chats chat-id])]
+(defn starts-as-command?
+  "Returns true if `text` may be treated as a command.
+  To make sure that text is command we need to use `possible-chat-actions` function."
+  [text]
+  (and (not (nil? text))
+       (or (str/starts-with? text const/bot-char)
+           (str/starts-with? text const/command-char))))
+
+(defn possible-chat-actions
+  "Returns a map of possible chat actions (commands and response) for a specified `chat-id`.
+  Every map's key is a command's name, value is a pair of [`command` `message-id`]. In the case
+  of commands `message-id` is `:any`, for responses value contains the actual id.
+
+  Example of output:
+  {:browse  [{:description \"Launch the browser\" :name \"browse\" ...} :any]
+   :request [{:description \"Request a payment\" :name \"request\" ...} \"message-id\"]}"
+  [{:keys [global-commands current-chat-id] :as db} chat-id]
+  (let [chat-id (or chat-id current-chat-id)
+        {:keys [contacts requests]} (get-in db [:chats chat-id])]
     (->> contacts
          (map (fn [{:keys [identity]}]
                 (let [{:keys [commands responses]} (get-in db [:contacts identity])]
@@ -36,10 +56,20 @@
                                          requests)]
                     (into commands' responses')))))
          (reduce (fn [m cur] (into (or m {}) cur)))
-         (into {})
-         (vals))))
+         (into {}))))
 
-(defn split-command-args [command-text]
+(defn split-command-args
+  "Returns a list of command's arguments including the command's name.
+
+  Examples:
+  Input:  '/send Jarrad 1.0'
+  Output: ['/send' 'Jarrad' '1.0']
+
+  Input:  '/send \"Complex name with space in between\" 1.0'
+  Output: ['/send' 'Complex name with space in between' '1.0']
+
+  All the complex logic inside this function aims to support wrapped arguments."
+  [command-text]
   (let [space?                  (text-ends-with-space? command-text)
         command-text            (if space?
                                   (str command-text ".")
@@ -66,6 +96,14 @@
          (first))))
 
 (defn join-command-args [args]
+  "Transforms a list of args to a string. The opposite of `split-command-args`.
+
+  Examples:
+  Input:  ['/send' 'Jarrad' '1.0']
+  Output: '/send Jarrad 1.0'
+
+  Input:  ['/send' 'Complex name with space in between' '1.0']
+  Output: '/send \"Complex name with space in between\" 1.0'"
   (->> args
        (map (fn [arg]
               (if (not (str/index-of arg const/spacing-char))
@@ -74,6 +112,14 @@
        (str/join const/spacing-char)))
 
 (defn selected-chat-command
+  "Returns a map containing `:command`, `:metadata` and `:args` keys.
+  Can also return `nil` if there is no selected command.
+
+  * `:command` key contains a map with all information about command.
+  * `:metadata` is also a map which contains some additional information, usually not visible by user.
+  For instance, we can add a `:to-message-id` key to this map, and this key will allow us to identity
+  the request we're responding to.
+  * `:args` contains all arguments provided by user."
   ([{:keys [current-chat-id] :as db} chat-id input-text]
    (let [chat-id          (or chat-id current-chat-id)
          input-metadata   (get-in db [:chats chat-id :input-metadata])
@@ -81,12 +127,12 @@
          possible-actions (possible-chat-actions db chat-id)
          command-args     (split-command-args input-text)
          command-name     (first command-args)]
-     (when (chat-utils/starts-as-command? (or command-name ""))
+     (when (starts-as-command? (or command-name ""))
        (when-let [[command to-message-id]
                   (-> (filter (fn [[{:keys [name bot]} message-id]]
                                 (= (or (when-not (bots-constants/mailman-bot? bot) bot) name)
                                    (subs command-name 1)))
-                              possible-actions)
+                              (vals possible-actions))
                       (first))]
            {:command  command
             :metadata (if (and (nil? (:to-message-id input-metadata)) (not= :any to-message-id))
@@ -101,6 +147,8 @@
 (def *no-argument-error* -1)
 
 (defn current-chat-argument-position
+  "Returns the position of current argument. It's just an integer number from -1 to infinity.
+  -1 (`*no-argument-error*`) means error. It can happen if there is no selected command or selection."
   [{:keys [args] :as command} input-text selection seq-arguments]
   (if command
     (if (get-in command [:command :sequential-params])
@@ -120,7 +168,12 @@
           *no-argument-error*)))
     *no-argument-error*))
 
-(defn argument-position [{:keys [current-chat-id] :as db} chat-id]
+(defn argument-position
+  "Returns the position of current argument. It's just an integer from -1 to infinity.
+  -1 (`*no-argument-error*`) means error. It can happen if there is no command or selection.
+
+  This method is basically just another way of calling `current-chat-argument-position`."
+  [{:keys [current-chat-id] :as db} chat-id]
   (let [chat-id       (or chat-id current-chat-id)
         input-text    (get-in db [:chats chat-id :input-text])
         seq-arguments (get-in db [:chats chat-id :seq-arguments])
@@ -129,6 +182,11 @@
     (current-chat-argument-position chat-command input-text selection seq-arguments)))
 
 (defn command-completion
+  "Returns one of the following values indicating a command's completion status:
+   * `:complete` means that the command is complete and can be sent;
+   * `:less-than-needed` means that the command is not complete and additional arguments should be provided;
+   * `:more-than-needed` means that the command is more than complete and contains redundant arguments;
+   * `:no-command` means that there is no selected command."
   ([{:keys [current-chat-id] :as db} chat-id]
    (let [chat-id      (or chat-id current-chat-id)
          input-text   (get-in db [:chats chat-id :input-text])
@@ -154,7 +212,11 @@
          :no-command)
        :no-command))))
 
-(defn args->params [{:keys [command args]}]
+(defn args->params
+  "Uses `args` (which is a list or vector like ['Jarrad' '1.0']) and command's `params`
+  and returns a map that looks the following way:
+  {:recipient \"Jarrad\" :amount \"1.0\"}"
+  [{:keys [command args]}]
   (let [params (:params command)]
     (->> args
          (map-indexed (fn [i value]
@@ -162,10 +224,38 @@
          (into {}))))
 
 (defn command-dependent-context-params
-  [{:keys [name] :as command}]
-  (case name
-    "phone" {:suggestions (phone-number/get-examples)}
+  "Returns additional `:context` data that will be added to specific commands.
+  The following data shouldn't be hardcoded here."
+  [chat-id {:keys [name] :as command}]
+  (case chat-id
+    "console" (case name
+                "phone" {:suggestions (phone-number/get-examples)}
+                {})
     {}))
+
+(defn modified-db-after-change
+  "Returns the new db object that should be used after any input change."
+  [{:keys [current-chat-id] :as db}]
+  (let [input-text   (get-in db [:chats current-chat-id :input-text])
+        command      (selected-chat-command db current-chat-id input-text)
+        prev-command (get-in db [:chat-ui-props current-chat-id :prev-command])]
+    (if command
+      (cond-> db
+              ;; clear the bot db
+              (not= prev-command (-> command :command :name))
+              (assoc-in [:bot-db (or (:bot command) current-chat-id)] nil)
+              ;; clear the chat's validation messages
+              true
+              (assoc-in [:chat-ui-props current-chat-id :validation-messages] nil))
+      (-> db
+          ;; clear input metadata
+          (assoc-in [:chats current-chat-id :input-metadata] nil)
+          ;; clear
+          (update-in [:chat-ui-props current-chat-id]
+                     merge
+                     {:result-box          nil
+                      :validation-messages nil
+                      :prev-command        (-> command :command :name)})))))
 
 (defmulti validation-handler (fn [name] (keyword name)))
 
@@ -177,30 +267,3 @@
       (set-errors [validation-message
                    {:title       (i18n/label :t/phone-number)
                     :description (i18n/label :t/invalid-phone)}]))))
-
-(defn- changed-arg-position [xs ys]
-  (let [longest  (into [] (max-key count xs ys))
-        shortest (into [] (if (= longest xs) ys xs))]
-    (->> longest
-         (map-indexed (fn [index x]
-                        (if (and (> (count shortest) index)
-                                 (= (count x) (count (get shortest index))))
-                          nil
-                          index)))
-         (remove nil?)
-         (first))))
-
-(defn make-input-text [[command & args] old-args]
-  (let [args     (into [] args)
-        old-args (into [] old-args)
-
-        arg-pos  (changed-arg-position args old-args)
-        new-arg  (get args arg-pos)
-        new-args (if arg-pos
-                   (assoc old-args arg-pos (when new-arg
-                                             (str/trim new-arg)))
-                   old-args)]
-    (str
-      command
-      const/spacing-char
-      (join-command-args new-args))))

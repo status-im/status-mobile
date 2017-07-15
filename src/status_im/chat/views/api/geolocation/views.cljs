@@ -1,4 +1,4 @@
-(ns status-im.chat.views.geolocation.views
+(ns status-im.chat.views.api.geolocation.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]]
                    [reagent.ratom :refer [reaction]])
   (:require [status-im.components.react :refer [view image text touchable-highlight]]
@@ -6,7 +6,7 @@
             [goog.string :as gstr]
             [status-im.utils.utils :refer [http-get]]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.chat.views.geolocation.styles :as st]
+            [status-im.chat.views.api.geolocation.styles :as st]
             [status-im.components.mapbox :refer [mapview]]
             [re-frame.core :refer [dispatch subscribe]]
             [status-im.i18n :refer [label]]

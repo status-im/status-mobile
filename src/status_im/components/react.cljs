@@ -170,3 +170,7 @@
                        [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
                        [view props])]
     (vec (concat view-element children))))
+
+;; Emoji
+
+(def emojilib (js/require "emojilib"))

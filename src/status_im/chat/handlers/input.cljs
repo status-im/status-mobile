@@ -13,25 +13,19 @@
             [status-im.i18n :as i18n]
             [clojure.string :as str]))
 
+(handlers/register-handler
+  :update-input-data
+  (fn [db]
+    (input-model/modified-db-after-change db)))
+
 (handlers/register-handler :set-chat-input-text
   (fn [{:keys [current-chat-id chats chat-ui-props] :as db} [_ text chat-id]]
     (let [chat-id          (or chat-id current-chat-id)
           ends-with-space? (input-model/text-ends-with-space? text)]
       (dispatch [:update-suggestions chat-id text])
-
       (->> text
            (input-model/text->emoji)
-           (assoc-in db [:chats chat-id :input-text]))
-
-      ;; TODO(alwx): need to understand the need in this
-      #_(if-let [{command :command} (input-model/selected-chat-command db chat-id text)]
-         (let [{old-args :args} (input-model/selected-chat-command db chat-id)
-               text-splitted  (input-model/split-command-args text)
-               new-input-text (input-model/make-input-text text-splitted old-args)]
-           (assoc-in db [:chats chat-id :input-text] new-input-text))
-         (->> text
-              (input-model/text->emoji)
-              (assoc-in db [:chats chat-id :input-text]))))))
+           (assoc-in db [:chats chat-id :input-text])))))
 
 (handlers/register-handler :add-to-chat-input-text
   (handlers/side-effect!
@@ -157,7 +151,7 @@
                          :context    (merge {:data data
                                              :from current-account-id
                                              :to   to}
-                                            (input-model/command-dependent-context-params command))}]
+                                            (input-model/command-dependent-context-params current-chat-id command))}]
             (status/call-jail
               {:jail-id  (or bot owner-id current-chat-id)
                :path     path
@@ -341,7 +335,7 @@
         (dispatch [::request-command-data
                    {:content   command
                     :chat-id   chat-id
-                    ;;TODO(alwx): jail-id ?
+                    :jail-id   (or (get-in command [:command :bot]) chat-id)
                     :data-type :validator
                     :after     #(dispatch [::proceed-validation %2 after-validation])}])))))
 

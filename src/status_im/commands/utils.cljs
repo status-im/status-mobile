@@ -5,9 +5,9 @@
             [status-im.components.react :as components]
             [status-im.chat.views.input.web-view :as chat-web-view]
             [status-im.chat.views.input.validation-messages :as chat-validation-messages]
-            [status-im.chat.views.choosers.choose-contact :as choose-contact]
+            [status-im.chat.views.api.choose-contact :as choose-contact]
             [status-im.components.qr-code :as qr]
-            [status-im.chat.views.geolocation.views :as geolocation]
+            [status-im.chat.views.api.geolocation.views :as geolocation]
             [status-im.utils.handlers :refer [register-handler]]
             [taoensso.timbre :as log]))
 

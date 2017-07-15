@@ -1,4 +1,4 @@
-(ns status-im.chat.views.geolocation.styles
+(ns status-im.chat.views.api.geolocation.styles
   (:require [status-im.components.styles :as common]))
 
 (defn place-item-container [address]

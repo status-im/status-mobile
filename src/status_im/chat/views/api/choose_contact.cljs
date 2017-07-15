@@ -1,4 +1,4 @@
-(ns status-im.chat.views.choosers.choose-contact
+(ns status-im.chat.views.api.choose-contact
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]

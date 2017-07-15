@@ -64,9 +64,8 @@
         command              (subscribe [:selected-chat-command])
         sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])
         input-focused?       (subscribe [:chat-ui-props :input-focused?])
-        prev-command         (subscribe [:chat-ui-props :prev-command])
         input-ref            (atom nil)]
-    (fn [{:keys [set-layout-height set-container-width height single-line-input?]}]
+    (fn [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
       [text-input
        {:ref                    #(when %
                                    (dispatch [:set-chat-ui-props {:input-ref %}])
@@ -78,39 +77,30 @@
         :blur-on-submit         false
         :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
                                                                 :show-emoji?    false}])
-        :on-blur                #(do (dispatch [:set-chat-ui-props {:input-focused? false}]))
+        :on-blur                #(dispatch [:set-chat-ui-props {:input-focused? false}])
         :on-submit-editing      (fn [e]
                                   (if single-line-input?
                                     (dispatch [:send-current-message])
                                     (.setNativeProps @input-ref (clj->js {:text (str @input-text "\n")}))))
         :on-layout              (fn [e]
-                                  (set-container-width (.-width (.-layout (.-nativeEvent e)))))
+                                  (set-container-width-fn (.-width (.-layout (.-nativeEvent e)))))
         :on-change              (fn [e]
                                   (let [native-event (.-nativeEvent e)
-                                        text         (.-text native-event)]
+                                        text         (.-text native-event)
+                                        height       (.. native-event -contentSize -height)]
                                     (when-not single-line-input?
-                                      (let [height (.. native-event -contentSize -height)]
-                                        (set-layout-height height)))
+                                      (set-layout-height-fn height))
                                     (when (not= text @input-text)
                                       (dispatch [:set-chat-input-text text])
-                                      (if @command
-                                        (do
-                                          (when (not= @prev-command (-> @command :command :name))
-                                            (dispatch [:clear-bot-db @command]))
-                                          (dispatch [:load-chat-parameter-box (:command @command)])
-                                          (dispatch [:set-chat-ui-props {:validation-messages nil}]))
-                                        (do
-                                          (dispatch [:set-chat-input-metadata nil])
-                                          (dispatch [:set-chat-ui-props
-                                                     {:result-box          nil
-                                                      :validation-messages nil
-                                                      :prev-command        (-> @command :command :name)}]))))))
+                                      (when @command
+                                        (dispatch [:load-chat-parameter-box (:command @command)]))
+                                      (dispatch [:update-input-data]))))
         :on-content-size-change (when (and (not @input-focused?)
                                            (not single-line-input?))
                                   #(let [h (-> (.-nativeEvent %)
                                                (.-contentSize)
                                                (.-height))]
-                                     (set-layout-height h)))
+                                     (set-layout-height-fn h)))
         :on-selection-change    #(let [s   (-> (.-nativeEvent %)
                                                (.-selection))
                                        end (.-end s)]
@@ -119,13 +109,13 @@
         :placeholder-text-color style/color-input-helper-placeholder
         :auto-capitalize        :sentences}])))
 
-(defn- invisible-input [{:keys [set-layout-width value]}]
+(defn- invisible-input [{:keys [set-layout-width-fn value]}]
   (let [input-text    (subscribe [:chat :input-text])]
     [text {:style     style/invisible-input-text
            :on-layout #(let [w (-> (.-nativeEvent %)
                                    (.-layout)
                                    (.-width))]
-                         (set-layout-width w))}
+                         (set-layout-width-fn w))}
      (or @input-text "")]))
 
 (defn- input-helper [_]
@@ -183,25 +173,25 @@
                              (get-options type))])))))
 
 (defn input-view [_]
-  (let [component            (r/current-component)
-        set-layout-width     #(r/set-state component {:width %})
-        set-layout-height    #(r/set-state component {:height %})
-        set-container-width  #(r/set-state component {:container-width %})
-        command              (subscribe [:selected-chat-command])]
+  (let [component              (r/current-component)
+        set-layout-width-fn    #(r/set-state component {:width %})
+        set-layout-height-fn   #(r/set-state component {:height %})
+        set-container-width-fn #(r/set-state component {:container-width %})
+        command                (subscribe [:selected-chat-command])]
     (r/create-class
       {:reagent-render
        (fn [{:keys [anim-margin single-line-input?]}]
          (let [{:keys [width height container-width]} (r/state component)
                command @command]
            [animated-view {:style (style/input-root height anim-margin)}
-            [invisible-input {:set-layout-width set-layout-width}]
-            [basic-text-input {:set-layout-height   set-layout-height
-                               :set-container-width set-container-width
-                               :height              height
-                               :single-line-input?  single-line-input?}]
+            [invisible-input {:set-layout-width-fn set-layout-width-fn}]
+            [basic-text-input {:set-layout-height-fn   set-layout-height-fn
+                               :set-container-width-fn set-container-width-fn
+                               :height                 height
+                               :single-line-input?     single-line-input?}]
             [input-helper {:command command
                            :width   width}]
-            [seq-input {:command-width width
+            [seq-input {:command-width   width
                         :container-width container-width}]
             (if-not command
               [touchable-highlight
