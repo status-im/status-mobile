@@ -73,13 +73,6 @@
                      (merge responses commands))))
            (apply merge)))))
 
-(reg-sub :possible-chat-actions
-  (fn [db [_ chat-id]]
-    "Returns a vector of [command message-id] values. `message-id` can be `:any`.
-     Example: [[browse-command :any] [debug-command :any] [phone-command '1489161286111-58a2cd...']]"
-    (let [chat-id (or chat-id (db :current-chat-id))]
-      (input-model/possible-chat-actions db chat-id))))
-
 (reg-sub
   :selected-chat-command
   (fn [db [_ chat-id]]
@@ -138,7 +131,7 @@
           selected-command  (subscribe [:selected-chat-command chat-id])
           requests          (subscribe [:chat :request-suggestions chat-id])
           commands          (subscribe [:chat :command-suggestions chat-id])]
-      (and (or @show-suggestions? (chat-utils/starts-as-command? (str/trim (or @input-text ""))))
+      (and (or @show-suggestions? (input-model/starts-as-command? (str/trim (or @input-text ""))))
            (not (:command @selected-command))
            (or (not-empty @requests)
                (not-empty @commands))))))

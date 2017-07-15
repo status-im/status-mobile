@@ -56,8 +56,3 @@
     bot (str const/bot-char bot)
 
     :else (str const/command-char name)))
-
-(defn starts-as-command? [text]
-  (and (not (nil? text))
-       (or (str/starts-with? text const/bot-char)
-           (str/starts-with? text const/command-char))))
