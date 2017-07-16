@@ -14,7 +14,7 @@
             [status-im.components.toolbar.styles :refer [toolbar-title-container
                                                          toolbar-title-text
                                                          toolbar-background1]]
-            [status-im.utils.utils :refer [log http-post]]
+            [status-im.utils.utils :refer [http-post]]
             [status-im.components.styles :refer [icon-ok
                                                  button-input-container
                                                  button-input

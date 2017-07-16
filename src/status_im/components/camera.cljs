@@ -1,13 +1,13 @@
 (ns status-im.components.camera
   (:require [reagent.core :as r]
             [clojure.walk :refer [keywordize-keys]]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.react-native.js-dependencies :as rn-dependecies]))
 
-(def camera-class (js/require "react-native-camera"))
-(def camera-default (.-default camera-class))
+(def default-camera (.-default rn-dependecies/camera))
 
 (defn constants [t]
-  (-> (aget camera-default "constants" t)
+  (-> (aget rn-dependecies/camera "constants" t)
       (js->clj)
       (keywordize-keys)))
 
@@ -17,9 +17,9 @@
 (defn request-access [callback]
   (if platform/android?
       (callback true)
-      (-> (.checkVideoAuthorizationStatus camera-default)
+      (-> (.checkVideoAuthorizationStatus default-camera)
           (.then #(callback %))
           (.catch #(callback false)))))
 
 (defn camera [props]
-  (r/create-element camera-default (clj->js (merge {:inverted true} props))))
+  (r/create-element default-camera (clj->js (merge {:inverted true} props))))

@@ -14,8 +14,6 @@
             [cljs.reader :refer [read-string]]
             [status-im.navigation.handlers :as nav]))
 
-(def web3 (js/require "web3"))
-
 (defn by-public-key [public-key contacts]
   (when-let [{:keys [address]} (contacts public-key)]
     (when address {:address address})))

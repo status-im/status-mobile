@@ -1,5 +1,6 @@
 (ns status-im.components.item-checkbox
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
-(def item-checkbox (r/adapt-react-class (js/require "react-native-circle-checkbox")))
+(def item-checkbox rn-dependencies/camera)
 

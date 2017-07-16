@@ -1,9 +1,8 @@
 (ns status-im.components.qr-code
-  (:require [reagent.core :as r]))
-
-(def class (js/require "react-native-qrcode"))
+  (:require [reagent.core :as r]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn qr-code [props]
   (r/create-element
-    class
+    rn-dependencies/qr-code
     (clj->js (merge {:inverted true} props))))

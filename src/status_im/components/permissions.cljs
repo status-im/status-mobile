@@ -1,8 +1,9 @@
 (ns status-im.components.permissions
   (:require [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
-(def permissions-class (.-PermissionsAndroid js/ReactNative))
+(def permissions-class (.-PermissionsAndroid rn-dependencies/react-native))
 
 (def permissions-map
   {:read-external-storage  "android.permission.READ_EXTERNAL_STORAGE"

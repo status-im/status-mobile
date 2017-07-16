@@ -1,12 +1,11 @@
 (ns status-im.utils.instabug
-  (:require [taoensso.timbre :as log]))
-
-(def instabug-rn (js/require "instabug-reactnative"))
+  (:require [taoensso.timbre :as log]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn log [str]
   (if js/goog.DEBUG
     (log/debug str)
-    (.IBGLog instabug-rn str)))
+    (.IBGLog rn-dependencies/instabug str)))
 
 (defn instabug-appender []
   {:enabled?   true

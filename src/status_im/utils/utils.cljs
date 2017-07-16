@@ -2,20 +2,12 @@
   (:require [status-im.constants :as const]
             [status-im.i18n :refer [label]]
             [reagent.core :as r]
-            [clojure.string :as str]))
-
-(defn require [module]
-  (if (exists? js/window)
-    (js/require module)
-    #js {}))
-
-(defn log [obj]
-  (.log js/console obj))
-
-(def react-native (js/require "react-native"))
+            [clojure.string :as str]
+            [taoensso.timbre :as log]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn show-popup [title content]
-  (.alert (.-Alert react-native)
+  (.alert (.-Alert rn-dependencies/react-native)
           title
           content))
 
@@ -25,7 +17,7 @@
   ([title content s on-accept]
    (show-confirmation title content s on-accept nil))
   ([title content s on-accept on-cancel]
-   (.alert (.-Alert react-native)
+   (.alert (.-Alert rn-dependencies/react-native)
            title
            content
            ; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
@@ -45,7 +37,7 @@
                                    :content-type "application/json"}
                          :body (.stringify js/JSON (clj->js data))}))
        (.then (fn [response]
-                (log response)
+                (log/debug response)
                 (.text response)))
        (.then (fn [text]
                 (let [json (.parse js/JSON text)
@@ -62,7 +54,7 @@
    (-> (.fetch js/window url (clj->js {:method  "GET"
                                        :headers {"Cache-Control" "no-cache"}}))
        (.then (fn [response]
-                (log response)
+                (log/debug response)
                 (let [ok?  (.-ok response)
                       ok?' (if valid-response?
                              (and ok? (valid-response? response))
@@ -100,16 +92,6 @@
       (if (cond (first coll))
         index
         (recur (inc index) cond (next coll))))))
-
-(defn get-react-property [name]
-  (aget react-native name))
-
-(defn adapt-class [class]
-  (when class
-    (r/adapt-react-class class)))
-
-(defn get-class [name]
-  (adapt-class (get-react-property name)))
 
 (defn hash-tag? [s]
   (= \# (first s)))

@@ -1,7 +1,8 @@
 (ns status-im.ios.platform
   (:require [status-im.components.styles :as styles]
             [status-im.i18n :refer [label]]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def component-styles
   {:status-bar            {:default     {:height    20
@@ -69,8 +70,6 @@
 
 ;; Dialogs
 
-(def react-native (js/require "react-native"))
-
 (defn action-sheet-options [options]
   (let [destructive-opt-index (utils/first-index :destructive? options)
         cancel-option         {:text (label :t/cancel)}
@@ -80,7 +79,7 @@
                     (when destructive-opt-index {:destructiveButtonIndex destructive-opt-index})))))
 
 (defn show-action-sheet [{:keys [options callback]}]
-  (.showActionSheetWithOptions (.-ActionSheetIOS react-native)
+  (.showActionSheetWithOptions (.-ActionSheetIOS rn-dependencies/react-native)
                                (action-sheet-options options)
                                callback))
 

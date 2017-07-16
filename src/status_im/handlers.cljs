@@ -30,7 +30,8 @@
     [status-im.constants :refer [console-chat-id]]
     [status-im.utils.ethereum-network :as enet]
     [status-im.utils.instabug :as inst]
-    [status-im.utils.platform :as p]))
+    [status-im.utils.platform :as p]
+    [status-im.js-dependencies :as dependencies]))
 
 ;; -- Common --------------------------------------------------------------
 
@@ -100,23 +101,23 @@
         (dispatch [:load-commands!])
         (when callback (callback))))))
 
-(def ecc (js/require "eccjs"))
-
 (register-handler :initialize-crypt
   (u/side-effect!
     (fn [_ _]
       (log/debug "initializing crypt")
-      (gen-random-bytes 1024 (fn [{:keys [error buffer]}]
-                               (if error
-                                 (do
-                                   (log/error "Failed to generate random bytes to initialize sjcl crypto")
-                                   (dispatch [:notify-user {:type  :error
-                                                            :error error}]))
-                                 (do
-                                   (->> (.toString buffer "hex")
-                                        (.toBits (.. ecc -sjcl -codec -hex))
-                                        (.addEntropy (.. ecc -sjcl -random)))
-                                   (dispatch [:crypt-initialized]))))))))
+      (gen-random-bytes
+        1024
+        (fn [{:keys [error buffer]}]
+          (if error
+            (do
+              (log/error "Failed to generate random bytes to initialize sjcl crypto")
+              (dispatch [:notify-user {:type  :error
+                                       :error error}]))
+            (do
+              (->> (.toString buffer "hex")
+                   (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
+                   (.addEntropy (.. dependencies/eccjs -sjcl -random)))
+              (dispatch [:crypt-initialized]))))))))
 
 (defn node-started [_ _]
   (log/debug "Started Node")

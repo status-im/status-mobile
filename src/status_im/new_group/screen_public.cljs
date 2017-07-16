@@ -1,7 +1,7 @@
 (ns status-im.new-group.screen-public
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.resources :as res]
+            [status-im.react-native.resources :as res]
             [status-im.components.react :refer [view
                                                 text
                                                 image

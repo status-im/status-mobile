@@ -20,6 +20,11 @@ node {
       sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
       sh 'cd ios && pod install && cd ..'
     }
+
+    stage('Tests') {
+      sh 'lein test-cljs'
+    }
+
     stage('Build') {
       sh 'lein prod-build'
     }
