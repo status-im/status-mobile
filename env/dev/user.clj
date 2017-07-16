@@ -24,9 +24,6 @@
 (def cljs-builds
   (get-in profiles [:dev :cljsbuild :builds]))
 
-(def buids-by-id
-  (into {} (map (fn [{:keys [id] :as build}] [id build]) cljs-builds)))
-
 (defn start-figwheel
   "Start figwheel for one or more builds"
   [build-ids cljs-builds]
@@ -62,16 +59,18 @@
 (defn get-builds [ids all-builds]
   (keep
     (fn [id]
-      (let [build (get all-builds (get-id id))]
-        (if (test-id? id)
-          (get-test-build build)
-          build)))
+      (assoc
+        (let [build (get all-builds (get-id id))]
+          (if (test-id? id)
+            (get-test-build build)
+            build))
+        :id id))
     ids))
 
 (let [env-build-ids (System/getenv "BUILD_IDS")
       build-ids     (if env-build-ids
                       (map keyword (s/split env-build-ids #","))
                       [:android])
-      builds        (get-builds build-ids buids-by-id)]
+      builds        (get-builds build-ids cljs-builds)]
   (start-figwheel build-ids builds)
   (rfs/-main))
