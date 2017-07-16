@@ -6,11 +6,12 @@
                                                 text]]
             [status-im.components.carousel.styles :as st]
             [taoensso.timbre :as log]
-            [status-im.components.react :as r]))
+            [status-im.components.react :as r]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 
 (defn window-page-width []
-  (.-width (.get (.. r/react-native -Dimensions) "window")))
+  (.-width (.get (.. rn-dependencies/react-native -Dimensions) "window")))
 
 (def defaults {:gap 8
                :sneak 8

@@ -7,7 +7,7 @@
                                                 icon]]
             [status-im.components.chat-icon.styles :as st]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.resources :as resources]
+            [status-im.react-native.resources :as resources]
             [status-im.constants :refer [console-chat-id]]
             [clojure.string :as s]))
 

@@ -8,6 +8,7 @@
             [status-im.utils.phone-number :as phone-number]
             [status-im.chat.utils :as chat-utils]
             [status-im.bots.constants :as bots-constants]
+            [status-im.js-dependencies :as dependencies]
             [taoensso.timbre :as log]))
 
 (defn text->emoji
@@ -17,7 +18,7 @@
     (str/replace text
                  #":([a-z_\-+0-9]*):"
                  (fn [[original emoji-id]]
-                   (if-let [emoji-map (aget rc/emojilib "lib" emoji-id)]
+                   (if-let [emoji-map (aget dependencies/emojis "lib" emoji-id)]
                      (aget emoji-map "char")
                      original)))))
 

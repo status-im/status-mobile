@@ -5,23 +5,23 @@
             [taoensso.timbre :as log]
             [status-im.utils.fs :as fs]
             [clojure.string :as str]
-            [goog.string :as gstr])
+            [goog.string :as gstr]
+            [status-im.react-native.js-dependencies :as rn-dependencies])
   (:refer-clojure :exclude [exists?]))
-
-(def realm-class (js/require "realm"))
 
 (defn realm-version
   [file-name]
-  (.schemaVersion realm-class file-name))
+  (.schemaVersion rn-dependencies/realm file-name))
 
 (defn open-realm
   [options file-name]
   (let [options (merge options {:path file-name})]
     (when (cljs.core/exists? js/window)
-      (realm-class. (clj->js options)))))
+      (rn-dependencies/realm. (clj->js options)))))
 
 (defn close [realm]
-  (.close realm))
+  (when realm
+    (.close realm)))
 
 (defn migrate [file-name schemas]
   (let [current-version (realm-version file-name)]
@@ -37,7 +37,7 @@
 
 (def new-account-filename "new-account")
 
-(def base-realm (open-migrated-realm (.-defaultPath realm-class) base/schemas))
+(def base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas))
 
 (def account-realm (atom (open-migrated-realm new-account-filename account/schemas)))
 

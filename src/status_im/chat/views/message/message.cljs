@@ -23,7 +23,7 @@
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
             [status-im.models.commands :refer [parse-command-message-content
                                                parse-command-request]]
-            [status-im.resources :as res]
+            [status-im.react-native.resources :as res]
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
                                          text-content-type

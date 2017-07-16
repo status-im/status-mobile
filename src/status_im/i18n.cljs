@@ -1,5 +1,6 @@
 (ns status-im.i18n
   (:require
+    [status-im.react-native.js-dependencies :as rn-dependencies]
     [status-im.translations.af :as af]
     [status-im.translations.ar :as ar]
     [status-im.translations.bel :as be]
@@ -48,11 +49,10 @@
     [taoensso.timbre :as log]
     [clojure.string :as str]))
 
-(def i18n (js/require "react-native-i18n"))
-(set! (.-fallbacks i18n) true)
-(set! (.-defaultSeparator i18n) "/")
+(set! (.-fallbacks rn-dependencies/i18n) true)
+(set! (.-defaultSeparator rn-dependencies/i18n) "/")
 
-(set! (.-translations i18n) (clj->js {:af      af/translations
+(set! (.-translations rn-dependencies/i18n) (clj->js {:af      af/translations
                                       :ar      ar/translations
                                       :be      be/translations
                                       :da      da/translations
@@ -124,7 +124,7 @@
 (defn label-number [number]
   (when number
     (let [{:keys [delimiter separator]} delimeters]
-      (.toNumber i18n
+      (.toNumber rn-dependencies/i18n
                  (str/replace number #"," ".")
                  (clj->js {:precision                 10
                            :strip_insignificant_zeros true
@@ -134,14 +134,14 @@
 (defn label
   ([path] (label path {}))
   ([path options]
-   (if (exists? i18n.t)
+   (if (exists? rn-dependencies/i18n.t)
      (let [options (update options :amount label-number)]
-       (.t i18n (name path) (clj->js options)))
+       (.t rn-dependencies/i18n (name path) (clj->js options)))
      (name path))))
 
 (defn label-pluralize [count path & options]
-  (if (exists? i18n.t)
-    (.p i18n count (name path) (clj->js options))
+  (if (exists? rn-dependencies/i18n.t)
+    (.p rn-dependencies/i18n count (name path) (clj->js options))
     (name path)))
 
 (defn message-status-label [status]
@@ -152,7 +152,7 @@
        (label)))
 
 (def locale
-  (.-locale i18n))
+  (.-locale rn-dependencies/i18n))
 
 (defn get-contact-translated [contact-id key fallback]
   (let [translation #(get-in default-contacts [(keyword contact-id) key (keyword %)])]

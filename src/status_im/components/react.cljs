@@ -1,18 +1,29 @@
 (ns status-im.components.react
   (:require [reagent.core :as r]
             [status-im.components.styles :as st]
-            [status-im.utils.utils :as u
-             :refer [get-react-property get-class adapt-class]]
+            [status-im.utils.utils :as u]
             [status-im.utils.platform :refer [platform-specific ios?]]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
-(def react-native (js/require "react-native"))
-(def native-modules (.-NativeModules react-native))
-(def device-event-emitter (.-DeviceEventEmitter react-native))
-(def dismiss-keyboard! (js/require "dismissKeyboard"))
-(def orientation (js/require "react-native-orientation"))
+(defn get-react-property [name]
+  (if rn-dependencies/react-native
+    (aget rn-dependencies/react-native name)
+    #js {}))
+
+(defn adapt-class [class]
+  (when class
+    (r/adapt-react-class class)))
+
+(defn get-class [name]
+  (adapt-class (get-react-property name)))
+
+(def native-modules (.-NativeModules rn-dependencies/react-native))
+(def device-event-emitter (.-DeviceEventEmitter rn-dependencies/react-native))
+(def dismiss-keyboard! rn-dependencies/dismiss-keyboard)
+(def orientation rn-dependencies/orientation)
 (def back-android (get-react-property "BackAndroid"))
-(def drawer (js/require "react-native-drawer-layout"))
+(def drawer rn-dependencies/drawer)
 
 (def splash-screen (.-SplashScreen native-modules))
 
@@ -20,6 +31,7 @@
 
 (def app-registry (get-react-property "AppRegistry"))
 (def app-state (get-react-property "AppState"))
+(def net-info (get-react-property "NetInfo"))
 (def navigator (get-class "Navigator"))
 (def view (get-class "View"))
 
@@ -43,14 +55,14 @@
 (def modal (get-class "Modal"))
 (def picker (get-class "Picker"))
 
-(def pan-responder (.-PanResponder js/ReactNative))
-(def animated (.-Animated js/ReactNative))
+(def pan-responder (.-PanResponder rn-dependencies/react-native))
+(def animated (.-Animated rn-dependencies/react-native))
 (def animated-view (r/adapt-react-class (.-View animated)))
 (def animated-text (r/adapt-react-class (.-Text animated)))
 
-(def dimensions (.-Dimensions js/ReactNative))
-(def keyboard (.-Keyboard react-native))
-(def linking (.-Linking js/ReactNative))
+(def dimensions (.-Dimensions rn-dependencies/react-native))
+(def keyboard (.-Keyboard rn-dependencies/react-native))
+(def linking (.-Linking rn-dependencies/react-native))
 
 (def slider (get-class "Slider"))
 ;; Accessor methods for React Components
@@ -108,17 +120,17 @@
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))
 
+(def gradient (adapt-class (.-default rn-dependencies/linear-gradient)))
+
 (defn linear-gradient [props]
-  (let [class    (js/require "react-native-linear-gradient")
-        gradient (adapt-class (.-default class))]
-    [gradient props]))
+  [gradient props])
 
 (defn list-item [component]
   (r/as-element component))
 
 ;; Image picker
 
-(def image-picker-class (js/require "react-native-image-crop-picker"))
+(def image-picker-class rn-dependencies/image-crop-picker)
 
 (defn show-access-error [o]
   (when (= "ERROR_PICKER_UNAUTHORIZED_KEY" (aget o "code")) ; Do not show error when user cancel selection
@@ -132,19 +144,19 @@
         (.then images-fn)
         (.catch show-access-error))))
 
-(def swiper (adapt-class (js/require "react-native-swiper")))
+(def swiper (adapt-class rn-dependencies/swiper))
 
 ;; Clipboard
 
 (def sharing
-  (.-Share js/ReactNative))
+  (.-Share rn-dependencies/react-native))
 
 (defn copy-to-clipboard [text]
-  (.setString (.-Clipboard react-native) text))
+  (.setString (.-Clipboard rn-dependencies/react-native) text))
 
 ;; Emoji
 
-(def emoji-picker-class (js/require "react-native-emoji-picker"))
+(def emoji-picker-class rn-dependencies/emoji-picker)
 
 (def emoji-picker
   (let [emoji-picker (.-default emoji-picker-class)]
@@ -152,7 +164,7 @@
 
 ;; Autolink
 
-(def autolink-class (r/adapt-react-class (.-default (js/require "react-native-autolink"))))
+(def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))
 
 (defn autolink [opts]
   (r/as-element
@@ -160,8 +172,7 @@
 
 ;; HTTP Bridge
 
-(def http-bridge
-  (js/require "react-native-http-bridge"))
+(def http-bridge rn-dependencies/http-bridge)
 
 ;; KeyboardAvoidingView
 

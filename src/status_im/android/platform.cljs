@@ -1,5 +1,6 @@
 (ns status-im.android.platform
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.components.styles :as styles]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def component-styles
   {:status-bar            {:default     {:height       25
@@ -59,10 +60,8 @@
 
 ;; Dialogs
 
-(def react-native-dialogs (js/require "react-native-dialogs"))
-
 (defn show-dialog [{:keys [title options callback]}]
-  (let [dialog (new react-native-dialogs)]
+  (let [dialog (new rn-dependencies/dialogs)]
     (.set dialog (clj->js {:title         title
                            :items         (mapv :text options)
                            :itemsCallback callback}))

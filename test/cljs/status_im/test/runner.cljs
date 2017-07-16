@@ -1,8 +1,7 @@
 (ns status-im.test.runner
   (:require [doo.runner :refer-macros [doo-tests]]
             [status-im.test.chat.models.input]
-            [status-im.test.handlers]
-            [status-im.test.commands.handlers]))
+            [status-im.test.handlers]))
 
 (enable-console-print!)
 
@@ -13,5 +12,4 @@
 (set! goog.DEBUG false)
 
 (doo-tests 'status-im.test.chat.models.input
-           'status-im.test.handlers
-           'status-im.test.commands.handlers)
+           'status-im.test.handlers)

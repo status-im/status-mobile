@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [status-im.data-store.contacts :as contacts]))
 
-(def web3 (js/require "web3"))
 
 (defn is-address? [s]
   (.isAddress web3.prototype s))

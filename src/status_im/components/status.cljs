@@ -7,9 +7,9 @@
             [taoensso.timbre :as log]
             [cljs.core.async :refer [<! timeout]]
             [status-im.utils.js-resources :as js-res]
-            [status-im.i18n :as i]
             [status-im.utils.platform :as p]
-            [status-im.utils.scheduler :as scheduler]))
+            [status-im.utils.scheduler :as scheduler]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn cljs->json [data]
   (.stringify js/JSON (clj->js data)))
@@ -48,11 +48,11 @@
       (recur (<! (timeout 500))))))
 
 (def status
-  (when (exists? (.-NativeModules r/react-native))
-    (.-Status (.-NativeModules r/react-native))))
+  (when (exists? (.-NativeModules rn-dependencies/react-native))
+    (.-Status (.-NativeModules rn-dependencies/react-native))))
 
 (defn init-jail []
-  (let [init-js (str js-res/status-js "I18n.locale = '" i/i18n.locale "';")]
+  (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
     (.initJail status init-js #(log/debug "jail initialized"))))
 
 (defonce listener-initialized (atom false))
@@ -145,7 +145,7 @@
          (log/debug :call-jail :params params)
          (let [params' (update params :context assoc
                                :debug js/goog.DEBUG
-                               :locale i/i18n.locale)
+                               :locale rn-dependencies/i18n.locale)
                cb      (fn [r]
                          (let [{:keys [result] :as r'} (t/json->clj r)
                                {:keys [messages]} result]

@@ -4,12 +4,11 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.react :refer [view touchable-highlight text]]))
-
-(def react-native-popup-menu (js/require "react-native-popup-menu"))
+            [status-im.components.react :refer [view touchable-highlight text]]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn get-property [name]
-  (aget react-native-popup-menu name))
+  (aget rn-dependencies/popup-menu name))
 
 (defn adapt-class [class]
   (when class

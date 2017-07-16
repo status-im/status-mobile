@@ -1,11 +1,10 @@
 (ns status-im.utils.ethereum-network
   (:require [status-im.constants :as c]
-            [status-im.utils.web-provider :as w3]))
-
-(def Web3 (js/require "web3"))
+            [status-im.utils.web3-provider :as w3]
+            [status-im.js-dependencies :as dependencies]))
 
 (defn web3 []
-  (Web3. (w3/get-provider c/ethereum-rpc-url)))
+  (dependencies/Web3. (w3/get-provider c/ethereum-rpc-url)))
 
 (def networks
   {"0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3" :mainnet

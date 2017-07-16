@@ -1,7 +1,7 @@
 (ns status-im.participants.views.add
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.resources :as res]
+            [status-im.react-native.resources :as res]
             [status-im.components.react :refer [view list-view list-item]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
