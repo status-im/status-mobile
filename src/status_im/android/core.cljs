@@ -47,7 +47,8 @@
             [status-im.components.status :as status]
             [status-im.components.styles :as st]
             [status-im.chat.styles.screen :as chat-st]
-            [status-im.profile.qr-code.screen :refer [qr-code-view]]))
+            [status-im.profile.qr-code.screen :refer [qr-code-view]]
+            [status-im.utils.utils :as utils]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -166,6 +167,7 @@
                        [component])]])]]))))})))
 
 (defn init []
+  (utils/register-exception-handler)
   (status/call-module status/init-jail)
   (dispatch-sync [:reset-app])
   (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root))
