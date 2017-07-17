@@ -198,6 +198,21 @@
         "groups": ["dapps"]
     },
     
+    "Winsome.io":
+    {
+        "name":
+        {
+            "en": "Winsome.io"
+        },
+        "photo-path": "contacts://winsome",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://winsome.io/"
+        },
+        "groups": ["dapps"]
+    },
+    
     "Dentacoin":
     {
         "name":
