@@ -66,9 +66,9 @@
    :not-specified                         "Non specificato"
    :public-key                            "Chiave pubblica"
    :phone-number                          "Numero di telefono"
-   :email                                 "Email"
+   :email                                 "E-mail"
    :profile-no-status                     "Nessuno stato"
-   :add-to-contacts                       "Aggiungere ai contatti"
+   :add-to-contacts                       "Aggiungi ai contatti"
    :error-incorrect-name                  "Seleziona un altro nome"
    :error-incorrect-email                 "e-mail non valida"
 
