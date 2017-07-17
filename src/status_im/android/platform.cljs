@@ -68,7 +68,6 @@
                            :itemsCallback callback}))
     (.show dialog)))
 
-
 ;; Structure to be exported
 
 (def platform-specific

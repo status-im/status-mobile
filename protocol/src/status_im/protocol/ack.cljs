@@ -1,7 +1,7 @@
 (ns status-im.protocol.ack
   (:require [status-im.protocol.web3.delivery :as d]
             [status-im.protocol.web3.filtering :as f]
-            [status-im.utils.random :as random]))
+            [status-im.protocol.web3.utils :as u]))
 
 (defn check-ack!
   [web3
@@ -11,7 +11,7 @@
   (when (and requires-ack? (not ack?))
     (let [message {:from       identity
                    :to         from
-                   :message-id (random/id)
+                   :message-id (u/id)
                    :topics     [f/status-topic]
                    :type       type
                    :ack?       true

@@ -2,6 +2,7 @@
   (:require [cljs.spec.alpha :as s]
             [status-im.utils.platform :as platform]))
 
+
 (def class
   (when platform/android?
     (js/require "nfc-react-native")))

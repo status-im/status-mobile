@@ -8,7 +8,6 @@
             [status-im.utils.utils :refer [http-post]]
             [status-im.utils.phone-number :refer [format-phone-number]]
             [status-im.utils.handlers :as u]
-            [status-im.utils.utils :refer [require]]
             [status-im.navigation.handlers :as nav]
             [status-im.utils.random :as random]
             [status-im.i18n :refer [label]]

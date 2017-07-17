@@ -19,17 +19,17 @@
    callback]
   (let [{:keys [public]} keypair
 
-        content  (:content payload)
-        content' (if (and (not to) public content)
-                   (e/encrypt public (prn-str content))
-                   content)
+        content   (:content payload)
+        content'  (if (and (not to) public content)
+                    (e/encrypt public (prn-str content))
+                    content)
 
-        payload' (-> message
-                     (select-keys [:message-id :requires-ack? :type :clock-value])
-                     (merge payload)
-                     (assoc :content content')
-                     prn-str
-                     u/from-utf8)]
+        payload'  (-> message
+                      (select-keys [:message-id :requires-ack? :type :clock-value])
+                      (merge payload)
+                      (assoc :content content')
+                      prn-str
+                      u/from-utf8)]
     (shh-keys/get-sym-key
       web3
       (or key-password shh-keys/status-key-password)

@@ -2,7 +2,7 @@
 
 (defn timestamp []
   (.getTime (js/Date.)))
-
+ 
 (def Chance (js/require "chance"))
 
 (def chance (Chance.))
