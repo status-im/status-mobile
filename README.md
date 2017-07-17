@@ -1,18 +1,18 @@
-![Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum](https://status.im/img/status-github-banner@2x.png?v=1.1 "Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum")
+![Status - A Browser, Messenger, and gateway to the decentralized world of Ethereum](https://status.im/img/status-github-banner@2x.png?v=1.1 "Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum")
 [![Build Status](https://saucelabs.com/buildstatus/jarrad-status)](https://saucelabs.com/beta/builds/50ccf11ec1a44d88b6eb989929e5789f)
 
 # Status - a Mobile Ethereum Operating System
 
-Join us in creating a browser, messenger, and gateway to a decentralised world. Status is a free (libre) open source mobile client targeting Android & iOS built entirely on [Ethereum](https://ethereum.org/) technologies. That's right, no middle men and `go-ethereum` running directly on your device.
+Join us in creating a browser, messenger, and gateway to a decentralized world. Status is a free (libre) open source mobile client targeting Android & iOS built entirely on [Ethereum](https://ethereum.org/) technologies. That's right, no middle men and `go-ethereum` running directly on your device.
 
 [![Getting started with Status](https://i.imgur.com/C0aZZEL.jpg)](https://www.youtube.com/watch?v=oDCSEmS9c3o "Getting started with Status")
 
 
 ## Why?
 
-We believe in a medium of pure free trade, economies with fair, permissionless access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
+We believe in a medium of pure free trade, economies with fair, permission-less access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
 
-We want to take responsibilty for our data, the way we conduct ourselves privately and promote this way of life to a mass audience.
+We want to take responsibility for our data, the way we conduct ourselves privately and promote this way of life to a mass audience.
 
 We want deep insights into our own economies so we can make informed, data-driven decisions on how to make our lives better. The Ethereum blockchain, Smart Contracts, Swarm and Whisper provides us a path forward.  
 
@@ -36,7 +36,7 @@ John Dewey once said "Education is not preparation for life; education is life *
 Content is King, keeping our blog up to date and informing the community of news helps keep everyone on the same page. [Jump on our Slack](http://slack.status.im) and discuss with Carl how you can contribute.
 
 - **Marketing**  
-In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user aquisition, public relations or hype building, check out our [Community Outreach and Marketing Guide](http://wiki.status.im/contributing/outreach/) to see how you can spread the word.
+In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user acquisition, public relations or hype building, check out our [Community Outreach and Marketing Guide](http://wiki.status.im/contributing/outreach/) to see how you can spread the word.
 
 - **Testers**  
 It's bug hunting season! Status is currently in Alpha and there are sure to be a bunch of education, [grab your fresh copy of Status](http://wiki.status.im/contributing/development/building-status/) and shake your phone to submit bug reports, or start browsing our [Github Issues](http://github.com/status-im/status-react/issues). Every bug you find brings Status closer to stable, usable software for everyone to enjoy!
@@ -87,7 +87,7 @@ Without the dedication of these fine gentleman, Status would not exist.
 
 ## Contact us
 
-Feel free to email us at [support@status.im](mailto:support@status.im) or better yet, [join our Slack](http://slack.status.im). 
+Feel free to email us at [support@status.im](mailto:support@status.im) or better yet, [join our Slack](http://slack.status.im).
 
 Got a feature request or suggestion, download Status and shake your phone, failing that search our [Github Issues](http://github.com/status-im/status-react/issues).
 
