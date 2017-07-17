@@ -274,6 +274,8 @@
                                {:chat-id  chat-id
                                 :function :init
                                 :context  {:from current-account-id}}))]
+       ; Reset validation messages, if any
+       (dispatch [:set-chat-ui-props {:validation-messages nil}])
        (dispatch [:load-requests! chat-id])
         ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
        #_(dispatch [:load-commands! chat-id])
