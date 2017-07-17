@@ -10,7 +10,7 @@
    :offline                               "Desconectado"
 
    ;drawer
-   :invite-friends                        "Invitar a los amigos"
+   :invite-friends                        "Invitar amigos"
    :faq                                   "Preguntas más frecuentes"
    :switch-users                          "Cambiar usuarios"
 
@@ -20,10 +20,10 @@
    :search-chat                           "Buscar chat"
    :members                               {:one   "1 miembro"
                                            :other "{{count}} miembros"
-                                           :zero  "no hay miembros"}
+                                           :zero  "sin miembros"}
    :members-active                        {:one   "1 miembro, 1 activo"
                                            :other "{{count}} miembros, {{count}} activos"
-                                           :zero  " no hay miembros"}
+                                           :zero  " sin miembros"}
    :active-online                         "En línea"
    :active-unknown                        "Desconocido"
    :available                             "Disponible"
@@ -32,8 +32,8 @@
    :suggestions-commands                  "Comandos"
 
    ;sync
-   :sync-in-progress                      "Sincronización..."
-   :sync-synced                           "Sincronizados"
+   :sync-in-progress                      "Sincronizando..."
+   :sync-synced                           "Sincronizado"
 
    ;messages
    :status-sending                        "Enviando"
@@ -75,7 +75,7 @@
 
    ;;make_photo
    :image-source-title                    "Imagen de perfil"
-   :image-source-make-photo               "Captura"
+   :image-source-make-photo               "Capturar"
    :image-source-gallery                  "Seleccionar de la galería"
    :image-source-cancel                   "Cancelar"
 
@@ -87,22 +87,22 @@
    ;sign-up
    :contacts-syncronized                  "Se han sincronizado tus contactos"
    :confirmation-code                     (str "¡Gracias! Te hemos enviado un mensaje de texto con un código"
-                                               "de confirmación. Por favor, escribe ese código para confirmar tu número de teléfono")
-   :incorrect-code                        (str "Lo sentimos, el código era incorrecto. Escríbalo de nuevo.")
-   :generate-passphrase                   (str "Generaré una frase de contraseña para que puedas restaurar tu contraseña."
-                                               "Acceder o iniciar sesión desde otro dispositivo")
+                                               "de confirmación. Por favor, introducelo para confirmar tu número de teléfono")
+   :incorrect-code                        (str "Lo sentimos, el código era incorrecto. Por favor escríbelo de nuevo.")
+   :generate-passphrase                   (str "Generaré una frase de respaldo para que puedas restaurar tu contraseña"
+                                               "o iniciar sesión desde otro dispositivo")
    :phew-here-is-your-passphrase          "*Uf* ha sido difícil, aquí está tu contraseña, * escríbela y ¡guárdala en un sitio seguro! * La necesitarás para recuperar tu cuenta."
-   :here-is-your-passphrase               "Aquí está tu frase de contraseña, *escríbela y ¡guárdala en un sitio seguro! *La necesitarás para recuperar tu cuenta."
+   :here-is-your-passphrase               "Aquí está tu frase de respaldo, *escríbela y ¡guárdala en un sitio seguro! *La necesitarás para recuperar tu cuenta."
    :written-down                          "Asegúrate de haberla escrito de manera segura"
    :phone-number-required                 "Toca aquí para escribir tu número de teléfono y encontraré a tus amigos"
    :intro-status                          "¡Habla conmigo para configurar tu cuenta y cambiar tu configuración!"
-   :intro-message1                        "Bienvenido a estados\n¡Toca este mensaje para configurar tu contraseña y empezar!"
-   :account-generation-message            "Dame un segundo, ¡tengo que hacer un poco de Matemáticas locas para generar tu cuenta!"
+   :intro-message1                        "Bienvenido a Status\n¡Toca este mensaje para configurar tu contraseña y empezar!"
+   :account-generation-message            "Dame un segundo, ¡tengo que hacer unas cálculos para generar tu cuenta!"
 
    ;chats
    :chats                                 "Chats"
-   :new-chat                              "Un nuevo chat"
-   :new-group-chat                        "Un nuevo grupo de chat"
+   :new-chat                              "Chat nuevo"
+   :new-group-chat                        "Grupo de chat nuevo"
 
    ;discover
    :discover                              "Descubrir"
@@ -110,18 +110,18 @@
    :search-tags                           "Escribe tus etiquetas de búsqueda aquí"
    :popular-tags                          "Etiquetas populares"
    :recent                                "Reciente"
-   :no-statuses-discovered                "No se han encontrado estados"
+   :no-statuses-discovered                "No se han encontrado Status"
 
    ;settings
    :settings                              "Ajustes"
 
    ;contacts
    :contacts                              "Contactos"
-   :new-contact                           "Un nuevo contacto"
+   :new-contact                           "Un contacto nuevo"
    :show-all                              "MOSTRAR TODOS"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Gente"
-   :contacts-group-new-chat               "Empezar un Nuevo chat"
+   :contacts-group-new-chat               "Empezar un chat nuevo"
    :no-contacts                           "No hay contactos todavía"
    :show-qr                               "Mostrar QR"
 
@@ -146,7 +146,7 @@
    :phone-request-text                    "Solicitud de número de teléfono"
    :confirmation-code-command-description "Enviar código de confirmación"
    :confirmation-code-request-text        "Solicitud de código de confirmación"
-   :send-command-description              "Enviar ubicación"
+   :send-command-description              "Enviar comando"
    :request-command-description           "Enviar solicitud"
    :keypair-password-command-description  ""
    :help-command-description              "Ayuda"
@@ -193,11 +193,11 @@
    :wrong-password                        "Contraseña incorrecta"
 
    ;recover
-   :recover-from-passphrase               "Recuperar de la frase de contraseña"
-   :recover-explain                       "Por favor, escribe la frase de contraseña a modo de contraseña para poder entrar"
-   :passphrase                            "Frase de contraseña"
+   :recover-from-passphrase               "Recuperar con tu frase de respaldo"
+   :recover-explain                       "Por favor, escribe la frase de respaldo a modo de contraseña para poder entrar"
+   :passphrase                            "Frase de respaldo"
    :recover                               "Recuperar"
-   :enter-valid-passphrase                "Por favor, escribe la frase de contraseña"
+   :enter-valid-passphrase                "Por favor, escribe la frase de respaldo"
    :enter-valid-password                  "Por favor, escribe la contraseña"
 
    ;accounts
@@ -221,7 +221,7 @@
    :pending-confirmation                  "Confirmación pendiente"
    :recipient                             "Beneficiario"
    :one-more-item                         "Un elemento más"
-   :fee                                   "Cuota"
+   :fee                                   "Tasa"
    :value                                 "Valor"
 
    ;:webview

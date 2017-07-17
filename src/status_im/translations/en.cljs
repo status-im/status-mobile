@@ -202,7 +202,7 @@
    :phone-request-text                    "Phone number request"
    :confirmation-code-command-description "Send confirmation code"
    :confirmation-code-request-text        "Confirmation code request"
-   :send-command-description              "Send location"
+   :send-command-description              "Send command"
    :request-command-description           "Send request"
    :keypair-password-command-description  ""
    :help-command-description              "Help"
