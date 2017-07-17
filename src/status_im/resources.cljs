@@ -32,4 +32,5 @@
    :augur (js/require "./images/contacts/augur.png")
    :ethlance (js/require "./images/contacts/ethlance.png")
    :commiteth (js/require "./images/contacts/commiteth.png")
-   :etherplay (js/require "./images/contacts/etherplay.png")})
+   :etherplay (js/require "./images/contacts/etherplay.png")
+   :daocasino (js/require "./images/contacts/daocasino.png")})
