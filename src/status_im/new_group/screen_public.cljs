@@ -10,7 +10,8 @@
                                                 list-view
                                                 list-item]]
             [status-im.components.text-field.view :refer [text-field]]
-            [status-im.components.styles :refer [color-blue
+            [status-im.components.styles :refer [icon-ok
+                                                 color-blue
                                                  color-gray4]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar.view :refer [toolbar]]
@@ -27,8 +28,10 @@
      [status-bar]
      [toolbar
       {:title   (label :t/new-public-group-chat)
-       :actions [{:image   {:source res/v                   ;; {:uri "icon_search"}
-                            :style  (st/toolbar-icon create-btn-enabled?)}
+       :actions [{:image   {:source {:uri (if create-btn-enabled?
+                                            :icon_ok_blue
+                                            :icon_ok_disabled)}
+                            :style  icon-ok}
                   :handler (when create-btn-enabled?
                              #(dispatch [:create-new-public-group topic]))}]}]]))
 

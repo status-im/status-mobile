@@ -5,6 +5,9 @@
 (reg-sub :is-contact-selected?
   (u/contains-sub :selected-contacts))
 
+(reg-sub :is-participant-selected?
+  (u/contains-sub :selected-participants))
+
 (defn filter-selected-contacts [selected-contacts contacts]
   (remove #(true? (:pending? (contacts %))) selected-contacts))
 

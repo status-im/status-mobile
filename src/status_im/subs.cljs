@@ -6,7 +6,6 @@
             status-im.discover.subs
             status-im.contacts.subs
             status-im.new-group.subs
-            status-im.participants.subs
             status-im.transactions.subs
             status-im.bots.subs))
 
