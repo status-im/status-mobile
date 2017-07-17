@@ -39,8 +39,6 @@
                                                                    add-contacts-toggle-list
                                                                    add-participants-toggle-list]]
             [status-im.new-group.views.reorder-groups :refer [reorder-groups]]
-            [status-im.participants.views.add :refer [new-participants]]
-            [status-im.participants.views.remove :refer [remove-participants]]
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.edit.screen :refer [edit-my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
@@ -125,8 +123,6 @@
              (let [component (case current-view
                                :discover main-tabs
                                :discover-search-results discover-search-results
-                               :add-participants new-participants
-                               :remove-participants remove-participants
                                :chat-list main-tabs
                                :new-chat new-chat
                                :new-group new-group

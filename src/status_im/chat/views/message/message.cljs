@@ -85,7 +85,7 @@
 (defn message-content-audio [_]
   [view st/audio-container
    [view st/play-view
-    [image {:source res/play
+    [image {;:source res/play
             :style  st/play-image}]]
    [view st/track-container
     [view st/track]

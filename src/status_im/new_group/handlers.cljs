@@ -358,5 +358,17 @@
   (after (delete-group!))
   (delete-group))
 
+(defn deselect-participant
+  [db [_ id]]
+  (update db :selected-participants disj id))
+
+(register-handler :deselect-participant deselect-participant)
+
+(defn select-participant
+  [db [_ id]]
+  (update db :selected-participants conj id))
+
+(register-handler :select-participant select-participant)
+
 
 
