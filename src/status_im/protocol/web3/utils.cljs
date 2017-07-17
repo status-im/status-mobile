@@ -16,10 +16,5 @@
 (defn shh [web3]
   (.-shh web3))
 
-(defn make-web3 [rpc-url]
-  (->> rpc-url
-       w3/get-provider
-       dependencies/Web3.))
-
 (defn timestamp []
   (to-long (now)))

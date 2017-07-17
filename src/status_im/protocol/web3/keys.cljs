@@ -1,6 +1,5 @@
 (ns status-im.protocol.web3.keys)
 
-(defonce status-sym-key-id (atom nil))
 (def status-key-password "status-key-password")
 (def status-group-key-password "status-public-group-key-password")
 
@@ -20,8 +19,3 @@
       (fn [err res]
         (swap! password->keys assoc password res)
         (callback res)))))
-
-
-(defn get-status-sym-key
-  [web3 callback]
-  (get-sym-key web3 status-key-password callback))

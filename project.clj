@@ -8,7 +8,7 @@
                  [reagent "0.6.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server]]
                  [re-frame "0.9.4"]
                  [natal-shell "0.3.0"]
-                 [com.andrewmcveigh/cljs-time "0.4.0"]
+                 [com.andrewmcveigh/cljs-time "0.5.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]
                  [com.taoensso/timbre "4.7.4"]
                  [com.google.guava/guava "21.0"]]
@@ -22,7 +22,8 @@
                                 ["with-profile" "prod" "cljsbuild" "once" "ios"]
                                 ["with-profile" "prod" "cljsbuild" "once" "android"]]
             "generate-externs" ["with-profile" "prod" "externs" "android" "externs/externs.js"]
-            "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]}
+            "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
+            "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :test-paths ["test/clj"]
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.11"]
@@ -58,6 +59,14 @@
                                                  :output-to     "target/test/test.js"
                                                  :output-dir    "target/test"
                                                  :optimizations :none
+                                                 :target        :nodejs}}
+                                 {:id           "protocol"
+                                  :source-paths ["src" "test/cljs"]
+                                  :compiler
+                                                {:main          status-im.test.protocol.runner
+                                                 :output-to     "target/test/test.js"
+                                                 :output-dir    "target/test"
+                                                 :optimizations :none
                                                  :target        :nodejs}}]}}
              :prod {:cljsbuild {:builds
                                 {:ios
@@ -67,7 +76,7 @@
                                                  :output-dir         "target/ios-prod"
                                                  :static-fns         true
                                                  :optimize-constants true
-                                                 :optimizations      :advanced
+                                                 :optimizations      :simple
                                                  :externs            ["externs/externs.js"]
                                                  :closure-defines    {"goog.DEBUG" false}
                                                  :parallel-build     true}}
@@ -78,7 +87,7 @@
                                                  :output-dir         "target/android-prod"
                                                  :static-fns         true
                                                  :optimize-constants true
-                                                 :optimizations      :advanced
+                                                 :optimizations      :simple
                                                  :externs            ["externs/externs.js"]
                                                  :closure-defines    {"goog.DEBUG" false}
                                                  :parallel-build     true}}}}}})
