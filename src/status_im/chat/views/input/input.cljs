@@ -87,9 +87,10 @@
         :on-change              (fn [e]
                                   (let [native-event (.-nativeEvent e)
                                         text         (.-text native-event)
-                                        height       (.. native-event -contentSize -height)]
-                                    (when-not single-line-input?
-                                      (set-layout-height-fn height))
+                                        content-size (.. native-event -contentSize)]
+                                    (when (and (not single-line-input?)
+                                               content-size)
+                                      (set-layout-height-fn (.-height content-size)))
                                     (when (not= text @input-text)
                                       (dispatch [:set-chat-input-text text])
                                       (when @command
