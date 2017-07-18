@@ -31,7 +31,7 @@
               groups  (chats/get-active-group-chats)
               web3    (w3/make-web3 rpc-url)]
           (protocol/init-whisper!
-            {:rpc-url                     rpc-url
+            {:web3                        web3
              :identity                    public-key
              :groups                      groups
              :callback                    #(dispatch [:incoming-message %1 %2])
