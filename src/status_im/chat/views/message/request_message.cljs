@@ -16,8 +16,7 @@
 (def request-message-icon-scale-delay 600)
 
 (defn set-chat-command [message-id command]
-  (let [command-key (keyword (:name command))
-        metadata    {:to-message-id message-id}]
+  (let [metadata {:to-message-id message-id}]
     (dispatch [:select-chat-input-command command metadata])))
 
 (def min-scale 1)

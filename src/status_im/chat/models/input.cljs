@@ -103,13 +103,17 @@
   Input:  ['/send' 'Jarrad' '1.0']
   Output: '/send Jarrad 1.0'
 
+  Input:  ['/send' '\"Jarrad\"' '1.0']
+  Output: '/send Jarrad 1.0'
+
   Input:  ['/send' 'Complex name with space in between' '1.0']
   Output: '/send \"Complex name with space in between\" 1.0'"
   (->> args
        (map (fn [arg]
-              (if (not (str/index-of arg const/spacing-char))
-                arg
-                (str const/arg-wrapping-char arg const/arg-wrapping-char))))
+              (let [arg (str/replace arg (re-pattern const/arg-wrapping-char) "")]
+                (if (not (str/index-of arg const/spacing-char))
+                  arg
+                  (str const/arg-wrapping-char arg const/arg-wrapping-char)))))
        (str/join const/spacing-char)))
 
 (defn selected-chat-command
