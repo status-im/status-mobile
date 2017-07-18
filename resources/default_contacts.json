@@ -271,5 +271,20 @@
             "en": "http://test.etherplay.io"
         },
         "groups": ["dapps"]
+    },
+    
+    "Ethcro":
+    {
+        "name":
+        {
+            "en": "Ethcro"
+        },
+        "photo-path": "contacts://ethcro",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://ethcrodapp.0trust.us"
+        },
+        "groups": ["dapps"]
     }
 }
