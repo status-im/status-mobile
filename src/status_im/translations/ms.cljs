@@ -202,7 +202,7 @@
    :phone-request-text                    "Permintaan nombor telefon"
    :confirmation-code-command-description "Hantar kod pengesahan"
    :confirmation-code-request-text        "Permintaan kod pengesahan"
-   :send-command-description              "Hantar lokasi"
+   :send-command-description              "Hantar arahan"
    :request-command-description           "Hantar permintaan"
    :keypair-password-command-description  ""
    :help-command-description              "Bantuan"
@@ -210,6 +210,16 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH ke {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH dari {{chat-name}}"
+
+   ;location command
+   :your-current-location                 "Lokasi terkini anda"
+   :places-nearby                         "Tempat berhampiran"
+   :search-results                        "Hasil carian"
+   :dropped-pin                           "Pin dilepaskan"
+   :location                              "Lokasi"
+   :open-map                              "Buka peta"
+   :sharing-copy-to-clipboard-address     "Salin alamat"
+   :sharing-copy-to-clipboard-coordinates "Salin koordinat"
 
    ;new-group
    :group-chat-name                       "Nama perbualan"
@@ -277,7 +287,7 @@
 
    ;wallet-qr-code
    :done                                  "Selesai"
-   :main-wallet                           "Wallet utama"
+   :main-wallet                           "Dompet utama"
 
    ;validation
    :invalid-phone                         "Nombor telefon salah"
