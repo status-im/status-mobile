@@ -20,11 +20,11 @@
    (.alert (.-Alert rn-dependencies/react-native)
            title
            content
-           ; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
+           ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
            (clj->js
-             (vector (merge {:text (label :t/cancel) :style "cancel"}
-                            (when on-cancel {:onPress on-cancel}))
-                     {:text (or s "OK") :onPress on-accept :style "destructive"})))))
+            (vector (merge {:text (label :t/cancel) :style "cancel"}
+                           (when on-cancel {:onPress on-cancel}))
+                    {:text (or s "OK") :onPress on-accept :style "destructive"})))))
 
 (defn http-post
   ([action data on-success]
@@ -49,7 +49,7 @@
 
 (defn http-get
   ([url on-success on-error]
-    (http-get url nil on-success on-error))
+   (http-get url nil on-success on-error))
   ([url valid-response? on-success on-error]
    (-> (.fetch js/window url (clj->js {:method  "GET"
                                        :headers {"Cache-Control" "no-cache"}}))
@@ -72,9 +72,13 @@
                    (fn [error]
                      (show-popup "Error" (str error))))))))
 
-(defn truncate-str [s max]
-  (if (and (< max (count s)) s)
-    (str (subs s 0 (- max 3)) "...")
+(defn truncate-str
+  "Given string and max threshold, trims the string to threshold length with `...`
+  appended to end if length of the string exceeds max threshold, returns the same
+  string if threshold is not exceeded"
+  [s threshold]
+  (if (and s (< threshold (count s)))
+    (str (subs s 0 (- threshold 3)) "...")
     s))
 
 (defn clean-text [s]
@@ -84,14 +88,13 @@
       (str/trim)))
 
 (defn first-index
-  [cond coll]
-  (loop [index 0
-         cond cond
-         coll coll]
-    (when (seq coll)
-      (if (cond (first coll))
-        index
-        (recur (inc index) cond (next coll))))))
+  "Returns first index in coll where predicate on coll element is truthy"
+  [pred coll]
+  (->> coll
+       (keep-indexed (fn [idx e]
+                       (when (pred e)
+                         idx)))
+       first))
 
 (defn hash-tag? [s]
   (= \# (first s)))
@@ -105,3 +108,11 @@
         (vreset! called? true)
         (apply f args)
         nil))))
+
+(defn update-if-present
+  "Like regular `clojure.core/update` but returns original map if update key is not present"
+  [m k f & args]
+  (if (contains? m k)
+    (apply update m k f args)
+    m))
+

@@ -1,13 +1,15 @@
 (ns status-im.chat.handlers.commands
-  (:require [re-frame.core :refer [enrich after dispatch]]
+  (:require [cljs.reader :as reader]
+            [clojure.string :as str]
+            [re-frame.core :refer [enrich after dispatch]]
+            [status-im.data-store.messages :as messages]
             [status-im.utils.handlers :as handlers]
             [status-im.components.status :as status]
             [status-im.chat.constants :as const]
             [status-im.commands.utils :as cu]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]
-            [taoensso.timbre :as log]
-            [clojure.string :as str]))
+            [taoensso.timbre :as log]))
 
 (defn generate-context [{:keys [contacts current-account-id chats] :as db} chat-id to]
   (merge {:platform platform/platform
@@ -38,11 +40,15 @@
                 params   {:parameters params
                           :context    (generate-context db chat-id to)}
                 callback #(let [result (get-in % [:result :returned])
-                                result (if (:markup result)
+                                result' (if (:markup result)
                                          (update result :markup cu/generate-hiccup)
-                                         result)]
-                            (dispatch [:set-in [:message-data data-type message-id] result])
-                            (when on-requested (on-requested result)))]
+                                         result)] 
+                            (dispatch [:set-in [:message-data data-type message-id] result'])
+                            (when (= :preview data-type)
+                              ;; update message in realm with serialized preview
+                              (messages/update {:message-id message-id
+                                                :preview (prn-str result)}))
+                            (when on-requested (on-requested result')))]
             ;chat-id path params callback lock? type
             (status/call-jail {:jail-id  jail-id'
                                :path     path
@@ -64,4 +70,12 @@
     (fn [db [_ {:keys [message-id] :as message}]]
       (let [previews (get-in db [:message-data :preview])]
         (when-not (contains? previews message-id)
-          (dispatch [:request-command-data message :preview]))))))
+          (let [{serialized-preview :preview} (messages/get-by-id message-id)]
+            ;; if preview is already cached in db, do not request it from jail
+            ;; and write it directly to message-data path
+            (if serialized-preview
+              (dispatch [:set-in [:message-data :preview message-id]
+                         (-> serialized-preview
+                             reader/read-string
+                             (update :markup cu/generate-hiccup))])
+              (dispatch [:request-command-data message :preview]))))))))
