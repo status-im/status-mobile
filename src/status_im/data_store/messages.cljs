@@ -2,6 +2,7 @@
   (:require [status-im.data-store.realm.messages :as data-store]
             [clojure.string :refer [join split]]
             [status-im.utils.random :refer [timestamp]]
+            [status-im.utils.utils :refer [update-if-present]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [cljs.reader :refer [read-string]]
             [status-im.constants :as c])
@@ -111,10 +112,10 @@
                            :timestamp (timestamp)})]
       (data-store/save message'))))
 
-(defn update
+(defn update 
   [{:keys [message-id] :as message}]
   (when (data-store/exists? message-id)
-    (let [message (clojure.core/update message :user-statuses vals)]
+    (let [message (update-if-present message :user-statuses vals)]
       (data-store/save message))))
 
 (defn delete-by-chat-id [chat-id]
