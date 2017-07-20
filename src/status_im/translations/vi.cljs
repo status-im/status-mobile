@@ -227,7 +227,7 @@
                                            :other "{{Count}} giao dịch đã được xác nhận"
                                            :zero  "Không có giao dịch nào được xác nhận"}
    :public-group-topic                    "Chủ đề"
-   :debug-enabled                         "Máy chủ gỡ lỗi đã được khởi chạy! Địa chỉ IP của bạn là {{ip}}. Bạn có thể thêm DApp bằng cách chạy * status-dev-cli add-dapp -ip {{ip}} * từ máy tính của mình"
+   :debug-enabled                         "Máy chủ gỡ lỗi đã được khởi chạy! Bạn có thể thêm DApp bằng cách chạy *status-dev-cli scan* từ máy tính của mình"
    :new-public-group-chat                 "Tham gia cuộc trò chuyện công khai"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Hủy"
@@ -246,7 +246,6 @@
    :delete-group                          "Xóa nhóm"
    :browsing-title                        "Duyệt"
    :reorder-groups                        "Sắp xếp lại các nhóm"
-   :debug-enabled-no-ip                   "Máy chủ gỡ lỗi đã được khởi chạy! Bây giờ bạn có thể thêm DApp bằng cách chạy * status-dev-cli add-dapp -ip [ip của bạn] * từ máy tính của mình"
    :browsing-cancel                       "Hủy"
    :faucet-success                        "Đã nhận được yêu cầu Faucet"
    :choose-from-contacts                  "Chọn từ danh bạ"

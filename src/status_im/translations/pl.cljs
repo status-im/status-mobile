@@ -227,7 +227,7 @@
                                            :other "Potwierdzone transakcje: {{count}}"
                                            :zero  "Brak potwierdzonych transakcji"}
    :public-group-topic                    "Temat"
-   :debug-enabled                         "Uruchomiono serwer debugowania! Twój adres IP to {{ip}}. Możesz teraz dodać program DApp, uruchamiając *status-dev-cli add-dapp --ip {{ip}}* na swoim komputerze"
+   :debug-enabled                         "Uruchomiono serwer debugowania! Możesz teraz dodać program DApp, uruchamiając *status-dev-cli scan* na swoim komputerze"
    :new-public-group-chat                 "Dołącz do publicznego czatu"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Anuluj"
@@ -246,7 +246,6 @@
    :delete-group                          "Usuń grupę"
    :browsing-title                        "Przeglądaj"
    :reorder-groups                        "Przestaw grupy"
-   :debug-enabled-no-ip                   "Uruchomiono serwer debugowania! Możesz teraz dodać program DApp, uruchamiając *status-dev-cli add-dapp --ip {{ip}}* na swoim komputerze"
    :browsing-cancel                       "Anuluj"
    :faucet-success                        "Odebrano prośbę dotyczącą kranu"
    :choose-from-contacts                  "Wybierz spośród kontaktów"

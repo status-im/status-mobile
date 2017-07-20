@@ -227,7 +227,7 @@
                                            :other "{{count}} transações confirmadas"
                                            :zero  "Nenhuma transação confirmada"}
    :public-group-topic                    "Tema"
-   :debug-enabled                         "Foi lançado o servidor de depuração! O seu endereço IP é {{ip}}. Agora, pode adicionar a sua DApp executando *status-dev-cli add-dapp --ip {{ip}}* do seu computador"
+   :debug-enabled                         "Foi lançado o servidor de depuração! Agora, pode adicionar a sua DApp executando *status-dev-cli scan* do seu computador"
    :new-public-group-chat                 "Juntar-se ao chat público"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Cancelar"
@@ -246,7 +246,6 @@
    :delete-group                          "Eliminar grupo"
    :browsing-title                        "Procurar"
    :reorder-groups                        "Reordenar grupos"
-   :debug-enabled-no-ip                   "Foi lançado o servidor de depuração! Agora, pode adicionar a sua DApp executando *status-dev-cli add-dapp --ip [your ip]* do seu computador"
    :browsing-cancel                       "Cancelar"
    :faucet-success                        "O pedido de torneira foi recebido"
    :choose-from-contacts                  "Escolher entre os contactos"

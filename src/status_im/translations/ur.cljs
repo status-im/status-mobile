@@ -227,7 +227,7 @@
                                            :other "{{count}} لین دین کی توثیق ہوئی"
                                            :zero  "کسی لین دین کی توثیق نہیں ہوئی"}
    :public-group-topic                    "موضوع"
-   :debug-enabled                         "ڈی بگ سرور کو لانچ کیا گیا ہے! آپ کا آئی پتہ {{ip}} ہے۔ اب آپ اپنے کمپیوٹر سے *status-dev-cli add-dapp --ip {{ip}}* کو چلاتے ہوئے اپنا DApp شامل کر سکتے ہیں"
+   :debug-enabled                         "ڈی بگ سرور کو لانچ کیا گیا ہے! آپ کا آئی پتہ ہے۔ اب آپ اپنے کمپیوٹر سے *status-dev-cli scan* کو چلاتے ہوئے اپنا DApp شامل کر سکتے ہیں"
    :new-public-group-chat                 "عوامی چیٹ میں شامل ہوں"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "منسوخ کریں"
@@ -246,7 +246,6 @@
    :delete-group                          "گروپ کو حذف کریں"
    :browsing-title                        "براؤز"
    :reorder-groups                        "ریکارڈر کے گروپ"
-   :debug-enabled-no-ip                   "ڈی بگ سرور کو لانچ کیا گیا ہے! اب آپ اپنے کمپیوٹر سے *status-dev-cli add-dapp --ip [your ip]* کو چلاتے ہوئے اپنا DApp شامل کر سکتے ہیں"
    :browsing-cancel                       "منسوخ کریں"
    :faucet-success                        "فوسیٹ درخواست موصول ہوئی ہے"
    :choose-from-contacts                  "روابط سے منتخب کریں"

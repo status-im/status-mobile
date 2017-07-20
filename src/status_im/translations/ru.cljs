@@ -242,7 +242,7 @@
                                            :other "Подтверждено {{count}} транзакции(й)"
                                            :zero  "Нет подтвержденных транзакций"}
    :public-group-topic                    "Тема"
-   :debug-enabled                         "Запущен сервер отладки! Ваш IP-адрес: {{ip}}. Теперь вы можете добавить DApp, выполнив со своего компьютера *status-dev-cli add-dapp -ip {{ip}}*"
+   :debug-enabled                         "Запущен сервер отладки! Теперь вы можете добавить DApp, выполнив со своего компьютера *status-dev-cli scan*"
    :new-public-group-chat                 "Присоединиться к общему чату"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :share-qr                              "Поделиться QR"
@@ -259,7 +259,6 @@
    :edit-group                            "Изменить группу"
    :delete-group                          "Удалить группу"
    :browsing-title                        "Просматривать"
-   :debug-enabled-no-ip                   "Запущен сервер отладки! Теперь вы можете добавить DApp, выполнив с компьютера *status-dev-cli add-dapp -ip [your ip]*"
    :browsing-cancel                       "Отмена"
    :faucet-success                        "Заявка на сборщик получена"
    :choose-from-contacts                  "Выбрать из контактов"

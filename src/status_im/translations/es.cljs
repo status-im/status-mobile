@@ -233,7 +233,7 @@
                                            :other "{{count}} transacciones confirmadas"
                                            :zero  "No hay transacciones confirmadas"}
    :public-group-topic                    "Tema"
-   :debug-enabled                         "¡El servidor de depuración se ha puesto en marcha! Su dirección IP es {{ip}}. Ahora puede añadir su DApp ejecutando *status-dev-cli add-dapp --ip {{ip}}* desde su ordenador"
+   :debug-enabled                         "¡El servidor de depuración se ha puesto en marcha! Ahora puede añadir su DApp ejecutando *status-dev-cli scan* desde su ordenador"
    :new-public-group-chat                 "Unirse al chat público"
    :share-qr                              "Compartir QR"
    :feedback                              "¿Tiene comentarios?\n¡Agite su teléfono!"
@@ -250,7 +250,6 @@
    :delete-group                          "Eliminar grupo"
    :browsing-title                        "Examinar"
    :reorder-groups                        "Reordenar grupos"
-   :debug-enabled-no-ip                   "¡El servidor de depuración se ha puesto en marcha! Ahora puede añadir su DApp ejecutando *status-dev-cli add-dapp --ip [your ip]* desde su ordenador"
    :browsing-cancel                       "Cancelar"
    :faucet-success                        "La solicitud de clave se ha recibido"
    :choose-from-contacts                  "Elegir entre contactos"

@@ -227,7 +227,7 @@
                                            :other "{{count}} transações confirmadas"
                                            :zero  "Nenhuma transação confirmada"}
    :public-group-topic                    "Assunto"
-   :debug-enabled                         "O servidor de debug foi inicializado! Seu endereço de IP é {{ip}}. Você agora pode adicionar seu DApp ao executar *status-dev-cli add-dapp --ip {{ip}}* a partir de seu computador."
+   :debug-enabled                         "O servidor de debug foi inicializado! Você agora pode adicionar seu DApp ao executar *status-dev-cli scan* a partir de seu computador."
    :new-public-group-chat                 "Juntar-se a bate-papo público."
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Cancelar"
@@ -246,7 +246,6 @@
    :delete-group                          "Excluir grupo"
    :browsing-title                        "Buscar"
    :reorder-groups                        "Reorganizar grupos"
-   :debug-enabled-no-ip                   "O servidor de debug foi inicializado! Você agora pode adicionar seu DApp ao executar *status-dev-cli add-dapp --ip [your ip]* a partir de seu computador."
    :browsing-cancel                       "Cancelar"
    :faucet-success                        "Requisição faucet foi recebida"
    :choose-from-contacts                  "Selecionar a partir dos contatos"

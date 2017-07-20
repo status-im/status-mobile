@@ -233,7 +233,7 @@
                                            :other "Підтверджено {{count}} транзакцій"
                                            :zero  "Підтверджені транзакції відсутні"}
    :public-group-topic                    "Тема"
-   :debug-enabled                         "Debug server запущено! Ваша IP-адреса: {{ip}}. Тепер ви можете додати свій DApp запустивши *status-dev-cli add-dapp --ip {{ip}}* зі свого комп’ютера"
+   :debug-enabled                         "Debug server запущено! Тепер ви можете додати свій DApp запустивши *status-dev-cli scan* зі свого комп’ютера"
    :new-public-group-chat                 "Приєднатися до публічного чату"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :share-qr                              "Поділитись QR"
@@ -251,7 +251,6 @@
    :delete-group                          "Видалити групу"
    :browsing-title                        "Перегляд"
    :reorder-groups                        "Перепланувати групи"
-   :debug-enabled-no-ip                   "Debug server запущено! Тепер ви можете додати свій DApp запустивши *status-dev-cli add-dapp --ip {{ip}}* зі свого комп’ютера"
    :browsing-cancel                       "Відмінити"
    :faucet-success                        "Розширений запит отримано"
    :choose-from-contacts                  "Виберіть з контактів"

@@ -227,7 +227,7 @@
                                            :other "{{count}} transactions confirmées"
                                            :zero  "Aucune transaction confirmée"}
    :public-group-topic                    "Sujet"
-   :debug-enabled                         "Le serveur de débogage a été lancé ! Votre adresse IP est {{ip}}. Vous pouvez maintenant ajouter votre Dapp en exécutant *status-dev-cli add-dapp --ip {{ip}}* depuis votre ordinateur"
+   :debug-enabled                         "Le serveur de débogage a été lancé ! Vous pouvez maintenant ajouter votre Dapp en exécutant *status-dev-cli scan* depuis votre ordinateur"
    :new-public-group-chat                 "Rejoindre le chat public"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Annuler"
@@ -246,7 +246,6 @@
    :delete-group                          "Supprimer le groupe"
    :browsing-title                        "Parcourir"
    :reorder-groups                        "Réorganiser les groupes"
-   :debug-enabled-no-ip                   "Le serveur de débogage a été lancé ! Vous pouvez maintenant ajouter votre Dapp en exécutant *status-dev-cli add-dapp --ip {{ip}}* depuis votre ordinateur"
    :browsing-cancel                       "Annuler"
    :faucet-success                        "La requête du site faucet a été reçue"
    :choose-from-contacts                  "Choisir parmi les contacts"

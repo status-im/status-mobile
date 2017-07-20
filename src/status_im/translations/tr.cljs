@@ -227,7 +227,7 @@
                                            :other "{{count}} işlem onaylandı"
                                            :zero  "Hiçbir işlem onaylanmadı"}
    :public-group-topic                    "Başlık"
-   :debug-enabled                         "Hata ayıklama sunucusu başlatıldı! IP adresiniz {{ip}}. Artık şimdi bilgisayarınızdan *status-dev-cli add-dapp --ip {{ip}}* çalıştırarak DApp'inizi ekleyebilirsiniz"
+   :debug-enabled                         "Hata ayıklama sunucusu başlatıldı! Artık şimdi bilgisayarınızdan *status-dev-cli scan* çalıştırarak DApp'inizi ekleyebilirsiniz"
    :new-public-group-chat                 "Herkese açık sohbete katılın"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "İptal Et"
@@ -246,7 +246,6 @@
    :delete-group                          "Grubu silin"
    :browsing-title                        "Tarayın"
    :reorder-groups                        "Grupları yeniden sıralayın"
-   :debug-enabled-no-ip                   "Hata ayıklama sunucusu başlatıldı! Şimdi bilgisayarınızdan *status-dev-cli add-dapp --ip {{ip}}* çalıştırarak DApp'inizi ekleyebilirsiniz"
    :browsing-cancel                       "İptal Et"
    :faucet-success                        "Vana talebi alındı"
    :choose-from-contacts                  "Kişi listesinden seçin"

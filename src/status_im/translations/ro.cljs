@@ -227,7 +227,7 @@
                                            :other "{{count}} (de) tranzacții confirmate"
                                            :zero  "Nicio tranzacție confirmată"}
    :public-group-topic                    "Subiect"
-   :debug-enabled                         "Serverul de curățare a fost lansat! Adresa dvs. IP este {{ip}}. Acum vă puteți adăuga DApp rulând *status-dev-cli add-dapp --ip {{ip}}* de pe computerul dvs."
+   :debug-enabled                         "Serverul de curățare a fost lansat! Adresa dvs. Acum vă puteți adăuga DApp rulând *status-dev-cli scan* de pe computerul dvs."
    :new-public-group-chat                 "Alăturați-vă chat-ului public"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Anulare"
@@ -246,7 +246,6 @@
    :delete-group                          "Ștergere grup"
    :browsing-title                        "Navigare"
    :reorder-groups                        "Reorganizare grupuri"
-   :debug-enabled-no-ip                   "Serverul de curățare a fost lansat! Adresa dvs. IP este {{ip}}. Acum vă puteți adăuga DApp rulând *status-dev-cli add-dapp --ip [your ip]* de pe computerul dvs."
    :browsing-cancel                       "Anulare"
    :faucet-success                        "Solicitarea a fost primită"
    :choose-from-contacts                  "Alegeți dintre contacte"

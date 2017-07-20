@@ -227,7 +227,7 @@
                                            :other "{{count}} tranzakció megerősítve"
                                            :zero  "Nincs megerősített tranzakció"}
    :public-group-topic                    "Téma"
-   :debug-enabled                         "A hibakereső szerver elindításra került! Az IP-címed a következő: {{ip}}. Mostantól hozzáadhatod a DAppod, ha futtatod a számítógépeden a következőt: *status-dev-cli add-dapp --ip {{ip}}*"
+   :debug-enabled                         "A hibakereső szerver elindításra került! Mostantól hozzáadhatod a DAppod, ha futtatod a számítógépeden a következőt: *status-dev-cli scan*"
    :new-public-group-chat                 "Csatlakozás nyilvános csevegéshez"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Mégse"
@@ -246,7 +246,6 @@
    :delete-group                          "Csoport törlése"
    :browsing-title                        "Böngészés"
    :reorder-groups                        "Csoport átrendezése"
-   :debug-enabled-no-ip                   "A hibakereső szerver elindításra került! Az IP-címed a következő: {{ip}}. Mostantól hozzáadhatod a DAppod, ha futtatod a számítógépeden a következőt: *status-dev-cli add-dapp --ip [your ip]*"
    :browsing-cancel                       "Mégse"
    :faucet-success                        "A Faucet kérés beérkezett"
    :choose-from-contacts                  "Választás a névjegyekből"
