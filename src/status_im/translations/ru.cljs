@@ -244,7 +244,7 @@
    :public-group-topic                    "Тема"
    :debug-enabled                         "Запущен сервер отладки! Ваш IP-адрес: {{ip}}. Теперь вы можете добавить DApp, выполнив со своего компьютера *status-dev-cli add-dapp -ip {{ip}}*"
    :new-public-group-chat                 "Присоединиться к общему чату"
-   :datetime-ago-format                   "{{Number}} {{time-interval}} {{ago}}"
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :share-qr                              "Поделиться QR"
    :feedback                              "Есть отзыв?\nВстряхните телефон!"
    :twelve-words-in-correct-order         "12 слов в нужном порядке"
