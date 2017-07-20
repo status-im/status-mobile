@@ -229,7 +229,7 @@
    :public-group-topic                    "Chủ đề"
    :debug-enabled                         "Máy chủ gỡ lỗi đã được khởi chạy! Địa chỉ IP của bạn là {{ip}}. Bạn có thể thêm DApp bằng cách chạy * status-dev-cli add-dapp -ip {{ip}} * từ máy tính của mình"
    :new-public-group-chat                 "Tham gia cuộc trò chuyện công khai"
-   :datetime-ago-format                   "{{Number}} {{time-intervals}} {{ago}}"
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Hủy"
    :share-qr                              "Chia sẻ mã QR"
    :feedback                              "Nhận phản hồi?\nLắc điện thoại của bạn!"

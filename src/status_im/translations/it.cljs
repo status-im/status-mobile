@@ -229,7 +229,7 @@
    :public-group-topic                    "Argomento"
    :debug-enabled                         "Il server di debug è stato avviato! Il tuo indirizzo IP è {{ip}}. Ora puoi aggiungere la tua DApp avviando *status-dev-cli add-dapp --ip {{ip}}* dal tuo computer"
    :new-public-group-chat                 "Entra nella chat pubblica"
-   :datetime-ago-format                   "{{number}} {{time-intervals}} {{fa}}"
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Annulla"
    :share-qr                              "Condividi QR"
    :feedback                              "Hai suggerimenti?\nScuoti il tuo telefono!"
