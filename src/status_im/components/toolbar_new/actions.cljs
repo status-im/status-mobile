@@ -49,3 +49,8 @@
   {:image   {:source {:uri :icon_close_white}
              :style  st/action-default}
    :handler handler})
+
+(defn list-white [handler]
+  {:image   {:source {:uri :icon_list_white}
+             :style  st/action-default}
+   :handler handler})

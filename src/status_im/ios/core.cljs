@@ -92,6 +92,7 @@
          (when @view-id
            (let [current-view (validate-current-view @view-id @signed-up?)]
              (let [component (case current-view
+                               :wallet main-tabs
                                :discover main-tabs
                                :discover-search-results discover-search-results
                                :chat-list main-tabs
