@@ -10,6 +10,7 @@
             [status-im.chats-list.screen :refer [chats-list]]
             [status-im.discover.screen :refer [discover]]
             [status-im.contacts.views :refer [contact-groups-list]]
+            [status-im.ui.screens.wallet.main-screen.views :refer [wallet]]
             [status-im.components.tabs.tabs :refer [tabs]]
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
@@ -34,11 +35,18 @@
     :screen        contact-groups-list
     :icon-inactive :icon_contacts
     :icon-active   :icon_contacts_active
-    :index         2}])
+    :index         2}
+   {:view-id       :wallet
+    :title         "Wallet"
+    :screen        wallet
+    :icon-inactive :icon_contacts
+    :icon-active   :icon_contacts_active
+    :index         3}])
 
 (def tab->index {:chat-list    0
                  :discover     1
-                 :contact-list 2})
+                 :contact-list 2
+                 :wallet       3})
 
 (def index->tab (clojure.set/map-invert tab->index))
 
@@ -98,7 +106,7 @@
        :reagent-render
        (fn []
          [view common-st/flex
-          [status-bar {:type :main}]
+          [status-bar {:type (if (= @view-id :wallet) :wallet :main)}]
           [view common-st/flex
            [drawer-view
             [view {:style common-st/flex}
@@ -110,7 +118,9 @@
                        :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)})
               [chats-list]
               [discover (= @view-id :discover)]
-              [contact-groups-list (= @view-id :contact-list)]]
+              [contact-groups-list (= @view-id :contact-list)]
+              ;; [wallet]
+              ]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
                     :tab-list         tab-list}]

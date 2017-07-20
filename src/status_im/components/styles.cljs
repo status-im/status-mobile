@@ -4,6 +4,8 @@
 (def color-blue "#7099e6")
 (def color-blue2 "#5b6dee")
 (def color-blue3 "#424fae")
+(def color-blue4 "#4360df")
+(def color-blue5 "#3c56c8")
 (def color-blue-transparent "#7099e632")
 (def color-black "#000000")
 (def color-purple "#a187d5")
@@ -22,6 +24,7 @@
 (def color-light-blue2 "#eff3fc")
 (def color-light-blue3 "#a0bcf0")
 (def color-light-blue4 "#f1f4f5")
+(def color-light-blue5 "#d9dff9")
 (def color-dark-blue-1 "#252c4a")
 (def color-dark-blue-2 "#1f253f")
 (def color-dark-blue-3 "#191f37")
@@ -31,6 +34,8 @@
 (def color-red2 "#d84b4b")
 (def color-light-red "#e86363")
 (def color-light-red2 "#f47979")
+(def color-green-1 "#a8f4d4")
+(def color-green-2 "#448469")
 
 (def color-separator "#D6D6D6")
 

@@ -22,7 +22,10 @@
                                          :color        styles/color-black}
                            :transaction {:height       0
                                          :bar-style    "light-content"
-                                         :color        styles/color-dark-blue-2}}
+                                         :color        styles/color-dark-blue-2}
+                           :wallet      {:height       0
+                                         :bar-style    "light-content"
+                                         :color        styles/color-blue5}}
    :sized-text            {:margin-top        0
                            :additional-height 0}
    :chat                  {:new-message {:border-top-color styles/color-transparent
