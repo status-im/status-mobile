@@ -78,16 +78,18 @@
        :disabled? true}]]]])
 
 (defn render-asset-fn [{:keys [id currency amount]}]
-  [list/touchable-item show-not-implemented!
-   [rn/view
-    [list/item
-     [list/item-image {:uri :launch_logo}]
-     [rn/view {:style st/asset-item-value-container}
-      [rn/text {:style st/asset-item-value} (str amount)]
-      [rn/text {:style      st/asset-item-currency
-                :uppercase? true}
-       id]]
-     [list/item-icon :icons/forward]]]])
+  (let [token? (not (= "eth" id))]
+    [list/touchable-item (if token? #(rf/dispatch [:navigate-to :wallet-token-details]))
+     [rn/view
+      [list/item
+       [list/item-image {:uri :launch_logo}]
+       [rn/view {:style st/asset-item-value-container}
+        [rn/text {:style st/asset-item-value} (str amount)]
+        [rn/text {:style      st/asset-item-currency
+                  :uppercase? true}
+         id]]
+       (if token?
+         [list/item-icon :icons/forward])]]]))
 
 (defn asset-section [eth]
   (let [assets [{:id "eth" :currency :eth :amount eth}]]

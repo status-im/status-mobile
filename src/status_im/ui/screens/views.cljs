@@ -43,6 +43,7 @@
             [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
 
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
+            [status-im.ui.screens.wallet.token-data.views :as token-data-views]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
             [status-im.ui.screens.wallet.history.views :as wallet-history]))
 
@@ -63,6 +64,7 @@
                           :wallet main-tabs
                           :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
+                          :wallet-token-details token-data-views/screen
                           :discover main-tabs
                           :discover-search-results discover-search-results
                           :chat-list main-tabs
