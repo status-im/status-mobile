@@ -227,7 +227,7 @@
                                            :other "Št. potrjenih transakcij: {{count}}"
                                            :zero  "Ni potrjenih transakcij"}
    :public-group-topic                    "Tema"
-   :debug-enabled                         "Strežnik za odpravljanje napak je bil zagnan! Vaš IP naslov je {{ip}}. Sedaj lahko aplikacijo DApp dodate tako, da zaženete *status-dev-cli add-dapp --ip {{ip}}* na vašem računalniku"
+   :debug-enabled                         "Strežnik za odpravljanje napak je bil zagnan! Sedaj lahko aplikacijo DApp dodate tako, da zaženete *status-dev-cli scan* na vašem računalniku"
    :new-public-group-chat                 "Pridruži se javnemu klepetu"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Prekliči"
@@ -246,7 +246,6 @@
    :delete-group                          "Izbriši skupino"
    :browsing-title                        "Brskaj"
    :reorder-groups                        "Preuredi skupine"
-   :debug-enabled-no-ip                   "Strežnik za odpravljanje napak je bil zagnan! Sedaj lahko aplikacijo DApp dodate tako, da zaženete *status-dev-cli add-dapp --ip [your ip]* na vašem računalniku"
    :browsing-cancel                       "Prekliči"
    :faucet-success                        "Zahteva za dovod je bila prejeta"
    :choose-from-contacts                  "Izberi iz stikov"

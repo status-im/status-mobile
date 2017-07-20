@@ -257,7 +257,7 @@
    :transactions-confirmed                {:one   "Transaktion bestätigt"
                                            :other "{{count}} Transaktionen bestätigt"
                                            :zero  "Keine Transaktion bestätigt"}
-   :debug-enabled                         "Debug-Server wurde eingeführt! Ihre IP-Adresse ist {{ip}}. Sie können nun Ihre DApp hinzufügen, indem Sie *status-dev-cli add-dapp --ip {{ip}}* von Ihrem Computer starten"
+   :debug-enabled                         "Debug-Server wurde eingeführt! Sie können nun Ihre DApp hinzufügen, indem Sie *status-dev-cli scan* von Ihrem Computer starten"
    :share-qr                              "QR teilen"
    :twelve-words-in-correct-order         "12 Wörter in richtiger Reihenfolge"
    :remove-from-contacts                  "Von Kontakten entfernen"
@@ -270,7 +270,6 @@
    :edit-group                            "Gruppe bearbeiten"
    :delete-group                          "Gruppe löschen"
    :reorder-groups                        "Gruppen wieder ordnen"
-   :debug-enabled-no-ip                   "Debug-Server wurde eingeführt! Sie können nun Ihre DApp hinzufügen, indem Sie *status-dev-cli add-dapp --ip [your ip]* von Ihrem Computer starten"
    :faucet-success                        "Absperranfrage wurde erhalten"
    :choose-from-contacts                  "Aus Kontakten wählen"
    :new-group                             "Neue Gruppe"

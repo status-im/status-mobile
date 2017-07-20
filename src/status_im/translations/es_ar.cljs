@@ -232,7 +232,7 @@
                                            :other "{{count}} transacciones confirmadas"
                                            :zero  "No hay transacciones confirmadas"}
    :public-group-topic                    "Tema"
-   :debug-enabled                         "¡Se inició el servidor de depuración! Su dirección IP es {{ip}}. Ahora puede agregar su DApp ejecutando *status-dev-cli add-dapp --ip {{ip}}* desde su computadora"
+   :debug-enabled                         "¡Se inició el servidor de depuración! Ahora puede agregar su DApp ejecutando *status-dev-cli scan* desde su computadora"
    :new-public-group-chat                 "Unirse al chat público"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :share-qr                              "Compartir QR"
@@ -250,7 +250,6 @@
    :delete-group                          "Eliminar grupo"
    :browsing-title                        "Explorar"
    :reorder-groups                        "Reorganizar grupos"
-   :debug-enabled-no-ip                   "¡Se inició el servidor de depuración! Ahora puede agregar su DApp ejecutando *status-dev-cli add-dapp --ip [your ip]* desde su computadora"
    :browsing-cancel                       "Cancelar"
    :faucet-success                        "Se recibió la solicitud de Faucet"
    :choose-from-contacts                  "Elegir de los contactos"

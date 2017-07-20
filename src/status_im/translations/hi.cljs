@@ -227,7 +227,7 @@
                                            :other "{{count}} लेनदेनों की पुष्टि की गई"
                                            :zero  "किसी भी लेनदेन की पुष्टि नहीं हुई"}
    :public-group-topic                    "विषय"
-   :debug-enabled                         "डीबग सर्वर लाँच कर दिया गया है! आपका आईपी पता {{ip}} है। अब आप अपने कम्प्यूटर से *status-dev-cli add-dapp --ip {{ip}}* चलाकर अपने DApp को शामिल कर सकते हैं"
+   :debug-enabled                         "डीबग सर्वर लाँच कर दिया गया है! है। अब आप अपने कम्प्यूटर से *status-dev-cli scan* चलाकर अपने DApp को शामिल कर सकते हैं"
    :new-public-group-chat                 "सार्वजनिक चैट में शामिल हों"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "रद्द करें"
@@ -246,7 +246,6 @@
    :delete-group                          "समूह मिटाएं"
    :browsing-title                        "ब्राउज़ करें"
    :reorder-groups                        "समूहों को फिर से क्रम में रखें"
-   :debug-enabled-no-ip                   "डीबग सर्वर लाँच कर दिया गया है! अब आप अपने कम्प्यूटर से *status-dev-cli add-dapp --ip [your ip]* चलाकर अपने DApp को शामिल कर सकते हैं"
    :browsing-cancel                       "रद्द करें"
    :faucet-success                        "फॉसेट का अनुरोध प्राप्त हुआ है"
    :choose-from-contacts                  "संपर्कों में से चुनें"

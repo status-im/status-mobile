@@ -227,7 +227,7 @@
                                            :other "{{count}} transaktioner bekräftade"
                                            :zero  "Inga bekräftade transaktioner"}
    :public-group-topic                    "Ämne"
-   :debug-enabled                         "Felsökningsserver startad! Din IP-adress är {{ip}}. Lägg till din DApp genom att ange *status-dev-cli add-dapp --ip {{ip}}* på datorn"
+   :debug-enabled                         "Felsökningsserver startad! Lägg till din DApp genom att ange *status-dev-cli scan* på datorn"
    :new-public-group-chat                 "Gå med i offentlig chatt"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Avbryt"
@@ -246,7 +246,6 @@
    :delete-group                          "Radera grupp"
    :browsing-title                        "Bläddra"
    :reorder-groups                        "Ändra ordning på grupper"
-   :debug-enabled-no-ip                   "Felsökningsserver startad! Lägg till din DApp genom att ange *status-dev-cli add-dapp --ip [your ip]* på datorn"
    :browsing-cancel                       "Avbryt"
    :faucet-success                        "Hämtningsbegäran har tagits emot"
    :choose-from-contacts                  "Välj bland kontakter"

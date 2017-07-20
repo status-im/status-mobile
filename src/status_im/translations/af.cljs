@@ -227,7 +227,7 @@
                                            :other "{{count}} transaksies bevestig"
                                            :zero  "Geen transaksies bevestig"}
    :public-group-topic                    "Onderwerp"
-   :debug-enabled                         "Ontfout-bediener is bekendgestel! U IP-adres is {{ip}}. U kan nou u DApp byvoeg deur *status-dev-cli add-dapp --ip {{ip}}* te hardloop vanaf u rekenaar"
+   :debug-enabled                         "Ontfout-bediener is bekendgestel! U kan nou u DApp byvoeg deur *status-dev-cli scan* te hardloop vanaf u rekenaar"
    :new-public-group-chat                 "Sluit aan by openbare klets"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Kanselleer"
@@ -246,7 +246,6 @@
    :delete-group                          "Skrap groep"
    :browsing-title                        "Blaai"
    :reorder-groups                        "Herrangskik groepe"
-   :debug-enabled-no-ip                   "Ontfout-bediener is bekendgestel! U kan nou u DApp byvoeg deur *status-dev-cli add-dapp --ip [your ip]* te hardloop vanaf u rekenaar"
    :browsing-cancel                       "Kanselleer"
    :faucet-success                        "Kraan versoek is ontvang"
    :choose-from-contacts                  "Kies uit kontakte"

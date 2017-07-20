@@ -227,7 +227,7 @@
                                            :other "ยืนยันการทำธุรกรรมแล้ว {{count}} รายการ"
                                            :zero  "ไม่มีการยืนยันการทำธุรกรรม"}
    :public-group-topic                    "หัวข้อ"
-   :debug-enabled                         "มีการเปิดการดำเนินงานของเซิร์ฟเวอร์ที่ได้แก้ไขข้อบกพร่องแล้ว! ที่อยู่ IP ของคุณคือ {{ip}} ตอนนี้คุณสามารถเพิ่ม DApp ของคุณโดยการเปิดดำเนินการ *status-dev-cli add-dapp --ip {{ip}}* จากคอมพิวเตอร์ของคุณ"
+   :debug-enabled                         "มีการเปิดการดำเนินงานของเซิร์ฟเวอร์ที่ได้แก้ไขข้อบกพร่องแล้ว! ตอนนี้คุณสามารถเพิ่ม DApp ของคุณโดยการเปิดดำเนินการ *status-dev-cli scan* จากคอมพิวเตอร์ของคุณ"
    :new-public-group-chat                 "เข้าร่วมแชทสาธารณะ"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "ยกเลิก"
@@ -246,7 +246,6 @@
    :delete-group                          "ลบกลุ่ม"
    :browsing-title                        "เบราว์"
    :reorder-groups                        "จัดกลุ่มใหม่"
-   :debug-enabled-no-ip                   "มีการเปิดการดำเนินงานของเซิร์ฟเวอร์ที่ได้แก้ไขข้อบกพร่องแล้ว! ตอนนี้คุณสามารถเพิ่ม DApp ของคุณโดยการเปิดดำเนินการ *status-dev-cli add-dapp --ip [your ip]* จากคอมพิวเตอร์ของคุณ"
    :browsing-cancel                       "ยกเลิก"
    :faucet-success                        "ได้รับคำขอไขก๊อกแล้ว"
    :choose-from-contacts                  "เลือกจากรายชื่อติดต่อ"
