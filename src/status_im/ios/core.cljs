@@ -12,9 +12,9 @@
                                                 splash-screen
                                                 http-bridge]]
             [status-im.components.main-tabs :refer [main-tabs]]
-            [status-im.contacts.views.contact-list :refer [contact-list]]
-            [status-im.contacts.views.contact-list-modal :refer [contact-list-modal]]
-            [status-im.contacts.views.new-contact :refer [new-contact]]
+            [status-im.contacts.contact-list.views :refer [contact-list]]
+            [status-im.contacts.contact-list-modal.views :refer [contact-list-modal]]
+            [status-im.contacts.new-contact.views :refer [new-contact]]
             [status-im.qr-scanner.screen :refer [qr-scanner]]
             [status-im.discover.search-results :refer [discover-search-results]]
             [status-im.chat.screen :refer [chat]]

@@ -101,7 +101,7 @@
 (defn show-profile
   [db [_ identity]]
   (dispatch [:navigate-forget :profile])
-  (assoc db :contact-identity identity))
+  (assoc db :contacts/identity identity))
 
 (register-handler :show-profile show-profile)
 

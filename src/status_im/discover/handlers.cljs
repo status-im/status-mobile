@@ -29,7 +29,8 @@
 
 (register-handler :broadcast-status
   (u/side-effect!
-    (fn [{:keys [current-public-key web3 current-account-id accounts contacts]}
+    (fn [{:keys [current-public-key web3 current-account-id accounts]
+          :contacts/keys [contacts]}
          [_ status hashtags]]
       (let [{:keys [name photo-path]} (get accounts current-account-id)
             message-id (random/id)
@@ -73,7 +74,8 @@
 
 (register-handler :request-discoveries
   (u/side-effect!
-    (fn [{:keys [current-public-key web3 contacts]}]
+    (fn [{:keys [current-public-key web3]
+          :contacts/keys [contacts]}]
       (doseq [id (u/identities contacts)]
         (when-not (protocol/message-pending? web3 :discoveries-request id)
           (protocol/send-discoveries-request!
@@ -84,7 +86,8 @@
 
 (register-handler :discoveries-send-portions
   (u/side-effect!
-    (fn [{:keys [current-public-key contacts web3]} [_ to]]
+    (fn [{:keys [current-public-key web3]
+          :contacts/keys [contacts]} [_ to]]
       (when (get contacts to)
         (protocol/send-discoveries-response!
           {:web3        web3
@@ -99,7 +102,8 @@
 
 (register-handler :discoveries-response-received
   (u/side-effect!
-    (fn [{:keys [discoveries contacts]} [_ {:keys [payload from]}]]
+    (fn [{:keys [discoveries]
+          :contacts/keys [contacts]} [_ {:keys [payload from]}]]
       (when (get contacts from)
         (when-let [data (:data payload)]
           (doseq [{:keys [message-id] :as discover} data]

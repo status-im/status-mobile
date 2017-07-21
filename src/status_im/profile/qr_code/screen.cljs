@@ -17,7 +17,7 @@
 (defview qr-code-view []
   [{:keys [photo-path address name] :as contact} [:get-in [:qr-modal :contact]]
    {:keys [qr-source amount? dimensions]} [:get :qr-modal]
-   {:keys [amount]} [:get :contacts-click-params]]
+   {:keys [amount]} [:get :contacts/click-params]]
   [view st/wallet-qr-code
    [status-bar {:type :modal}]
    [view st/account-toolbar

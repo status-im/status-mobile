@@ -69,7 +69,7 @@
             public?       [:chat :public?]
             show-actions? [:chat-ui-props :show-actions?]
             accounts      [:get :accounts]
-            contact       [:get-in [:contacts @chat-id]]
+            contact       [:get-in [:contacts/contacts @chat-id]]
             sync-state    [:get :sync-state]
             creating?     [:get :creating-account?]]
     [view (st/chat-name-view (or (empty? accounts)

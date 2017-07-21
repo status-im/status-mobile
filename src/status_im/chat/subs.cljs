@@ -27,7 +27,7 @@
 
 (reg-sub
   :chats
-  (fn [db ]
+  (fn [db]
     (:chats db)))
 
 (reg-sub
@@ -39,7 +39,7 @@
 
 (reg-sub
   :get-current-chat-id
-  (fn [db ]
+  (fn [db]
     (:current-chat-id db)))
 
 (reg-sub
@@ -55,23 +55,22 @@
 (reg-sub :get-commands
   (fn [db [_ chat-id]]
     (let [current-chat (or chat-id (db :current-chat-id))]
-      (or (get-in db [:contacts current-chat :commands]) {}))))
+      (or (get-in db [:contacts/contacts current-chat :commands]) {}))))
 
 (reg-sub
   :get-responses
   (fn [db [_ chat-id]]
     (let [current-chat (or chat-id (db :current-chat-id))]
-      (or (get-in db [:contacts current-chat :responses]) {}))))
+      (or (get-in db [:contacts/contacts current-chat :responses]) {}))))
 
 (reg-sub :get-commands-and-responses
-  (fn [db [_ chat-id]]
-    (let [{:keys [chats contacts]} db]
-      (->> (get-in chats [chat-id :contacts])
-           (filter :is-in-chat)
-           (mapv (fn [{:keys [identity]}]
-                   (let [{:keys [commands responses]} (get contacts identity)]
-                     (merge responses commands))))
-           (apply merge)))))
+  (fn [{:keys [chats] :contacts/keys [contacts]} [_ chat-id]]
+    (->> (get-in chats [chat-id :contacts])
+         (filter :is-in-chat)
+         (mapv (fn [{:keys [identity]}]
+                 (let [{:keys [commands responses]} (get contacts identity)]
+                   (merge responses commands))))
+         (apply merge))))
 
 (reg-sub
   :selected-chat-command
@@ -148,7 +147,7 @@
 (reg-sub :get-response
   (fn [db [_ n]]
     (let [chat-id (subscribe [:get-current-chat-id])]
-      (get-in db [:contacts @chat-id :responses n]))))
+      (get-in db [:contacts/contacts @chat-id :responses n]))))
 
 (reg-sub :is-request-answered?
   :<- [:chat :requests]
@@ -170,7 +169,7 @@
       (get-in db [:chats @chat-id :all-loaded?]))))
 
 (reg-sub :photo-path
-  :<- [:get :contacts]
+  :<- [:get-contacts]
   (fn [contacts [_ id]]
     (:photo-path (contacts id))))
 
@@ -178,9 +177,9 @@
   (fn [db [_ chat-id]]
     (let [{:keys [last-message messages]} (get-in db [:chats chat-id])]
       (->> (conj messages last-message)
-        (sort-by :clock-value > )
-             (filter :show?)
-             (first)))))
+        (sort-by :clock-value >)
+        (filter :show?)
+        (first)))))
 
 (reg-sub :get-last-message-short-preview
   (fn [db [_ chat-id]]

@@ -2,7 +2,8 @@
   (:require [re-frame.core :refer [reg-sub]]
             [status-im.utils.datetime :as time]))
 
-(defn- calculate-priority [{:keys [chats contacts current-public-key]}
+(defn- calculate-priority [{:keys [chats current-public-key]
+                            :contacts/keys [contacts]}
                            {:keys [whisper-id created-at]}]
   (let [contact               (get contacts whisper-id)
         chat                  (get chats whisper-id)

@@ -396,7 +396,7 @@
 
 (register-handler :contact-request-received
   (u/side-effect!
-    (fn [{:keys [contacts]} [_ {:keys [from payload]}]]
+    (fn [{:contacts/keys [contacts]} [_ {:keys [from payload]}]]
       (when from
         (let [{{:keys [name profile-image address status]} :contact
                {:keys [public private]}                    :keypair} payload

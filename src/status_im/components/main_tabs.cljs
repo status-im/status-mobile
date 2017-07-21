@@ -9,7 +9,7 @@
             [status-im.components.tabs.bottom-shadow :refer [bottom-shadow-view]]
             [status-im.chats-list.screen :refer [chats-list]]
             [status-im.discover.screen :refer [discover]]
-            [status-im.contacts.screen :refer [contact-list]]
+            [status-im.contacts.views :refer [contact-list]]
             [status-im.components.tabs.tabs :refer [tabs]]
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]

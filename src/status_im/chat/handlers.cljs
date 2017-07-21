@@ -266,8 +266,8 @@
         db'               (-> db
                               (assoc :current-chat-id chat-id)
                               (assoc-in [:chats chat-id :was-opened?] true))
-        commands-loaded?  (get-in db [:contacts chat-id :commands-loaded?])
-        bot-url           (get-in db [:contacts chat-id :bot-url])
+        commands-loaded?  (get-in db [:contacts/contacts chat-id :commands-loaded?])
+        bot-url           (get-in db [:contacts/contacts chat-id :bot-url])
         was-opened?       (get-in db [:chats chat-id :was-opened?])
         call-init-command #(when (and (not was-opened?) bot-url)
                              (status/call-function!
@@ -311,7 +311,7 @@
           (callback))
         (dispatch [::clear-chat-loaded-callbacks chat-id])))))
 
-(defn prepare-chat [{:keys [contacts]} chat-id chat]
+(defn prepare-chat [{:contacts/keys [contacts]} chat-id chat]
   (let [name (get-in contacts [chat-id :name])]
     (merge {:chat-id    chat-id
             :name       (or name (generate-gfy))
@@ -432,7 +432,8 @@
     delete-chat!))
 
 (defn send-seen!
-  [{:keys [web3 current-public-key chats contacts]}
+  [{:keys [web3 current-public-key chats]
+    :contacts/keys [contacts]}
    [_ {:keys [from chat-id message-id]}]]
   (when-not (get-in contacts [chat-id :dapp?])
     (let [{:keys [group-chat public?]} (chats chat-id)]
@@ -452,7 +453,8 @@
   (u/side-effect! send-seen!))
 
 (defn send-clock-value-request!
-  [{:keys [web3 current-public-key contacts]} [_ {:keys [message-id from]}]]
+  [{:keys [web3 current-public-key]
+    :contacts/keys [contacts]} [_ {:keys [message-id from]}]]
   (when-not (get-in contacts [from :dapp?])
     (protocol/send-clock-value-request!
       {:web3    web3
@@ -487,8 +489,9 @@
 
 (register-handler :check-and-open-dapp!
   (u/side-effect!
-    (fn [{:keys [current-chat-id global-commands contacts] :as db}]
-      (let [dapp-url (get-in db [:contacts current-chat-id :dapp-url])]
+    (fn [{:keys [current-chat-id global-commands]
+          :contacts/keys [contacts]}]
+      (let [dapp-url (get-in contacts [current-chat-id :dapp-url])]
         (when dapp-url
           (am/go
             (dispatch [:select-chat-input-command

@@ -72,7 +72,7 @@
 
 (register-handler :debug-add-contact
   (u/side-effect!
-    (fn [{:keys [contacts]} [_ {:keys [name whisper-identity dapp-url bot-url] :as dapp-data}]]
+    (fn [{:contacts/keys [contacts]} [_ {:keys [name whisper-identity dapp-url bot-url] :as dapp-data}]]
       (if (and name
                whisper-identity
                (or dapp-url bot-url))
@@ -113,7 +113,8 @@
 
 (register-handler :debug-contact-changed
   (u/side-effect!
-    (fn [{:keys [webview-bridge current-chat-id contacts]} [_ {:keys [whisper-identity] :as dapp-data}]]
+    (fn [{:keys [webview-bridge current-chat-id]
+          :contacts/keys [contacts]} [_ {:keys [whisper-identity] :as dapp-data}]]
       (when (get-in contacts [whisper-identity :debug?])
         (when (and (= current-chat-id whisper-identity)
                    webview-bridge)
@@ -132,7 +133,7 @@
 
 (register-handler :debug-dapps-list
   (u/side-effect!
-    (fn [{:keys [contacts]}]
+    (fn [{:contacts/keys [contacts]}]
       (let [contacts (->> (vals contacts)
                           (filter :debug?)
                           (map #(select-keys % [:name :whisper-identity :dapp-url :bot-url])))]

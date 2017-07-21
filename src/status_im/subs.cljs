@@ -11,7 +11,7 @@
 
 (reg-sub :get
   (fn [db [_ k]]
-    (k db)))
+    (get db k)))
 
 (reg-sub :get-current-account
   (fn [db]
@@ -32,7 +32,7 @@
 (reg-sub :tabs-hidden?
   :<- [:get-in [:toolbar-search :show]]
   :<- [:get-in [:chat-list-ui-props :edit?]]
-  :<- [:get-in [:contacts-ui-props :edit?]]
+  :<- [:get-in [:contacts/ui-props :edit?]]
   :<- [:get :view-id]
   (fn [[search-mode? chats-edit-mode? contacts-edit-mode? view-id]]
     (or search-mode?
