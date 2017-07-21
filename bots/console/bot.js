@@ -116,7 +116,7 @@ function getLastForm(code) {
     var index = codeLength - 1;
     while (index >= 0) {
         var char = code[index];
-        if (level == 0 && (char == '(' || char == ',')) {
+        if (level == 0 && index != 0 && (char == '(' || char == ',')) {
             break;
         }
         if (char == ')') {
@@ -162,7 +162,7 @@ function getLastLevel(code) {
         }
         index--;
     }
-    if (form.indexOf("(") < 0) {
+    if (form.indexOf("(") < 0 && form != ",") {
         var parts = form.split(',');
         form = parts[parts.length - 1];
     }
