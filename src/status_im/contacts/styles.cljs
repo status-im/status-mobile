@@ -3,8 +3,6 @@
   (:require [status-im.components.styles :as common]
             [status-im.components.tabs.styles :as tabs-st]))
 
-;; Contacts list
-
 (def toolbar-actions
   {:flex-direction :row})
 

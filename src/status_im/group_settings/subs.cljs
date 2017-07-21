@@ -5,7 +5,7 @@
 (reg-sub :selected-participant
   (fn [db]
     (let [identity (first (:selected-participants db))]
-      (get-in db [:contacts identity]))))
+      (get-in db [:contacts/contacts identity]))))
 
 (defn get-chat-name-validation-messages [chat-name]
   (filter some?

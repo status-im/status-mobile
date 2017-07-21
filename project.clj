@@ -50,7 +50,8 @@
                                                     :optimizations :none}}}}
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                    :timeout          240000}}
-             :test {:plugins   [[lein-doo "0.1.7"]]
+             :test {:dependencies [[day8.re-frame/test "0.1.5"]]
+                    :plugins   [[lein-doo "0.1.7"]]
                     :cljsbuild {:builds
                                 [{:id           "test"
                                   :source-paths ["src" "test/cljs"]

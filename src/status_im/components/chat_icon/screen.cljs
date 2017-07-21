@@ -34,7 +34,7 @@
 
 (defview pending-contact-badge
   [chat-id {:keys [pending-wrapper pending-outer-circle pending-inner-circle]}]
-  [pending-contact? [:get-in [:contacts chat-id :pending?]]]
+  [pending-contact? [:get-in [:contacts/contacts chat-id :pending?]]]
   (when pending-contact?
     [view pending-wrapper
      [view pending-outer-circle
@@ -42,7 +42,7 @@
 
 (defview chat-icon-view [chat-id group-chat name online styles & [hide-dapp?]]
   [photo-path [:chat-photo chat-id]
-   dapp? [:get-in [:contacts chat-id :dapp?]]]
+   dapp? [:get-in [:contacts/contacts chat-id :dapp?]]]
   [view (:container styles)
    (if-not (s/blank? photo-path)
      [chat-icon photo-path styles]

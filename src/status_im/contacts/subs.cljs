@@ -4,13 +4,15 @@
             [clojure.string :as str]
             [status-im.bots.constants :as bots-constants]))
 
-(reg-sub :current-contact
+(reg-sub
+  :current-contact
   (fn [db [_ k]]
-    (get-in db [:contacts (:current-chat-id db) k])))
+    (get-in db [:contacts/contacts (:current-chat-id db) k])))
 
-(reg-sub :get-contacts
+(reg-sub
+  :get-contacts
   (fn [db _]
-    (:contacts db)))
+    (:contacts/contacts db)))
 
 (defn sort-contacts [contacts]
   (sort (fn [c1 c2]
@@ -20,74 +22,93 @@
                      (clojure.string/lower-case name2))))
         (vals contacts)))
 
+(reg-sub
+  :all-added-contacts
+  :<- [:get-contacts]
+  (fn [contacts]
+    (->> (remove (fn [[_ {:keys [pending? whisper-identity]}]]
+                   (or (true? pending?)
+                       (bots-constants/hidden-bots whisper-identity))) contacts)
+         (sort-contacts))))
 
-(reg-sub :all-added-contacts
-  (fn [db]
-    (let [contacts (:contacts db)]
-      (->> (remove (fn [[_ {:keys [pending? whisper-identity]}]]
-                     (or (true? pending?)
-                         (bots-constants/hidden-bots whisper-identity))) contacts)
-           (sort-contacts)))))
-
-(reg-sub :all-added-people-contacts
+(reg-sub
+  :all-added-people-contacts
   :<- [:all-added-contacts]
   (fn [contacts]
     (remove #(true? (:dapp? %)) contacts)))
 
-(reg-sub :people-in-current-chat
-  (fn [{:keys [current-chat-id]} _]
-    (let [contacts (subscribe [:current-chat-contacts])]
-      (remove #(true? (:dapp? %)) @contacts))))
+(reg-sub
+  :people-in-current-chat
+  :<- [:current-chat-contacts]
+  (fn [contacts]
+    (remove #(true? (:dapp? %)) contacts)))
 
 (defn filter-group-contacts [group-contacts contacts]
-  (filter #(group-contacts (:whisper-identity %)) contacts))
+  (let [group-contacts' (into #{} (map #(:identity %) group-contacts))]
+    (filter #(group-contacts' (:whisper-identity %)) contacts)))
 
-(reg-sub :all-added-group-contacts
+(reg-sub
+  :group-contacts
   (fn [db [_ group-id]]
-    (let [contacts (subscribe [:all-added-contacts])
-          group-contacts (into #{} (map #(:identity %)
-                                        (get-in db [:contact-groups group-id :contacts])))]
-      (filter-group-contacts group-contacts @contacts))))
+    (get-in db [:contact-groups group-id :contacts])))
+
+(reg-sub
+  :all-added-group-contacts
+  (fn [[_ group-id] _]
+    [(subscribe [:all-added-contacts])
+     (subscribe [:group-contacts group-id])])
+  (fn [[contacts group-contacts] _]
+    (filter-group-contacts group-contacts contacts)))
 
 (defn filter-not-group-contacts [group-contacts contacts]
-  (remove #(group-contacts (:whisper-identity %)) contacts))
+  (let [group-contacts' (into #{} (map #(:identity %) group-contacts))]
+    (remove #(group-contacts' (:whisper-identity %)) contacts)))
 
-(reg-sub :all-not-added-group-contacts
-  (fn [db [_ group-id]]
-    (let [contacts (subscribe [:all-added-contacts])
-          group-contacts (into #{} (map #(:identity %)
-                                        (get-in db [:contact-groups group-id :contacts])))]
-      (filter-not-group-contacts group-contacts @contacts))))
+(reg-sub
+  :all-not-added-group-contacts
+  (fn [[_ group-id] _]
+    [(subscribe [:all-added-contacts])
+     (subscribe [:group-contacts group-id])])
+  (fn [[contacts group-contacts]]
+    (filter-not-group-contacts group-contacts contacts)))
 
-(reg-sub :all-added-group-contacts-with-limit
-  (fn [db [_ group-id limit]]
-    (let [contacts (subscribe [:all-added-group-contacts group-id])]
-      (take limit @contacts))))
+(reg-sub
+  :all-added-group-contacts-with-limit
+  (fn [[_ group-id limit] _]
+    (subscribe [:all-added-group-contacts group-id]))
+  (fn [contacts [_ group-id limit]]
+    (take limit contacts)))
 
-(reg-sub :all-added-group-contacts-count
-  (fn [_ [_ group-id]]
-    (let [contacts (subscribe [:all-added-group-contacts group-id])]
-      (count @contacts))))
+(reg-sub
+  :all-added-group-contacts-count
+  (fn [[_ group-id] _]
+    (subscribe [:all-added-group-contacts group-id]))
+  (fn [contacts _]
+    (count contacts)))
 
-(reg-sub :get-added-contacts-with-limit
+(reg-sub
+  :get-added-contacts-with-limit
   :<- [:all-added-contacts]
   (fn [contacts [_ limit]]
     (take limit contacts)))
 
-(reg-sub :added-contacts-count
+(reg-sub
+  :added-contacts-count
   :<- [:all-added-contacts]
   (fn [contacts]
     (count contacts)))
 
-(reg-sub :all-added-groups
+(reg-sub
+  :contact-groups
   (fn [db]
-    (let [groups (vals (:contact-groups db))]
-      (->> (remove :pending? groups)
-           (sort-by :order >)))))
+    (vals (:contact-groups db))))
 
-(defn get-contact-letter [contact]
-  (when-let [letter (first (:name contact))]
-    (clojure.string/upper-case letter)))
+(reg-sub
+  :all-added-groups
+  :<- [:contact-groups]
+  (fn [groups]
+    (->> (remove :pending? groups)
+         (sort-by :order >))))
 
 (defn search-filter [text item]
   (let [name (-> (or (:name item) "")
@@ -95,92 +116,126 @@
         text (str/lower-case text)]
     (not= (str/index-of name text) nil)))
 
-(defn search-filter-reaction [contacts]
-  (let [text (subscribe [:get-in [:toolbar-search :text]])]
-    (if @text
-      (filter #(search-filter @text %) @contacts)
-      @contacts)))
+(defn search-filter-reaction [contacts text]
+  (if text
+    (filter #(search-filter text %) contacts)
+    contacts))
 
-(reg-sub :all-added-group-contacts-filtered
-  (fn [_ [_ group-id]]
-    (let [contacts (if group-id
-                     (subscribe [:all-added-group-contacts group-id])
-                     (subscribe [:all-added-contacts]))]
-      (search-filter-reaction contacts))))
+(reg-sub
+  :all-added-group-contacts-filtered
+  (fn [[_ group-id] _]
+    [(if group-id
+       (subscribe [:all-added-group-contacts group-id])
+       (subscribe [:all-added-contacts]))
+     (subscribe [:get-in [:toolbar-search :text]])])
+  (fn [[contacts text] _]
+    (search-filter-reaction contacts text)))
 
-(reg-sub :all-group-not-added-contacts-filtered
+(reg-sub
+  :contact-group-contacts
   (fn [db]
-    (let [contact-group-id (:contact-group-id db)
-          contacts (subscribe [:all-not-added-group-contacts contact-group-id])]
-      (search-filter-reaction contacts))))
+    (get-in db [:contact-groups (:contact-group-id db) :contacts])))
 
-(reg-sub :contacts-filtered
-  (fn [_ [_ subscription-id]]
-    (let [contacts (subscribe [subscription-id])]
-      (search-filter-reaction contacts))))
+(reg-sub
+  :all-not-added-contact-group-contacts
+  (fn [_ _]
+    [(subscribe [:all-added-contacts])
+     (subscribe [:contact-group-contacts])])
+  (fn [[contacts group-contacts]]
+    (filter-not-group-contacts group-contacts contacts)))
 
-(reg-sub :contacts-with-letters
+(reg-sub
+  :all-group-not-added-contacts-filtered
+  (fn [_ _]
+    [(subscribe [:all-not-added-contact-group-contacts])
+     (subscribe [:get-in [:toolbar-search :text]])])
+  (fn [[contacts text] _]
+    (search-filter-reaction contacts text)))
+
+(reg-sub
+  :contacts-filtered
+  (fn [[_ subscription-id] _]
+    [(subscribe [subscription-id])
+     (subscribe [:get-in [:toolbar-search :text]])])
+  (fn [[contacts text]]
+    (search-filter-reaction contacts text)))
+
+(reg-sub
+  :contact
   (fn [db]
-    (let [contacts (:contacts db)]
-      (let [ordered (sort-contacts contacts)]
-        (reduce (fn [prev cur]
-                  (let [prev-letter (get-contact-letter (last prev))
-                        cur-letter  (get-contact-letter cur)]
-                    (conj prev
-                          (if (not= prev-letter cur-letter)
-                            (assoc cur :letter cur-letter)
-                            cur))))
-                [] ordered)))))
+    (let [identity (:contacts/identity db)]
+      (get-in db [:contacts/contacts identity]))))
 
-(defn contacts-by-chat [fn db chat-id]
-  (let [chat     (get-in db [:chats chat-id])
-        contacts (:contacts db)]
-    (when chat
-      (let [current-participants (->> chat
-                                      :contacts
-                                      (map :identity)
-                                      set)]
-        (fn #(current-participants (:whisper-identity %))
-            (vals contacts))))))
-
-(defn contacts-by-current-chat [fn db]
-  (let [current-chat-id (:current-chat-id db)]
-    (contacts-by-chat fn db current-chat-id)))
-
-(reg-sub :contact
-  (fn [db]
-    (let [identity (:contact-identity db)]
-      (get-in db [:contacts identity]))))
-
-(reg-sub :contact-by-identity
+(reg-sub
+  :contact-by-identity
   (fn [db [_ identity]]
-    (get-in db [:contacts identity])))
+    (get-in db [:contacts/contacts identity])))
 
-(reg-sub :contact-name-by-identity
+(reg-sub
+  :contact-name-by-identity
   :<- [:get-contacts]
   (fn [contacts [_ identity]]
     (:name (contacts identity))))
 
-(reg-sub :all-new-contacts
-  (fn [db]
-    (contacts-by-current-chat remove db)))
-
-(reg-sub :current-chat-contacts
-  (fn [db]
-    (contacts-by-current-chat filter db)))
-
-(reg-sub :chat-photo
+(reg-sub
+  :chat-by-id
   (fn [db [_ chat-id]]
-    (let [chat-id  (or chat-id (:current-chat-id db))
-          chat     (get-in db [:chats chat-id])
-          contacts (contacts-by-chat filter db chat-id)]
-      (when (and chat (not (:group-chat chat)))
-        (cond
-          (:photo-path chat)
-          (:photo-path chat)
+    (get-in db [:chats chat-id])))
 
-          (pos? (count contacts))
-          (:photo-path (first contacts))
+(reg-sub
+  :current-chat
+  (fn [db _]
+    (get-in db [:chats (:current-chat-id db)])))
 
-          :else
-          (identicon chat-id))))))
+(defn chat-contacts [[chat contacts] [_ fn]]
+  (when chat
+    (let [current-participants (->> chat
+                                    :contacts
+                                    (map :identity)
+                                    set)]
+      (fn #(current-participants (:whisper-identity %))
+        (vals contacts)))))
+
+(reg-sub
+  :contacts-current-chat
+  :<- [:current-chat]
+  :<- [:get-contacts]
+  chat-contacts)
+
+(reg-sub
+  :all-new-contacts
+  :<- [:contacts-current-chat remove]
+  (fn [contacts]
+    contacts))
+
+(reg-sub
+  :current-chat-contacts
+  :<- [:contacts-current-chat filter]
+  (fn [contacts]
+    contacts))
+
+(reg-sub
+  :contacts-by-chat
+  (fn [[_ fn chat-id] _]
+    [(subscribe [:chat-by-id chat-id])
+     (subscribe [:get-contacts])])
+  chat-contacts)
+
+(reg-sub
+  :chat-photo
+  (fn [[_ chat-id] _]
+    [(if chat-id
+       (subscribe [:chat-by-id chat-id])
+       (subscribe [:current-chat]))
+     (subscribe [:contacts-by-chat filter chat-id])])
+  (fn [[chat contacts] [_ chat-id]]
+    (when (and chat (not (:group-chat chat)))
+      (cond
+        (:photo-path chat)
+        (:photo-path chat)
+
+        (pos? (count contacts))
+        (:photo-path (first contacts))
+
+        :else
+        (identicon chat-id)))))

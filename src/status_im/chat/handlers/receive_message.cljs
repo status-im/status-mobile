@@ -97,7 +97,7 @@
     (assoc-in db [:chats chat-id :last-message] message)))
 
 (defn commands-loaded? [db chat-id]
-  (get-in db [:contacts chat-id :commands-loaded?]))
+  (get-in db [:contacts/contacts chat-id :commands-loaded?]))
 
 (def timeout 400)
 

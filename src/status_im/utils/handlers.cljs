@@ -1,5 +1,5 @@
 (ns status-im.utils.handlers
-  (:require [re-frame.core :refer [reg-event-db]]
+  (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
             [re-frame.interceptor :refer [->interceptor get-coeffect]]
             [clojure.string :as str]
             [taoensso.timbre :as log]
@@ -26,7 +26,7 @@
   "throw an exception if db doesn't match the spec"
   (->interceptor
     :id check-spec
-    :before
+    :after
     (fn check-handler
       [context]
       (let [new-db (get-coeffect context :db)
@@ -39,6 +39,16 @@
   ([name handler] (register-handler name nil handler))
   ([name middleware handler]
    (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
+
+(defn register-handler-db
+  ([name handler] (register-handler-db name nil handler))
+  ([name interceptors handler]
+   (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) interceptors] handler)))
+
+(defn register-handler-fx
+  ([name handler] (register-handler-fx name nil handler))
+  ([name interceptors handler]
+   (reg-event-fx name [debug-handlers-names (when js/goog.DEBUG check-spec) interceptors] handler)))
 
 (defn get-hashtags [status]
   (if status

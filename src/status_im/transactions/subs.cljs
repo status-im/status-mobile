@@ -11,7 +11,7 @@
     (into {} (map (fn [[_ {:keys [address] :as contact}]]
                     (when address
                       [address contact]))
-                  (:contacts db)))))
+                  (:contacts/contacts db)))))
 
 (reg-sub :contact-by-address
   :<- [:contacts-by-address]

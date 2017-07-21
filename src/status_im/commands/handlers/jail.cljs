@@ -37,7 +37,8 @@
       :else nil)))
 
 (defn suggestions-handler!
-  [{:keys [contacts chats] :as db} [{:keys [chat-id default-db command parameter-index result]}]]
+  [{:keys [chats] :as db}
+   [{:keys [chat-id default-db command parameter-index result]}]]
   (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
         contains-markup? (contains? returned :markup)
         path (if command
@@ -53,7 +54,7 @@
 (defn suggestions-events-handler!
   [{:keys [current-chat-id bot-db] :as db} [[n & data :as ev] val]]
   (log/debug "Suggestion event: " n (first data) val)
-  (let [{:keys [dapp?]} (get-in db [:contacts current-chat-id])]
+  (let [{:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])]
     (case (keyword n)
       :set-command-argument
       (let [[index value move-to-next?] (first data)]

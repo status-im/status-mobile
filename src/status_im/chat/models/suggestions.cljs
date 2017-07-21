@@ -23,14 +23,14 @@
   (let [requests (get-in db [:chats current-chat-id :requests])]
     (->> requests
          (map (fn [{:keys [type] :as v}]
-                (assoc v :name (get-in db [:contacts current-chat-id :responses type :name]))))
+                (assoc v :name (get-in db [:contacts/contacts current-chat-id :responses type :name]))))
          (filter (fn [v] ((can-be-suggested? text) v))))))
 
 (defn get-command-suggestions
   [{:keys [current-chat-id] :as db} text]
   (->> (get-in db [:chats current-chat-id :contacts])
        (map (fn [{:keys [identity]}]
-              (let [commands (get-in db [:contacts identity :commands])]
+              (let [commands (get-in db [:contacts/contacts identity :commands])]
                 (->> commands
                      (filter (fn [[_ v]] ((can-be-suggested? text) v)))))))
        (reduce (fn [m cur] (into (or m {}) cur)))

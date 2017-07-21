@@ -13,7 +13,7 @@
 
 (reg-sub :selected-contacts-count
   :<- [:get :selected-contacts]
-  :<- [:get :contacts]
+  :<- [:get-contacts]
   (fn [[selected-contacts contacts]]
     ;TODO temporary, contact should be deleted from group after contact deletion from contacts
     (count (filter-selected-contacts selected-contacts contacts))))

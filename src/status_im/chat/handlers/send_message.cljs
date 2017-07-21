@@ -137,7 +137,8 @@
 
 (register-handler ::invoke-command-handlers!
   (u/side-effect!
-    (fn [{:keys [bot-db accounts current-account-id] :as db}
+    (fn [{:keys [bot-db accounts current-account-id]
+          :contacts/keys [contacts] :as db}
          [_ {{:keys [command
                      params
                      id]} :command
@@ -145,7 +146,7 @@
              :as          orig-params}]]
       (let [{:keys [type name bot owner-id]} command
             handler-type (if (= :command type) :commands :responses)
-            to           (get-in db [:contacts chat-id :address])
+            to           (get-in contacts [chat-id :address])
             identity     (or owner-id bot chat-id)
             bot-db       (get bot-db (or bot chat-id))
             params       {:parameters params
@@ -217,7 +218,7 @@
 
 (register-handler :received-bot-response
   (u/side-effect!
-    (fn [{:keys [contacts]} [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
+    (fn [{:contacts/keys [contacts]} [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
       (let [{:keys [returned context]} result
             {:keys [markup text-message err]} returned
             {:keys [log-messages update-db default-db]} context
@@ -287,10 +288,11 @@
 (register-handler ::send-message!
   (u/side-effect!
     (fn [{:keys [web3 chats network-status current-account-id accounts]
+          :contacts/keys [contacts]
           :as   db} [_ {{:keys [message-type]
                          :as   message} :message
                         chat-id         :chat-id}]]
-      (let [{:keys [dapp?]} (get-in db [:contacts chat-id])]
+      (let [{:keys [dapp?]} (get contacts chat-id)]
         (if dapp?
           (dispatch [::send-dapp-message chat-id message])
           (when message
@@ -323,7 +325,8 @@
 (register-handler ::send-command-protocol!
   (u/side-effect!
     (fn [{:keys [web3 current-public-key chats network-status
-                 current-account-id accounts contacts] :as db}
+                 current-account-id accounts]
+          :contacts/keys [contacts] :as db}
          [_ {:keys [chat-id command]}]]
       (log/debug "sending command: " command)
       (if (get-in contacts [chat-id :dapp?])

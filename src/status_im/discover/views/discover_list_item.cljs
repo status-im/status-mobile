@@ -22,7 +22,7 @@
                                 account-name       :name
                                 :as                current-account} :current-account}]
   [{contact-name       :name
-    contact-photo-path :photo-path} [:get-in [:contacts whisper-id]]]
+    contact-photo-path :photo-path} [:get-in [:contacts/contacts whisper-id]]]
   (let [item-style (get-in platform-specific [:component-styles :discover :item])]
     [view
      [view st/popular-list-item

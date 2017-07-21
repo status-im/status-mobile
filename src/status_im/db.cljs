@@ -8,7 +8,7 @@
              :keyboard-height            0
              :accounts                   {}
              :navigation-stack           '()
-             :contacts                   {}
+             :contacts/contacts          {}
              :qr-codes                   {}
              :contact-groups             {}
              :selected-contacts          #{}

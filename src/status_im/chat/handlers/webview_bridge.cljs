@@ -7,7 +7,7 @@
             [taoensso.timbre :as log]
             [status-im.models.commands :as commands]
             [status-im.commands.utils :as cu]
-            [status-im.contacts.validations :as v]
+            [status-im.contacts.db :as v]
             [status-im.components.status :as s]
             [status-im.components.nfc :as nfc]
             [status-im.constants :as c]
@@ -24,7 +24,7 @@
     (str "\"" s "\"")))
 
 (defn scan-qr-handler
-  [{:keys [contacts]} [_ _ data]]
+  [{:contacts/keys [contacts]} [_ _ data]]
   (let [data'  (try (read-string (wrap-hex data))
                     (catch :default e data))
         data'' (cond
@@ -60,9 +60,10 @@
 
 (register-handler ::send-command
   (u/side-effect!
-    (fn [{:keys [current-chat-id] :as db}
+    (fn [{:keys [current-chat-id]
+          :contacts/keys [contacts]}
          [_ command-key {:keys [contact amount]}]]
-      (let [command (get-in db [:contacts current-chat-id :commands command-key])]
+      (let [command (get-in contacts [current-chat-id :commands command-key])]
         (dispatch [:set-in [:bot-db current-chat-id :public :recipient] contact])
         (dispatch [:proceed-command
                    {:command  command,
@@ -107,9 +108,9 @@
 
 (defmethod nav/preload-data! :contact-list-modal
   [db [_ _ {:keys [handler action params]}]]
-  (assoc db :contacts-click-handler handler
-            :contacts-click-action action
-            :contacts-click-params params))
+  (assoc db :contacts/click-handler handler
+            :contacts/click-action action
+            :contacts/click-params params))
 
 (def qr-context {:toolbar-title (label :t/address)})
 

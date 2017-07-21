@@ -1,23 +1,14 @@
-(ns status-im.contacts.screen
-  (:require-macros [status-im.utils.views :refer [defview]])
+(ns status-im.contacts.views
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
             [status-im.components.common.common :as common]
-            [status-im.components.react :refer [view
-                                                text
-                                                image
-                                                icon
-                                                touchable-highlight
-                                                scroll-view
-                                                list-view
-                                                list-item]]
+            [status-im.components.react :refer [view text icon touchable-highlight scroll-view]]
             [status-im.components.native-action-button :refer [native-action-button
                                                                native-action-button-item]]
-            [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
-            [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.contact.contact :refer [contact-view]]
             [status-im.utils.platform :refer [platform-specific ios? android?]]
             [status-im.utils.utils :as u]
@@ -26,11 +17,11 @@
             [status-im.components.styles :refer [color-blue
                                                  create-icon]]))
 
-(def contacts-limit 5)
+(def ^:const contacts-limit 5)
 
 (def toolbar-options
   [{:text (label :t/new-contact)    :value #(dispatch [:navigate-to :new-contact])}
-   {:text (label :t/edit)           :value #(dispatch [:set-in [:contacts-ui-props :edit?] true])}
+   {:text (label :t/edit)           :value #(dispatch [:set-in [:contacts/ui-props :edit?] true])}
    {:text (label :t/new-group)      :value #(dispatch [:open-contact-toggle-list :contact-group])}
    {:text (label :t/reorder-groups) :value #(dispatch [:navigate-to :reorder-groups])}])
 
@@ -39,23 +30,23 @@
    (act/opts (if ios? toolbar-options (rest toolbar-options)))])
 
 (defn toolbar-view []
- [toolbar {:title          (label :t/contacts)
-           :nav-action     (act/hamburger open-drawer)
-           :actions        (toolbar-actions)}])
+  [toolbar {:title      (label :t/contacts)
+            :nav-action (act/hamburger open-drawer)
+            :actions    (toolbar-actions)}])
 
 (defn toolbar-edit []
-  [toolbar {:nav-action     (act/back #(dispatch [:set-in [:contacts-ui-props :edit?] false]))
-            :actions        [{:image :blank}]
-            :title          (label :t/edit-contacts)}])
+  [toolbar {:nav-action (act/back #(dispatch [:set-in [:contacts/ui-props :edit?] false]))
+            :actions    [{:image :blank}]
+            :title      (label :t/edit-contacts)}])
 
 (defn contact-options [{:keys [unremovable?] :as contact} group]
   (let [delete-contact-opt {:value        #(u/show-confirmation
                                              (str (label :t/delete-contact) "?") (label :t/delete-contact-confirmation)
                                              (label :t/delete)
-                                             (fn[] (dispatch [:hide-contact contact])))
+                                             (fn [] (dispatch [:hide-contact contact])))
                             :text         (label :t/delete-contact)
                             :destructive? true}
-        options            (if unremovable? [] [delete-contact-opt])]
+        options (if unremovable? [] [delete-contact-opt])]
     (if group
       (conj options
             {:value #(dispatch [:remove-contact-from-group
@@ -69,10 +60,10 @@
     [view
      (when subtitle
        [common/form-title subtitle
-                          {:count-value contacts-count
-                           :extended?   edit?
-                           :options     [{:value #(dispatch [:navigate-to :edit-group group :contact-group])
-                                          :text  (label :t/edit-group)}]}])
+        {:count-value contacts-count
+         :extended?   edit?
+         :options     [{:value #(dispatch [:navigate-to :edit-group group :contact-group])
+                        :text  (label :t/edit-group)}]}])
      [view st/contacts-list
       [common/list-footer]
       (doall
@@ -93,20 +84,20 @@
         [view st/show-all
          [touchable-highlight {:on-press #(do
                                             (when edit?
-                                              (dispatch [:set-in [:contact-list-ui-props :edit?] true]))
+                                              (dispatch [:set-in [:contacts/list-ui-props :edit?] true]))
                                             (dispatch [:navigate-to :group-contacts group]))}
           [view
-           [text {:style st/show-all-text
+           [text {:style      st/show-all-text
                   :uppercase? (get-in platform-specific [:uppercase?])
-                  :font (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
+                  :font       (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
             (str (- contacts-count contacts-limit) " " (label :t/more))]]]]])
      [common/bottom-shadow]]))
 
 (defview contact-group-view [{:keys [group] :as params}]
-  [contacts [:all-added-group-contacts-with-limit (:group-id group) contacts-limit]
-   contacts-count [:all-added-group-contacts-count (:group-id group)]]
-  [contact-group-form (merge params {:contacts contacts
-                                     :contacts-count contacts-count})])
+  (letsubs [contacts       [:all-added-group-contacts-with-limit (:group-id group) contacts-limit]
+            contacts-count [:all-added-group-contacts-count (:group-id group)]]
+    [contact-group-form (merge params {:contacts       contacts
+                                       :contacts-count contacts-count})]))
 
 (defn contacts-action-button []
   [native-action-button {:button-color color-blue
@@ -122,28 +113,28 @@
                :style create-icon}]]])
 
 (defview contact-list [_]
-  [contacts             [:get-added-contacts-with-limit contacts-limit]
-   contacts-count       [:added-contacts-count]
-   edit?                [:get-in [:contacts-ui-props :edit?]]
-   groups               [:all-added-groups]
-   tabs-hidden?         [:tabs-hidden?]]
-  [view {:flex 1}
-   [view (st/contacts-list-container tabs-hidden?)
-    (if edit?
-      [toolbar-edit]
-      [toolbar-view])
-    (if (pos? (+ (count groups) contacts-count))
-      [scroll-view {:style    st/contact-groups}
-       (when (pos? contacts-count)
-         [contact-group-form {:contacts       contacts
-                              :contacts-count contacts-count
-                              :edit?          edit?}])
-       (for [group groups]
-         ^{:key group}
-         [contact-group-view {:group          group
-                              :edit?          edit?}])]
-      [view st/empty-contact-groups
-       [icon :group_big st/empty-contacts-icon]
-       [text {:style st/empty-contacts-text} (label :t/no-contacts)]])]
-   (when (and android? (not edit?))
-       [contacts-action-button])])
+  (letsubs [contacts       [:get-added-contacts-with-limit contacts-limit]
+            contacts-count [:added-contacts-count]
+            edit?          [:get-in [:contacts/ui-props :edit?]]
+            groups         [:all-added-groups]
+            tabs-hidden?   [:tabs-hidden?]]
+    [view {:flex 1}
+     [view (st/contacts-list-container tabs-hidden?)
+      (if edit?
+        [toolbar-edit]
+        [toolbar-view])
+      (if (pos? (+ (count groups) contacts-count))
+        [scroll-view {:style st/contact-groups}
+         (when (pos? contacts-count)
+           [contact-group-form {:contacts       contacts
+                                :contacts-count contacts-count
+                                :edit?          edit?}])
+         (for [group groups]
+           ^{:key group}
+           [contact-group-view {:group group
+                                :edit? edit?}])]
+        [view st/empty-contact-groups
+         [icon :group_big st/empty-contacts-icon]
+         [text {:style st/empty-contacts-text} (label :t/no-contacts)]])]
+     (when (and android? (not edit?))
+       [contacts-action-button])]))

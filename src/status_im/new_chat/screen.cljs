@@ -53,7 +53,7 @@
 
 (defview new-chat []
   [contacts [:all-added-group-contacts-filtered]
-   params [:get :contacts-click-params]]
+   params [:get :contacts/click-params]]
   [drawer-view
    [view st/contacts-list-container
     [new-chat-toolbar]

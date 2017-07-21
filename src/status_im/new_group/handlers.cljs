@@ -44,7 +44,8 @@
 (register-handler :select-contact select-contact)
 
 (defn group-name-from-contacts
-  [{:keys [contacts selected-contacts username]}]
+  [{:keys [selected-contacts username]
+    :contacts/keys [contacts]}]
   (->> (select-keys contacts selected-contacts)
        vals
        (map :name)

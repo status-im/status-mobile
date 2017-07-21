@@ -1,17 +1,17 @@
 (ns status-im.handlers
   (:require
-    [re-frame.core :refer [after dispatch dispatch-sync debug]]
+    [re-frame.core :refer [after dispatch dispatch-sync debug reg-fx]]
     [status-im.db :refer [app-db]]
     [status-im.data-store.core :as data-store]
     [taoensso.timbre :as log]
     [status-im.utils.crypt :refer [gen-random-bytes]]
     [status-im.components.status :as status]
     [status-im.components.permissions :as permissions]
-    [status-im.utils.handlers :refer [register-handler] :as u]
+    [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
     status-im.chat.handlers
     status-im.group-settings.handlers
     status-im.navigation.handlers
-    status-im.contacts.handlers
+    status-im.contacts.events
     status-im.discover.handlers
     status-im.new-group.handlers
     status-im.profile.handlers
@@ -44,17 +44,23 @@
 
 (register-handler :set-in set-in)
 
-(register-handler :initialize-db
-  (fn [{:keys [status-module-initialized? status-node-started?
-               network-status network first-run]} _]
-    (data-store/init)
-    (assoc app-db :current-account-id nil
-                  :contacts {}
-                  :network-status network-status
-                  :status-module-initialized? (or p/ios? js/goog.DEBUG status-module-initialized?)
-                  :status-node-started? status-node-started?
-                  :network (or network :testnet)
-                  :first-run (or (nil? first-run) first-run))))
+(reg-fx
+  ::init-store
+  (fn []
+    (data-store/init)))
+
+(register-handler-fx :initialize-db
+  (fn [{{:keys [status-module-initialized? status-node-started?
+                network-status network first-run _]} :db} _]
+    {::init-store nil
+     :db (assoc app-db
+           :current-account-id nil
+           :contacts/contacts {}
+           :network-status network-status
+           :status-module-initialized? (or p/ios? js/goog.DEBUG status-module-initialized?)
+           :status-node-started? status-node-started?
+           :network (or network :testnet)
+           :first-run (or (nil? first-run) first-run))}))
 
 (register-handler :initialize-account-db
   (fn [db _]
@@ -62,7 +68,7 @@
         (assoc :current-chat-id console-chat-id)
         (dissoc :transactions
                 :transactions-queue
-                :new-contact-identity))))
+                :contacts/new-identity))))
 
 (register-handler :initialize-account
   (u/side-effect!

@@ -11,7 +11,7 @@
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]))
 
-(defn generate-context [{:keys [contacts current-account-id chats] :as db} chat-id to]
+(defn generate-context [{:keys [current-account-id chats] :as db} chat-id to]
   (merge {:platform platform/platform
           :from     current-account-id
           :to       to
@@ -21,7 +21,8 @@
 
 (handlers/register-handler :request-command-data
   (handlers/side-effect!
-    (fn [{:keys [contacts current-account-id chats] :as db}
+    (fn [{:keys [current-account-id chats]
+          :contacts/keys [contacts] :as db}
          [_ {{:keys [command params content-command type]} :content
              :keys [message-id chat-id jail-id on-requested from] :as message} data-type]]
       (let [jail-id  (or jail-id chat-id)

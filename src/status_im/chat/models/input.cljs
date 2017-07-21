@@ -50,7 +50,7 @@
         {:keys [contacts requests]} (get-in db [:chats chat-id])]
     (->> contacts
          (map (fn [{:keys [identity]}]
-                (let [{:keys [commands responses]} (get-in db [:contacts identity])]
+                (let [{:keys [commands responses]} (get-in db [:contacts/contacts identity])]
                   (let [commands'  (mapv (fn [[k v]] [k [v :any]]) (merge global-commands commands))
                         responses' (mapv (fn [{:keys [message-id type]}]
                                            [type [(get responses type) message-id]])

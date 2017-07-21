@@ -76,7 +76,7 @@
 (defview discover [current-view?]
   [show-search [:get-in [:toolbar-search :show]]
    search-text [:get-in [:toolbar-search :text]]
-   contacts [:get :contacts]
+   contacts [:get-contacts]
    current-account [:get-current-account]
    discoveries [:get-recent-discoveries]
    tabs-hidden? [:tabs-hidden?]]
