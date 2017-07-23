@@ -1,11 +1,10 @@
-(ns status-im.utils.listview
-  (:require-macros [natal-shell.data-source :refer [data-source]]))
+(ns status-im.utils.listview)
 
 (defn clone-with-rows [ds rows]
   (.cloneWithRows ds (reduce (fn [ac el] (.push ac el) ac)
                              (clj->js []) rows)))
 
-(defmacro data-source [config]
+(defn data-source [config]
   (js/ReactNative.ListView.DataSource. (clj->js config)))
 
 (defn to-datasource [items]
