@@ -95,3 +95,13 @@
 
 (defn hash-tag? [s]
   (= \# (first s)))
+
+(defn wrap-call-once!
+  "Returns a version of provided function that will be called only the first time wrapping function is called. Returns nil."
+  [f]
+  (let [called? (volatile! false)]
+    (fn [& args]
+      (when-not @called?
+        (vreset! called? true)
+        (apply f args)
+        nil))))
