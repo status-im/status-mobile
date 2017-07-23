@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :as common]
             [status-im.utils.platform :refer [platform-specific]]
+            [status-im.utils.utils :as u]
             [status-im.components.react :refer [view
                                                 text
                                                 touchable-highlight]]))
@@ -21,9 +22,11 @@
    :android {:font-size      14
              :letter-spacing 0.5}})
 
-(defn sticky-button [label on-press]
-  [touchable-highlight {:on-press on-press}
-   [view sticky-button-style
-    [text {:style sticky-button-label-style
-           :uppercase? (get-in platform-specific [:uppercase?])}
-          label]]])
+(defn sticky-button
+  ([label on-press] (sticky-button label on-press false))
+  ([label on-press once?]
+   [touchable-highlight {:on-press (if once? (u/wrap-call-once! on-press) on-press)}
+    [view sticky-button-style
+     [text {:style sticky-button-label-style
+            :uppercase? (get-in platform-specific [:uppercase?])}
+           label]]]))
