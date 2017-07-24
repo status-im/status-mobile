@@ -113,7 +113,7 @@
   :<- [:chat :input-text]
   :<- [:chat-ui-props :validation-messages]
   (fn [[chat-parameter-box show-suggestions? input-text validation-messages]]
-    (and chat-parameter-box
+    (and (get chat-parameter-box :markup)
          (not validation-messages)
          (not show-suggestions?))))
 

@@ -141,7 +141,10 @@ function getLastLevel(code) {
         var char = code[index];
         if (char == ')') {
             level--;
-            nested = true;
+            // A single unbalanced ')' shouldn't set nested to true.
+            if (level > 0) {
+                nested = true;
+            }
         }
         if (char == '(') {
             level++;
@@ -343,6 +346,8 @@ function jsSuggestions(params, context) {
             sugestionsMarkup
         );
         return {markup: view};
+    } else {
+        return {markup: null};
     }
 }
 
