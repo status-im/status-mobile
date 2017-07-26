@@ -44,7 +44,7 @@
                                          (update result :markup cu/generate-hiccup)
                                          result)] 
                             (dispatch [:set-in [:message-data data-type message-id] result'])
-                            (when (= :preview data-type)
+                            (when (and result (= :preview data-type))
                               ;; update message in realm with serialized preview
                               (messages/update {:message-id message-id
                                                 :preview (prn-str result)}))
