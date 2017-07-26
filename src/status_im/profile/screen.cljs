@@ -40,7 +40,8 @@
 
 (defn profile-toolbar [contact]
   [toolbar
-   (when-not (:pending? contact)
+   (when (and (not (:pending? contact))
+              (not (:unremovable? contact)))
      {:actions [(act/opts [{:value #(dispatch [:hide-contact contact])
                             :text  (label :t/remove-from-contacts)}])]})])
 
