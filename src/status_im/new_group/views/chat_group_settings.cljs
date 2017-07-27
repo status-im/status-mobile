@@ -72,4 +72,7 @@
        [view st/separator]
        [group-chat-settings-btns]]]
      (when save-btn-enabled?
-       [sticky-button (label :t/save) #(dispatch [:set-chat-name])])]))
+       [sticky-button (label :t/save) #(dispatch [:set-chat-name])
+        ;; once? set to true, so once component is mounted, on-press handler
+        ;; will be executed only once
+        true])]))
