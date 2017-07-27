@@ -96,4 +96,7 @@
        [sticky-button (label :t/save)
         (if (= group-type :contact-group)
           #(dispatch [:create-new-group group-name])
-          #(dispatch [:create-new-group-chat group-name]))])]))
+          #(dispatch [:create-new-group-chat group-name]))
+        ;; once? set to true, so once component is mounted, on-press handler
+        ;; will be executed only once
+        true])]))
