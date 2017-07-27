@@ -175,7 +175,7 @@
    :choose-from-contacts                  "Ajouter depuis mes contacts"
    :no-contacts                           "Pas encore de contacts"
    :show-qr                               "Afficher le QR"
-   :enter-address                         "Entrez Addresse"
+   :enter-address                         "Entrer Adresse"
    :more                                  "plus"
 
    ;group-settings
