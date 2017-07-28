@@ -388,7 +388,8 @@
               new-sel      (->> command-args
                                 (take (+ 3 arg-pos))
                                 (input-model/join-command-args)
-                                (count))
+                                count
+                                (min (count input-text)))
               ref          (get-in chat-ui-props [current-chat-id :input-ref])]
           (.setNativeProps ref (clj->js {:selection {:start new-sel :end new-sel}}))
           (dispatch [:update-text-selection new-sel]))))))
