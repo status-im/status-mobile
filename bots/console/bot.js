@@ -665,6 +665,22 @@ status.response({
 
             return {markup: error};
         }
+    },
+    preview: function (params) {
+        return {
+            markup: status.components.text(
+                {},
+                params.code
+            )
+        };
+    },
+    shortPreview: function (params) {
+        return {
+            markup: status.components.text(
+                {},
+                params.code
+            )
+        };
     }
 });
 
