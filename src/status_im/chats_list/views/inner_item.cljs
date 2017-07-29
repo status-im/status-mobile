@@ -117,7 +117,8 @@
          chat-name)]]]))
 
 (defn chat-list-item-inner-view [{:keys [chat-id name color online
-                                         group-chat contacts public?] :as chat}
+                                         group-chat contacts public?
+                                         unremovable?] :as chat}
                                  edit?]
   (let [last-message (subscribe [:get-last-message chat-id])
         name         (or (get-contact-translated chat-id :name name)
@@ -136,4 +137,4 @@
        [message-content-text chat-id]
        (when-not edit? [unviewed-indicator chat-id])]]
      [view st/chat-options-container
-      (when edit? [options-btn chat-id])]]))
+      (when (and edit? (not unremovable?)) [options-btn chat-id])]]))
