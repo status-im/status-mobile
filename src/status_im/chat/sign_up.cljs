@@ -22,7 +22,7 @@
    :content-type text-content-type
    :outgoing     true})
 
-; todo fn name is not too smart, but...
+;; todo fn name is not too smart, but...
 (defn command-content
   [command content]
   {:command (name command)
@@ -182,22 +182,23 @@
               :to           "me"}]))
 
 (def console-chat
-  {:chat-id    console-chat-id
-   :name       (s/capitalize console-chat-id)
-   :color      default-chat-color
-   :group-chat false
-   :is-active  true
-   :timestamp  (.getTime (js/Date.))
-   :photo-path console-chat-id
-   :contacts   [{:identity         console-chat-id
-                 :text-color       "#FFFFFF"
-                 :background-color "#AB7967"}]})
+  {:chat-id      console-chat-id
+   :name         (s/capitalize console-chat-id)
+   :color        default-chat-color
+   :group-chat   false
+   :is-active    true
+   :unremovable? true
+   :timestamp    (.getTime (js/Date.))
+   :photo-path   console-chat-id
+   :contacts     [{:identity         console-chat-id
+                   :text-color       "#FFFFFF"
+                   :background-color "#AB7967"}]})
 
 (def console-contact
-  {:whisper-identity console-chat-id
-   :name             (s/capitalize console-chat-id)
-   :photo-path       console-chat-id
-   :dapp?            true
-   :unremovable?     true
-   :bot-url          "local://console-bot"
-   :dapp-hash        858845357})
+  {:whisper-identity  console-chat-id
+   :name              (s/capitalize console-chat-id)
+   :photo-path        console-chat-id
+   :dapp?             true
+   :unremovable?      true
+   :bot-url           "local://console-bot"
+   :dapp-hash         858845357})
