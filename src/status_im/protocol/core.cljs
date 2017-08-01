@@ -18,8 +18,6 @@
 ;; user
 (def send-message! chat/send!)
 (def send-seen! chat/send-seen!)
-(def send-clock-value-request! chat/send-clock-value-request!)
-(def send-clock-value! chat/send-clock-value!)
 (def reset-pending-messages! d/reset-pending-messages!)
 
 ;; group

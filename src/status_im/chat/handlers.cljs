@@ -457,41 +457,6 @@
             (dispatch [:remove-unviewed-messages chat-id])))]
   (u/side-effect! send-seen!))
 
-(defn send-clock-value-request!
-  [{:keys [web3 current-public-key]
-    :contacts/keys [contacts]} [_ {:keys [message-id from]}]]
-  (when-not (get-in contacts [from :dapp?])
-    (protocol/send-clock-value-request!
-      {:web3    web3
-       :message {:from       current-public-key
-                 :to         from
-                 :message-id message-id}})))
-
-(register-handler :send-clock-value-request! (u/side-effect! send-clock-value-request!))
-
-(defn send-clock-value!
-  [{:keys [web3 current-public-key]} to message-id clock-value]
-  (when current-public-key
-    (protocol/send-clock-value! {:web3    web3
-                                 :message {:from        current-public-key
-                                           :to          to
-                                           :message-id  message-id
-                                           :clock-value clock-value}})))
-
-(register-handler :update-clock-value!
-  (after (fn [db [_ to i {:keys [message-id] :as message} last-clock-value]]
-           (let [clock-value (+ last-clock-value i 1)]
-             (messages/update (assoc message :clock-value clock-value))
-             (send-clock-value! db to message-id clock-value))))
-  (fn [db [_ _ i {:keys [message-id]} last-clock-value]]
-    (assoc-in db [:message-extras message-id :clock-value] (+ last-clock-value i 1))))
-
-(register-handler :send-clock-value!
-  (u/side-effect!
-    (fn [db [_ to message-id]]
-      (let [{:keys [clock-value]} (messages/get-by-id message-id)]
-        (send-clock-value! db to message-id clock-value)))))
-
 (register-handler :check-and-open-dapp!
   (u/side-effect!
     (fn [{:keys [current-chat-id global-commands]

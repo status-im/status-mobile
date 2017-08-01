@@ -40,23 +40,3 @@
                  :requires-ack? false)
                (assoc-in [:payload :group-id] (:group-id message))
                (dissoc :group-id)))))
-
-(defn send-clock-value-request!
-  [{:keys [web3 message]}]
-  (debug :send-clock-value-request message)
-  (d/add-pending-message!
-    web3
-    (merge message-defaults
-           (assoc message
-             :type :clock-value-request
-             :requires-ack? false))))
-
-(defn send-clock-value!
-  [{:keys [web3 message]}]
-  (debug :send-clock-value message)
-  (d/add-pending-message!
-    web3
-    (merge message-defaults
-           (assoc message
-             :type :clock-value
-             :requires-ack? false))))
