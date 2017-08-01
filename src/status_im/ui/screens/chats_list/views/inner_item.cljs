@@ -97,11 +97,11 @@
       nil
       st/opts-btn]]))
 
-(defn chat-list-item-name [name group-chat? public?]
+(defn chat-list-item-name [name group-chat? public? public-key]
   (let [private-group? (and group-chat? (not public?))
         public-group?  (and group-chat? public?)
         chat-name      (if (str/blank? name)
-                         (generate-gfy)
+                         (generate-gfy public-key)
                          (truncate-str name 30))]
     [view st/name-view
      (when public-group?
@@ -119,17 +119,17 @@
 
 (defn chat-list-item-inner-view [{:keys [chat-id name color online
                                          group-chat contacts public?
-                                         unremovable?] :as chat}
+                                         public-key unremovable?] :as chat}
                                  edit?]
   (let [last-message (subscribe [:get-last-message chat-id])
         name         (or (get-contact-translated chat-id :name name)
-                         (generate-gfy))]
+                         (generate-gfy public-key))]
     [view st/chat-container
      [view st/chat-icon-container
       [chat-icon-view-chat-list chat-id group-chat name color online]]
      [view st/chat-info-container
       [view st/item-upper-container
-       [chat-list-item-name name group-chat public?]
+       [chat-list-item-name name group-chat public? public-key]
        (when (and (not edit?) @last-message)
          [view st/message-status-container
           [message-status chat @last-message]

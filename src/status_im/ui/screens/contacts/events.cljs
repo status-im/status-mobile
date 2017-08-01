@@ -144,7 +144,7 @@
                (fn [{:keys [contacts]}]
                  (if (> (count contacts) 0)
                    (let [{:keys [whisper-identity]} (first contacts)
-                         contact {:name             (generate-gfy)
+                         contact {:name             (generate-gfy whisper-identity)
                                   :address          id
                                   :photo-path       (identicon whisper-identity)
                                   :whisper-identity whisper-identity}]
@@ -441,6 +441,6 @@
       {::request-contacts-by-address id}
       {:dispatch (if (get-in db [:contacts/contacts id])
                    [:add-pending-contact id]
-                   [:add-new-contact-and-open-chat {:name             (generate-gfy)
+                   [:add-new-contact-and-open-chat {:name             (generate-gfy id)
                                                     :photo-path       (identicon id)
                                                     :whisper-identity id}])})))
