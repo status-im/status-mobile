@@ -188,12 +188,10 @@
 
 (register-handler :app-state-change
   (u/side-effect!
-    (fn [{:keys [webview-bridge] :as db} [_ state]]
+    (fn [db [_ state]]
       (case state
         "background" (status/stop-rpc-server)
-        "active" (do (status/start-rpc-server)
-                     (when webview-bridge
-                       (.resetOkHttpClient webview-bridge)))
+        "active" (status/start-rpc-server)
         nil))))
 
 (register-handler :request-permissions
