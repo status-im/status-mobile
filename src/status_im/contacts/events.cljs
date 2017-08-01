@@ -12,11 +12,11 @@
             [cljs.reader :refer [read-string]]
             [status-im.utils.js-resources :as js-res]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.contacts.navigation]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
-            [status-im.contacts.db :as v]))
+            [status-im.contacts.db :as v]
+            [status-im.contacts.navigation]))
 
 ;;;; COFX
 
@@ -208,7 +208,7 @@
       (subs (.sha3 js/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
 
 (defn- prepare-default-groups-events [groups default-groups]
-  [[:add-groups
+  [[:add-contact-groups
     (for [[id {:keys [name contacts]}] default-groups
           :let [id' (clojure.core/name id)]
           :when (not (get groups id'))]
@@ -412,9 +412,9 @@
 (register-handler-fx
   :remove-contact-from-group
   (fn [{:keys [db]} [_ whisper-identity group-id]]
-    (let [{:keys [contact-groups]} db
+    (let [{:group/keys [contact-groups]} db
           group' (update (contact-groups group-id) :contacts (remove-contact-from-group whisper-identity))]
-      {:dispatch [:update-group group']})))
+      {:dispatch [:update-contact-group group']})))
 
 (register-handler-fx
   :remove-contact
@@ -428,8 +428,8 @@
   :open-contact-toggle-list
   (fn [{:keys [db]} [_ group-type]]
     {:db       (-> db
-                   (assoc :group-type group-type
-                          :selected-contacts #{}
+                   (assoc :group/group-type group-type
+                          :group/selected-contacts #{}
                           :new-chat-name "")
                    (assoc-in [:toolbar-search :show] nil)
                    (assoc-in [:toolbar-search :text] ""))

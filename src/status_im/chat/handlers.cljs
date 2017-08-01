@@ -1,6 +1,6 @@
 (ns status-im.chat.handlers
   (:require-macros [cljs.core.async.macros :as am])
-  (:require [re-frame.core :refer [enrich after debug dispatch]]
+  (:require [re-frame.core :refer [enrich after debug dispatch reg-fx]]
             [status-im.models.commands :as commands]
             [clojure.string :as string]
             [status-im.components.styles :refer [default-chat-color]]
@@ -20,7 +20,7 @@
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.navigation.handlers :as nav]
-            [status-im.utils.handlers :refer [register-handler] :as u]
+            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
             [status-im.handlers.server :as server]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
@@ -389,6 +389,11 @@
   [db [_ chat-id]]
   (update db :chats dissoc chat-id))
 
+(reg-fx
+  ::delete-messages
+  (fn [id]
+    (messages/delete-by-chat-id id)))
+
 (defn delete-messages!
   [{:keys [current-chat-id]} [_ chat-id]]
   (let [id (or chat-id current-chat-id)]
@@ -530,3 +535,38 @@
       (if (= network-status :offline)
         (chats/inc-message-overhead chat-id)
         (chats/reset-message-overhead chat-id)))))
+
+(reg-fx
+  ::save-public-chat
+  (fn [chat]
+    (chats/save chat)))
+
+(reg-fx
+  ::start-watching-group
+  (fn [{:keys [group-id web3 current-public-key keypair]}]
+    (protocol/start-watching-group!
+      {:web3     web3
+       :group-id group-id
+       :identity current-public-key
+       :keypair  keypair
+       :callback #(dispatch [:incoming-message %1 %2])})))
+
+(register-handler-fx
+  :create-new-public-chat
+  (fn [{:keys [db]} [_ topic]]
+    (let [exists? (boolean (get-in db [:chats topic]))
+          chat    {:chat-id     topic
+                   :name        topic
+                   :color       default-chat-color
+                   :group-chat  true
+                   :public?     true
+                   :is-active   true
+                   :timestamp   (random/timestamp)}]
+      (merge
+        (when-not exists?
+          {:db (assoc-in db [:chats (:chat-id chat)] chat)
+           ::save-public-chat chat
+           ::start-watching-group (merge {:group-id topic}
+                                         (select-keys db [:web3 :current-public-key]))})
+        {:dispatch-n [[:navigate-to-clean :chat-list]
+                      [:navigate-to :chat topic]]}))))

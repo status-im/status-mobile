@@ -35,17 +35,17 @@
     (debug :send-group-message message)
     (d/add-pending-message! web3 message)))
 
-(s/def :group/message
+(s/def ::message
   (s/merge :protocol/message (s/keys :req-un [:chat-message/payload])))
 
 (s/def :public-group/username (s/and string? (complement str/blank?)))
 (s/def :public-group/message
-  (s/merge :group/message (s/keys :username :public-group/username)))
+  (s/merge ::message (s/keys :username :public-group/username)))
 
 (defn send!
   [{:keys [keypair message] :as options}]
   {:pre [(valid? :message/keypair keypair)
-         (valid? :group/message message)]}
+         (valid? ::message message)]}
   (send-group-message! options :group-message))
 
 (defn send-to-public-group!
@@ -74,16 +74,15 @@
                            identity)]
     (send-group-message! options' :remove-group-identity)))
 
-(s/def :group/admin :message/from)
 (s/def ::identities (s/* string?))
 
-(s/def :group/name string?)
-(s/def :group/id string?)
-(s/def :group/admin string?)
-(s/def :group/contacts (s/* string?))
+(s/def ::name string?)
+(s/def ::id string?)
+(s/def ::admin string?)
+(s/def ::contacts (s/* string?))
 (s/def ::group
   (s/keys :req-un
-          [:group/name :group/id :group/contacts :message/keypair :group/admin]))
+          [::name ::id ::contacts :message/keypair ::admin]))
 (s/def :invite/options
   (s/keys :req-un [:options/web3 :protocol/message ::group ::identities]))
 

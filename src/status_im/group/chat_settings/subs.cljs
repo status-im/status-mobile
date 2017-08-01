@@ -1,8 +1,9 @@
-(ns status-im.group-settings.subs
+(ns status-im.group.chat-settings.subs
   (:require [re-frame.core :refer [reg-sub]]
             [status-im.constants :refer [max-chat-name-length]]))
 
-(reg-sub :selected-participant
+(reg-sub
+  :selected-participant
   (fn [db]
     (let [identity (first (:selected-participants db))]
       (get-in db [:contacts/contacts identity]))))
@@ -14,12 +15,19 @@
                 (when (< max-chat-name-length (count chat-name))
                   "Chat name is too long"))))
 
-(reg-sub :new-chat-name-validation-messages
+(reg-sub
+  :new-chat-name
   (fn [db]
-    (let [chat-name (:new-chat-name db)]
-      (get-chat-name-validation-messages chat-name))))
+    (:new-chat-name db)))
 
-(reg-sub :new-chat-name-valid?
-  (fn [db]
-    (let [chat-name (:new-chat-name db)]
-      (zero? (count (get-chat-name-validation-messages chat-name))))))
+(reg-sub
+  :new-chat-name-validation-messages
+  :<- [:new-chat-name]
+  (fn [chat-name]
+    (get-chat-name-validation-messages chat-name)))
+
+(reg-sub
+  :new-chat-name-valid?
+  :<- [:new-chat-name]
+  (fn [chat-name]
+    (zero? (count (get-chat-name-validation-messages chat-name)))))

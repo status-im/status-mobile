@@ -56,8 +56,7 @@
 
 (defview contact-list []
   (letsubs [edit? [:get-in [:contacts/list-ui-props :edit?]]
-            group [:get :contacts-group]
-            type  [:get :group-type]]
+            group [:get-contact-group]]
     [drawer-view
      [view {:flex 1}
       [view

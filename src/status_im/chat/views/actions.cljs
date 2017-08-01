@@ -68,7 +68,7 @@
    :icon       :settings
    :icon-style {:width  20
                 :height 13}
-   :handler    #(dispatch [:show-group-settings])})
+   :handler    #(dispatch [:show-group-chat-settings])})
 
 (defn group-chat-items [members public?]
   (into (if public? [] [(item-members members)])
