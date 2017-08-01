@@ -4,7 +4,8 @@
             [status-im.test.chat.models.input]
             [status-im.test.handlers]
             [status-im.test.utils.utils]
-            [status-im.test.utils.money]))
+            [status-im.test.utils.money]
+            [status-im.test.utils.clocks]))
 
 (enable-console-print!)
 
@@ -18,4 +19,5 @@
            'status-im.test.chat.models.input
            'status-im.test.handlers
            'status-im.test.utils.utils
-           'status-im.test.utils.money)
+           'status-im.test.utils.money
+           'status-im.test.utils.clocks)

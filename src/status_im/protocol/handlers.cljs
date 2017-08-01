@@ -117,8 +117,6 @@
                                      (dispatch [:message-delivered message])
                                      (dispatch [:pending-message-remove message]))
             :seen                  (dispatch [:message-seen message])
-            :clock-value-request   (dispatch [:message-clock-value-request message])
-            :clock-value           (dispatch [:message-clock-value message])
             :group-invitation      (dispatch [:group-chat-invite-received message])
             :update-group          (dispatch [:update-group-message message])
             :add-group-identity    (dispatch [:participant-invited-to-group message])
@@ -299,15 +297,6 @@
                           (assoc message :message-status status))]
             (messages/update message)))))))
 
-(defn save-message-clock-value!
-  [{:keys [message-extras]}
-   [_ {{:keys [message-id clock-value]} :payload}]]
-  (when-let [{old-clock-value :clock-value
-              :as             message} (merge (messages/get-by-id message-id)
-                                              (get message-extras message-id))]
-    (if (>= clock-value old-clock-value)
-      (messages/update (assoc message :clock-value clock-value :show? true)))))
-
 (defn update-message-status [status]
   (fn [db
        [_ {:keys                                        [from]
@@ -345,33 +334,6 @@
 (register-handler :message-seen
   [(after (save-message-status! :seen))]
   (update-message-status :seen))
-
-(register-handler :message-clock-value-request
-  (u/side-effect!
-    (fn [_ [_ {:keys [from] {:keys [message-id]} :payload}]]
-      (let [{:keys [chat-id]} (messages/get-by-id message-id)
-            message-overhead (chats/get-message-overhead chat-id)
-            last-clock-value (messages/get-last-clock-value chat-id)]
-        (if (pos? message-overhead)
-          (let [last-outgoing (->> (messages/get-last-outgoing chat-id message-overhead)
-                                   (reverse)
-                                   (map-indexed vector))]
-            (chats/reset-message-overhead chat-id)
-            (doseq [[i message] last-outgoing]
-              (dispatch [:update-clock-value! from i message (+ last-clock-value 100)])))
-          (dispatch [:send-clock-value! from message-id]))))))
-
-(register-handler :message-clock-value
-  (after save-message-clock-value!)
-  (fn [{:keys [message-extras] :as db}
-       [_ {{:keys [message-id clock-value]} :payload}]]
-    (if-let [{old-clock-value :clock-value} (merge (messages/get-by-id message-id)
-                                                   (get message-extras message-id))]
-      (if (> clock-value old-clock-value)
-        (assoc-in db [:message-extras message-id] {:clock-value clock-value
-                                                   :show?       true})
-        db)
-      db)))
 
 (register-handler :pending-message-upsert
   (after
