@@ -62,7 +62,7 @@
        [common/form-title subtitle
         {:count-value contacts-count
          :extended?   edit?
-         :options     [{:value #(dispatch [:navigate-to :edit-group group :contact-group])
+         :options     [{:value #(dispatch [:navigate-to :edit-contact-group group :contact-group])
                         :text  (label :t/edit-group)}]}])
      [view st/contacts-list
       [common/list-footer]
@@ -85,7 +85,7 @@
          [touchable-highlight {:on-press #(do
                                             (when edit?
                                               (dispatch [:set-in [:contacts/list-ui-props :edit?] true]))
-                                            (dispatch [:navigate-to :group-contacts group]))}
+                                            (dispatch [:navigate-to :group-contacts (:group-id group)]))}
           [view
            [text {:style      st/show-all-text
                   :uppercase? (get-in platform-specific [:uppercase?])
@@ -112,7 +112,7 @@
     [ion-icon {:name  :md-create
                :style create-icon}]]])
 
-(defview contact-list [_]
+(defview contact-groups-list [_]
   (letsubs [contacts       [:get-added-contacts-with-limit contacts-limit]
             contacts-count [:added-contacts-count]
             edit?          [:get-in [:contacts/ui-props :edit?]]

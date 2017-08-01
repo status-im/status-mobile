@@ -1,4 +1,4 @@
-(ns status-im.new-chat.styles
+(ns status-im.chat.new-chat.styles
   (:require [status-im.components.styles :as common]))
 
 (def contacts-list-container

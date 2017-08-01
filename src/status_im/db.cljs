@@ -10,8 +10,8 @@
              :navigation-stack           '()
              :contacts/contacts          {}
              :qr-codes                   {}
-             :contact-groups             {}
-             :selected-contacts          #{}
+             :group/contact-groups       {}
+             :group/selected-contacts    #{}
              :chats                      {}
              :current-chat-id            console-chat-id
              :loading-allowed            true

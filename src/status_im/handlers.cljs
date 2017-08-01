@@ -9,11 +9,11 @@
     [status-im.components.permissions :as permissions]
     [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
     status-im.chat.handlers
-    status-im.group-settings.handlers
+    status-im.group.chat-settings.events
     status-im.navigation.handlers
     status-im.contacts.events
     status-im.discover.handlers
-    status-im.new-group.handlers
+    status-im.group.events
     status-im.profile.handlers
     status-im.commands.handlers.loading
     status-im.commands.handlers.jail
@@ -79,7 +79,7 @@
       (dispatch [:initialize-sync-listener])
       (dispatch [:initialize-chats])
       (dispatch [:load-contacts])
-      (dispatch [:load-groups])
+      (dispatch [:load-contact-groups])
       (dispatch [:init-chat])
       (dispatch [:init-discoveries])
       (dispatch [:init-debug-mode address])

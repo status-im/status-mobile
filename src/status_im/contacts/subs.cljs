@@ -50,7 +50,7 @@
 (reg-sub
   :group-contacts
   (fn [db [_ group-id]]
-    (get-in db [:contact-groups group-id :contacts])))
+    (get-in db [:group/contact-groups group-id :contacts])))
 
 (reg-sub
   :all-added-group-contacts
@@ -99,15 +99,10 @@
     (count contacts)))
 
 (reg-sub
-  :contact-groups
-  (fn [db]
-    (vals (:contact-groups db))))
-
-(reg-sub
   :all-added-groups
-  :<- [:contact-groups]
+  :<- [:get-contact-groups]
   (fn [groups]
-    (->> (remove :pending? groups)
+    (->> (remove :pending? (vals groups))
          (sort-by :order >))))
 
 (defn search-filter [text item]
@@ -133,8 +128,9 @@
 
 (reg-sub
   :contact-group-contacts
-  (fn [db]
-    (get-in db [:contact-groups (:contact-group-id db) :contacts])))
+  :<- [:get-contact-group]
+  (fn [group]
+    (:contacts group)))
 
 (reg-sub
   :all-not-added-contact-group-contacts

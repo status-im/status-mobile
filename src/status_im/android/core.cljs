@@ -28,17 +28,16 @@
             [status-im.transactions.screens.unsigned-transactions :refer [unsigned-transactions]]
             [status-im.transactions.screens.transaction-details :refer [transaction-details]]
             [status-im.chats-list.screen :refer [chats-list]]
-            [status-im.new-chat.screen :refer [new-chat]]
-            [status-im.new-group.screen-public :refer [new-public-group]]
-            [status-im.new-group.screen-private :refer [new-group
-                                                        edit-group]]
-            [status-im.new-group.views.chat-group-settings :refer [chat-group-settings]]
-            [status-im.new-group.views.contact-list :refer [edit-group-contact-list
-                                                            edit-chat-group-contact-list]]
-            [status-im.new-group.views.contact-toggle-list :refer [contact-toggle-list
-                                                                   add-contacts-toggle-list
-                                                                   add-participants-toggle-list]]
-            [status-im.new-group.views.reorder-groups :refer [reorder-groups]]
+            [status-im.chat.new-chat.view :refer [new-chat]]
+            [status-im.chat.new-public-chat.view :refer [new-public-chat]]
+            [status-im.group.views :refer [new-group edit-contact-group]]
+            [status-im.group.chat-settings.views :refer [chat-group-settings]]
+            [status-im.group.edit-contacts.views :refer [edit-contact-group-contact-list
+                                                         edit-chat-group-contact-list]]
+            [status-im.group.add-contacts.views :refer [contact-toggle-list
+                                                        add-contacts-toggle-list
+                                                        add-participants-toggle-list]]
+            [status-im.group.reorder.views :refer [reorder-groups]]
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.edit.screen :refer [edit-my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
@@ -127,13 +126,13 @@
                                :chat-list main-tabs
                                :new-chat new-chat
                                :new-group new-group
-                               :edit-group edit-group
+                               :edit-contact-group edit-contact-group
                                :chat-group-settings chat-group-settings
                                :add-contacts-toggle-list add-contacts-toggle-list
                                :add-participants-toggle-list add-participants-toggle-list
-                               :edit-group-contact-list edit-group-contact-list
+                               :edit-group-contact-list edit-contact-group-contact-list
                                :edit-chat-group-contact-list edit-chat-group-contact-list
-                               :new-public-group new-public-group
+                               :new-public-chat new-public-chat
                                :contact-list main-tabs
                                :contact-toggle-list contact-toggle-list
                                :group-contacts contact-list

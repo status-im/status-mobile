@@ -9,7 +9,7 @@
             [status-im.components.tabs.bottom-shadow :refer [bottom-shadow-view]]
             [status-im.chats-list.screen :refer [chats-list]]
             [status-im.discover.screen :refer [discover]]
-            [status-im.contacts.views :refer [contact-list]]
+            [status-im.contacts.views :refer [contact-groups-list]]
             [status-im.components.tabs.tabs :refer [tabs]]
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
@@ -31,7 +31,7 @@
     :index         1}
    {:view-id       :contact-list
     :title         (label :t/contacts)
-    :screen        contact-list
+    :screen        contact-groups-list
     :icon-inactive :icon_contacts
     :icon-active   :icon_contacts_active
     :index         2}])
@@ -103,13 +103,13 @@
             [view {:style common-st/flex}
              [swiper (merge
                       (st/main-swiper @tabs-hidden?)
-                       {:index                  (get-tab-index @view-id)
-                        :loop                   false
-                        :ref                    #(reset! main-swiper %)
-                        :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)})
+                      {:index                  (get-tab-index @view-id)
+                       :loop                   false
+                       :ref                    #(reset! main-swiper %)
+                       :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)})
               [chats-list]
               [discover (= @view-id :discover)]
-              [contact-list (= @view-id :contact-list)]]
+              [contact-groups-list (= @view-id :contact-list)]]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
                     :tab-list         tab-list}]

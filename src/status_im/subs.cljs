@@ -2,10 +2,10 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             status-im.chat.subs
             status-im.chats-list.subs
-            status-im.group-settings.subs
+            status-im.group.chat-settings.subs
             status-im.discover.subs
             status-im.contacts.subs
-            status-im.new-group.subs
+            status-im.group.subs
             status-im.transactions.subs
             status-im.bots.subs))
 

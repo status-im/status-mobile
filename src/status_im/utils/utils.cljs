@@ -127,5 +127,5 @@
   ([] (register-exception-handler default-alert-handler))
   ([f] (register-exception-handler true f))
   ([dev? f]
-   (if (or dev? (not js/goog.DEBUG))
+   (if (and dev? (not js/goog.DEBUG))
      (.setGlobalHandler js/ErrorUtils f dev?))))
