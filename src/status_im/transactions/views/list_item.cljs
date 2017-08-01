@@ -30,10 +30,11 @@
 
 (defview view [{:keys [to value id] :as transaction} on-deny]
   [recipient [:contact-by-address to]]
-  (let [eth-value      (.fromWei js/Web3.prototype value "ether")
-        value          (str (i18n/label-number eth-value) " ETH")
+  (let [bignumber      (.toBigNumber js/Web3.prototype value)
+        eth-value      (str (.fromWei js/Web3.prototype bignumber "ether"))
+        value-str      (str (i18n/label-number eth-value) " ETH")
         recipient-name (or (:name recipient) to (i18n/label :t/contract-creation))]
     [rn/view {:style st/item}
      [item-image recipient]
-     [item-info recipient-name value]
+     [item-info recipient-name value-str]
      [deny-btn id on-deny]]))
