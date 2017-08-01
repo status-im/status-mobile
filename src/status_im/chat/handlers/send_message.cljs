@@ -19,7 +19,8 @@
             [status-im.protocol.core :as protocol]
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.chat.handlers.console :as console]
-            [status-im.utils.types :as types]))
+            [status-im.utils.types :as types]
+            [status-im.utils.clocks :as clocks]))
 
 (defn prepare-command
   [identity chat-id clock-value
@@ -52,7 +53,7 @@
      :to-message   to-message
      :type         (:type command)
      :has-handler  (:has-handler command)
-     :clock-value  (inc clock-value)
+     :clock-value  (clocks/send clock-value)
      :show?        true}))
 
 (defn console-command? [chat-id command-name]
@@ -177,7 +178,7 @@
                            :content-type text-content-type
                            :outgoing     true
                            :timestamp    (time/now-ms)
-                           :clock-value  (inc clock-value)
+                           :clock-value  (clocks/send clock-value)
                            :show?        true})
             message''   (cond-> message'
                                 (and group-chat public?)
