@@ -58,6 +58,7 @@
             group-chat [:chat :group-id]
             name       [:chat :name]
             color      [:chat :color]
+            public-key [:chat :public-key]
             members    [:current-chat-contacts]]
     (let [{:keys [status]} (if group-chat
                              {:photo-path  nil
@@ -70,7 +71,7 @@
               :font            :default
               :number-of-lines 1}
         (if (str/blank? name)
-          (generate-gfy)
+          (generate-gfy public-key)
           (or (get-contact-translated chat-id :name name)
               (label :t/chat-name)))]
        (when (or status content)
