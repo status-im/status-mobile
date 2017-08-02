@@ -43,8 +43,10 @@
                 callback #(let [result (get-in % [:result :returned])
                                 result' (if (:markup result)
                                          (update result :markup cu/generate-hiccup)
-                                         result)] 
-                            (dispatch [:set-in [:message-data data-type message-id] result'])
+                                         result)]
+                            ;; don't fill message data with nil results
+                            (when result'
+                              (dispatch [:set-in [:message-data data-type message-id] result']))
                             (when (and result (= :preview data-type))
                               ;; update message in realm with serialized preview
                               (messages/update {:message-id message-id
