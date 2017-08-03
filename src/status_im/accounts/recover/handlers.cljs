@@ -11,8 +11,7 @@
             [status-im.navigation.handlers :as nav]))
 
 (defn account-recovered [result]
-  (let [_          (log/debug result)
-        data       (json->clj result)
+  (let [data       (json->clj result)
         public-key (:pubkey data)
         address    (:address data)
         {:keys [public private]} (protocol/new-keypair!)

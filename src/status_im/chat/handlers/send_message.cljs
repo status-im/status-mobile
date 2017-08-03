@@ -89,7 +89,6 @@
                                (map :name))
             command'      (->> (prepare-command current-public-key chat-id clock-value request content)
                                (cu/check-author-direction db chat-id))]
-        (log/debug "Handler data: " request handler-data params)
         (dispatch [:update-message-overhead! chat-id network-status])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
@@ -328,7 +327,6 @@
                  current-account-id accounts]
           :contacts/keys [contacts] :as db}
          [_ {:keys [chat-id command]}]]
-      (log/debug "sending command: " command)
       (if (get-in contacts [chat-id :dapp?])
         (when-let [text-message (get-in command [:content :handler-data :text-message])]
           (handle-message-from-bot {:message text-message
