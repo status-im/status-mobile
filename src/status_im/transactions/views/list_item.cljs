@@ -4,7 +4,8 @@
             [status-im.components.chat-icon.screen :as chat-icon]
             [status-im.components.react :as rn]
             [status-im.i18n :as i18n]
-            [status-im.transactions.styles.list-item :as st]))
+            [status-im.transactions.styles.list-item :as st]
+            [status-im.utils.money :as money]))
 
 (defview item-image [contact]
   [rn/view {:style st/item-photo}
@@ -30,8 +31,7 @@
 
 (defview view [{:keys [to value id] :as transaction} on-deny]
   [recipient [:contact-by-address to]]
-  (let [bignumber      (.toBigNumber js/Web3.prototype value)
-        eth-value      (str (.fromWei js/Web3.prototype bignumber "ether"))
+  (let [eth-value      (str (money/wei->ether value))
         value-str      (str (i18n/label-number eth-value) " ETH")
         recipient-name (or (:name recipient) to (i18n/label :t/contract-creation))]
     [rn/view {:style st/item}

@@ -27,7 +27,8 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.listview :as lw]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.money :as money]))
 
 (defonce drawer-atom (atom nil))
 (defn open-drawer [] (.openDrawer @drawer-atom))
@@ -95,7 +96,7 @@
 
 (defview transaction-list-item [{:keys [to value timestamp] :as transaction}]
   [recipient [:contact-by-address to]]
-  (let [eth-value      (.fromWei js/Web3.prototype value "ether")
+  (let [eth-value      (str (money/wei->ether value))
         value          (i18n/label-number eth-value)
         recipient-name (or (:name recipient) to)]
     [touchable-highlight {:on-press #(rf/dispatch [:navigate-to-modal :transaction-details transaction])}

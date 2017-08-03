@@ -3,7 +3,8 @@
             [status-im.test.contacts.handlers]
             [status-im.test.chat.models.input]
             [status-im.test.handlers]
-            [status-im.test.utils.utils]))
+            [status-im.test.utils.utils]
+            [status-im.test.utils.money]))
 
 (enable-console-print!)
 
@@ -16,4 +17,5 @@
 (doo-tests 'status-im.test.contacts.handlers
            'status-im.test.chat.models.input
            'status-im.test.handlers
-           'status-im.test.utils.utils)
+           'status-im.test.utils.utils
+           'status-im.test.utils.money)

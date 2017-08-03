@@ -12,7 +12,8 @@
             [status-im.transactions.styles.screens :as st]
             [status-im.transactions.views.list-item :as transactions-list-item]
             [status-im.transactions.views.password-form :as password-form]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.money :as money]))
 
 (defn toolbar-view []
   [toolbar/toolbar
@@ -40,8 +41,8 @@
   [current-account [:get-current-account]
    recipient       [:contact-by-address to]]
   (let [recipient-name (or (:name recipient) to (i18n/label :t/contract-creation))
-        gas-price      (.fromWei js/Web3.prototype gas-price "ether")
-        fee-value      (* gas gas-price)
+        gas-price'     (money/wei->ether gas-price)
+        fee-value      (money/fee-value gas gas-price')
         estimated-fee  (str fee-value " ETH")]
     [rn/view st/details-container
      [detail-item (i18n/label :t/to) recipient-name true]
