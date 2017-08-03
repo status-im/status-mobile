@@ -122,7 +122,7 @@
 
 (defn complete-transactions
   [hashes password callback]
-  (log/debug :complete-transactions (boolean status) hashes password)
+  (log/debug :complete-transactions (boolean status) hashes)
   (when status
     (call-module #(.completeTransactions status (cljs->json hashes) password callback))))
 
@@ -142,7 +142,8 @@
       #(do
          (log/debug :call-jail :jail-id jail-id)
          (log/debug :call-jail :path path)
-         (log/debug :call-jail :params params)
+         ;; this debug message can contain sensetive info
+         #_(log/debug :call-jail :params params)
          (let [params' (update params :context assoc
                                :debug js/goog.DEBUG
                                :locale rn-dependencies/i18n.locale)
