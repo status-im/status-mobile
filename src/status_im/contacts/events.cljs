@@ -12,6 +12,7 @@
             [cljs.reader :refer [read-string]]
             [status-im.utils.js-resources :as js-res]
             [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.js-dependencies :as dependencies]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
@@ -175,27 +176,15 @@
        ::save-contact contact})))
 
 (register-handler-fx
-  :load-contacts
-  [(inject-cofx ::get-all-contacts)]
-  (fn [{:keys [db all-contacts]} _]
-    (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
-          global-commands (->> contacts-list
-                               (filter (fn [[_ c]] (:global-command c)))
-                               (map (fn [[id {:keys [global-command]}]]
-                                      [(keyword id) (-> global-command
-                                                        (update :params (comp vec vals))
-                                                        (assoc :bot id
-                                                               :type :command))]))
-                               (into {}))
-          contacts (into {} contacts-list)]
-      {:db         (assoc db :contacts/contacts contacts
-                             :global-commands global-commands)
-       :dispatch-n (mapv (fn [_ contact] [:watch-contact contact]) contacts)})))
-
-(register-handler-fx
   :sync-contacts
   (fn [_ _]
     {::fetch-contacts-from-phone! nil}))
+
+(defn- update-pending-status [old-contacts {:keys [whisper-identity pending?] :as contact}]
+  (let [{old-pending :pending?
+         :as         old-contact} (get old-contacts whisper-identity)
+        pending?' (if old-contact (and old-pending pending?) pending?)]
+    (assoc contact :pending? (boolean pending?'))))
 
 (defn- public-key->address [public-key]
   (let [length (count public-key)
@@ -205,7 +194,7 @@
                          128 public-key
                          nil)]
     (when normalized-key
-      (subs (.sha3 js/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
+      (subs (.sha3 dependencies/Web3.prototype normalized-key #js {:encoding "hex"}) 26))))
 
 (defn- prepare-default-groups-events [groups default-groups]
   [[:add-contact-groups
@@ -264,26 +253,31 @@
   :load-default-contacts!
   [(inject-cofx ::get-default-contacts-and-groups)]
   (fn [{:keys [db default-contacts default-groups]} _]
-    (let [{:keys [groups] :contacts/keys [contacts]} db]
+    (let [{:contacts/keys [contacts] :group/keys [contact-groups]} db]
       {:dispatch-n (concat
-                     (prepare-default-groups-events groups default-groups)
+                     (prepare-default-groups-events contact-groups default-groups)
                      (prepare-default-contacts-events contacts default-contacts)
                      (prepare-add-chat-events contacts default-contacts)
                      (prepare-bot-commands-events contacts default-contacts)
                      (prepare-add-contacts-to-groups-events contacts default-contacts))})))
 
-(register-handler-db
-  :remove-contacts-click-handler
-  (fn [db _]
-    (dissoc db
-            :contacts/click-handler
-            :contacts/click-action)))
-
-(defn- update-pending-status [old-contacts {:keys [whisper-identity pending?] :as contact}]
-  (let [{old-pending :pending?
-         :as         old-contact} (get old-contacts whisper-identity)
-        pending?' (if old-contact (and old-pending pending?) pending?)]
-    (assoc contact :pending? (boolean pending?'))))
+(register-handler-fx
+  :load-contacts
+  [(inject-cofx ::get-all-contacts)]
+  (fn [{:keys [db all-contacts]} _]
+    (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
+          global-commands (->> contacts-list
+                               (filter (fn [[_ c]] (:global-command c)))
+                               (map (fn [[id {:keys [global-command]}]]
+                                      [(keyword id) (-> global-command
+                                                        (update :params (comp vec vals))
+                                                        (assoc :bot id
+                                                               :type :command))]))
+                               (into {}))
+          contacts (into {} contacts-list)]
+      {:db         (assoc db :contacts/contacts contacts
+                             :global-commands global-commands)
+       :dispatch-n (mapv (fn [_ contact] [:watch-contact contact]) contacts)})))
 
 (register-handler-fx
   :add-contacts
@@ -301,12 +295,18 @@
                                          [(keyword n) (assoc global-command
                                                         :type :command
                                                         :bot n)])))
-                               (into {}))
-          new-contacts-vals (vals new-contacts')]
+                               (into {}))]
       {:db              (-> db
                             (update :global-commands merge global-commands)
                             (update :contacts/contacts merge new-contacts'))
-       ::save-contacts! new-contacts-vals})))
+       ::save-contacts! (vals new-contacts')})))
+
+(register-handler-db
+  :remove-contacts-click-handler
+  (fn [db _]
+    (dissoc db
+            :contacts/click-handler
+            :contacts/click-action)))
 
 (register-handler-fx
   ::send-contact-request
@@ -321,11 +321,11 @@
 (register-handler-fx
   ::add-new-contact
   (fn [{:keys [db]} [_ {:keys [whisper-identity] :as contact}]]
-    {:db                    (-> db
-                                (update-in [:contacts/contacts whisper-identity] merge contact)
-                                (assoc :contacts/new-identity ""))
-     :dispatch [::send-contact-request contact]
-     ::save-contact         contact}))
+    {:db            (-> db
+                        (update-in [:contacts/contacts whisper-identity] merge contact)
+                        (assoc :contacts/new-identity ""))
+     :dispatch      [::send-contact-request contact]
+     ::save-contact contact}))
 
 (register-handler-fx
   :add-new-contact-and-open-chat
@@ -337,16 +337,16 @@
 
 (register-handler-fx
   :add-pending-contact
-  (fn [{:keys [db]} [_ chat-id]]
+  (fn [{:keys [db]} [_ chat-or-whisper-id]]
     (let [{:keys [chats] :contacts/keys [contacts]} db
-          contact (if-let [contact-info (get-in chats [chat-id :contact-info])]
+          contact (if-let [contact-info (get-in chats [chat-or-whisper-id :contact-info])]
                     (read-string contact-info)
-                    (get contacts chat-id))
-          contact' (assoc contact :address (public-key->address chat-id)
+                    (get contacts chat-or-whisper-id))
+          contact' (assoc contact :address (public-key->address chat-or-whisper-id)
                                   :pending? false)]
       {:dispatch-n [[::add-new-contact contact']
                     [:watch-contact contact']
-                    [:discoveries-send-portions chat-id]]})))
+                    [:discoveries-send-portions chat-or-whisper-id]]})))
 
 (register-handler-db
   :set-contact-identity-from-qr
@@ -416,6 +416,7 @@
           group' (update (contact-groups group-id) :contacts (remove-contact-from-group whisper-identity))]
       {:dispatch [:update-contact-group group']})))
 
+;;used only by status-dev-cli
 (register-handler-fx
   :remove-contact
   (fn [{:keys [db]} [_ whisper-identity pred]]

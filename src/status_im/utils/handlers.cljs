@@ -1,6 +1,6 @@
 (ns status-im.utils.handlers
   (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
-            [re-frame.interceptor :refer [->interceptor get-coeffect]]
+            [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [clojure.string :as str]
             [taoensso.timbre :as log]
             [cljs.spec.alpha :as s])
@@ -29,9 +29,9 @@
     :after
     (fn check-handler
       [context]
-      (let [new-db (get-coeffect context :db)
+      (let [new-db (get-effect context :db)
             v (get-coeffect context :event)]
-        (when-not (s/valid? :status-im.specs/db new-db)
+        (when (and new-db (not (s/valid? :status-im.specs/db new-db)))
           (throw (ex-info (str "spec check failed on: " (first v) "\n " (s/explain-str :status-im.specs/db new-db)) {})))
         context))))
 
