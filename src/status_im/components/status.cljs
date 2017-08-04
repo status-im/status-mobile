@@ -118,7 +118,9 @@
 
 (defn login [address password on-result]
   (when status
-    (call-module #(.login status address password on-result))))
+    (call-module #(.login status address password (fn [& args]
+                                                    (js/alert args)
+                                                    (apply on-result args))))))
 
 (defn complete-transactions
   [hashes password callback]
