@@ -1,12 +1,15 @@
 package im.status.ethereum;
 
 import android.app.AlertDialog;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import com.facebook.react.ReactActivity;
 import com.cboy.rn.splashscreen.SplashScreen;
 import com.testfairy.TestFairy;
@@ -14,7 +17,42 @@ import com.testfairy.TestFairy;
 import java.util.Properties;
 
 public class MainActivity extends ReactActivity {
-    private static final String TAG = "MainActivity";
+
+    private void registerUncaughtExceptionHandler() {
+        // Make sure we get an Alert for every uncaught exceptions
+        final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread thread, final Throwable t) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("Error")
+                                .setMessage(t.toString())
+                                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                                    public void onClick(final DialogInterface dialog, final int id) {
+                                        dialog.dismiss();
+                                        defaultUncaughtExceptionHandler.uncaughtException(thread, t);
+                                    }
+                                }).show();
+
+                        Looper.loop();
+                    }
+                }.start();
+            }
+        });
+    }
+
+    private ActivityManager.MemoryInfo getAvailableMemory() {
+        ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return memoryInfo;
+    }
+
 
     protected void configureStatus() {
         // Required because of crazy APN settings redirecting localhost (found in GB)
@@ -25,6 +63,9 @@ public class MainActivity extends ReactActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        registerUncaughtExceptionHandler();
+        Log.v("RNBootstrap", "Available memory "+getAvailableMemory().availMem);
+
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
         TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
