@@ -11,7 +11,9 @@
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
 (def default-contact-groups (json->clj (slurp "resources/default_contact_groups.json")))
 
-(def wallet-js (slurp-bot :wallet))
+(def transactor-group-js (slurp-bot :transactor_group))
+
+(def transactor-personal-js (slurp-bot :transactor_personal))
 
 (def console-js (slurp-bot :console "web3_metadata.js"))
 
@@ -22,11 +24,12 @@
 (def demo-bot-js (slurp-bot :demo_bot))
 
 (def resources
-  {:wallet-bot  wallet-js
-   :console-bot console-js
-   :browse-bot  browse-js
-   :mailman-bot mailman-js
-   :demo-bot    demo-bot-js})
+  {:transactor-group-bot    transactor-group-js
+   :transactor-personal-bot transactor-personal-js
+   :console-bot             console-js
+   :browse-bot              browse-js
+   :mailman-bot             mailman-js
+   :demo-bot                demo-bot-js})
 
 (defn get-resource [url]
   (let [resource-name (keyword (subs url (count local-protocol)))]

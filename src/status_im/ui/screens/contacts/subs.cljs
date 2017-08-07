@@ -23,9 +23,9 @@
 (reg-sub :all-added-contacts
   :<- [:get-contacts]
   (fn [contacts]
-    (->> (remove (fn [[_ {:keys [pending? whisper-identity]}]]
-                   (or (true? pending?)
-                       (bots-constants/hidden-bots whisper-identity))) contacts)
+    (->> contacts
+         (remove (fn [[_ {:keys [pending? mixable?]}]]
+                   (or pending? mixable?)))
          (sort-contacts))))
 
 (reg-sub :all-added-people-contacts

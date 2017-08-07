@@ -1,25 +1,23 @@
 (ns status-im.chat.handlers
   (:require-macros [cljs.core.async.macros :as am])
   (:require [re-frame.core :refer [enrich after debug dispatch reg-fx]]
-            [status-im.models.commands :as commands]
             [clojure.string :as string]
             [status-im.components.styles :refer [default-chat-color]]
-            [status-im.chat.models.suggestions :as suggestions]
-            [status-im.chat.constants :as chat-consts]
+            [status-im.chat.constants :as chat-const]
             [status-im.protocol.core :as protocol]
             [status-im.data-store.chats :as chats]
             [status-im.data-store.contacts :as contacts]
-            [status-im.data-store.messages :as messages] 
+            [status-im.data-store.messages :as messages]
             [status-im.data-store.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
-                                         content-type-command-request 
+                                         content-type-command-request
                                          console-chat-id
                                          wallet-chat-id]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.ui.screens.navigation :as nav]
-            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u] 
+            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
             [status-im.native-module.core :as status]
@@ -27,8 +25,8 @@
             [status-im.chat.utils :refer [console? not-console? safe-trim]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             status-im.chat.events
-            status-im.chat.handlers.requests 
-            status-im.chat.handlers.send-message 
+            status-im.chat.handlers.requests
+            status-im.chat.handlers.send-message
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
             [taoensso.timbre :as log]))
@@ -36,7 +34,7 @@
 (defn load-messages!
   ([db] (load-messages! db nil))
   ([{:keys [current-chat-id] :as db} _]
-   (let [messages (messages/get-by-chat-id current-chat-id)] 
+   (let [messages (messages/get-by-chat-id current-chat-id)]
      (assoc db :messages messages))))
 
 (defn init-chat
@@ -244,7 +242,7 @@
         (when dapp-url
           (am/go
             (dispatch [:select-chat-input-command
-                       (assoc (:browse global-commands) :prefill [dapp-url])
+                       (assoc (first (:browse global-commands)) :prefill [dapp-url])
                        nil
                        true])
             (a/<! (a/timeout 100))

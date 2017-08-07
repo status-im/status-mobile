@@ -1,4 +1,5 @@
 (ns status-im.chat.views.message.request-message
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.components.react :refer [view
@@ -8,7 +9,7 @@
                                                 icon
                                                 touchable-highlight]]
             [status-im.chat.styles.message.message :as st]
-            [status-im.models.commands :refer [parse-command-request]]
+            [status-im.chat.models.commands :as commands]
             [status-im.components.animation :as anim]
             [taoensso.timbre :as log]))
 
@@ -70,35 +71,35 @@
              (when command-icon
                [icon command-icon st/command-request-image])]]))})))
 
-(defn message-content-command-request
+(defview message-content-command-request
   [{:keys [message-id chat-id]}]
-  (let [commands-atom       (subscribe [:get-commands-and-responses chat-id])
-        answered?           (subscribe [:is-request-answered? message-id])
-        status-initialized? (subscribe [:get :status-module-initialized?])
-        markup              (subscribe [:get-message-preview message-id])]
-    (fn [{:keys [message-id content from incoming-group]}]
-      (let [commands @commands-atom
-            {:keys        [prefill prefill-bot-db prefillBotDb params]
+  (letsubs [requests [:chat-actions :possible-requests]
+            commands [:chat-actions :possible-commands]
+            answered? [:is-request-answered? message-id]
+            status-initialized? [:get :status-module-initialized?]
+            markup [:get-message-preview message-id]]
+    (fn [{:keys [message-id content from incoming-group] :as message}]
+      (let [{:keys        [prefill prefill-bot-db prefillBotDb params]
              text-content :text} content
-            {:keys [command content]} (parse-command-request commands content)
-            command  (if (and params command)
-                       (merge command {:prefill        prefill
-                                       :prefill-bot-db (or prefill-bot-db prefillBotDb)})
-                       command)
-            on-press-handler  (if (:execute-immediately? command)
-                                #(dispatch [:execute-command-immediately command])
-                                (when (and (not @answered?) @status-initialized?)
-                                  #(set-chat-command message-id command)))]
+            {:keys [command content]} (commands/set-command-for-request message requests commands)
+            command          (if (and params command)
+                               (merge command {:prefill        prefill
+                                               :prefill-bot-db (or prefill-bot-db prefillBotDb)})
+                               command)
+            on-press-handler (if (:execute-immediately? command)
+                               #(dispatch [:execute-command-immediately command])
+                               (when (and (not answered?) status-initialized?)
+                                 #(set-chat-command message-id command)))]
         [view st/comand-request-view
          [touchable-highlight
           {:on-press on-press-handler}
           [view st/command-request-message-view
-           (if (and @markup
-                    (not (string? @markup)))
-             [view @markup]
+           (if (and markup
+                    (not (string? markup)))
+             [view markup]
              [text {:style st/style-message-text
                     :font  :default}
-              (or text-content @markup content)])]]
+              (or text-content markup content)])]]
          (when (:request-text command)
            [view st/command-request-text-view
             [text {:style st/style-sub-text

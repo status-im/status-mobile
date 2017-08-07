@@ -1,19 +1,18 @@
 (ns status-im.chat.subs
-  (:require [re-frame.core :refer [reg-sub dispatch subscribe path]] 
+  (:require [re-frame.core :refer [reg-sub dispatch subscribe path]]
             [status-im.data-store.chats :as chats]
             [status-im.chat.constants :as const]
-            [status-im.chat.models.input :as input-model] 
+            [status-im.chat.models.input :as input-model]
             [status-im.chat.utils :as chat-utils]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.constants :refer [response-suggesstion-resize-duration
                                          content-type-status
                                          console-chat-id]]
             [status-im.commands.utils :as commands-utils]
-            [status-im.models.commands :as commands]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [taoensso.timbre :as log]
             [clojure.string :as str]))
- 
+
 (reg-sub
   :chat-ui-props
   (fn [db [_ ui-element chat-id]]
@@ -38,6 +37,15 @@
     (:chats db)))
 
 (reg-sub
+  :chat-actions
+  :<- [:chats]
+  :<- [:get-current-chat-id]
+  :<- [:chat :input-text]
+  (fn [[chats current-chat-id text] [_ type chat-id]]
+    (->> (get-in chats [(or chat-id current-chat-id) type])
+         (filter #(or (str/includes? (chat-utils/command-name %) (or text "")))))))
+
+(reg-sub
   :chat
   :<- [:chats]
   :<- [:get-current-chat-id]
@@ -54,30 +62,15 @@
   (fn [_ [_ chat-id]]
     (chats/get-by-id chat-id)))
 
-(reg-sub :get-bots-suggestions
-  (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (get-in db [:bots-suggestions @chat-id]))))
-
-(reg-sub :get-commands
-  (fn [db [_ chat-id]]
-    (let [current-chat (or chat-id (db :current-chat-id))]
-      (or (get-in db [:contacts/contacts current-chat :commands]) {}))))
-
-(reg-sub
-  :get-responses
-  (fn [db [_ chat-id]]
-    (let [current-chat (or chat-id (db :current-chat-id))]
-      (or (get-in db [:contacts/contacts current-chat :responses]) {}))))
-
 (reg-sub :get-commands-and-responses
-  (fn [{:keys [chats] :contacts/keys [contacts]} [_ chat-id]]
+  (fn [{:keys [chats global-commands] :contacts/keys [contacts]} [_ chat-id]]
     (->> (get-in chats [chat-id :contacts])
          (filter :is-in-chat)
          (mapv (fn [{:keys [identity]}]
                  (let [{:keys [commands responses]} (get contacts identity)]
                    (merge responses commands))))
-         (apply merge))))
+         (apply merge)
+         (merge global-commands))))
 
 (reg-sub
   :selected-chat-command
@@ -135,8 +128,8 @@
           show-suggestions? (subscribe [:chat-ui-props :show-suggestions? chat-id])
           input-text        (subscribe [:chat :input-text chat-id])
           selected-command  (subscribe [:selected-chat-command chat-id])
-          requests          (subscribe [:chat :request-suggestions chat-id])
-          commands          (subscribe [:chat :command-suggestions chat-id])]
+          requests          (subscribe [:chat :possible-requests chat-id])
+          commands          (subscribe [:chat :possible-commands chat-id])]
       (and (or @show-suggestions? (input-model/starts-as-command? (str/trim (or @input-text ""))))
            (not (:command @selected-command))
            (or (not-empty @requests)
@@ -192,7 +185,7 @@
   (fn [db [_ message-id]]
     (get-in db [:message-data :short-preview message-id :markup])))
 
-(reg-sub :get-last-message-short-preview 
+(reg-sub :get-last-message-short-preview
   (fn [db [_ chat-id]]
     (let [last-message (subscribe [:get-last-message chat-id])
           preview (subscribe [:get-message-short-preview-markup (:message-id @last-message)])]

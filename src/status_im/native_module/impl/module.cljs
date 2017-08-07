@@ -2,7 +2,6 @@
   (:require-macros
     [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.components.react :as r]
-            [status-im.utils.types :as t]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
             [cljs.core.async :refer [<! timeout]]
@@ -130,13 +129,13 @@
       #(do
          (log/debug :call-jail :jail-id jail-id)
          (log/debug :call-jail :path path)
-         ;; this debug message can contain sensetive info
+         ;; this debug message can contain sensitive info
          #_(log/debug :call-jail :params params)
          (let [params' (update params :context assoc
                                :debug js/goog.DEBUG
                                :locale rn-dependencies/i18n.locale)
                cb      (fn [r]
-                         (let [{:keys [result] :as r'} (t/json->clj r)
+                         (let [{:keys [result] :as r'} (types/json->clj r)
                                {:keys [messages]} result]
                            (log/debug r')
                            (doseq [{:keys [type message]} messages]
