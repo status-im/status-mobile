@@ -15,50 +15,27 @@
   {:last-updated     0
    :address          nil
    :name             "Browse"
-
-   :global-command
-                     {
-                      :description         "Launch the browser"
-                      :sequential-params   false
-                      :color               "#ffa500"
-                      :name                "global"
-                      :params
-                                           {
-                                            :0
-                                            {
-                                             :name        "url"
-                                             :type        "text"
-                                             :placeholder "URL"}}
-                      :icon                nil
-                      :title               "Browser"
-                      :has-handler         false
-                      :fullscreen          true
-                      :suggestions-trigger "on-change"}
    :dapp-url         nil
    :dapp-hash        nil
 
-   :commands
-                     {
-                      :location
-                      {
-                       :description         "Share your location"
-                       :sequential-params   true
-                       :color               nil
-                       :name                "location"
+   :commands         {:location (list {:description         "Share your location"
+                                       :sequential-params   true
+                                       :color               nil
+                                       :name                "location"
 
-                       :params
-                                            {
-                                             :0
-                                             {
-                                              :name        "address"
-                                              :type        "text"
-                                              :placeholder "address"}}
-                       :icon                nil
-                       :title               "Location"
-                       :has-handler         false
-                       :fullscreen          true
-                       :owner-id            "browse"
-                       :suggestions-trigger "on-change"}}
+                                       :params
+                                                            {
+                                                             :0
+                                                             {
+                                                              :name        "address"
+                                                              :type        "text"
+                                                              :placeholder "address"}}
+                                       :icon                nil
+                                       :title               "Location"
+                                       :has-handler         false
+                                       :fullscreen          true
+                                       :owner-id            "browse"
+                                       :suggestions-trigger "on-change"})}
    :photo-path       nil
    :debug?           false
    :status           nil
@@ -122,7 +99,6 @@
 (def wallet-contact
   {:address nil
    :name "Wallet"
-   :global-command nil
    :dapp-url "https://status.im/dapps/wallet/"
    :dapp-hash nil
    :photo-path "icon_wallet_avatar"

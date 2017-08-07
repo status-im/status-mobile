@@ -2,11 +2,11 @@
   (:require [re-frame.core :refer [after dispatch]]
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.components.react :refer [http-bridge]]
-            [status-im.utils.types :refer [clj->json]]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.accounts :as accounts]
             [taoensso.timbre :as log]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.types :as types]))
 
 (def debug-server-port 5561)
 
@@ -14,7 +14,7 @@
   (.respond http-bridge
             200
             "application/json"
-            (clj->json data)))
+            (types/clj->json data)))
 
 (register-handler :init-debug-mode
   (u/side-effect!

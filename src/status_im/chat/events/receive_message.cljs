@@ -75,7 +75,8 @@
                                    (assoc-in [:chats chat-identifier :last-message] message))
                  :dispatch-n   [[:upsert-chat! {:chat-id    chat-identifier
                                                 :group-chat group-chat?}]
-                                [:request-command-message-data enriched-message :short-preview]]
+                                [:request-command-message-data enriched-message :short-preview]
+                                [:update-suggestions]]
                  :save-message (dissoc enriched-message :new?)}
 
           (get-in enriched-message [:content :command])
@@ -89,7 +90,10 @@
                (= content-type const/content-type-command)
                (not= chat-identifier const/wallet-chat-id)
                (= "send" (get-in message [:content :command])))
-          (update :dispatch-n conj [:received-message (wallet-message (assoc message :message-id random-id))])))
+          (update :dispatch-n conj [:received-message (wallet-message (assoc message :message-id random-id))])
+
+          true
+          (update :dispatch-n conj [:update-suggestions])))
       {:db db})))
 
 (def ^:private receive-interceptors

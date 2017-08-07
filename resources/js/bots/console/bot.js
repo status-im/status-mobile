@@ -455,7 +455,6 @@ function phoneSuggestions(params, context) {
 
 var phoneConfig = {
     name: "phone",
-    registeredOnly: true,
     icon: "phone_white",
     color: "#5bb2a2",
     title: I18n.t('phone_title'),
@@ -491,7 +490,6 @@ var phoneConfig = {
     }
 };
 status.response(phoneConfig);
-status.command(phoneConfig);
 
 var ropstenNetworkId = 3;
 var rinkebyNetworkId = 4;
@@ -553,39 +551,38 @@ function faucetSuggestions(params) {
     return {markup: view};
 }
 
-var faucetCommandConfig =
-    {
-        name: "faucet",
-        title: I18n.t('faucet_title'),
-        description: I18n.t('faucet_description'),
-        color: "#7099e6",
-        registeredOnly: true,
-        params: [{
-            name: "url",
-            type: status.types.TEXT,
-            suggestions: faucetSuggestions,
-            placeholder: I18n.t('faucet_placeholder')
-        }],
-        preview: function (params) {
-            return {
-                markup: status.components.text(
-                    {},
-                    params.url
-                )
-            };
-        },
-        shortPreview: function (params) {
-            return {
-                markup: status.components.text(
-                    {},
-                    I18n.t('faucet_title') + ": " + params.url
-                )
-            };
-        },
-        validator: function (params, context) {
-            var f = faucets.map(function (entry) {
-                return entry.url;
-            });
+var faucetCommandConfig ={
+    name: "faucet",
+    title: I18n.t('faucet_title'),
+    description: I18n.t('faucet_description'),
+    color: "#7099e6",
+    scope: ["registered-only", "group-chats", "personal-chats", "can-use-for-dapps"],
+    params: [{
+        name: "url",
+        type: status.types.TEXT,
+        suggestions: faucetSuggestions,
+        placeholder: I18n.t('faucet_placeholder')
+    }],
+    preview: function (params) {
+        return {
+            markup: status.components.text(
+                {},
+                params.url
+            )
+        };
+    },
+    shortPreview: function (params) {
+        return {
+            markup: status.components.text(
+                {},
+                I18n.t('faucet_title') + ": " + params.url
+            )
+        };
+    },
+    validator: function (params, context) {
+        var f = faucets.map(function (entry) {
+            return entry.url;
+        });
 
             if (f.indexOf(params.url) == -1) {
                 var error = status.components.validationMessage(
@@ -635,7 +632,7 @@ status.command({
     title: I18n.t('debug_mode_title'),
     description: I18n.t('debug_mode_description'),
     color: "#7099e6",
-    registeredOnly: true,
+    scope: ["registered-only", "group-chats", "personal-chats", "can-use-for-dapps"],
     params: [{
         name: "mode",
         suggestions: debugSuggestions,
@@ -658,18 +655,6 @@ status.command({
         };
     }
 });
-
-
-// status.command({
-//     name: "help",
-//     title: "Help",
-//     description: "Request help from Console",
-//     color: "#7099e6",
-//     params: [{
-//         name: "query",
-//         type: status.types.TEXT
-//     }]
-// });
 
 status.response({
     name: "confirmation-code",

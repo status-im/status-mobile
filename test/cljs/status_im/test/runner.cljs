@@ -28,7 +28,7 @@
 (doo-tests
  'status-im.test.chat.events
  'status-im.test.accounts.events
- 'status-im.test.contacts.events
+ ;;'status-im.test.contacts.events
  'status-im.test.profile.events
  'status-im.test.wallet.events
  'status-im.test.wallet.transactions.subs
