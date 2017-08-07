@@ -289,18 +289,20 @@
     (let [message-id' (or ack-of-message message-id)]
       (when-let [{:keys [message-status] :as message} (messages/get-by-id message-id')]
         (when-not (= (keyword message-status) :seen)
-          (let [group?  (boolean group-id)
-                message (if (and group? (not= status :sent))
-                          (update-in message
-                                     [:user-statuses from]
-                                     (fn [{old-status :status}]
-                                       {:id               (random/id)
-                                        :whisper-identity from
-                                        :status           (if (= (keyword old-status) :seen)
-                                                            old-status
-                                                            status)}))
-                          (assoc message :message-status status))]
-            (messages/update message)))))))
+          (let [group?   (boolean group-id)
+                message' (-> (if (and group? (not= status :sent))
+                               (update-in message
+                                          [:user-statuses from]
+                                          (fn [{old-status :status}]
+                                            {:id               (random/id)
+                                             :whisper-identity from
+                                             :status           (if (= (keyword old-status) :seen)
+                                                                 old-status
+                                                                 status)}))
+                               (assoc message :message-status status))
+                             ;; we need to dissoc preview because it has been saved before
+                             (dissoc :preview))]
+            (messages/update message')))))))
 
 (defn update-message-status [status]
   (fn [db

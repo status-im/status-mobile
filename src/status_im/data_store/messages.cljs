@@ -107,8 +107,7 @@
 
 (defn save
   ;; todo remove chat-id parameter
-  [chat-id {:keys [message-id content]
-            :as   message}]
+  [chat-id {:keys [message-id content] :as message}]
   (when-not (data-store/exists? message-id)
     (let [content' (if (string? content)
                      content

@@ -36,7 +36,6 @@
         "photo-path": "icon_wallet_avatar",
         "dapp?": true,
         "pending?": true,
-        "has-global-command?": true,
         "bot-url": "local://wallet-bot",
         "unremovable?": true
     },
@@ -49,8 +48,30 @@
             "ru": "Печкин"
         },
         "dapp?": true,
-        "has-global-command?": true,
+        "mixable?": true,
         "bot-url": "local://mailman-bot"
+    },
+
+    "transactor-group":
+    {
+        "name":
+        {
+            "en": "Transactor"
+        },
+        "dapp?": true,
+        "mixable?": true,
+        "bot-url": "local://transactor-group-bot"
+    },
+
+    "transactor-personal":
+    {
+        "name":
+        {
+            "en": "Transactor"
+        },
+        "dapp?": true,
+        "mixable?": true,
+        "bot-url": "local://transactor-personal-bot"
     },
 
     "demo-bot":

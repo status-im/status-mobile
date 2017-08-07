@@ -15,14 +15,13 @@
                                                 get-dimensions
                                                 dismiss-keyboard!]]
             [status-im.components.animation :as anim]
-            [status-im.chat.constants :as chat-consts]
             [status-im.components.list-selection :refer [share browse share-or-open-map]]
-            [status-im.chat.views.message.request-message :refer [message-content-command-request]]
+            [status-im.chat.constants :as chat-consts]
+            [status-im.chat.models.commands :as commands]
             [status-im.chat.styles.message.message :as st]
             [status-im.chat.styles.message.command-pill :as pill-st]
+            [status-im.chat.views.message.request-message :refer [message-content-command-request]]
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
-            [status-im.models.commands :refer [parse-command-message-content
-                                               parse-command-request]]
             [status-im.react-native.resources :as res]
             [status-im.constants :refer [console-chat-id
                                          wallet-chat-id
@@ -125,11 +124,6 @@
        (first (vals params))
        (str params))]))
 
-(defn commands-subscription [{:keys [type]}]
-  (if (= type "response")
-    :get-responses
-    :get-commands))
-
 (defview message-content-command
   [{:keys [message-id content content-type chat-id to from outgoing] :as message}]
   [commands [:get-commands-and-responses chat-id]
@@ -139,7 +133,7 @@
    contact-chat [:get-in [:chats (if outgoing to from)]]
    preview [:get-message-preview message-id]]
   (let [commands (merge commands from-commands)
-        {:keys [command params]} (parse-command-message-content commands global-commands content)
+        {:keys [command params]} (commands/set-command-for-content commands global-commands content)
         {:keys     [name type]
          icon-path :icon} command]
     [view st/content-command-view

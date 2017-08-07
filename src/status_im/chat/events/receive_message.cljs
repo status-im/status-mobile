@@ -75,14 +75,18 @@
                                    (assoc-in [:chats chat-identifier :last-message] message))
                  :dispatch-n   [[:upsert-chat! {:chat-id    chat-identifier
                                                 :group-chat group-chat?}]
-                                [:request-command-message-data enriched-message :short-preview]]
+                                [:request-command-message-data enriched-message :short-preview]
+                                [:update-suggestions]]
                  :save-message (dissoc enriched-message :new?)}
 
           (get-in enriched-message [:content :command])
           (update :dispatch-n conj [:request-command-preview enriched-message])
 
           (= (:content-type enriched-message) const/content-type-command-request)
-          (update :dispatch-n conj [:add-request chat-identifier enriched-message])))
+          (update :dispatch-n conj [:add-request chat-identifier enriched-message])
+
+          true
+          (update :dispatch-n conj [:update-suggestions])))
       {:db db})))
 
 (def ^:private receive-interceptors

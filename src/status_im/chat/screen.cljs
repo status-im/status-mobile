@@ -25,7 +25,7 @@
             [status-im.chat.views.input.input :as input]
             [status-im.chat.views.actions :refer [actions-view]]
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
-            [status-im.chat.constants :as const]
+            [status-im.chat.constants :as chat-const]
             [status-im.i18n :refer [label label-pluralize]]
             [status-im.components.animation :as anim]
             [status-im.components.sync-state.offline :refer [offline-view]]
@@ -123,7 +123,7 @@
 (defn get-intro-status-message [all-messages]
   (let [{:keys [timestamp content-type]} (last all-messages)]
     (when (not= content-type content-type-status)
-      {:message-id   const/intro-status-message-id
+      {:message-id   chat-const/intro-status-message-id
        :content-type content-type-status
        :timestamp    (or timestamp (time/now-ms))})))
 
