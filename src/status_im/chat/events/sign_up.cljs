@@ -108,7 +108,6 @@
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{:keys [db random-id] :as cofx} [contacts]]
     (-> db
-        (contacts-events/add-contacts contacts)
         (as-> fx
             (merge fx
                    (accounts-events/account-update (assoc cofx :db (:db fx)) {:signed-up? true})

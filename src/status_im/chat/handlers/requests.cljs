@@ -10,9 +10,10 @@
   (requests/save new-request))
 
 (defn add-request
-  [db [_ chat-id {:keys [message-id content]}]]
+  [db [_ chat-id {:keys [message-id content] :as r}]]
   (let [request {:chat-id    chat-id
                  :message-id message-id
+                 :bot        (:bot content)
                  :type       (:command content)
                  :added      (js/Date.)}
         request' (update request :type keyword)]

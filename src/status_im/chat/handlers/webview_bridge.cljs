@@ -5,7 +5,6 @@
             [status-im.utils.types :as t]
             [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]
-            [status-im.models.commands :as commands]
             [status-im.commands.utils :as cu]
             [status-im.native-module.core :as s]
             [status-im.components.nfc :as nfc]

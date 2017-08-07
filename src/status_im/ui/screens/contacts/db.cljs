@@ -27,6 +27,7 @@
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/pending? boolean?)
+(spec/def :contact/mixable? boolean?)
 (spec/def :contact/unremovable? boolean?)
 
 (spec/def :contact/dapp? boolean?)
@@ -34,21 +35,39 @@
 (spec/def :contact/dapp-hash (spec/nilable int?))
 (spec/def :contact/bot-url (spec/nilable string?))
 (spec/def :contact/global-command (spec/nilable map?))
-(spec/def :contact/commands (spec/nilable (spec/map-of keyword? map?)))
-(spec/def :contact/responses (spec/nilable (spec/map-of keyword? map?)))
+(spec/def :contact/commands (spec/nilable (spec/map-of keyword? seq?)))
+(spec/def :contact/responses (spec/nilable (spec/map-of keyword? seq?)))
 (spec/def :contact/commands-loaded? (spec/nilable boolean?))
 (spec/def :contact/subscriptions (spec/nilable map?))
 ;true when contact added using status-dev-cli
 (spec/def :contact/debug? boolean?)
 
-(spec/def :contact/contact (allowed-keys
-                             :req-un [:contact/name :contact/whisper-identity]
-                             :opt-un [:contact/address :contact/private-key :contact/public-key :contact/photo-path
-                                      :contact/status :contact/last-updated :contact/last-online :contact/pending?
-                                      :contact/unremovable? :contact/dapp? :contact/dapp-url :contact/dapp-hash
-                                      :contact/bot-url :contact/global-command :contact/commands-loaded?
-                                      :contact/commands :contact/responses :contact/debug? :contact/subscriptions
-                                      :contact/fcm-token]))
+(spec/def :contact/contact
+  (allowed-keys
+    :req-un [:contact/name]
+    :opt-un [:contact/whisper-identity
+             :contact/address
+             :contact/private-key
+             :contact/public-key
+             :contact/photo-path
+             :contact/status
+             :contact/last-updated
+             :contact/last-online
+             :contact/pending?
+             :contact/mixable?
+             :contact/scope
+             :contact/unremovable?
+             :contact/dapp?
+             :contact/dapp-url
+             :contact/dapp-hash
+             :contact/bot-url
+             :contact/global-command
+             :contact/commands-loaded?
+             :contact/commands
+             :contact/responses
+             :contact/debug?
+             :contact/subscriptions
+             :contact/fcm-token]))
 
 ;;Contact list ui props
 (spec/def :contact-list-ui/edit? boolean?)

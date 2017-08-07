@@ -455,7 +455,6 @@ function phoneSuggestions(params, context) {
 
 var phoneConfig = {
     name: "phone",
-    registeredOnly: true,
     icon: "phone_white",
     color: "#5bb2a2",
     title: I18n.t('phone_title'),
@@ -491,7 +490,6 @@ var phoneConfig = {
     }
 };
 status.response(phoneConfig);
-status.command(phoneConfig);
 
 var faucets = [
     /*{
@@ -540,7 +538,7 @@ status.command({
     title: I18n.t('faucet_title'),
     description: I18n.t('faucet_description'),
     color: "#7099e6",
-    registeredOnly: true,
+    scope: ["registered-only", "group-chats", "personal-chats", "can-use-for-dapps"],
     params: [{
         name: "url",
         type: status.types.TEXT,
@@ -611,7 +609,7 @@ status.command({
     title: I18n.t('debug_mode_title'),
     description: I18n.t('debug_mode_description'),
     color: "#7099e6",
-    registeredOnly: true,
+    scope: ["registered-only", "group-chats", "personal-chats", "can-use-for-dapps"],
     params: [{
         name: "mode",
         suggestions: debugSuggestions,
@@ -634,18 +632,6 @@ status.command({
         };
     }
 });
-
-
-// status.command({
-//     name: "help",
-//     title: "Help",
-//     description: "Request help from Console",
-//     color: "#7099e6",
-//     params: [{
-//         name: "query",
-//         type: status.types.TEXT
-//     }]
-// });
 
 status.response({
     name: "confirmation-code",

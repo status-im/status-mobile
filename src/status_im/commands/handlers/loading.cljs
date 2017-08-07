@@ -3,21 +3,16 @@
             [status-im.utils.handlers :as u]
             [status-im.utils.utils :refer [http-get show-popup]]
             [clojure.string :as s]
-            [status-im.data-store.commands :as commands]
             [status-im.data-store.contacts :as contacts]
-            [status-im.native-module.core :as status]
-            [status-im.utils.types :refer [json->clj]]
+            [status-im.data-store.local-storage :as local-storage]
             [status-im.commands.utils :refer [reg-handler]]
-            [status-im.constants :refer [console-chat-id wallet-chat-id]]
-            [taoensso.timbre :as log]
-            [status-im.i18n :refer [label]]
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.chat.models.commands :as commands-model]
+            [status-im.native-module.core :as status]
             [status-im.utils.homoglyph :as h]
             [status-im.utils.js-resources :as js-res]
-            [status-im.utils.random :as random] 
-            [status-im.bots.constants :as bots-constants]
-            [status-im.utils.datetime :as time]
-            [status-im.data-store.local-storage :as local-storage]
-            [clojure.string :as str]))
+            [status-im.utils.types :as types]
+            [taoensso.timbre :as log]))
 
 
 (defn load-commands!
@@ -50,13 +45,10 @@
                bot-url
                dapp?]} :contact
        :as             params}]]
-  (if bot-url
+  (when bot-url
     (if-let [resource (js-res/get-resource bot-url)]
       (dispatch [::validate-hash params resource])
-      (http-get-commands params bot-url))
-    (when-not dapp?
-      ;; TODO: this part should be removed in the future
-      (dispatch [::validate-hash params js-res/wallet-js]))))
+      (http-get-commands params bot-url))))
 
 (defn dispatch-loaded!
   [db [{{:keys [whisper-identity]} :contact
@@ -83,7 +75,7 @@
     (status/parse-jail
       whisper-identity (str local-storage-js file)
       (fn [result]
-        (let [{:keys [error result]} (json->clj result)]
+        (let [{:keys [error result]} (types/json->clj result)]
           (log/debug "Parsing commands results: " error result)
           (if error
             (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
@@ -99,88 +91,61 @@
              (get-hash-by-file file))]
     (assoc db :command-hash-valid? valid?)))
 
-(defn each-merge [coll with]
+(defn each-merge [with coll]
   (->> coll
        (map (fn [[k v]] [k (merge v with)]))
        (into {})))
 
-(defn filter-commands [account {:keys [contacts chat-id] :as chat} commands]
+(defn extract-commands [{:keys [contacts]} commands]
   (->> commands
-       (remove (fn [[_ {:keys [registered-only name]}]]
-                 (and (not (:address account))
-                      (not= name "global")
-                      registered-only)))
-       ;; TODO: this part should be removed because it's much better to provide the ability to do this in the API
-       (map (fn [[k {:keys [name] :as v}]]
-              [k (assoc v :hidden? (and (some #{name} ["send" "request"])
-                                        (= chat-id wallet-chat-id)))]))
-       (remove (fn [[k _]]
+       (remove (fn [[_ {:keys [name]}]]
                  (and (= (count contacts) 1)
                       (not= console-chat-id (get (first contacts) :identity))
-                      (h/matches (name k) "password"))))
+                      (h/matches name "password"))))
+       (map (fn [[k {:keys [name scope] :as v}]]
+              [[name scope] v]))
        (into {})))
 
-(defn get-mailmans-commands [db]
-  (->> (get-in db [:contacts/contacts bots-constants/mailman-bot :commands])
-       (map
-         (fn [[k v :as com]]
-           [k (-> v
-                  (update :params (fn [p]
-                                    (if (map? p)
-                                      ((comp vec vals) p)
-                                      p)))
-                  (assoc :bot bots-constants/mailman-bot
-                         :type :command))]))
+(defn extract-global-commands [commands chat-id]
+  (->> commands
+       (filter (fn [[_ {:keys [scope]}]]
+                 (:global? scope)))
+       (map (fn [[k {:keys [name scope] :as v}]]
+              [[name scope] (assoc v :bot chat-id :type :command)]))
        (into {})))
+
+(defn transform-commands [commands]
+  (reduce (fn [m [_ {:keys [name scope] :as v}]]
+            (update m (keyword name) conj v))
+          {}
+          commands))
 
 (defn add-commands
-  [{:keys [chats] :as db} [id _ {:keys [commands responses subscriptions]}]]
-  (let [account          @(subscribe [:get-current-account])
+  [{:keys [current-account-id accounts chats] :as db}
+   [id _ {:keys [commands responses subscriptions]}]]
+  (let [account          (get accounts current-account-id)
         chat             (get chats id)
-        commands'        (filter-commands account chat commands)
-        responses'       (filter-commands account chat responses)
-        global-command   (:global commands')
-        commands''       (each-merge (apply dissoc commands' [:init :global])
-                                     {:type     :command
-                                      :owner-id id})
-        mailman-commands (get-mailmans-commands db)]
-    (cond-> db
-
-            true
-            (update-in [:contacts/contacts id] assoc
-                       :commands-loaded? true
-                       :commands (merge mailman-commands commands'')
-                       :responses (each-merge responses' {:type     :response
-                                                          :owner-id id})
-                       :subscriptions subscriptions)
-
-            global-command
-            (update :global-commands assoc (keyword id)
-                    (assoc global-command :bot id
-                                          :type :command))
-
-            (= id bots-constants/mailman-bot)
-            (update :contacts/contacts (fn [contacts]
-                                         (reduce (fn [contacts [k _]]
-                                                   (update-in contacts [k :commands]
-                                                              (fn [c]
-                                                                (merge mailman-commands c))))
-                                                 contacts
-                                                 contacts))))))
-
-(defn save-commands-js!
-  [_ [id file]]
-  #_(commands/save {:chat-id id :file file}))
-
-(defn save-commands!
-  [{:keys [global-commands] :contacts/keys [contacts]} [id]]
-  (let [command   (get global-commands (keyword id))
-        commands  (get-in contacts [id :commands])
-        responses (get-in contacts [id :responses])]
-    (contacts/save {:whisper-identity id
-                    :global-command   command
-                    :commands         (vals commands)
-                    :responses        (vals responses)})))
+        global-commands  (extract-global-commands commands id)
+        mixable-commands (when-not (get-in db [:contacts/contacts id :mixable?])
+                           (commands-model/get-mixable-commands db))
+        commands'        (->> (apply dissoc commands (keys global-commands))
+                              (extract-commands chat)
+                              (each-merge {:type     :command
+                                           :owner-id id})
+                              (transform-commands)
+                              (merge mixable-commands))
+        responses'       (->> (extract-commands chat responses)
+                              (each-merge {:type     :response
+                                           :owner-id id})
+                              (transform-commands))
+        new-db           (-> db
+                             (update-in [:contacts/contacts id] assoc
+                                        :commands-loaded? true
+                                        :commands commands'
+                                        :responses responses'
+                                        :subscriptions subscriptions)
+                             (update :global-commands merge (transform-commands global-commands)))]
+    new-db))
 
 (defn loading-failed!
   [db [id reason details]]
@@ -210,10 +175,7 @@
 (reg-handler ::parse-commands! (u/side-effect! parse-commands!))
 
 (reg-handler ::add-commands
-  [(after save-commands-js!)
-   (after save-commands!)
-   (after #(dispatch [:update-suggestions]))
-   (after (fn [_ [id]]
+  [(after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
             (dispatch [:invoke-chat-loaded-callbacks id])))
    (after (fn [{:contacts/keys [contacts]} [id]]
@@ -221,8 +183,8 @@
               (doseq [[name opts] subscriptions]
                 (dispatch [:register-bot-subscription
                            (assoc opts :bot id
-                                       :name name)])))))]
-
+                                       :name name)])))))
+   (after #(dispatch [:update-suggestions]))]
   add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))

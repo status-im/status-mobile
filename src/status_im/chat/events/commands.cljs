@@ -5,7 +5,8 @@
             [taoensso.timbre :as log]
             [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.chat.models.commands :as commands-model]))
 
 ;;;; Helper fns
 
@@ -23,26 +24,33 @@
 (defn request-command-message-data
   "Requests command message data from jail"
   [db
-   {{:keys [command content-command params type]} :content
-    :keys [chat-id jail-id group-id message-id] :as message}
+   {{command-name         :command
+     content-command-name :content-command
+     :keys                [content-command-scope
+                           scope
+                           params
+                           type
+                           bot]} :content
+    :keys                        [chat-id jail-id group-id] :as message}
    data-type]
-  (let [{:keys [chats]
+  (let [{:keys          [chats]
          :accounts/keys [current-account-id]
          :contacts/keys [contacts]} db
-        jail-id (or jail-id chat-id)
+        jail-id (or bot jail-id chat-id)
         jail-id (if (get-in chats [jail-id :group-chat])
-                  (get-in chats [jail-id :command-suggestions (keyword command) :owner-id])
+                  (get-in chats [jail-id :possible-commands (keyword command-name) :owner-id])
                   jail-id)]
     (if (get-in contacts [jail-id :commands-loaded?])
-      (let [path          [(if (= :response (keyword type)) :responses :commands)
-                           (or content-command command)
-                           data-type]
-            to            (get-in contacts [chat-id :address])
-            jail-params   {:parameters params
-                           :context (generate-context db chat-id to group-id)}]
-        {:call-jail {:jail-id jail-id
-                     :path path
-                     :params jail-params
+      (let [path        [(if (= :response (keyword type)) :responses :commands)
+                         [(if content-command-name content-command-name command-name)
+                          (commands-model/scope->bit-mask (or scope content-command-scope))]
+                         data-type]
+            to          (get-in contacts [chat-id :address])
+            jail-params {:parameters params
+                         :context    (generate-context db chat-id to group-id)}]
+        {:call-jail {:jail-id                 jail-id
+                     :path                    path
+                     :params                  jail-params
                      :callback-events-creator (fn [jail-response]
                                                 [[::jail-command-data-response
                                                   jail-response message data-type]])}})

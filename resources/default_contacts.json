@@ -23,6 +23,7 @@
         },
         "unremovable?": true
     },
+
     "wallet":
     {
         "name":
@@ -36,12 +37,10 @@
         "add-chat?": true,
         "dapp?": true,
         "groups": ["dapps"],
-        "has-global-command?": true,
         "dapp-url":
         {
           "en": "https://status.im/dapps/wallet/"
         },
-        "bot-url": "local://wallet-bot",
         "unremovable?": true
     },
 
@@ -53,8 +52,30 @@
             "ru": "Печкин"
         },
         "dapp?": true,
-        "has-global-command?": true,
+        "mixable?": true,
         "bot-url": "local://mailman-bot"
+    },
+
+    "transactor-group":
+    {
+        "name":
+        {
+            "en": "Transactor"
+        },
+        "dapp?": true,
+        "mixable?": true,
+        "bot-url": "local://transactor-group-bot"
+    },
+
+    "transactor-personal":
+    {
+        "name":
+        {
+            "en": "Transactor"
+        },
+        "dapp?": true,
+        "mixable?": true,
+        "bot-url": "local://transactor-personal-bot"
     },
 
     "demo-bot":

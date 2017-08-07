@@ -6,7 +6,6 @@
             [status-im.commands.utils :refer [generate-hiccup reg-handler]]
             [clojure.string :as s]
             [status-im.components.react :as r]
-            [status-im.models.commands :as cm]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log] 
