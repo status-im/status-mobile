@@ -71,7 +71,7 @@
   (let [commands-atom       (subscribe [:get-commands-and-responses chat-id])
         answered?           (subscribe [:is-request-answered? message-id])
         status-initialized? (subscribe [:get :status-module-initialized?])
-        markup              (subscribe [:get-in [:message-data :preview message-id :markup]])]
+        markup              (subscribe [:get-message-preview message-id])]
     (fn [{:keys [message-id content from incoming-group]}]
       (let [commands @commands-atom
             {:keys        [prefill prefill-bot-db prefillBotDb params]

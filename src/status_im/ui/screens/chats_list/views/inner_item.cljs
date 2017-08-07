@@ -50,7 +50,7 @@
                (:content content)]
 
               (:command content)
-              (:markup preview)
+              preview
 
               :else
               [text {:style           st/last-message-text
