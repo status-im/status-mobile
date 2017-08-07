@@ -1,15 +1,21 @@
 package im.status.ethereum;
 
+import android.content.Context;
 import android.app.AlertDialog;
 import android.app.ActivityManager;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnClickListener;
+import android.support.multidex.MultiDexApplication;
+import android.os.Looper;
+import android.util.Log;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
 import com.facebook.react.ReactActivity;
 import com.cboy.rn.splashscreen.SplashScreen;
 import com.testfairy.TestFairy;
@@ -18,8 +24,7 @@ import java.util.Properties;
 
 public class MainActivity extends ReactActivity {
 
-    private void registerUncaughtExceptionHandler() {
-        // Make sure we get an Alert for every uncaught exceptions
+    private static void registerUncaughtExceptionHandler(final Context context) {
         final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
@@ -29,7 +34,7 @@ public class MainActivity extends ReactActivity {
                     public void run() {
                         Looper.prepare();
 
-                        new AlertDialog.Builder(MainActivity.this)
+                        new AlertDialog.Builder(context)
                                 .setTitle("Error")
                                 .setMessage(t.toString())
                                 .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
@@ -46,13 +51,15 @@ public class MainActivity extends ReactActivity {
         });
     }
 
-    private ActivityManager.MemoryInfo getAvailableMemory() {
-        ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+    private ActivityManager getActivityManager() {
+        return (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+    }
+
+    private ActivityManager.MemoryInfo getAvailableMemory(final ActivityManager activityManager) {
+        final ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
         return memoryInfo;
     }
-
 
     protected void configureStatus() {
         // Required because of crazy APN settings redirecting localhost (found in GB)
@@ -63,8 +70,13 @@ public class MainActivity extends ReactActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        registerUncaughtExceptionHandler();
-        Log.v("RNBootstrap", "Available memory "+getAvailableMemory().availMem);
+        // Make sure we get an Alert for every uncaught exceptions
+        registerUncaughtExceptionHandler(MainActivity.this);
+
+        // Report memory details for this application
+        final ActivityManager activityManager = getActivityManager();
+        Log.v("RNBootstrap", "Available system memory "+getAvailableMemory(activityManager).availMem + ", maximum usable application memory " + activityManager.getLargeMemoryClass()+"M");
+
 
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
