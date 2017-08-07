@@ -1,23 +1,30 @@
 (ns status-im.chat.subs
-  (:require [re-frame.core :refer [reg-sub dispatch subscribe path]]
+  (:require [re-frame.core :refer [reg-sub dispatch subscribe path]] 
             [status-im.data-store.chats :as chats]
             [status-im.chat.constants :as const]
-            [status-im.chat.models.input :as input-model]
+            [status-im.chat.models.input :as input-model] 
             [status-im.chat.utils :as chat-utils]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.constants :refer [response-suggesstion-resize-duration
                                          content-type-status
                                          console-chat-id]]
+            [status-im.commands.utils :as commands-utils]
             [status-im.models.commands :as commands]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [taoensso.timbre :as log]
             [clojure.string :as str]))
-
+ 
 (reg-sub
   :chat-ui-props
   (fn [db [_ ui-element chat-id]]
-    (let [current-chat-id (subscribe [:get-current-chat-id])]
-      (get-in db [:chat-ui-props (or chat-id @current-chat-id) ui-element]))))
+    (let [current-chat-id (subscribe [:get-current-chat-id])
+          data (get-in db [:chat-ui-props (or chat-id @current-chat-id) ui-element])]
+      (cond-> data
+        (:markup data)
+        (update :markup commands-utils/generate-hiccup)
+
+        (and  (= ui-element :validation-messages) data)
+        commands-utils/generate-hiccup))))
 
 (reg-sub
   :chat-input-margin
@@ -181,10 +188,16 @@
         (filter :show?)
         (first)))))
 
-(reg-sub :get-last-message-short-preview
+(reg-sub :get-message-short-preview-markup
+  (fn [db [_ message-id]]
+    (get-in db [:message-data :short-preview message-id :markup])))
+
+(reg-sub :get-last-message-short-preview 
   (fn [db [_ chat-id]]
-    (let [last-message (subscribe [:get-last-message chat-id])]
-      (get-in db [:message-data :short-preview (:message-id @last-message)]))))
+    (let [last-message (subscribe [:get-last-message chat-id])
+          preview (subscribe [:get-message-short-preview-markup (:message-id @last-message)])]
+      (when-let [markup @preview]
+        (commands-utils/generate-hiccup markup)))))
 
 (reg-sub :get-default-container-area-height
   :<- [:chat-ui-props :input-height]
@@ -213,3 +226,13 @@
          (filter :outgoing)
          (sort-by :clock-value >)
          (first))))
+
+(reg-sub :get-message-preview-markup
+  (fn [db [_ message-id]]
+    (get-in db [:message-data :preview message-id :markup])))
+
+(reg-sub :get-message-preview
+  (fn [db [_ message-id]]
+    (let [preview (subscribe [:get-message-preview-markup message-id])]
+      (when-let [markup @preview]
+        (commands-utils/generate-hiccup markup)))))

@@ -9,8 +9,7 @@
             [status-im.models.commands :as cm]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
-            [taoensso.timbre :as log]
-            [status-im.commands.utils :as cu]
+            [taoensso.timbre :as log] 
             [status-im.data-store.local-storage :as local-storage]))
 
 (defn command-handler!
@@ -22,7 +21,7 @@
     (cond
       handler-error
       (when-let [markup (:markup handler-error)]
-        (dispatch [:set-chat-ui-props {:validation-messages (cu/generate-hiccup markup)}]))
+        (dispatch [:set-chat-ui-props {:validation-messages markup}]))
 
       result
       (let [command' (assoc command :handler-data returned)

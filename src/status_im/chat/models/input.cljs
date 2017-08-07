@@ -267,9 +267,8 @@
 
 (defmethod validation-handler :phone
   [_]
-  (fn [[number] set-errors proceed]
-    (if (phone-number/valid-mobile-number? number)
-      (proceed)
-      (set-errors [validation-message
-                   {:title       (i18n/label :t/phone-number)
-                    :description (i18n/label :t/invalid-phone)}]))))
+  (fn [[number] error-events-creator]
+    (when-not (phone-number/valid-mobile-number? number) 
+      (error-events-creator [validation-message
+                             {:title       (i18n/label :t/phone-number)
+                              :description (i18n/label :t/invalid-phone)}]))))

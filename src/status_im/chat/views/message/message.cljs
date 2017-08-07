@@ -136,7 +136,7 @@
    global-commands [:get :global-commands]
    current-chat-id [:get-current-chat-id]
    contact-chat [:get-in [:chats (if outgoing to from)]]
-   preview [:get-in [:message-data :preview message-id :markup]]]
+   preview [:get-message-preview message-id]]
   (let [commands (merge commands from-commands)
         {:keys [command params]} (parse-command-message-content commands global-commands content)
         {:keys     [name type]
@@ -386,7 +386,7 @@
 (defn chat-message [{:keys [outgoing message-id chat-id user-statuses from] :as message}]
   (let [my-identity (subscribe [:get :current-public-key])
         status      (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
-        preview     (subscribe [:get-in [:message-data :preview message-id :markup]])]
+        preview     (subscribe [:get-message-preview message-id])]
     (r/create-class
       {:display-name "chat-message"
        :component-will-mount
