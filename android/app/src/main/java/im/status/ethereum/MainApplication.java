@@ -1,6 +1,6 @@
 package im.status.ethereum;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainApplication extends Application implements ReactApplication {
+public class MainApplication extends MultiDexApplication implements ReactApplication {
 
     private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
         @Override
@@ -75,4 +75,5 @@ public class MainApplication extends Application implements ReactApplication {
     public ReactNativeHost getReactNativeHost() {
         return mReactNativeHost;
     }
+
 }
