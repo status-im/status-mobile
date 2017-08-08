@@ -10,7 +10,8 @@
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log] 
-            [status-im.data-store.local-storage :as local-storage]))
+            [status-im.data-store.local-storage :as local-storage]
+            status-im.commands.events.jail))
 
 (defn command-handler!
   [_ [chat-id
@@ -26,9 +27,7 @@
       result
       (let [command' (assoc command :handler-data returned)
             params'  (assoc params :command command')]
-        (if (:eth_sendTransaction context)
-          (dispatch [:wait-for-transaction (:id command) params'])
-          (dispatch [:prepare-command! chat-id params'])))
+        (dispatch [:prepare-command! chat-id params']))
 
       (not (or error handler-error))
       (dispatch [:prepare-command! chat-id params])
@@ -99,6 +98,6 @@
 
 (reg-handler :set-local-storage
   (handlers/side-effect!
-    (fn [_ [{:keys [data chat_id]}]]
-      (local-storage/set-data {:chat-id chat_id
+    (fn [_ [{:keys [data chat-id]}]]
+      (local-storage/set-data {:chat-id chat-id
                                :data    data}))))

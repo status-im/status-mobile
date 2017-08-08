@@ -10,6 +10,7 @@
             [status-im.data-store.chats :as chats]
             [status-im.data-store.contacts :as contacts]
             [status-im.data-store.messages :as messages]
+            [status-im.data-store.handler-data :as handler-data]
             [status-im.data-store.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
@@ -190,9 +191,9 @@
 
 (defn init-chat
   ([db] (init-chat db nil))
-  ([{:keys [messages current-chat-id] :as db} _]
+  ([{:keys [messages current-chat-id] :as db} _] 
    (-> db
-       (assoc-in [:chats current-chat-id :messages] messages)
+       (assoc-in [:chats current-chat-id :messages] messages) 
        (dissoc :messages))))
 
 (defn load-commands!
@@ -215,11 +216,11 @@
                       (map (fn [{:keys [chat-id] :as chat}]
                              (let [last-message (messages/get-last-message chat-id)]
                                [chat-id (assoc chat :last-message last-message)])))
-                      (into {})))]
-
+                      (into {})))] 
     (-> db
         (assoc :chats chats')
-        (dissoc :loaded-chats)
+        (assoc :handler-data (handler-data/get-all))
+        (dissoc :loaded-chats) 
         (init-console-chat true))))
 
 (defn load-chats!
