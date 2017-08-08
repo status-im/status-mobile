@@ -25,7 +25,7 @@
                         <artifactItem>
                             <groupId>status-im</groupId>
                             <artifactId>status-go-ios-simulator</artifactId>
-                            <version>bug-whisper-on-geth1.6.1-g3f6f0fa+</version>
+                            <version>bugfix-updated-cht-#185-gd84d10d</version>
                             <type>zip</type>
                             <overWrite>true</overWrite>
                             <outputDirectory>./</outputDirectory>

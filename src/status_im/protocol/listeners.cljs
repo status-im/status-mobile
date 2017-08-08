@@ -10,8 +10,12 @@
   (debug :parse-payload)
   (try
     ;; todo figure why we have to call to-utf8 twice
-    (let [read (comp r/read-string u/to-utf8 u/to-utf8)]
-      {:payload (read payload)})
+    (let [payload'   (u/to-utf8 payload)
+          payload''  (r/read-string payload')
+          payload''' (if (map? payload'')
+                       payload''
+                       (r/read-string (u/to-utf8 payload')))]
+      {:payload payload'''})
     (catch :default err
       (debug :parse-payload-error err)
       {:error err})))

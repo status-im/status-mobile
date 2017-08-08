@@ -7,4 +7,3 @@
 (def homoglyph-finder    (js/require "homoglyph-finder"))
 (def identicon-js        (js/require "identicon.js"))
 (def Web3                (js/require "web3"))
-(def BigNumber           (js/require "bignumber.js"))
