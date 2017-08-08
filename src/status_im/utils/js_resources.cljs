@@ -41,7 +41,7 @@
               (slurp "resources/js/vendors/jquery-3.1.1.min.js")
               "}"))
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
-               (slurp "resources/web3.0_16_0.min.js")
+               (slurp "node_modules/web3/dist/web3.min.js")
                "}"))
 (defn web3-init [provider-address]
   (str "var providerAddress = \"" provider-address "\";"

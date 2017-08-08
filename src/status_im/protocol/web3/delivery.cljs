@@ -15,7 +15,7 @@
 
 (defn prepare-message
   [web3 {:keys [payload keypair to from topics ttl key-password]
-         :as message}
+         :as   message}
    callback]
   (let [{:keys [public]} keypair
 
@@ -37,22 +37,23 @@
         (callback
           (merge
             (select-keys message [:ttl])
-            {:type    (if to :asym :sym)
-             :sig     from
-             :key     (or to status-key-id)
-             :topic   (first topics)
-             :payload payload'}))))))
+            (let [type (if to :asym :sym)]
+              (cond-> {:sig     from
+                       :topic   (first topics)
+                       :payload payload'}
+                      to (assoc :pubKey to)
+                      (not to) (assoc :symKeyID status-key-id)))))))))
 
 (s/def :shh/pending-message
-  (s/keys :req-un [:message/sig :message-key/type :shh/payload :message/topic]
-          :opt-un [:message/ttl :message/key]))
+  (s/keys :req-un [:message/sig :shh/payload :message/topic]
+          :opt-un [:message/ttl :message/pubKey :message/symKeyID]))
 
-(defonce pending-mesage-callback (atom nil))
+(defonce pending-message-callback (atom nil))
 (defonce recipient->pending-message (atom {}))
 
 (defn set-pending-mesage-callback!
   [callback]
-  (reset! pending-mesage-callback callback))
+  (reset! pending-message-callback callback))
 
 (defn add-pending-message!
   [web3 {:keys [type message-id requires-ack? to ack?] :as message}]
@@ -74,25 +75,26 @@
                                  :requires-ack? (boolean requires-ack?)
                                  :attempts      0
                                  :was-sent?     false}]
-            (when (and @pending-mesage-callback requires-ack?)
-              (@pending-mesage-callback :pending pending-message))
+            (when (and @pending-message-callback requires-ack?)
+              (@pending-message-callback :pending pending-message))
             (swap! messages assoc-in [web3 message-id to] pending-message)
             (when to
               (swap! recipient->pending-message
                      update to set/union #{[web3 message-id to]}))))))))
 
 (s/def :delivery/pending-message
-  (s/keys :req-un [:message/sig :message/key :message/to :shh/payload
-                   :message/requires-ack? :payload/ack? ::id :message/topic
-                   ::attempts ::was-sent?]))
+  (s/keys :req-un [:message/sig :message/to :shh/payload :payload/ack? ::id
+                   :message/requires-ack? :message/topic ::attempts ::was-sent?]
+          :opt-un [:message/pubKey :message/symKeyID]))
 
-(defn add-prepeared-pending-message!
-  [web3 {:keys [message-id to key-type] :as pending-message}]
+(defn add-prepared-pending-message!
+  [web3 {:keys [message-id to sym-key-id pub-key] :as pending-message}]
   {:pre [(valid? :delivery/pending-message pending-message)]}
-  (debug :add-prepeared-pending-message!)
-  (let [message          (-> pending-message
-                             (select-keys [:sig :key :topic :payload])
-                             (assoc :type key-type))
+  (debug :add-prepared-pending-message!)
+  (let [message          (assoc
+                           (select-keys pending-message [:sig :topic :payload])
+                           :symKeyID sym-key-id
+                           :pubKey pub-key)
         pending-message' (assoc pending-message :message message
                                                 :id message-id)]
     (swap! messages assoc-in [web3 message-id to] pending-message')
@@ -130,10 +132,10 @@
                              (if message'
                                (assoc-in messages [id to] message')
                                messages))))]
-    (when @pending-mesage-callback
+    (when @pending-message-callback
       (let [message (get-in messages' [web3 id to])]
         (when message
-          (@pending-mesage-callback :sent message))))))
+          (@pending-message-callback :sent message))))))
 
 (defn attempt-was-made! [web3 id to]
   (debug :attempt-was-made id)
@@ -183,7 +185,7 @@
       ;; if message was not send less then max-attempts-number times
       ;; continue attempts
       (<= attempts max-attempts-number)
-      ;; check retransmition interval
+      ;; check retransmission interval
       (<= (+ last-attempt (* 1000 ack-not-received-s-interval)) (u/timestamp)))))
 
 (defn- check-ttl
