@@ -76,6 +76,7 @@
          (if height
            (dispatch [:set-expandable-height key height])
            (dispatch [:choose-predefined-expandable-height key :default])))
+       :display-name "expandable-view"
        :reagent-render
        (fn [{:keys [draggable? custom-header]} & elements]
          @to-changed-height @changes-counter @max-height

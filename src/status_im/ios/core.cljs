@@ -86,7 +86,8 @@
        :component-will-unmount
        (fn []
          (.stop http-bridge))
-       :render
+       :display-name "root"
+       :reagent-render
        (fn []
          (when @view-id
            (let [current-view (validate-current-view @view-id @signed-up?)]

@@ -94,6 +94,7 @@
              (let [to (scroll-to @prev-view-id @view-id)]
                (a/put! scroll-start [@main-swiper to]))))
          (reset! tabs-were-hidden? @tabs-hidden?))
+       :display-name "main-tabs"
        :reagent-render
        (fn []
          [view common-st/flex

@@ -180,7 +180,8 @@
         set-container-width-fn #(r/set-state component {:container-width %})
         command                (subscribe [:selected-chat-command])]
     (r/create-class
-      {:reagent-render
+      {:display-name "input-view"
+       :reagent-render
        (fn [{:keys [anim-margin single-line-input?]}]
          (let [{:keys [width height container-width]} (r/state component)
                command @command]
@@ -246,7 +247,8 @@
         container-anim-margin (anim/create-value 16)
         bottom-anim-margin    (anim/create-value 14)]
     (r/create-class
-      {:component-did-mount
+      {:display-name "input-container"
+       :component-did-mount
        (fn []
          (when-not (str/blank? @input-text)
            (.setValue anim-margin 0)

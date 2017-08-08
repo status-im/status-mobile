@@ -50,7 +50,8 @@
                         :answered? answered?
                         :loop?     loop?}]
     (r/create-class
-      {:component-did-mount
+      {:display-name "request-button"
+       :component-did-mount
        (if @answered? (fn []) #(request-button-animation-logic context))
        :component-will-unmount
        #(reset! loop? false)

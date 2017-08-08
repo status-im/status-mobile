@@ -105,6 +105,7 @@
        on-update
        :component-did-update
        on-update
+       :display-name "sync-state-gradient-view"
        :reagent-render
        (fn []
          [view st/sync-style-gradient

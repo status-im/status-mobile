@@ -31,6 +31,7 @@
        on-update
        :component-did-update
        on-update
+       :display-name "offline-view"
        :reagent-render
        (fn [{:keys [top]}]
          (when (or (= @network-status :offline) (= @sync-state :offline))
