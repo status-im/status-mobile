@@ -43,7 +43,6 @@
     "react-native-http-bridge",
     "emojilib",
     "react-native-mapbox-gl",
-    "bignumber.js",
     "react-native-config",
     "react-native-svg"
   ],
