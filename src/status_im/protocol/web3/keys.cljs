@@ -9,7 +9,7 @@
   [web3 password callback]
   (.. web3
       -shh
-      (addSymmetricKeyFromPassword password callback)))
+      (generateSymKeyFromPassword password callback)))
 
 (defn get-sym-key [web3 password callback]
   (if-let [key-id (get @password->keys password)]

@@ -22,7 +22,7 @@
     "babel-plugin-transform-regenerator": "6.20.0",
     "babel-preset-react-native": "1.9.0",
     "babel-register": "6.18.0",
-    "bignumber.js": "^4.0.2",
+    "bignumber.js": "github:status-im/bignumber.js#master",
     "browserify-zlib": "^0.1.4",
     "buffer": "^3.6.0",
     "chance": "1.0.4",
@@ -79,7 +79,7 @@
     "react-native-tcp": "^3.2.1",
     "react-native-udp": "^2.0.0",
     "react-native-vector-icons": "^4.0.1",
-    "react-native-webview-bridge": "github:status-im/react-native-webview-bridge#0.33.15",
+    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#status-go-bugfix-updated-cht",
     "readable-stream": "1.0.33",
     "realm": "^0.14.3",
     "stream-browserify": "^1.0.0",
@@ -88,7 +88,7 @@
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
     "vm-browserify": "0.0.4",
-    "web3": "github:farazdagi/web3.js#geth/1.6.1-unstable"
+    "web3": "github:status-im/web3.js#status-develop"
   },
   "browser": {
     "crypto": "react-native-crypto",

@@ -10,7 +10,8 @@
             [status-im.data-store.realm.schemas.account.v9.core :as v9]
             [status-im.data-store.realm.schemas.account.v10.core :as v10]
             [status-im.data-store.realm.schemas.account.v11.core :as v11]
-            [status-im.data-store.realm.schemas.account.v12.core :as v12]))
+            [status-im.data-store.realm.schemas.account.v12.core :as v12]
+            ))
 
 ;; put schemas ordered by version
 (def schemas [{:schema        v1/schema

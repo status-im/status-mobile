@@ -7,7 +7,7 @@
             [status-im.data-store.realm.schemas.account.v1.discover :as discover]
             [status-im.data-store.realm.schemas.account.v1.kv-store :as kv-store]
             [status-im.data-store.realm.schemas.account.v10.message :as message]
-            [status-im.data-store.realm.schemas.account.v7.pending-message :as pending-message]
+            [status-im.data-store.realm.schemas.account.v12.pending-message :as pending-message]
             [status-im.data-store.realm.schemas.account.v1.processed-message :as processed-message]
             [status-im.data-store.realm.schemas.account.v1.request :as request]
             [status-im.data-store.realm.schemas.account.v1.tag :as tag]
@@ -35,4 +35,5 @@
              local-storage/schema])
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating v12 account database: " old-realm new-realm))
+  (log/debug "migrating v12 account database: " old-realm new-realm)
+  (chat/migration old-realm new-realm))
