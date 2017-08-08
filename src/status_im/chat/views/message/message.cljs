@@ -371,6 +371,7 @@
       (r/create-class
         {:component-did-update
          on-update
+         :display-name "message-container"
          :reagent-render
          (fn [_ & children]
            @layout-height
@@ -387,7 +388,8 @@
         status      (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
         preview     (subscribe [:get-in [:message-data :preview message-id :markup]])]
     (r/create-class
-      {:component-will-mount
+      {:display-name "chat-message"
+       :component-will-mount
        (fn []
          (let [{:keys [bot command] :as content} (get-in message [:content])
                message' (assoc message :jail-id bot)]

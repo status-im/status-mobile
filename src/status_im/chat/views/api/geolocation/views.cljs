@@ -76,7 +76,8 @@
         result (reaction (when @geolocation (get-places (:coords @geolocation) cur-loc-geocoded)))]
     (r/create-class
       {:component-will-mount #(dispatch [:request-geolocation-update])
-       :render
+       :display-name "current-location-view"
+       :reagent-render
        (fn []
          (let [_ @result]
            (when (and @cur-loc-geocoded (> (count (:features @cur-loc-geocoded)) 0))

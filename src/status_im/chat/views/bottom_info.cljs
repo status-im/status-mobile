@@ -41,6 +41,7 @@
     (r/create-class
       {:component-did-update
        on-update
+       :display-name "container"
        :reagent-render
        (fn [height & children]
          [animated-view {:style (st/bottom-info-container height)}
@@ -69,7 +70,8 @@
   (let [bottom-info (subscribe [:chat-ui-props :bottom-info])
         contacts    (subscribe [:get-contacts])]
     (r/create-class
-      {:reagent-render
+      {:display-name "bottom-info-view"
+       :reagent-render
        (fn []
          (let [{:keys [user-statuses message-status participants]} @bottom-info
                participants (->> participants

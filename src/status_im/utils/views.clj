@@ -58,7 +58,8 @@
                                        (let [~@vars-bindings]
                                          (apply ~f ~args)))])))
                         (into {}))
-                  {:reagent-render
+                  {:display-name (name '~n)
+                   :reagent-render
                    (fn ~params
                      (let [~@vars-bindings]
                        ~body))}))))))

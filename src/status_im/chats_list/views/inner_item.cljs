@@ -21,7 +21,8 @@
   (let [message (subscribe [:get-last-message chat-id])
         preview (subscribe [:get-last-message-short-preview chat-id])]
     (r/create-class
-      {:component-will-mount
+      {:display-name "message-content-text"
+       :component-will-mount
        (fn []
          (when (and (get-in @message [:content :command])
                     (not @preview))

@@ -116,7 +116,8 @@
        (fn []
          (.stop http-bridge)
          (.removeEventListener app-state "change" app-state-change-handler))
-       :render
+       :display-name "root"
+       :reagent-render
        (fn []
          (when @view-id
            (let [current-view (validate-current-view @view-id @signed-up?)]
