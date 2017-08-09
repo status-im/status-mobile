@@ -17,6 +17,7 @@ node {
       sh 'git checkout master' 
       sh 'git checkout ' + env.BRANCH_NAME
       sh 'rm -rf node_modules'
+      sh 'cp .env.jenkins .env'
       sh 'lein deps && npm install && ./re-natal deps'
       sh 'sed -i "" "s/301000/601000/g" node_modules/react-native/packager/src/JSTransformer/index.js'
       sh 'lein generate-externs'

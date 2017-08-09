@@ -7,6 +7,7 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import com.cboy.rn.splashscreen.SplashScreenReactPackage;
 import com.centaurwarchief.smslistener.SmsListenerPackage;
 import com.facebook.react.ReactApplication;
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -60,7 +61,8 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ImageResizerPackage(),
                     new PickerPackage(),
                     new WebViewBridgePackage(BuildConfig.DEBUG),
-                    new ReactNativeMapboxGLPackage()
+                    new ReactNativeMapboxGLPackage(),
+                    new ReactNativeConfigPackage()
             ));
 
             if (!BuildConfig.DEBUG) {

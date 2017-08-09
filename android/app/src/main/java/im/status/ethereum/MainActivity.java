@@ -80,7 +80,10 @@ public class MainActivity extends ReactActivity {
 
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
-        TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
+
+        if(BuildConfig.TESTFAIRY_ENABLED == "1") {
+            TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
+        }
 
         if (!RootUtil.isDeviceRooted()) {
             configureStatus();
