@@ -22,7 +22,7 @@
                                                 dismiss-keyboard!]]
             [status-im.components.status-view.view :as status-view]
             [status-im.i18n :as i18n]
-            [status-im.profile.validations :as v]
+            [status-im.ui.screens.profile.db :as profile.db]
             [status-im.utils.datetime :as time]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.listview :as lw]
@@ -54,13 +54,13 @@
     [view {:style st/name-input-wrapper}
      [text-input
       {:placeholder    placeholder
-       :style          (st/name-input-text (s/valid? ::v/name (or new-name current-name)))
+       :style          (st/name-input-text (s/valid? ::profile.db/name (or new-name current-name)))
        :font           :medium
        :default-value  (or new-name current-name)
        :on-change-text #(rf/dispatch [:set-in [:profile-edit :name] %])
        :on-end-editing #(do
                           (rf/dispatch [:set-in [:profile-edit :name] nil])
-                          (when (s/valid? ::v/name new-name)
+                          (when (s/valid? ::profile.db/name new-name)
                             (rf/dispatch [:account-update {:name (utils/clean-text new-name)}])))}]]))
 
 (defview status-input []

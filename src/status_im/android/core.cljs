@@ -45,8 +45,8 @@
          (let [o (orientation->keyword (.getInitialOrientation react/orientation))]
            (dispatch [:set :orientation o]))
          (.addOrientationListener
-           react/orientation
-           #(dispatch [:set :orientation (orientation->keyword %)]))
+          react/orientation
+          #(dispatch [:set :orientation (orientation->keyword %)]))
          (.lockToPortrait react/orientation)
          (.addListener react/keyboard
                        "keyboardDidShow"

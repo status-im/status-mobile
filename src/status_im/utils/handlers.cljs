@@ -1,9 +1,9 @@
 (ns status-im.utils.handlers
-  (:require [re-frame.core :refer [reg-event-db reg-event-fx]]
+  (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as string]
+            [re-frame.core :refer [reg-event-db reg-event-fx]]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
-            [clojure.string :as str]
-            [taoensso.timbre :as log]
-            [cljs.spec.alpha :as s])
+            [taoensso.timbre :as log])
   (:require-macros status-im.utils.handlers))
 
 (defn side-effect!
@@ -16,24 +16,24 @@
 (def debug-handlers-names
   "Interceptor which logs debug information to js/console for each event."
   (->interceptor
-    :id     :debug-handlers-names
-    :before (fn debug-handlers-names-before
-              [context]
-              (log/debug "Handling re-frame event: " (first (get-coeffect context :event)))
-              context)))
+   :id     :debug-handlers-names
+   :before (fn debug-handlers-names-before
+             [context]
+             (log/debug "Handling re-frame event: " (first (get-coeffect context :event)))
+             context)))
 
 (def check-spec
   "throw an exception if db doesn't match the spec"
   (->interceptor
-    :id check-spec
-    :after
-    (fn check-handler
-      [context]
-      (let [new-db (get-effect context :db)
-            v (get-coeffect context :event)]
-        (when (and new-db (not (s/valid? :status-im.ui.screens.db/db new-db)))
-          (throw (ex-info (str "spec check failed on: " (first v) "\n " (s/explain-str :status-im.ui.screens.db/db new-db)) {})))
-        context))))
+   :id check-spec
+   :after
+   (fn check-handler
+     [context]
+     (let [new-db (get-effect context :db)
+           v (get-coeffect context :event)]
+       (when (and new-db (not (spec/valid? :status-im.ui.screens.db/db new-db)))
+         (throw (ex-info (str "spec check failed on: " (first v) "\n " (spec/explain-str :status-im.ui.screens.db/db new-db)) {})))
+       context))))
 
 (defn register-handler
   ([name handler] (register-handler name nil handler))
@@ -52,7 +52,7 @@
 
 (defn get-hashtags [status]
   (if status
-    (let [hashtags (map #(str/lower-case (subs % 1))
+    (let [hashtags (map #(string/lower-case (subs % 1))
                         (re-seq #"#[^ !?,;:.]+" status))]
       (set (or hashtags [])))
     #{}))
