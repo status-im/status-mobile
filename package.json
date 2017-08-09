@@ -51,6 +51,7 @@
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-autolink": "^0.10.0",
     "react-native-camera": "^0.9.4",
+    "react-native-config": "^0.5.0",
     "react-native-contacts": "^0.2.4",
     "react-native-crypto": "^2.0.1",
     "react-native-dialogs": "0.0.16",

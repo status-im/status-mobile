@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
 
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
 import com.android.build.OutputFile
 
 /**
@@ -185,6 +187,7 @@ dependencies {
     compile project(':react-native-webview-bridge')
     compile project(':reactnativemapboxgl')
     compile 'testfairy:testfairy-android-sdk:1.+@aar'
+    compile project(':react-native-config')
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }

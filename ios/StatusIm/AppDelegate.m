@@ -9,10 +9,11 @@
 
 #import "AppDelegate.h"
 
+#import "ReactNativeConfig.h"
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 #import "SplashScreen.h"
-#import "TestFairy.h" 
+#import "TestFairy.h"
 #define NSLog(s, ...) do { NSLog(s, ##__VA_ARGS__); TFLog(s, ##__VA_ARGS__); } while (0)
 @import Instabug;
 
@@ -30,17 +31,18 @@
                                                initialProperties:nil
                                                    launchOptions:launchOptions];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-
+  
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [SplashScreen show];
-#ifndef DEBUG
-  [TestFairy begin:@"969f6c921cb435cea1d41d1ea3f5b247d6026d55"];
-  //[Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
-#endif
+  NSString *testfairyEnabled = [ReactNativeConfig envFor:@"TESTFAIRY_ENABLED"];
+  if([testfairyEnabled isEqualToString:@"q"]){
+    [TestFairy begin:@"969f6c921cb435cea1d41d1ea3f5b247d6026d55"];
+    //[Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
+  }
   return YES;
 }
 

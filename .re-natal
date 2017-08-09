@@ -1,7 +1,7 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "10.0.3.2",
+  "androidHost": "localhost",
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
@@ -42,12 +42,13 @@
     "react-native-http-bridge",
     "emojilib",
     "react-native-mapbox-gl",
-    "bignumber.js"
+    "bignumber.js",
+    "react-native-config"
   ],
   "imageDirs": [
     "images"
   ],
-  "iosHost": "localhost",
+  "iosHost": "10.0.1.4",
   "envRoots": {
     "dev": "env/dev",
     "prod": "env/prod"
