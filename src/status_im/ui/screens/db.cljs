@@ -9,7 +9,7 @@
             status-im.ui.screens.group.db
             status-im.chat.specs
             status-im.chat.new-public-chat.db
-            status-im.profile.specs
+            status-im.ui.screens.profile.db
             status-im.transactions.specs
             status-im.ui.screens.discover.db))
 
@@ -37,7 +37,6 @@
              :tags                       []
              :sync-state                 :done
              :network                    :testnet})
-
 
 ;;;;GLOBAL
 

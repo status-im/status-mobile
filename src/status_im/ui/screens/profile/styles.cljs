@@ -1,14 +1,15 @@
-(ns status-im.profile.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :refer [color-white
-                                                 color-black
-                                                 color-gray4
-                                                 color-gray5
-                                                 color-light-gray
-                                                 color-light-blue
-                                                 color-light-blue-transparent
-                                                 text1-color]]
-            [status-im.utils.platform :as p]))
+(ns status-im.ui.screens.profile.styles
+  (:require [status-im.components.styles
+             :refer
+             [color-black
+              color-gray4
+              color-gray5
+              color-light-blue
+              color-light-gray
+              color-white
+              text1-color]]
+            [status-im.utils.platform :as platform])
+  (:require-macros [status-im.utils.styles :refer [defstyle]]))
 
 (def profile
   {:flex             1
@@ -129,7 +130,7 @@
   {:margin-left      16})
 
 (def edit-line-color
-  (if p/ios?
+  (if platform/ios?
     (str color-gray5 "80")
     color-gray5))
 
@@ -137,7 +138,7 @@
   color-light-blue)
 
 (def profile-focus-line-height
-  (get-in p/platform-specific [:component-styles :text-field-focus-line-height]))
+  (get-in platform/platform-specific [:component-styles :text-field-focus-line-height]))
 
 (defstyle profile-name-input
   {:color   text1-color
@@ -189,4 +190,3 @@
 (def add-a-status
   (merge profile-status-text
          {:color color-gray4}))
-

@@ -1,39 +1,37 @@
 (ns status-im.ui.screens.events
-  (:require
-    status-im.chat.handlers
-    status-im.ui.screens.group.chat-settings.events
-    status-im.ui.screens.navigation
-    status-im.ui.screens.contacts.events
-    status-im.ui.screens.discover.events
-    status-im.ui.screens.group.events
-    status-im.profile.handlers
-    status-im.commands.handlers.loading
-    status-im.commands.handlers.jail
-    status-im.ui.screens.qr-scanner.events
-    status-im.ui.screens.accounts.events
-    status-im.protocol.handlers
-    status-im.transactions.handlers
-    status-im.network.handlers
-    status-im.debug.handlers
-    status-im.bots.handlers
+  (:require status-im.bots.handlers
+            status-im.chat.handlers
+            status-im.commands.handlers.jail
+            status-im.commands.handlers.loading
+            status-im.debug.handlers
+            status-im.network.handlers
+            status-im.protocol.handlers
+            status-im.transactions.handlers
+            status-im.ui.screens.accounts.events
+            status-im.ui.screens.contacts.events
+            status-im.ui.screens.discover.events
+            status-im.ui.screens.group.chat-settings.events
+            status-im.ui.screens.group.events
+            status-im.ui.screens.navigation
+            status-im.ui.screens.profile.events
+            status-im.ui.screens.qr-scanner.events
 
-    [re-frame.core :refer [dispatch reg-fx]]
-    [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
-    [status-im.ui.screens.db :refer [app-db]]
-    [status-im.data-store.core :as data-store]
-    [taoensso.timbre :as log]
-    [status-im.utils.crypt :as crypt]
-    [status-im.components.status :as status]
-    [status-im.components.permissions :as permissions]
-
-    [status-im.utils.types :as types]
-    [status-im.constants :refer [console-chat-id]]
-    [status-im.utils.instabug :as inst]
-    [status-im.utils.platform :as platform]
-    [status-im.js-dependencies :as dependencies]
-    [status-im.utils.utils :as utils]
-    [status-im.utils.config :as config]
-    [status-im.i18n :as i18n]))
+            [re-frame.core :refer [dispatch reg-fx]]
+            [status-im.components.status :as status]
+            [status-im.components.permissions :as permissions]
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.data-store.core :as data-store]
+            [status-im.i18n :as i18n]
+            [status-im.js-dependencies :as dependencies]
+            [status-im.ui.screens.db :refer [app-db]]
+            [status-im.utils.config :as config]
+            [status-im.utils.crypt :as crypt]
+            [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
+            [status-im.utils.instabug :as inst]
+            [status-im.utils.platform :as platform]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]
+            [taoensso.timbre :as log]))
 
 ;;;; COFX
 
@@ -48,33 +46,33 @@
   ::initialize-crypt-fx
   (fn []
     (crypt/gen-random-bytes
-      1024
-      (fn [{:keys [error buffer]}]
-        (if error
-          (log/error "Failed to generate random bytes to initialize sjcl crypto")
-          (->> (.toString buffer "hex")
-               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-               (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
+     1024
+     (fn [{:keys [error buffer]}]
+       (if error
+         (log/error "Failed to generate random bytes to initialize sjcl crypto")
+         (->> (.toString buffer "hex")
+              (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
+              (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
 
 (defn node-started [result]
   (log/debug "Started Node"))
 
 (defn move-to-internal-storage []
   (status/move-to-internal-storage
-    (fn []
-      (status/start-node node-started))))
+   (fn []
+     (status/start-node node-started))))
 
 (reg-fx
   ::initialize-geth-fx
   (fn []
     (status/should-move-to-internal-storage?
-      (fn [should-move?]
-        (if should-move?
-          (dispatch [:request-permissions
-                     [:read-external-storage]
-                     #(move-to-internal-storage)
-                     #(dispatch [:move-to-internal-failure-message])])
-          (status/start-node node-started))))))
+     (fn [should-move?]
+       (if should-move?
+         (dispatch [:request-permissions
+                    [:read-external-storage]
+                    #(move-to-internal-storage)
+                    #(dispatch [:move-to-internal-failure-message])])
+         (status/start-node node-started))))))
 
 (reg-fx
   ::status-module-initialized-fx
@@ -101,8 +99,8 @@
   (fn []
     (when config/testfairy-enabled?
       (utils/show-popup
-        (i18n/label :testfairy-title)
-        (i18n/label :testfairy-message)))))
+       (i18n/label :testfairy-title)
+       (i18n/label :testfairy-message)))))
 
 ;;;; Handlers
 
@@ -133,12 +131,12 @@
                 network-status network _]} :db} _]
     {::init-store nil
      :db (assoc app-db
-           :current-account-id nil
-           :contacts/contacts {}
-           :network-status network-status
-           :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-           :status-node-started? status-node-started?
-           :network (or network :testnet))}))
+                :current-account-id nil
+                :contacts/contacts {}
+                :network-status network-status
+                :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                :status-node-started? status-node-started?
+                :network (or network :testnet))}))
 
 (register-handler-db
   :initialize-account-db
@@ -174,14 +172,14 @@
                  :chat
                  :accounts)]
       (merge
-        {:db (assoc db :view-id view
-                       :navigation-stack (list view))}
-        (when (or (empty? accounts) open-console?)
-          {:dispatch-n (concat
-                         [[:init-console-chat]
-                          [:load-commands!]]
-                         (when open-console?
-                          [[:navigate-to :chat console-chat-id]]))})))))
+       {:db (assoc db :view-id view
+                   :navigation-stack (list view))}
+       (when (or (empty? accounts) open-console?)
+         {:dispatch-n (concat
+                       [[:init-console-chat]
+                        [:load-commands!]]
+                       (when open-console?
+                         [[:navigate-to :chat console-chat-id]]))})))))
 
 (register-handler-fx
   :initialize-crypt
@@ -247,19 +245,19 @@
                 (fn []
                   (let [watch-id (atom nil)]
                     (.getCurrentPosition
-                      navigator.geolocation
-                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                      (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
+                     navigator.geolocation
+                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                     (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
                     (when platform/android?
                       (reset! watch-id
                               (.watchPosition
-                                navigator.geolocation
-                                #(do
-                                   (.clearWatch
-                                     navigator.geolocation
-                                     @watch-id)
-                                   (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
+                               navigator.geolocation
+                               #(do
+                                  (.clearWatch
+                                   navigator.geolocation
+                                   @watch-id)
+                                  (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
 
 (register-handler-db
   :update-geolocation

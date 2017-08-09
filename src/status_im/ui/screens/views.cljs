@@ -37,10 +37,10 @@
                                                                    add-participants-toggle-list]]
             [status-im.ui.screens.group.reorder.views :refer [reorder-groups]]
 
-            [status-im.profile.screen :refer [profile my-profile]]
-            [status-im.profile.edit.screen :refer [edit-my-profile]]
-            [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
-            [status-im.profile.qr-code.screen :refer [qr-code-view]]
+            [status-im.ui.screens.profile.views :refer [profile my-profile]]
+            [status-im.ui.screens.profile.edit.views :refer [edit-my-profile]]
+            [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
+            [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]))
             ;;[status-im.ui.screens.wallet.receive.views :refer [receive-transaction]]
 
