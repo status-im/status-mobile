@@ -67,6 +67,7 @@
             chat-id       [:chat :chat-id]
             contacts      [:chat :contacts]
             public?       [:chat :public?]
+            public-key    [:chat :public-key]
             show-actions? [:chat-ui-props :show-actions?]
             accounts      [:get :accounts]
             contact       [:get-in [:contacts/contacts @chat-id]]
@@ -76,7 +77,7 @@
                                  show-actions?
                                  creating?))
      (let [chat-name (if (str/blank? name)
-                       (generate-gfy)
+                       (generate-gfy public-key)
                        (or (get-contact-translated chat-id :name name)
                            (label :t/chat-name)))]
        [text {:style           st/chat-name-text
