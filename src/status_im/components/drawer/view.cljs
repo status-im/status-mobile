@@ -47,13 +47,14 @@
    [view
     [ci/chat-icon (:photo-path account) {:size 52}]]])
 
-(defview name-input [placeholder]
+(defview name-input []
   [account [:get-current-account]
    new-name [:get-in [:profile-edit :name]]]
-  (let [current-name (:name account)]
+  (let [current-name (:name account)
+        public-key (:public-key account)]
     [view {:style st/name-input-wrapper}
      [text-input
-      {:placeholder    placeholder
+      {:placeholder    (gfycat/generate-gfy public-key)
        :style          (st/name-input-text (s/valid? ::v/name (or new-name current-name)))
        :font           :medium
        :default-value  (or new-name current-name)
@@ -169,20 +170,19 @@
       (i18n/label :t/switch-users)]]]])
 
 (defn drawer []
-  (let [placeholder (gfycat/generate-gfy)]
-    (fn []
-      [touchable-without-feedback {:on-press #(dismiss-keyboard!)}
-       [view st/drawer
-        [view st/upper-container
-         [view st/profile-container
-          [profile-picture]
-          [name-input placeholder]
-          [status-input]
-          [options-btn]]
-         [current-network]]
-        [view
-         [unsigned-transactions]
-         [switch-account]]]])))
+  (fn []
+    [touchable-without-feedback {:on-press #(dismiss-keyboard!)}
+     [view st/drawer
+      [view st/upper-container
+       [view st/profile-container
+        [profile-picture]
+        [name-input]
+        [status-input]
+        [options-btn]]
+       [current-network]]
+      [view
+       [unsigned-transactions]
+       [switch-account]]]]))
 
 (defn drawer-view [items]
   [drawer-layout {:drawerWidth          300

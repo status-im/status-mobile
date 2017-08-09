@@ -34,7 +34,7 @@
           (= account-address whisper-id) account-name
           (not (str/blank? contact-name)) contact-name
           (not (str/blank? name)) name
-          :else (generate-gfy))]
+          :else (generate-gfy whisper-id))]
        [status-view {:id     message-id
                      :style  (:status-text item-style)
                      :status status}]]
