@@ -405,17 +405,6 @@
                                      :pending?         true}]
                   [:account-update-keys]]}))
 
-(defn remove-contact-from-group [whisper-identity]
-  (fn [contacts]
-    (remove #(= whisper-identity (:identity %)) contacts)))
-
-(register-handler-fx
-  :remove-contact-from-group
-  (fn [{:keys [db]} [_ whisper-identity group-id]]
-    (let [{:group/keys [contact-groups]} db
-          group' (update (contact-groups group-id) :contacts (remove-contact-from-group whisper-identity))]
-      {:dispatch [:update-contact-group group']})))
-
 ;;used only by status-dev-cli
 (register-handler-fx
   :remove-contact

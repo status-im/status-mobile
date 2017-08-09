@@ -535,3 +535,112 @@
                                          (select-keys db [:web3 :current-public-key]))})
         {:dispatch-n [[:navigate-to-clean :chat-list]
                       [:navigate-to :chat topic]]}))))
+
+(reg-fx
+  ::save-chat
+  (fn [new-chat]
+    (chats/save new-chat)))
+
+(reg-fx
+  ::start-listen-group
+  (fn [{:keys [new-chat web3 current-public-key]}]
+    (let [{:keys [chat-id public-key private-key contacts name]} new-chat
+          identities (mapv :identity contacts)]
+      (protocol/invite-to-group!
+        {:web3       web3
+         :group      {:id       chat-id
+                      :name     name
+                      :contacts (conj identities current-public-key)
+                      :admin    current-public-key
+                      :keypair  {:public  public-key
+                                 :private private-key}}
+         :identities identities
+         :message    {:from       current-public-key
+                      :message-id (random/id)}})
+      (protocol/start-watching-group!
+        {:web3     web3
+         :group-id chat-id
+         :identity current-public-key
+         :keypair  {:public  public-key
+                    :private private-key}
+         :callback #(dispatch [:incoming-message %1 %2])}))))
+
+(reg-fx
+  ::start-watching-group
+  (fn [{:keys [group-id web3 current-public-key keypair]}]
+    (protocol/start-watching-group!
+      {:web3     web3
+       :group-id group-id
+       :identity current-public-key
+       :keypair  keypair
+       :callback #(dispatch [:incoming-message %1 %2])})))
+
+(defn group-name-from-contacts [contacts selected-contacts username]
+  (->> (select-keys contacts selected-contacts)
+       vals
+       (map :name)
+       (cons username)
+       (string/join ", ")))
+
+(defn prepare-group-chat
+  [{:keys [current-public-key username]
+    :group/keys [selected-contacts]
+    :contacts/keys [contacts]} group-name]
+  (let [selected-contacts'  (mapv #(hash-map :identity %) selected-contacts)
+        chat-name (if-not (string/blank? group-name)
+                    group-name
+                    (group-name-from-contacts contacts selected-contacts username))
+        {:keys [public private]} (protocol/new-keypair!)]
+    {:chat-id     (random/id)
+     :public-key  public
+     :private-key private
+     :name        chat-name
+     :color       default-chat-color
+     :group-chat  true
+     :group-admin current-public-key
+     :is-active   true
+     :timestamp   (random/timestamp)
+     :contacts    selected-contacts'}))
+
+(register-handler-fx
+  :create-new-group-chat-and-open
+  (fn [{:keys [db]} [_ group-name]]
+    (let [new-chat (prepare-group-chat (select-keys db [:group/selected-contacts :current-public-key :username
+                                                        :contacts/contacts])
+                                       group-name)]
+      {:db (-> db
+               (assoc-in [:chats (:chat-id new-chat)] new-chat)
+               (assoc :group/selected-contacts #{}))
+       ::save-chat new-chat
+       ::start-listen-group (merge {:new-chat new-chat}
+                                   (select-keys db [:web3 :current-public-key]))
+       :dispatch-n [[:navigate-to-clean :chat-list]
+                    [:navigate-to :chat (:chat-id new-chat)]]})))
+
+(register-handler-fx
+  :group-chat-invite-received
+  (fn [{{:keys [current-public-key] :as db} :db}
+       [_ {:keys                                                    [from]
+           {:keys [group-id group-name contacts keypair timestamp]} :payload}]]
+    (let [{:keys [private public]} keypair]
+      (let [contacts' (keep (fn [ident]
+                              (when (not= ident current-public-key)
+                                {:identity ident})) contacts)
+            chat      {:chat-id     group-id
+                       :name        group-name
+                       :group-chat  true
+                       :group-admin from
+                       :public-key  public
+                       :private-key private
+                       :contacts    contacts'
+                       :added-to-at timestamp
+                       :timestamp   timestamp
+                       :is-active   true}
+            exists?   (chats/exists? group-id)]
+        (when (or (not exists?) (chats/new-update? timestamp group-id))
+          {::start-watching-group (merge {:group-id group-id
+                                          :keypair keypair}
+                                         (select-keys db [:web3 :current-public-key]))
+           :dispatch (if exists?
+                       [:update-chat! chat]
+                       [:add-chat group-id chat])})))))
