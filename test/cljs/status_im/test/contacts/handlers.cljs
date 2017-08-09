@@ -94,10 +94,21 @@
     :fullscreen          true
     :suggestions-trigger "on-change"}})
 
+(def test-contact-group
+  {:group-id "1501682106404-685e041e-38e7-593e-b42c-fb4cabd7faa4"
+   :name "Test"
+   :timestamp 0
+   :order 0
+   :pending? false
+   :contacts (list
+               {:identity "bchat"}
+               {:identity "Commiteth"}
+               {:identity "demo-bot"})})
+
 (def dapps-contact-group
   {:group-id "dapps"
    :name "ÐApps"
-   :order 0
+   :order 1
    :timestamp 0
    :contacts [{:identity "wallet"}
               {:identity "oaken-water-meter"}
@@ -127,6 +138,7 @@
   {"browse" browse-contact-from-realm-db
    "wallet" wallet-contact})
 
+
 (defn test-fixtures []
   (rf/reg-fx ::handlers/init-store #())
 
@@ -136,13 +148,21 @@
   (rf/reg-fx ::contacts-events/stop-watching-contact #())
   (rf/reg-fx ::contacts-events/send-contact-request-fx #())
 
+  (rf/reg-fx ::group-events/save-contact-group #())
   (rf/reg-fx ::group-events/save-contact-groups #())
+  (rf/reg-fx ::group-events/add-contacts-to-contact-group #())
+  (rf/reg-fx ::group-events/save-contact-group-property #())
   (rf/reg-fx ::group-events/add-contacts-to-contact-group #())
 
   (rf/reg-cofx
     ::contacts-events/get-all-contacts
     (fn [coeffects _]
       (assoc coeffects :all-contacts [browse-contact-from-realm-db])))
+
+  (rf/reg-cofx
+    ::group-events/get-all-contact-groups
+    (fn [coeffects _]
+      (assoc coeffects :all-groups {(:group-id test-contact-group) test-contact-group})))
 
   ;;TODO implement tests later for :add-chat? and :bot-url
   (rf/reg-cofx
@@ -155,6 +175,7 @@
 
 (deftest contacts-events
   "load-contacts
+   load-contact-groups
    load-default-contacts (add-contact-groups, add-contacts, add-contacts-to-group ;TODO add-chat, load-commands!)
    add-contact-handler (add-new-contact-and-open-chat, status-im.contacts.events/add-new-contact,
                         status-im.contacts.events/send-contact-request ;TODO start-chat)
@@ -162,7 +183,10 @@
    contact-update-received (update-contact ;TODO :update-chat!)
    hide-contact (update-contact ;TODO :account-update-keys)
    add-contact-handler (add-pending-contact, status-im.contacts.events/add-new-contact
-                        status-im.contacts.events/send-contact-request ;TODO :discoveries-send-portions)"
+                        status-im.contacts.events/send-contact-request ;TODO :discoveries-send-portions)
+   create-new-contact-group
+   set-contact-group-name
+   save-contact-group-order"
 
   (run-test-sync
 
@@ -185,10 +209,17 @@
         (is (= {"browse" browse-contact-from-realm-db} @contacts))
         (is (= browse-global-commands @global-commands)))
 
-      (testing ":load-default-contacts! event"
+      (testing ":load-contact-groups event"
 
         ;;Assert the initial state
         (is (and (map? @contact-groups) (empty? @contact-groups)))
+
+        (rf/dispatch [:load-contact-groups])
+
+        (is (= {(:group-id test-contact-group) test-contact-group}
+               @contact-groups)))
+
+      (testing ":load-default-contacts! event"
 
         ;; :load-default-contacts! event dispatches next 5 events
         ;;
@@ -199,10 +230,16 @@
         ;;TODO :load-commands!
         (rf/dispatch [:load-default-contacts!])
 
-        (is (= {"dapps" dapps-contact-group} (update @contact-groups "dapps" assoc :timestamp 0)))
+        (rf/dispatch [:set-in [:group/contact-groups "dapps" :timestamp] 0])
+
+        (is (= {"dapps" dapps-contact-group
+                (:group-id test-contact-group) test-contact-group}
+               @contact-groups))
 
         (is (= contacts-browse-wallet
                @contacts)))
+
+
 
       (let [new-contact-public-key "0x048f7d5d4bda298447bbb5b021a34832509bd1a8dbe4e06f9b7223d00a59b6dc14f6e142b21d3220ceb3155a6d8f40ec115cd96394d3cc7c55055b433a1758dc74"
             new-contact-address "5392ccb49f2e9fef8b8068b3e3b5ba6c020a9aca"
@@ -302,4 +339,106 @@
 
                   (is (= (assoc contacts-browse-wallet new-contact-public-key (assoc recieved-contact''
                                                                                 :pending? false))
-                         @contacts)))))))))))
+                         @contacts)))
+
+                (testing ":create-new-contact-group event"
+
+                  (let [new-group-name "new group"]
+
+                    (rf/dispatch [:select-contact new-contact-public-key])
+                    (rf/dispatch [:select-contact "wallet"])
+                    (rf/dispatch [:select-contact "browse"])
+                    (rf/dispatch [:deselect-contact "browse"])
+
+                    (rf/dispatch [:create-new-contact-group new-group-name])
+
+                    (rf/dispatch [:deselect-contact "wallet"])
+                    (rf/dispatch [:deselect-contact new-contact-public-key])
+
+                    (let [new-group-id (->> @contact-groups
+                                            (vals)
+                                            (filter #(= (:name %) new-group-name))
+                                            (first)
+                                            (:group-id))
+                          new-group {:group-id    new-group-id
+                                     :name        new-group-name
+                                     :order       2
+                                     :timestamp   0
+                                     :contacts   [{:identity new-contact-public-key}
+                                                  {:identity "wallet"}]}
+                          groups-with-new-group {new-group-id new-group
+                                                 "dapps" dapps-contact-group
+                                                 (:group-id test-contact-group) test-contact-group}]
+
+                      (rf/dispatch [:set-in [:group/contact-groups new-group-id :timestamp] 0])
+
+                      (is (= groups-with-new-group @contact-groups))
+
+                      (let [groups-with-new-group' (update groups-with-new-group new-group-id assoc :name "new group name")]
+
+                        (testing ":set-contact-group-name event"
+
+                          (rf/reg-event-db ::prepare-group-name
+                                           (fn [db _] (assoc db :new-chat-name "new group name"
+                                                                :group/contact-group-id new-group-id)))
+
+                          (rf/dispatch [::prepare-group-name])
+                          (rf/dispatch [:set-contact-group-name])
+
+                          (is (= groups-with-new-group' @contact-groups)))
+
+                        (let [groups-with-new-group'' (-> groups-with-new-group'
+                                                          (update new-group-id assoc :order 1)
+                                                          (update "dapps" assoc :order 2))]
+
+                          (testing ":save-contact-group-order event"
+
+                            (rf/reg-event-db ::prepare-groups-order
+                                             (fn [db _]
+                                               (assoc db :group/groups-order
+                                                         (->> (vals (:group/contact-groups db))
+                                                              (remove :pending?)
+                                                              (sort-by :order >)
+                                                              (map :group-id)))))
+
+                            (rf/dispatch [::prepare-groups-order])
+                            (rf/dispatch [:change-contact-group-order 1 0])
+                            (rf/dispatch [:save-contact-group-order])
+
+                            (is (= groups-with-new-group'' @contact-groups)))
+
+                          (testing ":add-selected-contacts-to-group event"
+
+                            (rf/dispatch [:select-contact "browse"])
+                            (rf/dispatch [:add-selected-contacts-to-group])
+                            (rf/dispatch [:deselect-contact "browse"])
+
+                            (is (= (update groups-with-new-group'' new-group-id assoc :contacts [{:identity new-contact-public-key}
+                                                                                                 {:identity "wallet"}
+                                                                                                 {:identity "browse"}])
+                                   @contact-groups)))
+
+                          (testing ":remove-contact-from-group event"
+
+                            (rf/dispatch [:remove-contact-from-group "browse" new-group-id])
+
+                            (is (= groups-with-new-group'' @contact-groups)))
+
+
+                          (testing ":add-contacts-to-group event"
+
+                            (rf/dispatch [:add-contacts-to-group new-group-id ["browse"]])
+
+                            (is (= (update groups-with-new-group'' new-group-id assoc :contacts [{:identity new-contact-public-key}
+                                                                                                 {:identity "wallet"}
+                                                                                                 {:identity "browse"}])
+                                   @contact-groups))
+
+                            (rf/dispatch [:remove-contact-from-group "browse" new-group-id]))
+
+                          (testing ":delete-contact-group event"
+
+                            (rf/dispatch [:delete-contact-group])
+
+                            (is (= (update groups-with-new-group'' new-group-id assoc :pending? true)
+                                   @contact-groups))))))))))))))))

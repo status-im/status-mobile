@@ -221,8 +221,7 @@
                                     (.clearWatch
                                       navigator.geolocation
                                       @watch-id)
-                                    (dispatch [:update-geolocation (js->clj % :keywordize-keys true)]))))
-                       (dispatch [:set-in [:debug :watch-id] @watch-id]))))]))))
+                                    (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]))))
 
 (register-handler :update-geolocation
   (fn [db [_ geolocation]]
