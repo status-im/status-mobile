@@ -312,9 +312,10 @@
         (dispatch [::clear-chat-loaded-callbacks chat-id])))))
 
 (defn prepare-chat [{:contacts/keys [contacts]} chat-id chat]
-  (let [name (get-in contacts [chat-id :name])]
+  (let [name (get-in contacts [chat-id :name])
+        whisper-identity (get-in contacts [chat-id :whisper-identity])]
     (merge {:chat-id    chat-id
-            :name       (or name (generate-gfy))
+            :name       (or name (generate-gfy whisper-identity))
             :color      default-chat-color
             :group-chat false
             :is-active  true

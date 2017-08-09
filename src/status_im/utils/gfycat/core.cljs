@@ -10,8 +10,8 @@
   (str/capitalize (rnd/seeded-rand-nth gen vector)))
 
 (defn generate-gfy
-  ([account]
-  (let [gen (rnd/rand-gen account)
+  ([public-key]
+  (let [gen (rnd/rand-gen public-key)
         first-adjective (pick-random gen adjectives/data)
         second-adjective (pick-random gen adjectives/data)
         animal (pick-random gen animals/data)]

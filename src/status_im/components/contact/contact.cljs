@@ -21,7 +21,7 @@
       (if (pos? (count (:name contact)))
         (get-contact-translated whisper-identity :name name)
         ;;TODO is this correct behaviour?
-        (generate-gfy))]
+        (generate-gfy whisper-identity))]
      (when info
        [text {:style st/info-text}
         info])]]))

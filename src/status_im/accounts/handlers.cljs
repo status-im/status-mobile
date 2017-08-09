@@ -45,7 +45,7 @@
         {:keys [public private]} (protocol/new-keypair!)
         account    {:public-key          public-key
                     :address             address
-                    :name                (generate-gfy)
+                    :name                (generate-gfy public-key)
                     :status              (rand-nth statuses/data)
                     :signed-up?          true
                     :updates-public-key  public
