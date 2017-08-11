@@ -40,6 +40,7 @@
 
 (def list-view-class (get-class "ListView"))
 (def scroll-view (get-class "ScrollView"))
+(def flat-list-class (get-class "FlatList"))
 (def web-view (get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
 
@@ -105,6 +106,20 @@
            :resizeMode "contain"
            :style      style}]))
 
+(defn- wrap-render-fn [f]
+  (fn [o]
+    (let [{:keys [item index separators]} (js->clj o :keywordize-keys true)]
+      (r/as-element (f item index separators)))))
+
+(defn flat-list
+  "A function wrapping the creation of FlatList.
+   See https://facebook.github.io/react-native/docs/flatlist.html"
+  ([data render-fn] (flat-list data render-fn {}))
+  ([data render-fn props]
+   [flat-list-class (merge {:data (clj->js data) :renderItem (wrap-render-fn render-fn) :keyExtractor (fn [_ i] i)} props)]))
+
+;; TODO Migrate to new FlatList and SectionList when appropriate. ListView will eventually get deprecated
+;; see https://facebook.github.io/react-native/docs/using-a-listview.html
 (defn list-view [props]
   [list-view-class (merge {:enableEmptySections true} props)])
 

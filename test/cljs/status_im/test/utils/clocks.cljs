@@ -10,6 +10,8 @@
 (def b (atom {:identity "b"}))
 (def c (atom {:identity "c"}))
 
+(declare recv!)
+
 ;; The network is unreliable.
 (defn random-broadcast! [chat-id message]
   (when (> (rand-int 10) 5) (recv! a chat-id message))

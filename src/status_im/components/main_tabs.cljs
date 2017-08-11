@@ -11,42 +11,38 @@
             [status-im.ui.screens.discover.views :refer [discover]]
             [status-im.ui.screens.contacts.views :refer [contact-groups-list]]
             [status-im.ui.screens.wallet.main-screen.views :refer [wallet]]
-            [status-im.components.tabs.tabs :refer [tabs]]
+            [status-im.utils.config :as config]
+            [status-im.components.tabs.views :refer [tabs]]
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
             [status-im.i18n :refer [label]]
             [cljs.core.async :as a]))
 
 (def tab-list
-  [{:view-id       :chat-list
-    :title         (label :t/chats)
-    :screen        chats-list
-    :icon-inactive :icon_chats
-    :icon-active   :icon_chats_active
-    :index         0}
-   {:view-id       :discover
-    :title         (label :t/discover)
-    :screen        discover
-    :icon-inactive :icon_discover
-    :icon-active   :icon_discover_active
-    :index         1}
-   {:view-id       :contact-list
-    :title         (label :t/contacts)
-    :screen        contact-groups-list
-    :icon-inactive :icon_contacts
-    :icon-active   :icon_contacts_active
-    :index         2}
-   {:view-id       :wallet
-    :title         "Wallet"
-    :screen        wallet
-    :icon-inactive :icon_contacts
-    :icon-active   :icon_contacts_active
-    :index         3}])
+  (concat
+    [{:view-id       :chat-list
+      :title         (label :t/chats)
+      :screen        chats-list
+      :icon-inactive :icon_chats
+      :icon-active   :icon_chats_active}
+     {:view-id       :discover
+      :title         (label :t/discover)
+      :screen        discover
+      :icon-inactive :icon_discover
+      :icon-active   :icon_discover_active}
+     {:view-id       :contact-list
+      :title         (label :t/contacts)
+      :screen        contact-groups-list
+      :icon-inactive :icon_contacts
+      :icon-active   :icon_contacts_active}]
+    (when config/wallet-tab-enabled?
+      [{:view-id       :wallet
+        :title         "Wallet"
+        :screen        wallet
+        :icon-inactive :icon_contacts
+        :icon-active   :icon_contacts_active}])))
 
-(def tab->index {:chat-list    0
-                 :discover     1
-                 :contact-list 2
-                 :wallet       3})
+(def tab->index (reduce #(assoc %1 (:view-id %2) (count %1)) {} tab-list))
 
 (def index->tab (clojure.set/map-invert tab->index))
 
@@ -116,12 +112,9 @@
                        :loop                   false
                        :ref                    #(reset! main-swiper %)
                        :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)})
-              [chats-list]
-              [discover (= @view-id :discover)]
-              [contact-groups-list (= @view-id :contact-list)]]
-              ;; TODO(oskarth): While wallet is in WIP we hide the wallet component
-              ;;[wallet (= @view-id :wallet)]
-
+              (doall
+                (map-indexed (fn [index {vid :view-id screen :screen}]
+                               ^{:key index} [screen (= @view-id vid)]) tab-list))]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
                     :tab-list         tab-list}]

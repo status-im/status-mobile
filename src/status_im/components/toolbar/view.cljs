@@ -14,6 +14,8 @@
             [status-im.accessibility-ids :as id]
             [status-im.utils.platform :refer [platform-specific]]))
 
+;; TODO This is our old toolbar component. Please do not use it and consider moving legacy usage to the new toolbar_new component.
+
 (defn toolbar [{title                :title
                 nav-action           :nav-action
                 hide-nav?            :hide-nav?

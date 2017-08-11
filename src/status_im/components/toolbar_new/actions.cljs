@@ -1,5 +1,7 @@
 (ns status-im.components.toolbar-new.actions
-  (:require [status-im.components.toolbar-new.styles :as st]))
+  (:require [re-frame.core :refer [dispatch]]
+            [status-im.accessibility-ids :as id]
+            [status-im.components.toolbar-new.styles :as st]))
 
 (def nothing
   {:image   {:source nil
@@ -25,7 +27,7 @@
              :style  st/action-default}
    :handler handler})
 
-(defn search-icon []
+(def search-icon
   {:image   {:source {:uri :icon_search_dark}
              :style  (merge st/action-default
                             {:opacity 0.4})}})
@@ -33,7 +35,11 @@
 (defn back [handler]
   {:image   {:source {:uri :icon_back_dark}
              :style  st/action-default}
-   :handler handler})
+   :handler handler
+   :accessibility-label id/toolbar-back-button})
+
+(def default-back
+  (back #(dispatch [:navigate-back])))
 
 (defn back-white [handler]
   {:image   {:source {:uri :icon_back_white}

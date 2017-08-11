@@ -6,9 +6,7 @@
                                                 animated-view
                                                 text
                                                 icon
-                                                touchable-highlight
-                                                list-view
-                                                list-item]]
+                                                touchable-highlight]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.i18n :refer [label label-pluralize]]
