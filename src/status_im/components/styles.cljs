@@ -110,3 +110,10 @@
 (def button-input
   {:flex          1
    :flexDirection :column})
+
+(def modal
+  {:position :absolute
+   :left     0
+   :top      0
+   :right    0
+   :bottom   0})

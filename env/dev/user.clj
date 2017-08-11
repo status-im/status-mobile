@@ -39,7 +39,7 @@
   []
   (ra/stop-figwheel!))
 
-(hawk/watch! [{:paths   ["resources" "bots"]
+(hawk/watch! [{:paths   ["resources"]
                :handler (fn [ctx e]
                           (let [path         "src/status_im/utils/js_resources.cljs"
                                 js-resourced (slurp path)]

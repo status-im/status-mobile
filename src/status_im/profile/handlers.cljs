@@ -1,13 +1,12 @@
 (ns status-im.profile.handlers
   (:require [re-frame.core :refer [subscribe dispatch after]]
-            [status-im.utils.handlers :refer [register-handler] :as u]
+            [status-im.utils.handlers :refer [register-handler get-hashtags] :as u]
             [status-im.components.react :refer [show-image-picker]]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.i18n :refer [label]]
-            [status-im.utils.handlers :as u :refer [get-hashtags]]
             [taoensso.timbre :as log]
             [status-im.constants :refer [console-chat-id]]
-            [status-im.navigation.handlers :as nav]))
+            [status-im.ui.screens.navigation :as nav]))
 
 (defn message-user [identity]
   (when identity

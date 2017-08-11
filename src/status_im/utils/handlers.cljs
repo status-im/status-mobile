@@ -31,8 +31,8 @@
       [context]
       (let [new-db (get-effect context :db)
             v (get-coeffect context :event)]
-        (when (and new-db (not (s/valid? :status-im.specs/db new-db)))
-          (throw (ex-info (str "spec check failed on: " (first v) "\n " (s/explain-str :status-im.specs/db new-db)) {})))
+        (when (and new-db (not (s/valid? :status-im.ui.screens.db/db new-db)))
+          (throw (ex-info (str "spec check failed on: " (first v) "\n " (s/explain-str :status-im.ui.screens.db/db new-db)) {})))
         context))))
 
 (defn register-handler

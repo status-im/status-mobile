@@ -3,7 +3,7 @@
   (:require [re-frame.core :refer [dispatch]]
             [clojure.string :as str]
             [reagent.core :as r]
-            [status-im.contacts.styles :as cst]
+            [status-im.ui.screens.contacts.styles :as cst]
             [status-im.components.common.common :refer [separator
                                                         form-spacer
                                                         top-shadow

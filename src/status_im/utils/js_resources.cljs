@@ -32,20 +32,20 @@
   (let [resource-name (keyword (subs url (count local-protocol)))]
     (resources resource-name)))
 
-(def status-js (str (slurp "resources/status.js")
-                    (slurp "resources/i18n.js")))
+(def status-js (str (slurp "resources/js/status.js")
+                    (slurp "resources/js/i18n.js")))
 
-(def webview-js (slurp "resources/webview.js"))
+(def webview-js (slurp "resources/js/webview.js"))
 (def jquery (str
               " if (typeof jQuery2 == 'undefined') {"
-              (slurp "resources/jquery-3.1.1.min.js")
+              (slurp "resources/js/vendors/jquery-3.1.1.min.js")
               "}"))
 (def web3 (str "; if (typeof Web3 == 'undefined') {"
                (slurp "resources/web3.0_16_0.min.js")
                "}"))
 (defn web3-init [provider-address]
   (str "var providerAddress = \"" provider-address "\";"
-       (slurp "resources/web3_init.js")))
+       (slurp "resources/js/web3_init.js")))
 
 (defn local-storage-data [data]
   (str "var localStorageData = " (or data "{}") ";"))

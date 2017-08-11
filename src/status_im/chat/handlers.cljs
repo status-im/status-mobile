@@ -19,7 +19,7 @@
                                          wallet-chat-id]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
-            [status-im.navigation.handlers :as nav]
+            [status-im.ui.screens.navigation :as nav]
             [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
             [status-im.handlers.server :as server]
             [status-im.utils.phone-number :refer [format-phone-number
@@ -564,16 +564,6 @@
          :keypair  {:public  public-key
                     :private private-key}
          :callback #(dispatch [:incoming-message %1 %2])}))))
-
-(reg-fx
-  ::start-watching-group
-  (fn [{:keys [group-id web3 current-public-key keypair]}]
-    (protocol/start-watching-group!
-      {:web3     web3
-       :group-id group-id
-       :identity current-public-key
-       :keypair  keypair
-       :callback #(dispatch [:incoming-message %1 %2])})))
 
 (defn group-name-from-contacts [contacts selected-contacts username]
   (->> (select-keys contacts selected-contacts)

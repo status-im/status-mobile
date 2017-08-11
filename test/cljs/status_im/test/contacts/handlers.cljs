@@ -3,12 +3,11 @@
             reagent.core
             [re-frame.core :as rf]
             [day8.re-frame.test :refer-macros [run-test-sync]]
-            status-im.specs
-            status-im.db
-            [status-im.contacts.events :as contacts-events]
-            [status-im.group.events :as group-events]
-            [status-im.handlers :as handlers]
-            status-im.subs
+            status-im.ui.screens.db
+            [status-im.ui.screens.contacts.events :as contacts-events]
+            [status-im.ui.screens.group.events :as group-events]
+            status-im.ui.screens.subs
+            [status-im.ui.screens.events :as events]
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.datetime :as datetime]))
 
@@ -140,7 +139,7 @@
 
 
 (defn test-fixtures []
-  (rf/reg-fx ::handlers/init-store #())
+  (rf/reg-fx ::events/init-store #())
 
   (rf/reg-fx ::contacts-events/save-contacts! #())
   (rf/reg-fx ::contacts-events/save-contact #())
