@@ -38,16 +38,12 @@ node {
       sh 'cd android && ./gradlew assembleRelease'
     }
     stage('Deploy (Android)') {
-      def artifact_dir = pwd() + '/android/app/build/outputs/apk/'
-      def artifact = new File(artifact_dir + 'app-release.apk')
-      assert artifact.exists()
-      def server = Artifactory.server('artifacts')
-      def shortCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(6)
-      def filename = 'im.status.ethereum-' + shortCommit + '.apk'
-      artifact.renameTo artifact_dir + filename
-      def uploadSpec = '{ "files": [ { "pattern": "*apk/' + filename + '", "target": "pull-requests" }]}'
-      def buildInfo = server.upload(uploadSpec)
-      apkUrl = 'http://artifacts.status.im:8081/artifactory/pull-requests/' + filename
+        withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@android/app/build/outputs/apk/app-release.apk -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
+            sh 'sleep 10'
+            def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
+            apkUrl = 'https://i.diawi.com/' + hash
+        }
     }
 
     // try {
