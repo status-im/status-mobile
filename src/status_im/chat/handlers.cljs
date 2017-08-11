@@ -565,16 +565,6 @@
                     :private private-key}
          :callback #(dispatch [:incoming-message %1 %2])}))))
 
-(reg-fx
-  ::start-watching-group
-  (fn [{:keys [group-id web3 current-public-key keypair]}]
-    (protocol/start-watching-group!
-      {:web3     web3
-       :group-id group-id
-       :identity current-public-key
-       :keypair  keypair
-       :callback #(dispatch [:incoming-message %1 %2])})))
-
 (defn group-name-from-contacts [contacts selected-contacts username]
   (->> (select-keys contacts selected-contacts)
        vals
