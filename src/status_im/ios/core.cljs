@@ -38,6 +38,8 @@
             [status-im.profile.screen :refer [profile my-profile]]
             [status-im.profile.edit.screen :refer [edit-my-profile]]
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
+            [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
+            ;;[status-im.ui.screens.wallet.receive.views :refer [receive-transaction]]
             status-im.data-store.core
             [taoensso.timbre :as log]
             [status-im.chat.styles.screen :as st]
@@ -93,6 +95,8 @@
            (let [current-view (validate-current-view @view-id @signed-up?)]
              (let [component (case current-view
                                :wallet main-tabs
+                               :wallet-send-transaction send-transaction
+                               ;;:wallet-receive-transaction receive-transaction
                                :discover main-tabs
                                :discover-search-results discover-search-results
                                :chat-list main-tabs

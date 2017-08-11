@@ -119,7 +119,8 @@
               [chats-list]
               [discover (= @view-id :discover)]
               [contact-groups-list (= @view-id :contact-list)]
-              ;; [wallet]
+              ;; TODO(oskarth): While wallet is in WIP we hide the wallet component
+              ;;[wallet (= @view-id :wallet)]
               ]
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
