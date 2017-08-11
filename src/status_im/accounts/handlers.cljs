@@ -35,7 +35,7 @@
   :add-account
   (u/handlers->
     update-account
-      save-account ))
+      save-account))
 
 (defn account-created [result password]
   (let [data       (json->clj result)
@@ -164,13 +164,8 @@
   (let [accounts (->> (accounts-store/get-all)
                       (map (fn [{:keys [address] :as account}]
                              [address account]))
-                      (into {}))
-        view     (if (empty? accounts)
-                   :chat
-                   :accounts)]
-    (assoc db :accounts accounts
-              :view-id view
-              :navigation-stack (list view))))
+                      (into {}))]
+    (assoc db :accounts accounts)))
 
 (reg-event-db :load-accounts load-accounts!)
 

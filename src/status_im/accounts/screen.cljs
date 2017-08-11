@@ -34,7 +34,9 @@
      [account-bage address photo-path name]]]])
 
 (defn create-account [_]
-  (dispatch [:reset-app #(dispatch [:navigate-to :chat console-chat-id])]))
+  (dispatch [:initialize-db])
+  (dispatch [:load-accounts])
+  (dispatch [:check-console-chat true]))
 
 (defview accounts []
   [accounts [:get :accounts]]
