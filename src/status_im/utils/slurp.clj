@@ -10,6 +10,6 @@
        (map (fn [file-name]
               (try
                 (clojure.core/slurp
-                  (s/join "/" ["bots" (name bot-name) file-name]))
+                  (s/join "/" ["resources/js/bots" (name bot-name) file-name]))
                 (catch Exception _ ""))))
        (apply str)))

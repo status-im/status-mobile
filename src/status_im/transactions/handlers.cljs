@@ -1,7 +1,7 @@
 (ns status-im.transactions.handlers
   (:require [re-frame.core :refer [after dispatch debug enrich]]
             [status-im.utils.handlers :refer [register-handler]]
-            [status-im.navigation.handlers :as nav]
+            [status-im.ui.screens.navigation :as nav]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]

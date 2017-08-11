@@ -7,9 +7,9 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.components.tabs.bottom-shadow :refer [bottom-shadow-view]]
-            [status-im.chats-list.screen :refer [chats-list]]
-            [status-im.discover.screen :refer [discover]]
-            [status-im.contacts.views :refer [contact-groups-list]]
+            [status-im.ui.screens.chats-list.views :refer [chats-list]]
+            [status-im.ui.screens.discover.views :refer [discover]]
+            [status-im.ui.screens.contacts.views :refer [contact-groups-list]]
             [status-im.ui.screens.wallet.main-screen.views :refer [wallet]]
             [status-im.components.tabs.tabs :refer [tabs]]
             [status-im.components.tabs.styles :as st]
@@ -118,10 +118,10 @@
                        :on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)})
               [chats-list]
               [discover (= @view-id :discover)]
-              [contact-groups-list (= @view-id :contact-list)]
+              [contact-groups-list (= @view-id :contact-list)]]
               ;; TODO(oskarth): While wallet is in WIP we hide the wallet component
               ;;[wallet (= @view-id :wallet)]
-              ]
+
              [tabs {:selected-view-id @view-id
                     :prev-view-id     @prev-view-id
                     :tab-list         tab-list}]

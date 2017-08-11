@@ -7,12 +7,12 @@
             [taoensso.timbre :as log]
             [status-im.models.commands :as commands]
             [status-im.commands.utils :as cu]
-            [status-im.contacts.db :as v]
+            [status-im.ui.screens.contacts.db :as v]
             [status-im.components.status :as s]
             [status-im.components.nfc :as nfc]
             [status-im.constants :as c]
             [cljs.reader :refer [read-string]]
-            [status-im.navigation.handlers :as nav]))
+            [status-im.ui.screens.navigation :as nav]))
 
 (defn by-public-key [public-key contacts]
   (when-let [{:keys [address]} (contacts public-key)]
