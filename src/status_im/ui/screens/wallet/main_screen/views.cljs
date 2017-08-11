@@ -26,7 +26,7 @@
 
 (defn toolbar-view []
   [toolbar/toolbar {:style          st/toolbar
-                    :nav-action     (act/list-white #(rf/dispatch [:navigate-to-modal :unsigned-transactions]))
+                    :nav-action     (act/list-white #(rf/dispatch [:navigate-to-modal :wallet-transactions]))
                     :custom-content [toolbar-title]
                     :custom-action  [toolbar-buttons]}])
 

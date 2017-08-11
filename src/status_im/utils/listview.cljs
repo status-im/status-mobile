@@ -4,13 +4,13 @@
   (.cloneWithRows ds (reduce (fn [ac el] (.push ac el) ac)
                              (clj->js []) rows)))
 
-(defn data-source [config]
+(defn- data-source [config]
   (js/ReactNative.ListView.DataSource. (clj->js config)))
 
 (defn to-datasource [items]
   (clone-with-rows (data-source {:rowHasChanged not=}) items))
 
-(defn clone-with-rows-inverted [ds rows]
+(defn- clone-with-rows-inverted [ds rows]
   (let [rows (reduce (fn [ac el] (.push ac el) ac)
                      (clj->js []) (reverse rows))
         row-ids (.reverse (.map rows (fn [_ index] index)))]

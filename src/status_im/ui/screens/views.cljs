@@ -41,8 +41,8 @@
             [status-im.ui.screens.profile.edit.views :refer [edit-my-profile]]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
             [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
-            [status-im.ui.screens.wallet.send.views :refer [send-transaction]]))
-            ;;[status-im.ui.screens.wallet.receive.views :refer [receive-transaction]]
+            [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
+            [status-im.ui.screens.wallet.history.views :refer [wallet-transactions]]))
 
 (defn validate-current-view
   [current-view signed-up?]
@@ -60,7 +60,6 @@
         (let [component (case current-view
                           :wallet main-tabs
                           :wallet-send-transaction send-transaction
-                          ;;:wallet-receive-transaction receive-transaction
                           :discover main-tabs
                           :discover-search-results discover-search-results
                           :chat-list main-tabs
@@ -102,5 +101,6 @@
                                   :unsigned-transactions unsigned-transactions
                                   :transaction-details transaction-details
                                   :confirmation-success confirmation-success
-                                  :contact-list-modal contact-list-modal)]
+                                  :contact-list-modal contact-list-modal
+                                  :wallet-transactions wallet-transactions)]
                   [component])]])]])))))

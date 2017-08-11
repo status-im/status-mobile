@@ -2,6 +2,7 @@
   (:require [doo.runner :refer-macros [doo-tests]]
             [status-im.test.contacts.handlers]
             [status-im.test.chat.models.input]
+            [status-im.test.components.main-tabs]
             [status-im.test.handlers]
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
@@ -17,6 +18,7 @@
 
 (doo-tests 'status-im.test.contacts.handlers
            'status-im.test.chat.models.input
+           'status-im.test.components.main-tabs
            'status-im.test.handlers
            'status-im.test.utils.utils
            'status-im.test.utils.money

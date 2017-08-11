@@ -1,6 +1,6 @@
 (ns status-im.react-native.js-dependencies)
 
-(def action-button          #js {})
+(def action-button          #js {:default #js {:Item #js {}}})
 (def android-sms-listener   #js {})
 (def autolink               #js {:default #js {}})
 (def config                 #js {:default #js {}})
@@ -29,12 +29,13 @@
   #js {:NativeModules      #js {}
        :Animated           #js {:View #js {}
                                 :Text #js {}}
-       :DeviceEventEmitter #js {:addListener (fn [])}})
+       :DeviceEventEmitter #js {:addListener (fn [])}
+       :Dimensions         #js {:get  (fn [])}})
 (def realm                  #js {:schemaVersion (fn [])
                                  :close         (fn [])})
 (def sortable-listview      #js {})
 (def swiper                 #js {})
-(def vector-icons           #js {})
+(def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})
 
 
