@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.wallet.main-screen.views
+(ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
@@ -12,11 +12,13 @@
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.main-screen.styles :as st]))
 
+;; XXX Copy paste from main-screen ns
+
 (defn toolbar-title []
   [rn/view {:style st/toolbar-title-container}
    [rn/text {:style st/toolbar-title-text
              :font  :toolbar-title}
-    "Main Wallet"]
+    "Send Transaction"]
    [rn/icon :dropdown_white st/toolbar-title-icon]])
 
 (defn toolbar-buttons []
@@ -30,29 +32,20 @@
                     :custom-content [toolbar-title]
                     :custom-action  [toolbar-buttons]}])
 
-;; TODO: Use standard signature and move to action-button namespace
-(defn action-button [{:keys [on-press view-style text-style text]}]
-  [rn/touchable-highlight {:on-press on-press}
-   [rn/view {:style view-style}
-    [rn/text {:style      text-style
-              :font       :medium
-              :uppercase? false} text]]])
-
-;; TODO: button to go to send screen
 (defn action-buttons []
   [rn/view {:style st/action-buttons-container}
-   [action-button {:on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
-                   :view-style st/action-button
-                   :text-style st/action-button-text
-                   :text "Send"}]
-   [action-button {:on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
-                   :view-style st/action-button-center
-                   :text-style st/action-button-text
-                   :text "Request"}]
-   [action-button {:on-press (fn [] )
-                   :view-style st/action-button
-                   :text-style st/action-button-text-disabled
-                   :text "Exchange"}]])
+   [rn/view {:style st/action-button}
+    [rn/text {:style      st/action-button-text
+              :font       :medium
+              :uppercase? true} "Send"]]
+   [rn/view {:style st/action-button-center}
+    [rn/text {:style      st/action-button-text
+              :font       :medium
+              :uppercase? true} "Request"]]
+   [rn/view {:style st/action-button}
+    [rn/text {:style      st/action-button-text-disabled
+              :font       :medium
+              :uppercase? true} "Exchange"]]])
 
 (defn main-section []
   [rn/view {:style st/main-section}
@@ -99,7 +92,7 @@
                     :renderSeparator (when platform/ios? (render-separator-fn (count assets)))
                     :renderRow       render-row-fn}]]))
 
-(defview wallet []
+(defview send-transaction []
   []
   [rn/view {:style st/wallet-container}
    [toolbar-view]

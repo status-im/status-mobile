@@ -1,7 +1,10 @@
-(ns status-im.ui.screens.wallet.main-screen.styles
+(ns status-im.ui.screens.wallet.send.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :as common]
             [status-im.utils.platform :as platform]))
+
+;; XXX: Copy paste from main wallet
+;; TODO: Transfer to common space
 
 (def wallet-container
   {:flex             1
