@@ -18,7 +18,7 @@
         _          (log/debug "Captured image: " path)
         on-success (fn [base64]
                      (log/debug "Captured success: " base64)
-                     (dispatch [:set-in [:profile-edit :photo-path] (str "data:image/jpeg;base64," base64)])
+                     (dispatch [:set-in [:my-profile/edit :photo-path] (str "data:image/jpeg;base64," base64)])
                      (dispatch [:navigate-back]))
         on-error   (fn [type error]
                      (log/debug type error))]

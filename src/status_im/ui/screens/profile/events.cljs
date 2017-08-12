@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.events
-  (:require [re-frame.core :as re-frame :refer [reg-fx]]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame :refer [reg-fx]]
             [status-im.components.react :refer [show-image-picker]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.ui.screens.profile.navigation]
@@ -7,52 +8,71 @@
             [status-im.utils.image-processing :refer [img->base64]]
             [taoensso.timbre :as log]))
 
-(defn message-user [identity]
-  (when identity
-    (re-frame/dispatch [:navigation-replace :chat identity])))
-
-(handlers/register-handler
+(reg-fx
   :open-image-picker
-  (handlers/side-effect!
-   (fn [_ _]
-     (show-image-picker
-      (fn [image]
-        (let [path (get (js->clj image) "path")
-              _ (log/debug path)
-              on-success (fn [base64]
-                           (re-frame/dispatch [:set-in [:profile-edit :photo-path] (str "data:image/jpeg;base64," base64)]))
-              on-error   (fn [type error]
-                           (.log js/console type error))]
-          (img->base64 path on-success on-error)))))))
+  ;; the image picker is only used here for now, this effect can be use in other scenarios as well
+  (fn [callback-event]
+    (show-image-picker
+     (fn [image]
+       (let [path (get (js->clj image) "path")
+             _ (log/debug path)
+             on-success (fn [base64]
+                          (re-frame/dispatch [callback-event base64]))
+             on-error   (fn [type error]
+                          (.log js/console type error))]
+         (img->base64 path on-success on-error))))))
 
-(handlers/register-handler
-  :phone-number-change-requested
+(handlers/register-handler-fx
+  :profile/send-transaction
+  (fn [_ [_ chat-id]]
+    {:dispatch-n [[:clear-seq-arguments]
+                  [:navigate-to :chat chat-id]
+                  ;; TODO https://github.com/status-im/status-react/issues/1621
+                  [:select-chat-input-command {:name "send"}]]}))
+
+(handlers/register-handler-fx
+  :profile/send-message
+  (fn [_ [_ identity]]
+    (when identity
+      {:dispatch [:navigation-replace :chat identity]})))
+
+(handlers/register-handler-fx
+  :my-profile/edit
+  (fn [{:keys [db]} [_ edit-type edit-value]]
+    (let [current-account-id (:current-account-id db)
+          current-account (select-keys (get-in db [:accounts current-account-id])
+                                       [:name :photo-path :status])
+          new-db (-> db
+                     (update-in [:my-profile/edit] merge current-account)
+                     (assoc-in [:my-profile/edit :edit-status?] (= edit-type :status true)))]
+      {:db new-db
+       :dispatch [:navigate-to :edit-my-profile]})))
+
+(handlers/register-handler-fx
+  :my-profile/update-status
+  (fn [_ [_ new-status]]
+    (when-not (string/blank? new-status)
+      {:dispatch-n [[:check-status-change new-status]
+                    [:account-update {:status new-status}]]})))
+
+(handlers/register-handler-fx
+  :my-profile/update-phone-number
   ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
   ;; We allow to change phone number only from console because this requires entering SMS verification code.
-  (handlers/side-effect!
-   (fn [db _]
-     (re-frame/dispatch [:navigate-to :chat console-chat-id])
-     (js/setTimeout #(re-frame/dispatch [:select-chat-input-command {:name "phone"}]) 500))))
+  (fn [_ _]
+    {:dispatch-n [[:navigate-to :chat console-chat-id]
+                  [:select-chat-input-command {:name "phone"}]]}))
 
-(handlers/register-handler
-  :open-chat-with-the-send-transaction
-  (handlers/side-effect!
-   (fn [db [_ chat-id]]
-     (re-frame/dispatch [:clear-seq-arguments])
-     (re-frame/dispatch [:navigate-to :chat chat-id])
-     (js/setTimeout #(re-frame/dispatch [:select-chat-input-command {:name "send"}]) 500))))
+(handlers/register-handler-fx
+  :my-profile/update-picture
+  (fn [{:keys [db]} [this-event base64-image]]
+    (if base64-image
+      {:db (assoc-in db [:my-profile/edit :photo-path] (str "data:image/jpeg;base64," base64-image))}
+      {:open-image-picker this-event})))
 
-(defn prepare-edit-profile
-  [{:keys [current-account-id] :as db} _]
-  (let [current-account (select-keys (get-in db [:accounts current-account-id])
-                                     [:name :photo-path :status])]
-    (update-in db [:profile-edit] merge current-account)))
-
-(defn open-edit-profile [_ _]
-  (re-frame/dispatch [:navigate-to :edit-my-profile]))
-
-(handlers/register-handler
-  :open-edit-my-profile
-  (handlers/handlers->
-   prepare-edit-profile
-   open-edit-profile))
+(handlers/register-handler-fx
+  :my-profile/save-changes
+  (fn [{:keys [db]} _]
+    (let [{:keys [:my-profile/edit]} db]
+      {:dispatch-n [[:check-status-change (:status edit)]
+                    [:account-update edit]]})))

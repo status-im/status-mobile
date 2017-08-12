@@ -34,12 +34,6 @@
 (defn open-drawer [] (.openDrawer @drawer-atom))
 (defn close-drawer [] (.closeDrawer @drawer-atom))
 
-(defn- update-status [new-status]
-  (when-not (str/blank? new-status)
-    (rf/dispatch [:check-status-change new-status])
-    (rf/dispatch [:account-update {:status new-status}])
-    (rf/dispatch [:set-in [:profile-edit :status] new-status])))
-
 (defview profile-picture []
   [account [:get-current-account]]
   [touchable-opacity {:on-press #(rf/dispatch [:navigate-to :my-profile])
@@ -49,27 +43,25 @@
 
 (defview name-input []
   [account [:get-current-account]
-   new-name [:get-in [:profile-edit :name]]]
-  (let [current-name (:name account)
-        public-key (:public-key account)]
-    [view {:style st/name-input-wrapper}
+   name-text  (r/atom nil)]
+  (let [previous-name (:name account)]
+    [view st/name-input-wrapper
      [text-input
       {:placeholder    (gfycat/generate-gfy public-key)
-       :style          (st/name-input-text (s/valid? ::profile.db/name (or new-name current-name)))
+       :style          (st/name-input-text (s/valid? ::profile.db/name @name-text))
        :font           :medium
-       :default-value  (or new-name current-name)
-       :on-change-text #(rf/dispatch [:set-in [:profile-edit :name] %])
-       :on-end-editing #(do
-                          (rf/dispatch [:set-in [:profile-edit :name] nil])
-                          (when (s/valid? ::profile.db/name new-name)
-                            (rf/dispatch [:account-update {:name (utils/clean-text new-name)}])))}]]))
+       :default-value  (or @name-text previous-name)
+       :on-change-text #(reset! name-text %)
+       :on-end-editing #(if (s/valid? ::profile.db/name @name-text)
+                          (rf/dispatch [:account-update {:name (utils/clean-text @name-text)}])
+                          (reset! name-text previous-name))}]]))
 
 (defview status-input []
   [account      [:get-current-account]
    status-edit? (r/atom false)
    status-text  (r/atom nil)]
-  (let [status      (:status account)
-        placeholder (i18n/label :t/update-status)]
+  (let [placeholder     (i18n/label :t/update-status)
+        previous-status (:status account)]
     [view st/status-container
      (if @status-edit?
        [text-input {:style               st/status-input-view
@@ -79,21 +71,21 @@
                     :max-length          140
                     :accessibility-label id/drawer-status-input
                     :placeholder         placeholder
-                    :default-value       status
-                    :on-blur             #(do
-                                            (reset! status-edit? false)
-                                            (update-status @status-text))
+                    :default-value       previous-status
                     :on-change-text      #(let [new-status (utils/clean-text %)]
                                             (reset! status-text new-status)
-                                            (if (str/includes? % "\n")
-                                              (do
-                                                (reset! status-edit? false)
-                                                (update-status new-status))
-                                              (rf/dispatch [:set-in [:profile-edit :status] new-status])))}]
-       [status-view/status-view {:style           (st/status-view (str/blank? status))
+                                            (when (str/includes? % "\n")
+                                              (reset! status-edit? false)
+                                              (rf/dispatch [:my-profile/update-status new-status])))
+                    :on-blur             #(do (reset! status-edit? false)
+                                              (rf/dispatch [:my-profile/update-status @status-text]))}]
+
+       [status-view/status-view {:style           (st/status-view (str/blank? previous-status))
                                  :on-press        #(reset! status-edit? true)
                                  :number-of-lines 3
-                                 :status          (if (str/blank? status) placeholder status)}])]))
+                                 :status          (if (str/blank? previous-status)
+                                                    placeholder
+                                                    previous-status)}])]))
 
 (defview transaction-list-item [{:keys [to value timestamp] :as transaction}]
   [recipient [:contact-by-address to]]
@@ -152,7 +144,6 @@
    [touchable-highlight
     {:on-press (fn []
                  (close-drawer)
-                 (rf/dispatch [:set-in [:profile-edit :name] nil])
                  (rf/dispatch [:navigate-to :my-profile]))}
     [view [icon :options_gray]]]])
 
@@ -161,7 +152,6 @@
    [touchable-highlight
     {:on-press (fn []
                  (close-drawer)
-                 (rf/dispatch [:set-in [:profile-edit :name] nil])
                  (rf/dispatch [:navigate-to :accounts]))}
     [view
      [text {:style      st/switch-account-text

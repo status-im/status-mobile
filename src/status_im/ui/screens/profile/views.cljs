@@ -17,14 +17,13 @@
             [status-im.components.toolbar-new.actions :as actions]
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.i18n :refer [label]]
-            [status-im.ui.screens.profile.events :as profile.event :refer [message-user]]
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]])
   (:require-macros [status-im.utils.views :refer [defview]]))
 
 (defn my-profile-toolbar []
-  [toolbar {:actions [(actions/opts [{:value #(dispatch [:open-edit-my-profile])
+  [toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit])
                                       :text (label :t/edit)}])]}])
 
 (defn profile-toolbar [contact]
@@ -43,7 +42,7 @@
       (label :t/active-unknown))))
 
 (defn profile-badge [{:keys [name last-online] :as contact}]
-  [react/view styles/profile-bage
+  [react/view styles/profile-badge
    [my-profile-icon {:account contact
                      :edit?   false}]
    [react/view styles/profile-badge-name-container
@@ -66,13 +65,13 @@
    [action-separator]
    [action-button (label :t/start-conversation)
     :chats_blue
-    #(message-user whisper-identity)]
+    #(dispatch [:profile/send-message whisper-identity])]
    (when-not dapp?
      [react/view
       [action-separator]
       [action-button (label :t/send-transaction)
        :arrow_right_blue
-       #(dispatch [:open-chat-with-the-send-transaction chat-id])]])])
+       #(dispatch [:profile/send-transaction chat-id])]])])
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [react/view styles/profile-setting-item
@@ -160,22 +159,18 @@
    [info-item-separator]
    [profile-info-phone-item
     phone
-    [{:value #(dispatch [:phone-number-change-requested])
+    [{:value #(dispatch [:my-profile/change-phone-number])
       :text (label :t/edit)}]]])
-
-(defn- profile-status-on-press []
-  (dispatch [:set-in [:profile-edit :edit-status?] true])
-  (dispatch [:open-edit-my-profile]))
 
 (defn profile-status [status & [edit?]]
   [react/view styles/profile-status-container
    (if (or (nil? status) (string/blank? status))
-     [react/touchable-highlight {:on-press profile-status-on-press}
+     [react/touchable-highlight {:on-press #(dispatch [:my-profile/edit :status])}
       [react/view
        [react/text {:style styles/add-a-status}
         (label :t/add-a-status)]]]
      [react/scroll-view
-      [react/touchable-highlight {:on-press (when edit? profile-status-on-press)}
+      [react/touchable-highlight {:on-press (when edit? #(dispatch [:my-profile/edit :status]))}
        [react/view
         [react/text {:style styles/profile-status-text}
          (colorize-status-hashtags status)]]]])])
