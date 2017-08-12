@@ -27,7 +27,7 @@
              :current-chat-id            console-chat-id
              :loading-allowed            true
              :selected-participants      #{}
-             :profile-edit               {:edit?      false
+             :my-profile/edit            {:edit?      false
                                           :name       nil
                                           :email      nil
                                           :status     nil
@@ -97,7 +97,8 @@
                   :group/contact-group-id
                   :group/group-type
                   :group/selected-contacts
-                  :group/groups-order]
+                  :group/groups-order
+                  :my-profile/edit]
                  :opt-un
                  [::current-public-key
                   ::modal
@@ -158,7 +159,6 @@
                   :chat/raw-unviewed-messages
                   :chat/bot-db
                   :chat/geolocation
-                  :profile/profile-edit
                   :transactions/transactions
                   :transactions/transactions-queue
                   :transactions/selected-transaction

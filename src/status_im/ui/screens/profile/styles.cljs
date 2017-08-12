@@ -50,10 +50,10 @@
    :padding          16
    :max-height       114})
 
-(def profile-bage
+(def profile-badge
   {:flex-direction :row})
 
-(def edit-profile-bage
+(def edit-profile-badge
   {:flex-direction :row
    :padding-left   24})
 

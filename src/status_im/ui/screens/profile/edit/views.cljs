@@ -24,15 +24,15 @@
             :actions [{:image :blank}]}])
 
 (defview profile-name-input []
-  (letsubs [new-profile-name [:get-in [:profile-edit :name]]]
+  (letsubs [new-profile-name [:get-in [:my-profile/edit :name]]]
     [react/view
      [text-input-with-label {:label          (label :t/name)
                              :default-value  new-profile-name
-                             :on-change-text #(dispatch [:set-in [:profile-edit :name] %])}]]))
+                             :on-change-text #(dispatch [:set-in [:my-profile/edit :name] %])}]]))
 
 (def profile-icon-options
   [{:text  (label :t/image-source-gallery)
-    :value #(dispatch [:open-image-picker])}
+    :value #(dispatch [:my-profile/update-picture])}
    {:text  (label :t/image-source-make-photo)
     :value (fn []
              (dispatch [:request-permissions
@@ -43,8 +43,8 @@
                                 (utils/show-popup (label :t/error)
                                                   (label :t/camera-access-error)))))]))}])
 
-(defn edit-profile-bage [contact]
-  [react/view styles/edit-profile-bage
+(defn edit-profile-badge [contact]
+  [react/view styles/edit-profile-badge
    [react/view styles/edit-profile-icon-container
     [context-menu
      [my-profile-icon {:account contact
@@ -66,12 +66,12 @@
           :max-length        140
           :placeholder       (label :t/status)
           :style             styles/profile-status-input
-          :on-change-text    #(dispatch [:set-in [:profile-edit :status] (clean-text %)])
-          :on-blur           #(dispatch [:set-in [:profile-edit :edit-status?] false])
+          :on-change-text    #(dispatch [:set-in [:my-profile/edit :status] (clean-text %)])
+          :on-blur           #(dispatch [:set-in [:my-profile/edit :edit-status?] false])
           :blur-on-submit    true
           :on-submit-editing #(.blur @input-ref)
           :default-value     status}]
-        [react/touchable-highlight {:on-press #(dispatch [:set-in [:profile-edit :edit-status?] true])}
+        [react/touchable-highlight {:on-press #(dispatch [:set-in [:my-profile/edit :edit-status?] true])}
          [react/view
           (if (string/blank? status)
             [react/text {:style styles/add-a-status}
@@ -87,8 +87,8 @@
 
 (defview edit-my-profile []
   (letsubs [current-account [:get-current-account]
-            changed-account [:get :profile-edit]]
-    {:component-will-unmount #(dispatch [:set-in [:profile-edit :edit-status?] false])}
+            changed-account [:get :my-profile/edit]]
+    {:component-will-unmount #(dispatch [:set-in [:my-profile/edit :edit-status?] false])}
     (let [profile-edit-data-valid? (spec/valid? ::db/profile changed-account)
           profile-edit-data-changed? (or (not= (:name current-account) (:name changed-account))
                                          (not= (:status current-account) (:status changed-account))
@@ -97,10 +97,8 @@
        [status-bar]
        [edit-my-profile-toolbar]
        [react/view styles/edit-my-profile-form
-        [edit-profile-bage changed-account]
+        [edit-profile-badge changed-account]
         [edit-profile-status changed-account]
         [status-prompt changed-account]]
        (when (and profile-edit-data-changed? profile-edit-data-valid?)
-         [sticky-button (label :t/save) #(do
-                                           (dispatch [:check-status-change (:status changed-account)])
-                                           (dispatch [:account-update changed-account]))])])))
+         [sticky-button (label :t/save) #(dispatch [:my-profile/save-changes])])])))
