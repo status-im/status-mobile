@@ -322,4 +322,8 @@
    :contract-creation                     "Contract Creation"
 
    ;:webview
-   :web-view-error                        "oops, error"})
+   :web-view-error                        "oops, error"
+
+   ;;testfairy warning
+   :testfairy-title                       "Warning!"
+   :testfairy-message                     "You are using app installed from a nightly build. For testing purposes this build includes session recording if wifi connection is used, so all your interaction with app is saved (as video and log) and might be used by development team to investigate possible issues. Saved video/log do not include your passwords. Recording is done only if app is installed from a nightly build. Nothing is recorded if app is installed from PlayStore or TestFlight."})

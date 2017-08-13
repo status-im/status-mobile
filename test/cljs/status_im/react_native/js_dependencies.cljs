@@ -3,6 +3,7 @@
 (def action-button          #js {})
 (def android-sms-listener   #js {})
 (def autolink               #js {:default #js {}})
+(def config                 #js {:default #js {}})
 (def camera                 #js {:constants #js {}})
 (def circle-checkbox        #js {})
 (def contacts               #js {})
