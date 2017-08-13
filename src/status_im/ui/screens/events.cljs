@@ -30,7 +30,10 @@
     [status-im.constants :refer [console-chat-id]]
     [status-im.utils.instabug :as inst]
     [status-im.utils.platform :as platform]
-    [status-im.js-dependencies :as dependencies]))
+    [status-im.js-dependencies :as dependencies]
+    [status-im.utils.utils :as utils]
+    [status-im.utils.config :as config]
+    [status-im.i18n :as i18n]))
 
 ;;;; COFX
 
@@ -93,6 +96,14 @@
   (fn [[permissions then else]]
     (permissions/request-permissions permissions then else)))
 
+(reg-fx
+  ::testfairy-alert
+  (fn []
+    (when config/testfairy-enabled?
+      (utils/show-popup
+        (i18n/label :testfairy-title)
+        (i18n/label :testfairy-message)))))
+
 ;;;; Handlers
 
 (register-handler-db
@@ -108,12 +119,13 @@
 (register-handler-fx
   :initialize-app
   (fn [_ _]
-   {:dispatch-n [[:initialize-db]
-                 [:load-accounts]
-                 [:check-console-chat]
-                 [:listen-to-network-status!]
-                 [:initialize-crypt]
-                 [:initialize-geth]]}))
+    {::testfairy-alert nil
+     :dispatch-n       [[:initialize-db]
+                        [:load-accounts]
+                        [:check-console-chat]
+                        [:listen-to-network-status!]
+                        [:initialize-crypt]
+                        [:initialize-geth]]}))
 
 (register-handler-fx
   :initialize-db
