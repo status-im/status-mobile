@@ -42,7 +42,7 @@
             [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
             [status-im.profile.qr-code.screen :refer [qr-code-view]]
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]))
--           ;;[status-im.ui.screens.wallet.receive.views :refer [receive-transaction]]
+            ;;[status-im.ui.screens.wallet.receive.views :refer [receive-transaction]]
 
 (defn validate-current-view
   [current-view signed-up?]
