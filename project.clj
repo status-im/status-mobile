@@ -24,7 +24,7 @@
             "generate-externs" ["with-profile" "prod" "externs" "android" "externs/externs.js"]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
-  :test-paths ["test/clj"]
+  :test-paths ["test/clj" "test/cljs"]
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.11"]
                                    [re-frisk-remote "0.4.2"]

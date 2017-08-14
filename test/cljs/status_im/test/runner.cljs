@@ -1,11 +1,6 @@
 (ns status-im.test.runner
-  (:require [doo.runner :refer-macros [doo-tests]]
-            [status-im.test.contacts.handlers]
-            [status-im.test.chat.models.input]
-            [status-im.test.handlers]
-            [status-im.test.utils.utils]
-            [status-im.test.utils.money]
-            [status-im.test.utils.clocks]))
+  (:require-macros [status-im.test.loader :refer [require-test-namespaces]])
+  (:require [doo.runner :refer-macros [doo-tests doo-all-tests]]))
 
 (enable-console-print!)
 
@@ -13,11 +8,12 @@
 ;; https://github.com/bensu/doo/issues/83#issuecomment-165498172
 (set! (.-error js/console) (fn [x] (.log js/console x)))
 
+
+
 (set! goog.DEBUG false)
 
-(doo-tests 'status-im.test.contacts.handlers
-           'status-im.test.chat.models.input
-           'status-im.test.handlers
-           'status-im.test.utils.utils
-           'status-im.test.utils.money
-           'status-im.test.utils.clocks)
+(require-test-namespaces "./test/cljs/status_im/test")
+
+(println (macroexpand '(require-test-namespaces "./test/cljs/status_im/test")))
+
+(doo-all-tests #"status\-im\.test.*")
