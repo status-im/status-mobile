@@ -43,7 +43,7 @@
 
 (register-handler :open-faucet
   (u/side-effect!
-   (fn [{:keys [accounts current-account-id]} [_ faucet-name _]]
+   (fn [{:accounts/keys [accounts current-account-id]} [_ faucet-name _]]
      (if-let [faucet (faucet-by-name faucet-name)]
        (let [current-address (get-in accounts [current-account-id :address])]
          (open-faucet faucet-name current-address faucet))))))

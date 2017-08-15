@@ -7,12 +7,12 @@
             [taoensso.timbre :as log]
             [status-im.models.commands :as commands]
             [status-im.commands.utils :as cu]
-            [status-im.ui.screens.contacts.db :as v]
             [status-im.components.status :as s]
             [status-im.components.nfc :as nfc]
             [status-im.constants :as c]
             [cljs.reader :refer [read-string]]
-            [status-im.ui.screens.navigation :as nav]))
+            [status-im.ui.screens.navigation :as nav]
+            [cljs.spec.alpha :as spec]))
 
 (defn by-public-key [public-key contacts]
   (when-let [{:keys [address]} (contacts public-key)]
@@ -29,7 +29,7 @@
                     (catch :default e data))
         data'' (cond
                  (map? data') data'
-                 (v/is-address? data') {:address data'}
+                 (spec/valid? :global/address data') {:address data'}
                  (string? data') (by-public-key data' contacts)
                  :else nil)]
     (when data''
@@ -127,7 +127,7 @@
 
 (register-handler :webview-send-eth!
   (u/side-effect!
-    (fn [{:keys [current-account-id]} [_ {:keys [amount address]}]]
+    (fn [{:accounts/keys [current-account-id]} [_ {:keys [amount address]}]]
       (let [context    {:from current-account-id}
             path       [:functions :send]
             parameters {:context    context

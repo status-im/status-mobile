@@ -56,7 +56,7 @@
     (replace-view db view-id)))
 
 (defn- can-navigate-back? [db]
-  (and (not (db :creating-account?))))
+  (not (get db :accounts/creating-account?)))
 
 (register-handler-db
   :navigate-back

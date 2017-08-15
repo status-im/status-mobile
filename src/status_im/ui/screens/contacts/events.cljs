@@ -16,8 +16,8 @@
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
-            [status-im.ui.screens.contacts.db :as v]
-            [status-im.ui.screens.contacts.navigation]))
+            [status-im.ui.screens.contacts.navigation]
+            [cljs.spec.alpha :as spec]))
 
 ;;;; COFX
 
@@ -310,10 +310,11 @@
 
 (register-handler-fx
   ::send-contact-request
-  (fn [{{:keys [accounts current-account-id] :as db} :db} [_ contact]]
+  (fn [{{:accounts/keys [accounts current-account-id] :as db} :db} [_ contact]]
     (let [current-account (get accounts current-account-id)]
       {::send-contact-request-fx (merge
-                                   (select-keys db [:current-public-key :web3 :current-account-id :accounts])
+                                   (select-keys db [:current-public-key :web3])
+                                   {:current-account-id current-account-id}
                                    (select-keys contact [:whisper-identity])
                                    (select-keys current-account [:name :photo-path :status
                                                                  :updates-public-key :updates-private-key]))})))
@@ -437,7 +438,7 @@
 (register-handler-fx
   :add-contact-handler
   (fn [{:keys [db]} [_ id]]
-    (if (v/is-address? id)
+    (if (spec/valid? :global/address id)
       {::request-contacts-by-address id}
       {:dispatch (if (get-in db [:contacts/contacts id])
                    [:add-pending-contact id]

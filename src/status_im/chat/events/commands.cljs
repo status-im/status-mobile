@@ -15,7 +15,7 @@
 
 (defn generate-context
   "Generates context for jail call"
-  [{:keys [current-account-id chats]} chat-id to]
+  [{:keys [chats] :accounts/keys [current-account-id]} chat-id to]
   (merge {:platform platform/platform
           :from     current-account-id
           :to       to
@@ -72,7 +72,8 @@
       [{{:keys [command content-command params type]} :content
         :keys [chat-id jail-id] :as message}
        data-type]]
-   (let [{:keys [current-account-id chats]
+   (let [{:keys [chats]
+          :accounts/keys [current-account-id]
           :contacts/keys [contacts]} db
          jail-id (or jail-id chat-id)
          jail-id (if (get-in chats [jail-id :group-chat])

@@ -1,6 +1,7 @@
 (ns status-im.android.core
   (:require [reagent.core :as reagent]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            status-im.utils.db
             status-im.ui.screens.db
             status-im.ui.screens.events
             status-im.ui.screens.subs
@@ -16,7 +17,7 @@
                        ;; this listener and handle application's closing
                        ;; in handlers
                        (let [stack      (subscribe [:get :navigation-stack])
-                             creating?  (subscribe [:get :creating-account?])
+                             creating?  (subscribe [:get :accounts/creating-account?])
                              result-box (subscribe [:chat-ui-props :result-box])
                              webview    (subscribe [:get :webview-bridge])]
                          (cond

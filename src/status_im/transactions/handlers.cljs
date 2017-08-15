@@ -194,7 +194,7 @@
 
 (register-handler :transaction-failed
   (u/side-effect!
-    (fn [{:keys [current-account-id accounts]} [_ {:keys [id args message_id error_code error_message] :as event}]]
+    (fn [{:accounts/keys [accounts current-account-id]} [_ {:keys [id args message_id error_code error_message] :as event}]]
       (let [current-account-address       (:address (get accounts current-account-id))
             transaction-initiator-address (normalize-hex (:from args))]
         (cond

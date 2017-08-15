@@ -1,6 +1,7 @@
 (ns status-im.chat.new-public-chat.view
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
+            status-im.utils.db
             [status-im.components.react :refer [view text]]
             [status-im.components.text-field.view :refer [text-field]]
             [status-im.components.styles :as common]
@@ -30,7 +31,7 @@
     [view
      [text-field
       {:error           (cond
-                          (not (spec/valid? ::v/not-empty-string topic))
+                          (not (spec/valid? :global/not-empty-string topic))
                           (label :t/empty-topic)
 
                           (not (spec/valid? ::v/topic topic))

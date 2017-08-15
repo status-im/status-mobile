@@ -18,8 +18,8 @@
   (messages/save chat-id (dissoc message :new?)))
 
 (defn get-current-identity
-  [{:keys [current-account-id accounts]}]
-  (:public-key (accounts current-account-id)))
+  [{:accounts/keys [accounts current-account-id]}]
+  (get-in accounts [current-account-id :public-key]))
 
 (declare add-message-to-wallet)
 

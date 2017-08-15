@@ -1,45 +1,23 @@
 (ns status-im.ui.screens.contacts.db
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
+            status-im.utils.db
             [clojure.string :as string]
-            [status-im.data-store.contacts :as contacts]
-            [status-im.js-dependencies :as dependencies]))
+            [status-im.data-store.contacts :as contacts]))
 
 (defn contact-can-be-added? [identity]
   (if (contacts/exists? identity)
     (:pending? (contacts/get-by-id identity))
     true))
 
-(defn is-address? [s]
-  (.isAddress dependencies/Web3.prototype s))
-
-(defn hex-string? [s]
-  (let [s' (if (string/starts-with? s "0x")
-             (subs s 2)
-             s)]
-    (boolean (re-matches #"(?i)[0-9a-f]+" s'))))
-
-(defn valid-length? [identity]
-  (let [length (count identity)]
-    (and
-      (hex-string? identity)
-      (or
-        (and (= 128 length) (not (string/includes? identity "0x")))
-        (and (= 130 length) (string/starts-with? identity "0x"))
-        (and (= 132 length) (string/starts-with? identity "0x04"))
-        (is-address? identity)))))
-
-(spec/def ::not-empty-string (spec/and string? not-empty))
-(spec/def ::public-key (spec/and ::not-empty-string valid-length?))
-
 ;;;; DB
 
 ;;Contact
 
 ;we can't validate public key, because for dapps whisper-identity is just string
-(spec/def :contact/whisper-identity ::not-empty-string)
-(spec/def :contact/name ::not-empty-string)
-(spec/def :contact/address (spec/nilable is-address?))
+(spec/def :contact/whisper-identity :global/not-empty-string)
+(spec/def :contact/name :global/not-empty-string)
+(spec/def :contact/address (spec/nilable :global/address))
 (spec/def :contact/private-key (spec/nilable string?))
 (spec/def :contact/public-key (spec/nilable string?))
 (spec/def :contact/photo-path (spec/nilable string?))
@@ -77,12 +55,12 @@
 (spec/def :contacts-ui/edit? boolean?)
 
 
-(spec/def :contacts/contacts (spec/nilable (spec/map-of ::not-empty-string :contact/contact)))
+(spec/def :contacts/contacts (spec/nilable (spec/map-of :global/not-empty-string :contact/contact)))
 ;public key of new contact during adding this new contact
 (spec/def :contacts/new-identity (spec/nilable string?))
 (spec/def :contacts/new-public-key-error (spec/nilable string?))
 ;on showing this contact's profile (andrey: better to move into profile ns)
-(spec/def :contacts/identity (spec/nilable ::not-empty-string))
+(spec/def :contacts/identity (spec/nilable :global/not-empty-string))
 (spec/def :contacts/list-ui-props (spec/nilable (allowed-keys :opt-un [:contact-list-ui/edit?])))
 (spec/def :contacts/ui-props (spec/nilable (allowed-keys :opt-un [:contacts-ui/edit?])))
 ;used in modal list (for example for wallet)

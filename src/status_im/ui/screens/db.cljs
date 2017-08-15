@@ -17,7 +17,7 @@
 (def app-db {:current-public-key         ""
              :status-module-initialized? (or platform/ios? js/goog.DEBUG)
              :keyboard-height            0
-             :accounts                   {}
+             :accounts/accounts          {}
              :navigation-stack           '()
              :contacts/contacts          {}
              :qr-codes                   {}
@@ -36,7 +36,7 @@
              :discover-search-tags       '()
              :tags                       []
              :sync-state                 :done
-             :network                    :testnet})
+             :network                    "testnet"})
 
 ;;;;GLOBAL
 
@@ -79,8 +79,7 @@
 
 ;;;;NETWORK
 
-;;network name :testnet
-(spec/def ::network (spec/nilable keyword?))
+(spec/def ::network (spec/nilable string?))
 
 (spec/def ::db (allowed-keys
                  :opt
@@ -98,6 +97,12 @@
                   :group/group-type
                   :group/selected-contacts
                   :group/groups-order
+                  :accounts/accounts
+                  :accounts/account-creation?
+                  :accounts/creating-account?
+                  :accounts/current-account-id
+                  :accounts/recover
+                  :accounts/login
                   :my-profile/edit]
                  :opt-un
                  [::current-public-key
@@ -117,12 +122,6 @@
                   ::sync-state
                   ::sync-data
                   ::network
-                  :accounts/accounts
-                  :accounts/account-creation?
-                  :accounts/creating-account?
-                  :accounts/current-account-id
-                  :accounts/recover
-                  :accounts/login
                   :navigation/view-id
                   :navigation/navigation-stack
                   :navigation/prev-tab-view-id

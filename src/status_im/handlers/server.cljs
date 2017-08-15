@@ -6,8 +6,8 @@
 
 (defn sign-up
   [db phone-number message-id handler]
-  (let [current-account-id (get db :current-account-id)
-        {:keys [public-key address]} (get-in db [:accounts current-account-id])]
+  (let [current-account-id (get db :accounts/current-account-id)
+        {:keys [public-key address]} (get-in db [:accounts/accounts current-account-id])]
     (log/debug "signing up with public-key" public-key "and phone " phone-number)
     (http-post "sign-up" {:phone-number     phone-number
                           :whisper-identity public-key

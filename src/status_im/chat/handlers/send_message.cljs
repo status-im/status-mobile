@@ -137,7 +137,8 @@
 
 (register-handler ::invoke-command-handlers!
   (u/side-effect!
-    (fn [{:keys [bot-db accounts current-account-id]
+    (fn [{:keys [bot-db]
+          :accounts/keys [accounts current-account-id]
           :contacts/keys [contacts] :as db}
          [_ {{:keys [command
                      params
@@ -207,7 +208,7 @@
 
 (register-handler ::send-dapp-message
   (u/side-effect!
-    (fn [{:keys [current-account-id] :as db} [_ chat-id {:keys [content]}]]
+    (fn [{:accounts/keys [current-account-id] :as db} [_ chat-id {:keys [content]}]]
       (let [data (get-in db [:local-storage chat-id])]
         (status/call-function!
           {:chat-id    chat-id
@@ -287,7 +288,8 @@
 
 (register-handler ::send-message!
   (u/side-effect!
-    (fn [{:keys [web3 chats network-status current-account-id accounts]
+    (fn [{:keys [web3 chats network-status]
+          :accounts/keys [accounts current-account-id]
           :contacts/keys [contacts]
           :as   db} [_ {{:keys [message-type]
                          :as   message} :message
@@ -324,8 +326,8 @@
 
 (register-handler ::send-command-protocol!
   (u/side-effect!
-    (fn [{:keys [web3 current-public-key chats network-status
-                 current-account-id accounts]
+    (fn [{:keys [web3 current-public-key chats network-status]
+          :accounts/keys [accounts current-account-id]
           :contacts/keys [contacts] :as db}
          [_ {:keys [chat-id command]}]]
       (if (get-in contacts [chat-id :dapp?])

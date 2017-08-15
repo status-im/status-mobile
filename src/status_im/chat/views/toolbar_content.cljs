@@ -69,10 +69,10 @@
             public?       [:chat :public?]
             public-key    [:chat :public-key]
             show-actions? [:chat-ui-props :show-actions?]
-            accounts      [:get :accounts]
+            accounts      [:get-accounts]
             contact       [:get-in [:contacts/contacts @chat-id]]
             sync-state    [:get :sync-state]
-            creating?     [:get :creating-account?]]
+            creating?     [:get :accounts/creating-account?]]
     [view (st/chat-name-view (or (empty? accounts)
                                  show-actions?
                                  creating?))

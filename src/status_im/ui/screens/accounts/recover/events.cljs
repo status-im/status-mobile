@@ -1,43 +1,48 @@
 (ns status-im.ui.screens.accounts.recover.events
-  (:require [re-frame.core :refer [reg-event-db after dispatch dispatch-sync]]
-            [status-im.components.status :as status]
-            [status-im.utils.types :refer [json->clj]]
-            [status-im.utils.identicon :refer [identicon]]
-            [taoensso.timbre :as log]
-            [clojure.string :as str]
-            [status-im.utils.handlers :as u]
-            [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.protocol.core :as protocol]
-            [status-im.ui.screens.navigation :as nav]))
+  (:require
+    status-im.ui.screens.accounts.recover.navigation
 
-(defn account-recovered [result]
-  (let [data       (json->clj result)
-        public-key (:pubkey data)
-        address    (:address data)
-        {:keys [public private]} (protocol/new-keypair!)
-        account    {:public-key          public-key
-                    :address             address
-                    :name                (generate-gfy public-key)
-                    :photo-path          (identicon public-key)
-                    :updates-public-key  public
-                    :updates-private-key private
-                    :signed-up?          true}]
-    (log/debug "account-recovered")
-    (when-not (str/blank? public-key)
-      (dispatch [:set-in [:recover :passphrase] ""])
-      (dispatch [:set-in [:recover :password] ""])
-      (dispatch [:add-account account])
-      (dispatch [:navigate-back]))))
+    [re-frame.core :refer [reg-fx inject-cofx dispatch]]
+    [status-im.components.status :as status]
+    [status-im.utils.types :refer [json->clj]]
+    [status-im.utils.identicon :refer [identicon]]
+    [taoensso.timbre :as log]
+    [clojure.string :as str]
+    [status-im.utils.handlers :refer [register-handler-fx]]
+    [status-im.utils.gfycat.core :refer [generate-gfy]]))
 
-(defn recover-account
-  [_ [_ passphrase password]]
-  (status/recover-account
-    passphrase
-    password
-    account-recovered))
+;;;; FX
 
-(reg-event-db :recover-account (u/side-effect! recover-account))
+(reg-fx
+  ::recover-account-fx
+  (fn [[passphrase password]]
+    (status/recover-account passphrase password #(dispatch [:account-recovered %]))))
 
-(defmethod nav/preload-data! :recover
-  [db]
-  (update db :recover dissoc :password :passphrase))
+;;;; Handlers
+
+(register-handler-fx
+  :account-recovered
+  [(inject-cofx :get-new-keypair!)]
+  (fn [{:keys [db keypair]} [_ result]]
+    (let [data (json->clj result)
+          public-key (:pubkey data)
+          address (:address data)
+          {:keys [public private]} keypair
+          account {:public-key          public-key
+                   :address             address
+                   :name                (generate-gfy public-key)
+                   :photo-path          (identicon public-key)
+                   :updates-public-key  public
+                   :updates-private-key private
+                   :signed-up?          true}]
+      (log/debug "account-recovered")
+      (when-not (str/blank? public-key)
+        {:db         (update db :accounts/recover assoc :passphrase "" :password "")
+         :dispatch-n [[:add-account account]
+                      [:navigate-back]]}))))
+
+(register-handler-fx
+  :recover-account
+  (fn [_ [_ passphrase password]]
+    {::recover-account-fx [passphrase password]}))
+

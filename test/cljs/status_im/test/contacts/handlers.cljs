@@ -280,11 +280,12 @@
                                   :status "test status"}
                 recieved-contact' (merge new-contact
                                          (dissoc recieved-contact :profile-image)
-                                         {:public-key "" :private-key ""})]
+                                         {:public-key new-contact-public-key
+                                          :private-key ""})]
 
             (rf/dispatch [:contact-request-received {:from new-contact-public-key
                                                      :payload {:contact recieved-contact
-                                                               :keypair {:public ""
+                                                               :keypair {:public new-contact-public-key
                                                                          :private ""}}}])
 
             (is (= (assoc contacts-browse-wallet new-contact-public-key recieved-contact')

@@ -31,7 +31,7 @@
       (normalize-hex whisper-identity))
     (label :t/can-not-add-yourself)
 
-    (not (s/valid? ::v/public-key whisper-identity))
+    (not (s/valid? :global/public-key whisper-identity))
     (label :t/enter-valid-public-key)
 
     (not (v/contact-can-be-added? whisper-identity))

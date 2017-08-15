@@ -202,7 +202,7 @@
 (register-handler-fx
  :load-chat-parameter-box
  [trim-v]
- (fn [{{:keys [current-chat-id bot-db current-account-id] :as db} :db}
+ (fn [{{:keys [current-chat-id bot-db] :accounts/keys [current-account-id] :as db} :db}
       [{:keys [name type bot owner-id] :as command}]]
    (let [parameter-index (input-model/argument-position db current-chat-id)]
      (when (and command (> parameter-index -1))
@@ -238,7 +238,7 @@
 (register-handler-fx
  ::send-message
  [trim-v]
- (fn [{{:keys [current-public-key current-account-id] :as db} :db} [command chat-id]]
+ (fn [{{:keys [current-public-key] :accounts/keys [current-account-id] :as db} :db} [command chat-id]]
    (let [text (get-in db [:chats chat-id :input-text])
          data   {:message  text
                  :command  command
@@ -385,7 +385,7 @@
 (register-handler-fx
  ::check-dapp-suggestions
  [trim-v]
- (fn [{{:keys [current-account-id] :as db} :db} [chat-id text]]
+ (fn [{{:accounts/keys [current-account-id] :as db} :db} [chat-id text]]
    (let [data (get-in db [:local-storage chat-id])]
      {:chat-fx/call-jail-function {:chat-id    chat-id
                                    :function   :on-message-input-change
