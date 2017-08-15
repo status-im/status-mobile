@@ -12,26 +12,30 @@
             [status-im.components.toolbar.styles :refer [toolbar-background1]]
             [status-im.ui.screens.qr-scanner.styles :as st]
             [status-im.utils.types :refer [json->clj]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [reagent.core :as r]))
 
-(defview qr-scanner-toolbar [title]
+(defview qr-scanner-toolbar [title hide-nav?]
   (letsubs [modal [:get :modal]]
     [view
      [status-bar]
      [toolbar {:title            title
                :background-color toolbar-background1
+               :hide-nav?        hide-nav?
                :nav-action       (when modal
                                    (act/back #(dispatch [:navigate-back])))}]]))
 
 (defview qr-scanner []
-  (letsubs [identifier [:get :current-qr-context]]
+  (letsubs [identifier [:get :current-qr-context]
+            camera-initialized? (r/atom false)]
     [view st/barcode-scanner-container
-     [qr-scanner-toolbar (:toolbar-title identifier)]
+     [qr-scanner-toolbar (:toolbar-title identifier) (not @camera-initialized?)]
      [camera {:onBarCodeRead (fn [code]
                                (let [data (-> (.-data code)
                                               (str/replace #"ethereum:" ""))]
                                  (dispatch [:set-qr-code identifier data])))
               ;:barCodeTypes  [:qr]
+              :ref           #(reset! camera-initialized? true)
               :captureAudio  false
               :style         st/barcode-scanner}]
      [view st/rectangle-container
