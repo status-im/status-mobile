@@ -131,12 +131,12 @@
                 network-status network _]} :db} _]
     {::init-store nil
      :db (assoc app-db
-                :current-account-id nil
+                :accounts/current-account-id nil
                 :contacts/contacts {}
                 :network-status network-status
                 :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                 :status-node-started? status-node-started?
-                :network (or network :testnet))}))
+                :network (or network "testnet"))}))
 
 (register-handler-db
   :initialize-account-db
@@ -163,11 +163,11 @@
                   [:send-account-update-if-needed]
                   [:start-requesting-discoveries]
                   [:remove-old-discoveries!]
-                  [:set :creating-account? false]]}))
+                  [:set :accounts/creating-account? false]]}))
 
 (register-handler-fx
   :check-console-chat
-  (fn [{{:keys [accounts] :as db} :db} [_ open-console?]]
+  (fn [{{:accounts/keys [accounts] :as db} :db} [_ open-console?]]
     (let [view (if (empty? accounts)
                  :chat
                  :accounts)]

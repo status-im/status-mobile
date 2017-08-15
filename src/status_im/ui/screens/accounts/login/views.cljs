@@ -29,7 +29,7 @@
   (dispatch [:login-account address password]))
 
 (defview login []
-  (letsubs [{:keys [address photo-path name password error processing]} [:get :login]]
+  (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]]
     [view ast/accounts-container
      [status-bar {:type :transparent}]
      [login-toolbar]
@@ -42,8 +42,8 @@
                                :auto-capitalize   :none
                                :hide-underline?   true
                                :on-change-text    #(do
-                                                     (dispatch [:set-in [:login :password] %])
-                                                     (dispatch [:set-in [:login :error] ""]))
+                                                     (dispatch [:set-in [:accounts/login :password] %])
+                                                     (dispatch [:set-in [:accounts/login :error] ""]))
                                :on-submit-editing #(login-account password-text-input address password)
                                :auto-focus        true
                                :secure-text-entry true

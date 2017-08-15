@@ -104,7 +104,7 @@
         (update-in [:chats current-chat-id :input-text] safe-trim))))
 
 (defn init-console-chat
-  ([{:keys [chats current-account-id] :as db} existing-account?]
+  ([{:keys [chats] :accounts/keys [current-account-id] :as db} existing-account?]
    (let [new-chat sign-up-service/console-chat]
      (if (chats console-chat-id)
        db
@@ -213,7 +213,7 @@
   (compare timestamp2 timesatmp1))
 
 (defn initialize-chats
-  [{:keys [loaded-chats account-creation? chats] :as db} _]
+  [{:keys [loaded-chats chats] :accounts/keys [account-creation?] :as db} _]
   (let [chats' (if account-creation?
                  chats
                  (->> loaded-chats
@@ -228,7 +228,7 @@
         (init-console-chat true))))
 
 (defn load-chats!
-  [{:keys [account-creation?] :as db} _]
+  [{:accounts/keys [account-creation?] :as db} _]
   (if account-creation?
     db
     (assoc db :loaded-chats (chats/get-all))))
@@ -253,7 +253,7 @@
           (init-console-chat true)))))
 
 (defmethod nav/preload-data! :chat
-  [{:keys [current-chat-id current-account-id] :as db} [_ _ id]]
+  [{:keys [current-chat-id] :accounts/keys [current-account-id] :as db} [_ _ id]]
   (let [chat-id           (or id current-chat-id)
         messages          (get-in db [:chats chat-id :messages])
         db'               (-> db

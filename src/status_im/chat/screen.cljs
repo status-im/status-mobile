@@ -110,8 +110,8 @@
 
 (defview chat-toolbar []
   [show-actions? [:chat-ui-props :show-actions?]
-   accounts [:get :accounts]
-   creating? [:get :creating-account?]]
+   accounts [:get-accounts]
+   creating? [:get :accounts/creating-account?]]
   [view
    [status-bar]
    [toolbar {:hide-nav?      (or (empty? accounts) show-actions? creating?)

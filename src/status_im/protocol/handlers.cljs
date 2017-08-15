@@ -19,13 +19,14 @@
             [status-im.components.status :as status]
             [clojure.string :refer [join]]
             [status-im.utils.scheduler :as s]
-            [status-im.utils.web3-provider :as w3]))
+            [status-im.utils.web3-provider :as w3]
+            [status-im.utils.datetime :as time]))
 
 (register-handler :initialize-protocol
   (fn [db [_ current-account-id ethereum-rpc-url]]
     (let [{:keys [public-key status updates-public-key
                   updates-private-key]}
-          (get-in db [:accounts current-account-id])]
+          (get-in db [:accounts/accounts current-account-id])]
       (if public-key
         (let [rpc-url (or ethereum-rpc-url c/ethereum-rpc-url)
               groups  (chats/get-active-group-chats)
@@ -393,3 +394,12 @@
           (when android-error? (status/init-jail))
           (status/restart-rpc)
           (dispatch [:load-commands!]))))))
+
+(register-handler
+  :load-processed-messages
+  (u/side-effect!
+    (fn [_]
+      (let [now      (time/now-ms)
+            messages (processed-messages/get-filtered (str "ttl > " now))]
+        (cache/init! messages)
+        (processed-messages/delete (str "ttl <=" now))))))

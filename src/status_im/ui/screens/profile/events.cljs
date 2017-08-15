@@ -39,8 +39,8 @@
 (handlers/register-handler-fx
   :my-profile/edit
   (fn [{:keys [db]} [_ edit-type edit-value]]
-    (let [current-account-id (:current-account-id db)
-          current-account (select-keys (get-in db [:accounts current-account-id])
+    (let [current-account-id (:accounts/current-account-id db)
+          current-account (select-keys (get-in db [:accounts/accounts current-account-id])
                                        [:name :photo-path :status])
           new-db (-> db
                      (update-in [:my-profile/edit] merge current-account)

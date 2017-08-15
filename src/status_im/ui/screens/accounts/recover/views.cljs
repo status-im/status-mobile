@@ -18,7 +18,7 @@
             [clojure.string :as str]))
 
 (defview passphrase-input [passphrase]
-  (letsubs [error [:get-in [:recover :passphrase-error]]]
+  (letsubs [error [:get-in [:accounts/recover :passphrase-error]]]
     [view {:margin-top 10}
      [text-input-with-label {:label             (i18n/label :t/passphrase)
                              :description       (i18n/label :t/twelve-words-in-correct-order)
@@ -27,21 +27,21 @@
                              :max-height        st/passphrase-input-max-height
                              :default-value     passphrase
                              :auto-capitalize   :none
-                             :on-change-text    #(dispatch [:set-in [:recover :passphrase] %])
+                             :on-change-text    #(dispatch [:set-in [:accounts/recover :passphrase] %])
                              :error             error}]]))
 
 (defview password-input [password]
-  (letsubs [error [:get-in [:recover :password-error]]]
+  (letsubs [error [:get-in [:accounts/recover :password-error]]]
     [view {:margin-top 10}
      [text-input-with-label {:label             (i18n/label :t/password)
                              :default-value     password
                              :auto-capitalize   :none
-                             :on-change-text    #(dispatch [:set-in [:recover :password] %])
+                             :on-change-text    #(dispatch [:set-in [:accounts/recover :password] %])
                              :secure-text-entry true
                              :error             error}]]))
 
 (defview recover []
-  (letsubs [{:keys [passphrase password]} [:get :recover]]
+  (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
     (let [valid-form? (and
                         (spec/valid? ::v/passphrase passphrase)
                         (spec/valid? ::v/password password))]

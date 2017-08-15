@@ -126,7 +126,7 @@
 
 (register-handler :debug-switch-node
   (u/side-effect!
-    (fn [{:keys [current-account-id]} [_ {:keys [url]}]]
+    (fn [{:accounts/keys [current-account-id]} [_ {:keys [url]}]]
       (dispatch [:initialize-protocol current-account-id url])
       (respond {:type :ok
                 :text "You've successfully switched the node."}))))

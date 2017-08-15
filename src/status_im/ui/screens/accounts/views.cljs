@@ -33,13 +33,8 @@
     [view st/account-view
      [account-bage address photo-path name]]]])
 
-(defn create-account [_]
-  (dispatch [:initialize-db])
-  (dispatch [:load-accounts])
-  (dispatch [:check-console-chat true]))
-
 (defview accounts []
-  [accounts [:get :accounts]]
+  [accounts [:get-accounts]]
   [view st/accounts-container
    [status-bar {:type :transparent}]
    [view st/account-title-conatiner
@@ -53,7 +48,7 @@
    [view st/bottom-actions-container
     [action-button (i18n/label :t/create-new-account)
                    :add_white
-                   create-account
+                   #(dispatch [:create-new-account-handler])
                    st/accounts-action-button]
     [common/separator st/accounts-separator st/accounts-separator-wrapper]
     [action-button (i18n/label :t/recover-access)

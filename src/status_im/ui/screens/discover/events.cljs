@@ -29,7 +29,8 @@
 
 (register-handler :broadcast-status
   (u/side-effect!
-    (fn [{:keys [current-public-key web3 current-account-id accounts]
+    (fn [{:keys [current-public-key web3]
+          :accounts/keys [accounts current-account-id]
           :contacts/keys [contacts]}
          [_ status hashtags]]
       (let [{:keys [name photo-path]} (get accounts current-account-id)
