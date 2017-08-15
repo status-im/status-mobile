@@ -68,8 +68,7 @@
         (dispatch [:proceed-command
                    {:command  command,
                     :metadata nil,
-                    :args     [(get contact :name) amount]}
-                   current-chat-id])))))
+                    :args     [(get contact :name) amount]}])))))
 
 (defn chat-with-command
   [_ [_ whisper-identity command-key params]]

@@ -41,9 +41,7 @@
    show-suggestions? [:show-suggestions?]]
   [view style/commands-root
    [view style/command-list-icon-container
-    [touchable-highlight {:on-press #(do (dispatch [:toggle-chat-ui-props :show-suggestions?])
-                                         (dispatch [:set-chat-ui-props {:validation-messages nil}])
-                                         (dispatch [:update-suggestions]))}
+    [touchable-highlight {:on-press #(dispatch [:show-suggestions])}
      [view style/commands-list-icon
       (if show-suggestions?
         [vi/icon :icons/close]
@@ -103,8 +101,8 @@
                                                (.-height))]
                                      (set-layout-height-fn h)))
         :on-selection-change    #(let [s   (-> (.-nativeEvent %)
-                                               (.-selection))
-                                       end (.-end s)]
+                                               (.-selection)) 
+                                       end (.-end s)] 
                                    (dispatch [:update-text-selection end]))
         :style                  (style/input-view height single-line-input?)
         :placeholder-text-color style/color-input-helper-placeholder
