@@ -1,23 +1,7 @@
 (ns status-im.ui.screens.navigation
-  (:require [re-frame.core :refer [dispatch subscribe debug enrich after]]
-            [status-im.utils.handlers :refer [register-handler] :as u]
+  (:require [re-frame.core :refer [enrich]]
+            [status-im.utils.handlers :refer [register-handler-db]]
             [status-im.constants :refer [console-chat-id]]))
-
-(defn push-view [db view-id]
-  (-> db
-      (update :navigation-stack conj view-id)
-      (assoc :view-id view-id)))
-
-(defn replace-top-element [stack view-id]
-  (let [stack' (if (> 2 (count stack))
-                 (list :chat-list)
-                 (pop stack))]
-      (conj stack' view-id)))
-
-(defn replace-view [db view-id]
-  (-> db
-      (update :navigation-stack replace-top-element view-id)
-      (assoc :view-id view-id)))
 
 (defmulti preload-data!
           (fn [db [_ view-id]] (or view-id (:view-id db))))
@@ -29,24 +13,44 @@
     (dissoc db :was-modal?) ;;TODO check how it worked with this bug
     (apply preload-data! db args)))
 
-(register-handler :navigate-forget
+(register-handler-db
+  :navigate-forget
   (enrich preload-data!)
   (fn [db [_ new-view-id]]
     (assoc db :view-id new-view-id)))
 
-(register-handler :navigate-to
+(defn push-view [db view-id]
+  (-> db
+      (update :navigation-stack conj view-id)
+      (assoc :view-id view-id)))
+
+(register-handler-db
+  :navigate-to
   (enrich preload-data!)
   (fn [{:keys [view-id] :as db} [_ new-view-id]]
     (if (= view-id new-view-id)
       db
       (push-view db new-view-id))))
 
-(register-handler :navigate-to-modal
+(register-handler-db
+  :navigate-to-modal
   (enrich preload-data!)
   (fn [db [_ modal-view]]
     (assoc db :modal modal-view)))
 
-(register-handler :navigation-replace
+(defn replace-top-element [stack view-id]
+  (let [stack' (if (> 2 (count stack))
+                 (list :chat-list)
+                 (pop stack))]
+    (conj stack' view-id)))
+
+(defn replace-view [db view-id]
+  (-> db
+      (update :navigation-stack replace-top-element view-id)
+      (assoc :view-id view-id)))
+
+(register-handler-db
+  :navigation-replace
   (enrich preload-data!)
   (fn [db [_ view-id]]
     (replace-view db view-id)))
@@ -54,7 +58,8 @@
 (defn- can-navigate-back? [db]
   (and (not (db :creating-account?))))
 
-(register-handler :navigate-back
+(register-handler-db
+  :navigate-back
   (enrich -preload-data!)
   (fn [{:keys [navigation-stack view-id modal] :as db} _]
     (cond
@@ -73,35 +78,21 @@
             (assoc db :view-id first-in-stack)))
         db))))
 
-(defn navigate-to-clean
-  [db [_ view-id]]
+(defn navigate-to-clean [db view-id]
   (-> db
       (assoc :navigation-stack (list))
       (push-view view-id)))
 
-(register-handler :navigate-to-clean navigate-to-clean)
+(register-handler-db
+  :navigate-to-clean
+  (fn [db [_ view-id]]
+    (navigate-to-clean db view-id)))
 
-(defn store-prev-tab
-  [db [_ view-id]]
-  (-> db
-      (assoc :prev-tab-view-id (:view-id db))
-      (assoc :prev-view-id (:view-id db))))
-
-(register-handler :navigate-to-tab
-  (u/handlers->
-    store-prev-tab
-    navigate-to-clean
-    preload-data!))
-
-(register-handler :on-navigated-to-tab
+(register-handler-db
+  :navigate-to-tab
   (enrich preload-data!)
-  (fn [db [_]]
-    (assoc db :prev-tab-view-id nil)))
-
-(defn show-profile
-  [db [_ identity]]
-  (dispatch [:navigate-forget :profile])
-  (assoc db :contacts/identity identity))
-
-(register-handler :show-profile show-profile)
-
+  (fn [db [_ view-id]]
+    (-> db
+        (assoc :prev-tab-view-id (:view-id db))
+        (assoc :prev-view-id (:view-id db))
+        (navigate-to-clean view-id))))

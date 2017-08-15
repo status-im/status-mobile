@@ -634,3 +634,9 @@
            :dispatch (if exists?
                        [:update-chat! chat]
                        [:add-chat group-id chat])})))))
+
+(register-handler-fx
+  :show-profile
+  (fn [{db :db} [_ identity]]
+    {:db (assoc db :contacts/identity identity)
+     :dispatch [:navigate-forget :profile]}))
