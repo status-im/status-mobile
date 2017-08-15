@@ -1,38 +1,47 @@
 (ns status-im.ui.screens.accounts.events
   (:require
-    status-im.ui.screens.accounts.login.events
-    status-im.ui.screens.accounts.recover.events
+   status-im.ui.screens.accounts.login.events
+   status-im.ui.screens.accounts.recover.events
 
-    [status-im.data-store.accounts :as accounts-store]
-    [re-frame.core :refer [reg-cofx reg-fx dispatch inject-cofx]]
-    [taoensso.timbre :as log]
-    [status-im.protocol.core :as protocol]
-    [status-im.native-module.core :as status]
-    [status-im.utils.types :refer [json->clj]]
-    [status-im.utils.identicon :refer [identicon]]
-    [status-im.utils.random :as random]
-    [clojure.string :as str]
-    [status-im.utils.datetime :as time]
-    [status-im.utils.handlers :refer [register-handler-db register-handler-fx get-hashtags] :as handlers]
-    [status-im.ui.screens.accounts.statuses :as statuses]
-    [status-im.utils.signing-phrase.core :as signing-phrase]
-    [status-im.utils.gfycat.core :refer [generate-gfy]]))
+   [status-im.data-store.accounts :as accounts-store]
+   [re-frame.core :as re-frame]
+   [taoensso.timbre :as log]
+   [status-im.protocol.core :as protocol]
+   [status-im.native-module.core :as status]
+   [status-im.utils.types :refer [json->clj]]
+   [status-im.utils.identicon :refer [identicon]]
+   [status-im.utils.random :as random]
+   [clojure.string :as str]
+   [status-im.utils.datetime :as time]
+   [status-im.utils.handlers :as handlers]
+   [status-im.ui.screens.accounts.statuses :as statuses]
+   [status-im.utils.signing-phrase.core :as signing-phrase]
+   [status-im.utils.gfycat.core :refer [generate-gfy]]))
+
+;;;; Helper fns
+
+(defn create-account
+  "Takes db and password, creates map of effects describing account creation"
+  [db password]
+  {:db              (assoc db :accounts/creating-account? true)
+   ::create-account password
+   :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
 
 ;;;; COFX
 
-(reg-cofx
-  :get-new-keypair!
-  (fn [coeffects _]
-    (assoc coeffects :keypair (protocol/new-keypair!))))
+(re-frame/reg-cofx
+ :get-new-keypair!
+ (fn [coeffects _]
+   (assoc coeffects :keypair (protocol/new-keypair!))))
 
-(reg-cofx
-  ::get-all-accounts
-  (fn [coeffects _]
-    (assoc coeffects :all-accounts (accounts-store/get-all))))
+(re-frame/reg-cofx
+ ::get-all-accounts
+ (fn [coeffects _]
+   (assoc coeffects :all-accounts (accounts-store/get-all))))
 
 ;;;; FX
 
-(reg-fx
+(re-frame/reg-fx
   ::save-account
   (fn [account]
     (accounts-store/save account true)))
@@ -55,46 +64,46 @@
                  :signing-phrase      phrase}]
     (log/debug "account-created")
     (when-not (str/blank? public-key)
-      (dispatch [:show-mnemonic mnemonic phrase])
-      (dispatch [:add-account account password]))))
+      (re-frame/dispatch [:show-mnemonic mnemonic phrase])
+      (re-frame/dispatch [:add-account account password]))))
 
-(reg-fx
+(re-frame/reg-fx
   ::create-account
   (fn [password]
     (status/create-account
-      password
-      #(account-created % password))))
+     password
+     #(account-created % password))))
 
-(reg-fx
+(re-frame/reg-fx
   ::broadcast-account-update
   (fn [{:keys [current-public-key web3 name photo-path status
                updates-public-key updates-private-key]}]
     (when web3
       (protocol/broadcast-profile!
-        {:web3    web3
-         :message {:from       current-public-key
-                   :message-id (random/id)
-                   :keypair    {:public  updates-public-key
-                                :private updates-private-key}
-                   :payload    {:profile {:name          name
-                                          :status        status
-                                          :profile-image photo-path}}}}))))
+       {:web3    web3
+        :message {:from       current-public-key
+                  :message-id (random/id)
+                  :keypair    {:public  updates-public-key
+                               :private updates-private-key}
+                  :payload    {:profile {:name          name
+                                         :status        status
+                                         :profile-image photo-path}}}}))))
 
-(reg-fx
+(re-frame/reg-fx
   ::send-keys-update
   (fn [{:keys [web3 current-public-key contacts
                updates-public-key updates-private-key]}]
     (doseq [id (handlers/identities contacts)]
       (protocol/update-keys!
-        {:web3    web3
-         :message {:from       current-public-key
-                   :to         id
-                   :message-id (random/id)
-                   :payload    {:keypair {:public  updates-public-key
-                                          :private updates-private-key}}}}))))
+       {:web3    web3
+        :message {:from       current-public-key
+                  :to         id
+                  :message-id (random/id)
+                  :payload    {:keypair {:public  updates-public-key
+                                         :private updates-private-key}}}}))))
 ;;;; Handlers
 
-(register-handler-fx
+(handlers/register-handler-fx
   :add-account
   (fn [{{:keys          [network]
          :networks/keys [networks]
@@ -107,23 +116,16 @@
         (when password
           {:dispatch-later [{:ms 400 :dispatch [:login-account address password true]}]})))))
 
-(register-handler-fx
-  :create-account
-  (fn [{db :db} [_ password]]
-    {:db              (assoc db :accounts/creating-account? true)
-     ::create-account password
-     :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]}))
-
-(register-handler-fx
+(handlers/register-handler-fx
   :create-new-account-handler
   (fn [_ _]
     {:dispatch-n [[:initialize-db]
                   [:load-accounts]
                   [:check-console-chat true]]}))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :load-accounts
-  [(inject-cofx ::get-all-accounts)]
+  [(re-frame/inject-cofx ::get-all-accounts)]
   (fn [{:keys [db all-accounts]} _]
     (let [accounts (->> all-accounts
                         (map (fn [{:keys [address] :as account}]
@@ -136,7 +138,7 @@
         (when-not (empty? events)
           {:dispatch-n events})))))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :account-update-networks
   (fn [{{:accounts/keys [accounts] :networks/keys [networks] :as db} :db} [_ id]]
     (let [current-account (get accounts id)
@@ -144,41 +146,51 @@
       {:db            (assoc-in db [:accounts/accounts id] new-account)
        ::save-account new-account})))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :check-status-change
   (fn [{{:accounts/keys [accounts current-account-id]} :db} [_ status]]
     (let [{old-status :status} (get accounts current-account-id)
           status-updated? (and (not= status nil)
                                (not= status old-status))]
       (when status-updated?
-        (let [hashtags (get-hashtags status)]
+        (let [hashtags (handlers/get-hashtags status)]
           (when (seq hashtags)
             {:dispatch [:broadcast-status status hashtags]}))))))
 
-(defn update-account [current-account new-fields]
-  (merge current-account (assoc new-fields :last-updated (time/now-ms))))
+(defn- update-account [current-account new-fields now]
+  (merge current-account (assoc new-fields :last-updated now)))
 
-(register-handler-fx
+(defn account-update
+  "Takes map of coeffects containing `:db` and `:now` keys + new account fields,
+  returns all effects necessary for account update."
+  [{{:keys          [network]
+     :accounts/keys [accounts current-account-id] :as db} :db now :now} new-account-fields]
+  (let [current-account (get accounts current-account-id) 
+        new-account (update-account current-account new-account-fields now)]
+    {:db                        (assoc-in db [:accounts/accounts current-account-id] new-account)
+     ::save-account             new-account
+     ::broadcast-account-update (merge
+                                 (select-keys db [:current-public-key :web3])
+                                 (select-keys new-account [:name :photo-path :status
+                                                           :updates-public-key :updates-private-key]))}))
+
+;; TODO(janherich): remove this event once it's not used anymore
+(handlers/register-handler-fx
   :account-update
-  (fn [{{:accounts/keys [accounts current-account-id] :as db} :db} [_ new-account-fields]]
-    (let [current-account     (get accounts current-account-id)
-          new-account         (update-account current-account new-account-fields)]
-      {:db                        (assoc-in db [:accounts/accounts current-account-id] new-account)
-       ::save-account             new-account
-       ::broadcast-account-update (merge
-                                   (select-keys db [:current-public-key :web3])
-                                   (select-keys new-account [:name :photo-path :status
-                                                             :updates-public-key :updates-private-key]))})))
+  [(re-frame/inject-cofx :now) re-frame/trim-v]
+  (fn [cofx [new-account-fields]]
+    (account-update cofx new-account-fields)))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :account-update-keys
-  [(inject-cofx :get-new-keypair!)]
-  (fn [{:keys [db keypair]} _]
+  [(re-frame/inject-cofx :get-new-keypair!) (re-frame/inject-cofx :now)]
+  (fn [{:keys [db keypair now]} _]
     (let [{:accounts/keys [accounts current-account-id]} db
           {:keys [public private]} keypair
           current-account (get accounts current-account-id)
           new-account     (update-account current-account {:updates-public-key  public
-                                                           :updates-private-key private})]
+                                                           :updates-private-key private}
+                                          now)]
       {:db                (assoc-in db [:accounts/accounts current-account-id] new-account)
        ::save-account     new-account
        ::send-keys-update (merge
@@ -186,17 +198,19 @@
                            (select-keys new-account [:updates-public-key
                                                      :updates-private-key]))})))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :send-account-update-if-needed
-  (fn [{{:accounts/keys [accounts current-account-id]} :db} _]
+  [(re-frame/inject-cofx :now)]
+  (fn [{{:accounts/keys [accounts current-account-id]} :db now :now :as cofx} _]
     (let [{:keys [last-updated]} (get accounts current-account-id)
-          now           (time/now-ms)
           needs-update? (> (- now last-updated) time/week)]
       (log/info "Need to send account-update: " needs-update?)
       (when needs-update?
-        (dispatch [:account-update])))))
+        ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
+        ;; account with network update when last update was more then week ago
+        (account-update cofx nil)))))
 
-(register-handler-db
+(handlers/register-handler-db
   :set-current-account
   (fn [{:accounts/keys [accounts] :as db} [_ address]]
     (let [key (:public-key (accounts address))]

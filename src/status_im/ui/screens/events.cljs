@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.events
-  (:require status-im.bots.handlers
+  (:require status-im.bots.events
             status-im.chat.handlers
             status-im.commands.handlers.jail
             status-im.commands.handlers.loading
@@ -17,7 +17,7 @@
             status-im.ui.screens.profile.events
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
-            [re-frame.core :refer [dispatch reg-fx]]
+            [re-frame.core :refer [dispatch reg-fx reg-cofx]]
             [status-im.native-module.core :as status]
             [status-im.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
@@ -25,6 +25,9 @@
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
             [status-im.ui.screens.db :refer [app-db]]
+            [status-im.utils.sms-listener :as sms-listener-util]
+            [status-im.utils.datetime :as time]
+            [status-im.utils.random :as random]
             [status-im.utils.config :as config]
             [status-im.utils.crypt :as crypt]
             [status-im.utils.notifications :as notifications]
@@ -35,9 +38,86 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
+;;;; Helper fns
+
+(defn- call-jail-function
+  [{:keys [chat-id function callback-events-creator] :as opts}]
+  (let [path   [:functions function]
+        params (select-keys opts [:parameters :context])]
+    (status/call-jail
+     {:jail-id chat-id
+      :path    path
+      :params  params
+      :callback (fn [jail-response]
+                  (doseq [event (if callback-events-creator
+                                  (callback-events-creator jail-response)
+                                  [[:received-bot-response
+                                    {:chat-id chat-id}
+                                    jail-response]])
+                          :when event]
+                    (dispatch event)))})))
+
 ;;;; COFX
 
+(reg-cofx
+ :now
+ (fn [coeffects _]
+   (assoc coeffects :now (time/now-ms))))
+
+(reg-cofx
+ :random-id
+ (fn [coeffects _]
+   (assoc coeffects :random-id (random/id))))
+
+(reg-cofx
+ :random-id-seq
+ (fn [coeffects _]
+   (assoc coeffects :random-id-seq
+          ((fn rand-id-seq []
+             (cons (random/id) (lazy-seq (rand-id-seq))))))))
+
 ;;;; FX
+
+(reg-fx
+  :call-jail
+  (fn [{:keys [callback-events-creator] :as opts}]
+    (status/call-jail
+     (-> opts
+         (dissoc :callback-events-creator)
+         (assoc :callback
+                (fn [jail-response]
+                  (doseq [event (callback-events-creator jail-response)]
+                    (dispatch event))))))))
+
+(reg-fx
+  :call-jail-function
+  call-jail-function)
+
+(reg-fx
+  :call-jail-function-n
+  (fn [opts-seq]
+    (doseq [opts opts-seq]
+      (call-jail-function opts))))
+
+(reg-fx
+  :http-post
+  (fn [{:keys [action data success-event-creator failure-event-creator]}]
+    (utils/http-post action
+                     data
+                     #(dispatch (success-event-creator %))
+                     #(dispatch (failure-event-creator %)))))
+
+(reg-fx
+  :http-get
+  (fn [{:keys [url success-event-creator failure-event-creator]}]
+    (utils/http-get url
+                    #(dispatch (success-event-creator %))
+                    #(dispatch (failure-event-creator %)))))
+
+(reg-fx
+  :remove-sms-listener
+  (fn [subscription]
+    (sms-listener-util/remove-sms-listener subscription)))
 
 (reg-fx
   ::init-store
@@ -101,9 +181,9 @@
         (i18n/label :testfairy-message)))))
 
 (reg-fx
- ::get-fcm-token-fx
- (fn []
-   (notifications/get-fcm-token)))
+  ::get-fcm-token-fx
+  (fn []
+    (notifications/get-fcm-token)))
 
 ;;;; Handlers
 
@@ -211,9 +291,9 @@
     (.geoPermissionsGranted webview-bridge)))
 
 (register-handler-fx
- :get-fcm-token
- (fn [_ _]
-   {::get-fcm-token-fx nil}))
+  :get-fcm-token
+  (fn [_ _]
+    {::get-fcm-token-fx nil}))
 
 (defn handle-jail-signal [{:keys[chat_id data]}]
   (let [{:keys [event data]} (types/json->clj data)]

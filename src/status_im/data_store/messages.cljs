@@ -18,9 +18,9 @@
 (defn- command-type?
   [type]
   (contains?
-    #{c/content-type-command c/content-type-command-request
-      c/content-type-wallet-request c/content-type-wallet-command}
-    type))
+   #{c/content-type-command c/content-type-command-request
+     c/content-type-wallet-request c/content-type-wallet-command}
+   type))
 
 (def default-values
   {:outgoing       false
@@ -97,6 +97,14 @@
   []
   (data-store/get-unviewed))
 
+(defn get-previews
+  []
+  (->> (data-store/get-all-as-list)
+       (filter :preview)
+       (reduce (fn [acc {:keys [message-id preview]}]
+                 (assoc acc message-id (read-string preview)))
+               {})))
+
 (defn save
   ;; todo remove chat-id parameter
   [chat-id {:keys [message-id content]
@@ -112,7 +120,7 @@
                            :timestamp (timestamp)})]
       (data-store/save message'))))
 
-(defn update 
+(defn update
   [{:keys [message-id] :as message}]
   (when (data-store/exists? message-id)
     (let [message (update-if-present message :user-statuses vals)]
@@ -120,4 +128,3 @@
 
 (defn delete-by-chat-id [chat-id]
   (data-store/delete-by-chat-id chat-id))
-

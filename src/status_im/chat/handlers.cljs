@@ -9,179 +9,29 @@
             [status-im.protocol.core :as protocol]
             [status-im.data-store.chats :as chats]
             [status-im.data-store.contacts :as contacts]
-            [status-im.data-store.messages :as messages]
-            [status-im.data-store.handler-data :as handler-data]
+            [status-im.data-store.messages :as messages] 
             [status-im.data-store.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
-                                         content-type-command-request
-                                         default-number-of-messages
+                                         content-type-command-request 
                                          console-chat-id
                                          wallet-chat-id]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.ui.screens.navigation :as nav]
-            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
-            [status-im.handlers.server :as server]
+            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u] 
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
             [status-im.native-module.core :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.chat.utils :refer [console? not-console? safe-trim]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            status-im.chat.events.input 
-            status-im.chat.events.commands
-            status-im.chat.handlers.animation
-            status-im.chat.handlers.requests
-            status-im.chat.handlers.unviewed-messages
-            status-im.chat.handlers.send-message
-            status-im.chat.handlers.receive-message
-            status-im.chat.handlers.faucet
+            status-im.chat.events
+            status-im.chat.handlers.requests 
+            status-im.chat.handlers.send-message 
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
-            status-im.chat.handlers.console
             [taoensso.timbre :as log]))
-
-(register-handler :set-layout-height
-  (fn [db [_ height]]
-    (assoc db :layout-height height)))
-
-(register-handler :set-chat-ui-props
-  (fn [{:keys [current-chat-id] :as db} [_ kvs]]
-    (update-in db [:chat-ui-props current-chat-id] merge kvs)))
-
-(register-handler :toggle-chat-ui-props
-  (fn [{:keys [current-chat-id chat-ui-props] :as db} [_ ui-element chat-id]]
-    (let [chat-id (or chat-id current-chat-id)]
-      (update-in db [:chat-ui-props chat-id ui-element] not))))
-
-(register-handler :show-message-details
-  (u/side-effect!
-    (fn [_ [_ details]]
-      (dispatch [:set-chat-ui-props {:show-bottom-info? true
-                                     :show-emoji?       false
-                                     :bottom-info       details}]))))
-
-(register-handler :load-more-messages
-  (fn [{:keys [current-chat-id loading-allowed] :as db} _]
-    (let [all-loaded? (get-in db [:chats current-chat-id :all-loaded?])]
-      (if loading-allowed
-        (do (am/go
-              (<! (a/timeout 400))
-              (dispatch [:set :loading-allowed true]))
-            (if all-loaded?
-              db
-              (let [messages-path [:chats current-chat-id :messages]
-                    messages      (get-in db messages-path)
-                    chat-messages (filter #(= current-chat-id (:chat-id %)) messages)
-                    new-messages  (messages/get-by-chat-id current-chat-id (count chat-messages))
-                    all-loaded?   (> default-number-of-messages (count new-messages))]
-                (-> db
-                    (assoc :loading-allowed false)
-                    (update-in messages-path concat new-messages)
-                    (assoc-in [:chats current-chat-id :all-loaded?] all-loaded?)))))
-        db))))
-
-(defn set-message-shown
-  [db chat-id message-id]
-  (update-in db
-             [:chats chat-id :messages]
-             (fn [messages]
-               (map (fn [message]
-                      (if (= message-id (:message-id message))
-                        (assoc message :new? false)
-                        message))
-                    messages))))
-
-(register-handler :set-message-shown
-  (fn [db [_ {:keys [chat-id message-id]}]]
-    (set-message-shown db chat-id message-id)))
-
-(register-handler :cancel-command
-  (fn [{:keys [current-chat-id] :as db} _]
-    (-> db
-        (assoc-in [:chats current-chat-id :command-input] {})
-        (update-in [:chats current-chat-id :input-text] safe-trim))))
-
-(defn init-console-chat
-  ([{:keys [chats] :accounts/keys [current-account-id] :as db} existing-account?]
-   (let [new-chat sign-up-service/console-chat]
-     (if (chats console-chat-id)
-       db
-       (do
-         (dispatch [:add-contacts [sign-up-service/console-contact]])
-         (chats/save new-chat)
-         (contacts/save-all [sign-up-service/console-contact])
-         (when-not current-account-id
-           (sign-up-service/intro))
-         (when existing-account?
-           (sign-up-service/start-signup))
-         (-> db
-             (assoc :new-chat new-chat)
-             (update :chats assoc console-chat-id new-chat)
-             (assoc :current-chat-id console-chat-id)))))))
-
-(register-handler :init-console-chat
-  (fn [db _]
-    (init-console-chat db false)))
-
-(register-handler :account-generation-message
-  (u/side-effect!
-    (fn [_]
-      (when-not (messages/get-by-id chat-consts/passphrase-message-id)
-        (sign-up-service/account-generation-message)))))
-
-(register-handler :move-to-internal-failure-message
-  (u/side-effect!
-    (fn [_]
-      (when-not (messages/get-by-id chat-consts/move-to-internal-failure-message-id)
-        (sign-up-service/move-to-internal-failure-message)))))
-
-(register-handler :show-mnemonic
-  (u/side-effect!
-    (fn [_ [_ mnemonic signing-phrase]]
-      (let [crazy-math-message? (messages/get-by-id chat-consts/crazy-math-message-id)]
-        (sign-up-service/passphrase-messages mnemonic signing-phrase crazy-math-message?)))))
-
-(defn- handle-sms [{body :body}]
-  (when-let [matches (re-matches #"(\d{4})" body)]
-    (dispatch [:sign-up-confirm (second matches)])))
-
-(register-handler :sign-up
-  (after (fn [_ [_ phone-number]]
-           (dispatch [:account-update {:phone phone-number}])))
-  (fn [db [_ phone-number message-id]]
-    (sign-up-service/start-listening-confirmation-code-sms)
-    (let [formatted (format-phone-number phone-number)]
-      (server/sign-up db
-                      formatted
-                      message-id
-                      sign-up-service/on-sign-up-response))))
-
-(register-handler :start-listening-confirmation-code-sms
-  (fn [db [_ listener]]
-    (if-not (:confirmation-code-sms-listener db)
-      (assoc db :confirmation-code-sms-listener listener)
-      db)))
-
-(register-handler :stop-listening-confirmation-code-sms
-  (fn [db]
-    (if (:confirmation-code-sms-listener db)
-      (sign-up-service/stop-listening-confirmation-code-sms db)
-      db)))
-
-(register-handler :sign-up-confirm
-  (u/side-effect!
-    (fn [_ [_ confirmation-code message-id]]
-      (server/sign-up-confirm
-        confirmation-code
-        message-id
-        sign-up-service/on-send-code-response))))
-
-(register-handler :set-signed-up
-  (u/side-effect!
-    (fn [_ [_ signed-up]]
-      (dispatch [:account-update {:signed-up? signed-up}]))))
 
 (defn load-messages!
   ([db] (load-messages! db nil))
@@ -207,47 +57,6 @@
     load-messages!
     init-chat
     load-commands!))
-
-(defn initialize-chats
-  [{:keys [loaded-chats chats] :accounts/keys [account-creation?] :as db} _]
-  (let [chats' (if account-creation?
-                 chats
-                 (->> loaded-chats
-                      (map (fn [{:keys [chat-id] :as chat}]
-                             (let [last-message (messages/get-last-message chat-id)]
-                               [chat-id (assoc chat :last-message last-message)])))
-                      (into {})))]
-
-    (-> db
-        (assoc :chats chats')
-        (assoc :handler-data (handler-data/get-all))
-        (dissoc :loaded-chats)
-        (init-console-chat true))))
-
-(defn load-chats!
-  [{:accounts/keys [account-creation?] :as db} _]
-  (if account-creation?
-    db
-    (assoc db :loaded-chats (chats/get-all))))
-
-(register-handler :initialize-chats
-  [(after #(dispatch [:load-unviewed-messages!]))
-   (after #(dispatch [:load-default-contacts!]))]
-  (u/handlers->
-    load-chats!
-    initialize-chats))
-
-(register-handler :reload-chats
-  (fn [{:keys [chats] :as db} _]
-    (let [chats' (->> (chats/get-all)
-                      (map (fn [{:keys [chat-id] :as chat}]
-                             (let [last-message (messages/get-last-message chat-id)
-                                   prev-chat    (get chats chat-id)
-                                   new-chat     (assoc chat :last-message last-message)]
-                               [chat-id (merge prev-chat new-chat)])))
-                      (into {}))]
-      (-> (assoc db :chats chats')
-          (init-console-chat true)))))
 
 (defmethod nav/preload-data! :chat
   [{:keys [current-chat-id] :accounts/keys [current-account-id] :as db} [_ _ id]]
@@ -426,27 +235,6 @@
     delete-messages!
     remove-pending-messages!
     delete-chat!))
-
-(defn send-seen!
-  [{:keys [web3 current-public-key chats]
-    :contacts/keys [contacts]}
-   [_ {:keys [from chat-id message-id]}]]
-  (when-not (get-in contacts [chat-id :dapp?])
-    (let [{:keys [group-chat public?]} (chats chat-id)]
-      (when-not public?
-        (protocol/send-seen! {:web3    web3
-                              :message {:from       current-public-key
-                                        :to         from
-                                        :group-id   (when group-chat chat-id)
-                                        :message-id message-id}})))))
-
-(register-handler :send-seen!
-  [(after (fn [_ [_ {:keys [message-id]}]]
-            (messages/update {:message-id     message-id
-                              :message-status :seen})))
-   (after (fn [_ [_ {:keys [chat-id]}]]
-            (dispatch [:remove-unviewed-messages chat-id])))]
-  (u/side-effect! send-seen!))
 
 (register-handler :check-and-open-dapp!
   (u/side-effect!

@@ -19,7 +19,7 @@
             [status-im.utils.datetime :as datetime]
             [status-im.protocol.core :as protocol]
             [taoensso.timbre :refer-macros [debug] :as log]
-            [status-im.chat.handlers.console :as console]
+            [status-im.chat.events.console :as console]
             [status-im.utils.types :as types]
             [status-im.utils.config :as config]
             [status-im.utils.clocks :as clocks]))
@@ -60,7 +60,7 @@
 
 (defn console-command? [chat-id command-name]
   (and (= console-chat-id chat-id)
-       (console/commands-names (keyword command-name))))
+       (console/commands-names command-name)))
 
 (register-handler  :check-commands-handlers!
   (u/side-effect!
@@ -124,10 +124,12 @@
 
 (register-handler ::save-command!
   (u/side-effect!
-    (fn [_ [_ chat-id {:keys [command]} hidden-params]]
-      (let [command (-> command
-                        (update-in [:content :params] #(apply dissoc % hidden-params))
-                        (dissoc :to-message :has-handler))]
+    (fn [db [_ chat-id {:keys [command]} hidden-params]]
+      (let [preview (get-in db [:message-data :preview (:message-id command)])
+            command (cond-> (-> command
+                                (update-in [:content :params] #(apply dissoc % hidden-params))
+                                (dissoc :to-message :has-handler :raw-input))
+                      preview (assoc :preview (pr-str preview)))]
         (messages/save chat-id command)))))
 
 (register-handler ::dispatch-responded-requests!
