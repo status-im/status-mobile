@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.events
-  (:require status-im.bots.handlers
+  (:require status-im.bots.events
             status-im.chat.handlers
             status-im.commands.handlers.jail
             status-im.commands.handlers.loading
@@ -33,9 +33,49 @@
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
+;;;; Helper fns
+
+(defn- call-jail-function
+  [{:keys [chat-id function callback-events-creator] :as opts}]
+  (let [path   [:functions function]
+        params (select-keys opts [:parameters :context])]
+    (status/call-jail
+     {:jail-id chat-id
+      :path    path
+      :params  params
+      :callback (fn [jail-response]
+                  (doseq [event (if callback-events-creator
+                                  (callback-events-creator jail-response)
+                                  [[:received-bot-response
+                                    {:chat-id chat-id}
+                                    jail-response]])
+                          :when event]
+                    (dispatch event)))})))
+
 ;;;; COFX
 
 ;;;; FX
+
+(reg-fx
+ :call-jail
+ (fn [{:keys [callback-events-creator] :as opts}]
+   (status/call-jail
+    (-> opts
+        (dissoc :callback-events-creator)
+        (assoc :callback
+               (fn [jail-response]
+                 (doseq [event (callback-events-creator jail-response)]
+                   (dispatch event))))))))
+
+(reg-fx
+ :call-jail-function
+ call-jail-function)
+
+(reg-fx
+ :call-jail-function-n
+ (fn [opts-seq]
+   (doseq [opts opts-seq]
+     (call-jail-function opts))))
 
 (reg-fx
   ::init-store

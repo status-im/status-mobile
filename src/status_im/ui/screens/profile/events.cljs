@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.profile.events
   (:require [clojure.string :as string]
-            [re-frame.core :as re-frame :refer [reg-fx]]
+            [re-frame.core :as re-frame :refer [reg-fx trim-v]]
             [status-im.components.react :refer [show-image-picker]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.ui.screens.profile.navigation]
@@ -26,11 +26,14 @@
 
 (handlers/register-handler-fx
   :profile/send-transaction
-  (fn [_ [_ chat-id]]
+  [trim-v]
+  (fn [{:keys [db]} [chat-id contact-id]]
     {:dispatch-n [[:clear-seq-arguments]
                   [:navigate-to :chat chat-id]
-                  ;; TODO https://github.com/status-im/status-react/issues/1621
-                  [:select-chat-input-command {:name "send"}]]}))
+                  [:select-chat-input-command {:name "send"}]
+                  [:set-contact-as-command-argument {:arg-index 0
+                                                     :bot-db-key "recipient"
+                                                     :contact (get-in db [:contacts/contacts contact-id])}]]}))
 
 (handlers/register-handler-fx
   :profile/send-message

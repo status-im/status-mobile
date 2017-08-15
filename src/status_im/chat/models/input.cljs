@@ -47,13 +47,13 @@
         {:keys [contacts requests]} (get-in db [:chats chat-id])]
     (->> contacts
          (map (fn [{:keys [identity]}]
-                 (let [{:keys [commands responses]} (get-in db [:contacts/contacts identity])]
-                   (let [commands'  (mapv (fn [[k v]] [k [v :any]]) (merge global-commands commands))
-                         responses' (mapv (fn [{:keys [message-id type]}]
-                                            (when-let [response (get responses type)]
-                                              [type [response message-id]]))
-                                          requests)]
-                     (into commands' responses')))))
+                (let [{:keys [commands responses]} (get-in db [:contacts/contacts identity])]
+                  (let [commands'  (mapv (fn [[k v]] [k [v :any]]) (merge global-commands commands))
+                        responses' (mapv (fn [{:keys [message-id type]}]
+                                           (when-let [response (get responses type)]
+                                             [type [response message-id]]))
+                                         requests)]
+                    (into commands' responses')))))
          (reduce (fn [m cur] (into (or m {}) cur)))
          (into {}))))
 
@@ -78,7 +78,7 @@
                                     (str/replace (str/trim command-text) #" +" " ")
                                     command-text)
           splitted                (cond-> (str/split command-text-normalized const/spacing-char)
-                                          space? (drop-last))]
+                                    space? (drop-last))]
       (->> splitted
            (reduce (fn [[list command-started?] arg]
                      (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
@@ -95,7 +95,7 @@
                    [[] false])
            (first)))))
 
-(defn join-command-args [args]
+(defn join-command-args
   "Transforms a list of args to a string. The opposite of `split-command-args`.
 
   Examples:
@@ -107,6 +107,7 @@
 
   Input:  ['/send' 'Complex name with space in between' '1.0']
   Output: '/send \"Complex name with space in between\" 1.0'"
+  [args]
   (when args
     (->> args
          (map (fn [arg]
@@ -139,13 +140,13 @@
                                    (subs command-name 1)))
                               (vals possible-actions))
                       (first))]
-           {:command  command
-            :metadata (if (and (nil? (:to-message-id input-metadata)) (not= :any to-message-id))
-                        (assoc input-metadata :to-message-id to-message-id)
-                        input-metadata)
-            :args     (if (empty? seq-arguments)
-                        (rest command-args)
-                        seq-arguments)}))))
+         {:command  command
+          :metadata (if (and (nil? (:to-message-id input-metadata)) (not= :any to-message-id))
+                      (assoc input-metadata :to-message-id to-message-id)
+                      input-metadata)
+          :args     (if (empty? seq-arguments)
+                      (rest command-args)
+                      seq-arguments)}))))
   ([{:keys [current-chat-id] :as db} chat-id]
    (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
 
@@ -247,12 +248,12 @@
         prev-command (get-in db [:chat-ui-props current-chat-id :prev-command])]
     (if command
       (cond-> db
-              ;; clear the bot db
-              (not= prev-command (-> command :command :name))
-              (assoc-in [:bot-db (or (:bot command) current-chat-id)] nil)
-              ;; clear the chat's validation messages
-              true
-              (assoc-in [:chat-ui-props current-chat-id :validation-messages] nil))
+        ;; clear the bot db
+        (not= prev-command (-> command :command :name))
+        (assoc-in [:bot-db (or (:bot command) current-chat-id)] nil)
+        ;; clear the chat's validation messages
+        true
+        (assoc-in [:chat-ui-props current-chat-id :validation-messages] nil))
       (-> db
           ;; clear input metadata
           (assoc-in [:chats current-chat-id :input-metadata] nil)
@@ -268,7 +269,7 @@
 (defmethod validation-handler :phone
   [_]
   (fn [[number] error-events-creator]
-    (when-not (phone-number/valid-mobile-number? number) 
+    (when-not (phone-number/valid-mobile-number? number)
       (error-events-creator [validation-message
                              {:title       (i18n/label :t/phone-number)
                               :description (i18n/label :t/invalid-phone)}]))))
