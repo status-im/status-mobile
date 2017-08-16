@@ -288,7 +288,10 @@
           (if (= :complete (input-model/command-completion chat-command))
             (do
               (dispatch [:proceed-command chat-command chat-id])
-              (dispatch [:clear-seq-arguments chat-id]))
+              (dispatch [:clear-seq-arguments chat-id])
+              (dispatch [:set-chat-input-text nil chat-id])
+              (dispatch [:set-chat-input-metadata nil chat-id])
+              (dispatch [:set-chat-ui-props {:sending-in-progress? false}]))
             (let [text (get-in db [:chats chat-id :input-text])]
               (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
               (when-not (input-model/text-ends-with-space? text)
