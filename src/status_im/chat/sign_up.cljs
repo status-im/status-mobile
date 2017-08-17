@@ -137,7 +137,8 @@
               :from         console-chat-id
               :to           "me"}]))
 
-(defn passphrase-messages [mnemonic crazy-math-message?]
+
+(defn passphrase-messages [mnemonic signing-phrase crazy-math-message?]
   (dispatch [:received-message
              {:message-id   const/passphrase-message-id
               :content      (if crazy-math-message?
@@ -151,6 +152,22 @@
   (dispatch [:received-message
              {:message-id   (random/id)
               :content      mnemonic
+              :content-type text-content-type
+              :outgoing     false
+              :chat-id      console-chat-id
+              :from         console-chat-id
+              :to           "me"}])
+  (dispatch [:received-message
+             {:message-id   const/signing-phrase-message-id
+              :content      (label :t/here-is-your-signing-phrase)
+              :content-type text-content-type
+              :outgoing     false
+              :chat-id      console-chat-id
+              :from         console-chat-id
+              :to           "me"}])
+  (dispatch [:received-message
+             {:message-id   (random/id)
+              :content      signing-phrase
               :content-type text-content-type
               :outgoing     false
               :chat-id      console-chat-id

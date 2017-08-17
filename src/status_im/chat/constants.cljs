@@ -12,5 +12,6 @@
 (def crazy-math-message-id "crazy-math-message")
 (def move-to-internal-failure-message-id "move-to-internal-failure-message")
 (def passphrase-message-id "passphraze-message")
+(def signing-phrase-message-id "signing-phrase-message")
 (def intro-status-message-id "intro-status")
 (def intro-message1-id "intro-message1")

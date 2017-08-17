@@ -17,10 +17,11 @@
 (spec/def :account/status (spec/nilable string?))
 (spec/def :account/network (spec/nilable string?))
 (spec/def :account/phone (spec/nilable string?))
+(spec/def :account/signing-phrase :global/not-empty-string)
 
 (spec/def :accounts/account (allowed-keys
                               :req-un [:account/name :account/address :account/public-key
-                                       :account/photo-path]
+                                       :account/photo-path :account/signing-phrase]
                               :opt-un [:account/debug? :account/status :account/last-updated
                                        :account/updates-private-key :account/updates-public-key
                                        :account/email :account/signed-up? :account/network
