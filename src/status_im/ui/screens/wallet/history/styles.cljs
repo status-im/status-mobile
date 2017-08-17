@@ -1,46 +1,14 @@
 (ns status-im.ui.screens.wallet.history.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.components.styles :as st]))
 
 (def wallet-transactions-container
   {:flex             1
-   :background-color common/color-white})
+   :background-color st/color-white})
 
-(def toolbar-buttons-container
-  {:flex-direction  :row
-   :flex-shrink     1
-   :justify-content :space-between
-   :width           68
-   :margin-right    12})
-
-(def item
-  {:flex-direction  :row
-   :flex            1})
-
-(def item-text-view
-  {:flex            1
-   :flex-direction  :column})
-
-(def primary-text
-  {:flex      1
-   :font-size 16
-   :color     common/color-black})
-
-(def secondary-text
-  {:font-size 16
-   :color     common/color-gray4})
-
-(def item-icon
-  {:width  40
-   :height 40})
-
-(def secondary-action
-  (merge item-icon {:align-self "flex-end"}))
-
-;;;;;;;;;;;;;;;;;;
-;; Main section ;;
-;;;;;;;;;;;;;;;;;;
+(def toolbar-right-action
+  {:color        st/color-blue4
+   :font-size    18
+   :margin-right 12})
 
 (def main-section
-  {:padding 16
-   :background-color common/color-white})
+  {:background-color st/color-white})

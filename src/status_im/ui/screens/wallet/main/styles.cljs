@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.wallet.main-screen.styles
+(ns status-im.ui.screens.wallet.main.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :as common]
             [status-im.utils.platform :as platform]))
@@ -81,37 +81,8 @@
   {:font-size 12
    :color     common/color-green-2})
 
-;;;;;;;;;;;;;;;;;;;;
-;; Action buttons ;;
-;;;;;;;;;;;;;;;;;;;;
-
-(def action-buttons-container
-  {:flex-direction   :row
-   :background-color common/color-white-transparent-2
-   :margin-top       34
-   :margin-left      5
-   :margin-right     5
-   :border-radius    4})
-
-(def action-button
-  {:padding-vertical   13
-   :padding-horizontal 18
-   :flex-basis         0
-   :flex               1
-   :align-items        :center})
-
-(def action-button-center
-  (merge action-button
-         {:border-color       common/color-white-transparent-2
-          :border-left-width  1
-          :border-right-width 1}))
-
-(def action-button-text
-  {:font-size 13
-   :color     common/color-white})
-
-(def action-button-text-disabled
-  (merge action-button-text {:opacity 0.4}))
+(def buttons
+  {:margin-top 34})
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Assets section ;;

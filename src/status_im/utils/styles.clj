@@ -11,13 +11,13 @@
 
 (defmacro defstyle
   "Defines style symbol.
-   Style parameter may contain plaform specific style:
+   Style parameter may contain platform specific style:
    {:width   100
     :height  125
     :ios     {:height 20}
     :android {:margin-top 3}}
 
-    Reuslting style for Android:
+    Resulting style for Android:
     {:width 100
      :height 125
      :margin-top 3}
@@ -31,7 +31,7 @@
 
 (defmacro defnstyle
   "Defines style function.
-   Style parameter may contain plaform specific style:
+   Style parameter may contain platform specific style:
    {:width   100
     :height  (* a 2)
     :ios     {:height (/ a 2)}

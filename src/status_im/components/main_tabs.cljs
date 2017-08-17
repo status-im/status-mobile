@@ -10,7 +10,7 @@
             [status-im.ui.screens.chats-list.views :refer [chats-list]]
             [status-im.ui.screens.discover.views :refer [discover]]
             [status-im.ui.screens.contacts.views :refer [contact-groups-list]]
-            [status-im.ui.screens.wallet.main-screen.views :refer [wallet]]
+            [status-im.ui.screens.wallet.main.views :refer [wallet]]
             [status-im.utils.config :as config]
             [status-im.components.tabs.views :refer [tabs]]
             [status-im.components.tabs.styles :as st]

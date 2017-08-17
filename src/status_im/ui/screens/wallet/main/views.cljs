@@ -1,8 +1,9 @@
-(ns status-im.ui.screens.wallet.main-screen.views
+(ns status-im.ui.screens.wallet.main.views
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [clojure.string :as string]
             [re-frame.core :as rf]
             [status-im.components.common.common :as common]
+            [status-im.components.button.view :as btn]
             [status-im.components.drawer.view :as drawer]
             [status-im.components.react :as rn]
             [status-im.components.toolbar-new.view :as toolbar]
@@ -10,7 +11,7 @@
             [status-im.i18n :as i18n]
             [status-im.utils.listview :as lw]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.wallet.main-screen.styles :as st]))
+            [status-im.ui.screens.wallet.main.styles :as st]))
 
 (defn toolbar-title []
   [rn/view {:style st/toolbar-title-container}
@@ -30,30 +31,6 @@
                     :custom-content [toolbar-title]
                     :custom-action  [toolbar-buttons]}])
 
-;; TODO: Use standard signature and move to action-button namespace
-(defn action-button [{:keys [on-press view-style text-style text]}]
-  [rn/touchable-highlight {:on-press on-press}
-   [rn/view {:style view-style}
-    [rn/text {:style      text-style
-              :font       :medium
-              :uppercase? false} text]]])
-
-;; TODO: button to go to send screen
-(defn action-buttons []
-  [rn/view {:style st/action-buttons-container}
-   [action-button {:on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
-                   :view-style st/action-button
-                   :text-style st/action-button-text
-                   :text "Send"}]
-   [action-button {:on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
-                   :view-style st/action-button-center
-                   :text-style st/action-button-text
-                   :text "Request"}]
-   [action-button {:on-press (fn [] )
-                   :view-style st/action-button
-                   :text-style st/action-button-text-disabled
-                   :text "Exchange"}]])
-
 (defn main-section []
   [rn/view {:style st/main-section}
    [rn/view {:style st/total-balance-container}
@@ -64,7 +41,13 @@
      [rn/text {:style st/value-variation-title} "Total value"]
      [rn/view {:style st/today-variation-container}
       [rn/text {:style st/today-variation} "+5.43%"]]]
-    [action-buttons]]])
+    [btn/buttons st/buttons
+     [{:text     "Send"
+       :on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])}
+      {:text     "Request"
+       :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])}
+      {:text      "Exchange"
+       :disabled? true}]]]])
 
 (defn asset-list-item [[id {:keys [currency amount] :as row}]]
   [rn/view {:style st/asset-item-container}
