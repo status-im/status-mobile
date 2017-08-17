@@ -287,7 +287,6 @@
 
    ;wallet-qr-code
    :done                                  "Done"
-   :main-wallet                           "Main Wallet"
 
    ;validation
    :invalid-phone                         "Invalid phone number"
@@ -330,6 +329,13 @@
 
    ;; wallet
    :wallet                                "Wallet"
+   :wallets                               "Wallets"
+   :your-wallets                          "Your wallets"
+   :main-wallet                           "Main Wallet"
+   :wallet-send                           "Send"
+   :wallet-request                        "Request"
+   :wallet-exchange                       "Exchange"
+   :wallet-assets                         "Assets"
    :transactions                          "Transactions"
    :transactions-to                       "To"
    :transactions-sign                     "Sign"

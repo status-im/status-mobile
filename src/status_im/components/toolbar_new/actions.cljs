@@ -60,3 +60,8 @@
   {:image   {:source {:uri :icon_list_white}
              :style  st/action-default}
    :handler handler})
+
+(defn add-wallet [handler]
+  {:image   {:source {:uri :icon_add_wallet_dark}
+             :style  st/action-default}
+   :handler handler})

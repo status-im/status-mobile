@@ -27,14 +27,10 @@
    :color       st/color-gray4
    :padding-top 4})
 
-(def item-icon
+(def item-image
   {:width   40
    :height  40
    :margin  14})
-
-(def primary-action item-icon)
-
-(def secondary-action item-icon)
 
 (def base-separator
   {:height           1

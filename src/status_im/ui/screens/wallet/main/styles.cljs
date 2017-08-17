@@ -16,6 +16,9 @@
    :flex-direction :row
    :margin-left    6})
 
+(def toolbar-title-inner-container
+  {:flex-direction :row})
+
 (def toolbar-title-text
   {:color        common/color-white
    :font-size    17
@@ -97,19 +100,10 @@
    :margin-left 16
    :color       common/color-gray4})
 
-(def asset-item-container
-  {:flex-direction :row
-   :align-items    :center
-   :padding        12})
-
-(def asset-item-currency-icon
-  {:height       40
-   :width        40
-   :margin-right 14})
-
 (def asset-item-value-container
   {:flex           1
-   :flex-direction :row})
+   :flex-direction :row
+   :align-items    :center})
 
 (def asset-item-value
   {:font-size 16
@@ -119,13 +113,3 @@
   {:font-size   16
    :color       common/color-gray4
    :margin-left 6})
-
-(def asset-item-details-icon
-  {:flex-shrink 1
-   :height      24
-   :width       24})
-
-(def asset-list-separator
-  {:margin-left         70
-   :border-bottom-width 1
-   :border-color        common/color-separator})

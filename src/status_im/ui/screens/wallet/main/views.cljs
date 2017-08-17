@@ -5,12 +5,12 @@
             [status-im.components.common.common :as common]
             [status-im.components.button.view :as btn]
             [status-im.components.drawer.view :as drawer]
+            [status-im.components.list.views :as list]
             [status-im.components.react :as rn]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :as i18n]
             [status-im.utils.config :as config]
-            [status-im.utils.listview :as lw]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as st]
@@ -20,11 +20,13 @@
   (utils/show-popup "TODO" "Not implemented yet!"))
 
 (defn toolbar-title []
-  [rn/view {:style st/toolbar-title-container}
-   [rn/text {:style st/toolbar-title-text
-             :font  :toolbar-title}
-    "Main Wallet"]
-   [rn/touchable-icon :dropdown_white st/toolbar-title-icon show-not-implemented!]])
+  [rn/touchable-highlight {:on-press #(rf/dispatch [:navigate-to :wallet-list])
+                           :style st/toolbar-title-container}
+   [rn/view {:style st/toolbar-title-inner-container}
+    [rn/text {:style st/toolbar-title-text
+              :font  :toolbar-title}
+     (i18n/label :t/main-wallet)]
+    [rn/icon :dropdown_white st/toolbar-title-icon]]])
 
 (defn toolbar-buttons []
   [rn/view {:style st/toolbar-buttons-container}
@@ -54,52 +56,33 @@
      [rn/view {:style st/today-variation-container}
       [rn/text {:style st/today-variation} change]]]
     [btn/buttons st/buttons
-     [{:text     "Send"
+     [{:text     (i18n/label :t/wallet-send)
        :on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
        :disabled? (not config/wallet-wip-enabled?)}
-      {:text     "Request"
+      {:text     (i18n/label :t/wallet-request)
        :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
        :disabled? (not config/wallet-wip-enabled?)}
-      {:text      "Exchange"
+      {:text      (i18n/label :t/wallet-exchange)
        :disabled? true}]]]])
 
-(defn asset-list-item [[id {:keys [currency amount] :as row}]]
-  [rn/view {:style st/asset-item-container}
-   [rn/image {:source {:uri :launch_logo}
-              :style  st/asset-item-currency-icon}]
-   [rn/view {:style st/asset-item-value-container}
-    [rn/text {:style st/asset-item-value} (str amount)]
-    [rn/text {:style      st/asset-item-currency
-              :uppercase? true}
-     id]]
-   [rn/touchable-icon :forward_gray st/asset-item-details-icon show-not-implemented!]])
+(defn render-asset-fn [{:keys [id currency amount]}]
+  [list/touchable-item show-not-implemented!
+   [rn/view
+    [list/item
+     [list/item-image {:uri :launch_logo}]
+     [rn/view {:style st/asset-item-value-container}
+      [rn/text {:style st/asset-item-value} (str amount)]
+      [rn/text {:style      st/asset-item-currency
+                :uppercase? true}
+       id]]
+     [list/item-icon :forward_gray]]]])
 
-(defn render-separator-fn [assets-count]
-  (fn [_ row-id _]
-    (rn/list-item
-     ^{:key row-id}
-     [common/separator {} st/asset-list-separator])))
-
-(defn render-row-fn [row _ _]
-  (rn/list-item
-   [rn/touchable-highlight {:on-press #()}
-    [rn/view
-     [asset-list-item row]]]))
-
-(def assets-example-map
-  {"eth" {:currency :eth :amount 0.445}
-   "snt" {:currency :snt :amount 1}
-   "gno" {:currency :gno :amount 0.024794}})
-
-;; NOTE(oskarth): In development, replace assets with assets-example-map
-;; to check multiple assets being rendered
 (defn asset-section [eth]
-  (let [assets {"eth" {:currency :eth :amount eth}}]
+  (let [assets [{:id "eth" :currency :eth :amount eth}]]
     [rn/view {:style st/asset-section}
-     [rn/text {:style st/asset-section-title} "Assets"]
-     [rn/list-view {:dataSource      (lw/to-datasource assets)
-                    :renderSeparator (when platform/ios? (render-separator-fn (count assets)))
-                    :renderRow       render-row-fn}]]))
+     [rn/text {:style st/asset-section-title} (i18n/label :t/wallet-assets)]
+     [list/flat-list {:data      assets
+                      :render-fn render-asset-fn}]]))
 
 (defn eth-balance [{:keys [balance]}]
   (when balance
