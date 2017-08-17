@@ -139,9 +139,9 @@
 
 (register-handler :show-mnemonic
   (u/side-effect!
-    (fn [_ [_ mnemonic]]
+    (fn [_ [_ mnemonic signing-phrase]]
       (let [crazy-math-message? (messages/get-by-id chat-consts/crazy-math-message-id)]
-        (sign-up-service/passphrase-messages mnemonic crazy-math-message?)))))
+        (sign-up-service/passphrase-messages mnemonic signing-phrase crazy-math-message?)))))
 
 (defn- handle-sms [{body :body}]
   (when-let [matches (re-matches #"(\d{4})" body)]

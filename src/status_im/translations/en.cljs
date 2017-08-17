@@ -121,6 +121,7 @@
                                                "access or log in from another device")
    :phew-here-is-your-passphrase          "*Phew* that was hard, here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :here-is-your-passphrase               "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
+   :here-is-your-signing-phrase           "Here is your signing phrase. You will use it to verify your transactions. *Write it down and keep it safe!*"
    :written-down                          "Make sure you had securely written it down"
    :phone-number-required                 "Tap here to enter your phone number & I'll find your friends"
    :shake-your-phone                      "Find a bug or have a suggestion? Just ~shake~ your phone!"

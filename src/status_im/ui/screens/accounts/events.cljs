@@ -15,6 +15,7 @@
     [status-im.utils.datetime :as time]
     [status-im.utils.handlers :refer [register-handler-db register-handler-fx get-hashtags] :as handlers]
     [status-im.ui.screens.accounts.statuses :as statuses]
+    [status-im.utils.signing-phrase.core :as signing-phrase]
     [status-im.utils.gfycat.core :refer [generate-gfy]]))
 
 ;;;; COFX
@@ -37,10 +38,11 @@
     (accounts-store/save account true)))
 
 (defn account-created [result password]
-  (let [data (json->clj result)
+  (let [data       (json->clj result)
         public-key (:pubkey data)
-        address (:address data)
-        mnemonic (:mnemonic data)
+        address    (:address data)
+        mnemonic   (:mnemonic data)
+        phrase     (signing-phrase/generate)
         {:keys [public private]} (protocol/new-keypair!)
         account {:public-key          public-key
                  :address             address
@@ -49,10 +51,11 @@
                  :signed-up?          true
                  :updates-public-key  public
                  :updates-private-key private
-                 :photo-path          (identicon public-key)}]
+                 :photo-path          (identicon public-key)
+                 :signing-phrase      phrase}]
     (log/debug "account-created")
     (when-not (str/blank? public-key)
-      (dispatch [:show-mnemonic mnemonic])
+      (dispatch [:show-mnemonic mnemonic phrase])
       (dispatch [:add-account account])
       (dispatch [:login-account address password true]))))
 

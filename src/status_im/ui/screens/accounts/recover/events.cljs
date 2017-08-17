@@ -9,7 +9,8 @@
     [taoensso.timbre :as log]
     [clojure.string :as str]
     [status-im.utils.handlers :refer [register-handler-fx]]
-    [status-im.utils.gfycat.core :refer [generate-gfy]]))
+    [status-im.utils.gfycat.core :refer [generate-gfy]]
+    [status-im.utils.signing-phrase.core :as signing-phrase]))
 
 ;;;; FX
 
@@ -27,9 +28,10 @@
   :account-recovered
   [(inject-cofx :get-new-keypair!)]
   (fn [{:keys [db keypair]} [_ result]]
-    (let [data (json->clj result)
+    (let [data       (json->clj result)
           public-key (:pubkey data)
-          address (:address data)
+          address    (:address data)
+          phrase     (signing-phrase/generate)
           {:keys [public private]} keypair
           account {:public-key          public-key
                    :address             address
@@ -37,7 +39,8 @@
                    :photo-path          (identicon public-key)
                    :updates-public-key  public
                    :updates-private-key private
-                   :signed-up?          true}]
+                   :signed-up?          true
+                   :signing-phrase      phrase}]
       (log/debug "account-recovered")
       (when-not (str/blank? public-key)
         {:db         (update db :accounts/recover assoc :passphrase "" :password "")
