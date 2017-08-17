@@ -41,7 +41,9 @@
             [status-im.ui.screens.profile.edit.views :refer [edit-my-profile]]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
             [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
+
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
+            [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
             [status-im.ui.screens.wallet.history.views :as wallet-history]))
 
 (defn validate-current-view
@@ -59,6 +61,7 @@
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
                           :wallet main-tabs
+                          :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
                           :discover main-tabs
                           :discover-search-results discover-search-results

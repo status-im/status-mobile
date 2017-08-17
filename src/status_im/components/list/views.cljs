@@ -33,8 +33,16 @@
     content
     right-action]))
 
+(defn touchable-item [handler item]
+  [rn/touchable-highlight {:on-press handler}
+   item])
+
 (defn item-icon [k]
-  [rn/icon k lst/item-icon])
+  [rn/icon k lst/item-image])
+
+(defn item-image [source]
+  [rn/image {:source source
+             :style  lst/item-image}])
 
 (defn item-content
   ([primary] (item-content primary nil))
