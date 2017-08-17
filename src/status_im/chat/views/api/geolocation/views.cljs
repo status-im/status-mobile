@@ -24,6 +24,10 @@
                 #(reset! cur-loc-geocoded nil))
       true)))
 
+(defn get-coord [{:keys [latitude longitude]}]
+  {:latitude (or latitude 0)
+   :longitude (or longitude 0)})
+
 (defn place-item [{:keys [title address pin-style] [latitude longitude] :center}]
   [touchable-highlight {:on-press #(do
                                      (dispatch [:set-command-argument [0
@@ -58,7 +62,7 @@
                               (dispatch [:set-chat-seq-arg-input-text "Dropped pin"])
                               (dispatch [:chat-input-blur :seq-input-ref])
                               (dispatch [:load-chat-parameter-box (:command command)]))
-                    :initialCenterCoordinate coord
+                    :initialCenterCoordinate (get-coord coord)
                     :showsUserLocation true
                     :initialZoomLevel 10
                     :logoIsHidden true
@@ -140,10 +144,11 @@
         result          (reaction (when @pin-location (get-places @pin-location pin-geolocation)))
         result2         (reaction (when @pin-location (get-places @pin-location pin-nearby true)))]
     (fn []
-      (let [_ @result _ @result2]
+      (let [_ @result _ @result2
+            coord (select-keys (:coords geolocation) [:latitude :longitude])]
         [view
          [view
-          [mapview {:initial-center-coordinate (select-keys (:coords geolocation) [:latitude :longitude])
+          [mapview {:initial-center-coordinate (get-coord coord) 
                     :initialZoomLevel 10
                     :onRegionDidChange #(reset! pin-location (js->clj % :keywordize-keys true))
                     :logoIsHidden true
