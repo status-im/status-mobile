@@ -5,6 +5,7 @@
 (def color-blue2 "#5b6dee")
 (def color-blue3 "#424fae")
 (def color-blue4 "#4360df")
+(def color-blue4-transparent "rgba(67, 96, 223, 0.10)")
 (def color-blue5 "#3c56c8")
 (def color-blue-transparent "#7099e632")
 (def color-black "#000000")
