@@ -77,7 +77,8 @@
                                                  :optimize-constants true
                                                  :optimizations      :simple
                                                  :closure-defines    {"goog.DEBUG" false}
-                                                 :parallel-build     true}}
+                                                 :parallel-build     true
+                                                 :language-in        :ecmascript5}}
                                  :android
                                  {:source-paths ["react-native/src" "src" "env/prod"]
                                   :compiler     {:output-to          "index.android.js"
@@ -87,4 +88,5 @@
                                                  :optimize-constants true
                                                  :optimizations      :simple
                                                  :closure-defines    {"goog.DEBUG" false}
-                                                 :parallel-build     true}}}}}})
+                                                 :parallel-build     true
+                                                 :language-in        :ecmascript5}}}}}})
