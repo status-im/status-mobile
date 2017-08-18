@@ -36,6 +36,8 @@
              :discover-search-tags       '()
              :tags                       []
              :sync-state                 :done
+             :wallet                     {}
+             :prices                     {}
              :network                    "testnet"})
 
 ;;;;GLOBAL
@@ -172,4 +174,6 @@
                   :discoveries/tags
                   :discoveries/current-tag
                   :discoveries/request-discoveries-timer
-                  :discoveries/new-discover]))
+                  :discoveries/new-discover
+                  :wallet/wallet
+                  :prices/prices]))
