@@ -29,3 +29,14 @@
 
 (defn fee-value [gas gas-price]
   (.times (bignumber gas) (bignumber gas-price)))
+
+(defn eth->usd [eth usd-price]
+  (.times (bignumber eth) (bignumber usd-price)))
+
+(defn percent-change [from to]
+  (-> (.dividedBy (bignumber from) (bignumber to))
+      (.minus 1)
+      (.times 100)))
+
+(defn with-precision [n decimals]
+  (.round (bignumber n) decimals))

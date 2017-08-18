@@ -15,7 +15,7 @@
             status-im.ui.screens.navigation
             status-im.ui.screens.profile.events
             status-im.ui.screens.qr-scanner.events
-
+            status-im.ui.screens.wallet.events
             [re-frame.core :refer [dispatch reg-fx]]
             [status-im.components.status :as status]
             [status-im.components.permissions :as permissions]
@@ -163,7 +163,8 @@
                   [:send-account-update-if-needed]
                   [:start-requesting-discoveries]
                   [:remove-old-discoveries!]
-                  [:set :accounts/creating-account? false]]}))
+                  [:set :accounts/creating-account? false]
+                  [:init-wallet]]}))
 
 (register-handler-fx
   :check-console-chat
