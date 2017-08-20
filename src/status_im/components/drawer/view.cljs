@@ -44,16 +44,18 @@
 (defview name-input []
   [account [:get-current-account]
    name-text  (r/atom nil)]
-  (let [previous-name (:name account)]
+  (let [previous-name (:name account)
+        public-key (:public-key account)
+        placeholder (gfycat/generate-gfy public-key)]
     [view st/name-input-wrapper
      [text-input
-      {:placeholder    (gfycat/generate-gfy public-key)
+      {:placeholder    placeholder
        :style          (st/name-input-text (s/valid? ::profile.db/name @name-text))
        :font           :medium
        :default-value  (or @name-text previous-name)
        :on-change-text #(reset! name-text %)
        :on-end-editing #(if (s/valid? ::profile.db/name @name-text)
-                          (rf/dispatch [:account-update {:name (utils/clean-text @name-text)}])
+                          (rf/dispatch [:account-update {:name (utils/clean-text (or @name-text placeholder))}])
                           (reset! name-text previous-name))}]]))
 
 (defview status-input []
