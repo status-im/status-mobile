@@ -1,7 +1,8 @@
 (ns status-im.ui.screens.accounts.db
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
-            status-im.utils.db))
+            status-im.utils.db
+            status-im.ui.screens.network-settings.db))
 
 (spec/def :account/address :global/address)
 (spec/def :account/name :global/not-empty-string)
@@ -16,6 +17,7 @@
 (spec/def :account/debug? (spec/nilable boolean?))
 (spec/def :account/status (spec/nilable string?))
 (spec/def :account/network (spec/nilable string?))
+(spec/def :account/networks (spec/nilable :networks/networks))
 (spec/def :account/phone (spec/nilable string?))
 (spec/def :account/signing-phrase :global/not-empty-string)
 
@@ -25,7 +27,7 @@
                               :opt-un [:account/debug? :account/status :account/last-updated
                                        :account/updates-private-key :account/updates-public-key
                                        :account/email :account/signed-up? :account/network
-                                       :account/phone]))
+                                       :account/phone :account/networks]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

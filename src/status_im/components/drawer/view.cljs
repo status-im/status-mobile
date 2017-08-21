@@ -145,10 +145,11 @@
                :uppercase? platform/android?}
          (i18n/label :t/view-all)]]])))
 
-(defn current-network []
-  [view {:style st/network-label-container}
-   [text {:style st/network-label} (i18n/label :t/current-network)]
-   [text {:style st/network-title} "Ropsten"]])
+(defview current-network []
+  (letsubs [network [:get-current-account-network]]
+    [view {:style st/network-label-container}
+     [text {:style st/network-label} (i18n/label :t/current-network)]
+     [text {:style st/network-title} (:name network)]]))
 
 (defn options-btn []
   [view {:style st/options-button}

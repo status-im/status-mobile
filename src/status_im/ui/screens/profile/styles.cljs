@@ -62,7 +62,7 @@
   {:optionsContainer {:margin-top 78}})
 
 (def edit-profile-name-container
-  {:flex 1
+  {:flex        1
    :padding-top 30})
 
 (def edit-profile-icon-container
@@ -128,7 +128,19 @@
          {:color color-gray4}))
 
 (def info-item-separator
-  {:margin-left      16})
+  {:margin-left 16})
+
+(defstyle network-settings
+  {:padding-horizontal 16
+   :flex-direction     :row
+   :align-items        :center
+   :background-color   color-white
+   :android            {:height 72}
+   :ios                {:height 64}})
+
+(def network-settings-text
+  (merge {:flex 1}
+         profile-setting-text))
 
 (def edit-line-color
   (if platform/ios?
@@ -154,7 +166,7 @@
              :padding-bottom 0}})
 
 (defstyle profile-status-input
-  {:line-height  24;;TODO doesnt' work for multiline because a bug in the RN
+  {:line-height  24                                         ;;TODO doesnt' work for multiline because a bug in the RN
    :color        text1-color
    :padding-left 0
    :ios          {:font-size      17
@@ -162,18 +174,18 @@
                   :padding-top    0
                   :height         74
                   :letter-spacing -0.2}
-   :android      {:font-size      16
-                  :padding-top    5
-                  :height 74
+   :android      {:font-size           16
+                  :padding-top         5
+                  :height              74
                   :text-align-vertical :top
-                  :padding-bottom 0}})
+                  :padding-bottom      0}})
 
 (defstyle profile-status-text
-  {:color        text1-color
-   :line-height  24
-   :ios          {:font-size      17
-                  :letter-spacing -0.2}
-   :android      {:font-size      16}})
+  {:color       text1-color
+   :line-height 24
+   :ios         {:font-size      17
+                 :letter-spacing -0.2}
+   :android     {:font-size 16}})
 
 (defstyle edit-profile-status
   {:background-color   color-light-gray

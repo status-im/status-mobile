@@ -6,6 +6,7 @@
 (defn get-network-subdomain [network]
   (case network
     "testnet" "ropsten"
+    "testnet_rpc" "ropsten"
     "mainnet" "api"))
 
 (defn get-transaction-details-url [network hash]

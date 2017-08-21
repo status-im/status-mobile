@@ -12,9 +12,10 @@
   module/IReactNativeStatus
   ;; status-go calls
   (-init-jail [this])
-  (-start-node [this callback]
+  (-start-node [this config]
     (re-frame/dispatch [:signal-event "{\"type\":\"node.started\",\"event\":{}}"])
     (re-frame/dispatch [:signal-event "{\"type\":\"node.ready\",\"event\":{}}"]))
+  (-stop-node [this])
   (-stop-rpc-server [this])
   (-start-rpc-server [this])
   (-restart-rpc [this])

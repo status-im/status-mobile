@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.db
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
-  (:require [status-im.constants :refer [console-chat-id]]
+  (:require [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
             [cljs.spec.alpha :as spec]
             status-im.ui.screens.accounts.db
@@ -11,7 +11,8 @@
             status-im.chat.new-public-chat.db
             status-im.ui.screens.profile.db
             status-im.transactions.specs
-            status-im.ui.screens.discover.db))
+            status-im.ui.screens.discover.db
+            status-im.ui.screens.network-settings.db))
 
 ;; initial state of app-db
 (def app-db {:current-public-key         ""
@@ -24,7 +25,7 @@
              :group/contact-groups       {}
              :group/selected-contacts    #{}
              :chats                      {}
-             :current-chat-id            console-chat-id
+             :current-chat-id            constants/console-chat-id
              :loading-allowed            true
              :selected-participants      #{}
              :discoveries                {}
@@ -34,7 +35,8 @@
              :wallet                     {}
              :prices                     {}
              :notifications              {}
-             :network                    "testnet"})
+             :network                    constants/default-network
+             :networks/networks          constants/default-networks})
 
 ;;;;GLOBAL
 
@@ -79,6 +81,11 @@
 
 (spec/def ::network (spec/nilable string?))
 
+;;;;NODE
+
+(spec/def :node/after-start (spec/nilable vector?))
+(spec/def :node/after-stop (spec/nilable vector?))
+
 (spec/def ::db (allowed-keys
                  :opt
                  [:contacts/contacts
@@ -104,7 +111,11 @@
                   :my-profile/drawer
                   :my-profile/profile
                   :my-profile/default-name
-                  :wallet/request-transaction]
+                  :wallet/request-transaction
+                  :networks/selected-network
+                  :networks/networks
+                  :node/after-start
+                  :node/after-stop]
                  :opt-un
                  [::current-public-key
                   ::modal

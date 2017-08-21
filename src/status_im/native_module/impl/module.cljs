@@ -72,9 +72,14 @@
   (when status
     (call-module #(.moveToInternalStorage status on-result))))
 
-(defn start-node [on-result]
+
+(defn stop-node []
   (when status
-    (call-module #(.startNode status on-result))))
+    (call-module #(.stopNode status))))
+
+(defn start-node [config]
+  (when status
+    (call-module #(.startNode status config))))
 
 (defn stop-rpc-server []
   (when status
@@ -190,8 +195,10 @@
   ;; status-go calls
   (-init-jail [this]
     (init-jail))
-  (-start-node [this callback]
-    (start-node callback))
+  (-start-node [this config]
+    (start-node config))
+  (-stop-node [this]
+    (stop-node))
   (-stop-rpc-server [this]
     (stop-rpc-server))
   (-start-rpc-server [this]
