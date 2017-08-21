@@ -28,8 +28,12 @@
   (module-interface/-move-to-internal-storage rns-module callback))
 
 
-(defn start-node [callback]
-  (module-interface/-start-node rns-module callback))
+(defn start-node [config]
+  (module-interface/-start-node rns-module config))
+
+
+(defn stop-node []
+  (module-interface/-stop-node rns-module))
 
 
 (defn stop-rpc-server []

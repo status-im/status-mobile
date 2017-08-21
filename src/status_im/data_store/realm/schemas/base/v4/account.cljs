@@ -1,6 +1,6 @@
-(ns status-im.data-store.realm.schemas.base.v3.account
+(ns status-im.data-store.realm.schemas.base.v4.account
   (:require [taoensso.timbre :as log]
-            [status-im.utils.signing-phrase.core :as signing-phrase]))
+            [status-im.constants :as constants]))
 
 (def schema {:name       :account
              :primaryKey :address
@@ -20,15 +20,13 @@
                           :last-updated        {:type :int :default 0}
                           :signed-up?          {:type    :bool
                                                 :default false}
-                          :network             :string}})
+                          :network             :string
+                          :networks            {:type       :list
+                                                :objectType :network}}})
 
 (defn migration [_old-realm new-realm]
-  (log/debug "migrating account schema v3")
+  (log/debug "migrating account schema v4")
   (let [accounts (.objects new-realm "account")]
     (dotimes [i (.-length accounts)]
-      (let [account (aget accounts i)
-            phrase  (aget account "signing-phrase")]
-        (when (empty? phrase)
-          (log/debug (js->clj account))
-          (aset account "signing-phrase" (signing-phrase/generate)))))))
-
+      (let [account (aget accounts i)]
+        (aset account "network" constants/default-network)))))

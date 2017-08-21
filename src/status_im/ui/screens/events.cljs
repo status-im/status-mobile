@@ -13,6 +13,7 @@
             status-im.ui.screens.group.chat-settings.events
             status-im.ui.screens.group.events
             status-im.ui.screens.navigation
+            status-im.ui.screens.network-settings.events
             status-im.ui.screens.profile.events
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
@@ -47,33 +48,29 @@
   ::initialize-crypt-fx
   (fn []
     (crypt/gen-random-bytes
-     1024
-     (fn [{:keys [error buffer]}]
-       (if error
-         (log/error "Failed to generate random bytes to initialize sjcl crypto")
-         (->> (.toString buffer "hex")
-              (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-              (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
+      1024
+      (fn [{:keys [error buffer]}]
+        (if error
+          (log/error "Failed to generate random bytes to initialize sjcl crypto")
+          (->> (.toString buffer "hex")
+               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
+               (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
 
-(defn node-started [result]
-  (log/debug "Started Node"))
-
-(defn move-to-internal-storage []
+(defn move-to-internal-storage [config]
   (status/move-to-internal-storage
-   (fn []
-     (status/start-node node-started))))
+    #(status/start-node config)))
 
 (reg-fx
-  ::initialize-geth-fx
-  (fn []
+  :initialize-geth-fx
+  (fn [config]
     (status/should-move-to-internal-storage?
-     (fn [should-move?]
-       (if should-move?
-         (dispatch [:request-permissions
-                    [:read-external-storage]
-                    #(move-to-internal-storage)
-                    #(dispatch [:move-to-internal-failure-message])])
-         (status/start-node node-started))))))
+      (fn [should-move?]
+        (if should-move?
+          (dispatch [:request-permissions
+                     [:read-external-storage]
+                     #(move-to-internal-storage config)
+                     #(dispatch [:move-to-internal-failure-message])])
+          (status/start-node config))))))
 
 (reg-fx
   ::status-module-initialized-fx
@@ -100,8 +97,8 @@
   (fn []
     (when config/testfairy-enabled?
       (utils/show-popup
-       (i18n/label :testfairy-title)
-       (i18n/label :testfairy-message)))))
+        (i18n/label :testfairy-title)
+        (i18n/label :testfairy-message)))))
 
 (reg-fx
  ::get-fcm-token-fx
@@ -133,16 +130,18 @@
 
 (register-handler-fx
   :initialize-db
-  (fn [{{:keys [status-module-initialized? status-node-started?
-                network-status network _]} :db} _]
-    {::init-store nil
-     :db (assoc app-db
-                :accounts/current-account-id nil
-                :contacts/contacts {}
-                :network-status network-status
-                :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                :status-node-started? status-node-started?
-                :network (or network "testnet"))}))
+  (fn [{{:keys          [status-module-initialized? status-node-started?
+                         network-status network _]
+         :networks/keys [networks]} :db} _]
+    (let [network' (or network (get app-db :network))]
+      {::init-store nil
+       :db          (assoc app-db
+                      :accounts/current-account-id nil
+                      :contacts/contacts {}
+                      :network-status network-status
+                      :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                      :status-node-started? status-node-started?
+                      :network network')})))
 
 (register-handler-db
   :initialize-account-db
@@ -181,14 +180,14 @@
                  :chat
                  :accounts)]
       (merge
-       {:db (assoc db :view-id view
-                   :navigation-stack (list view))}
-       (when (or (empty? accounts) open-console?)
-         {:dispatch-n (concat
-                       [[:init-console-chat]
-                        [:load-commands!]]
-                       (when open-console?
-                         [[:navigate-to :chat console-chat-id]]))})))))
+        {:db (assoc db :view-id view
+                       :navigation-stack (list view))}
+        (when (or (empty? accounts) open-console?)
+          {:dispatch-n (concat
+                         [[:init-console-chat]
+                          [:load-commands!]]
+                         (when open-console?
+                           [[:navigate-to :chat console-chat-id]]))})))))
 
 (register-handler-fx
   :initialize-crypt
@@ -197,8 +196,14 @@
 
 (register-handler-fx
   :initialize-geth
-  (fn [_ _]
-    {::initialize-geth-fx nil}))
+  (fn [{db :db} _]
+    (let [{:accounts/keys [current-account-id accounts]} db
+          default-networks (:networks/networks db)
+          default-network  (:network db)
+          {:keys [network networks]} (get accounts current-account-id)
+          network-config   (or (get-in networks [network :config])
+                               (get-in default-networks [default-network :config]))]
+      {:initialize-geth-fx network-config})))
 
 (register-handler-fx
   :webview-geo-permissions-granted
@@ -235,6 +240,7 @@
         "transaction.queued"      (dispatch [:transaction-queued event])
         "transaction.failed"      (dispatch [:transaction-failed event])
         "node.started"            (dispatch [:status-node-started])
+        "node.stopped"            (dispatch [:status-node-stopped])
         "module.initialized"      (dispatch [:status-module-initialized])
         "request_geo_permissions" (dispatch [:request-permissions [:geolocation]
                                              #(dispatch [:webview-geo-permissions-granted])])
@@ -244,13 +250,19 @@
 (register-handler-fx
   :status-module-initialized
   (fn [{:keys [db]} _]
-    {:db (assoc db :status-module-initialized? true)
+    {:db                            (assoc db :status-module-initialized? true)
      ::status-module-initialized-fx nil}))
 
-(register-handler-db
+(register-handler-fx
   :status-node-started
-  (fn [db]
-    (assoc db :status-node-started? true)))
+  (fn [{{:node/keys [after-start] :as db} :db}]
+    (merge {:db (assoc db :status-node-started? true)}
+           (when after-start {:dispatch-n [after-start]}))))
+
+(register-handler-fx
+  :status-node-stopped
+  (fn [{{:node/keys [after-stop]} :db}]
+    (when after-stop {:dispatch-n [after-stop]})))
 
 (register-handler-fx
   :app-state-change
@@ -272,19 +284,19 @@
                 (fn []
                   (let [watch-id (atom nil)]
                     (.getCurrentPosition
-                     navigator.geolocation
-                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                     (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
+                      navigator.geolocation
+                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                      (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
                     (when platform/android?
                       (reset! watch-id
                               (.watchPosition
-                               navigator.geolocation
-                               #(do
-                                  (.clearWatch
-                                   navigator.geolocation
-                                   @watch-id)
-                                  (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
+                                navigator.geolocation
+                                #(do
+                                   (.clearWatch
+                                     navigator.geolocation
+                                     @watch-id)
+                                   (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
 
 (register-handler-db
   :update-geolocation

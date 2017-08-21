@@ -373,4 +373,24 @@
    :transactions-filter-title             "Filter History"
    :transactions-filter-tokens            "Tokens"
    :transactions-filter-type              "Type"
-   :transactions-filter-select-all        "Select all"})
+   :transactions-filter-select-all        "Select all"
+
+   ;network settings
+   :new-network                           "New network"
+   :add-network                           "Add network"
+   :add-new-network                       "Add new network"
+   :existing-networks                     "Existing networks"
+   :add-json-file                         "Add a JSON file"
+   :paste-json-as-text                    "Paste JSON as text"
+   :paste-json                            "Paste JSON"
+   :specify-rpc-url                       "Specify a RPC URL"
+   :edit-rpc-url                          "Edit a RPC URL"
+   :edit-network-config                   "Edit network config"
+   :connected                             "Connected"
+   :process-json                          "Process JSON"
+   :error-processing-json                 "Error processing JSON"
+   :rpc-url                               "RPC URL"
+   :remove-network                        "Remove network"
+   :network-settings                      "Network settings"
+   :edit-network-warning                  "Be careful, editing the network data may disable this network for you"
+   :connecting-requires-login             "Connecting to another network requires login"})

@@ -64,7 +64,8 @@
             :icons/dropdown-up         (slurp-svg "./resources/icons/dropdown_up.svg")
             :icons/dropdown            (slurp-svg "./resources/icons/dropdown.svg")
             :icons/grab                (slurp-svg "./resources/icons/grab.svg")
-            :icons/share               (slurp-svg "./resources/icons/share.svg")})
+            :icons/share               (slurp-svg "./resources/icons/share.svg")
+            :icons/network             (slurp-svg "./resources/icons/network.svg")})
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)
@@ -78,25 +79,25 @@
   ([name {:keys [color container-style style accessibility-label]
           :or {accessibility-label :icon}}]
    ^{:key name}
-   [react/view {:style container-style
+   [react/view {:style               container-style
                 :accessibility-label accessibility-label}
     (if-let [icon-fn (get icons (normalize-property-name name))]
       (into []
             (concat
-             [svg (merge default-viewbox style)]
-             (icon-fn
-              (cond
-                (keyword? color)
-                (case color
-                  :dark styles/icon-dark-color
-                  :gray styles/icon-gray-color
-                  :blue styles/color-light-blue
-                  :active styles/color-blue4
-                  :white styles/color-white
-                  :red styles/icon-red-color
-                  styles/icon-dark-color)
-                (string? color)
-                color
-                :else
-                styles/icon-dark-color))))
+              [svg (merge default-viewbox style)]
+              (icon-fn
+                (cond
+                  (keyword? color)
+                  (case color
+                    :dark styles/icon-dark-color
+                    :gray styles/icon-gray-color
+                    :blue styles/color-light-blue
+                    :active styles/color-blue4
+                    :white styles/color-white
+                    :red styles/icon-red-color
+                    styles/icon-dark-color)
+                  (string? color)
+                  color
+                  :else
+                  styles/icon-dark-color))))
       (throw (js/Error. (str "Unknown icon: " name))))]))

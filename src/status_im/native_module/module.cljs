@@ -3,7 +3,8 @@
 (defprotocol IReactNativeStatus
   (-init-jail [this])
   (-move-to-internal-storage [this callback])
-  (-start-node [this callback])
+  (-start-node [this config])
+  (-stop-node [this])
   (-stop-rpc-server [this])
   (-start-rpc-server [this])
   (-restart-rpc [this])
