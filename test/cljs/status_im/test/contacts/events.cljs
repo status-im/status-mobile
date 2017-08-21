@@ -1,4 +1,4 @@
-(ns status-im.test.contacts.handlers
+(ns status-im.test.contacts.events
   (:require [cljs.test :refer-macros [deftest is testing]]
             reagent.core
             [re-frame.core :as rf]
@@ -183,9 +183,15 @@
    hide-contact (update-contact ;TODO :account-update-keys)
    add-contact-handler (add-pending-contact, status-im.contacts.events/add-new-contact
                         status-im.contacts.events/send-contact-request ;TODO :discoveries-send-portions)
+
+
    create-new-contact-group
    set-contact-group-name
-   save-contact-group-order"
+   save-contact-group-order
+   add-selected-contacts-to-group
+   remove-contact-from-group
+   add-contacts-to-group
+   delete-contact-group"
 
   (run-test-sync
 
