@@ -236,3 +236,7 @@
     (let [preview (subscribe [:get-message-preview-markup message-id])]
       (when-let [markup @preview]
         (commands-utils/generate-hiccup markup)))))
+
+(reg-sub :get-message-preview-waiting?
+  (fn [db [_ message-id]]
+    (get-in db [:message-preview-waiting message-id])))

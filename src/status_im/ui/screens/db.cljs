@@ -160,6 +160,8 @@
                   :chat/raw-unviewed-messages
                   :chat/bot-db
                   :chat/geolocation
+                  :chat/message-preview-waiting
+                  :profile/profile-edit
                   :transactions/transactions
                   :transactions/transactions-queue
                   :transactions/selected-transaction

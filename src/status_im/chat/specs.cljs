@@ -30,3 +30,4 @@
 (s/def :chat/raw-unviewed-messages (s/nilable vector?))
 (s/def :chat/bot-db (s/nilable map?))
 (s/def :chat/geolocation (s/nilable map?))
+(s/def :chat/message-preview-waiting (s/nilable map?))

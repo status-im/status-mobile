@@ -111,12 +111,14 @@
   (#{c/content-type-wallet-command c/content-type-wallet-request} content-type))
 
 (defn command-preview
-  [{:keys [params preview content-type] :as message}]
+  [{:keys [params preview content-type preview-waiting?] :as message}]
   (cond
     (wallet-command? content-type)
     (wallet-command-preview message)
 
     preview preview
+
+    (and (nil? preview) preview-waiting?) nil
 
     :else
     [text {:style st/command-text
@@ -137,7 +139,8 @@
    global-commands [:get :global-commands]
    current-chat-id [:get-current-chat-id]
    contact-chat [:get-in [:chats (if outgoing to from)]]
-   preview [:get-message-preview message-id]]
+   preview [:get-message-preview message-id]
+   message-preview-waiting? [:get-message-preview-waiting? message-id]]
   (let [commands (merge commands from-commands)
         {:keys [command params]} (parse-command-message-content commands global-commands content)
         {:keys     [name type]
@@ -157,6 +160,7 @@
                        :params          params
                        :outgoing?       outgoing
                        :preview         preview
+                       :preview-waiting? message-preview-waiting?
                        :contact-chat    contact-chat
                        :contact-address (if outgoing to from)
                        :current-chat-id current-chat-id}]]))
