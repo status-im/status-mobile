@@ -10,4 +10,4 @@
 (defn enabled? [v] (= "1" v))
 
 (def testfairy-enabled? (enabled? (get-config :TESTFAIRY_ENABLED)))
-(def wallet-tab-enabled? (enabled? (get-config  :WALLET_TAB_ENABLED 0)))
+(def wallet-wip-enabled? (enabled? (get-config :WALLET_WIP_ENABLED 0)))

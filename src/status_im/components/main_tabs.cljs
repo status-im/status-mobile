@@ -11,7 +11,6 @@
             [status-im.ui.screens.discover.views :refer [discover]]
             [status-im.ui.screens.contacts.views :refer [contact-groups-list]]
             [status-im.ui.screens.wallet.main.views :refer [wallet]]
-            [status-im.utils.config :as config]
             [status-im.components.tabs.views :refer [tabs]]
             [status-im.components.tabs.styles :as st]
             [status-im.components.styles :as common-st]
@@ -19,28 +18,26 @@
             [cljs.core.async :as a]))
 
 (def tab-list
-  (concat
-    (when config/wallet-tab-enabled?
-      [{:view-id       :wallet
-        :title         (label :t/wallet)
-        :screen        wallet
-        :icon-inactive :icon_wallet_gray
-        :icon-active   :icon_wallet_active}])
-    [{:view-id       :chat-list
-      :title         (label :t/chats)
-      :screen        chats-list
-      :icon-inactive :icon_chats
-      :icon-active   :icon_chats_active}
-     {:view-id       :discover
-      :title         (label :t/discover)
-      :screen        discover
-      :icon-inactive :icon_discover
-      :icon-active   :icon_discover_active}
-     {:view-id       :contact-list
-      :title         (label :t/contacts)
-      :screen        contact-groups-list
-      :icon-inactive :icon_contacts
-      :icon-active   :icon_contacts_active}]))
+  [{:view-id       :wallet
+    :title         (label :t/wallet)
+    :screen        wallet
+    :icon-inactive :icon_wallet_gray
+    :icon-active   :icon_wallet_active}
+   {:view-id       :chat-list
+    :title         (label :t/chats)
+    :screen        chats-list
+    :icon-inactive :icon_chats
+    :icon-active   :icon_chats_active}
+   {:view-id       :discover
+    :title         (label :t/discover)
+    :screen        discover
+    :icon-inactive :icon_discover
+    :icon-active   :icon_discover_active}
+   {:view-id       :contact-list
+    :title         (label :t/contacts)
+    :screen        contact-groups-list
+    :icon-inactive :icon_contacts
+    :icon-active   :icon_contacts_active}])
 
 (def tab->index (reduce #(assoc %1 (:view-id %2) (count %1)) {} tab-list))
 

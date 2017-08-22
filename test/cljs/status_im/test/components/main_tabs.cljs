@@ -4,5 +4,5 @@
 
 (deftest tab->index
   (is (contains? tabs/tab->index :chat-list))
-  (is (= 1 (:discover tabs/tab->index))))
+  (is (= 2 (:discover tabs/tab->index))))
 
