@@ -8,6 +8,8 @@
             [status-im.utils.image-processing :refer [img->base64]]
             [taoensso.timbre :as log]))
 
+(def account-profile-keys [:name :photo-path :status])
+
 (reg-fx
   :open-image-picker
   ;; the image picker is only used here for now, this effect can be use in other scenarios as well
@@ -40,8 +42,9 @@
   :my-profile/edit
   (fn [{:keys [db]} [_ edit-type edit-value]]
     (let [current-account-id (:accounts/current-account-id db)
-          current-account (select-keys (get-in db [:accounts/accounts current-account-id])
-                                       [:name :photo-path :status])
+          current-account (-> db
+                              (get-in [:accounts/accounts current-account-id])
+                              (select-keys account-profile-keys))
           new-db (-> db
                      (update-in [:my-profile/edit] merge current-account)
                      (assoc-in [:my-profile/edit :edit-status?] (= edit-type :status true)))]
@@ -75,4 +78,4 @@
   (fn [{:keys [db]} _]
     (let [{:keys [:my-profile/edit]} db]
       {:dispatch-n [[:check-status-change (:status edit)]
-                    [:account-update edit]]})))
+                    [:account-update (select-keys edit account-profile-keys)]]})))
