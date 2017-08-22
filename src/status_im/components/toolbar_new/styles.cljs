@@ -44,7 +44,8 @@
 (defstyle toolbar-title-text
   {:color          text1-color
    :letter-spacing -0.2
-   :font-size      17})
+   :font-size      17
+   :ios            {:text-align "center"}})
 
 (def toolbar-border-container
   (get-in p/platform-specific [:component-styles :toolbar-border-container]))
