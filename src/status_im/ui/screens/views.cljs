@@ -58,6 +58,8 @@
     (when view-id
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
+                          :wallet-transactions-unsigned wallet-transactions
+                          :wallet-transactions-history wallet-transactions
                           :wallet main-tabs
                           :wallet-send-transaction send-transaction
                           :discover main-tabs
@@ -85,7 +87,8 @@
                           :profile-photo-capture profile-photo-capture
                           :accounts accounts
                           :login login
-                          :recover recover)]
+                          :recover recover
+                          (throw (str "Unknown view: " current-view)))]
 
           [(if android? menu-context view) common-styles/flex
            [view common-styles/flex
@@ -102,5 +105,6 @@
                                   :transaction-details transaction-details
                                   :confirmation-success confirmation-success
                                   :contact-list-modal contact-list-modal
-                                  :wallet-transactions wallet-transactions)]
+                                  :wallet-transactions wallet-transactions
+                                  (throw (str "Unknown modal view: " modal-view)))]
                   [component])]])]])))))

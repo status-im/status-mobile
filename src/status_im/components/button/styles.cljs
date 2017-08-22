@@ -1,12 +1,14 @@
 (ns status-im.components.button.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.components.styles :as st]))
 
 (def border-color st/color-white-transparent-2)
 
-(def button-borders
-  {:background-color border-color
-   :margin           5
-   :border-radius    8})
+(defstyle button-borders
+  {:background-color  border-color
+   :margin-horizontal 5
+   :android           {:border-radius 4}
+   :ios               {:border-radius 8}})
 
 (def action-buttons-container
   (merge

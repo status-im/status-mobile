@@ -40,7 +40,6 @@
 
 (defn tab-title [active?]
   {:font-size  (if-not (or active? p/ios?) 12 14)
-   :height     16
    :min-width  60
    :text-align :center
    :color      (if active? st/color-light-blue st/color-gray4)})
@@ -52,15 +51,19 @@
    :align-self   :center})
 
 (def tab-container
-  {:flex             1
-   :height           tab-height
-   :justifyContent   :center
-   :alignItems       :center})
+  {:flex           1
+   :height         tab-height
+   :justifyContent :center
+   :alignItems     :center})
+
+(def swiper
+  {:shows-pagination false})
 
 (defn main-swiper [tabs-hidden?]
-  {:position         :absolute
-   :top              0
-   :left             0
-   :right            0
-   :bottom           (if tabs-hidden? 0 tabs-height)
-   :shows-pagination false})
+  (merge
+    swiper
+    {:position :absolute
+     :top      0
+     :left     0
+     :right    0
+     :bottom   (if tabs-hidden? 0 tabs-height)}))

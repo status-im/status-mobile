@@ -20,6 +20,12 @@
 
 (def tab-list
   (concat
+    (when config/wallet-tab-enabled?
+      [{:view-id       :wallet
+        :title         (label :t/wallet)
+        :screen        wallet
+        :icon-inactive :icon_wallet_gray
+        :icon-active   :icon_wallet_active}])
     [{:view-id       :chat-list
       :title         (label :t/chats)
       :screen        chats-list
@@ -34,13 +40,7 @@
       :title         (label :t/contacts)
       :screen        contact-groups-list
       :icon-inactive :icon_contacts
-      :icon-active   :icon_contacts_active}]
-    (when config/wallet-tab-enabled?
-      [{:view-id       :wallet
-        :title         "Wallet"
-        :screen        wallet
-        :icon-inactive :icon_contacts
-        :icon-active   :icon_contacts_active}])))
+      :icon-active   :icon_contacts_active}]))
 
 (def tab->index (reduce #(assoc %1 (:view-id %2) (count %1)) {} tab-list))
 
@@ -115,8 +115,8 @@
               (doall
                 (map-indexed (fn [index {vid :view-id screen :screen}]
                                ^{:key index} [screen (= @view-id vid)]) tab-list))]
-             [tabs {:selected-view-id @view-id
-                    :prev-view-id     @prev-view-id
+             [tabs {:style (st/tabs-container @tabs-hidden?)
+                    :selected-view-id @view-id
                     :tab-list         tab-list}]
              (when-not @tabs-hidden?
                [bottom-shadow-view])]]]])})))

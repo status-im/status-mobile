@@ -1,7 +1,8 @@
 (ns status-im.components.button.view
   (:require [cljs.spec.alpha :as s]
             [status-im.components.button.styles :as cst]
-            [status-im.components.react :as rn]))
+            [status-im.components.react :as rn]
+            [status-im.utils.platform :as p]))
 
 (defn button [{:keys [on-press style text text-style disabled?]
                :or {style cst/action-button}}]
@@ -10,7 +11,7 @@
     [rn/text {:style      (or text-style
                               (if disabled? cst/action-button-text-disabled cst/action-button-text))
               :font       :medium
-              :uppercase? false}
+              :uppercase? p/android?}
      text]]])
 
 (defn primary-button [m]
