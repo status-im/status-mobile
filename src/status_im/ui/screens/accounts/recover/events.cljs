@@ -16,7 +16,10 @@
 (reg-fx
   ::recover-account-fx
   (fn [[passphrase password]]
-    (status/recover-account passphrase password #(dispatch [:account-recovered %]))))
+    (status/recover-account
+     (str/trim passphrase)
+     password
+     #(dispatch [:account-recovered %]))))
 
 ;;;; Handlers
 
@@ -45,4 +48,3 @@
   :recover-account
   (fn [_ [_ passphrase password]]
     {::recover-account-fx [passphrase password]}))
-
