@@ -18,12 +18,12 @@
             [status-im.i18n :as i18n]
             [clojure.string :as str]))
 
-(defn account-bage [address photo-path name]
-  [view st/account-bage
+(defn account-badge [address photo-path name]
+  [view st/account-badge
    [image {:source {:uri (if (str/blank? photo-path) :avatar photo-path)}
            :style  st/photo-image}]
-   [view st/account-bage-text-view
-    [text {:style st/account-bage-text
+   [view st/account-badge-text-view
+    [text {:style st/account-badge-text
            :numberOfLines 1}
      (or name address)]]])
 
@@ -31,7 +31,7 @@
   [view
    [touchable-highlight {:on-press #(dispatch [:open-login address photo-path name])}
     [view st/account-view
-     [account-bage address photo-path name]]]])
+     [account-badge address photo-path name]]]])
 
 (defview accounts []
   [accounts [:get-accounts]]

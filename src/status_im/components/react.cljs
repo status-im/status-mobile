@@ -115,6 +115,11 @@
    (merge {:underlay-color :transparent} props)
    content])
 
+(defn touchable-icon [n style handler]
+  [touchable-highlight {:on-press handler}
+   [view
+    [icon n style]]])
+
 (def picker-item
   (when-let [picker (get-react-property "Picker")]
     (adapt-class (.-Item picker))))

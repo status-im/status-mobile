@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch dispatch-sync]]
             [status-im.ui.screens.accounts.styles :as ast]
-            [status-im.ui.screens.accounts.views :refer [account-bage]]
+            [status-im.ui.screens.accounts.views :refer [account-badge]]
             [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
@@ -35,7 +35,7 @@
      [login-toolbar]
      [view st/login-view
       [view st/login-badge-container
-       [account-bage address photo-path name]
+       [account-badge address photo-path name]
        [view {:height 8}]
        [text-input-with-label {:ref               #(reset! password-text-input %)
                                :label             (i18n/label :t/password)

@@ -52,16 +52,16 @@
    :ios              {:border-radius 8}
    :android          {:border-radius 4}})
 
-(def account-bage
+(def account-badge
   {:flex-direction     :row
    :align-items        :center
    :padding-horizontal 16})
 
-(def account-bage-text-view
+(def account-badge-text-view
   {:margin-left 16
    :flex-shrink 1})
 
-(defstyle account-bage-text
+(defstyle account-badge-text
   {:ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 16

@@ -9,26 +9,36 @@
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :as i18n]
+            [status-im.utils.config :as config]
             [status-im.utils.listview :as lw]
             [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as st]
             [status-im.utils.money :as money]))
+
+(defn- show-not-implemented! []
+  (utils/show-popup "TODO" "Not implemented yet!"))
 
 (defn toolbar-title []
   [rn/view {:style st/toolbar-title-container}
    [rn/text {:style st/toolbar-title-text
              :font  :toolbar-title}
     "Main Wallet"]
-   [rn/icon :dropdown_white st/toolbar-title-icon]])
+   [rn/touchable-icon :dropdown_white st/toolbar-title-icon show-not-implemented!]])
 
 (defn toolbar-buttons []
   [rn/view {:style st/toolbar-buttons-container}
-   [rn/icon :dots_vertical_white st/toolbar-icon]
-   [rn/icon :qr_white st/toolbar-icon]])
+   [rn/touchable-icon :dots_vertical_white st/toolbar-icon show-not-implemented!]
+   [rn/touchable-icon :qr_white st/toolbar-icon show-not-implemented!]])
+
+(defn- show-wallet-transactions []
+  (if config/wallet-wip-enabled?
+    (rf/dispatch [:navigate-to-modal :wallet-transactions])
+    (show-not-implemented!)))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style          st/toolbar
-                    :nav-action     (act/list-white #(rf/dispatch [:navigate-to-modal :wallet-transactions]))
+                    :nav-action     (act/list-white show-wallet-transactions)
                     :custom-content [toolbar-title]
                     :custom-action  [toolbar-buttons]}])
 
@@ -45,9 +55,11 @@
       [rn/text {:style st/today-variation} change]]]
     [btn/buttons st/buttons
      [{:text     "Send"
-       :on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])}
+       :on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
+       :disabled? (not config/wallet-wip-enabled?)}
       {:text     "Request"
-       :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])}
+       :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
+       :disabled? (not config/wallet-wip-enabled?)}
       {:text      "Exchange"
        :disabled? true}]]]])
 
@@ -60,7 +72,7 @@
     [rn/text {:style      st/asset-item-currency
               :uppercase? true}
      id]]
-   [rn/icon :forward_gray st/asset-item-details-icon]])
+   [rn/touchable-icon :forward_gray st/asset-item-details-icon show-not-implemented!]])
 
 (defn render-separator-fn [assets-count]
   (fn [_ row-id _]
