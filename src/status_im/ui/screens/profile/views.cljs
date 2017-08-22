@@ -57,21 +57,20 @@
 (defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
   [react/view actions-list
    (if pending?
-     [action-button (label :t/add-to-contacts)
-      :add_blue
-      #(dispatch [:add-pending-contact chat-id])]
-     [action-button-disabled (label :t/in-contacts)
-      :ok_dark])
+     [action-button {:label    (label :t/add-to-contacts)
+                     :image    :add_blue
+                     :on-press #(dispatch [:add-pending-contact chat-id])}]
+     [action-button-disabled (label :t/in-contacts) :ok_dark])
    [action-separator]
-   [action-button (label :t/start-conversation)
-    :chats_blue
-    #(dispatch [:profile/send-message whisper-identity])]
+   [action-button {:label    (label :t/start-conversation)
+                   :image    :chats_blue
+                   :on-press #(dispatch [:profile/send-message whisper-identity])}]
    (when-not dapp?
      [react/view
       [action-separator]
-      [action-button (label :t/send-transaction)
-       :arrow_right_blue
-       #(dispatch [:profile/send-transaction chat-id])]])])
+      [action-button {:label    (label :t/send-transaction)
+                      :image    :arrow_right_blue
+                      :on-press #(dispatch [:profile/send-transaction chat-id])}]])])
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [react/view styles/profile-setting-item
@@ -186,9 +185,9 @@
        [profile-status status true]]
       [form-spacer]
       [react/view actions-list
-       [action-button (label :t/show-qr)
-        :q_r_blue
-        (show-qr current-account :public-key)]]
+       [action-button {:label    (label :t/show-qr)
+                       :image    :q_r_blue
+                       :on-press (show-qr current-account :public-key)}]]
       [form-spacer]
       [react/view styles/profile-info-container
        [my-profile-info current-account]

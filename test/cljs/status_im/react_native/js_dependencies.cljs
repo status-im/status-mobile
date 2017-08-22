@@ -35,6 +35,7 @@
                                  :close         (fn [])})
 (def sortable-listview      #js {})
 (def swiper                 #js {})
+(def vector-icons-ion       #js {:default #js {}})
 (def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})
 

@@ -29,7 +29,6 @@
 (def realm                  (js/require "realm"))
 (def sortable-listview      (js/require "react-native-sortable-listview"))
 (def swiper                 (js/require "react-native-swiper"))
-(def vector-icons           (js/require "react-native-vector-icons/Ionicons"))
+(def vector-icons-ion       (js/require "react-native-vector-icons/Ionicons"))
+(def vector-icons           (js/require "react-native-vector-icons"))
 (def webview-bridge         (js/require "react-native-webview-bridge"))
-
-
