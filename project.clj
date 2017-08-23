@@ -24,7 +24,7 @@
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :test-paths ["test/clj"]
   :figwheel {:nrepl-port 7888}
-  :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.13"]
+  :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.11"]
                                    [re-frisk-remote "0.4.2"]
                                    [re-frisk-sidecar "0.4.5"]
                                    [com.cemerick/piggieback "0.2.2"]
@@ -53,16 +53,14 @@
                     :cljsbuild {:builds
                                 [{:id           "test"
                                   :source-paths ["src" "test/cljs"]
-                                  :compiler
-                                                {:main          status-im.test.runner
+                                  :compiler     {:main          status-im.test.runner
                                                  :output-to     "target/test/test.js"
                                                  :output-dir    "target/test"
                                                  :optimizations :none
                                                  :target        :nodejs}}
                                  {:id           "protocol"
                                   :source-paths ["src" "test/cljs"]
-                                  :compiler
-                                                {:main          status-im.test.protocol.runner
+                                  :compiler     {:main          status-im.test.protocol.runner
                                                  :output-to     "target/test/test.js"
                                                  :output-dir    "target/test"
                                                  :optimizations :none
