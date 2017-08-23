@@ -28,13 +28,14 @@
               message-id timestamp clock-value]
        :as   message
        :or   {clock-value 0}}]
-  (let [same-message     (messages/get-by-id message-id)
-        current-identity (get-current-identity db)
-        chat-id'         (or group-id chat-id from)
-        exists?          (chats/exists? chat-id')
-        active?          (chats/is-active? chat-id')
-        local-clock      (messages/get-last-clock-value chat-id')
-        clock-new        (clocks/receive clock-value local-clock)]
+  (let [same-message      (messages/get-by-id message-id)
+        current-identity  (get-current-identity db)
+        chat-id'          (or group-id chat-id from)
+        exists?           (chats/exists? chat-id')
+        active?           (chats/is-active? chat-id')
+        local-clock       (messages/get-last-clock-value chat-id')
+        clock-new         (clocks/receive clock-value local-clock)
+        recipient-pub-key (get-in message [:content :params :bot-db :public :recipient :whisper-identity])]
     (when (and (not same-message)
                (not= from current-identity)
                (or (not exists?) active?))
@@ -55,6 +56,7 @@
           (dispatch [:add-request chat-id' message']))
         (dispatch [:add-unviewed-message chat-id' message-id]))
       (if (and
+            (= recipient-pub-key current-identity)
             (= (:content-type message) content-type-command)
             (not= chat-id' wallet-chat-id)
             (= "send" (get-in message [:content :command])))
@@ -64,10 +66,11 @@
   (let [ct       (if (= content-type c/content-type-command)
                    c/content-type-wallet-command
                    c/content-type-wallet-request)
-        message' (assoc message :clock-value 0
-                                :message-id (random/id)
-                                :chat-id wallet-chat-id
-                                :content-type ct)]
+        message' (-> (assoc message :clock-value 0
+                                    :message-id (random/id)
+                                    :chat-id wallet-chat-id
+                                    :content-type ct)
+                     (dissoc :group-id))]
     (add-message db message')))
 
 (register-handler :received-protocol-message!
