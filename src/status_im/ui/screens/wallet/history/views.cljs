@@ -59,37 +59,32 @@
       [action-buttons m])]
    [list/item-icon :icons/forward]])
 
-(def dummy-transaction-data
-  [{:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "0,4909" :symbol "ETH"} :state :unsigned}
-   {:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "10000" :symbol "SGT"} :state :unsigned}
-   {:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "10000" :symbol "SGT"} :state :unsigned}])
-
-(def dummy-transaction-data-sorted
-  [{:title "Postponed"
-    :key :postponed
-    :data [{:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "0,4909" :symbol "ETH"} :state :pending}
-           {:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "10000" :symbol "SGT"} :state :pending}
-           {:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "10000" :symbol "SGT"} :state :sent}]}
-   {:title "Pending"
-    :key :pending
-    :data [{:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "0,4909" :symbol "ETH"} :state :pending}
-           {:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "10000" :symbol "SGT"} :state :pending}
-           {:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "10000" :symbol "SGT"} :state :sent}]}])
-
 ;; TODO(yenda) hook with re-frame
 
 (defn empty-text [s]
   [rn/text {:style st/empty-text} s])
 
 (defview history-list []
-  [list/section-list {:sections        dummy-transaction-data-sorted
-                      :render-fn       render-transaction
-                      :empty-component (empty-text (i18n/label :t/transactions-history-empty))}])
+  (letsubs [pending-transactions   [:wallet/pending-transactions]
+            postponed-transactions [:wallet/postponed-transactions]
+            sent-transactions      [:wallet/sent-transactions]]
+    [list/section-list {:sections        [{:title "Postponed"
+                                           :key :postponed
+                                           :data postponed-transactions}
+                                          {:title "Pending"
+                                           :key :pending
+                                           :data pending-transactions}
+                                          {:title "Sent"
+                                           :key :sent
+                                           :data sent-transactions}]
+                        :render-fn       render-transaction
+                        :empty-component (empty-text (i18n/label :t/transactions-history-empty))}]))
 
 (defview unsigned-list []
-  [list/flat-list {:data            dummy-transaction-data
-                   :render-fn       render-transaction
-                   :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}])
+  (letsubs [transactions [:wallet/unsigned-transactions]]
+    [list/flat-list {:data            transactions
+                     :render-fn       render-transaction
+                     :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]))
 
 (def tab-list
   [{:view-id :wallet-transactions-unsigned

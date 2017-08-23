@@ -7,6 +7,7 @@
             status-im.ui.screens.discover.subs
             status-im.ui.screens.contacts.subs
             status-im.ui.screens.group.subs
+            status-im.ui.screens.wallet.subs
             status-im.transactions.subs
             status-im.bots.subs))
 
