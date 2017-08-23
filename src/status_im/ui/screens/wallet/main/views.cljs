@@ -88,31 +88,12 @@
      [list/flat-list {:data      assets
                       :render-fn render-asset-fn}]]))
 
-(defn eth-balance [{:keys [balance]}]
-  (when balance
-    (money/wei->ether balance)))
-
-(defn portfolio-value [{:keys [balance]} {:keys [price]}]
-  (when (and balance price)
-    (-> (money/wei->ether balance)
-        (money/eth->usd price)
-        (money/with-precision 2)
-        str)))
-
-(defn portfolio-change [{:keys [price last-day]}]
-  (when (and price last-day)
-    (-> (money/percent-change price last-day)
-        (money/with-precision 2)
-        (str "%"))))
-
 (defview wallet []
-  (letsubs [wallet [:get :wallet]
-            prices [:get :prices]]
-    (let [eth    (or (eth-balance wallet) "...")
-          usd    (or (portfolio-value wallet prices) "...")
-          change (or (portfolio-change prices) "-%")]
-      [rn/view {:style st/wallet-container}
-       [toolbar-view]
-       [rn/scroll-view
-        [main-section usd change]
-        [asset-section eth]]])))
+  (letsubs [eth-balance [:eth-balance]
+            portfolio-value [:portfolio-value]
+            portfolio-change [:portfolio-change]]
+    [rn/view {:style st/wallet-container}
+     [toolbar-view]
+     [rn/scroll-view
+      [main-section portfolio-value portfolio-change]
+      [asset-section eth-balance]]]))
