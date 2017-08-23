@@ -36,7 +36,8 @@
 (def sortable-listview      #js {})
 (def swiper                 #js {})
 (def vector-icons-ion       #js {:default #js {}})
-(def vector-icons           #js {:default #js {}})
+(def vector-icons           #js {:default #js {}
+                                 :createIconSetFromFontello (fn [])})
 (def webview-bridge         #js {:default #js {}})
 
 

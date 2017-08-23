@@ -8,7 +8,11 @@
 
 (def conf (.parse js/JSON (slurp "resources/fontello-config.json")))
 
-(def icon-class (r/adapt-react-class (.createIconSetFromFontello rn-dependencies/vector-icons conf)))
+(defn adapt-class [class]
+  (when class
+    (r/adapt-react-class class)))
+
+(def icon-class (adapt-class (.createIconSetFromFontello rn-dependencies/vector-icons conf)))
 
 (defn check-name [n]
   (if (= n :options)
