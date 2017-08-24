@@ -20,6 +20,6 @@ During the last year both sync and async calls  were handled by the same functio
 
 **Summary**
 - Both sync and async calls are available in otto
-- Only async in rn
+- Only async in RN
 - Only async in iOS webview
 - Both async/sync in Android webview
