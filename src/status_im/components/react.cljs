@@ -77,8 +77,7 @@
 (defn text
   ([t]
    (r/as-element [text-class t]))
-  ([{:keys [uppercase?] :as opts
-     :or   {font :default}} t & ts]
+  ([{:keys [uppercase?] :as opts} t & ts]
    (r/as-element
      (let [ts (cond->> (conj ts t)
                        uppercase? (map clojure.string/upper-case))]

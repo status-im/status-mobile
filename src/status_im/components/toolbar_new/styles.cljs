@@ -1,15 +1,9 @@
 (ns status-im.components.toolbar-new.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :refer [text1-color
-                                                 color-white
-                                                 color-light-gray
-                                                 color-gray5
-                                                 color-gray4
-                                                 color-blue
-                                                 color-black]]
+  (:require [status-im.components.styles :as st]
             [status-im.utils.platform :as p]))
 
-(def toolbar-background1 color-white)
+(def toolbar-background1 st/color-white)
 
 (def toolbar-icon-width 24)
 (def toolbar-icon-height 24)
@@ -42,7 +36,7 @@
    :ios        {:align-items  :center}})
 
 (defstyle toolbar-title-text
-  {:color          text1-color
+  {:color          st/text1-color
    :letter-spacing -0.2
    :font-size      17
    :ios            {:text-align "center"}})
@@ -81,7 +75,7 @@
    :padding-left        0
    :padding-bottom      0
    :text-align-vertical :center
-   :color               color-black
+   :color               st/color-black
    :ios                 {:padding-left   8
                          :padding-top    2
                          :letter-spacing -0.2}})
@@ -93,3 +87,9 @@
 (def toolbar-button
   {:paddingVertical   16
    :paddingHorizontal 12})
+
+(def toolbar-right-action
+  {:color        st/color-blue4
+   :font-size    17
+   :margin-right 12})
+
