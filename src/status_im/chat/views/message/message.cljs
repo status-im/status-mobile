@@ -412,9 +412,9 @@
                                 :on-long-press #(cond (= content-type text-content-type)
                                                       (share content (label :t/message))
                                                       (and (= content-type content-type-command) (= "location" (:content-command content)))
-                                                      (let [params (str/split (get-in content [:params "address"]) #"&amp;")
-                                                            latlong (rest params)]
-                                                        (share-or-open-map (first params) (first latlong) (second latlong))))}
+                                                      (let [address (get-in content [:params :address])
+                                                            [location lat long] (str/split address #"&amp;")]
+                                                        (share-or-open-map location lat long)))}
            [view
             (let [incoming-group (and group-chat (not outgoing))]
               [message-content message-body (merge message
