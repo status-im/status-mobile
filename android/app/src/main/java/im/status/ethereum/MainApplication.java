@@ -7,6 +7,7 @@ import com.bitgo.randombytes.RandomBytesPackage;
 import com.cboy.rn.splashscreen.SplashScreenReactPackage;
 import com.centaurwarchief.smslistener.SmsListenerPackage;
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.SvgPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -43,6 +44,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         protected List<ReactPackage> getPackages() {
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
+            new SvgPackage(),
                     new HttpServerReactPackage(),
                     new NfcReactNativePackage(),
                     new SplashScreenReactPackage(),

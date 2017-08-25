@@ -1,5 +1,6 @@
 (ns status-im.components.common.common
-  (:require [status-im.components.react :refer [view text icon linear-gradient]]
+  (:require [status-im.components.react :refer [view text linear-gradient]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.utils.platform :as p]
             [status-im.components.common.styles :as st]))
@@ -52,7 +53,7 @@
     (when extended?
       [view st/form-title-extend-container
        [context-menu
-        [icon :options_gray]
+        [vi/icon :icons/options]
         options
         nil
         st/form-title-extend-button]])]

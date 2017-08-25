@@ -43,7 +43,8 @@
     "emojilib",
     "react-native-mapbox-gl",
     "bignumber.js",
-    "react-native-config"
+    "react-native-config",
+    "react-native-svg"
   ],
   "imageDirs": [
     "resources/images"

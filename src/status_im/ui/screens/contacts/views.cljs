@@ -2,7 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
             [status-im.components.common.common :as common]
-            [status-im.components.react :refer [view text icon touchable-highlight scroll-view]]
+            [status-im.components.react :refer [view text touchable-highlight scroll-view]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.native-action-button :refer [native-action-button
                                                                native-action-button-item]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
@@ -134,7 +135,7 @@
            [contact-group-view {:group group
                                 :edit? edit?}])]
         [view st/empty-contact-groups
-         [icon :group_big st/empty-contacts-icon]
+         [vi/icon :icons/group_big {:style st/empty-contacts-icon}]
          [text {:style st/empty-contacts-text} (label :t/no-contacts)]])]
      (when (and android? (not edit?))
        [contacts-action-button])]))

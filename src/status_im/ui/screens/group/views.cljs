@@ -4,8 +4,9 @@
             [status-im.ui.screens.contacts.styles :as cstyles]
             [status-im.components.common.common :as common]
             [status-im.components.action-button.action-button :refer [action-button action-separator]]
-            [status-im.components.react :refer [view text icon touchable-highlight
+            [status-im.components.react :refer [view text touchable-highlight
                                                 keyboard-avoiding-view list-view list-item]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
@@ -40,16 +41,16 @@
        :default-value     new-group-name}]]))
 
 (defn add-btn [on-press]
-  [action-button (label :t/add-members)
-   :add_blue
-                 on-press])
+  [action-button {:label    (label :t/add-members)
+                  :icon     [:icons/add {:color :blue}]
+                  :on-press on-press}])
 
 (defn delete-btn [on-press]
   [view styles/settings-group-container
    [touchable-highlight {:on-press on-press}
     [view styles/settings-group-item
      [view styles/delete-icon-container
-      [icon :close_red styles/add-icon]]
+      [vi/icon :icons/close {:color :red}]]
      [view styles/settings-group-text-container
       [text {:style styles/delete-group-text}
        (label :t/delete-group)]
@@ -62,19 +63,19 @@
     [touchable-highlight {:on-press #()}
      [view styles/settings-group-item
       [view styles/settings-icon-container
-       [icon :speaker_blue styles/add-icon]]
+       [vi/icon :icons/speaker {:color :blue}]]
       [view styles/settings-group-text-container
        [text {:style styles/settings-group-text}
         (label :t/mute-notifications)]]]]]
    [action-separator]
-   [action-button (label :t/clear-history)
-                  :close_blue
-                  #(dispatch [:clear-history])]
+   [action-button {:label    (label :t/clear-history)
+                   :icon     [:icons/close {:color :blue}]
+                   :on-press #(dispatch [:clear-history])}]
    [action-separator]
    [touchable-highlight {:on-press #(dispatch [:leave-group-chat])}
     [view styles/settings-group-item
      [view styles/delete-icon-container
-      [icon :arrow_right_red styles/add-icon]]
+      [vi/icon :icons/arrow_right {:color :red}]]
      [view styles/settings-group-text-container
       [text {:style styles/delete-group-text}
        (label :t/leave-chat)]]]]])

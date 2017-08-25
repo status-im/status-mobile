@@ -7,6 +7,7 @@
             [status-im.components.drawer.view :as drawer]
             [status-im.components.list.views :as list]
             [status-im.components.react :as rn]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :as i18n]
@@ -26,12 +27,15 @@
     [rn/text {:style st/toolbar-title-text
               :font  :toolbar-title}
      (i18n/label :t/main-wallet)]
-    [rn/icon :dropdown_white st/toolbar-title-icon]]])
+    [vi/icon
+     :icons/dropdown
+     {:container-style st/toolbar-title-icon
+      :color :white}]]])
 
 (defn toolbar-buttons []
   [rn/view {:style st/toolbar-buttons-container}
-   [rn/touchable-icon :dots_vertical_white st/toolbar-icon show-not-implemented!]
-   [rn/touchable-icon :qr_white st/toolbar-icon show-not-implemented!]])
+   [vi/touchable-icon :icons/dots_vertical {:color :white} show-not-implemented!]
+   [vi/touchable-icon :icons/qr {:color :white} show-not-implemented!]])
 
 (defn- show-wallet-transactions []
   (if config/wallet-wip-enabled?
@@ -75,7 +79,7 @@
       [rn/text {:style      st/asset-item-currency
                 :uppercase? true}
        id]]
-     [list/item-icon :forward_gray]]]])
+     [list/item-icon :icons/forward]]]])
 
 (defn asset-section [eth]
   (let [assets [{:id "eth" :currency :eth :amount eth}]]

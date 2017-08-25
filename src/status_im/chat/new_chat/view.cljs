@@ -17,17 +17,17 @@
 
 (defn options-list []
   [view actions-list
-   [action-button (label :t/new-group-chat)
-                  :private_group_big
-                  #(dispatch [:open-contact-toggle-list :chat-group])]
+   [action-button {:label    (label :t/new-group-chat)
+                   :icon     [:icons/group_big {:color :blue}]
+                   :on-press #(dispatch [:open-contact-toggle-list :chat-group])}]
    [action-separator]
-   [action-button (label :t/new-public-group-chat)
-                  :public_group_big
-                  #(dispatch [:navigate-to :new-public-chat])]
+   [action-button {:label    (label :t/new-public-group-chat)
+                   :icon     [:icons/public {:color :blue}]
+                   :on-press #(dispatch [:navigate-to :new-public-chat])}]
    [action-separator]
-   [action-button (label :t/add-new-contact)
-                  :add_blue
-                  #(dispatch [:navigate-to :new-contact])]])
+   [action-button {:label    (label :t/add-new-contact)
+                   :icon     [:icons/add {:color :blue}]
+                   :on-press #(dispatch [:navigate-to :new-contact])}]])
 
 (defn contact-list-row []
   (fn [row _ _]

@@ -2,6 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :as rf]
             [status-im.components.react :as rn]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.ui.screens.wallet.send.styles :as cst]))
 
@@ -13,8 +14,8 @@
 
 (defn toolbar-buttons []
   [rn/view {:style cst/toolbar-buttons-container}
-   [rn/icon :dots_vertical_white cst/toolbar-icon]
-   [rn/icon :qr_white cst/toolbar-icon]])
+   [vi/icon :icons/dots_vertical {:color :white}]
+   [vi/icon :icons/qr {:color :white}]])
 
 (defn toolbar-view []
   [toolbar/toolbar {:style          cst/toolbar

@@ -12,6 +12,7 @@
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.list-selection :refer [share-options]]
             [status-im.components.react :as react]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.styles :refer [color-blue]]
             [status-im.components.toolbar-new.actions :as actions]
@@ -57,21 +58,20 @@
 (defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
   [react/view actions-list
    (if pending?
-     [action-button (label :t/add-to-contacts)
-      :add_blue
-      #(dispatch [:add-pending-contact chat-id])]
-     [action-button-disabled (label :t/in-contacts)
-      :ok_dark])
+     [action-button {:label    (label :t/add-to-contacts)
+                     :icon     [:icons/add {:color :blue}]
+                     :on-press #(dispatch [:add-pending-contact chat-id])}]
+     [action-button-disabled {:label (label :t/in-contacts) :icon :icons/ok}])
    [action-separator]
-   [action-button (label :t/start-conversation)
-    :chats_blue
-    #(dispatch [:profile/send-message whisper-identity])]
+   [action-button {:label    (label :t/start-conversation)
+                   :icon     [:icons/chats {:color :blue}]
+                   :on-press #(dispatch [:profile/send-message whisper-identity])}]
    (when-not dapp?
      [react/view
       [action-separator]
-      [action-button (label :t/send-transaction)
-       :arrow_right_blue
-       #(dispatch [:profile/send-transaction chat-id])]])])
+      [action-button {:label    (label :t/send-transaction)
+                      :icon     [:icons/arrow_right {:color :blue}]
+                      :on-press #(dispatch [:profile/send-transaction chat-id])}]])])
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [react/view styles/profile-setting-item
@@ -87,7 +87,7 @@
      value]]
    (when options
      [context-menu
-      [react/icon :options_gray]
+      [vi/icon :icons/options]
       options
       nil
       styles/profile-info-item-button])])
@@ -186,9 +186,9 @@
        [profile-status status true]]
       [form-spacer]
       [react/view actions-list
-       [action-button (label :t/show-qr)
-        :q_r_blue
-        (show-qr current-account :public-key)]]
+       [action-button {:label    (label :t/show-qr)
+                       :icon     [:icons/qr {:color :blue}]
+                       :on-press (show-qr current-account :public-key)}]]
       [form-spacer]
       [react/view styles/profile-info-container
        [my-profile-info current-account]

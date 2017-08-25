@@ -5,10 +5,10 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.react :refer [view
                                                 text
-                                                icon
                                                 list-view
                                                 list-item
                                                 scroll-view]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.components.toolbar.actions :as act]
             [status-im.ui.screens.discover.views.discover-list-item :refer [discover-list-item]]
@@ -49,7 +49,7 @@
        (if (empty? discoveries)
          [view st/empty-view
           ;; todo change icon
-          [icon :group_big contacts-st/empty-contacts-icon]
+          [vi/icon :icons/group_big {:style contacts-st/empty-contacts-icon}]
           [text {:style contacts-st/empty-contacts-text}
            (label :t/no-statuses-found)]]
          [list-view {:dataSource      datasource

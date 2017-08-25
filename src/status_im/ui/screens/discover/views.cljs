@@ -6,8 +6,8 @@
     [status-im.components.react :refer [view
                                         scroll-view
                                         text
-                                        text-input
-                                        icon]]
+                                        text-input]]
+    [status-im.components.icons.vector-icons :as vi]
     [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
     [status-im.components.toolbar-new.actions :as act]
     [status-im.components.drawer.view :refer [open-drawer]]
@@ -90,6 +90,6 @@
         [discover-recent {:current-account current-account}]]
        [view contacts-st/empty-contact-groups
         ;; todo change icon
-        [icon :group_big contacts-st/empty-contacts-icon]
+        [vi/icon :icons/group_big {:style contacts-st/empty-contacts-icon}]
         [text {:style contacts-st/empty-contacts-text}
          (label :t/no-statuses-discovered)]])]))

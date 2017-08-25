@@ -46,12 +46,16 @@
                 :renderSeparator #(list-item ^{:key %2} [view {:height 10}])
                 :renderRow       #(list-item [account-view %])}]]
    [view st/bottom-actions-container
-    [action-button (i18n/label :t/create-new-account)
-                   :add_white
-                   #(dispatch [:create-new-account-handler])
-                   st/accounts-action-button]
+    [action-button (merge
+                     {:label (i18n/label :t/create-new-account)
+                      :icon [:icons/add
+                             {:color :white}]
+                      :on-press #(dispatch [:create-new-account-handler])}
+                     st/accounts-action-button)]
     [common/separator st/accounts-separator st/accounts-separator-wrapper]
-    [action-button (i18n/label :t/recover-access)
-                   :dots_horizontal_white
-                   #(dispatch [:navigate-to :recover])
-                   st/accounts-action-button]]])
+    [action-button (merge
+                     {:label (i18n/label :t/recover-access)
+                      :icon [:icons/dots_horizontal
+                             {:color :white}]
+                      :on-press #(dispatch [:navigate-to :recover])}
+                     st/accounts-action-button)]]])

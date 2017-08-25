@@ -3,6 +3,7 @@
             [re-frame.core :refer [dispatch]]
             [status-im.components.qr-code :refer [qr-code]]
             [status-im.components.react :as react]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.qr-code.styles :as styles])
@@ -26,7 +27,7 @@
        [react/view styles/online-container
         [react/touchable-highlight {:onPress #(dispatch [:navigate-back])}
          [react/view styles/online-image-container
-          [react/icon :close_white]]]]]]
+          [vi/icon :icons/close {:color :white}]]]]]]
      [react/view {:style     styles/qr-code
                   :on-layout #(let [layout (.. % -nativeEvent -layout)]
                                 (dispatch [:set-in [:qr-modal :dimensions] {:width  (.-width layout)

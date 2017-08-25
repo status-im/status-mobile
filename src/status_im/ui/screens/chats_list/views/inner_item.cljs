@@ -2,7 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
-            [status-im.components.react :refer [view image icon text]]
+            [status-im.components.react :refer [view image text]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-chat-list]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.ui.screens.chats-list.styles :as st]
@@ -92,7 +93,7 @@
                   :destructive? true}]]
     [view st/opts-btn-container
      [context-menu
-      [icon :options_gray]
+      [vi/icon :icons/options]
       options
       nil
       st/opts-btn]]))
@@ -106,10 +107,10 @@
     [view st/name-view
      (when public-group?
        [view st/public-group-icon-container
-        [icon :public_group st/public-group-icon]])
+        [vi/icon :icons/public_chat {:style st/public-group-icon}]])
      (when private-group?
       [view st/private-group-icon-container
-       [icon :private_group st/private-group-icon]])
+       [vi/icon :icons/group_chat {:style st/private-group-icon}]])
      [view {:flex-shrink 1}
       [text {:style st/name-text
              :number-of-lines 1}

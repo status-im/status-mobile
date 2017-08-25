@@ -1,7 +1,6 @@
 (ns status-im.components.toolbar.view
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                                icon
                                                 text
                                                 text-input
                                                 image
