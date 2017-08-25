@@ -15,9 +15,6 @@
 (def toolbar-icon-height 24)
 (def toolbar-icon-spacing 24)
 
-(def toolbar-gradient
-  {:height 4})
-
 (defn toolbar-wrapper [background-color]
   {:backgroundColor (or background-color toolbar-background1)
    :elevation       2})

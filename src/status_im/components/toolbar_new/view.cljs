@@ -6,17 +6,20 @@
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.styles :as tst]
+            [status-im.components.icons.vector-icons :as vi]
             [reagent.core :as r]))
 
 (defn nav-button
-  [{:keys [handler accessibility-label image]}]
+  [{:keys [handler accessibility-label image icon]}]
   [rn/touchable-highlight
    (merge {:style    tst/toolbar-button
            :on-press handler}
           (when accessibility-label
             {:accessibility-label accessibility-label}))
    [rn/view
-    [rn/image image]]])
+    (if icon
+      [vi/icon icon]
+      [rn/image image])]])
 
 (defn toolbar [{:keys [title
                        nav-action
@@ -42,14 +45,14 @@
             title]])
       [rn/view (tst/toolbar-actions-container (count actions) custom-action)
        (if actions
-         (for [{:keys [image options handler]} actions]
+         (for [{:keys [image icon options handler]} actions]
            (with-meta
              (cond (= image :blank)
                    [rn/view tst/toolbar-action]
 
                    options
                    [context-menu
-                    [rn/view tst/toolbar-action [rn/image image]]
+                    [rn/view tst/toolbar-action [vi/icon icon]]
                     options
                     nil
                     tst/toolbar-button]
@@ -58,8 +61,10 @@
                    [rn/touchable-highlight {:style    tst/toolbar-button
                                             :on-press handler}
                     [rn/view tst/toolbar-action
-                     [rn/image image]]])
-             {:key (str "action-" image)}))
+                     (if icon
+                       [vi/icon icon]
+                       [rn/image image])]])
+             {:key (str "action-" (or icon image))}))
          custom-action)]]
      [sync-state-gradient-view]
      (when-not hide-border?

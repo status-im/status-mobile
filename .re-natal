@@ -10,6 +10,7 @@
     "react-native-i18n",
     "realm/react-native",
     "react-native-action-button",
+    "react-native-vector-icons",
     "react-native-vector-icons/Ionicons",
     "react-native-vector-icons/Octicons",
     "react-native-randombytes",

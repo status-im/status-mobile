@@ -19,7 +19,6 @@
             :hide-border?     true
             :title-style      {:color :white}
             :nav-action       (act/back-white #(dispatch [:navigate-back]))
-            :actions          [{:image :blank}]
             :title            (i18n/label :t/sign-in-to-status)}])
 
 (def password-text-input (atom nil))
