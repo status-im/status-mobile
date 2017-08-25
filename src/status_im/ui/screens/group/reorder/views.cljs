@@ -2,7 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as reagent]
             [re-frame.core :refer [dispatch dispatch-sync]]
-            [status-im.components.react :refer [view text icon list-item]]
+            [status-im.components.react :refer [view text list-item]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :refer [toolbar]]
@@ -26,7 +27,7 @@
        (str cnt " " (label-pluralize cnt :t/contact-s))]
       [view {:flex 1}]
       [view styles/order-item-icon
-       [icon :grab_gray]]]]))
+       [vi/icon :icons/grab]]]]))
 
 (defn render-separator [last]
   (fn [_ row-id _]

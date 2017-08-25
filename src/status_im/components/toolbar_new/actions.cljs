@@ -3,62 +3,51 @@
             [status-im.accessibility-ids :as id]
             [status-im.components.toolbar-new.styles :as st]))
 
-(def nothing
-  {:image   {:source nil
-             :style  st/action-default}})
-
 (defn hamburger [handler]
-  {:image   {:source {:uri :icon_hamburger_dark}
-             :style  st/action-default}
+  {:icon    :icons/hamburger
    :handler handler})
 
 (defn add [handler]
-  {:image   {:source {:uri :icon_add}
-             :style  st/action-default}
+  {:icon    :icons/add
    :handler handler})
 
 (defn opts [options]
-  {:image   {:source {:uri :icon_options_dark}
-             :style  st/action-default}
+  {:icon    :icons/options
    :options options})
 
 (defn search [handler]
-  {:image   {:source {:uri :icon_search_dark}
-             :style  st/action-default}
+  {:icon    :icons/search
    :handler handler})
 
 (def search-icon
-  {:image   {:source {:uri :icon_search_dark}
-             :style  (merge st/action-default
-                            {:opacity 0.4})}})
+  {:icon [:icons/search
+          {:container-style {:opacity 0.4}}]})
 
 (defn back [handler]
-  {:image   {:source {:uri :icon_back_dark}
-             :style  st/action-default}
-   :handler handler
+  {:icon                :icons/back
+   :handler             handler
    :accessibility-label id/toolbar-back-button})
 
 (def default-back
   (back #(dispatch [:navigate-back])))
 
 (defn back-white [handler]
-  {:image   {:source {:uri :icon_back_white}
-             :style  st/action-default}
+  {:icon    [:icons/back
+             {:color :white}]
    :handler handler})
 
 (defn close [handler]
-  {:image   {:source {:uri :icon_close_dark}
-             :style  st/action-default}
+  {:icon    :icons/close
    :handler handler})
 
 (defn close-white [handler]
-  {:image   {:source {:uri :icon_close_white}
-             :style  st/action-default}
+  {:icon    [:icons/close
+             {:color :white}]
    :handler handler})
 
 (defn list-white [handler]
-  {:image   {:source {:uri :icon_list_white}
-             :style  st/action-default}
+  {:icon    [:icons/transaction_history
+             {:color :white :style {:viewBox "-108 65.9 24 24"}}]
    :handler handler})
 
 (defn add-wallet [handler]

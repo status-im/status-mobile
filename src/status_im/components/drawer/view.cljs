@@ -12,7 +12,6 @@
             [status-im.components.react :refer [view
                                                 text
                                                 text-input
-                                                icon
                                                 list-item
                                                 list-view
                                                 drawer-layout
@@ -20,6 +19,7 @@
                                                 touchable-highlight
                                                 touchable-opacity
                                                 dismiss-keyboard!]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.status-view.view :as status-view]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.profile.db :as profile.db]
@@ -96,7 +96,7 @@
         recipient-name (or (:name recipient) to)]
     [touchable-highlight {:on-press #(rf/dispatch [:navigate-to-modal :transaction-details transaction])}
      [view {:style st/transaction}
-      [icon :arrow_right_gray st/transaction-icon]
+      [vi/icon :icons/arrow_right {:container-style st/transaction-icon}]
       [view {:style st/transaction-info}
        [view {:style st/transaction-value-container}
         [text {:style st/transaction-value :font :medium} value]
@@ -147,7 +147,7 @@
     {:on-press (fn []
                  (close-drawer)
                  (rf/dispatch [:navigate-to :my-profile]))}
-    [view [icon :options_gray]]]])
+    [view [vi/icon :icons/options]]]])
 
 (defn switch-account []
   [view st/switch-account-container

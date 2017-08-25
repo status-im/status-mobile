@@ -4,11 +4,11 @@
             [status-im.components.react :refer [view
                                                 animated-view
                                                 text
-                                                icon
                                                 modal
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.chat-icon.screen :refer [chat-icon-view-action
                                                            chat-icon-view-menu-item]]
@@ -92,7 +92,7 @@
         [touchable-highlight
          {:on-press #(dispatch [:set-chat-ui-props {:show-actions? false}])}
          [view st/action
-          [icon :up st/up-icon]]]
+          [vi/icon :icons/dropdown_up]]]
         [touchable-highlight
          {:on-press #(dispatch [:set-chat-ui-props {:show-actions? true}])}
          [view st/action

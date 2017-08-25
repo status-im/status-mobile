@@ -19,6 +19,7 @@
   (:require [reagent.core :as r]
             [status-im.components.list.styles :as lst]
             [status-im.components.react :as rn]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.utils.platform :as p]))
 
 (def flat-list-class (rn/get-class "FlatList"))
@@ -37,8 +38,8 @@
   [rn/touchable-highlight {:on-press handler}
    item])
 
-(defn item-icon [k]
-  [rn/icon k lst/item-image])
+(defn item-icon [k & [opts]]
+  [vi/icon k (merge opts {:style lst/item-image})])
 
 (defn item-image [source]
   [rn/image {:source source

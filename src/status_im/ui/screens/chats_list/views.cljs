@@ -8,7 +8,6 @@
                                                 view
                                                 animated-view
                                                 text
-                                                icon
                                                 image
                                                 touchable-highlight]]
             [status-im.components.native-action-button :refer [native-action-button]]

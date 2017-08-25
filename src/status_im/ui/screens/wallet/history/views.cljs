@@ -43,7 +43,7 @@
     :pending :dropdown_white
     :dropdown_white))
 
-(defn action-buttons [m ]
+(defn action-buttons [m]
   [rn/view {:style st/action-buttons}
    [btn/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
    [btn/secondary-button {:text (i18n/label :t/transactions-delete) :on-press #(on-delete-transaction m)}]])
@@ -52,12 +52,12 @@
 
 (defn render-transaction [{:keys [to state] {:keys [value symbol]} :content :as m}]
   [list/item
-   [list/item-icon :ok_blue]
+   [list/item-icon :icons/ok {:color :blue}]
    [list/item-content
     (str value " " symbol) (str (i18n/label :t/transactions-to) " " to)
     (if (unsigned? state)
       [action-buttons m])]
-   [list/item-icon :forward_gray]])
+   [list/item-icon :icons/forward]])
 
 (def dummy-transaction-data
   [{:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "0,4909" :symbol "ETH"} :state :unsigned}
@@ -126,30 +126,30 @@
 
 (defn- token->icon [s]
   (case s
-    "GNO" :dollar_green
-    :ok_blue))
+    "GNO" [:icons/ok {:color :green}] ;TODO :dollar
+    [:icons/ok {:color :blue}]))
 
 (defn item-tokens [{:keys [symbol label]}]
   [list/item
-   [list/item-icon (token->icon symbol)]
-   [list/item-content label symbol]
+   ((comp vec flatten vector) list/item-icon (token->icon symbol))
+   [list/item-content label symbol]])
    ;; TODO checkbox
-   ])
+
 
 (defn- type->icon [k]
   (case k
-    "incoming"  :dollar_green
-    "outgoing"  :ok_blue
-    "pending"   :dollar_green
-    "postponed" :ok_blue
-    :ok_blue))
+    "incoming"  [:icon/ok {:color :blue}] ;TODO :dollar_green
+    "outgoing"  [:icon/ok {:color :blue}]
+    "pending"   [:icon/ok {:color :blue}] ;TODO :dollar_green
+    "postponed" [:icon/ok {:color :blue}]
+    [:icon/ok {:color :blue}]))
 
 (defn item-type [{:keys [id label]}]
   [list/item
-   [list/item-icon (type->icon id)]
-   [list/item-content label]
+   ((comp vec flatten vector) list/item-icon (type->icon id))
+   [list/item-content label]])
    ;; TODO checkbox
-   ])
+
 
 (def filter-data
   [{:title (i18n/label :t/transactions-filter-tokens)
@@ -189,10 +189,10 @@
                :tab-list         tab-list}]
    [rn/swiper (merge tst/swiper
                      {:index                  (get-tab-index @view-id)
-                      :loop                   false
+                      :loop                   false})
                       ;:ref                    #(reset! swiper %)
                       ;:on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)
-                      })
+
     (doall
       (map-indexed (fn [index {screen :screen}]
                      ^{:key index} [screen]) tab-list))]])

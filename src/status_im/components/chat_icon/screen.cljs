@@ -3,8 +3,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
                                                 text
-                                                image
-                                                icon]]
+                                                image]]
             [status-im.components.chat-icon.styles :as st]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.react-native.resources :as resources]

@@ -162,6 +162,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-svg')
     compile 'com.android.support:multidex:1.0.1'
     compile project(':react-native-http-bridge')
     compile project(':nfc-react-native')

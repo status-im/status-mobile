@@ -19,11 +19,12 @@
             [status-im.components.react :refer [view
                                                 animated-view
                                                 text
+                                                icon
                                                 scroll-view
                                                 text-input
-                                                icon
                                                 touchable-highlight
                                                 dismiss-keyboard!]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
 
@@ -46,8 +47,8 @@
                                          (dispatch [:update-suggestions]))}
      [view style/commands-list-icon
       (if show-suggestions?
-        [icon :close_gray style/close-commands-list-icon]
-        [icon :input_list style/commands-list-icon])]]]
+        [vi/icon :icons/close]
+        [vi/icon :icons/commands_list])]]]
    [scroll-view {:horizontal                     true
                  :showsHorizontalScrollIndicator false
                  :keyboardShouldPersistTaps      :always}
@@ -200,7 +201,7 @@
                {:on-press #(do (dispatch [:toggle-chat-ui-props :show-emoji?])
                                (dismiss-keyboard!))}
                [view
-                [icon :smile style/input-emoji-icon]]]
+                [vi/icon :icons/smile {:container-style style/input-emoji-icon}]]]
               (when-not single-line-input?
                 [touchable-highlight
                  {:on-press #(do (dispatch [:set-chat-input-text nil])
@@ -209,7 +210,7 @@
                                                                 :validation-messages nil}])
                                  (dispatch [:clear-seq-arguments]))}
                  [view style/input-clear-container
-                  [icon :close_gray style/input-clear-icon]]]))]))})))
+                  [vi/icon :icons/close]]]))]))})))
 
 (defview input-container [{:keys [anim-margin]}]
   (letsubs [command-completion [:command-completion]

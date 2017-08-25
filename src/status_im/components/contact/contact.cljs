@@ -1,6 +1,7 @@
 (ns status-im.components.contact.contact
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [status-im.components.react :refer [view icon touchable-highlight text]]
+  (:require [status-im.components.react :refer [view touchable-highlight text]]
+            [status-im.components.icons.vector-icons :as vi]
             [status-im.components.chat-icon.screen :refer [contact-icon-contacts-tab]]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.contact.styles :as st]
@@ -35,7 +36,7 @@
      (when (and extended? (not (empty? extend-options)))
        [view st/more-btn-container
         [context-menu
-         [icon :options_gray]
+         [vi/icon :icons/options]
          extend-options
          nil
          st/more-btn]])]]])
@@ -49,4 +50,4 @@
                                 (when checked {:style st/selected-contact}))]
      [view (st/icon-check-container checked)
       (when checked
-        [icon :check_on st/check-icon])]]]])
+        [vi/icon :icons/ok {:style st/check-icon}])]]]])
