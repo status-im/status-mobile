@@ -18,6 +18,10 @@
    [rn/view
     [rn/image image]]])
 
+(defn text-action [handler title]
+  [rn/text {:style tst/toolbar-right-action :onPress handler}
+   title])
+
 (defn toolbar [{:keys [title
                        nav-action
                        hide-nav?

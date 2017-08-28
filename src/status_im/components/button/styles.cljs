@@ -16,9 +16,9 @@
     {:flex-direction :row}))
 
 (def action-button
-  {:flex-basis         0
-   :flex               1
-   :align-items        :center})
+  {:flex-direction  :row
+   :justify-content :center
+   :align-items     :center})
 
 (def action-button-center
   (merge action-button
@@ -27,7 +27,7 @@
           :border-right-width 1}))
 
 (def action-button-text
-  {:font-size          18
+  {:font-size          15
    :font-weight        "normal"
    :color              st/color-white
    :padding-horizontal 16

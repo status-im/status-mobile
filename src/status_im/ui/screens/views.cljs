@@ -42,7 +42,7 @@
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
             [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
-            [status-im.ui.screens.wallet.history.views :refer [wallet-transactions]]))
+            [status-im.ui.screens.wallet.history.views :as wallet-history]))
 
 (defn validate-current-view
   [current-view signed-up?]
@@ -58,8 +58,6 @@
     (when view-id
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
-                          :wallet-transactions-unsigned wallet-transactions
-                          :wallet-transactions-history wallet-transactions
                           :wallet main-tabs
                           :wallet-send-transaction send-transaction
                           :discover main-tabs
@@ -105,6 +103,8 @@
                                   :transaction-details transaction-details
                                   :confirmation-success confirmation-success
                                   :contact-list-modal contact-list-modal
-                                  :wallet-transactions wallet-transactions
+                                  :wallet-transactions wallet-history/transactions
+                                  :wallet-transactions-filter wallet-history/filter-history
+                                  :wallet-transactions-sign-all wallet-history/sign-all
                                   (throw (str "Unknown modal view: " modal-view)))]
                   [component])]])]])))))

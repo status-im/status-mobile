@@ -1,12 +1,13 @@
 (ns status-im.ui.screens.wallet.history.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as r]
+            [re-frame.core :as rf]
             [status-im.components.button.view :as btn]
             [status-im.components.react :as rn]
-            [status-im.components.list.styles :as list-st]
             [status-im.components.list.views :as list]
             [status-im.components.tabs.styles :as tst]
             [status-im.components.tabs.views :as tabs]
+            [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.ui.screens.wallet.history.styles :as st]
             [status-im.utils.utils :as utils]
@@ -17,24 +18,19 @@
   ;; TODO(yenda) implement
   (utils/show-popup "TODO" "Sign Transaction"))
 
-(defn on-sign-all-transactions
-  [m]
-  ;; TODO(yenda) implement
-  (utils/show-popup "TODO" "Sign All Transactions"))
-
 (defn on-delete-transaction
   [m]
   ;; TODO(yenda) implement
   (utils/show-popup "TODO" "Delete Transaction"))
 
 (defn unsigned-action []
-  [rn/text {:style st/toolbar-right-action :onPress on-sign-all-transactions}
+  [toolbar/text-action #(rf/dispatch [:navigate-to-modal :wallet-transactions-sign-all])
    (i18n/label :t/transactions-sign-all)])
 
 (defn history-action []
-  ;; TODO(jeluard)
-  [rn/text {:style st/toolbar-right-action}
-   "AAAAA"])
+  ;; TODO(jeluard) replace with proper icon
+  [toolbar/text-action #(rf/dispatch [:navigate-to-modal :wallet-transactions-filter])
+   "History"])
 
 (defn toolbar-view [view-id]
   [toolbar/toolbar
@@ -48,28 +44,20 @@
     :dropdown_white))
 
 (defn action-buttons [m ]
-  [rn/view {:style list-st/action-buttons}
+  [rn/view {:style st/action-buttons}
    [btn/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
    [btn/secondary-button {:text (i18n/label :t/transactions-delete) :on-press #(on-delete-transaction m)}]])
 
 (defn- unsigned? [state] (= "unsigned" state))
 
-(defn transaction-details [{:keys [to state] {:keys [value symbol]} :content :as m}]
-  [rn/view {:style list-st/item-text-view}
-   [rn/text {:style list-st/primary-text} (str value " " symbol)]
-   [rn/text {:style list-st/secondary-text :ellipsize-mode "middle" :number-of-lines 1} (str (i18n/label :t/transactions-to) " " to)]
-   (if (unsigned? state)
-     [action-buttons m])])
-
-(defn render-transaction [m]
-  [rn/view {:style list-st/item}
-   [rn/image {:source {:uri :console}
-              :style  list-st/item-icon}]
-   [transaction-details m]
-   [rn/icon :forward_gray list-st/secondary-action]])
-
-(defn render-section-header [m]
-  [rn/text {:style list-st/section-header} (:title m)])
+(defn render-transaction [{:keys [to state] {:keys [value symbol]} :content :as m}]
+  [list/item
+   [list/item-icon :ok_blue]
+   [list/item-content
+    (str value " " symbol) (str (i18n/label :t/transactions-to) " " to)
+    (if (unsigned? state)
+      [action-buttons m])]
+   [list/item-icon :forward_gray]])
 
 (def dummy-transaction-data
   [{:to "0x829bd824b016326a401d083b33d092293333a830" :content {:value "0,4909" :symbol "ETH"} :state :unsigned}
@@ -94,25 +82,103 @@
   [rn/text {:style st/empty-text} s])
 
 (defview history-list []
-  [list/section-list dummy-transaction-data-sorted render-transaction render-section-header
-   {:empty-component (empty-text (i18n/label :t/transactions-history-empty))}])
+  [list/section-list {:sections        dummy-transaction-data-sorted
+                      :render-fn       render-transaction
+                      :empty-component (empty-text (i18n/label :t/transactions-history-empty))}])
 
 (defview unsigned-list []
-  [list/flat-list dummy-transaction-data render-transaction
-   {:empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}])
+  [list/flat-list {:data            dummy-transaction-data
+                   :render-fn       render-transaction
+                   :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}])
 
 (def tab-list
   [{:view-id :wallet-transactions-unsigned
-    :title         (i18n/label :t/transactions-unsigned)
-    :screen        unsigned-list}
+    :title   (i18n/label :t/transactions-unsigned)
+    :screen  unsigned-list}
    {:view-id :wallet-transactions-history
-    :title         (i18n/label :t/transactions-history)
-    :screen        history-list}])
+    :title   (i18n/label :t/transactions-history)
+    :screen  history-list}])
 
 (def tab->index (reduce #(assoc %1 (:view-id %2) (count %1)) {} tab-list))
 
 (defn get-tab-index [view-id]
   (get tab->index view-id 0))
+
+;; Sign all
+
+(defview sign-all []
+  []
+  [rn/keyboard-avoiding-view {:style st/sign-all-view}
+   [rn/view {:style st/sign-all-done}
+    [btn/primary-button {:style    st/sign-all-done-button
+                         :text     (i18n/label :t/transactions-sign-all-done)
+                         :on-press #(rf/dispatch [:navigate-back])}]]
+   [rn/view {:style st/sign-all-popup}
+    [rn/text {:style st/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
+    [rn/text {:style st/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
+    [rn/view {:style st/sign-all-actions}
+     [rn/text-input {:style             st/sign-all-input
+                     :secure-text-entry true
+                     :placeholder       (i18n/label :t/transactions-sign-input-placeholder)}]
+     [btn/primary-button {:text (i18n/label :t/transactions-sign-all) :on-press #(on-sign-transaction %)}]]]])
+
+;; Filter history
+
+(defn- token->icon [s]
+  (case s
+    "GNO" :dollar_green
+    :ok_blue))
+
+(defn item-tokens [{:keys [symbol label]}]
+  [list/item
+   [list/item-icon (token->icon symbol)]
+   [list/item-content label symbol]
+   ;; TODO checkbox
+   ])
+
+(defn- type->icon [k]
+  (case k
+    "incoming"  :dollar_green
+    "outgoing"  :ok_blue
+    "pending"   :dollar_green
+    "postponed" :ok_blue
+    :ok_blue))
+
+(defn item-type [{:keys [id label]}]
+  [list/item
+   [list/item-icon (type->icon id)]
+   [list/item-content label]
+   ;; TODO checkbox
+   ])
+
+(def filter-data
+  [{:title (i18n/label :t/transactions-filter-tokens)
+    :key :tokens
+    :render-fn item-tokens
+    :data [{:symbol "GNO" :label "Gnosis"}
+           {:symbol "SNT" :label "Status Network Token"}
+           {:symbol "SGT" :label "Status Genesis Token"}
+           {:symbol "GOL" :label "Golem"}]}
+   {:title (i18n/label :t/transactions-filter-type)
+    :key :type
+    :render-fn item-type
+    :data [{:id :incoming :label "Incoming"}
+           {:id :outgoing :label "Outgoing"}
+           {:id :pending :label "Pending"}
+           {:id :postponed :label "Postponed"}]}])
+
+(defview filter-history []
+  []
+  [rn/view
+   [toolbar/toolbar
+    ;; TODO(jeluard) replace with icon when available and toolbar has been refactored
+    {:title      (i18n/label :t/transactions-filter-title)
+     :nav-action (act/back #(rf/dispatch [:navigate-back]));; TODO close modal
+     :custom-action
+                 [toolbar/text-action #(rf/dispatch [:navigate-to-modal :wallet-transactions-filter])
+                  (i18n/label :t/transactions-filter-select-all)]}]
+   [rn/scroll-view
+    [list/section-list {:sections filter-data}]]])
 
 ;; TODO(jeluard) whole swipe logic
 ;; extract navigate-tab action (on tap)
@@ -135,7 +201,7 @@
 
 (def initial-tab (-> tab-list first :view-id))
 
-(defview wallet-transactions []
+(defview transactions []
   []
   (let [view-id (r/atom initial-tab)]
     [rn/view {:style st/wallet-transactions-container}

@@ -334,8 +334,15 @@
    :transactions-to                       "To"
    :transactions-sign                     "Sign"
    :transactions-sign-all                 "Sign all"
+   :transactions-sign-all-text            "Sign the transaction by entering your password.\nMake sure that the words above match your secret signing phrase"
+   :transactions-sign-input-placeholder   "Enter your passphrase"
+   :transactions-sign-all-done            "Done"
    :transactions-delete                   "Delete"
    :transactions-history                  "History"
    :transactions-unsigned                 "Unsigned"
    :transactions-history-empty            "You don't have a history transactions"
-   :transactions-unsigned-empty           "You don't have unsigned transactions"})
+   :transactions-unsigned-empty           "You don't have unsigned transactions"
+   :transactions-filter-title             "Filter History"
+   :transactions-filter-tokens            "Tokens"
+   :transactions-filter-type              "Type"
+   :transactions-filter-select-all        "Select all"})
