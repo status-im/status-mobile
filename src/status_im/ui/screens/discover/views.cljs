@@ -90,6 +90,6 @@
         [discover-recent {:current-account current-account}]]
        [view contacts-st/empty-contact-groups
         ;; todo change icon
-        [vi/icon :icons/group_big {:style contacts-st/empty-contacts-icon}]
+        [vi/icon :icons/group-big {:style contacts-st/empty-contacts-icon}]
         [text {:style contacts-st/empty-contacts-text}
          (label :t/no-statuses-discovered)]])]))

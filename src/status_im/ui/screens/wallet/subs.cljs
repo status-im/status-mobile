@@ -46,6 +46,14 @@
           (str "%"))
       "-%")))
 
+(reg-sub :prices-loading?
+  (fn [db]
+    (:prices-loading? db)))
+
+(reg-sub :wallet/balance-loading?
+  (fn [db]
+    (get-in db [:wallet :balance-loading?])))
+
 (reg-sub :wallet/transactions
   (fn [db]
     (get-in db [:wallet :transactions])))

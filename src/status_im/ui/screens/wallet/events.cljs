@@ -46,19 +46,22 @@
     {:get-prices  {:from          "ETH"
                    :to            "USD"
                    :success-event :update-prices
-                   :error-event   :update-prices-fail}}))
+                   :error-event   :update-prices-fail}
+     :db (assoc db :prices-loading? true)}))
 
 (handlers/register-handler-fx
-  :init-wallet
+  :refresh-wallet
   (fn [{{:keys [web3 accounts/current-account-id] :as db} :db} [_ a]]
     {:get-balance {:web3          web3
                    :account-id    current-account-id
                    :success-event :update-balance
                    :error-event   :update-balance-fail}
      :dispatch    [:load-prices]
-     :db (assoc-in db [:wallet :transactions] wallet.db/dummy-transaction-data)}))
+     :db          (-> db
+                      (assoc-in [:wallet :transactions] wallet.db/dummy-transaction-data)
+                      (assoc-in [:wallet :balance-loading?] true))}))
 
-(defn set-error-message [db err]
+(defn assoc-error-message [db err]
   (assoc-in db [:wallet :wallet/error] err))
 
 (handlers/register-handler-db
@@ -69,21 +72,25 @@
 (handlers/register-handler-db
   :update-balance
   (fn [db [_ balance]]
-    (assoc-in db [:wallet :balance] balance)))
+    (-> db
+        (assoc-in [:wallet :balance] balance)
+        (assoc-in [:wallet :balance-loading?] false))))
 
 (handlers/register-handler-db
   :update-prices
   (fn [db [_ prices]]
-    (assoc db :prices prices)))
+    (assoc db :prices prices :prices-loading? false)))
 
 (handlers/register-handler-db
   :update-balance-fail
   (fn [db [_ err]]
     (log/debug "Unable to get balance: " err)
-    (set-error-message db :error)))
+    (-> (assoc-error-message db :error)
+        (assoc-in [:wallet :balance-loading?] false))))
 
 (handlers/register-handler-db
   :update-prices-fail
   (fn [db [_ err]]
     (log/debug "Unable to get prices: " err)
-    (set-error-message db :error)))
+    (-> (assoc-error-message db :error)
+      (assoc :prices-loading? false))))

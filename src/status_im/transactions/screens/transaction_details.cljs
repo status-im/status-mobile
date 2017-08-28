@@ -16,14 +16,14 @@
             [status-im.utils.money :as money]))
 
 (defn toolbar-view []
-  [toolbar/toolbar
+  [toolbar/toolbar2
    {:background-color st/transactions-toolbar-background
-    :nav-action       (act/back-white #(rf/dispatch [:navigate-to-modal :unsigned-transactions]))
-    :border-style     st/toolbar-border
-    :custom-content   [rn/view {:style st/toolbar-title-container}
-                       [rn/text {:style st/toolbar-title-text
-                                 :font  :toolbar-title}
-                        (i18n/label :t/transaction)]]}])
+    :border-style     st/toolbar-border}
+   [toolbar/nav-button (act/back-white #(rf/dispatch [:navigate-to-modal :unsigned-transactions]))]
+   [rn/view {:style st/toolbar-title-container}
+    [rn/text {:style st/toolbar-title-text
+              :font  :toolbar-title}
+     (i18n/label :t/transaction)]]])
 
 (defn detail-item [title content name?]
   [rn/view {:style st/details-item}

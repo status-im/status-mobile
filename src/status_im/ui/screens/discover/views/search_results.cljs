@@ -48,8 +48,7 @@
                  :style          st/discover-tag-toolbar}]
        (if (empty? discoveries)
          [view st/empty-view
-          ;; todo change icon
-          [vi/icon :icons/group_big {:style contacts-st/empty-contacts-icon}]
+          [vi/icon :icons/group-big {:style contacts-st/empty-contacts-icon}]
           [text {:style contacts-st/empty-contacts-text}
            (label :t/no-statuses-found)]]
          [list-view {:dataSource      datasource

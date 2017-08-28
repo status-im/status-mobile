@@ -18,7 +18,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform :refer [platform-specific]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
-            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar-new.view :as toolbar]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
             [status-im.chat.views.message.message :refer [chat-message]]
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
@@ -92,7 +92,7 @@
         [touchable-highlight
          {:on-press #(dispatch [:set-chat-ui-props {:show-actions? false}])}
          [view st/action
-          [vi/icon :icons/dropdown_up]]]
+          [vi/icon :icons/dropdown-up]]]
         [touchable-highlight
          {:on-press #(dispatch [:set-chat-ui-props {:show-actions? true}])}
          [view st/action
@@ -114,9 +114,10 @@
    creating? [:get :accounts/creating-account?]]
   [view
    [status-bar]
-   [toolbar {:hide-nav?      (or (empty? accounts) show-actions? creating?)
-             :custom-content [toolbar-content-view]
-             :custom-action  [toolbar-action]}]
+   [toolbar/toolbar2 {:hide-nav? (or (empty? accounts) show-actions? creating?)}
+    toolbar/default-nav-back
+    [toolbar-content-view]
+    [toolbar-action]]
    [add-contact-bar]])
 
 (defn get-intro-status-message [all-messages]

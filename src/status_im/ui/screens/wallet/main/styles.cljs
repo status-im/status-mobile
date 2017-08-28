@@ -1,21 +1,20 @@
 (ns status-im.ui.screens.wallet.main.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :as common]
+  (:require [status-im.components.styles :as st]
             [status-im.utils.platform :as platform]))
 
 (def wallet-container
   {:flex             1
-   :background-color common/color-white})
+   :background-color st/color-white})
 
 (def wallet-error-container
   {:align-self       :center
    :justify-content  :center
    :border-radius    20
    :flex-direction   :row
-   :background-color common/color-blue5})
+   :background-color st/color-blue5})
 
 (def wallet-exclamation-container
-  {:background-color common/color-red2
+  {:background-color st/color-red-2
    :justify-content  :center
    :margin-top       5
    :margin-left      10
@@ -23,18 +22,18 @@
    :margin-bottom    5
    :border-radius    100})
 
-(defstyle wallet-error-exclamation
+(def wallet-error-exclamation
   {:width  16
    :height 16})
 
 (def wallet-error-message
-  {:color         common/color-white
+  {:color         st/color-white
    :padding-top   3
    :padding-right 10
    :font-size     13})
 
 (def toolbar
-  {:background-color common/color-blue5
+  {:background-color st/color-blue5
    :elevation        0})
 
 (def toolbar-title-container
@@ -46,7 +45,7 @@
   {:flex-direction :row})
 
 (def toolbar-title-text
-  {:color        common/color-white
+  {:color        st/color-white
    :font-size    17
    :margin-right 4})
 
@@ -70,7 +69,7 @@
 
 (def main-section
   {:padding          16
-   :background-color common/color-blue4})
+   :background-color st/color-blue4})
 
 (def total-balance-container
   {:margin-top      18
@@ -82,12 +81,12 @@
 
 (def total-balance-value
   {:font-size 37
-   :color     common/color-white})
+   :color     st/color-white})
 
 (def total-balance-currency
   {:font-size   37
    :margin-left 9
-   :color       common/color-white
+   :color       st/color-white
    :opacity     0.4})
 
 (def value-variation
@@ -96,19 +95,33 @@
 
 (def value-variation-title
   {:font-size 14
-   :color     common/color-white
+   :color     st/color-white
    :opacity   0.6})
 
 (def today-variation-container
-  {:border-radius      4
+  {:border-radius      100
    :margin-left        8
    :padding-horizontal 8
-   :padding-vertical   4
-   :background-color   common/color-green-1})
+   :padding-vertical   4})
+
+(def today-variation-container-positive
+  (merge today-variation-container
+         {:background-color st/color-green-1}))
+
+(def today-variation-container-negative
+  (merge today-variation-container
+         {:background-color st/color-red-3}))
 
 (def today-variation
-  {:font-size 12
-   :color     common/color-green-2})
+  {:font-size 12})
+
+(def today-variation-positive
+  (merge today-variation
+         {:color st/color-green-2}))
+
+(def today-variation-negative
+  (merge today-variation
+         {:color st/color-red-4}))
 
 (def buttons
   {:margin-top 34})
@@ -118,13 +131,13 @@
 ;;;;;;;;;;;;;;;;;;;;
 
 (def asset-section
-  {:background-color common/color-white
+  {:background-color st/color-white
    :padding-vertical 16})
 
 (def asset-section-title
   {:font-size   14
    :margin-left 16
-   :color       common/color-gray4})
+   :color       st/color-gray4})
 
 (def asset-item-value-container
   {:flex           1
@@ -133,9 +146,20 @@
 
 (def asset-item-value
   {:font-size 16
-   :color     common/color-black})
+   :color     st/color-black})
+
+(def add-asset-icon
+  {:border-radius    32
+   :background-color st/color-blue4-transparent})
+
+(def add-asset-text
+  {:font-size 16
+   :color     st/color-blue4})
 
 (def asset-item-currency
   {:font-size   16
-   :color       common/color-gray4
+   :color       st/color-gray4
    :margin-left 6})
+
+(defn asset-border [color]
+  {:border-color color :border-width 1 :border-radius 32})

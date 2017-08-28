@@ -41,9 +41,10 @@
        :default-value     new-group-name}]]))
 
 (defn add-btn [on-press]
-  [action-button {:label    (label :t/add-members)
-                  :icon     [:icons/add {:color :blue}]
-                  :on-press on-press}])
+  [action-button {:label     (label :t/add-members)
+                  :icon      :icons/add
+                  :icon-opts {:color :blue}
+                  :on-press  on-press}])
 
 (defn delete-btn [on-press]
   [view styles/settings-group-container
@@ -68,14 +69,15 @@
        [text {:style styles/settings-group-text}
         (label :t/mute-notifications)]]]]]
    [action-separator]
-   [action-button {:label    (label :t/clear-history)
-                   :icon     [:icons/close {:color :blue}]
-                   :on-press #(dispatch [:clear-history])}]
+   [action-button {:label     (label :t/clear-history)
+                   :icon      :icons/close
+                   :icon-opts {:color :blue}
+                   :on-press  #(dispatch [:clear-history])}]
    [action-separator]
    [touchable-highlight {:on-press #(dispatch [:leave-group-chat])}
     [view styles/settings-group-item
      [view styles/delete-icon-container
-      [vi/icon :icons/arrow_right {:color :red}]]
+      [vi/icon :icons/arrow-right {:color :red}]]
      [view styles/settings-group-text-container
       [text {:style styles/delete-group-text}
        (label :t/leave-chat)]]]]])

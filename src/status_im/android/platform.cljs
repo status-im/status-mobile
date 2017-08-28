@@ -23,8 +23,9 @@
                            :transaction {:height       0
                                          :bar-style    "light-content"
                                          :color        styles/color-dark-blue-2}
-                           :wallet      {:height       0
+                           :wallet      {:height       25
                                          :bar-style    "light-content"
+                                         :translucent? true
                                          :color        styles/color-blue5}}
    :sized-text            {:margin-top        0
                            :additional-height 0}

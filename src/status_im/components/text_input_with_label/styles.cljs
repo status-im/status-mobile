@@ -39,7 +39,7 @@
               :letter-spacing -0.2}})
 
 (defstyle error-text
-   {:color   common/color-red2
+   {:color   common/color-red-2
     :android {:margin-top     6
               :font-size      12}
     :ios     {:margin-top     4
@@ -47,13 +47,13 @@
               :letter-spacing -0.2}})
 
 (defn underline-blured [error]
-  {:background-color (if error common/color-red2 common/color-light-gray2)
+  {:background-color (if error common/color-red-2 common/color-light-gray2)
    :align-items      :center})
 
 (defn underline-focused [underline-width underline-height error]
    {:height           underline-height
     :width            underline-width
-    :background-color (if error common/color-red2 common/color-light-blue)})
+    :background-color (if error common/color-red-2 common/color-light-blue)})
 
 (def label-top-top (if ios? 6 6))
 

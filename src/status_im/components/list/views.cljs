@@ -4,9 +4,9 @@
 
   (defn render [{:keys [title subtitle]}]
     [item
-     [item-icon :dots_vertical_white]
+     [item-icon {:icon :dots_vertical_white}]
      [item-content title subtitle]
-     [item-icon :arrow_right_gray]])
+     [item-icon {:icon :arrow_right_gray}]])
 
   [flat-list {:data [{:title  \"\" :subtitle \"\"}] :render-fn render}]
 
@@ -38,12 +38,18 @@
   [rn/touchable-highlight {:on-press handler}
    item])
 
-(defn item-icon [k & [opts]]
-  [vi/icon k (merge opts {:style lst/item-image})])
+(defn item-icon
+  [{:keys [icon style icon-opts]}]
+  [rn/view {:style lst/item-image-wrapper}
+   [rn/view {:style style}
+    [vi/icon icon (merge icon-opts {:style lst/item-image})]]])
 
-(defn item-image [source]
-  [rn/image {:source source
-             :style  lst/item-image}])
+(defn item-image
+  ([source] (item-image source nil))
+  ([source style]
+   [rn/view {:style (merge lst/item-image-wrapper style)}
+    [rn/image {:source source
+               :style  lst/item-image}]]))
 
 (defn item-content
   ([primary] (item-content primary nil))
@@ -94,8 +100,15 @@
     (let [{:keys [section]} (js->clj data :keywordize-keys true)]
       (r/as-element (f section)))))
 
-(defn- default-render-section-header [m]
-  [rn/text {:style lst/section-header} (:title m)])
+(defn- default-render-section-header [{:keys [title]}]
+  [rn/text {:style lst/section-header}
+   title])
+
+(defn- wrap-per-section-render-fn [props]
+  ;; TODO(jeluard) Somehow wrapping `:render-fn` does not work
+  (if-let [f (:render-fn props)]
+    (assoc (dissoc props :render-fn) :renderItem (wrap-render-fn f))
+    props))
 
 (defn section-list
   "A wrapper for SectionList.
@@ -105,7 +118,7 @@
     empty-component
     [section-list-class
      (merge (base-list-props render-fn empty-component)
-            {:sections            (clj->js (map #(if-let [f (:render-fn %)] (assoc % :renderItem (wrap-render-fn f)) %) sections))
+            {:sections            (clj->js (map wrap-per-section-render-fn sections))
              :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)}
             (when p/ios? {:SectionSeparatorComponent (fn [] (r/as-element [section-separator]))})
             props)]))

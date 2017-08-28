@@ -29,7 +29,7 @@
   {:title      (label :t/members-title)
    :subtitle   (members-text members)
    :icon       :menu_group
-   :icon-style {:width  25
+   :icon-opts {:width  25
                 :height 19}
    ;; TODO not implemented: action Members
    :handler    nil})
