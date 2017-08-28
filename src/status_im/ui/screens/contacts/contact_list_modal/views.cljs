@@ -28,20 +28,23 @@
 (defn actions-view [action click-handler]
   [view actions-list
    [action-button
-    {:label    (label :t/enter-address)
-     :icon     [:icons/address {:color :blue}]
-     :on-press #(do
-                  (dispatch [:send-to-webview-bridge
-                             {:event (name :webview-send-transaction)}])
-                  (dispatch [:navigate-back]))}]
+    {:label     (label :t/enter-address)
+     :icon      :icons/address
+     :icon-opts {:color :blue}
+     :on-press  #(do
+                   (dispatch [:send-to-webview-bridge
+                              {:event (name :webview-send-transaction)}])
+                   (dispatch [:navigate-back]))}]
    [action-separator]
    (if (= :request action)
-     [action-button {:label    (label :t/show-qr)
-                     :icons    [:icons/qr {:color :blue}]
-                     :on-press #(click-handler :qr-scan action)}]
-     [action-button {:label    (label :t/scan-qr)
-                     :icon     [:icons/fullscreen {:color :blue}]
-                     :on-press #(click-handler :qr-scan action)}])])
+     [action-button {:label     (label :t/show-qr)
+                     :icon      :icons/qr
+                     :icon-opts {:color :blue}
+                     :on-press  #(click-handler :qr-scan action)}]
+     [action-button {:label     (label :t/scan-qr)
+                     :icon      :icons/fullscreen
+                     :icon-opts {:color :blue}
+                     :on-press  #(click-handler :qr-scan action)}])])
 
 (defn render-row [click-handler action params]
   (fn [row _ _]

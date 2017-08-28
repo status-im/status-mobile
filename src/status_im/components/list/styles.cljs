@@ -29,8 +29,10 @@
 
 (def item-image
   {:width   40
-   :height  40
-   :margin  14})
+   :height  40})
+
+(def item-image-wrapper
+  {:margin  14})
 
 (def base-separator
   {:height           1

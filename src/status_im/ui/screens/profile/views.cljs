@@ -16,7 +16,7 @@
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.styles :refer [color-blue]]
             [status-im.components.toolbar-new.actions :as actions]
-            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
@@ -24,11 +24,11 @@
   (:require-macros [status-im.utils.views :refer [defview]]))
 
 (defn my-profile-toolbar []
-  [toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit])
+  [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit])
                                       :text (label :t/edit)}])]}])
 
 (defn profile-toolbar [contact]
-  [toolbar
+  [toolbar/toolbar
    (when (and (not (:pending? contact))
               (not (:unremovable? contact)))
      {:actions [(actions/opts [{:value #(dispatch [:hide-contact contact])
@@ -58,20 +58,23 @@
 (defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
   [react/view actions-list
    (if pending?
-     [action-button {:label    (label :t/add-to-contacts)
-                     :icon     [:icons/add {:color :blue}]
-                     :on-press #(dispatch [:add-pending-contact chat-id])}]
+     [action-button {:label     (label :t/add-to-contacts)
+                     :icon      :icons/add
+                     :icon-opts {:color :blue}
+                     :on-press  #(dispatch [:add-pending-contact chat-id])}]
      [action-button-disabled {:label (label :t/in-contacts) :icon :icons/ok}])
    [action-separator]
-   [action-button {:label    (label :t/start-conversation)
-                   :icon     [:icons/chats {:color :blue}]
-                   :on-press #(dispatch [:profile/send-message whisper-identity])}]
+   [action-button {:label     (label :t/start-conversation)
+                   :icon      :icons/chats
+                   :icon-opts {:color :blue}
+                   :on-press  #(dispatch [:profile/send-message whisper-identity])}]
    (when-not dapp?
      [react/view
       [action-separator]
-      [action-button {:label    (label :t/send-transaction)
-                      :icon     [:icons/arrow_right {:color :blue}]
-                      :on-press #(dispatch [:profile/send-transaction chat-id])}]])])
+      [action-button {:label     (label :t/send-transaction)
+                      :icon      :icons/arrow-right
+                      :icon-opts {:color :blue}
+                      :on-press  #(dispatch [:profile/send-transaction chat-id])}]])])
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
   [react/view styles/profile-setting-item
@@ -186,9 +189,10 @@
        [profile-status status true]]
       [form-spacer]
       [react/view actions-list
-       [action-button {:label    (label :t/show-qr)
-                       :icon     [:icons/qr {:color :blue}]
-                       :on-press (show-qr current-account :public-key)}]]
+       [action-button {:label     (label :t/show-qr)
+                       :icon      :icons/qr
+                       :icon-opts {:color :blue}
+                       :on-press  (show-qr current-account :public-key)}]]
       [form-spacer]
       [react/view styles/profile-info-container
        [my-profile-info current-account]

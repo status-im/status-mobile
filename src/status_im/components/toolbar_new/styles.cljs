@@ -16,16 +16,14 @@
 (defstyle toolbar
   {:flex-direction     :row
    :align-items        :center
+   :justify-content    :space-between
    :android            {:height 55}
    :ios                {:height 56}})
 
 (defnstyle toolbar-nav-actions-container
   [actions]
   {:flex-direction :row
-   :margin-left    4
-   :ios            {:width (when (and actions (pos? (count actions)))
-                             (-> (+ toolbar-icon-width toolbar-icon-spacing)
-                                 (* (count actions))))}})
+   :margin-left    4})
 
 (defstyle toolbar-title-container
   {:flex       1
@@ -43,6 +41,8 @@
 
 (def toolbar-border
   (get-in p/platform-specific [:component-styles :toolbar-border]))
+
+(def toolbar-actions {:flex-direction :row})
 
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction :row}
@@ -81,12 +81,28 @@
   {:width  24
    :height 24})
 
-(def toolbar-button
-  {:paddingVertical   16
-   :paddingHorizontal 12})
+(def nav-item-button
+  {:padding-vertical   16
+   :padding-horizontal 12})
 
-(def toolbar-right-action
-  {:color        st/color-blue4
-   :font-size    17
-   :margin-right 12})
+(def nav-item-text
+  {:padding-vertical   18
+   :padding-horizontal 16})
+
+(defstyle item
+  {:ios {:margin-horizontal 12
+         :margin-vertical   16}
+   :android {:margin 16}})
+
+(def item-text
+  (merge item
+         {:color        st/color-blue4
+          :font-size    17}))
+
+(def toolbar-text-action
+  (merge item
+         {:color        st/color-blue4
+          :font-size    17}))
+
+(def item-text-white-background {:color st/color-blue4})
 

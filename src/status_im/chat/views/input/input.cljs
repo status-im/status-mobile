@@ -48,7 +48,7 @@
      [view style/commands-list-icon
       (if show-suggestions?
         [vi/icon :icons/close]
-        [vi/icon :icons/commands_list])]]]
+        [vi/icon :icons/commands-list])]]]
    [scroll-view {:horizontal                     true
                  :showsHorizontalScrollIndicator false
                  :keyboardShouldPersistTaps      :always}

@@ -107,10 +107,10 @@
     [view st/name-view
      (when public-group?
        [view st/public-group-icon-container
-        [vi/icon :icons/public_chat {:style st/public-group-icon}]])
+        [vi/icon :icons/public-chat {:style st/public-group-icon}]])
      (when private-group?
       [view st/private-group-icon-container
-       [vi/icon :icons/group_chat {:style st/private-group-icon}]])
+       [vi/icon :icons/group-chat {:style st/private-group-icon}]])
      [view {:flex-shrink 1}
       [text {:style st/name-text
              :number-of-lines 1}

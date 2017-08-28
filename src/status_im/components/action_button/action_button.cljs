@@ -4,11 +4,11 @@
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.react :as rn]))
 
-(defn action-button [{:keys [label icon on-press label-style cyrcle-color]}]
+(defn action-button [{:keys [label icon icon-opts on-press label-style cyrcle-color]}]
   [rn/touchable-highlight {:on-press on-press}
    [rn/view st/action-button
     [rn/view (st/action-button-icon-container cyrcle-color)
-     ((comp vec flatten vector) vi/icon icon)]
+     [vi/icon icon icon-opts]]
     [rn/view st/action-button-label-container
      [rn/text {:style (merge st/action-button-label label-style)}
       label]]]])
@@ -17,7 +17,7 @@
   [rn/view st/action-button
    [rn/view st/action-button-icon-container-disabled
     [rn/view {:opacity 0.4}
-     ((comp vec flatten vector) vi/icon icon)]]
+     [vi/icon icon]]]
    [rn/view st/action-button-label-container
     [rn/text {:style st/action-button-label-disabled}
      label]]])

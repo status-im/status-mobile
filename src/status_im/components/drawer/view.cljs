@@ -96,7 +96,7 @@
         recipient-name (or (:name recipient) to)]
     [touchable-highlight {:on-press #(rf/dispatch [:navigate-to-modal :transaction-details transaction])}
      [view {:style st/transaction}
-      [vi/icon :icons/arrow_right {:container-style st/transaction-icon}]
+      [vi/icon :icons/arrow-right {:container-style st/transaction-icon}]
       [view {:style st/transaction-info}
        [view {:style st/transaction-value-container}
         [text {:style st/transaction-value :font :medium} value]

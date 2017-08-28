@@ -27,3 +27,6 @@
    :ethlance           nil
    :commiteth          nil
    :etherplay          nil})
+
+(def assets
+  {:ethereum nil})

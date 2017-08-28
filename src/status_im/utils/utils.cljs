@@ -3,7 +3,6 @@
             [status-im.i18n :refer [label]]
             [reagent.core :as r]
             [clojure.string :as str]
-            [taoensso.timbre :as log]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn show-popup [title content]
@@ -37,7 +36,6 @@
                                    :content-type "application/json"}
                          :body (.stringify js/JSON (clj->js data))}))
        (.then (fn [response]
-                (log/debug response)
                 (.text response)))
        (.then (fn [text]
                 (let [json (.parse js/JSON text)
@@ -54,7 +52,6 @@
    (-> (.fetch js/window url (clj->js {:method  "GET"
                                        :headers {"Cache-Control" "no-cache"}}))
        (.then (fn [response]
-                (log/debug response)
                 (let [ok?  (.-ok response)
                       ok?' (if valid-response?
                              (and ok? (valid-response? response))

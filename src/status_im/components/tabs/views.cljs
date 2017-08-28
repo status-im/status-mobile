@@ -16,15 +16,17 @@
   (let [active?   (= view-id selected-view-id)]
     [touchable-highlight {:style    st/tab
                           :disabled active?
-                          :onPress  #(dispatch [:navigate-to-tab view-id])}
+                          :on-press  #(dispatch [:navigate-to-tab view-id])}
      [view {:style st/tab-container}
       (when-let [icon (if active? icon-active icon-inactive)]
         [view
          [image {:source {:uri icon}
                  :style  st/tab-icon}]])
       [view
-       [text {:style (st/tab-title active?)
-              :font  (if (and p/ios? active?) :medium :regular)}
+       [text (merge
+               (if-not icon-active {:uppercase? (get-in p/platform-specific [:uppercase?])})
+               {:style (st/tab-title active?)
+                :font  (if (and p/ios? active?) :medium :regular)})
         title]]]]))
 
 (defn- create-tab [index data selected-view-id]

@@ -61,3 +61,7 @@
 
 (def sign-all-done-button
   {:background-color :transparent})
+
+(defn transaction-icon-background [color]
+  {:border-radius    32
+   :background-color st/color-blue4-transparent})

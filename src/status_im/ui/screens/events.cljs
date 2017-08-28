@@ -165,7 +165,7 @@
                   [:start-requesting-discoveries]
                   [:remove-old-discoveries!]
                   [:set :accounts/creating-account? false]
-                  [:init-wallet]
+                  [:refresh-wallet]
                   [:get-fcm-token]]}))
 
 (register-handler-fx

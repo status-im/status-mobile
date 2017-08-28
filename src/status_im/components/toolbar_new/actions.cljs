@@ -7,6 +7,11 @@
   {:icon    :icons/hamburger
    :handler handler})
 
+(defn hamburger-white [handler]
+  (merge (hamburger handler)
+         {:icon-opts {:color :white}
+          :handler handler}))
+
 (defn add [handler]
   {:icon    :icons/add
    :handler handler})
@@ -20,37 +25,38 @@
    :handler handler})
 
 (def search-icon
-  {:icon [:icons/search
-          {:container-style {:opacity 0.4}}]})
+  {:icon      :icons/search
+   :icon-opts {:container-style {:opacity 0.4}}})
 
 (defn back [handler]
   {:icon                :icons/back
    :handler             handler
    :accessibility-label id/toolbar-back-button})
 
+(def default-handler #(dispatch [:navigate-back]))
+
 (def default-back
-  (back #(dispatch [:navigate-back])))
+  (back default-handler))
 
 (defn back-white [handler]
-  {:icon    [:icons/back
-             {:color :white}]
-   :handler handler})
+  {:icon      :icons/back
+   :icon-opts {:color :white}
+   :handler   handler})
 
 (defn close [handler]
   {:icon    :icons/close
    :handler handler})
 
 (defn close-white [handler]
-  {:icon    [:icons/close
-             {:color :white}]
-   :handler handler})
+  {:icon      :icons/close
+   :icon-opts {:color :white}
+   :handler   handler})
 
 (defn list-white [handler]
-  {:icon    [:icons/transaction_history
-             {:color :white :style {:viewBox "-108 65.9 24 24"}}]
-   :handler handler})
+  {:icon      :icons/transaction-history
+   :icon-opts {:color :white :style {:viewBox "-108 65.9 24 24"}}
+   :handler   handler})
 
 (defn add-wallet [handler]
-  {:image   {:source {:uri :icon_add_wallet_dark}
-             :style  st/action-default}
+  {:icon    :icons/add-wallet
    :handler handler})

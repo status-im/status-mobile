@@ -12,14 +12,12 @@
             [status-im.utils.utils :as utils]
             [status-im.utils.platform :as platform]))
 
-(defn toolbar-actions []
-  [(act/add-wallet #(utils/show-popup "TODO" "Not implemented!"))])
-
 (defn toolbar-view [transactions]
-  [toolbar/toolbar {:style      st/toolbar
-                    :title      (i18n/label :t/wallets)
-                    :nav-action (act/close #(rf/dispatch [:navigate-back]))
-                    :actions    (toolbar-actions)}])
+  [toolbar/toolbar2 {:style st/toolbar}
+   [toolbar/nav-clear-text (i18n/label :t/done) #(rf/dispatch [:navigate-back])]
+   [toolbar/content-title (i18n/label :t/wallets)]
+   [toolbar/actions
+    [(act/add-wallet #(utils/show-popup "TODO" "Not implemented!"))]]])
 
 (defn- select-wallet []
   (utils/show-popup "TODO" "Not implemented!"))
@@ -39,14 +37,11 @@
 (def dummy-wallet-data
   [{:name     "Main wallet"
     :currency "USD"
-    :amount   12.43
-    :assets   ["SNT" "SGT" "GNO" "ETH"]
-    :color    "blue-1"}
-   {:name     "Other wallet"
-    :currency "ETH"
-    :amount   0.34
-    :assets   ["ETH"]
-    :color    "gray-1"}])
+    :amount   0
+    :assets   []
+    :color    "blue-1"}])
+
+;; TODO hook real data
 
 (defn wallet-list []
   [rn/scroll-view {:style st/wallet-list-screen}
@@ -59,6 +54,6 @@
 (defview wallet-list-screen []
   []
   [rn/view {:style st/screen-container}
-   [status-bar/status-bar {:type :main}]
+   [status-bar/status-bar]
    [toolbar-view]
    [wallet-list]])

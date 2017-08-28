@@ -135,7 +135,7 @@
            [contact-group-view {:group group
                                 :edit? edit?}])]
         [view st/empty-contact-groups
-         [vi/icon :icons/group_big {:style st/empty-contacts-icon}]
+         [vi/icon :icons/group-big {:style st/empty-contacts-icon}]
          [text {:style st/empty-contacts-text} (label :t/no-contacts)]])]
      (when (and android? (not edit?))
        [contacts-action-button])]))

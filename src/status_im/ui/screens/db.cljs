@@ -176,4 +176,5 @@
                   :discoveries/request-discoveries-timer
                   :discoveries/new-discover
                   :wallet/wallet
-                  :prices/prices]))
+                  :prices/prices
+                  :prices/prices-loading?]))

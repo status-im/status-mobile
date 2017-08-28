@@ -1,21 +1,15 @@
 (ns status-im.components.context-menu
   (:require [reagent.core :as r]
-            [status-im.components.styles :as common]
-            [status-im.i18n :refer [label]]
+            [status-im.components.styles :as st]
             [status-im.utils.platform :refer [platform-specific ios?]]
-            [re-frame.core :refer [dispatch]]
-            [status-im.components.react :refer [view touchable-highlight text]]
+            [status-im.components.react :as rn]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
-(defn get-property [name]
+(defn- get-property [name]
   (aget rn-dependencies/popup-menu name))
 
-(defn adapt-class [class]
-  (when class
-    (r/adapt-react-class class)))
-
-(defn get-class [name]
-  (adapt-class (get-property name)))
+(defn- get-class [name]
+  (rn/adapt-class (get-property name)))
 
 (def menu (get-class "Menu"))
 (def menu-context (get-class "MenuContext"))
@@ -41,7 +35,7 @@
 (defn context-menu-text [destructive?]
   {:font-size   15
    :line-height 20
-   :color       (if destructive? common/color-light-red common/text1-color)})
+   :color       (if destructive? st/color-light-red st/text1-color)})
 
 (def list-selection-fn (:list-selection-fn platform-specific))
 
@@ -53,17 +47,17 @@
                                       (handler))))})
   nil)
 
-(defn context-menu [trigger options & customStyles trigger-style]
+(defn context-menu [trigger options & custom-styles trigger-style]
   (if ios?
-    [touchable-highlight {:style    trigger-style
-                          :on-press #(open-ios-menu options)}
-     [view
+    [rn/touchable-highlight {:style    trigger-style
+                             :on-press #(open-ios-menu options)}
+     [rn/view
       trigger]]
     [menu {:onSelect #(when % (do (%) nil))}
      [menu-trigger {:style trigger-style} trigger]
-     [menu-options (context-menu-options customStyles)
+     [menu-options (context-menu-options custom-styles)
       (for [{:keys [style value destructive?] :as option} options]
         ^{:key option}
         [menu-option {:value value}
-         [text {:style (merge (context-menu-text destructive?) style)}
+         [rn/text {:style (merge (context-menu-text destructive?) style)}
           (:text option)]])]]))
