@@ -1,0 +1,8 @@
+node {sauce('6269510b-13f3-4019-b156-c2c835f3a408') {
+            try {sh '/usr/local/bin/python3 -m pytest -m sanity -n5 --apk apkUrl --build ${JOB_NAME}__${BUILD_NUMBER}'
+            }
+            finally {
+                saucePublisher()
+                junit testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']], testResults: '*.xml' }
+            }
+}
