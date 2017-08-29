@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.accounts.login.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :refer [dispatch dispatch-sync]]
+  (:require [clojure.string :as string]
+            [re-frame.core :refer [dispatch dispatch-sync]]
             [status-im.ui.screens.accounts.styles :as ast]
             [status-im.ui.screens.accounts.views :refer [account-badge]]
             [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
@@ -27,6 +28,19 @@
   (.blur @password-text-input)
   (dispatch [:login-account address password]))
 
+(defn- error-key [error]
+  ;; TODO Improved selection logic when status-go provide an error code
+  ;; see https://github.com/status-im/status-go/issues/278
+  (cond
+    (string/starts-with? error "there is no running node")
+    :t/node-unavailable
+
+    (string/starts-with? error "cannot retrieve a valid key")
+    :t/wrong-password
+
+    :else
+    :t/unknown-status-go-error))
+
 (defview login []
   (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]]
     [view ast/accounts-container
@@ -46,7 +60,7 @@
                                :on-submit-editing #(login-account password-text-input address password)
                                :auto-focus        true
                                :secure-text-entry true
-                               :error             (when (pos? (count error)) (i18n/label :t/wrong-password))}]]
+                               :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]
       [view {:margin-top 16}
        [touchable-highlight {:on-press #(login-account password-text-input address password)}
         [view st/sign-in-button
