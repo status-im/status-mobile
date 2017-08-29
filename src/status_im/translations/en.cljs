@@ -14,6 +14,8 @@
    :type-a-message                        "Type a message..."
    :type-a-command                        "Start typing a command..."
    :error                                 "Error"
+   :unknown-status-go-error               "Unknown status-go error"
+   :node-unavailable                      "No ethereum node running"
 
    :camera-access-error                   "To grant the required camera permission, please, go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                   "To grant the required photos permission, please, go to your system settings and make sure that Status > Photos is selected."
