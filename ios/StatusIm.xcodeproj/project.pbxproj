@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -67,6 +68,7 @@
 		B2A5F45C1DEC36BB00174F4D /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2A5F4381DEC36B200174F4D /* libRCTAnimation.a */; };
 		B2DEA0D01E49E33300FA28D6 /* libRCTHttpServer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2DEA0B11E49E32000FA28D6 /* libRCTHttpServer.a */; };
 		B2F2D1BC1D9D531B00B7B453 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2F2D1BB1D9D531B00B7B453 /* Images.xcassets */; };
+		B957A49EB0DE44D9A31CAF2D /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF2BF381BC7B4EB0887F0091 /* libRNSVG.a */; };
 		BA68A2377A20496EA737000D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E586E1B0E544F64AA9F5BD1 /* libz.tbd */; };
 		C3EE9AEA6F77464588FBAA64 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B5870D9ED504F32B6A09C35 /* FontAwesome.ttf */; };
 		CE4E31B31D8695250033ED64 /* Statusgo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4E31B21D8695250033ED64 /* Statusgo.framework */; };
@@ -76,7 +78,6 @@
 		EF2B5857B4A34E0C9707FB3F /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B3B19223008342D096AA356E /* Octicons.ttf */; };
 		F9238D6C1E5F055900C047B9 /* SF-UI-Text-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */; };
 		FD4F213C3873473CB703B1D2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 674B3D9595A047AB8D518F4E /* libRNFS.a */; };
-		B957A49EB0DE44D9A31CAF2D /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AF2BF381BC7B4EB0887F0091 /* libRNSVG.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -268,6 +269,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = C5DBB34B1AF2EF2B00E611A9;
 			remoteInfo = RCTMapboxGLTests;
+		};
+		92925B671F571DE600203EEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E74DC52A1E449A2BA858B14 /* RNSVG.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0CF68AC11AF0540F00FF9E5C;
+			remoteInfo = RNSVG;
 		};
 		9E3AB6C51D87DA2B008846B4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -477,6 +485,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = StatusIm/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = StatusIm/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		1E74DC52A1E449A2BA858B14 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSVG.xcodeproj; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; };
 		2028DFF51D4275B600227DCD /* SF-UI-Display-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Display-Medium.otf"; sourceTree = "<group>"; };
 		2028DFF61D4275B600227DCD /* SF-UI-Display-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Display-Regular.otf"; sourceTree = "<group>"; };
 		2028DFF71D4275B600227DCD /* SF-UI-Display-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Display-Semibold.otf"; sourceTree = "<group>"; };
@@ -531,6 +540,7 @@
 		9EF083381F3B538A00876A8F /* ReactNativeConfig.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeConfig.xcodeproj; path = "../node_modules/react-native-config/ios/ReactNativeConfig.xcodeproj"; sourceTree = "<group>"; };
 		9F1854E6D9654226B1FC8308 /* RCTCamera.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RCTCamera.xcodeproj"; sourceTree = "<group>"; };
 		ACA66A8F16CD2FE21F38738B /* Pods-StatusIm.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StatusIm.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StatusIm/Pods-StatusIm.debug.xcconfig"; sourceTree = "<group>"; };
+		AF2BF381BC7B4EB0887F0091 /* libRNSVG.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSVG.a; sourceTree = "<group>"; };
 		B23B48FE1E76917B006D4535 /* RobotoMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RobotoMono-Medium.ttf"; sourceTree = "<group>"; };
 		B24FC7FC1DE7195700D694FF /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		B24FC7FE1DE7195F00D694FF /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -550,8 +560,6 @@
 		F89A8F8005874B86B63C22E3 /* RNFIRMessaging.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFIRMessaging.xcodeproj; path = "../node_modules/react-native-fcm/ios/RNFIRMessaging.xcodeproj"; sourceTree = "<group>"; };
 		F9238D6B1E5F055900C047B9 /* SF-UI-Text-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-UI-Text-Semibold.otf"; sourceTree = "<group>"; };
 		FC1CBCFE6C906043D6CCEEE1 /* libPods-StatusImTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-StatusImTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1E74DC52A1E449A2BA858B14 /* RNSVG.xcodeproj */ = {isa = PBXFileReference; name = "RNSVG.xcodeproj"; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		AF2BF381BC7B4EB0887F0091 /* libRNSVG.a */ = {isa = PBXFileReference; name = "libRNSVG.a"; path = "libRNSVG.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -970,6 +978,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		92925B361F571DE600203EEB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				92925B681F571DE600203EEB /* libRNSVG.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9E3AB6B31D87DA2A008846B4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1114,7 +1130,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 610;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -1267,6 +1283,10 @@
 				{
 					ProductGroup = 20B7D0F01D3F74CC00B70F14 /* Products */;
 					ProjectRef = 45FB5F523DE04BDE9877869C /* RNRandomBytes.xcodeproj */;
+				},
+				{
+					ProductGroup = 92925B361F571DE600203EEB /* Products */;
+					ProjectRef = 1E74DC52A1E449A2BA858B14 /* RNSVG.xcodeproj */;
 				},
 				{
 					ProductGroup = 20B7D0FF1D3F74CD00B70F14 /* Products */;
@@ -1470,6 +1490,13 @@
 			fileType = wrapper.cfbundle;
 			path = RCTMapboxGLTests.xctest;
 			remoteRef = 922C4D2F1F4D8EBB0033C753 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		92925B681F571DE600203EEB /* libRNSVG.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSVG.a;
+			remoteRef = 92925B671F571DE600203EEB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9E3AB6C61D87DA2B008846B4 /* libReact-Native-Webview-Bridge.a */ = {
@@ -1896,6 +1923,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StatusIm.app/StatusIm";
 			};
@@ -1937,6 +1965,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = im.status.ethereum;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StatusIm.app/StatusIm";
 			};
@@ -1946,7 +1975,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ACA66A8F16CD2FE21F38738B /* Pods-StatusIm.debug.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
@@ -2004,7 +2032,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 38A44830EC5708E89387F641 /* Pods-StatusIm.release.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = StatusIm/StatusIm.entitlements;
@@ -2071,8 +2098,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2080,8 +2109,10 @@
 				DEVELOPMENT_TEAM = DTX7Z4U3YA;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -2114,7 +2145,7 @@
 					"$(SRCROOT)/../node_modules/instabug-reactnative/ios/RNInstabug",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -2134,8 +2165,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2145,6 +2178,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -2171,7 +2205,7 @@
 					"$(SRCROOT)/../node_modules/instabug-reactnative/ios/RNInstabug",
 					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
