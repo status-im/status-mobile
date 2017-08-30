@@ -1,0 +1,28 @@
+--- node_modules/react-native/React/Base/RCTBundleURLProvider.m	2017-08-30 17:59:11.000000000 +0200
++++ node_modules/react-native/React/Base/RCTBundleURLProvider.m.new	2017-08-30 18:00:12.000000000 +0200
+@@ -71,11 +71,21 @@
+ - (BOOL)isPackagerRunning:(NSString *)host
+ {
+   NSURL *url = [serverRootWithHost(host) URLByAppendingPathComponent:@"status"];
+-  NSURLRequest *request = [NSURLRequest requestWithURL:url];
+-  NSURLResponse *response;
++  // HACK: Sync network request sometimes takes too long, causing main thread to hang with an 0x8badf00d error.
++  // https://github.com/facebook/react-native/issues/10187
++  NSURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5];
++  NSHTTPURLResponse *response = nil;
+   NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:NULL];
+-  NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+-  return [status isEqualToString:@"packager-status:running"];
++  if (response == nil) {
++    // timed out or failed
++    NSLog(@"sync request timed out.");
++    return false;
++  } else {
++    // all good
++    NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
++    return [status isEqualToString:@"packager-status:running"];
++  }
++  return false;
+ }
+ 
+ - (NSString *)guessPackagerHost
