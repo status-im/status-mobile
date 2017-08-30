@@ -26,6 +26,7 @@
             [status-im.ui.screens.db :refer [app-db]]
             [status-im.utils.config :as config]
             [status-im.utils.crypt :as crypt]
+            [status-im.utils.notifications :as notifications]
             [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
             [status-im.utils.instabug :as inst]
             [status-im.utils.platform :as platform]
@@ -164,7 +165,8 @@
                   [:start-requesting-discoveries]
                   [:remove-old-discoveries!]
                   [:set :accounts/creating-account? false]
-                  [:init-wallet]]}))
+                  [:init-wallet]
+                  [:get-fcm-token]]}))
 
 (register-handler-fx
   :check-console-chat
@@ -264,3 +266,11 @@
   :update-geolocation
   (fn [db [_ geolocation]]
     (assoc db :geolocation geolocation)))
+
+;; TODO(oskarth): Put this token in DB
+(register-handler-fx
+ :get-fcm-token
+ (fn [_ _]
+   (notifications/get-fcm-token)
+   {}))
+
