@@ -7,6 +7,32 @@
   {:flex             1
    :background-color common/color-white})
 
+(def wallet-error-container
+  {:align-self       :center
+   :justify-content  :center
+   :border-radius    20
+   :flex-direction   :row
+   :background-color common/color-blue5})
+
+(def wallet-exclamation-container
+  {:background-color common/color-red2
+   :justify-content  :center
+   :margin-top       5
+   :margin-left      10
+   :margin-right     7
+   :margin-bottom    5
+   :border-radius    100})
+
+(defstyle wallet-error-exclamation
+  {:width  16
+   :height 16})
+
+(def wallet-error-message
+  {:color         common/color-white
+   :padding-top   3
+   :padding-right 10
+   :font-size     13})
+
 (def toolbar
   {:background-color common/color-blue5
    :elevation        0})

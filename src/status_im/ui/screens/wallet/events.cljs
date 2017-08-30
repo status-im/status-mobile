@@ -3,7 +3,8 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.prices :as prices]
             [status-im.ui.screens.wallet.db :as wallet.db]
-            [status-im.components.status :as status]))
+            [status-im.components.status :as status]
+            [taoensso.timbre :as log]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -57,6 +58,14 @@
      :dispatch    [:load-prices]
      :db (assoc-in db [:wallet :transactions] wallet.db/dummy-transaction-data)}))
 
+(defn set-error-message [db err]
+  (assoc-in db [:wallet :wallet/error] err))
+
+(handlers/register-handler-db
+ :wallet/clear-error-message
+ (fn [db [_]]
+   (update db :wallet dissoc :wallet/error)))
+
 (handlers/register-handler-db
   :update-balance
   (fn [db [_ balance]]
@@ -67,12 +76,14 @@
   (fn [db [_ prices]]
     (assoc db :prices prices)))
 
-(handlers/register-handler-fx
+(handlers/register-handler-db
   :update-balance-fail
-  (fn [_ [_ err]]
-    (.log js/console "Unable to get balance: " err)))
+  (fn [db [_ err]]
+    (log/debug "Unable to get balance: " err)
+    (set-error-message db :error)))
 
-(handlers/register-handler-fx
+(handlers/register-handler-db
   :update-prices-fail
   (fn [_ [_ err]]
-    (.log js/console "Unable to get prices: " err)))
+    (log/debug "Unable to get prices: " err)
+    (set-error-message db :error)))
