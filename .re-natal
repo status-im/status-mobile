@@ -30,6 +30,7 @@
     "react-native-image-crop-picker",
     "react-native-webview-bridge",
     "react-native-drawer-layout",
+    "react-native-fcm",
     "homoglyph-finder",
     "web3",
     "eccjs",

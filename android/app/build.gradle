@@ -163,6 +163,7 @@ android {
 
 dependencies {
     compile project(':react-native-svg')
+    compile project(':react-native-mapbox-gl')
     compile 'com.android.support:multidex:1.0.1'
     compile project(':react-native-http-bridge')
     compile project(':nfc-react-native')
@@ -186,9 +187,10 @@ dependencies {
     compile project(':react-native-fs')
     compile project(':react-native-image-crop-picker')
     compile project(':react-native-webview-bridge')
-    compile project(':reactnativemapboxgl')
     compile 'testfairy:testfairy-android-sdk:1.+@aar'
     compile project(':react-native-config')
+    compile project(':react-native-fcm')
+    compile 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
 
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
@@ -199,3 +201,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
   into 'libs'
 }
 
+// Must be at bottom to avoid dependency collision
+apply plugin: "com.google.gms.google-services"

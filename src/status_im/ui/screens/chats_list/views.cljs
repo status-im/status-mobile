@@ -25,7 +25,8 @@
             [status-im.ui.screens.chats-list.views.inner-item :refer [chat-list-item-inner-view]]
             [status-im.ui.screens.chats-list.styles :as st]
             [status-im.i18n :refer [label]]
-            [status-im.utils.platform :refer [platform-specific ios?]]))
+            [status-im.utils.platform :refer [platform-specific ios?]]
+            [status-im.utils.notifications :as notifications]))
 
 (def android-toolbar-popup-options
   [{:text (label :t/edit) :value #(dispatch [:set-in [:chat-list-ui-props :edit?] true])}])

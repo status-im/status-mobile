@@ -1,6 +1,15 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 
+# Need to explicitly declare this avoid downgrade
+# https://github.com/evollu/react-native-fcm/issues/420
+pod 'Firebase/Core', '4.0.0'
+
+# react-native-fcm should support FB 4, but latest breaks builds, hence older version
+# TODO(oskarth): Awaiting RN 0.47 upgrade, and/or PN working on iOS device before deciding which version to use
+pod 'Firebase/Messaging'
+#pod 'Firebase/Messaging', '3.17.0'
+
 target 'StatusIm' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!

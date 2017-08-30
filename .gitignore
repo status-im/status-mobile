@@ -30,7 +30,7 @@ project.xcworkspace
 .idea
 .gradle
 local.properties
-status-im.iml
+*.iml
 
 # node.js
 #
