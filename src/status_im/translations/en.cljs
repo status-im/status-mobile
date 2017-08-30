@@ -335,6 +335,7 @@
    :wallets                               "Wallets"
    :your-wallets                          "Your wallets"
    :main-wallet                           "Main Wallet"
+   :wallet-error                          "Error Loading Data"
    :wallet-send                           "Send"
    :wallet-request                        "Request"
    :wallet-exchange                       "Exchange"

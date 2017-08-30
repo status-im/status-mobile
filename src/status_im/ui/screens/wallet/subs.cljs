@@ -14,6 +14,10 @@
   (fn [db]
     (get-in db [:prices :last-day])))
 
+(reg-sub :wallet/error-message
+  (fn [db]
+    (get-in db [:wallet :wallet/error])))
+
 (reg-sub :eth-balance
   :<- [:balance]
   (fn [balance]

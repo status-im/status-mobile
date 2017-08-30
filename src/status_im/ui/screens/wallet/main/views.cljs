@@ -48,9 +48,17 @@
                     :custom-content [toolbar-title]
                     :custom-action  [toolbar-buttons]}])
 
+(defn error-message-view [error-message]
+  [rn/view {:style st/wallet-error-container}
+   [rn/view {:style st/wallet-exclamation-container}
+    [vi/icon :icons/exclamation_mark {:color           :white
+                                      :container-style st/wallet-error-exclamation}]]
+   [rn/text {:style st/wallet-error-message} (i18n/label :t/wallet-error)]])
+
 ;; TODO(oskarth): Whatever triggers the "in progress" animation should also trigger wallet-init or load-prices event.
-(defn main-section [usd-value change]
+(defn main-section [usd-value change error-message]
   [rn/view {:style st/main-section}
+   (when error-message [error-message-view error-message])
    [rn/view {:style st/total-balance-container}
     [rn/view {:style st/total-balance}
      [rn/text {:style st/total-balance-value} usd-value]
@@ -91,9 +99,10 @@
 (defview wallet []
   (letsubs [eth-balance [:eth-balance]
             portfolio-value [:portfolio-value]
-            portfolio-change [:portfolio-change]]
+            portfolio-change [:portfolio-change]
+            error-message [:wallet/error-message]]
     [rn/view {:style st/wallet-container}
      [toolbar-view]
      [rn/scroll-view
-      [main-section portfolio-value portfolio-change]
+      [main-section portfolio-value portfolio-change error-message]
       [asset-section eth-balance]]]))

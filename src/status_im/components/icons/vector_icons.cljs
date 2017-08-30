@@ -45,6 +45,7 @@
             :icons/close               (slurp-svg "./resources/icons/close.svg")
             :icons/dots_horizontal     (slurp-svg "./resources/icons/dots_horizontal.svg")
             :icons/dots_vertical       (slurp-svg "./resources/icons/dots_vertical.svg")
+            :icons/exclamation_mark    (slurp-svg "./resources/icons/exclamation_mark.svg")
             :icons/forward             (slurp-svg "./resources/icons/forward.svg")
             :icons/fullscreen          (slurp-svg "./resources/icons/fullscreen.svg")
             :icons/group_big           (slurp-svg "./resources/icons/group_big.svg")
