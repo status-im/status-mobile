@@ -50,18 +50,21 @@ It's all about that sex appeal, we want cryptocurrencies to be easy and fun to u
 - **Evangelism**  
 Help us spread the word! Tell a friend *right now*, in fact tell **everyone** - yell from a mountain if you have to, every person counts!
 
+## Status API 
+View our [developer documentation](https://docs.status.im/) and learn how to integrate your DApp into Status or build a decentralized chatbot.
+
 ## Give me Binaries!
 
-Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://wiki.status.im/contributing/development/building-status/).
+Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our website or by building it yourself.
 
-// TODO GPlay, TestFlight Instructions & FDroid
+Alternatively, if you’re on Android you can try one of our nightly APK builds from [here](http://artifacts.status.im:8081/artifactory/nightlies-local/)
 
 ## Core Contributors
 
 [Core Team Members](https://github.com/orgs/status-im/people)
 
 Special thanks to [@adrian-tiberius](https://github.com/adrian-tiberius).
-Without the dedication of these fine gentleman, Status would not exist.
+Without the dedication of these outsanding individuals, Status would not exist.
 
 ## Contact us
 
