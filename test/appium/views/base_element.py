@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
+from appium.webdriver.common.touch_action import TouchAction
 import pytest
 
 
@@ -32,15 +33,21 @@ class BaseElement(object):
         return None
 
     def find_element(self):
-        try:
-            return self.wait_for_element()
-        except (NoSuchElementException, TimeoutException):
-            pytest.fail("'%s' not found by %s '%s'" % (
-                self.name, self.locator.by, self.locator.value), pytrace=False)
+        return self.driver.find_element(self.locator.by, self.locator.value)
 
-    def wait_for_element(self, seconds=30):
+    def wait_for_element(self, seconds=10):
         return WebDriverWait(self.driver, seconds)\
             .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
+
+    def scroll_to_element(self):
+        for x in range(10):
+            action = TouchAction(self.driver)
+            action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
+            try:
+                self.find_element()
+                break
+            except NoSuchElementException:
+                pass
 
 
 class BaseEditBox(BaseElement):
