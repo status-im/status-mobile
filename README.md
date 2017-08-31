@@ -55,7 +55,7 @@ View our [developer documentation](https://docs.status.im/) and learn how to int
 
 ## Give me Binaries!
 
-Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our website or by building it yourself.
+Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://wiki.status.im/contributing/development/building-status/).
 
 Alternatively, if you’re on Android you can try one of our nightly APK builds from [here](http://artifacts.status.im:8081/artifactory/nightlies-local/)
 
