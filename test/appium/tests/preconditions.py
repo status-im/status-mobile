@@ -1,6 +1,6 @@
 
 
-def set_chat_for_users_from_scratch(*args):
+def set_password_as_new_user(*args):
     for view in args:
         view.request_password_icon.click()
         view.type_message_edit_box.send_keys("qwerty1234")

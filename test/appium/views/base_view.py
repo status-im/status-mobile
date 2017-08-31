@@ -18,9 +18,9 @@ class BaseViewObject(object):
         self.driver.keyevent(66)
 
     def find_text(self, text):
-        element = BaseElement(self.driver)
+        element = BaseButton(self.driver)
         element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
-        return element.wait_for_element(30)
+        return element.wait_for_element(100)
 
     def get_chats(self):
         from views.chats import ChatsViewObject

@@ -9,6 +9,13 @@ class ContinueButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
 
 
+class OkButton(BaseButton):
+
+    def __init__(self, driver):
+        super(OkButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK']")
+
+
 class TypeMessageEditBox(BaseEditBox):
 
     def __init__(self, driver):
@@ -29,11 +36,13 @@ class HomeView(BaseViewObject):
     def __init__(self, driver):
         super(HomeView, self).__init__(driver)
         self.continue_button = ContinueButton(driver)
+        self.ok_button = OkButton(driver)
 
-        try:
-            self.continue_button.click()
-        except Exception:
-            pass
+        for i in self.ok_button, self.continue_button:
+            try:
+                i.click()
+            except (NoSuchElementException, TimeoutException):
+                pass
 
         self.type_message_edit_box = TypeMessageEditBox(driver)
         self.request_password_icon = RequestPasswordIcon(driver)
