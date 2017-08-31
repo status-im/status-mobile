@@ -4,6 +4,7 @@
     [status-im.translations.af :as af]
     [status-im.translations.ar :as ar]
     [status-im.translations.bel :as be]
+    [status-im.translations.cs :as cs]
     [status-im.translations.da :as da]
     [status-im.translations.de :as de]
     [status-im.translations.de-ch :as de-ch]
@@ -56,6 +57,7 @@
       (clj->js {:af      af/translations
                 :ar      ar/translations
                 :be      be/translations
+                :cs      cs/translations
                 :da      da/translations
                 :de      de/translations
                 :de-ch   de-ch/translations
