@@ -14,4 +14,5 @@
    :augur              (js/require "./resources/images/contacts/augur.png")
    :ethlance           (js/require "./resources/images/contacts/ethlance.png")
    :commiteth          (js/require "./resources/images/contacts/commiteth.png")
+   :aigang             (js/require "./resources/images/contacts/aigang.png")
    :etherplay          (js/require "./resources/images/contacts/etherplay.png")})

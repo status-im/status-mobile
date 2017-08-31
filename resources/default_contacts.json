@@ -271,5 +271,19 @@
             "en": "http://test.etherplay.io"
         },
         "groups": ["dapps"]
+    },
+    "Aigang":
+    {
+        "name":
+        {
+            "en": "Aigang"
+        },
+        "photo-path": "contacts://aigang",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://investment.aigang.network/insurerLightv1.html"
+        },
+        "groups": ["dapps"]
     }
 }

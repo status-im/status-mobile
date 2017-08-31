@@ -26,4 +26,5 @@
    :augur              nil
    :ethlance           nil
    :commiteth          nil
+   :aigang             nil
    :etherplay          nil})
