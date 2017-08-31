@@ -6,8 +6,6 @@
             [status-im.data-store.messages :as msg-store]
             [status-im.utils.handlers :refer [register-handler-fx]]
             [status-im.components.status :as status]
-            [status-im.chat.constants :as const]
-            [status-im.commands.utils :as commands-utils]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
 
@@ -15,12 +13,13 @@
 
 (defn generate-context
   "Generates context for jail call"
-  [{:keys [chats] :accounts/keys [current-account-id]} chat-id to]
+  [{:keys [chats] :accounts/keys [current-account-id]} chat-id to group-id]
   (merge {:platform platform/platform
           :from     current-account-id
           :to       to
           :chat     {:chat-id    chat-id
-                     :group-chat (get-in chats [chat-id :group-chat])}}
+                     :group-chat (or (get-in chats [chat-id :group-chat])
+                                     (not (nil? group-id)))}}
          i18n/delimeters))
 
 ;;;; Coeffects
@@ -70,9 +69,9 @@
  [trim-v]
  (fn [{:keys [db]}
       [{{:keys [command content-command params type]} :content
-        :keys [chat-id jail-id] :as message}
+        :keys [chat-id jail-id group-id] :as message}
        data-type]]
-   (let [{:keys [chats]
+   (let [{:keys          [chats]
           :accounts/keys [current-account-id]
           :contacts/keys [contacts]} db
          jail-id (or jail-id chat-id)
@@ -85,10 +84,10 @@
                             data-type]
              to            (get-in contacts [chat-id :address])
              jail-params   {:parameters params
-                            :context (generate-context db chat-id to)}] 
-         {:chat-fx/call-jail {:jail-id jail-id
-                              :path path
-                              :params jail-params
+                            :context (generate-context db chat-id to group-id)}]
+         {:chat-fx/call-jail {:jail-id                 jail-id
+                              :path                    path
+                              :params                  jail-params
                               :callback-events-creator (fn [jail-response]
                                                          [[::jail-command-data-response
                                                            jail-response message data-type]])}})
