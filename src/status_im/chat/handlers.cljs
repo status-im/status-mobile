@@ -28,8 +28,7 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.chat.utils :refer [console? not-console? safe-trim]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            status-im.chat.events.input 
-            status-im.chat.events.commands
+            status-im.chat.events 
             status-im.chat.handlers.animation
             status-im.chat.handlers.requests
             status-im.chat.handlers.unviewed-messages
@@ -41,26 +40,6 @@
             status-im.chat.handlers.console
             [taoensso.timbre :as log]
             [tailrecursion.priority-map :refer [priority-map-by]]))
-
-(register-handler :set-layout-height
-  (fn [db [_ height]]
-    (assoc db :layout-height height)))
-
-(register-handler :set-chat-ui-props
-  (fn [{:keys [current-chat-id] :as db} [_ kvs]]
-    (update-in db [:chat-ui-props current-chat-id] merge kvs)))
-
-(register-handler :toggle-chat-ui-props
-  (fn [{:keys [current-chat-id chat-ui-props] :as db} [_ ui-element chat-id]]
-    (let [chat-id (or chat-id current-chat-id)]
-      (update-in db [:chat-ui-props chat-id ui-element] not))))
-
-(register-handler :show-message-details
-  (u/side-effect!
-    (fn [_ [_ details]]
-      (dispatch [:set-chat-ui-props {:show-bottom-info? true
-                                     :show-emoji?       false
-                                     :bottom-info       details}]))))
 
 (register-handler :load-more-messages
   (fn [{:keys [current-chat-id loading-allowed] :as db} _]
