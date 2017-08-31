@@ -64,7 +64,7 @@ Alternatively, if you’re on Android you can try one of our nightly APK builds 
 [Core Team Members](https://github.com/orgs/status-im/people)
 
 Special thanks to [@adrian-tiberius](https://github.com/adrian-tiberius).
-Without the dedication of these outsanding individuals, Status would not exist.
+Without the dedication of these outstanding individuals, Status would not exist.
 
 ## Contact us
 
