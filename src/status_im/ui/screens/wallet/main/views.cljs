@@ -42,7 +42,7 @@
 
 (defn toolbar-view []
   [toolbar/toolbar2 {:style wallet-styles/toolbar}
-   [toolbar/nav-button (act/hamburger-white drawer/open-drawer)]
+   [toolbar/nav-button (act/hamburger-white drawer/open-drawer!)]
    [toolbar-title]
    [toolbar/actions
     [(assoc (act/opts [{:text (i18n/label :t/wallet-settings) :value show-not-implemented!}]) :icon-opts {:color :white})

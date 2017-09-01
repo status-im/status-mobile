@@ -29,26 +29,28 @@
   (run-test-sync
    (test-fixtures)
    (let [accounts (rf/subscribe [:get-accounts])
-         address (:address new-account)
-         new-status "It's a new status!"]
+         address (:address new-account)]
      (rf/dispatch [:initialize-db])
      (rf/dispatch [:add-account new-account])
      (rf/dispatch [:set-current-account address])
-     (testing "Setting status"
-       (is (= (:status new-account) (-> @accounts
-                                       (get address)
-                                       :status)))
-      (rf/dispatch [:my-profile/update-status new-status])
-      (is (= new-status (-> @accounts
-                            (get address)
-                            :status))))
-     (testing "Setting phone number"
-       (is (nil? (-> @accounts
-                     (get address)
-                     :phone)))
-       (rf/dispatch [:set-in [:my-profile/edit :edit-status?] true])
-       (rf/dispatch [:set-in [:my-profile/edit :name] "It's my new name"])
-       (rf/dispatch [:my-profile/save-changes])
-       (is (= "It's my new name" (-> @accounts
-                                     (get address)
-                                     :name)))))))
+
+     (testing "Setting status from edit profile screen"
+       (let [new-status "New edit profile status"]
+         (is (= (:status new-account) (-> @accounts
+                                          (get address)
+                                          :status)))
+         (rf/dispatch [:my-profile/edit-profile :edit-status])
+         (rf/dispatch [:my-profile/update-status new-status])
+         (rf/dispatch [:my-profile/save-profile])
+         (is (= new-status (-> @accounts
+                               (get address)
+                               :status)))))
+
+     (testing "Setting status from drawer"
+       (let [new-status "New drawer status"]
+         (rf/dispatch [:my-profile.drawer/edit-status])
+         (rf/dispatch [:my-profile.drawer/update-status new-status])
+         (rf/dispatch [:my-profile.drawer/save-status])
+         (is (= new-status (-> @accounts
+                               (get address)
+                               :status))))))))

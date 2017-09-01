@@ -24,11 +24,15 @@
             :actions [{:image :blank}]}])
 
 (defview profile-name-input []
-  (letsubs [new-profile-name [:get-in [:my-profile/edit :name]]]
+  (letsubs [profile-name [:my-profile/get :name]
+            placeholder  [:get :my-profile/default-name]]
     [react/view
-     [text-input-with-label {:label          (label :t/name)
-                             :default-value  new-profile-name
-                             :on-change-text #(dispatch [:set-in [:my-profile/edit :name] %])}]]))
+     [text-input-with-label
+      {:label          (label :t/name)
+       :default-value  profile-name
+       :on-focus       #(dispatch [:my-profile/edit-profile])
+       :on-change-text #(dispatch [:my-profile/update-name %])}]]))
+
 
 (def profile-icon-options
   [{:text  (label :t/image-source-gallery)
@@ -39,9 +43,10 @@
                         [:camera :write-external-storage]
                         (fn []
                           (camera/request-access
-                           #(if % (dispatch [:navigate-to :profile-photo-capture])
-                                (utils/show-popup (label :t/error)
-                                                  (label :t/camera-access-error)))))]))}])
+                           #(if %
+                              (dispatch [:navigate-to :profile-photo-capture])
+                              (utils/show-popup (label :t/error)
+                                                (label :t/camera-access-error)))))]))}])
 
 (defn edit-profile-badge [contact]
   [react/view styles/edit-profile-badge
@@ -54,24 +59,21 @@
    [react/view styles/edit-profile-name-container
     [profile-name-input]]])
 
-(defn edit-profile-status [{:keys [status edit-status?]}]
-  (let [input-ref (reagent/atom nil)]
+(defview edit-profile-status []
+  (letsubs [edit-status? [:my-profile/get :edit-status?]
+            status       [:my-profile/get :status]]
     [react/view styles/edit-profile-status
      [react/scroll-view
       (if edit-status?
         [react/text-input
-         {:ref               #(reset! input-ref %)
-          :auto-focus        edit-status?
+         {:auto-focus        (if edit-status? true false)
           :multiline         true
           :max-length        140
           :placeholder       (label :t/status)
           :style             styles/profile-status-input
-          :on-change-text    #(dispatch [:set-in [:my-profile/edit :status] (clean-text %)])
-          :on-blur           #(dispatch [:set-in [:my-profile/edit :edit-status?] false])
-          :blur-on-submit    true
-          :on-submit-editing #(.blur @input-ref)
+          :on-change-text    #(dispatch [:my-profile/update-status %])
           :default-value     status}]
-        [react/touchable-highlight {:on-press #(dispatch [:set-in [:my-profile/edit :edit-status?] true])}
+        [react/touchable-highlight {:on-press #(dispatch [:my-profile/edit-profile :status])}
          [react/view
           (if (string/blank? status)
             [react/text {:style styles/add-a-status}
@@ -86,19 +88,16 @@
       (colorize-status-hashtags (label :t/status-prompt))]]))
 
 (defview edit-my-profile []
-  (letsubs [current-account [:get-current-account]
-            changed-account [:get :my-profile/edit]]
-    {:component-will-unmount #(dispatch [:set-in [:my-profile/edit :edit-status?] false])}
-    (let [profile-edit-data-valid? (spec/valid? ::db/profile changed-account)
-          profile-edit-data-changed? (or (not= (:name current-account) (:name changed-account))
-                                         (not= (:status current-account) (:status changed-account))
-                                         (not= (:photo-path current-account) (:photo-path changed-account)))]
-      [react/keyboard-avoiding-view {:style styles/profile}
-       [status-bar]
-       [edit-my-profile-toolbar]
-       [react/view styles/edit-my-profile-form
-        [edit-profile-badge changed-account]
-        [edit-profile-status changed-account]
-        [status-prompt changed-account]]
-       (when (and profile-edit-data-changed? profile-edit-data-valid?)
-         [sticky-button (label :t/save) #(dispatch [:my-profile/save-changes])])])))
+  (letsubs [current-account  [:get-current-account]
+            changed-account  [:get :my-profile/profile]
+            profile-changed? [:my-profile/changed?]
+            valid-name?      [:my-profile/valid-name?]]
+    [react/keyboard-avoiding-view {:style styles/profile}
+     [status-bar]
+     [edit-my-profile-toolbar]
+     [react/view styles/edit-my-profile-form
+      [edit-profile-badge changed-account]
+      [edit-profile-status]
+      [status-prompt changed-account]]
+     (when (and valid-name? profile-changed?)
+       [sticky-button (label :t/save) #(dispatch [:my-profile/save-profile])])]))

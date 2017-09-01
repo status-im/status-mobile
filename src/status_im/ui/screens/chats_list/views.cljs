@@ -5,7 +5,7 @@
             [status-im.components.renderers.renderers :as renderers]
             [status-im.components.react :as react]
             [status-im.components.native-action-button :refer [native-action-button]]
-            [status-im.components.drawer.view :refer [open-drawer]]
+            [status-im.components.drawer.view :as drawer]
             [status-im.components.styles :refer [color-blue]]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.toolbar-new.view :as toolbar]
@@ -39,7 +39,7 @@
 
 (defn toolbar-view []
   [toolbar/toolbar2 {}
-   [toolbar/nav-button (act/hamburger open-drawer)]
+   [toolbar/nav-button (act/hamburger open-drawer!)]
    [toolbar/content-title (i18n/label :t/chats)]
    [toolbar/actions
     (if ios?

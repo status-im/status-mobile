@@ -8,7 +8,7 @@
                                                                native-action-button-item]]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.components.toolbar-new.actions :as act]
-            [status-im.components.drawer.view :refer [open-drawer]]
+            [status-im.components.drawer.view :as drawer]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.components.contact.contact :refer [contact-view]]
             [status-im.utils.platform :refer [platform-specific ios? android?]]
@@ -32,7 +32,7 @@
 
 (defn toolbar-view []
   [toolbar/toolbar2 {}
-   [toolbar/nav-button (act/hamburger open-drawer)]
+   [toolbar/nav-button (act/hamburger open-drawer!)]
    [toolbar/content-title (label :t/contacts)]
    [toolbar/actions
     (toolbar-actions)]])
@@ -44,9 +44,9 @@
 
 (defn contact-options [{:keys [unremovable?] :as contact} group]
   (let [delete-contact-opt {:value        #(u/show-confirmation
-                                             (str (label :t/delete-contact) "?") (label :t/delete-contact-confirmation)
-                                             (label :t/delete)
-                                             (fn [] (dispatch [:hide-contact contact])))
+                                            (str (label :t/delete-contact) "?") (label :t/delete-contact-confirmation)
+                                            (label :t/delete)
+                                            (fn [] (dispatch [:hide-contact contact])))
                             :text         (label :t/delete-contact)
                             :destructive? true}
         options (if unremovable? [] [delete-contact-opt])]
@@ -70,17 +70,17 @@
      [view st/contacts-list
       [common/list-footer]
       (doall
-        (map (fn [contact]
-               ^{:key contact}
-               [view
-                [contact-view
-                 {:contact        contact
-                  :extended?      edit?
-                  :on-press       #(dispatch [:open-chat-with-contact %])
-                  :extend-options (contact-options contact group)}]
-                (when-not (= contact (last contacts))
-                  [common/list-separator])])
-             contacts))]
+       (map (fn [contact]
+              ^{:key contact}
+              [view
+               [contact-view
+                {:contact        contact
+                 :extended?      edit?
+                 :on-press       #(dispatch [:open-chat-with-contact %])
+                 :extend-options (contact-options contact group)}]
+               (when-not (= contact (last contacts))
+                 [common/list-separator])])
+            contacts))]
      (when (< contacts-limit contacts-count)
        [view
         [common/list-separator]

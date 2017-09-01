@@ -1,23 +1,23 @@
 (ns status-im.ui.screens.discover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require
-    [re-frame.core :refer [dispatch subscribe]]
-    [clojure.string :as str]
-    [status-im.components.react :refer [view
-                                        scroll-view
-                                        text
-                                        text-input]]
-    [status-im.components.icons.vector-icons :as vi]
-    [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
-    [status-im.components.toolbar-new.actions :as act]
-    [status-im.components.drawer.view :refer [open-drawer]]
-    [status-im.components.carousel.carousel :refer [carousel]]
-    [status-im.ui.screens.discover.views.popular-list :refer [discover-popular-list]]
-    [status-im.ui.screens.discover.views.discover-list-item :refer [discover-list-item]]
-    [status-im.utils.platform :refer [platform-specific]]
-    [status-im.i18n :refer [label]]
-    [status-im.ui.screens.discover.styles :as st]
-    [status-im.ui.screens.contacts.styles :as contacts-st]))
+   [re-frame.core :refer [dispatch subscribe]]
+   [clojure.string :as str]
+   [status-im.components.react :refer [view
+                                       scroll-view
+                                       text
+                                       text-input]]
+   [status-im.components.icons.vector-icons :as vi]
+   [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
+   [status-im.components.toolbar-new.actions :as act]
+   [status-im.components.drawer.view :as drawer]
+   [status-im.components.carousel.carousel :refer [carousel]]
+   [status-im.ui.screens.discover.views.popular-list :refer [discover-popular-list]]
+   [status-im.ui.screens.discover.views.discover-list-item :refer [discover-list-item]]
+   [status-im.utils.platform :refer [platform-specific]]
+   [status-im.i18n :refer [label]]
+   [status-im.ui.screens.discover.styles :as st]
+   [status-im.ui.screens.contacts.styles :as contacts-st]))
 
 (defn get-hashtags [status]
   (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
@@ -30,7 +30,7 @@
     :search-key         :discover
     :title              (label :t/discover)
     :search-placeholder (label :t/search-tags)
-    :nav-action         (act/hamburger open-drawer)
+    :nav-action         (act/hamburger drawer/open-drawer!)
     :on-search-submit   (fn [text]
                           (when-not (str/blank? text)
                             (let [hashtags (get-hashtags text)]

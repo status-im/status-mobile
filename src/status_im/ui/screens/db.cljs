@@ -27,11 +27,6 @@
              :current-chat-id            console-chat-id
              :loading-allowed            true
              :selected-participants      #{}
-             :my-profile/edit            {:edit?      false
-                                          :name       nil
-                                          :email      nil
-                                          :status     nil
-                                          :photo-path nil}
              :discoveries                {}
              :discover-search-tags       '()
              :tags                       []
@@ -105,7 +100,9 @@
                   :accounts/current-account-id
                   :accounts/recover
                   :accounts/login
-                  :my-profile/edit]
+                  :my-profile/drawer
+                  :my-profile/profile
+                  :my-profile/default-name]
                  :opt-un
                  [::current-public-key
                   ::modal
