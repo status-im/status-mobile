@@ -1,5 +1,5 @@
 (ns status-im.components.drawer.view
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [cljs.spec.alpha :as s]
             [clojure.string :as str]
             [reagent.core :as r]
@@ -30,64 +30,73 @@
             [status-im.utils.money :as money]))
 
 (defonce drawer-atom (atom nil))
-(defn open-drawer [] (.openDrawer @drawer-atom))
-(defn close-drawer [] (.closeDrawer @drawer-atom))
+(defn open-drawer! [] (.openDrawer @drawer-atom))
+(defn close-drawer! [] (.closeDrawer @drawer-atom))
+
+;; the save-event subscription is here because no save action would
+;; be dispatched when the user presses a screen changing zone while
+;; editing the name or status field
+
+(defn save-profile! []
+  (when-let [save-event @(rf/subscribe [:my-profile.drawer/save-event])]
+    (rf/dispatch [save-event])))
+
+(defn navigate-to-profile []
+  (close-drawer!)
+  (save-profile!)
+  (rf/dispatch [:navigate-to :my-profile]))
+
+(defn navigate-to-accounts []
+  (close-drawer!)
+  (save-profile!)
+  (rf/dispatch [:navigate-to :accounts]))
 
 (defview profile-picture []
-  [account [:get-current-account]]
-  [touchable-opacity {:on-press #(rf/dispatch [:navigate-to :my-profile])
-                      :style    st/user-photo-container}
-   [view
-    [ci/chat-icon (:photo-path account) {:size                52
-                                         :accessibility-label :drawer-profile-icon}]]])
+  (letsubs [account [:get-current-account]]
+    [touchable-opacity {:on-press navigate-to-profile
+                        :style    st/user-photo-container}
+     [view
+      [ci/chat-icon (:photo-path account) {:size                52
+                                           :accessibility-label :drawer-profile-icon}]]]))
 
 (defview name-input []
-  [account [:get-current-account]
-   name-text  (r/atom nil)]
-  (let [previous-name (:name account)
-        public-key (:public-key account)
-        placeholder (gfycat/generate-gfy public-key)]
+  (letsubs [profile-name [:my-profile.drawer/get :name]
+            valid-name?  [:my-profile.drawer/valid-name?]
+            placeholder  [:get :my-profile/default-name]]
     [view st/name-input-wrapper
      [text-input
       {:placeholder    placeholder
-       :style          (st/name-input-text (s/valid? ::profile.db/name @name-text))
+       :style          (st/name-input-text valid-name?)
        :font           :medium
-       :default-value  (or @name-text previous-name)
-       :on-change-text #(reset! name-text %)
-       :on-end-editing #(if (s/valid? ::profile.db/name @name-text)
-                          (rf/dispatch [:account-update {:name (utils/clean-text (or @name-text placeholder))}])
-                          (reset! name-text previous-name))}]]))
+       :default-value profile-name
+       :on-focus       #(rf/dispatch [:my-profile.drawer/edit-name])
+       :on-change-text #(rf/dispatch [:my-profile.drawer/update-name %])
+       :on-end-editing #(rf/dispatch [:my-profile.drawer/save-name])}]]))
 
 (defview status-input []
-  [account      [:get-current-account]
-   status-edit? (r/atom false)
-   status-text  (r/atom nil)]
-  (let [placeholder     (i18n/label :t/update-status)
-        previous-status (:status account)]
-    [view st/status-container
-     (if @status-edit?
-       [text-input {:style               st/status-input-view
-                    :multiline           true
-                    :auto-focus          true
-                    :focus               @status-edit?
-                    :max-length          140
-                    :accessibility-label :drawer-status-input
-                    :placeholder         placeholder
-                    :default-value       previous-status
-                    :on-change-text      #(let [new-status (utils/clean-text %)]
-                                            (reset! status-text new-status)
-                                            (when (str/includes? % "\n")
-                                              (reset! status-edit? false)
-                                              (rf/dispatch [:my-profile/update-status new-status])))
-                    :on-blur             #(do (reset! status-edit? false)
-                                              (rf/dispatch [:my-profile/update-status @status-text]))}]
+  (letsubs [edit-status? [:my-profile.drawer/get :edit-status?]
+            status       [:my-profile.drawer/get :status]]
+    (let [placeholder (i18n/label :t/update-status)]
+      [view st/status-container
+       (if edit-status?
+         [text-input {:style               st/status-input-view
+                      :multiline           true
+                      :auto-focus          true
+                      :focus               edit-status?
+                      :max-length          140
+                      :accessibility-label :drawer-status-input
+                      :placeholder         placeholder
+                      :default-value       status
+                      :on-change-text      #(rf/dispatch [:my-profile.drawer/update-status %])
+                      :on-end-editing      #(when edit-status?
+                                              (rf/dispatch [:my-profile.drawer/save-status]))}]
 
-       [status-view/status-view {:style           (st/status-view (str/blank? previous-status))
-                                 :on-press        #(reset! status-edit? true)
-                                 :number-of-lines 3
-                                 :status          (if (str/blank? previous-status)
-                                                    placeholder
-                                                    previous-status)}])]))
+         [status-view/status-view {:style           (st/status-view (str/blank? status))
+                                   :number-of-lines 3
+                                   :status          (if (str/blank? status)
+                                                      placeholder
+                                                      status)
+                                   :on-press        #(rf/dispatch [:my-profile.drawer/edit-status])}])])))
 
 (defview transaction-list-item [{:keys [to value timestamp] :as transaction}]
   [recipient [:contact-by-address to]]
@@ -144,17 +153,13 @@
 (defn options-btn []
   [view {:style st/options-button}
    [touchable-highlight
-    {:on-press (fn []
-                 (close-drawer)
-                 (rf/dispatch [:navigate-to :my-profile]))}
+    {:on-press navigate-to-profile}
     [view [vi/icon :icons/options]]]])
 
 (defn switch-account []
   [view st/switch-account-container
    [touchable-highlight
-    {:on-press (fn []
-                 (close-drawer)
-                 (rf/dispatch [:navigate-to :accounts]))}
+    {:on-press navigate-to-accounts}
     [view
      [text {:style      st/switch-account-text
             :font       (if platform/android? :medium :default)

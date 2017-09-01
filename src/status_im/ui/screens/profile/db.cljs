@@ -6,6 +6,8 @@
             [status-im.constants :as constants]
             [status-im.utils.homoglyph :as homoglyph]))
 
+(def account-profile-keys [:name :photo-path :status])
+
 (defn correct-name? [username]
   (when-let [username (some-> username (string/trim))]
     (every? false?
@@ -24,22 +26,13 @@
   (or (string/starts-with? photo-path "data:image/jpeg;base64,")
       (string/starts-with? photo-path "data:image/png;base64,")))
 
-
-(spec/def :profile/name (spec/nilable correct-name?))
-
-(spec/def ::profile (spec/keys :req-un [:profile/name]))
-
-
-(spec/def ::name (spec/or :name correct-name?
-                          :empty-string string/blank?))
-(spec/def ::email (spec/nilable correct-email?))
-(spec/def ::edit? boolean?)
-(spec/def ::status (spec/nilable string?))
-(spec/def ::photo-path (spec/nilable base64-encoded-image-path?))
-(spec/def ::edit-status? boolean?)
-
+(spec/def :profile/name correct-name?)
+(spec/def :profile/status (spec/nilable string?))
+(spec/def :profile/photo-path (spec/nilable base64-encoded-image-path?))
 
 ;; EDIT PROFILE
-(spec/def :my-profile/edit (allowed-keys
-                             :req-un [::email ::edit? ::name ::status ::photo-path]
-                             :opt-un [::edit-status?]))
+(spec/def :my-profile/default-name string?)
+(spec/def :my-profile/profile (spec/keys :opt-un [::name :profile/status :profile/photo-path
+                                                  ::edit-status? ::valid-name?]))
+(spec/def :my-profile/drawer (spec/keys :opt-un [::name :profile/status
+                                                 ::edit-status? ::valid-name?]))

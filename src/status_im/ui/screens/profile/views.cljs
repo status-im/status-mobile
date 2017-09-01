@@ -24,8 +24,8 @@
   (:require-macros [status-im.utils.views :refer [defview]]))
 
 (defn my-profile-toolbar []
-  [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit])
-                                      :text (label :t/edit)}])]}])
+  [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
+                                              :text (label :t/edit)}])]}])
 
 (defn profile-toolbar [contact]
   [toolbar/toolbar
@@ -172,12 +172,12 @@
 (defn profile-status [status & [edit?]]
   [react/view styles/profile-status-container
    (if (or (nil? status) (string/blank? status))
-     [react/touchable-highlight {:on-press #(dispatch [:my-profile/edit :status])}
+     [react/touchable-highlight {:on-press #(dispatch [:my-profile/edit-profile :edit-status])}
       [react/view
        [react/text {:style styles/add-a-status}
         (label :t/add-a-status)]]]
      [react/scroll-view
-      [react/touchable-highlight {:on-press (when edit? #(dispatch [:my-profile/edit :status]))}
+      [react/touchable-highlight {:on-press (when edit? #(dispatch [:my-profile/edit-profile :edit-status]))}
        [react/view
         [react/text {:style styles/profile-status-text}
          (colorize-status-hashtags status)]]]])])
