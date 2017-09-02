@@ -204,6 +204,7 @@
   (fn [_ [_ event-str]]
     (log/debug :event-str event-str)
     (inst/log (str "Signal event: " event-str))
+    (js/alert (str "Signal event: " event-str))
     (let [{:keys [type event]} (types/json->clj event-str)]
       (case type
         "transaction.queued"      (dispatch [:transaction-queued event])
