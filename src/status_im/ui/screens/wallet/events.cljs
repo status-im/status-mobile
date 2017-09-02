@@ -62,9 +62,9 @@
   (assoc-in db [:wallet :wallet/error] err))
 
 (handlers/register-handler-db
- :wallet/clear-error-message
- (fn [db [_]]
-   (update db :wallet dissoc :wallet/error)))
+  :wallet/clear-error-message
+  (fn [db [_]]
+    (update db :wallet dissoc :wallet/error)))
 
 (handlers/register-handler-db
   :update-balance
@@ -84,6 +84,6 @@
 
 (handlers/register-handler-db
   :update-prices-fail
-  (fn [_ [_ err]]
+  (fn [db [_ err]]
     (log/debug "Unable to get prices: " err)
     (set-error-message db :error)))
