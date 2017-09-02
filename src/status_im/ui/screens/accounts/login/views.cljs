@@ -9,9 +9,7 @@
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.ui.screens.accounts.login.styles :as st]
-            [status-im.components.react :refer [view
-                                                text
-                                                touchable-highlight]]
+            [status-im.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.components.react :as components]))
 
@@ -29,7 +27,7 @@
   (dispatch [:login-account address password]))
 
 (defn- error-key [error]
-  ;; TODO Improved selection logic when status-go provide an error code
+  ;; TODO Improve selection logic when status-go provide an error code
   ;; see https://github.com/status-im/status-go/issues/278
   (cond
     (string/starts-with? error "there is no running node")
@@ -43,13 +41,13 @@
 
 (defview login []
   (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]]
-    [view ast/accounts-container
+    [react/view ast/accounts-container
      [status-bar {:type :transparent}]
      [login-toolbar]
-     [view st/login-view
-      [view st/login-badge-container
+     [react/view st/login-view
+      [react/view st/login-badge-container
        [account-badge address photo-path name]
-       [view {:height 8}]
+       [react/view {:height 8}]
        [text-input-with-label {:ref               #(reset! password-text-input %)
                                :label             (i18n/label :t/password)
                                :auto-capitalize   :none
@@ -61,10 +59,11 @@
                                :auto-focus        true
                                :secure-text-entry true
                                :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]
-      [view {:margin-top 16}
-       [touchable-highlight {:on-press #(login-account password-text-input address password)}
-        [view st/sign-in-button
-         [text {:style st/sign-it-text} (i18n/label :t/sign-in)]]]]]
+      (let [enabled? (pos? (count password))]
+        [react/view {:margin-top 16}
+         [react/touchable-highlight (if enabled? {:on-press #(login-account password-text-input address password)})
+          [react/view st/sign-in-button
+           [react/text {:style (if enabled? st/sign-it-text st/sign-it-disabled-text)} (i18n/label :t/sign-in)]]]])]
      (when processing
-       [view st/processing-view
+       [react/view st/processing-view
         [components/activity-indicator {:animating true}]])]))
