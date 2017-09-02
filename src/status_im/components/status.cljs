@@ -72,7 +72,10 @@
 
 (defn start-node [on-result]
   (when status
-    (call-module #(.startNode status on-result))))
+    (let [on-result' (fn [& args]
+                       (js/alert (str (js->clj args)))
+                       (apply on-result args))]
+      (call-module #(.startNode status on-result')))))
 
 (defn stop-rpc-server []
   (when status
@@ -118,7 +121,10 @@
 
 (defn login [address password on-result]
   (when status
-    (call-module #(.login status address password on-result))))
+    (let [on-result' (fn [& args]
+                       (js/alert (str (js->clj args)))
+                       (apply on-result args))]
+      (call-module #(.login status address password on-result')))))
 
 (defn complete-transactions
   [hashes password callback]
