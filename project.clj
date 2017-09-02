@@ -1,6 +1,5 @@
 (defproject status-im "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :url "https://github.com/status-im/status-react/"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
@@ -11,7 +10,6 @@
                  [com.andrewmcveigh/cljs-time "0.5.0"]
                  [tailrecursion/cljs-priority-map "1.2.0"]
                  [com.taoensso/timbre "4.10.0"]
-                 [com.google.guava/guava "21.0"]
                  [hickory "0.7.1"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.13"]
@@ -23,13 +21,11 @@
                                 ["with-profile" "prod" "cljsbuild" "once" "android"]]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
-  :test-paths ["test/clj"]
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.11"]
                                    [re-frisk-remote "0.4.2"]
                                    [re-frisk-sidecar "0.4.5"]
                                    [com.cemerick/piggieback "0.2.2"]
-                                   [io.appium/java-client "3.4.1"]
                                    [hawk "0.2.11"]]
                     :source-paths ["src" "env/dev"]
                     :cljsbuild    {:builds
