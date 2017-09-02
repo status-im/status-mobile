@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.accounts.login.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.components.styles :as st]))
 
 (defstyle login-view
   {:flex              1
@@ -25,8 +25,12 @@
              :letter-spacing -0.2}
    :android {:font-size 16}})
 
+(def sign-it-disabled-text
+  (merge sign-it-text
+         {:color st/color-gray2}))
+
 (defstyle sign-in-button
-  {:background-color common/color-blue3
+  {:background-color st/color-blue3
    :align-items      :center
    :justify-content  :center
    :height           52
@@ -41,4 +45,4 @@
    :left             0
    :align-items      :center
    :justify-content  :center
-   :background-color (str common/color-black "1A")})
+   :background-color (str st/color-black "1A")})
