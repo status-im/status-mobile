@@ -42,7 +42,8 @@
                                      :compiler     {:output-to     "target/android/app.js"
                                                     :main          "env.android.main"
                                                     :output-dir    "target/android"
-                                                    :optimizations :none}}}}
+                                                    :optimizations :none}
+                                     :warning-handlers [status-im.utils.build/warning-handler]}}}
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
                                    :timeout          240000}}
              :test {:dependencies [[day8.re-frame/test "0.1.5"]]
@@ -73,7 +74,8 @@
                                                  :optimizations      :simple
                                                  :closure-defines    {"goog.DEBUG" false}
                                                  :parallel-build     true
-                                                 :language-in        :ecmascript5}}
+                                                 :language-in        :ecmascript5}
+                                  :warning-handlers [status-im.utils.build/warning-handler]}
                                  :android
                                  {:source-paths ["react-native/src" "src" "env/prod"]
                                   :compiler     {:output-to          "index.android.js"
@@ -84,4 +86,5 @@
                                                  :optimizations      :simple
                                                  :closure-defines    {"goog.DEBUG" false}
                                                  :parallel-build     true
-                                                 :language-in        :ecmascript5}}}}}})
+                                                 :language-in        :ecmascript5}
+                                  :warning-handlers [status-im.utils.build/warning-handler]}}}}})
