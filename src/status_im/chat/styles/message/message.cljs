@@ -83,9 +83,8 @@
   {:width     36
    :alignSelf :flex-start})
 
-(def photo-view {:borderRadius 12})
 (def photo
-  {:borderRadius 12
+  {:borderRadius 18
    :width        36
    :height       36})
 

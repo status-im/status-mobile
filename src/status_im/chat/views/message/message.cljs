@@ -317,7 +317,7 @@
 
 (defview member-photo [from]
   [photo-path [:photo-path from]]
-  [view st/photo-view
+  [view
    [image {:source {:uri (if (str/blank? photo-path)
                            (identicon from)
                            photo-path)}
@@ -326,7 +326,7 @@
 (defview my-photo [from]
   [account [:get-current-account]]
   (let [{:keys [photo-path]} account]
-    [view st/photo-view
+    [view
      [image {:source {:uri (if (str/blank? photo-path)
                              (identicon from)
                              photo-path)}
