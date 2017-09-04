@@ -1,0 +1,13 @@
+--- node_modules/react-native/packager/react-native-xcode.sh	2017-08-30 18:07:25.000000000 +0200
++++ node_modules/react-native/packager/react-native-xcode.sh.new	2017-08-30 18:07:43.000000000 +0200
+@@ -79,8 +79,8 @@
+     IP=$(ifconfig | grep 'inet ' | grep -v 127.0.0.1 | cut -d\   -f2  | awk 'NR==1{print $1}')
+   fi
+   $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+-  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP.xip.io:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
+-  echo "$IP.xip.io" > "$DEST/ip.txt"
++  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
++  echo "$IP" > "$DEST/ip.txt"
+ fi
+ 
+ BUNDLE_FILE="$DEST/main.jsbundle"
