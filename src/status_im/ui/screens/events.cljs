@@ -103,6 +103,11 @@
        (i18n/label :testfairy-title)
        (i18n/label :testfairy-message)))))
 
+(reg-fx
+ ::get-fcm-token-fx
+ (fn []
+   (notifications/get-fcm-token)))
+
 ;;;; Handlers
 
 (register-handler-db
@@ -199,6 +204,11 @@
   :webview-geo-permissions-granted
   (fn [{{:keys [webview-bridge]} :db} _]
     (.geoPermissionsGranted webview-bridge)))
+
+(register-handler-fx
+ :get-fcm-token
+ (fn [_ _]
+   {::get-fcm-token-fx nil}))
 
 (register-handler-fx
   :signal-event

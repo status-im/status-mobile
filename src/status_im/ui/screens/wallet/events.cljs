@@ -3,6 +3,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
+            [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.components.status :as status]
             [status-im.ui.screens.wallet.navigation]

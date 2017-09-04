@@ -9,7 +9,10 @@
             [status-im.ui.screens.views :as views]
             [status-im.components.react :as react]
             [status-im.components.status :as status]
-            [status-im.utils.error-handler :as error-handler]))
+            [status-im.utils.error-handler :as error-handler]
+            [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
+            [status-im.utils.notifications :as notifications]))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
@@ -37,6 +40,11 @@
                        #(when-not (= 0 @keyboard-height)
                           (dispatch [:set :keyboard-height 0])))
          (.hide react/splash-screen))
+       :component-did-mount
+       (fn []
+         (when config/notifications-wip-enabled?
+           (notifications/request-permissions)
+           (notifications/on-refresh-fcm-token)))
        :component-will-unmount
        (fn []
          (.stop react/http-bridge))
