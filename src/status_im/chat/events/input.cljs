@@ -107,6 +107,7 @@
                          [:clear-bot-db]
                          [:set-chat-input-metadata metadata]
                          [:set-chat-ui-props {:show-suggestions?   false
+                                              :show-emoji?         false
                                               :result-box          nil
                                               :validation-messages nil
                                               :prev-command        name}]
