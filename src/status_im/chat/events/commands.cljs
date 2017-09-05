@@ -55,22 +55,24 @@
  ::jail-command-data-response
  [trim-v]
  (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [message-id on-requested]} data-type]]
-   (cond-> {}
-     returned
-     (assoc :db (assoc-in db [:message-data data-type message-id] returned))
-     (and returned
-          (= :preview data-type))
-     (assoc ::update-persisted-message {:message-id message-id
-                                        :preview (prn-str returned)})
-     on-requested
-     (assoc :dispatch (on-requested returned)))))
+   (let [db' (assoc-in db [:message-preview-waiting message-id] false)]
+     (cond-> {}
+
+       returned
+       (assoc :db (assoc-in db' [:message-data data-type message-id] returned))
+       (and returned
+            (= :preview data-type))
+       (assoc ::update-persisted-message {:message-id message-id
+                                          :preview (prn-str returned)})
+       on-requested
+       (assoc :dispatch (on-requested returned))))))
 
 (register-handler-fx
  :request-command-data
  [trim-v]
  (fn [{:keys [db]}
       [{{:keys [command content-command params type]} :content
-        :keys [chat-id jail-id] :as message}
+        :keys [chat-id jail-id message-id] :as message}
        data-type]]
    (let [{:keys [chats]
           :accounts/keys [current-account-id]
@@ -85,8 +87,9 @@
                             data-type]
              to            (get-in contacts [chat-id :address])
              jail-params   {:parameters params
-                            :context (generate-context db chat-id to)}] 
-         {:chat-fx/call-jail {:jail-id jail-id
+                            :context (generate-context db chat-id to)}]
+         {:db (assoc-in db [:message-preview-waiting message-id] true)
+          :chat-fx/call-jail {:jail-id jail-id
                               :path path
                               :params jail-params
                               :callback-events-creator (fn [jail-response]
