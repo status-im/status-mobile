@@ -1,6 +1,8 @@
 (ns status-im.ui.screens.wallet.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
-            [status-im.utils.money :as money]))
+            [clojure.string :as string]
+            [status-im.utils.money :as money]
+            [status-im.utils.datetime :as datetime]))
 
 (reg-sub :balance
   (fn [db]
@@ -54,26 +56,38 @@
   (fn [db]
     (get-in db [:wallet :balance-loading?])))
 
+(reg-sub :wallet/transactions-loading?
+  (fn [db]
+    (get-in db [:wallet :transactions-loading?])))
+
 (reg-sub :wallet/transactions
   (fn [db]
     (get-in db [:wallet :transactions])))
 
+(defn filter-transactions [type transactions]
+  (filter #(= (:type %) type) transactions))
+
 (reg-sub :wallet/unsigned-transactions
   :<- [:wallet/transactions]
   (fn [transactions]
-    (filter #(= (:state %) :unsigned) transactions)))
+    (filter-transactions :unsigned transactions)))
 
-(reg-sub :wallet/pending-transactions
+(defn mini-str-date->keyword [mini-str-date]
+  (keyword (str "sent-" (string/replace mini-str-date #" " "-"))))
+
+(reg-sub :wallet/transactions-history-list
   :<- [:wallet/transactions]
   (fn [transactions]
-    (filter #(= (:state %) :pending) transactions)))
-
-(reg-sub :wallet/postponed-transactions
-  :<- [:wallet/transactions]
-  (fn [transactions]
-    (filter #(= (:state %) :postponed) transactions)))
-
-(reg-sub :wallet/sent-transactions
-  :<- [:wallet/transactions]
-  (fn [transactions]
-    (filter #(= (:state %) :sent) transactions)))
+    (let [{:keys [postponed pending inbound outbound]} (group-by :type transactions)
+          transaction-history-list                     [{:title "Postponed"
+                                                         :key :postponed
+                                                         :data (or postponed [])}
+                                                        {:title "Pending"
+                                                         :key :pending
+                                                         :data (or pending [])}]
+          completed-transactions                       (->> (into inbound outbound)
+                                                            (group-by #(datetime/date->mini-str-date (:timestamp %)))
+                                                            (map (fn [[k v]] {:title k
+                                                                              :key (mini-str-date->keyword k)
+                                                                              :data v})))]
+      (into transaction-history-list (or completed-transactions [])))))

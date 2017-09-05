@@ -47,25 +47,29 @@
    [btn/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
    [btn/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
 
-(defn- unsigned? [state] (= "unsigned" state))
+(defn- unsigned? [type] (= "unsigned" type))
+(defn- inbound? [type] (= "inbound" type))
 
 (defn- transaction-icon [k color] {:icon k :style (history-styles/transaction-icon-background color)})
 
 (defn- transaction-type->icon [s]
   (case s
-    "incoming" (transaction-icon :icons/arrow-left :red)
-    "outgoing" (transaction-icon :icons/arrow-right :red)
+    "inbound" (transaction-icon :icons/arrow-left :red)
+    "outbound" (transaction-icon :icons/arrow-right :red)
     "postponed"  (transaction-icon :icons/arrow-right :red)
     "unsigned" (transaction-icon :icons/dots-horizontal :red)
     "pending" (transaction-icon :icons/dots-horizontal :red)
     (throw (str "Unknown transaction type: " s))))
 
-(defn render-transaction [{:keys [to state] {:keys [value symbol]} :content :as m}]
+(defn render-transaction [{:keys [to from type value symbol] :as m}]
   [list/item
-   [list/item-icon (transaction-type->icon state)]
+   [list/item-icon (transaction-type->icon type)]
    [list/item-content
-    (str value " " symbol) (str (i18n/label :t/to) " " to)
-    (if (unsigned? state)
+    (str value " " symbol)
+    (if to
+      (str (i18n/label :t/to) " " to)
+      (str (i18n/label :t/from) " " from))
+    (when (unsigned? type)
       [action-buttons m])]
    [list/item-icon {:icon :icons/forward}]])
 
@@ -75,22 +79,14 @@
   [rn/text {:style history-styles/empty-text} s])
 
 (defview history-list []
-  (letsubs [pending-transactions   [:wallet/pending-transactions]
-            postponed-transactions [:wallet/postponed-transactions]
-            sent-transactions      [:wallet/sent-transactions]]
+  (letsubs [transactions-history-list [:wallet/transactions-history-list]
+            transactions-loading?      [:wallet/transactions-loading?]]
     [rn/scroll-view
-     [list/section-list {:sections        [{:title "Postponed"
-                                            :key :postponed
-                                            :data postponed-transactions}
-                                           {:title "Pending"
-                                            :key :pending
-                                            :data pending-transactions}
-                                           ;; TODO(yenda) :sent transactions shouldbe grouped by day and have their :key / :title adapted
-                                           {:title "01 Sep"
-                                            :key :sent-sep
-                                            :data sent-transactions}]
+     [list/section-list {:sections        transactions-history-list
                          :render-fn       render-transaction
-                         :empty-component (empty-text (i18n/label :t/transactions-history-empty))}]]))
+                         :empty-component (empty-text (i18n/label :t/transactions-history-empty))
+                         :on-refresh      #(rf/dispatch [:refresh-transactions])
+                         :refreshing      transactions-loading?}]]))
 
 (defview unsigned-list [transactions]
   []
@@ -187,12 +183,12 @@
      [rn/swiper (merge tst/swiper
                        {:index (get-tab-index tabs @view-id)
                         :loop  false})
-      ;:ref                    #(reset! swiper %)
-      ;:on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)
+                                        ;:ref                    #(reset! swiper %)
+                                        ;:on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)
 
       (doall
-        (map-indexed (fn [index {screen :screen}]
-                       (with-meta screen {:key index} )) tabs))]]))
+       (map-indexed (fn [index {screen :screen}]
+                      (with-meta screen {:key index} )) tabs))]]))
 
 ;; TODO(yenda) must reflect selected wallet
 

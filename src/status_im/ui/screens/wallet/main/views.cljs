@@ -128,12 +128,12 @@
        :refreshing               (or prices-loading? balance-loading?)}]]))
 
 (defview wallet []
-  (letsubs [eth-balance [:eth-balance]
-            portfolio-value [:portfolio-value]
+  (letsubs [eth-balance      [:eth-balance]
+            portfolio-value  [:portfolio-value]
             portfolio-change [:portfolio-change]
-            prices-loading?    [:prices-loading?]
-            balance-loading?   [:wallet/balance-loading?]
-            error-message [:wallet/error-message]]
+            prices-loading?  [:prices-loading?]
+            balance-loading? [:wallet/balance-loading?]
+            error-message    [:wallet/error-message]]
     [rn/view {:style wallet-styles/wallet-container}
      [toolbar-view]
      [rn/scroll-view

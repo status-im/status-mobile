@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame :refer [dispatch reg-fx]]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.prices :as prices]
+            [status-im.utils.transactions :as transactions]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.components.status :as status]
             [taoensso.timbre :as log]))
@@ -29,6 +30,14 @@
       :on-error       #(dispatch [error-event %])})))
 
 (reg-fx
+  :get-transactions
+  (fn [{:keys [network account-id]}]
+    (transactions/get-transactions network
+                                   account-id
+                                   #(dispatch [:update-transactions-succes %])
+                                   #(dispatch [:update-transactions-fail %]))))
+
+(reg-fx
   :get-prices
   (fn [{:keys [from to success-event error-event]}]
     (prices/get-prices
@@ -51,15 +60,13 @@
 
 (handlers/register-handler-fx
   :refresh-wallet
-  (fn [{{:keys [web3 accounts/current-account-id] :as db} :db} [_ a]]
+  (fn [{{:keys [web3 accounts/current-account-id network] :as db} :db} [_ a]]
     {:get-balance {:web3          web3
                    :account-id    current-account-id
                    :success-event :update-balance
                    :error-event   :update-balance-fail}
      :dispatch    [:load-prices]
-     :db          (-> db
-                      (assoc-in [:wallet :transactions] wallet.db/dummy-transaction-data)
-                      (assoc-in [:wallet :balance-loading?] true))}))
+     :db          (assoc-in db [:wallet :balance-loading?] true)}))
 
 (defn assoc-error-message [db err]
   (assoc-in db [:wallet :wallet/error] err))
@@ -68,6 +75,27 @@
   :wallet/clear-error-message
   (fn [db [_]]
     (update db :wallet dissoc :wallet/error)))
+
+(handlers/register-handler-fx
+  :refresh-transactions
+  (fn [{{:keys [accounts/current-account-id network] :as db} :db} _]
+    {:get-transactions {:account-id current-account-id
+                        :network network}
+     :db               (assoc-in db [:wallet :transactions-loading?] true)}))
+
+(handlers/register-handler-db
+  :update-transactions-succes
+  (fn [db [_ transactions]]
+    (-> db
+        (assoc-in [:wallet :transactions] transactions)
+        (assoc-in [:wallet :transactions-loading?] false))))
+
+(handlers/register-handler-db
+  :update-transactions-fail
+  (fn [db [_ err]]
+    (log/debug "Unable to get transactions: " err)
+    (-> (assoc-error-message db :error)
+        (assoc-in [:wallet :transactions-loading?] false))))
 
 (handlers/register-handler-db
   :update-balance
