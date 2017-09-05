@@ -20,7 +20,10 @@
                                          :color     "#2f3031"}
                            :transaction {:height    20
                                          :bar-style "light-content"
-                                         :color     styles/color-transparent}}
+                                         :color     styles/color-transparent}
+                           :wallet      {:height    20
+                                         :bar-style "light-content"
+                                         :color     styles/color-blue5}}
    :sized-text            {:margin-top        -5
                            :additional-height 5}
    :actions-list-view     {:border-bottom-color styles/color-gray3

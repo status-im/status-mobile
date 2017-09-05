@@ -90,8 +90,8 @@
    :padding-horizontal 16})
 
 (defstyle item
-  {:ios {:margin-horizontal 12
-         :margin-vertical   16}
+  {:ios     {:margin-horizontal 12
+             :margin-vertical   16}
    :android {:margin 16}})
 
 (def item-text
