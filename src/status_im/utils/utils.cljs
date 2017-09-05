@@ -1,7 +1,6 @@
 (ns status-im.utils.utils
   (:require [status-im.constants :as const]
-            [status-im.i18n :refer [label]]
-            [reagent.core :as r]
+            [status-im.i18n :as i18n]
             [clojure.string :as str]
             [taoensso.timbre :as log]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
@@ -22,7 +21,7 @@
            content
            ;; Styles are only relevant on iOS. On Android first button is 'neutral' and second is 'positive'
            (clj->js
-            (vector (merge {:text (label :t/cancel) :style "cancel"}
+            (vector (merge {:text (i18n/label :t/cancel) :style "cancel"}
                            (when on-cancel {:onPress on-cancel}))
                     {:text (or s "OK") :onPress on-accept :style "destructive"})))))
 
@@ -115,17 +114,3 @@
   (if (contains? m k)
     (apply update m k f args)
     m))
-
-(defn default-alert-handler
-  [error fatal?]
-  (show-popup "Error" (.-message error)))
-
-(defn register-exception-handler
-  "Register a function that will be called for each exception thrown.
-   When `dev?` is true, always register; otherwise only register when goog.DEBUG is false.
-   Default function shows error details in an alert box."
-  ([] (register-exception-handler default-alert-handler))
-  ([f] (register-exception-handler true f))
-  ([dev? f]
-   (if (and dev? (not js/goog.DEBUG))
-     (.setGlobalHandler js/ErrorUtils f dev?))))
