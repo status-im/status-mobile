@@ -3,7 +3,7 @@
     status-im.ui.screens.accounts.recover.navigation
 
     [re-frame.core :refer [reg-fx inject-cofx dispatch]]
-    [status-im.components.status :as status]
+    [status-im.native-module.core :as status]
     [status-im.utils.types :refer [json->clj]]
     [status-im.utils.identicon :refer [identicon]]
     [taoensso.timbre :as log]

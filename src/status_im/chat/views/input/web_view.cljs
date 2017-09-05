@@ -4,7 +4,7 @@
             [re-frame.core :refer [dispatch]]
             [status-im.components.webview-bridge :refer [webview-bridge]]
             [status-im.components.react :refer [view text] :as components]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [status-im.i18n :refer [label]]
             [status-im.utils.js-resources :as js-res]
             [clojure.string :as str]

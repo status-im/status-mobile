@@ -6,7 +6,7 @@
             [status-im.utils.handlers :as u]
             [status-im.utils.types :as t]
             [status-im.utils.hex :refer [valid-hex? normalize-hex]]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [clojure.string :as s]
             [taoensso.timbre :as log]))
 

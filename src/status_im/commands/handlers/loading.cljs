@@ -5,7 +5,7 @@
             [clojure.string :as s]
             [status-im.data-store.commands :as commands]
             [status-im.data-store.contacts :as contacts]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [reg-handler]]
             [status-im.constants :refer [console-chat-id wallet-chat-id]]

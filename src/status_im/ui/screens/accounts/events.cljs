@@ -7,7 +7,7 @@
     [re-frame.core :refer [reg-cofx reg-fx dispatch inject-cofx]]
     [taoensso.timbre :as log]
     [status-im.protocol.core :as protocol]
-    [status-im.components.status :as status]
+    [status-im.native-module.core :as status]
     [status-im.utils.types :refer [json->clj]]
     [status-im.utils.identicon :refer [identicon]]
     [status-im.utils.random :as random]
@@ -56,8 +56,7 @@
     (log/debug "account-created")
     (when-not (str/blank? public-key)
       (dispatch [:show-mnemonic mnemonic phrase])
-      (dispatch [:add-account account])
-      (dispatch [:login-account address password true]))))
+      (dispatch [:add-account account password]))))
 
 (reg-fx
   ::create-account
@@ -97,10 +96,11 @@
 
 (register-handler-fx
   :add-account
-  (fn [{{:keys [network] :as db} :db} [_ {:keys [address] :as account}]]
+  (fn [{{:keys [network] :as db} :db} [_ {:keys [address] :as account} password]]
     (let [account' (assoc account :network network)]
-      {:db            (assoc-in db [:accounts/accounts address] account')
-       ::save-account account'})))
+      {:db             (assoc-in db [:accounts/accounts address] account')
+       ::save-account  account'
+       :dispatch-later [{:ms 400 :dispatch [:login-account address password true]}]})))
 
 (register-handler-fx
   :create-account
