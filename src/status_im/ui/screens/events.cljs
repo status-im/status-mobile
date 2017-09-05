@@ -166,6 +166,7 @@
                   [:remove-old-discoveries!]
                   [:set :accounts/creating-account? false]
                   [:refresh-wallet]
+                  [:refresh-transactions]
                   [:get-fcm-token]]}))
 
 (register-handler-fx
@@ -273,4 +274,3 @@
  (fn [_ _]
    (notifications/get-fcm-token)
    {}))
-
