@@ -24,7 +24,7 @@
             [status-im.handlers.server :as server]
             [status-im.utils.phone-number :refer [format-phone-number
                                                   valid-mobile-number?]]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [status-im.utils.types :refer [json->clj]]
             [status-im.chat.utils :refer [console? not-console? safe-trim]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]

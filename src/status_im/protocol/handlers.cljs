@@ -16,7 +16,7 @@
             [status-im.utils.datetime :as dt]
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.constants :as c]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [clojure.string :refer [join]]
             [status-im.utils.scheduler :as s]
             [status-im.utils.web3-provider :as w3]

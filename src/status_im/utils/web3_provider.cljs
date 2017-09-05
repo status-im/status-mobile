@@ -1,6 +1,6 @@
 (ns status-im.utils.web3-provider
   (:require [taoensso.timbre :as log]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [status-im.js-dependencies :as dependencies]))
 
 (defn get-provider [rpc-url]

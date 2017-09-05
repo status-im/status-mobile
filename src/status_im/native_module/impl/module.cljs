@@ -1,4 +1,4 @@
-(ns status-im.components.status
+(ns status-im.native-module.impl.module
   (:require-macros
     [cljs.core.async.macros :refer [go-loop go]])
   (:require [status-im.components.react :as r]
@@ -9,10 +9,9 @@
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.platform :as p]
             [status-im.utils.scheduler :as scheduler]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
-
-(defn cljs->json [data]
-  (.stringify js/JSON (clj->js data)))
+            [status-im.utils.types :as types]
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.native-module.module :as module]))
 
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
@@ -52,8 +51,11 @@
     (.-Status (.-NativeModules rn-dependencies/react-native))))
 
 (defn init-jail []
-  (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
-    (.initJail status init-js #(log/debug "jail initialized"))))
+  (when status
+    (call-module
+      (fn []
+        (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
+            (.initJail status init-js #(log/debug "jail initialized")))))))
 
 (defonce listener-initialized (atom false))
 
@@ -124,7 +126,7 @@
   [hashes password callback]
   (log/debug :complete-transactions (boolean status) hashes)
   (when status
-    (call-module #(.completeTransactions status (cljs->json hashes) password callback))))
+    (call-module #(.completeTransactions status (types/clj->json hashes) password callback))))
 
 (defn discard-transaction
   [id]
@@ -154,7 +156,7 @@
                            (doseq [{:keys [type message]} messages]
                              (log/debug (str "VM console(" type ") - " message)))
                            (callback r')))]
-           (.callJail status jail-id (cljs->json path) (cljs->json params') cb))))))
+           (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 
 (defn call-function!
   [{:keys [chat-id function callback] :as opts}]
@@ -175,9 +177,50 @@
     (call-module #(.clearCookies status))
     (call-module #(.clearStorageAPIs status))))
 
-(def adjust-resize 16)
-(def adjust-pan 32)
-
 (defn call-web3 [host payload callback]
   (when status
     (call-module #(.sendWeb3Request status host payload callback))))
+
+(defrecord ReactNativeStatus []
+  module/IReactNativeStatus
+  ;; status-go calls
+  (-init-jail [this]
+    (init-jail))
+  (-start-node [this callback]
+    (start-node callback))
+  (-stop-rpc-server [this]
+    (stop-rpc-server))
+  (-start-rpc-server [this]
+    (start-rpc-server))
+  (-restart-rpc [this]
+    (restart-rpc))
+  (-create-account [this password callback]
+    (create-account password callback))
+  (-recover-account [this passphrase password callback]
+    (recover-account passphrase password callback))
+  (-login [this address password callback]
+    (login address password callback))
+  (-complete-transactions [this hashes password callback]
+    (complete-transactions hashes password callback))
+  (-discard-transaction [this id]
+    (discard-transaction id))
+  (-parse-jail [this chat-id file callback]
+    (parse-jail chat-id file callback))
+  (-call-jail [this params]
+    (call-jail params))
+  (-call-function! [this params]
+    (call-function! params))
+  (-call-web3 [this host payload callback]
+    (call-web3 host payload callback))
+
+  ;; other calls
+  (-move-to-internal-storage [this callback]
+    (move-to-internal-storage callback))
+  (-set-soft-input-mode [this mode]
+    (set-soft-input-mode mode))
+  (-clear-web-data [this]
+    (clear-web-data))
+  (-module-initialized! [this]
+    (module-initialized!))
+  (-should-move-to-internal-storage? [this callback]
+    (should-move-to-internal-storage? callback)))

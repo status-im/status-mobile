@@ -1,6 +1,6 @@
 (ns status-im.bots.handlers
   (:require [re-frame.core :as re-frame]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [status-im.utils.handlers :as u]))
 
 (defn chats-with-bot [chats bot]

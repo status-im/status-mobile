@@ -7,7 +7,7 @@
             [status-im.chat.models.input :as input-model]
             [status-im.chat.models.suggestions :as suggestions]
             [status-im.components.react :as react-comp]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
             [status-im.utils.random :as random]

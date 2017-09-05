@@ -1,7 +1,7 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as str]
             [status-im.components.react :as rc]
-            [status-im.components.status :as status]
+            [status-im.native-module.core :as status]
             [status-im.chat.constants :as const]
             [status-im.chat.views.input.validation-messages :refer [validation-message]]
             [status-im.i18n :as i18n]

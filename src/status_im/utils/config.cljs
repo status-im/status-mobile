@@ -12,3 +12,5 @@
 (def testfairy-enabled? (enabled? (get-config :TESTFAIRY_ENABLED)))
 (def wallet-wip-enabled? (enabled? (get-config :WALLET_WIP_ENABLED 0)))
 (def notifications-wip-enabled? (enabled? (get-config :NOTIFICATIONS_WIP_ENABLED 0)))
+(def stub-status-go? (enabled? (get-config :STUB_STATUS_GO 0)))
+

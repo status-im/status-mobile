@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [after dispatch]]
             [status-im.utils.handlers :refer [register-handler] :as u]
             [status-im.components.react :refer [http-bridge]]
-            [status-im.components.status :refer [cljs->json]]
+            [status-im.utils.types :refer [clj->json]]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.accounts :as accounts]
             [taoensso.timbre :as log]
@@ -14,7 +14,7 @@
   (.respond http-bridge
             200
             "application/json"
-            (cljs->json data)))
+            (clj->json data)))
 
 (register-handler :init-debug-mode
   (u/side-effect!
