@@ -26,7 +26,7 @@ status.defineSubscription(
 );
 
 function getFeeExplanation(n) {
-    return I18n.t('send_explanation') + I18n.t('send_explanation_' + (n + 2));
+    return I18n.t('send_explanation') + I18n.t('send_explanation_' + n);
 }
 
 status.defineSubscription(
@@ -182,8 +182,8 @@ function amountParameterBox(params, context) {
                     ),
                     status.components.slider(
                         {
-                            maximumValue: 2,
-                            minimumValue: -2,
+                            maximumValue: 4,
+                            minimumValue: 0,
                             onSlidingComplete: status.components.dispatch(
                                 [status.events.UPDATE_DB, "sliderValue"]
                             ),
