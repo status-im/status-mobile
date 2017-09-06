@@ -19,13 +19,13 @@
   (utils/show-popup "TODO" "Not implemented yet!"))
 
 (defn toolbar-view []
-  [toolbar/toolbar2 {:style send.styles/toolbar}
+  [toolbar/toolbar2 {:style        send.styles/toolbar
+                     :no-sync-bar? true}
    [toolbar/nav-button (act/close-white act/default-handler)]
-   [toolbar/content-title {:color :white} (i18n/label :t/wallet-send-transaction)
-    {:color styles/color-light-blue} (i18n/label :t/wallet-send-step-one)]
+   [toolbar/content-title {:color :white} (i18n/label :t/wallet-choose-recipient)]
    [toolbar/actions [{:icon      :icons/flash-active
                       :icon-opts {:color :white}
-                      :handler   show-not-implemented!}]]])
+                      :handler show-not-implemented!}]]])
 
 (defn recipient-buttons []
   [react/view {:style send.styles/recipient-buttons}
@@ -33,9 +33,9 @@
     [react/view {:style send.styles/recipient-button}
      [react/text {:style send.styles/recipient-button-text}
       (i18n/label :t/wallet-choose-from-contacts)]
-     [vector-icons/icon :icons/contacts {:color           :white
-                                         :container-style send.styles/recipient-icon}]]]
-   [react/touchable-highlight {:style (send.styles/recipient-touchable true)
+     [vector-icons/icon :icons/qr {:color           :white
+                                   :container-style send.styles/recipient-icon}]]]
+   [react/touchable-highlight {:style    (send.styles/recipient-touchable true)
                                :on-press #(react/get-from-clipboard
                                            (fn [clipboard]
                                              (re-frame/dispatch [:choose-recipient clipboard])))}
@@ -44,33 +44,46 @@
       (i18n/label :t/wallet-address-from-clipboard)]
      [vector-icons/icon :icons/copy-from {:color           :white
                                           :container-style send.styles/recipient-icon}]]]
-   [react/touchable-highlight {:style (send.styles/recipient-touchable false)}
+   [react/touchable-highlight {:style send.styles/recipient-touchable-disabled}
     [react/view {:style send.styles/recipient-button}
-     [react/text {:style send.styles/recipient-button-text}
+     [react/text {:style send.styles/recipient-button-text-disabled}
       (i18n/label :t/wallet-browse-photos)]
      [vector-icons/icon :icons/browse {:color           :white
-                                       :container-style send.styles/recipient-icon}]]]])
+                                       :container-style send.styles/recipient-icon-disabled}]]]])
+
+(defn viewfinder [{:keys [height width]}]
+  (let [min-dimension (min height width)]
+    [react/view {:style send.styles/viewfinder-port}
+     [react/view {:style (send.styles/viewfinder-translucent height width :top)}]
+     [react/view {:style (send.styles/viewfinder-translucent height width :right)}]
+     [react/view {:style (send.styles/viewfinder-translucent height width :bottom)}]
+     [react/view {:style (send.styles/viewfinder-translucent height width :left)}]
+     [react/image {:source {:uri :corner_left_top}
+                   :style  (send.styles/corner-left-top min-dimension)}]
+     [react/image {:source {:uri :corner_right_top}
+                   :style  (send.styles/corner-right-top min-dimension)}]
+     [react/image {:source {:uri :corner_left_bottom}
+                   :style  (send.styles/corner-left-bottom min-dimension)}]
+     [react/image {:source  {:uri :corner_right_bottom}
+                   :style (send.styles/corner-right-bottom min-dimension)}]]))
 
 (defview send-transaction []
   (letsubs [camera-dimensions [:camera-dimensions]]
     [react/view {:style send.styles/wallet-container}
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view]
-     [react/view {:style send.styles/choose-recipient-container}
-      [react/text {:style send.styles/choose-recipient-label} (i18n/label :t/wallet-choose-recipient)]]
-            [react/view {:style     send.styles/qr-container
-                         :on-layout #(let [layout (.. % -nativeEvent -layout)]
-                                    (re-frame/dispatch [:set-in [:wallet :camera-dimensions]
-                                                        {:width  (.-width layout)
-                                                         :height (.-height layout)}]))}
-             [camera/camera {:style         send.styles/preview
-                             :aspect        :fill
-                             :captureAudio  false
-                             :onBarCodeRead (fn [code]
-                                              (let [data (-> code
-                                                             .-data
-                                                             (str/replace #"ethereum:" ""))]
-                                                (re-frame/dispatch [:choose-recipient data])))}]
-             [react/view {:style (send.styles/outer-bezel camera-dimensions)}]
-             [react/view {:style (send.styles/inner-bezel camera-dimensions)}]]
+     [react/view {:style     send.styles/qr-container
+                  :on-layout #(let [layout (.. % -nativeEvent -layout)]
+                                (re-frame/dispatch [:set-in [:wallet :camera-dimensions]
+                                                    {:width  (.-width layout)
+                                                     :height (.-height layout)}]))}
+      [camera/camera {:style         send.styles/preview
+                      :aspect        :fill
+                      :captureAudio  false
+                      :onBarCodeRead (fn [code]
+                                       (let [data (-> code
+                                                      .-data
+                                                      (str/replace #"ethereum:" ""))]
+                                         (re-frame/dispatch [:choose-recipient data])))}]
+      [viewfinder camera-dimensions]]
      [recipient-buttons]]))
