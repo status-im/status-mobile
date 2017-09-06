@@ -40,14 +40,13 @@ class BaseElement(object):
             .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
 
     def scroll_to_element(self):
-        for x in range(10):
-            action = TouchAction(self.driver)
-            action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
+        for _ in range(5):
             try:
                 self.find_element()
                 break
             except NoSuchElementException:
-                pass
+                action = TouchAction(self.driver)
+                action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
 
 
 class BaseEditBox(BaseElement):
