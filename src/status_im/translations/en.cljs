@@ -373,4 +373,13 @@
    :transactions-filter-title             "Filter History"
    :transactions-filter-tokens            "Tokens"
    :transactions-filter-type              "Type"
-   :transactions-filter-select-all        "Select all"})
+   :transactions-filter-select-all        "Select all"
+   ;; Wallet Send
+   :wallet-send-transaction               "Send Transaction"
+   :wallet-send-step-one                  "Step 1 of 3"
+   :wallet-choose-recipient               "Choose Recipient"
+   :wallet-choose-from-contacts           "Choose From Contacts"
+   :wallet-address-from-clipboard         "Use Address From Clipboard"
+   :wallet-browse-photos                  "Browse Photos"
+
+   })

@@ -30,6 +30,11 @@
    :android    {:padding-left 18}
    :ios        {:align-items  :center}})
 
+(def toolbar-title-container
+  {:flex           1
+   :flex-direction :column
+   :margin-left    6})
+
 (defstyle toolbar-title-text
   {:color          styles/text1-color
    :letter-spacing -0.2
@@ -101,4 +106,3 @@
 (def toolbar-text-action-disabled {:color styles/color-gray7})
 
 (def item-text-white-background {:color styles/color-blue4})
-
