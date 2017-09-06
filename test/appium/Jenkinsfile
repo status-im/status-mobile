@@ -1,8 +1,8 @@
-node {sauce('6269510b-13f3-4019-b156-c2c835f3a408') {
-            try {sh '/usr/local/bin/python3 -m pytest -m sanity -v --dist=loadscope -n3 --build ${JOB_NAME}__${BUILD_NUMBER}'
+node {sauce('b9aded57-5cc1-4f6b-b5ea-42d989987852') {
+            try {sh 'cd test/appium/tests && /usr/local/bin/python3 -m pytest -m sanity --build ${JOB_NAME}__${BUILD_NUMBER} -v --dist=loadscope -n3'
             }
             finally {
                 saucePublisher()
-                junit testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']], testResults: '*.xml' }
+                junit testDataPublishers: [[$class: 'SauceOnDemandReportPublisher', jobVisibility: 'public']], testResults: 'test/appium/tests/*.xml' }
             }
 }
