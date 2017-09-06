@@ -81,13 +81,19 @@
             (concat
               [svg (merge default-viewbox style)]
               (icon-fn
-                (case color
-                  :dark st/icon-dark-color
-                  :gray st/icon-gray-color
-                  :blue st/color-light-blue
-                  :active st/color-blue4
-                  :white st/color-white
-                  :red st/icon-red-color
+                (cond
+                  (keyword? color)
+                  (case color
+                    :dark st/icon-dark-color
+                    :gray st/icon-gray-color
+                    :blue st/color-light-blue
+                    :active st/color-blue4
+                    :white st/color-white
+                    :red st/icon-red-color
+                    st/icon-dark-color)
+                  (string? color)
+                  color
+                  :else
                   st/icon-dark-color))))
       (throw (js/Error. (str "Unknown icon: " name))))]))
 

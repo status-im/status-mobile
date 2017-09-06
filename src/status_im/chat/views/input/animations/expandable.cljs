@@ -1,5 +1,5 @@
 (ns status-im.chat.views.input.animations.expandable
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as r]
             [reagent.impl.component :as rc]
             [re-frame.core :refer [dispatch subscribe]]
@@ -45,12 +45,12 @@
                                    :tension  60}))))))
 
 (defview overlay-view []
-  [max-height     (subscribe [:get-max-container-area-height])
-   layout-height  (subscribe [:get :layout-height])
-   view-height-to (subscribe [:get :expandable-view-height-to-value])]
-  (let [related-height (/ @view-height-to @max-height)]
-    (when (> related-height 0.6)
-      [animated-view {:style (style/result-box-overlay @layout-height (- related-height (/ 0.4 related-height)))}])))
+  (letsubs [max-height     [:get-max-container-area-height]
+            layout-height  [:get :layout-height]
+            view-height-to [:get :expandable-view-height-to-value]]
+    (let [related-height (/ view-height-to max-height)]
+      (when (> related-height 0.6)
+        [animated-view {:style (style/result-box-overlay layout-height (- related-height (/ 0.4 related-height)))}]))))
 
 (defn expandable-view [{:keys [key height hide-overlay?]} & _]
   (let [anim-value         (anim/create-value 0)

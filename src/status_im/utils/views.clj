@@ -4,7 +4,7 @@
 (defn atom? [sub]
   (or (vector? sub)
       (and (seq sub)
-           (#{'atom `reagent.core/atom} (first sub)))))
+           (#{`reagent.core/atom} (first sub)))))
 
 (defn walk-sub [sub form->sym]
   (if (coll? sub)

@@ -4,7 +4,7 @@
             [status-im.utils.platform :refer [android?]]
             [status-im.components.react :refer [view modal]]
             [status-im.components.styles :as common-styles]
-            [status-im.components.main-tabs :refer [main-tabs]]
+            [status-im.ui.screens.main-tabs.views :refer [main-tabs]]
             [status-im.components.context-menu :refer [menu-context]]
 
             [status-im.ui.screens.accounts.login.views :refer [login]]
@@ -60,12 +60,10 @@
     (when view-id
       (let [current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
-                          :wallet main-tabs
+                          (:wallet :chat-list :discover :contact-list) main-tabs
                           :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
-                          :discover main-tabs
                           :discover-search-results discover-search-results
-                          :chat-list main-tabs
                           :new-chat new-chat
                           :new-group new-group
                           :edit-contact-group edit-contact-group
@@ -75,7 +73,6 @@
                           :edit-group-contact-list edit-contact-group-contact-list
                           :edit-chat-group-contact-list edit-chat-group-contact-list
                           :new-public-chat new-public-chat
-                          :contact-list main-tabs
                           :contact-toggle-list contact-toggle-list
                           :group-contacts contact-list
                           :reorder-groups reorder-groups
