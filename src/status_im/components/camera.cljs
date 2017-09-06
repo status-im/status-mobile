@@ -13,6 +13,10 @@
 
 (def aspects (constants "Aspect"))
 (def capture-targets (constants "CaptureTarget"))
+(def torch-modes (constants "TorchMode"))
+
+(defn set-torch [state]
+  (set! (.-torchMode default-camera) state))
 
 (defn request-access [callback]
   (if platform/android?
