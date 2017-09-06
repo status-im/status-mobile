@@ -48,10 +48,13 @@
 (defn content-title
   ([title] (content-title nil title))
   ([title-style title]
-   [content-wrapper
+   (content-title title-style title nil nil))
+  ([title-style title subtitle-style subtitle]
+   [rn/view {:style tst/toolbar-title-container}
     [rn/text {:style (merge tst/toolbar-title-text title-style)
               :font  :toolbar-title}
-     title]]))
+     title]
+    (when subtitle [rn/text {:style subtitle-style} subtitle])]))
 
 ;; Actions
 

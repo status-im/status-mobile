@@ -12,7 +12,9 @@
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
+            [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
+            [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.main.styles :as wallet.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]))
 
@@ -69,9 +71,13 @@
      [change-display change]]
     [btn/buttons {:style wallet.styles/buttons :button-text-style wallet.styles/main-button-text}
      [{:text      (i18n/label :t/wallet-send)
-       :on-press  show-not-implemented!}
-      {:text      (i18n/label :t/wallet-request)
-       :on-press  show-not-implemented!}
+       :on-press  #(do (rf/dispatch [:navigate-to :wallet-send-transaction])
+                       (when platform/android?
+                           (rf/dispatch [:request-permissions [:camera]])))
+       :disabled? (not config/wallet-wip-enabled?)}
+      {:text     (i18n/label :t/wallet-request)
+       :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
+       :disabled? (not config/wallet-wip-enabled?)}
       {:text      (i18n/label :t/wallet-exchange)
        :disabled? true}]]]])
 

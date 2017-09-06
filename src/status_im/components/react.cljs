@@ -155,6 +155,11 @@
 (defn copy-to-clipboard [text]
   (.setString (.-Clipboard rn-dependencies/react-native) text))
 
+(defn get-from-clipboard [clbk]
+  (let [clipboard-contents (.getString (.-Clipboard rn-dependencies/react-native))]
+    (.then clipboard-contents #(clbk %))))
+
+
 ;; Emoji
 
 (def emoji-picker-class rn-dependencies/emoji-picker)
