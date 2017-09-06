@@ -4,6 +4,10 @@
 ;; (angusiguess) If we add more error types we can treat them as 'one-of' the following
 (spec/def :wallet/error #{:error})
 
+(spec/def :wallet.send/recipient string?)
+
+(spec/def :wallet/send (spec/keys :req-un [:wallet.send/recipient]))
+
 (spec/def :wallet/wallet (spec/keys :opt [:wallet/error]))
 
 ;; Placeholder namespace for wallet specs, which are a WIP depending on data
