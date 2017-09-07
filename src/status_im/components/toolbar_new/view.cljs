@@ -51,8 +51,10 @@
 
 ;; Actions
 
-(defn text-action [handler title]
-  [rn/text {:style (merge tst/item tst/item-text) :on-press handler}
+(defn text-action [{:keys [style handler disabled?]} title]
+  [rn/text {:style    (merge tst/item tst/item-text style
+                             (when disabled? tst/toolbar-text-action-disabled))
+            :on-press (when-not disabled? handler)}
    title])
 
 (def blank-action [rn/view {:style (merge tst/item tst/toolbar-action)}])
@@ -88,7 +90,7 @@
 (defn toolbar2
   ([title] (toolbar2 nil title))
   ([props title] (toolbar2 props default-nav-back [content-title title]))
-  ([props nav-item content-item] (toolbar2 props nav-item content-item nil))
+  ([props nav-item content-item] (toolbar2 props nav-item content-item [actions [{:image :blank}]]))
   ([{:keys [background-color
             hide-border?
             style

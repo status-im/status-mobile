@@ -49,8 +49,7 @@
 (defn toolbar-edit []
   [toolbar/toolbar2 {}
    [toolbar/nav-button (act/back #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] false]))]
-   [toolbar/content-title (i18n/label :t/edit-chats)]
-   [toolbar/actions [{:image :blank}]]])
+   [toolbar/content-title (i18n/label :t/edit-chats)]])
 
 (defview toolbar-search []
   (letsubs [search-text [:get-in [:toolbar-search :text]]]

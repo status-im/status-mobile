@@ -40,8 +40,7 @@
 (defn toolbar-edit []
   [toolbar/toolbar2 {}
    [toolbar/nav-button (act/back #(dispatch [:set-in [:contacts/ui-props :edit?] false]))]
-   [toolbar/content-title (label :t/edit-contacts)]
-   [toolbar/actions [{:image :blank}]]])
+   [toolbar/content-title (label :t/edit-contacts)]])
 
 (defn contact-options [{:keys [unremovable?] :as contact} group]
   (let [delete-contact-opt {:value        #(u/show-confirmation
