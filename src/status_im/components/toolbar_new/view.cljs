@@ -29,7 +29,7 @@
   ([text] (nav-text text nil))
   ([text handler] (nav-text nil text handler))
   ([props text handler]
-   [rn/text (merge {:style tst/item-text :on-press (or handler #(rf/dispatch [:navigate-back]))})
+   [rn/text (merge {:style (merge tst/item tst/item-text) :on-press (or handler #(rf/dispatch [:navigate-back]))})
     text]))
 
 (defn nav-clear-text
@@ -52,14 +52,14 @@
 ;; Actions
 
 (defn text-action [handler title]
-  [rn/text {:style tst/toolbar-text-action :on-press handler}
+  [rn/text {:style (merge tst/item tst/item-text) :on-press handler}
    title])
 
-(def blank-action [rn/view tst/toolbar-action])
+(def blank-action [rn/view {:style (merge tst/item tst/toolbar-action)}])
 
 (defn- option-actions [icon icon-opts options]
   [context-menu/context-menu
-   [rn/view tst/toolbar-action
+   [rn/view {:style (merge tst/item tst/toolbar-action)}
     [vi/icon icon icon-opts]]
    options
    nil
@@ -83,7 +83,7 @@
 
              :else
              [icon-action icon icon-opts handler])
-       {:key (str "action-" image)}))])
+       {:key (str "action-" (or image icon))}))])
 
 (defn toolbar2
   ([title] (toolbar2 nil title))

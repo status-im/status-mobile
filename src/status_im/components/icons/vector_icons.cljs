@@ -96,8 +96,3 @@
                   :else
                   st/icon-dark-color))))
       (throw (js/Error. (str "Unknown icon: " name))))]))
-
-(defn touchable-icon [n opts handler]
-  [rn/touchable-highlight {:on-press handler}
-   [rn/view
-    [icon n opts]]])
