@@ -165,8 +165,8 @@
                   [:start-requesting-discoveries]
                   [:remove-old-discoveries!]
                   [:set :accounts/creating-account? false]
-                  [:refresh-wallet]
-                  [:refresh-transactions]
+                  [:update-wallet]
+                  [:update-transactions]
                   [:get-fcm-token]]}))
 
 (register-handler-fx
@@ -270,7 +270,7 @@
 
 ;; TODO(oskarth): Put this token in DB
 (register-handler-fx
- :get-fcm-token
- (fn [_ _]
-   (notifications/get-fcm-token)
-   {}))
+  :get-fcm-token
+  (fn [_ _]
+    (notifications/get-fcm-token)
+    {}))

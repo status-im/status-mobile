@@ -14,15 +14,20 @@
    clear-error"
   (run-test-sync
    (re-frame/reg-fx ::events/init-store #())
+   (re-frame/reg-fx :get-prices #())
+   (re-frame/reg-fx :get-balance #())
    (re-frame/dispatch [:initialize-db])
-   (let [error (re-frame/subscribe [:wallet/error-message])
-         message :error]
+   (let [error (re-frame/subscribe [:wallet/error-message?])
+         message "failed balance update"]
      (re-frame/dispatch [:update-balance-fail message])
      (is (= message @error)))
-   (let [error (re-frame/subscribe [:wallet/error-message])
-         message :error]
+   (let [error (re-frame/subscribe [:wallet/error-message?])]
+     (re-frame/dispatch [:update-wallet])
+     (is (nil? @error)))
+   (let [error (re-frame/subscribe [:wallet/error-message?])
+         message "failed price update"]
      (re-frame/dispatch [:update-prices-fail message])
-     (is (= message @error)))
-   (let [error (re-frame/subscribe [:wallet/error-message])]
-     (re-frame/dispatch [:wallet/clear-error-message])
-     (is (nil? @error)))))
+     (is (= message @error))))
+  (let [error (re-frame/subscribe [:wallet/error-message?])]
+    (re-frame/dispatch [:update-wallet])
+    (is (nil? @error))))
