@@ -6,7 +6,7 @@
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.native-action-button :refer [native-action-button
                                                                native-action-button-item]]
-            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar-new.view :as toolbar]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.drawer.view :refer [open-drawer]]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
@@ -31,14 +31,17 @@
    (act/opts (if ios? toolbar-options (rest toolbar-options)))])
 
 (defn toolbar-view []
-  [toolbar {:title      (label :t/contacts)
-            :nav-action (act/hamburger open-drawer)
-            :actions    (toolbar-actions)}])
+  [toolbar/toolbar2 {}
+   [toolbar/nav-button (act/hamburger open-drawer)]
+   [toolbar/content-title (label :t/contacts)]
+   [toolbar/actions
+    (toolbar-actions)]])
 
 (defn toolbar-edit []
-  [toolbar {:nav-action (act/back #(dispatch [:set-in [:contacts/ui-props :edit?] false]))
-            :actions    [{:image :blank}]
-            :title      (label :t/edit-contacts)}])
+  [toolbar/toolbar2 {}
+   [toolbar/nav-button (act/back #(dispatch [:set-in [:contacts/ui-props :edit?] false]))]
+   [toolbar/content-title (label :t/edit-contacts)]
+   [toolbar/actions [{:image :blank}]]])
 
 (defn contact-options [{:keys [unremovable?] :as contact} group]
   (let [delete-contact-opt {:value        #(u/show-confirmation

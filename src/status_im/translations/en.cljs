@@ -342,6 +342,7 @@
    :wallet-assets                         "Assets"
    :wallet-add-asset                      "Add asset"
    :wallet-total-value                    "Total value"
+   :wallet-settings                       "Wallet Settings"
    :transactions                          "Transactions"
    :transactions-sign                     "Sign"
    :transactions-sign-all                 "Sign all"

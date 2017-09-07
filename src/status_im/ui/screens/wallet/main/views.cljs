@@ -34,17 +34,18 @@
      {:container-style wallet-styles/toolbar-title-icon
       :color :white}]]])
 
-(defn toolbar-buttons []
-  [rn/view {:style wallet-styles/toolbar-buttons-container}
-   [vi/touchable-icon :icons/dots-vertical (merge {:color :white} wallet-styles/toolbar-icon) show-not-implemented!]
-   [vi/touchable-icon :icons/transaction-history (merge {:color :white :style {:viewBox "-108 65.9 24 24"}} wallet-styles/toolbar-icon)
-    #(rf/dispatch [:navigate-to-modal :wallet-transactions])]])
+(def transaction-history-action
+  {:icon      :icons/transaction-history
+   :icon-opts (merge {:color :white :style {:viewBox "-108 65.9 24 24"}} wallet-styles/toolbar-icon)
+   :handler   #(rf/dispatch [:navigate-to-modal :wallet-transactions])})
 
 (defn toolbar-view []
   [toolbar/toolbar2 {:style wallet-styles/toolbar}
    [toolbar/nav-button (act/hamburger-white drawer/open-drawer)]
    [toolbar-title]
-   [toolbar-buttons]])
+   [toolbar/actions
+    [(assoc (act/opts [{:text (i18n/label :t/wallet-settings) :value show-not-implemented!}]) :icon-opts {:color :white})
+     transaction-history-action]]])
 
 (defn error-message-view [error-message]
   [rn/view {:style wallet-styles/wallet-error-container}
