@@ -1,18 +1,18 @@
 (ns status-im.ui.screens.wallet.history.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [reagent.core :as r]
-            [re-frame.core :as rf]
-            [status-im.components.button.view :as btn]
-            [status-im.components.checkbox.view :as chk]
-            [status-im.components.react :as rn]
+  (:require [re-frame.core :as re-frame]
+            [reagent.core :as reagent]
+            [status-im.components.button.view :as button]
+            [status-im.components.checkbox.view :as checkbox]
             [status-im.components.list.views :as list]
-            [status-im.components.tabs.styles :as tst]
+            [status-im.components.react :as react]
+            [status-im.components.tabs.styles :as tabs.styles]
             [status-im.components.tabs.views :as tabs]
-            [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.ui.screens.wallet.history.styles :as history-styles]
-            [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.ui.screens.wallet.history.styles :as history.styles]
+            [status-im.ui.screens.wallet.views :as wallet.views]
+            [status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn on-sign-transaction
   [m]
@@ -25,13 +25,13 @@
   (utils/show-popup "TODO" "Delete Transaction"))
 
 (defn unsigned-action []
-  [toolbar/text-action #(rf/dispatch [:navigate-to-modal :wallet-transactions-sign-all])
+  [toolbar/text-action #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])
    (i18n/label :t/transactions-sign-all)])
 
 (def history-action
   {:icon      :icons/filter
    :icon-opts {}
-   :handler   #(utils/show-popup "TODO" "Not implemented") #_(rf/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
+   :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
 
 (defn toolbar-view [view-id]
   [toolbar/toolbar2 {}
@@ -43,14 +43,14 @@
       [history-action]])])
 
 (defn action-buttons [m]
-  [rn/view {:style history-styles/action-buttons}
-   [btn/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
-   [btn/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
+  [react/view {:style history.styles/action-buttons}
+   [button/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
+   [button/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
 
 (defn- unsigned? [type] (= "unsigned" type))
 (defn- inbound? [type] (= "inbound" type))
 
-(defn- transaction-icon [k color] {:icon k :style (history-styles/transaction-icon-background color)})
+(defn- transaction-icon [k color] {:icon k :style (history.styles/transaction-icon-background color)})
 
 (defn- transaction-type->icon [s]
   (case s
@@ -74,23 +74,24 @@
    [list/item-icon {:icon :icons/forward}]])
 
 ;; TODO(yenda) hook with re-frame
-
 (defn empty-text [s]
-  [rn/text {:style history-styles/empty-text} s])
+  [react/text {:style history.styles/empty-text} s])
 
 (defview history-list []
   (letsubs [transactions-history-list [:wallet/transactions-history-list]
-            transactions-loading?      [:wallet/transactions-loading?]]
-    [rn/scroll-view
+            transactions-loading?     [:wallet/transactions-loading?]
+            error-message             [:wallet.transactions/error-message?]]
+    [react/scroll-view
+     (when error-message [wallet.views/error-message-view history.styles/error-container history.styles/error-message])
      [list/section-list {:sections        transactions-history-list
                          :render-fn       render-transaction
                          :empty-component (empty-text (i18n/label :t/transactions-history-empty))
-                         :on-refresh      #(rf/dispatch [:refresh-transactions])
+                         :on-refresh      #(re-frame/dispatch [:update-transactions])
                          :refreshing      transactions-loading?}]]))
 
 (defview unsigned-list [transactions]
   []
-  [rn/scroll-view
+  [react/scroll-view
    [list/flat-list {:data            transactions
                     :render-fn       render-transaction
                     :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]])
@@ -117,19 +118,19 @@
 
 (defview sign-all []
   []
-  [rn/keyboard-avoiding-view {:style history-styles/sign-all-view}
-   [rn/view {:style history-styles/sign-all-done}
-    [btn/primary-button {:style    history-styles/sign-all-done-button
-                         :text     (i18n/label :t/done)
-                         :on-press #(rf/dispatch [:navigate-back])}]]
-   [rn/view {:style history-styles/sign-all-popup}
-    [rn/text {:style history-styles/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
-    [rn/text {:style history-styles/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
-    [rn/view {:style history-styles/sign-all-actions}
-     [rn/text-input {:style             history-styles/sign-all-input
-                     :secure-text-entry true
-                     :placeholder       (i18n/label :t/transactions-sign-input-placeholder)}]
-     [btn/primary-button {:text (i18n/label :t/transactions-sign-all) :on-press #(on-sign-transaction %)}]]]])
+  [react/keyboard-avoiding-view {:style history.styles/sign-all-view}
+   [react/view {:style history.styles/sign-all-done}
+    [button/primary-button {:style    history.styles/sign-all-done-button
+                            :text     (i18n/label :t/done)
+                            :on-press #(re-frame/dispatch [:navigate-back])}]]
+   [react/view {:style history.styles/sign-all-popup}
+    [react/text {:style history.styles/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
+    [react/text {:style history.styles/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
+    [react/view {:style history.styles/sign-all-actions}
+     [react/text-input {:style             history.styles/sign-all-input
+                        :secure-text-entry true
+                        :placeholder       (i18n/label :t/transactions-sign-input-placeholder)}]
+     [button/primary-button {:text (i18n/label :t/transactions-sign-all) :on-press #(on-sign-transaction %)}]]]])
 
 ;; Filter history
 
@@ -137,13 +138,13 @@
   [list/item
    [list/item-icon (transaction-type->icon "pending")] ;; TODO add proper token data
    [list/item-content label symbol]
-   [chk/checkbox  {:checked? true #_checked?}]])
+   [checkbox/checkbox  {:checked? true #_checked?}]])
 
 (defn- item-type [{:keys [id label checked?]}]
   [list/item
    [list/item-icon (transaction-type->icon id)]
    [list/item-content label]
-   [chk/checkbox checked?]])
+   [checkbox/checkbox checked?]])
 
 (def filter-data
   [{:title (i18n/label :t/transactions-filter-tokens)
@@ -163,13 +164,13 @@
 
 (defview filter-history []
   []
-  [rn/view
+  [react/view
    [toolbar/toolbar2 {}
     [toolbar/nav-clear-text (i18n/label :t/done)]
     [toolbar/content-title (i18n/label :t/transactions-filter-title)]
     [toolbar/text-action #(utils/show-popup "TODO" "Select All")
      (i18n/label :t/transactions-filter-select-all)]]
-   [rn/scroll-view
+   [react/scroll-view
     [list/section-list {:sections filter-data}]]])
 
 ;; TODO(jeluard) whole swipe logic
@@ -177,10 +178,10 @@
 
 (defn- main-section [view-id unsigned-transactions]
   (let [tabs (tab-list unsigned-transactions)]
-    [rn/view {:style history-styles/main-section}
+    [react/view {:style history.styles/main-section}
      [tabs/tabs {:selected-view-id @view-id
                  :tab-list         tabs}]
-     [rn/swiper (merge tst/swiper
+     [react/swiper (merge tabs.styles/swiper
                        {:index (get-tab-index tabs @view-id)
                         :loop  false})
                                         ;:ref                    #(reset! swiper %)
@@ -193,8 +194,8 @@
 ;; TODO(yenda) must reflect selected wallet
 
 (defview transactions []
-  [unsigned-transactions [:wallet/unsigned-transactions]]
-  (let [view-id (r/atom :wallet-transactions-history)]
-    [rn/view {:style history-styles/wallet-transactions-container}
-     [toolbar-view view-id]
-     [main-section view-id unsigned-transactions]]))
+  (letsubs [unsigned-transactions [:wallet/unsigned-transactions]]
+    (let [view-id (reagent/atom :wallet-transactions-history)]
+      [react/view {:style history.styles/wallet-transactions-container}
+       [toolbar-view view-id]
+       [main-section view-id unsigned-transactions]])))

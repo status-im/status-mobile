@@ -1,14 +1,29 @@
 (ns status-im.ui.screens.wallet.history.styles
-  (:require [status-im.components.styles :as st]))
+  (:require [status-im.components.styles :as styles]))
+
+(def error-container
+  {:align-self       :center
+   :justify-content  :center
+   :border-radius    4
+   :padding-vertical 4
+   :flex-direction   :row
+   :background-color styles/color-gray9})
+
+(def error-message
+  {:color         styles/color-black
+   :padding-top   3
+   :padding-right 10
+   :font-size     13})
+
 
 (def wallet-transactions-container
   {:flex             1
-   :background-color st/color-white})
+   :background-color styles/color-white})
 
 (def main-section
   {:flex             1
    :position         :relative
-   :background-color st/color-white})
+   :background-color styles/color-white})
 
 (def empty-text
   {:text-align       :center
@@ -24,11 +39,11 @@
   {:flex              1
    :flex-direction    :column
    :justify-content   :center
-   :background-color  st/color-gray-transparent})
+   :background-color  styles/color-gray-transparent})
 
 (def sign-all-popup
   {:align-self        :flex-start
-   :background-color  st/color-white
+   :background-color  styles/color-white
    :margin-horizontal 12
    :border-radius     8})
 
@@ -38,7 +53,7 @@
    :margin-horizontal 12
    :text-align        :center
    :padding-vertical  9
-   :background-color  st/color-light-gray})
+   :background-color  styles/color-light-gray})
 
 (def sign-all-popup-text
   {:margin-top        8
@@ -64,4 +79,4 @@
 
 (defn transaction-icon-background [color]
   {:border-radius    32
-   :background-color st/color-blue4-transparent})
+   :background-color styles/color-blue4-transparent})

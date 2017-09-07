@@ -5,6 +5,7 @@
             [status-im.utils.transactions :as transactions]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.components.status :as status]
+            [status-im.ui.screens.wallet.navigation]
             [taoensso.timbre :as log]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
@@ -18,73 +19,72 @@
          (on-error err))))
     (on-error "web3 or account-id not available")))
 
+(defn assoc-error-message [db error-type err]
+  (assoc-in db [:wallet :errors error-type] (or (when err (str err))
+                                                :unknown-error)))
+
+(defn clear-error-message [db error-type]
+  (update-in db [:wallet :errors] dissoc error-type))
+
 ;; FX
 
 (reg-fx
   :get-balance
   (fn [{:keys [web3 account-id success-event error-event]}]
-    (get-balance
-     {:web3           web3
-      :account-id     account-id
-      :on-success     #(dispatch [success-event %])
-      :on-error       #(dispatch [error-event %])})))
+    (get-balance {:web3           web3
+                  :account-id     account-id
+                  :on-success     #(dispatch [success-event %])
+                  :on-error       #(dispatch [error-event %])})))
 
 (reg-fx
   :get-transactions
-  (fn [{:keys [network account-id]}]
+  (fn [{:keys [network account-id success-event error-event]}]
     (transactions/get-transactions network
                                    account-id
-                                   #(dispatch [:update-transactions-succes %])
-                                   #(dispatch [:update-transactions-fail %]))))
+                                   #(dispatch [success-event %])
+                                   #(dispatch [error-event %]))))
 
+;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
 (reg-fx
   :get-prices
   (fn [{:keys [from to success-event error-event]}]
-    (prices/get-prices
-     from
-     to
-     #(dispatch [success-event %])
-     #(dispatch [error-event %]))))
+    (prices/get-prices from
+                       to
+                       #(dispatch [success-event %])
+                       #(dispatch [error-event %]))))
 
 ;; Handlers
 
-;; TODO(oskarth): At some point we want to get list of relevant assets to get prices for
 (handlers/register-handler-fx
-  :load-prices
-  (fn [{{:keys [wallet] :as db} :db} [_ a]]
-    {:get-prices  {:from          "ETH"
-                   :to            "USD"
-                   :success-event :update-prices
-                   :error-event   :update-prices-fail}
-     :db (assoc db :prices-loading? true)}))
-
-(handlers/register-handler-fx
-  :refresh-wallet
+  :update-wallet
   (fn [{{:keys [web3 accounts/current-account-id network] :as db} :db} [_ a]]
     {:get-balance {:web3          web3
                    :account-id    current-account-id
-                   :success-event :update-balance
+                   :success-event :update-balance-success
                    :error-event   :update-balance-fail}
-     :dispatch    [:load-prices]
-     :db          (assoc-in db [:wallet :balance-loading?] true)}))
-
-(defn assoc-error-message [db err]
-  (assoc-in db [:wallet :wallet/error] err))
-
-(handlers/register-handler-db
-  :wallet/clear-error-message
-  (fn [db [_]]
-    (update db :wallet dissoc :wallet/error)))
+     :get-prices  {:from          "ETH"
+                   :to            "USD"
+                   :success-event :update-prices-success
+                   :error-event   :update-prices-fail}
+     :db          (-> db
+                      (clear-error-message :price-update)
+                      (clear-error-message :balance-update)
+                      (assoc-in [:wallet :balance-loading?] true)
+                      (assoc :prices-loading? true))}))
 
 (handlers/register-handler-fx
-  :refresh-transactions
+  :update-transactions
   (fn [{{:keys [accounts/current-account-id network] :as db} :db} _]
-    {:get-transactions {:account-id current-account-id
-                        :network network}
-     :db               (assoc-in db [:wallet :transactions-loading?] true)}))
+    {:get-transactions {:account-id    current-account-id
+                        :network       network
+                        :success-event :update-transactions-success
+                        :error-event   :update-transactions-fail}
+     :db               (-> db
+                           (clear-error-message :transaction-update)
+                           (assoc-in [:wallet :transactions-loading?] true))}))
 
 (handlers/register-handler-db
-  :update-transactions-succes
+  :update-transactions-success
   (fn [db [_ transactions]]
     (-> db
         (assoc-in [:wallet :transactions] transactions)
@@ -94,31 +94,36 @@
   :update-transactions-fail
   (fn [db [_ err]]
     (log/debug "Unable to get transactions: " err)
-    (-> (assoc-error-message db :error)
+    (-> db
+        (assoc-error-message :transactions-update err)
         (assoc-in [:wallet :transactions-loading?] false))))
 
 (handlers/register-handler-db
-  :update-balance
+  :update-balance-success
   (fn [db [_ balance]]
     (-> db
         (assoc-in [:wallet :balance] balance)
         (assoc-in [:wallet :balance-loading?] false))))
 
 (handlers/register-handler-db
-  :update-prices
-  (fn [db [_ prices]]
-    (assoc db :prices prices :prices-loading? false)))
-
-(handlers/register-handler-db
   :update-balance-fail
   (fn [db [_ err]]
     (log/debug "Unable to get balance: " err)
-    (-> (assoc-error-message db :error)
+    (-> db
+        (assoc-error-message :balance-update err)
         (assoc-in [:wallet :balance-loading?] false))))
+
+(handlers/register-handler-db
+  :update-prices-success
+  (fn [db [_ prices]]
+    (assoc db
+           :prices prices
+           :prices-loading? false)))
 
 (handlers/register-handler-db
   :update-prices-fail
   (fn [db [_ err]]
     (log/debug "Unable to get prices: " err)
-    (-> (assoc-error-message db :error)
-      (assoc :prices-loading? false))))
+    (-> db
+        (assoc-error-message :prices-update err)
+        (assoc :prices-loading? false))))

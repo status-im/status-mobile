@@ -17,6 +17,7 @@
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as wallet-styles]
+            [status-im.ui.screens.wallet.views :as wallet.views]
             [status-im.utils.money :as money]))
 
 (defn- show-not-implemented! []
@@ -47,16 +48,9 @@
     [(assoc (act/opts [{:text (i18n/label :t/wallet-settings) :value show-not-implemented!}]) :icon-opts {:color :white})
      transaction-history-action]]])
 
-(defn error-message-view [error-message]
-  [rn/view {:style wallet-styles/wallet-error-container}
-   [rn/view {:style wallet-styles/wallet-exclamation-container}
-    [vi/icon :icons/exclamation_mark {:color           :white
-                                      :container-style wallet-styles/wallet-error-exclamation}]]
-   [rn/text {:style wallet-styles/wallet-error-message} (i18n/label :t/wallet-error)]])
-
 (defn main-section [usd-value change error-message]
   [rn/view {:style wallet-styles/main-section}
-   (when error-message [error-message-view error-message])
+   (when error-message [wallet.views/error-message-view wallet-styles/error-container wallet-styles/error-message])
    [rn/view {:style wallet-styles/total-balance-container}
     [rn/view {:style wallet-styles/total-balance}
      [rn/text {:style wallet-styles/total-balance-value} usd-value]
@@ -125,7 +119,7 @@
                                    :data       [{}]
                                    :renderItem (list/wrap-render-fn render-add-asset-fn)}]
        :render-section-header-fn #()
-       :on-refresh               #(rf/dispatch [:refresh-wallet])
+       :on-refresh               #(rf/dispatch [:update-wallet])
        :refreshing               (or prices-loading? balance-loading?)}]]))
 
 (defview wallet []
@@ -134,7 +128,7 @@
             portfolio-change [:portfolio-change]
             prices-loading?  [:prices-loading?]
             balance-loading? [:wallet/balance-loading?]
-            error-message    [:wallet/error-message]]
+            error-message    [:wallet/error-message?]]
     [rn/view {:style wallet-styles/wallet-container}
      [toolbar-view]
      [rn/scroll-view
