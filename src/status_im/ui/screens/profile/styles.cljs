@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.profile.styles
   (:require [status-im.components.styles
+             :as styles
              :refer
              [color-black
               color-gray4
@@ -190,3 +191,26 @@
 (def add-a-status
   (merge profile-status-text
          {:color color-gray4}))
+
+(def testnet-only-container
+  {:background-color styles/color-dark
+   :flex-direction   :row
+   :padding          14})
+
+(def testnet-only-text
+  {:flex        1
+   :color       color-white
+   :margin-left 12})
+
+(def testnet-icon
+  {:border-radius   15
+   :border-width    1
+   :border-color    styles/color-gray
+   :height          27
+   :width           65
+   :flex-direction  :row
+   :align-items     :center
+   :justify-content :center})
+
+(def testnet-icon-text
+  {:color color-white})

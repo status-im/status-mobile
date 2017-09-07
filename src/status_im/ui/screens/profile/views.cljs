@@ -182,11 +182,23 @@
         [react/text {:style styles/profile-status-text}
          (colorize-status-hashtags status)]]]])])
 
+
+(defn testnet-only []
+  [react/view styles/testnet-only-container
+   [react/view styles/testnet-icon
+    [react/text {:style styles/testnet-icon-text}
+     (label :t/profile-testnet-icon)]]
+   [react/text {:style styles/testnet-only-text}
+    (label :t/profile-testnet-text)]])
+
 (defview my-profile []
-  (letsubs [{:keys [status] :as current-account} [:get-current-account]]
+  (letsubs [{:keys [status] :as current-account} [:get-current-account]
+            network [:get :network]]
     [react/view styles/profile
      [status-bar]
      [my-profile-toolbar]
+     (when (= network "testnet")
+       [testnet-only])
      [react/scroll-view
       [react/view styles/profile-form
        [profile-badge current-account]
@@ -207,10 +219,13 @@
                     status
                     whisper-identity]
              :as contact} [:contact]
-            chat-id [:get :current-chat-id]]
+            chat-id [:get :current-chat-id]
+            network [:get :network]]
     [react/view styles/profile
      [status-bar]
      [profile-toolbar contact]
+     (when (= network "testnet")
+       [testnet-only])
      [react/scroll-view
       [react/view styles/profile-form
        [profile-badge contact]
