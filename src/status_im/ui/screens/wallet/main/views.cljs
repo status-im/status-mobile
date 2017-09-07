@@ -6,7 +6,7 @@
             [status-im.components.button.view :as btn]
             [status-im.components.drawer.view :as drawer]
             [status-im.components.list.views :as list]
-            [status-im.components.react :as rn]
+            [status-im.components.react :as react]
             [status-im.components.styles :as st]
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.toolbar-new.view :as toolbar]
@@ -24,10 +24,10 @@
   (utils/show-popup "TODO" "Not implemented yet!"))
 
 (defn toolbar-title []
-  [rn/touchable-highlight {:on-press #(rf/dispatch [:navigate-to :wallet-list])
+  [react/touchable-highlight {:on-press #(rf/dispatch [:navigate-to :wallet-list])
                            :style wallet-styles/toolbar-title-container}
-   [rn/view {:style wallet-styles/toolbar-title-inner-container}
-    [rn/text {:style wallet-styles/toolbar-title-text
+   [react/view {:style wallet-styles/toolbar-title-inner-container}
+    [react/text {:style wallet-styles/toolbar-title-text
               :font  :toolbar-title}
      (i18n/label :t/main-wallet)]
     [vi/icon
@@ -48,19 +48,27 @@
     [(assoc (act/opts [{:text (i18n/label :t/wallet-settings) :value show-not-implemented!}]) :icon-opts {:color :white})
      transaction-history-action]]])
 
+(defn- change-display [change]
+  (let [pos-change? (pos? change)]
+    [react/view {:style (if pos-change?
+                       wallet-styles/today-variation-container-positive
+                       wallet-styles/today-variation-container-negative)}
+     [react/text {:style (if pos-change?
+                        wallet-styles/today-variation-positive
+                        wallet-styles/today-variation-negative)}
+      (str (if pos-change? "+" "-") change)]]))
+
 (defn main-section [usd-value change error-message]
-  [rn/view {:style wallet-styles/main-section}
+  [react/view {:style wallet-styles/main-section}
    (when error-message [wallet.views/error-message-view wallet-styles/error-container wallet-styles/error-message])
-   [rn/view {:style wallet-styles/total-balance-container}
-    [rn/view {:style wallet-styles/total-balance}
-     [rn/text {:style wallet-styles/total-balance-value} usd-value]
-     [rn/text {:style wallet-styles/total-balance-currency} "USD"]]
-    [rn/view {:style wallet-styles/value-variation}
-     [rn/text {:style wallet-styles/value-variation-title}
+   [react/view {:style wallet-styles/total-balance-container}
+    [react/view {:style wallet-styles/total-balance}
+     [react/text {:style wallet-styles/total-balance-value} usd-value]
+     [react/text {:style wallet-styles/total-balance-currency} "USD"]]
+    [react/view {:style wallet-styles/value-variation}
+     [react/text {:style wallet-styles/value-variation-title}
       (i18n/label :t/wallet-total-value)]
-     [rn/view {:style (if (pos? change) wallet-styles/today-variation-container-positive wallet-styles/today-variation-container-negative)}
-      [rn/text {:style (if (pos? change) wallet-styles/today-variation-positive wallet-styles/today-variation-negative)}
-       change]]]
+     [change-display change]]
     [btn/buttons wallet-styles/buttons
      [{:text     (i18n/label :t/wallet-send)
        :on-press show-not-implemented! ;; #(rf/dispatch [:navigate-to :wallet-send-transaction])
@@ -79,38 +87,38 @@
   ;; TODO(jeluard) Navigate to asset details screen
   #_
   [list/touchable-item show-not-implemented!
-   [rn/view
+   [react/view
     [list/item
      [list/item-image {:uri :launch_logo}]
-     [rn/view {:style wallet-styles/asset-item-value-container}
-      [rn/text {:style wallet-styles/asset-item-value} (str amount)]
-      [rn/text {:style      wallet-styles/asset-item-currency
+     [react/view {:style wallet-styles/asset-item-value-container}
+      [react/text {:style wallet-styles/asset-item-value} (str amount)]
+      [react/text {:style      wallet-styles/asset-item-currency
                 :uppercase? true}
        id]]
      [list/item-icon {:style :icons/forward}]]]]
-  [rn/view
+  [react/view
    [list/item
     (let [{:keys [source style]} (token->image id)]
       [list/item-image source style])
-    [rn/view {:style wallet-styles/asset-item-value-container}
-     [rn/text {:style wallet-styles/asset-item-value} (str amount)]
-     [rn/text {:style      wallet-styles/asset-item-currency
+    [react/view {:style wallet-styles/asset-item-value-container}
+     [react/text {:style wallet-styles/asset-item-value} (str amount)]
+     [react/text {:style      wallet-styles/asset-item-currency
                :uppercase? true}
       id]]]])
 
 (defn render-add-asset-fn [{:keys [id currency amount]}]
   [list/touchable-item show-not-implemented!
-   [rn/view
+   [react/view
     [list/item
      [list/item-icon {:icon :icons/add :style wallet-styles/add-asset-icon :icon-opts {:color :blue}}]
-     [rn/view {:style wallet-styles/asset-item-value-container}
-      [rn/text {:style wallet-styles/add-asset-text}
+     [react/view {:style wallet-styles/asset-item-value-container}
+      [react/text {:style wallet-styles/add-asset-text}
        (i18n/label :t/wallet-add-asset)]]]]])
 
 (defn asset-section [eth prices-loading? balance-loading?]
   (let [assets [{:id "eth" :currency :eth :amount eth}]]
-    [rn/view {:style wallet-styles/asset-section}
-     [rn/text {:style wallet-styles/asset-section-title} (i18n/label :t/wallet-assets)]
+    [react/view {:style wallet-styles/asset-section}
+     [react/text {:style wallet-styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/section-list
       {:sections                 [{:key        :assets
                                    :data       assets
@@ -129,8 +137,8 @@
             prices-loading?  [:prices-loading?]
             balance-loading? [:wallet/balance-loading?]
             error-message    [:wallet/error-message?]]
-    [rn/view {:style wallet-styles/wallet-container}
+    [react/view {:style wallet-styles/wallet-container}
      [toolbar-view]
-     [rn/scroll-view
+     [react/scroll-view
       [main-section portfolio-value portfolio-change error-message]
       [asset-section eth-balance prices-loading? balance-loading?]]]))

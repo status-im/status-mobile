@@ -98,5 +98,7 @@
   {:color     st/color-blue4
    :font-size 17})
 
+(def toolbar-text-action-disabled {:color st/color-gray7})
+
 (def item-text-white-background {:color st/color-blue4})
 

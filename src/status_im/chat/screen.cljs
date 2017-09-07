@@ -114,10 +114,11 @@
    creating? [:get :accounts/creating-account?]]
   [view
    [status-bar]
-   [toolbar/toolbar2 {:hide-nav? (or (empty? accounts) show-actions? creating?)}
-    toolbar/default-nav-back
-    [toolbar-content-view]
-    [toolbar-action]]
+   (let [hide-nav? (or (empty? accounts) show-actions? creating?)]
+     [toolbar/toolbar2 {}
+      (when-not hide-nav? toolbar/default-nav-back)
+      [toolbar-content-view]
+      [toolbar-action]])
    [add-contact-bar]])
 
 (defn get-intro-status-message [all-messages]

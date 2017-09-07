@@ -114,7 +114,7 @@
   "A wrapper for SectionList.
    See https://facebook.github.io/react-native/docs/sectionlist.html"
   [{:keys [sections render-fn empty-component render-section-header-fn] :or {render-section-header-fn default-render-section-header} :as props}]
-  (if (and (empty? sections) empty-component)
+  (if (and (every? #(empty? (:data %)) sections) empty-component)
     empty-component
     [section-list-class
      (merge (base-list-props render-fn empty-component)

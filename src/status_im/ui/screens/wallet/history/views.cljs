@@ -5,7 +5,6 @@
             [status-im.components.checkbox.view :as checkbox]
             [status-im.components.list.views :as list]
             [status-im.components.react :as react]
-            [status-im.components.tabs.styles :as tabs.styles]
             [status-im.components.tabs.views :as tabs]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :as i18n]
@@ -24,21 +23,23 @@
   ;; TODO(yenda) implement
   (utils/show-popup "TODO" "Delete Transaction"))
 
-(defn unsigned-action []
-  [toolbar/text-action #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])
+(defn unsigned-action [unsigned-transactions]
+  [toolbar/text-action {:disabled? (zero? (count unsigned-transactions)) :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
    (i18n/label :t/transactions-sign-all)])
 
 (def history-action
   {:icon      :icons/filter
-   :icon-opts {}
    :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
 
-(defn toolbar-view [view-id]
+(defn toolbar-view [view-id unsigned-transactions]
   [toolbar/toolbar2 {}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
-   (if (= @view-id :wallet-transactions-unsigned)
-     [unsigned-action]
+   (case @view-id
+     :wallet-transactions-unsigned
+     [unsigned-action unsigned-transactions]
+
+     :wallet-transactions-history
      [toolbar/actions
       [history-action]])])
 
@@ -74,8 +75,7 @@
    [list/item-icon {:icon :icons/forward}]])
 
 ;; TODO(yenda) hook with re-frame
-(defn empty-text [s]
-  [react/text {:style history.styles/empty-text} s])
+(defn- empty-text [s] [react/text {:style history.styles/empty-text} s])
 
 (defview history-list []
   (letsubs [transactions-history-list [:wallet/transactions-history-list]
@@ -109,11 +109,6 @@
     :title   (i18n/label :t/transactions-history)
     :screen  [history-list]}])
 
-(defn- tab->index [tabs] (reduce #(assoc %1 (:view-id %2) (count %1)) {} tabs))
-
-(defn get-tab-index [tabs view-id]
-  (get (tab->index tabs) view-id 0))
-
 ;; Sign all
 
 (defview sign-all []
@@ -136,7 +131,7 @@
 
 (defn- item-tokens [{:keys [symbol label checked?]}]
   [list/item
-   [list/item-icon (transaction-type->icon "pending")] ;; TODO add proper token data
+   [list/item-icon (transaction-type->icon "pending")] ;; TODO(jeluard) add proper token data
    [list/item-content label symbol]
    [checkbox/checkbox  {:checked? true #_checked?}]])
 
@@ -168,34 +163,26 @@
    [toolbar/toolbar2 {}
     [toolbar/nav-clear-text (i18n/label :t/done)]
     [toolbar/content-title (i18n/label :t/transactions-filter-title)]
-    [toolbar/text-action #(utils/show-popup "TODO" "Select All")
+    [toolbar/text-action {:handler #(utils/show-popup "TODO" "Select All")}
      (i18n/label :t/transactions-filter-select-all)]]
    [react/scroll-view
     [list/section-list {:sections filter-data}]]])
 
-;; TODO(jeluard) whole swipe logic
-;; extract navigate-tab action (on tap)
+(defn- main-section [view-id tabs ]
+    (let [prev-view-id (reagent/atom @view-id)]
+    [tabs/swipable-tabs {:style          history.styles/main-section
+                         :on-view-change #(do (reset! prev-view-id @view-id)
+                                              (reset! view-id %))}
 
-(defn- main-section [view-id unsigned-transactions]
-  (let [tabs (tab-list unsigned-transactions)]
-    [react/view {:style history.styles/main-section}
-     [tabs/tabs {:selected-view-id @view-id
-                 :tab-list         tabs}]
-     [react/swiper (merge tabs.styles/swiper
-                       {:index (get-tab-index tabs @view-id)
-                        :loop  false})
-                                        ;:ref                    #(reset! swiper %)
-                                        ;:on-momentum-scroll-end (on-scroll-end swiped? scroll-ended @view-id)
-
-      (doall
-       (map-indexed (fn [index {screen :screen}]
-                      (with-meta screen {:key index} )) tabs))]]))
+      tabs prev-view-id view-id]))
 
 ;; TODO(yenda) must reflect selected wallet
 
 (defview transactions []
-  (letsubs [unsigned-transactions [:wallet/unsigned-transactions]]
-    (let [view-id (reagent/atom :wallet-transactions-history)]
-      [react/view {:style history.styles/wallet-transactions-container}
-       [toolbar-view view-id]
-       [main-section view-id unsigned-transactions]])))
+  [unsigned-transactions [:wallet/unsigned-transactions]]
+  (let [tabs         (tab-list unsigned-transactions)
+        default-view (get-in tabs [0 :view-id])
+        view-id      (reagent/atom default-view)]
+    [react/view {:style history.styles/wallet-transactions-container}
+     [toolbar-view view-id unsigned-transactions]
+     [main-section view-id tabs]]))
