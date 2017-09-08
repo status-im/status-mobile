@@ -51,12 +51,14 @@
 (defn- change-display [change]
   (let [pos-change? (pos? change)]
     [react/view {:style (if pos-change?
-                       wallet-styles/today-variation-container-positive
-                       wallet-styles/today-variation-container-negative)}
+                          wallet-styles/today-variation-container-positive
+                          wallet-styles/today-variation-container-negative)}
      [react/text {:style (if pos-change?
-                        wallet-styles/today-variation-positive
-                        wallet-styles/today-variation-negative)}
-      (str (if pos-change? "+" "-") change)]]))
+                           wallet-styles/today-variation-positive
+                           wallet-styles/today-variation-negative)}
+      (if change
+        (str (when pos-change? "+") change "%")
+        "-%")]]))
 
 (defn main-section [usd-value change error-message]
   [react/view {:style wallet-styles/main-section}
