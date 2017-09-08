@@ -10,7 +10,6 @@
                                                  icon-search]]
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :as st]
-            [status-im.accessibility-ids :as id]
             [status-im.utils.platform :refer [platform-specific]]))
 
 ;; TODO This is our old toolbar component. Please do not use it and consider moving legacy usage to the new toolbar_new component.
@@ -33,7 +32,7 @@
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
              [image (:image nav-action)]]]
            [touchable-highlight {:on-press            #(dispatch [:navigate-back])
-                                 :accessibility-label id/toolbar-back-button}
+                                 :accessibility-label :toolbar-back-button}
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
              [image {:source {:uri :icon_back}
                      :style  icon-back}]]]))]
@@ -44,10 +43,12 @@
             title]])
       [view (st/toolbar-actions-container (count actions) custom-action)
        (if actions
-         (for [{action-image   :image
-                action-handler :handler} actions]
+         (for [{action-image        :image
+                action-handler      :handler
+                accessibility-label :accessibility-label} actions]
            ^{:key (str "action-" action-image)}
-           [touchable-highlight {:on-press action-handler}
+           [touchable-highlight {:on-press action-handler
+                                 :accessibility-label (:or accessibility-label :toolbar-action)}
             [view st/toolbar-action
              [image action-image]]])
          custom-action)]]

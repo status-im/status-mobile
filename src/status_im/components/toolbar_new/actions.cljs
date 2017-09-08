@@ -1,11 +1,11 @@
 (ns status-im.components.toolbar-new.actions
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.accessibility-ids :as id]
             [status-im.components.toolbar-new.styles :as st]))
 
 (defn hamburger [handler]
-  {:icon    :icons/hamburger
-   :handler handler})
+  {:icon                :icons/hamburger
+   :handler             handler
+   :accessibility-label :toolbar-hamburger-menu})
 
 (defn hamburger-white [handler]
   (merge (hamburger handler)
@@ -31,7 +31,7 @@
 (defn back [handler]
   {:icon                :icons/back
    :handler             handler
-   :accessibility-label id/toolbar-back-button})
+   :accessibility-label :toolbar-back-button})
 
 (def default-handler #(dispatch [:navigate-back]))
 

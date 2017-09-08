@@ -4,7 +4,6 @@
             [clojure.string :as str]
             [reagent.core :as r]
             [re-frame.core :as rf]
-            [status-im.accessibility-ids :as id]
             [status-im.components.chat-icon.screen :as ci]
             [status-im.components.common.common :as common]
             [status-im.components.context-menu :as context-menu]
@@ -39,7 +38,8 @@
   [touchable-opacity {:on-press #(rf/dispatch [:navigate-to :my-profile])
                       :style    st/user-photo-container}
    [view
-    [ci/chat-icon (:photo-path account) {:size 52}]]])
+    [ci/chat-icon (:photo-path account) {:size                52
+                                         :accessibility-label :drawer-profile-icon}]]])
 
 (defview name-input []
   [account [:get-current-account]
@@ -71,7 +71,7 @@
                     :auto-focus          true
                     :focus               @status-edit?
                     :max-length          140
-                    :accessibility-label id/drawer-status-input
+                    :accessibility-label :drawer-status-input
                     :placeholder         placeholder
                     :default-value       previous-status
                     :on-change-text      #(let [new-status (utils/clean-text %)]

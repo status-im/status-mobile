@@ -8,7 +8,6 @@
                                                 icon
                                                 touchable-highlight]]
             [status-im.chat.styles.message.message :as st]
-            [status-im.accessibility-ids :as id]
             [status-im.models.commands :refer [parse-command-request]]
             [status-im.components.animation :as anim]
             [taoensso.timbre :as log]))
@@ -41,6 +40,11 @@
        (anim/start
          (button-animation val min-scale loop? answered?)))))
 
+(defn request-button-label
+  "The request button label will be in the form of `request-the-command-name`"
+  [command-name]
+  (keyword (str "request-" (name command-name))))
+
 (defn request-button [message-id _ _]
   (let [scale-anim-val (anim/create-value min-scale)
         answered?      (subscribe [:is-request-answered? message-id])
@@ -61,7 +65,7 @@
            [touchable-highlight
             {:on-press            on-press-handler
              :style               (st/command-request-image-touchable)
-             :accessibility-label (id/chat-request-message-button (:name command))}
+             :accessibility-label (request-button-label (:name command))}
             [animated-view {:style (st/command-request-image-view command scale-anim-val)}
              (when command-icon
                [icon command-icon st/command-request-image])]]))})))

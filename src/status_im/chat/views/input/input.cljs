@@ -4,7 +4,6 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [taoensso.timbre :as log]
-            [status-im.accessibility-ids :as id]
             [status-im.chat.constants :as const]
             [status-im.chat.models.input :as input-model]
             [status-im.chat.styles.input.input :as style]
@@ -71,7 +70,7 @@
        {:ref                    #(when %
                                    (dispatch [:set-chat-ui-props {:input-ref %}])
                                    (reset! input-ref %))
-        :accessibility-label    id/chat-message-input
+        :accessibility-label    :chat-message-input
         :multiline              (not single-line-input?)
         :default-value          (or @input-text "")
         :editable               (not @sending-in-progress?)
@@ -237,7 +236,8 @@
                                                   (fn [] (dispatch [:chat-input-focus :seq-input-ref]))
                                                   100))
                                               (dispatch [:send-current-message]))}
-            [view style/send-message-container
+            [view {:style               style/send-message-container
+                   :accessibility-label :send-message-button}
              [icon :arrow_top style/send-message-icon]]]))])))
 
 (defn container []
