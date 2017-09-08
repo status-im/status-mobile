@@ -7,14 +7,15 @@
         },
         "contacts":
         [
-            "wallet",
-            "oaken-water-meter",
-            "melonport",
-            "bchat",
-            "Dentacoin",
             "Augur",
+            "bchat",
+            "Commiteth",
+            "Dentacoin",
+            "Etherplay",
             "Ethlance",
-            "Commiteth"
+            "melonport",
+            "oaken-water-meter",
+            "wallet"
         ]
     },
     "state-of-dapps":
@@ -25,11 +26,18 @@
         },
         "contacts":
         [
-            "flight-delays-suck",
-            "FirstBlood",
             "auction-house",
+            "Augur",
+            "Commiteth",
+            "Dentacoin",
+            "Etherplay",
+            "Ethlance",
+            "FirstBlood",
+            "flight-delays-suck",
             "gnosis",
-            "mkr-market"
+            "melonport",
+            "mkr-market",
+            "oaken-water-meter"
         ]
     }
 }
