@@ -10,12 +10,14 @@
 #import "AppDelegate.h"
 
 #import "ReactNativeConfig.h"
+#import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 #import "SplashScreen.h"
 #import "TestFairy.h"
 #import "RNFIRMessaging.h"
 
+/* Macro to send app logs to TestFairy, potential duplicate of prefix header */
 #define NSLog(s, ...) do { NSLog(s, ##__VA_ARGS__); TFLog(s, ##__VA_ARGS__); } while (0)
 @import Instabug;
 
@@ -25,6 +27,12 @@
 {
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
+
+  /* Enable debug logs from React Native for release mode */
+  NSString *debugLogsEnabled = [ReactNativeConfig envFor:@"DEBUG_LOGS_ENABLED"];
+  if([debugLogsEnabled isEqualToString:@"1"]){
+    RCTSetLogThreshold(RCTLogLevelInfo - 1);
+  }
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
 
