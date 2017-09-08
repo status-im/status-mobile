@@ -76,7 +76,7 @@
                       :icon-opts {:color :blue}
                       :on-press  #(dispatch [:profile/send-transaction chat-id])}]])])
 
-(defn profile-info-item [{:keys [label value options text-mode empty-value?]}]
+(defn profile-info-item [{:keys [label value options text-mode empty-value? accessibility-label]}]
   [react/view styles/profile-setting-item
    [react/view (styles/profile-info-text-container options)
     [react/text {:style styles/profile-setting-title}
@@ -85,8 +85,9 @@
     [react/text {:style           (if empty-value?
                                     styles/profile-setting-text-empty
                                     styles/profile-setting-text)
-                 :number-of-lines 1
-                 :ellipsizeMode   text-mode}
+                 :number-of-lines     1
+                 :ellipsizeMode       text-mode
+                 :accessibility-label accessibility-label}
      value]]
    (when options
      [context-menu
@@ -108,17 +109,19 @@
 
 (defn profile-info-address-item [{:keys [address] :as contact}]
   [profile-info-item
-   {:label     (label :t/address)
-    :value     address
-    :options   (profile-options contact :address address)
-    :text-mode :middle}])
+   {:label               (label :t/address)
+    :value               address
+    :options             (profile-options contact :address address)
+    :text-mode           :middle
+    :accessibility-label :profile-address}])
 
 (defn profile-info-public-key-item [public-key contact]
   [profile-info-item
-   {:label     (label :t/public-key)
-    :value     public-key
-    :options   (profile-options contact :public-key public-key)
-    :text-mode :middle}])
+   {:label               (label :t/public-key)
+    :value               public-key
+    :options             (profile-options contact :public-key public-key)
+    :text-mode           :middle
+    :accessibility-label :profile-public-key}])
 
 (defn info-item-separator []
   [separator styles/info-item-separator])
@@ -141,10 +144,11 @@
         phone-text  (if phone-empty?
                       (label :t/not-specified)
                       phone)]
-    [profile-info-item {:label        (label :t/phone-number)
-                        :value        phone-text
-                        :options      options
-                        :empty-value? phone-empty?}]))
+    [profile-info-item {:label               (label :t/phone-number)
+                        :value               phone-text
+                        :options             options
+                        :empty-value?        phone-empty?
+                        :accessibility-label :profile-phone-number}]))
 
 (defn profile-info [{:keys [whisper-identity status phone] :as contact}]
   [react/view

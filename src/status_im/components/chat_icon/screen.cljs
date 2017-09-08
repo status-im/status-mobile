@@ -15,14 +15,15 @@
    [text {:style (:default-chat-icon-text styles)}
     (first name)]])
 
-(defn chat-icon [photo-path {:keys [size]}]
+(defn chat-icon [photo-path {:keys [size accessibility-label]}]
   (let [photo (if (s/starts-with? photo-path "contacts://")
                 (->> (s/replace photo-path #"contacts://" "")
                      (keyword)
                      (get resources/contacts))
                 {:uri photo-path})]
     [image {:source photo
-            :style  (st/image-style size)}]))
+            :style  (st/image-style size)
+            :accessibility-label (or accessibility-label :chat-icon)}]))
 
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [view online-view-wrapper

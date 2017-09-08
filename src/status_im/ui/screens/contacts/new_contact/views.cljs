@@ -41,12 +41,13 @@
 
 (defn toolbar-actions [new-contact-identity account error]
   (let [error-message (validation-error-message new-contact-identity account error)]
-    [{:image   {:source {:uri (if (str/blank? error-message)
-                                :icon_ok_blue
-                                :icon_ok_disabled)}
-                :style  icon-ok}
-      :handler #(when (str/blank? error-message)
-                  (dispatch [:add-contact-handler new-contact-identity]))}]))
+    [{:image               {:source {:uri (if (str/blank? error-message)
+                                            :icon_ok_blue
+                                            :icon_ok_disabled)}
+                            :style  icon-ok}
+      :handler             #(when (str/blank? error-message)
+                              (dispatch [:add-contact-handler new-contact-identity]))
+      :accessibility-label :confirm-button}]))
 
 (defview contact-whisper-id-input [whisper-identity error]
   (letsubs [current-account [:get-current-account]]
@@ -54,15 +55,16 @@
                   (validation-error-message whisper-identity current-account error))]
       [view button-input-container
        [text-field
-        {:error          error
-         :error-color    color-blue
-         :input-style    st/qr-input
-         :value          whisper-identity
-         :wrapper-style  button-input
-         :label          (label :t/public-key)
-         :on-change-text #(do
-                            (dispatch [:set :contacts/new-identity %])
-                            (dispatch [:set :contacts/new-public-key-error nil]))}]
+        {:error               error
+         :error-color         color-blue
+         :input-style         st/qr-input
+         :value               whisper-identity
+         :wrapper-style       button-input
+         :label               (label :t/public-key)
+         :on-change-text      #(do
+                                 (dispatch [:set :contacts/new-identity %])
+                                 (dispatch [:set :contacts/new-public-key-error nil]))
+         :accessibility-label :public-key-input}]
        [scan-button {:show-label? (zero? (count whisper-identity))
                      :handler     #(dispatch [:scan-qr-code
                                               {:toolbar-title (label :t/new-contact)}
@@ -85,4 +87,3 @@
       [text {:style st/address-explication
              :font  :default}
        (label :t/address-explication)]]]))
-
