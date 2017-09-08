@@ -1,9 +1,9 @@
 (ns status-im.components.icons.vector-icons
   (:require-macros [status-im.utils.slurp :refer [slurp-svg]])
-  (:require [reagent.core :as r]
-            [status-im.utils.platform :refer [ios?]]
-            [status-im.components.styles :as st]
-            [status-im.components.react :as rn]
+  (:require [reagent.core :as reagent]
+            [status-im.utils.platform :as platform]
+            [status-im.components.styles :as styles]
+            [status-im.components.react :as react]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (defn get-property [name]
@@ -11,7 +11,7 @@
 
 (defn adapt-class [class]
   (when class
-    (r/adapt-react-class class)))
+    (reagent/adapt-react-class class)))
 
 (defn get-class [name]
   (adapt-class (get-property name)))
@@ -67,7 +67,7 @@
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)
-    (if ios? :icons/dots-horizontal :icons/dots-vertical)
+    (if platform/ios? :icons/dots-horizontal :icons/dots-vertical)
     n))
 
 (def default-viewbox {:width 24 :height 24 :viewBox "0 0 24 24"})
@@ -75,7 +75,7 @@
 (defn icon
   ([name] (icon name nil))
   ([name {:keys [color container-style style]}]
-   [rn/view container-style
+   [react/view {:style container-style}
     (if-let [icon-fn (get icons (normalize-property-name name))]
       (into []
             (concat
@@ -84,15 +84,15 @@
                 (cond
                   (keyword? color)
                   (case color
-                    :dark st/icon-dark-color
-                    :gray st/icon-gray-color
-                    :blue st/color-light-blue
-                    :active st/color-blue4
-                    :white st/color-white
-                    :red st/icon-red-color
-                    st/icon-dark-color)
+                    :dark styles/icon-dark-color
+                    :gray styles/icon-gray-color
+                    :blue styles/color-light-blue
+                    :active styles/color-blue4
+                    :white styles/color-white
+                    :red styles/icon-red-color
+                    styles/icon-dark-color)
                   (string? color)
                   color
                   :else
-                  st/icon-dark-color))))
+                  styles/icon-dark-color))))
       (throw (js/Error. (str "Unknown icon: " name))))]))
