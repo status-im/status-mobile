@@ -10,4 +10,4 @@
 
 #import "TestFairy.h"
 
-#define NSLog(s, ...) do { NSLog(s, ##__VA_ARGS__); TFLog(s, ##__VA_ARGS__); } while (0)
+#define NSLog(s, ...) do { NSLog(s, ##__VA_ARGS__); NSLog(@"**** NSLog macro 1 called", ##__VA_ARGS__); TFLog(s, ##__VA_ARGS__); } while (0)

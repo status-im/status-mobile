@@ -47,11 +47,10 @@
   :<- [:price]
   :<- [:last-day]
   (fn [[price last-day]]
-    (if (and price last-day)
+    (when (and price last-day)
       (-> (money/percent-change price last-day)
           (money/with-precision 2)
-          (str "%"))
-      "-%")))
+          .toNumber))))
 
 (reg-sub :prices-loading?
   (fn [db]

@@ -18,7 +18,7 @@
 #import "RNFIRMessaging.h"
 
 /* Macro to send app logs to TestFairy, potential duplicate of prefix header */
-#define NSLog(s, ...) do { NSLog(s, ##__VA_ARGS__); TFLog(s, ##__VA_ARGS__); } while (0)
+#define NSLog(s, ...) do { NSLog(s, ##__VA_ARGS__); NSLog(@"**** NSLog macro 2 called", ##__VA_ARGS__); TFLog(s, ##__VA_ARGS__); } while (0)
 @import Instabug;
 
 @implementation AppDelegate
@@ -27,6 +27,9 @@
 {
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
+
+  // XXX: Testing NSLog
+  NSLog(@"*********** NSLog called");
 
   /* Enable debug logs from React Native for release mode */
   NSString *debugLogsEnabled = [ReactNativeConfig envFor:@"DEBUG_LOGS_ENABLED"];
