@@ -277,10 +277,3 @@
   :update-geolocation
   (fn [db [_ geolocation]]
     (assoc db :geolocation geolocation)))
-
-;; TODO(oskarth): Put this token in DB
-(register-handler-fx
-  :get-fcm-token
-  (fn [_ _]
-    (notifications/get-fcm-token)
-    {}))
