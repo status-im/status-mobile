@@ -9,6 +9,7 @@
 
 #import "AppDelegate.h"
 
+#import <asl.h>
 #import "ReactNativeConfig.h"
 #import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
@@ -17,24 +18,58 @@
 #import "TestFairy.h"
 #import "RNFIRMessaging.h"
 
-/* Macro to send app logs to TestFairy, potential duplicate of prefix header */
-#define NSLog(s, ...) do { NSLog(s, ##__VA_ARGS__); NSLog(@"**** NSLog macro 2 called", ##__VA_ARGS__); TFLog(s, ##__VA_ARGS__); } while (0)
 @import Instabug;
 
 @implementation AppDelegate
+
+/* Modified version of RCTDefaultLogFunction that also directs all app logs to TestFairy. */
+RCTLogFunction RCTTestFairyLogFunction = ^(
+  RCTLogLevel level,
+  __unused RCTLogSource source,
+  NSString *fileName,
+  NSNumber *lineNumber,
+  NSString *message
+  )
+{
+  NSString *log = RCTFormatLog([NSDate date], level, fileName, lineNumber, message);
+  fprintf(stderr, "%s\n", log.UTF8String);
+  fflush(stderr);
+
+  /* Only custom part */
+  TFLog(log);
+
+  int aslLevel;
+  switch(level) {
+  case RCTLogLevelTrace:
+    aslLevel = ASL_LEVEL_DEBUG;
+    break;
+  case RCTLogLevelInfo:
+    aslLevel = ASL_LEVEL_NOTICE;
+    break;
+  case RCTLogLevelWarning:
+    aslLevel = ASL_LEVEL_WARNING;
+    break;
+  case RCTLogLevelError:
+    aslLevel = ASL_LEVEL_ERR;
+    break;
+  case RCTLogLevelFatal:
+    aslLevel = ASL_LEVEL_CRIT;
+    break;
+  }
+  asl_log(NULL, NULL, aslLevel, "%s", message.UTF8String);
+
+};
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
 
-  // XXX: Testing NSLog
-  NSLog(@"*********** NSLog called");
-
   /* Enable debug logs from React Native for release mode */
   NSString *debugLogsEnabled = [ReactNativeConfig envFor:@"DEBUG_LOGS_ENABLED"];
   if([debugLogsEnabled isEqualToString:@"1"]){
     RCTSetLogThreshold(RCTLogLevelInfo - 1);
+    RCTSetLogFunction(RCTTestFairyLogFunction);
   }
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
