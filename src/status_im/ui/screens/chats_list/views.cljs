@@ -39,7 +39,7 @@
 
 (defn toolbar-view []
   [toolbar/toolbar2 {}
-   [toolbar/nav-button (act/hamburger open-drawer!)]
+   [toolbar/nav-button (act/hamburger drawer/open-drawer!)]
    [toolbar/content-title (i18n/label :t/chats)]
    [toolbar/actions
     (if ios?
