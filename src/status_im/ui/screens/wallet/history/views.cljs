@@ -5,6 +5,8 @@
             [status-im.components.checkbox.view :as checkbox]
             [status-im.components.list.views :as list]
             [status-im.components.react :as react]
+            [status-im.components.status-bar :as status-bar]
+            [status-im.components.styles :as styles]
             [status-im.components.tabs.views :as tabs]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :as i18n]
@@ -32,7 +34,7 @@
    :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
 
 (defn toolbar-view [view-id unsigned-transactions]
-  [toolbar/toolbar2 {}
+  [toolbar/toolbar2 {:flat? true}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case @view-id
@@ -49,17 +51,15 @@
    [button/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
 
 (defn- unsigned? [type] (= "unsigned" type))
-(defn- inbound? [type] (= "inbound" type))
 
-(defn- transaction-icon [k color] {:icon k :style (history.styles/transaction-icon-background color)})
+(defn- transaction-icon [k background-color color] {:icon k :icon-opts {:color color} :style (history.styles/transaction-icon-background background-color)})
 
 (defn- transaction-type->icon [s]
   (case s
-    "inbound" (transaction-icon :icons/arrow-left :red)
-    "outbound" (transaction-icon :icons/arrow-right :red)
-    "postponed"  (transaction-icon :icons/arrow-right :red)
-    "unsigned" (transaction-icon :icons/dots-horizontal :red)
-    "pending" (transaction-icon :icons/dots-horizontal :red)
+    "unsigned" (transaction-icon :icons/dots-horizontal styles/color-gray4-transparent styles/color-gray7)
+    "inbound" (transaction-icon :icons/arrow-left styles/color-green-3-light styles/color-green-3)
+    "outbound" (transaction-icon :icons/arrow-right styles/color-blue4-transparent styles/color-blue4)
+    ("postponed" "pending")  (transaction-icon :icons/arrow-right styles/color-gray4-transparent styles/color-gray7)
     (throw (str "Unknown transaction type: " s))))
 
 (defn render-transaction [{:keys [to from type value symbol] :as m}]
@@ -72,7 +72,7 @@
       (str (i18n/label :t/from) " " from))
     (when (unsigned? type)
       [action-buttons m])]
-   [list/item-icon {:icon :icons/forward}]])
+   [list/item-icon {:icon :icons/forward :icon-opts history.styles/forward}]])
 
 ;; TODO(yenda) hook with re-frame
 (defn- empty-text [s] [react/text {:style history.styles/empty-text} s])
@@ -81,7 +81,7 @@
   (letsubs [transactions-history-list [:wallet/transactions-history-list]
             transactions-loading?     [:wallet/transactions-loading?]
             error-message             [:wallet.transactions/error-message?]]
-    [react/scroll-view
+    [react/scroll-view {:style styles/flex}
      (when error-message [wallet.views/error-message-view history.styles/error-container history.styles/error-message])
      [list/section-list {:sections        transactions-history-list
                          :render-fn       render-transaction
@@ -91,7 +91,7 @@
 
 (defview unsigned-list [transactions]
   []
-  [react/scroll-view
+  [react/scroll-view {:style styles/flex}
    [list/flat-list {:data            transactions
                     :render-fn       render-transaction
                     :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]])
@@ -168,12 +168,13 @@
    [react/scroll-view
     [list/section-list {:sections filter-data}]]])
 
-(defn- main-section [view-id tabs ]
-    (let [prev-view-id (reagent/atom @view-id)]
-    [tabs/swipable-tabs {:style          history.styles/main-section
-                         :on-view-change #(do (reset! prev-view-id @view-id)
-                                              (reset! view-id %))}
-
+(defn- main-section [view-id tabs]
+  (let [prev-view-id (reagent/atom @view-id)]
+    [tabs/swipable-tabs {:style            history.styles/main-section
+                         :style-tabs       history.styles/tabs
+                         :style-tab-active history.styles/tab-active
+                         :on-view-change   #(do (reset! prev-view-id @view-id)
+                                                (reset! view-id %))}
       tabs prev-view-id view-id]))
 
 ;; TODO(yenda) must reflect selected wallet
@@ -183,6 +184,7 @@
   (let [tabs         (tab-list unsigned-transactions)
         default-view (get-in tabs [0 :view-id])
         view-id      (reagent/atom default-view)]
-    [react/view {:style history.styles/wallet-transactions-container}
+    [react/view {:style styles/flex}
+     [status-bar/status-bar {:type :modal}]
      [toolbar-view view-id unsigned-transactions]
      [main-section view-id tabs]]))

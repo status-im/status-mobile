@@ -30,9 +30,11 @@
   ([left-action content] (item left-action content nil))
   ([left-action content right-action]
    [rn/view {:style lst/item}
-    left-action
+    [rn/view {:style lst/left-item-wrapper}
+     left-action]
     content
-    right-action]))
+    [rn/view {:style lst/right-item-wrapper}
+     right-action]]))
 
 (defn touchable-item [handler item]
   [rn/touchable-highlight {:on-press handler}
@@ -40,14 +42,13 @@
 
 (defn item-icon
   [{:keys [icon style icon-opts]}]
-  [rn/view {:style lst/item-image-wrapper}
-   [rn/view {:style style}
-    [vi/icon icon (merge icon-opts {:style lst/item-image})]]])
+  [rn/view {:style style}
+   [vi/icon icon (merge icon-opts {:style lst/item-icon})]])
 
 (defn item-image
   ([source] (item-image source nil))
   ([source style]
-   [rn/view {:style (merge lst/item-image-wrapper style)}
+   [rn/view {:style style}
     [rn/image {:source source
                :style  lst/item-image}]]))
 

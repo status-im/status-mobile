@@ -108,6 +108,7 @@
          (doall
            (map-indexed (fn [index {vid :view-id screen :screen}]
                           ^{:key index} [screen (= view-id vid)]) tab-list))]
-        [tabs {:style (styles/tabs-container tabs-hidden?)
+        [tabs {:style            (merge (styles/tabs-container tabs-hidden?)
+                                        styles/tabs-container-line)
                :selected-view-id view-id
                :tab-list         tab-list}]]]]]))

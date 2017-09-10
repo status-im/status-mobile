@@ -1,17 +1,17 @@
 (ns status-im.components.toolbar-new.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :as st]
+  (:require [status-im.components.styles :as styles]
             [status-im.utils.platform :as p]))
 
-(def toolbar-background1 st/color-white)
+(def toolbar-background1 styles/color-white)
 
 (def toolbar-icon-width 24)
 (def toolbar-icon-height 24)
 (def toolbar-icon-spacing 24)
 
-(defn toolbar-wrapper [background-color]
-  {:backgroundColor (or background-color toolbar-background1)
-   :elevation       2})
+(defn toolbar-wrapper [background-color flat?]
+  {:background-color (or background-color toolbar-background1)
+   :elevation        (if flat? 0 2)})
 
 (defstyle toolbar
   {:flex-direction     :row
@@ -31,7 +31,7 @@
    :ios        {:align-items  :center}})
 
 (defstyle toolbar-title-text
-  {:color          st/text1-color
+  {:color          styles/text1-color
    :letter-spacing -0.2
    :font-size      17
    :ios            {:text-align "center"}})
@@ -72,7 +72,7 @@
    :padding-left        0
    :padding-bottom      0
    :text-align-vertical :center
-   :color               st/color-black
+   :color               styles/color-black
    :ios                 {:padding-left   8
                          :padding-top    2
                          :letter-spacing -0.2}})
@@ -95,10 +95,10 @@
    :android {:margin 16}})
 
 (def item-text
-  {:color     st/color-blue4
+  {:color     styles/color-blue4
    :font-size 17})
 
-(def toolbar-text-action-disabled {:color st/color-gray7})
+(def toolbar-text-action-disabled {:color styles/color-gray7})
 
-(def item-text-white-background {:color st/color-blue4})
+(def item-text-white-background {:color styles/color-blue4})
 

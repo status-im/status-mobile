@@ -3,8 +3,7 @@
             [status-im.utils.platform :as platform]))
 
 (def wallet-container
-  {:flex             1
-   :background-color styles/color-white})
+  {:flex 1})
 
 (def error-container
   {:align-self       :center
@@ -20,7 +19,7 @@
    :font-size     13})
 
 (def toolbar
-  {:background-color styles/color-blue5
+  {:background-color (if platform/ios? styles/color-blue4 styles/color-blue5)
    :elevation        0})
 
 (def toolbar-title-container
@@ -118,7 +117,8 @@
 ;;;;;;;;;;;;;;;;;;;;
 
 (def asset-section
-  {:background-color styles/color-white
+  {:flex             1
+   :background-color styles/color-white
    :padding-vertical 16})
 
 (def asset-section-title
@@ -136,7 +136,12 @@
    :color     styles/color-black})
 
 (def add-asset-icon
-  {:border-radius    32
+  {:flex             1
+   :justify-content  :center
+   :align-items      :center
+   :width            40
+   :height           40
+   :border-radius    32
    :background-color styles/color-blue4-transparent})
 
 (def add-asset-text

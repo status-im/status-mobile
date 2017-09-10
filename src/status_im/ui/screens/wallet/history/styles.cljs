@@ -15,15 +15,18 @@
    :padding-right 10
    :font-size     13})
 
+(def main-section styles/flex)
 
-(def wallet-transactions-container
-  {:flex             1
-   :background-color styles/color-white})
+(def tabs
+  {:border-bottom-width 1
+   :border-bottom-color styles/color-gray10-transparent})
 
-(def main-section
-  {:flex             1
-   :position         :relative
-   :background-color styles/color-white})
+(def tab-active
+  {:border-bottom-width 2
+   :border-bottom-color styles/color-blue4})
+
+(def forward
+  {:color styles/color-gray7})
 
 (def empty-text
   {:text-align       :center
@@ -78,5 +81,10 @@
   {:background-color :transparent})
 
 (defn transaction-icon-background [color]
-  {:border-radius    32
-   :background-color styles/color-blue4-transparent})
+  {:flex             1
+   :justify-content  :center
+   :align-items      :center
+   :width            40
+   :height           40
+   :border-radius    32
+   :background-color color})

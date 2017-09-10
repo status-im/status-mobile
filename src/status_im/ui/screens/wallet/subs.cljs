@@ -83,15 +83,17 @@
   :<- [:wallet/transactions]
   (fn [transactions]
     (let [{:keys [postponed pending inbound outbound]} (group-by :type transactions)
-          transaction-history-list                     [{:title "Postponed"
-                                                         :key :postponed
-                                                         :data (or postponed [])}
-                                                        {:title "Pending"
-                                                         :key :pending
-                                                         :data (or pending [])}]
+          transaction-history-list                     [(if postponed
+                                                          {:title "Postponed"
+                                                           :key   :postponed
+                                                           :data  postponed})
+                                                        (if pending
+                                                          {:title "Pending"
+                                                           :key   :pending
+                                                           :data  pending})]
           completed-transactions                       (->> (into inbound outbound)
                                                             (group-by #(datetime/date->mini-str-date (:timestamp %)))
                                                             (map (fn [[k v]] {:title k
-                                                                              :key (mini-str-date->keyword k)
-                                                                              :data v})))]
-      (into transaction-history-list (or completed-transactions [])))))
+                                                                              :key   (mini-str-date->keyword k)
+                                                                              :data  v})))]
+      (into (filterv (complement nil?) transaction-history-list) (or completed-transactions [])))))
