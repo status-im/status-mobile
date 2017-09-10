@@ -128,7 +128,7 @@
 
 (register-handler-fx
   :check-status-change
-  (fn [{:accounts/keys [accounts current-account-id]} [_ status]]
+  (fn [{{:accounts/keys [accounts current-account-id]} :db} [_ status]]
     (let [{old-status :status} (get accounts current-account-id)
           status-updated? (and (not= status nil)
                                (not= status old-status))]
@@ -150,9 +150,9 @@
       {:db                        (assoc-in db [:accounts/accounts current-account-id] new-account)
        ::save-account             new-account
        ::broadcast-account-update (merge
-                                    (select-keys db [:current-public-key :web3])
-                                    (select-keys new-account [:name :photo-path :status
-                                                              :updates-public-key :updates-private-key]))})))
+                                   (select-keys db [:current-public-key :web3])
+                                   (select-keys new-account [:name :photo-path :status
+                                                             :updates-public-key :updates-private-key]))})))
 
 (register-handler-fx
   :account-update-keys
@@ -166,9 +166,9 @@
       {:db                (assoc-in db [:accounts/accounts current-account-id] new-account)
        ::save-account     new-account
        ::send-keys-update (merge
-                            (select-keys db [:web3 :current-public-key :contacts])
-                            (select-keys new-account [:updates-public-key
-                                                      :updates-private-key]))})))
+                           (select-keys db [:web3 :current-public-key :contacts])
+                           (select-keys new-account [:updates-public-key
+                                                     :updates-private-key]))})))
 
 (register-handler-fx
   :send-account-update-if-needed
@@ -184,5 +184,6 @@
   :set-current-account
   (fn [{:accounts/keys [accounts] :as db} [_ address]]
     (let [key (:public-key (accounts address))]
-      (assoc db :accounts/current-account-id address
-                :current-public-key key))))
+      (assoc db
+             :accounts/current-account-id address
+             :current-public-key key))))
