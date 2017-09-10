@@ -12,6 +12,8 @@
 (def color-purple "#a187d5")
 (def color-gray-transparent-light "rgba(0, 0, 0, 0.1)")
 (def color-gray-transparent "rgba(0, 0, 0, 0.4)")
+(def color-gray4-transparent "rgba(147, 155, 161, 0.2)")
+(def color-gray10-transparent "rgba(184, 193, 199, 0.5)")
 (def color-gray "#838c93de")
 (def color-gray2 "#8f838c93")
 (def color-gray3 "#00000040")
@@ -46,6 +48,8 @@
 (def color-light-red2 "#f47979")
 (def color-green-1 "#a8f4d4")
 (def color-green-2 "#448469")
+(def color-green-3 "#44d058")
+(def color-green-3-light "rgba(68, 208, 88, 0.2)")
 (def color-cyan "#7adcfb")
 
 (def color-separator "#D6D6D6")

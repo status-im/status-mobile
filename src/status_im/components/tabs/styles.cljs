@@ -28,27 +28,29 @@
    :alignItems      :center})
 
 (def tab
-  {:flex           1
-   :height         tab-height
-   :justifyContent :center
-   :alignItems     :center})
+  {:flex                1
+   :height              tab-height
+   :justify-content     :center
+   :align-items         :center
+   :border-bottom-width 2
+   :border-bottom-color styles/color-white})
 
-(defnstyle tab-title [active?]
-  {:ios        {:font-size 11}
-   :android    {:font-size 12}
+(defnstyle tab-title [active? text-only?]
+  {:ios        {:font-size (if text-only? 15 11)}
+   :android    {:font-size (if text-only? 14 12)}
    :margin-top 3
    :min-width  60
    :text-align :center
-   :color      (if active? styles/color-blue4 styles/color-gray8)})
+   :color      (if active? styles/color-blue4 styles/color-black)})
 
 (defn tab-icon [active?]
   {:color (if active? styles/color-blue4 styles/color-gray4)})
 
 (def tab-container
-  {:flex           1
-   :height         tab-height
-   :justifyContent :center
-   :alignItems     :center})
+  {:flex                1
+   :height              tab-height
+   :justify-content     :center
+   :align-items         :center})
 
 (def swiper
   {:shows-pagination false})

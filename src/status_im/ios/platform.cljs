@@ -23,7 +23,7 @@
                                          :color     styles/color-transparent}
                            :wallet      {:height    20
                                          :bar-style "light-content"
-                                         :color     styles/color-blue5}}
+                                         :color     styles/color-blue4}}
    :sized-text            {:margin-top        -5
                            :additional-height 5}
    :actions-list-view     {:border-bottom-color styles/color-gray3

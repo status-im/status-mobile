@@ -90,25 +90,18 @@
   ([title] (toolbar2 nil title))
   ([props title] (toolbar2 props default-nav-back [content-title title]))
   ([props nav-item content-item] (toolbar2 props nav-item content-item [actions [{:image :blank}]]))
-  ([{:keys [background-color
-            hide-border?
-            style
-            border-style]}
+  ([{:keys [background-color style flat?]}
     nav-item
     content-item
     action-items]
-  (let [style (merge (tst/toolbar-wrapper background-color) style)]
-    [rn/view {:style style}
-     [rn/view {:style tst/toolbar}
-      (when nav-item
-        [rn/view {:style (tst/toolbar-nav-actions-container 0)}
-         nav-item])
-      content-item
-      action-items]
-     [sync-state-gradient-view/sync-state-gradient-view]
-     (when-not hide-border?
-       [rn/view {:style (merge tst/toolbar-border-container border-style)}
-        [rn/view {:style tst/toolbar-border}]])])))
+   [rn/view {:style (merge (tst/toolbar-wrapper background-color flat?) style)}
+    [rn/view {:style tst/toolbar}
+     (when nav-item
+       [rn/view {:style (tst/toolbar-nav-actions-container 0)}
+        nav-item])
+     content-item
+     action-items]
+    [sync-state-gradient-view/sync-state-gradient-view]]))
 
 (defn toolbar
   "DEPRECATED
@@ -124,7 +117,7 @@
            border-style
            title-style
            style]}]
-  (let [style (merge (tst/toolbar-wrapper background-color) style)]
+  (let [style (merge (tst/toolbar-wrapper background-color false) style)]
     [rn/view {:style style}
      [rn/view tst/toolbar
       (when-not hide-nav?

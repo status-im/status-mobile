@@ -9,9 +9,10 @@
             [status-im.components.tabs.styles :as styles]
             [status-im.utils.platform :as p]))
 
-(defn- tab [{:keys [view-id title icon-active icon-inactive selected-view-id on-press]}]
-  (let [active? (= view-id selected-view-id)]
-    [react/touchable-highlight {:style    styles/tab
+(defn- tab [{:keys [view-id title icon-active icon-inactive style-active selected-view-id on-press]}]
+  (let [active? (= view-id selected-view-id)
+        text-only? (nil? icon-active)]
+    [react/touchable-highlight {:style    (merge styles/tab (if (and active? style-active) style-active))
                                 :disabled active?
                                 :on-press  #(if on-press (on-press view-id) (dispatch [:navigate-to-tab view-id]))}
      [react/view {:style styles/tab-container}
@@ -19,29 +20,29 @@
         [react/view
          [vi/icon icon (styles/tab-icon active?)]])
       [react/view
-       [react/text (merge (if-not icon-active {:uppercase? (get-in p/platform-specific [:uppercase?])})
-                          {:style (styles/tab-title active?)})
+       [react/text (merge (if text-only? {:uppercase? (get-in p/platform-specific [:uppercase?])})
+                          {:style (styles/tab-title active? text-only?)})
         title]]]]))
 
-(defn- create-tab [index data selected-view-id on-press]
+(defn- create-tab [index data selected-view-id on-press style-active]
   (let [data (merge data {:key              index
                           :index            index
+                          :style-active     style-active
                           :selected-view-id selected-view-id
                           :on-press         on-press})]
     [tab data]))
 
 (defview tabs-container [style children]
   (letsubs [tabs-hidden? [:tabs-hidden?]]
-    [react/animated-view {:style         (merge style
-                                                styles/tabs-container-line)
+    [react/animated-view {:style          style
                           :pointer-events (if tabs-hidden? :none :auto)}
      children]))
 
-(defn tabs [{:keys [style tab-list selected-view-id on-press]}]
+(defn tabs [{:keys [style style-tab-active tab-list selected-view-id on-press]}]
   [tabs-container style
    (into
      [react/view styles/tabs-inner-container]
-     (map-indexed #(create-tab %1 %2 selected-view-id on-press) tab-list))])
+     (map-indexed #(create-tab %1 %2 selected-view-id on-press style-tab-active) tab-list))])
 
 ;; Swipable tabs
 
@@ -82,7 +83,7 @@
               (reset! scrolling? false)
               (recur (async/<! scroll-start))))
 
-(defn swipable-tabs [{:keys [style on-view-change]} tab-list prev-view-id view-id]
+(defn swipable-tabs [{:keys [style style-tabs style-tab-active on-view-change]} tab-list prev-view-id view-id]
   (let [swiped?           (r/atom false)
         main-swiper       (r/atom nil)
         scroll-start      (async/chan 10)
@@ -103,6 +104,8 @@
                        [react/view {:style style}
                         [tabs {:selected-view-id @view-id
                                :tab-list         tab-list
+                               :style            style-tabs
+                               :style-tab-active style-tab-active
                                :on-press         on-view-change}]
                         [react/swiper (merge styles/swiper
                                              {:index                  (get-tab-index tab-list @view-id)
