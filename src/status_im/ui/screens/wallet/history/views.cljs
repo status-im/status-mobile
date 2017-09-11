@@ -78,8 +78,8 @@
 (defn- empty-text [s] [react/text {:style history.styles/empty-text} s])
 
 (defview history-list []
-  (letsubs [transactions-history-list [:wallet/transactions-history-list]
-            transactions-loading?     [:wallet/transactions-loading?]
+  (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
+            transactions-loading?     [:wallet.transactions/transactions-loading?]
             error-message             [:wallet.transactions/error-message?]]
     [react/scroll-view {:style styles/flex}
      (when error-message [wallet.views/error-message-view history.styles/error-container history.styles/error-message])
@@ -180,7 +180,7 @@
 ;; TODO(yenda) must reflect selected wallet
 
 (defview transactions []
-  [unsigned-transactions [:wallet/unsigned-transactions]]
+  [unsigned-transactions [:wallet.transactions/unsigned-transactions]]
   (let [tabs         (tab-list unsigned-transactions)
         default-view (get-in tabs [0 :view-id])
         view-id      (reagent/atom default-view)]
