@@ -6,7 +6,7 @@ function calculateFee(n, tx) {
 
     var gasMultiplicator = Math.pow(1.4, n).toFixed(3);
     var weiFee = web3.eth.gasPrice * gasMultiplicator * estimatedGas;
-    // force fee in eth to be of BigNumber type
+    // force fee in ETH to be of BigNumber type
     var ethFee = web3.toBigNumber(web3.fromWei(weiFee, "ether"));
     // always display 7 decimal places
     return ethFee.toFixed(7);
