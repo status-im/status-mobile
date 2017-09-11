@@ -34,10 +34,15 @@
        (before? date today) (label :t/datetime-yesterday)
        :else (today-format-fn local)))))
 
-(defn date->mini-str-date [ms]
+(defn timestamp->mini-date [ms]
   (unparse (formatter "dd MMM") (-> ms
                                     from-long
                                     (plus time-zone-offset))))
+
+(defn timestamp->date-key [ms]
+  (keyword (unparse (formatter "YYYYMMDD") (-> ms
+                                               from-long
+                                               (plus time-zone-offset)))))
 
 (defn day-relative [ms]
   (when (pos? ms)
