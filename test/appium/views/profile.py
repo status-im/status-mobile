@@ -6,7 +6,7 @@ class PublicKeyText(BaseText):
 
     def __init__(self, driver):
         super(PublicKeyText, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@instance='7']")
+        self.locator = self.Locator.accessibility_id('profile-public-key')
 
 
 class ProfileViewObject(BaseViewObject):
