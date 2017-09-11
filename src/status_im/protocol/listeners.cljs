@@ -6,70 +6,91 @@
             [taoensso.timbre :as log]
             [status-im.utils.hex :as i]))
 
-(defn create-error [description]
-  (log/debug :parse-payload-error description)
+(defn empty-public-key? [public-key]
+  (or (= "0x0" public-key)
+      (= "" public-key)
+      (nil? public-key)))
+
+(defn create-error [step description]
+  (when (not= description :silent)
+    (log/debug step description))
   {:error description})
 
-(defn- parse-payload [payload]
+(defn init-scope [js-error js-message options]
+  (if js-error
+    (create-error :init-scope-error (-> js-error js->clj str))
+    {:message (js->clj js-message :keywordize-keys true)
+     :options options}))
+
+(defn parse-payload [{:keys [message error options] :as scope}]
   (log/debug :parse-payload)
-  (try
-    ;; todo figure why we have to call to-utf8 twice
-    (let [payload'   (u/to-utf8 payload)
-          payload''  (r/read-string payload')
-          payload''' (if (map? payload'')
-                       payload''
-                       (r/read-string (u/to-utf8 payload')))]
-      (if (map? payload''')
-        {:payload payload'''}
-        (create-error (str "Invalid payload type " (type payload''')))))
-    (catch :default err
-      (create-error err))))
+  (if error
+    scope
+    (try
+      ;; todo figure why we sometimes have to call to-utf8 twice and sometimes only once
+      (let [payload    (:payload message)
+            payload'   (u/to-utf8 payload)
+            payload''  (r/read-string payload')
+            payload''' (if (map? payload'')
+                         payload''
+                         (r/read-string (u/to-utf8 payload')))]
+        (if (map? payload''')
+          {:message (assoc message :payload payload''')
+           :options options}
+          (create-error :parse-payload-error (str "Invalid payload type " (type payload''')))))
+      (catch :default err
+        (create-error :parse-payload-error  err)))))
 
-(defn- decrypt [key content]
-  (try
-    {:content (r/read-string (e/decrypt key content))}
-    (catch :default err
-      (log/debug :decrypt-error err)
-      {:error err})))
+(defn filter-messages-from-same-user [{:keys [message error options] :as scope}]
+  (if error
+    scope
+    (if (or (not= (i/normalize-hex (:identity options))
+                  (i/normalize-hex (:sig message)))
+            ;; allow user to receive his own discoveries
+            (= type :discover))
+      scope
+      (create-error :filter-messages-error :silent))))
 
-(defn- parse-content [key {:keys [content]} was-encrypted?]
-  (log/debug :parse-content
-         "Key exists:" (not (nil? key))
-         "Content exists:" (not (nil? content)))
-  (if (and (not was-encrypted?) key content)
-    (decrypt key content)
-    {:content content}))
+(defn parse-content [{:keys [message error options] :as scope}]
+  (if error
+    scope
+    (try
+      (let [to             (:recipientPublicKey message)
+            from           (:sig message)
+            key            (get-in options [:keypair :private])
+            raw-content    (get-in message [:payload :content])
+            encrypted?     (and (empty-public-key? to) key raw-content)
+            content        (if encrypted?
+                             (r/read-string (e/decrypt key raw-content))
+                             raw-content)]
+        (log/debug :parse-content
+                   "Key exists:" (not (nil? key))
+                   "Content exists:" (not (nil? raw-content)))
+        {:message (-> message
+                      (assoc-in [:payload :content] content)
+                      (assoc :to to
+                             :from from))
+         :options options})
+      (catch :default err
+        (create-error :parse-content-error err)))))
+
+(defn handle-message [{:keys [message error options] :as scope}]
+  (if error
+    scope
+    (let [{:keys [web3 identity callback]} options
+          {:keys [payload sig]}            message
+          ack?                            (get-in message [:payload :ack?])]
+      (log/debug :handle-message message)
+      (callback (if ack? :ack (:type payload)) message)
+      (ack/check-ack! web3 sig payload identity))))
 
 (defn message-listener
-  [{:keys [web3 identity callback keypair]}]
-  (fn [error js-message]
-    ;; todo handle error
-    (when error
-      (log/debug :listener-error error))
-    (when-not error
-      (log/debug :message-received (js->clj js-message))
-      (let [{:keys [sig payload recipientPublicKey] :as message}
-            (js->clj js-message :keywordize-keys true)
-
-            {{:keys [type ack?] :as payload'} :payload
-             payload-error                    :error}
-            (parse-payload payload)]
-        (when (and (not payload-error)
-                   (or (not= (i/normalize-hex identity)
-                             (i/normalize-hex sig))
-                       ;; allow user to receive his own discoveries
-                       (= type :discover)))
-          (let [{:keys [content error]} (parse-content (:private keypair)
-                                                       payload'
-                                                       (and (not= "0x0" recipientPublicKey)
-                                                            (not= "" recipientPublicKey)
-                                                            (not (nil? recipientPublicKey))))]
-            (if error
-              (log/debug :failed-to-handle-message error)
-              (let [payload'' (assoc payload' :content content)
-                    message'  (assoc message :payload payload''
-                                             :to recipientPublicKey
-                                             :from sig)]
-                (callback (if ack? :ack type) message')
-                (ack/check-ack! web3 sig payload'' identity)))))))))
+  "Valid options are: web3, identity, callback, keypair"
+  [options]
+  (fn [js-error js-message]
+    (-> (init-scope js-error js-message options)
+        parse-payload
+        filter-messages-from-same-user
+        parse-content
+        handle-message)))
 
