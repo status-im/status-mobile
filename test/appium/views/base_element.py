@@ -1,9 +1,8 @@
-from selenium.webdriver.common.by import By
+from appium.webdriver.common.mobileby import By, MobileBy
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from appium.webdriver.common.touch_action import TouchAction
-import pytest
 
 
 class BaseElement(object):
@@ -17,6 +16,10 @@ class BaseElement(object):
         @classmethod
         def xpath_selector(locator, value):
             return locator(By.XPATH, value)
+
+        @classmethod
+        def accessibility_id(locator, value):
+            return locator(MobileBy.ACCESSIBILITY_ID, value)
 
         def __str__(self, *args, **kwargs):
             return "%s:%s" % (self.by, self.value)

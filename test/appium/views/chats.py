@@ -6,17 +6,14 @@ class ProfileButton(BaseButton):
 
     def __init__(self, driver):
         super(ProfileButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.support.v4.view.ViewPager//android.view.ViewGroup[2]/android.view.ViewGroup[1]/android.view.View"
-        )
+        self.locator = self.Locator.accessibility_id('toolbar-hamburger-menu')
 
 
 class ProfileIcon(BaseButton):
 
     def __init__(self, driver):
         super(ProfileIcon, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//android.widget.EditText/../android.view.ViewGroup")
+        self.locator = self.Locator.accessibility_id('drawer-profile-icon')
 
     def navigate(self):
         from views.profile import ProfileViewObject
@@ -45,18 +42,6 @@ class NewGroupChatButton(BaseButton):
         super(NewGroupChatButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
             "//android.widget.TextView[@text='New group chat']")
-
-    class AugurContact(BaseButton):
-        def __init__(self, driver):
-            super(NewGroupChatButton.AugurContact, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector(
-                "//android.widget.TextView[@text='Augur']")
-
-    class JarradContact(BaseButton):
-        def __init__(self, driver):
-            super(NewGroupChatButton.JarradContact, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector(
-                "//android.widget.TextView[@text='Jarrad']")
 
     class NextButton(BaseButton):
         def __init__(self, driver):
@@ -90,26 +75,21 @@ class ConfirmPublicKeyButton(BaseButton):
     def __init__(self, driver):
         super(ConfirmPublicKeyButton, self).__init__(driver)
         self.locator = \
-            self.Locator.xpath_selector("//android.widget.TextView[@text='Add new contact']"
-                                        "/following-sibling::android.view.ViewGroup/"
-                                        "android.widget.ImageView")
+            self.Locator.accessibility_id('toolbar-action')
 
 
 class ChatMessageInput(BaseEditBox):
 
     def __init__(self, driver):
         super(ChatMessageInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@content-desc='chat-message-input']")
+        self.locator = self.Locator.accessibility_id('chat-message-input')
 
 
 class SendMessageButton(BaseButton):
 
     def __init__(self, driver):
         super(SendMessageButton, self).__init__(driver)
-        self.locator = \
-            self.Locator.xpath_selector("//android.widget.FrameLayout//"
-                                        "android.view.ViewGroup[3]//"
-                                        "android.view.ViewGroup[2]//android.widget.ImageView")
+        self.locator = self.Locator.accessibility_id("send-message-button")
 
 
 class UserNameText(BaseText):
@@ -118,12 +98,6 @@ class UserNameText(BaseText):
         super(UserNameText, self).__init__(driver)
         self.locator = \
             self.Locator.xpath_selector("//android.widget.ScrollView//android.widget.TextView")
-
-    class UserContactByName(BaseButton):
-
-        def __init__(self, driver, user_name):
-            super(UserNameText.UserContactByName, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector('//*[@text="' + user_name + '"]')
 
 
 class ChatsViewObject(BaseViewObject):
@@ -140,13 +114,11 @@ class ChatsViewObject(BaseViewObject):
         self.public_key_edit_box = PublicKeyEditBox(self.driver)
         self.confirm_public_key_button = ConfirmPublicKeyButton(self.driver)
 
-        self.chat_message_input = ChatMessageInput(self.driver)
-        self.send_message_button = SendMessageButton(self.driver)
-        self.user_name_text = UserNameText(self.driver)
-
         self.new_group_chat_button = NewGroupChatButton(self.driver)
-        self.augur_contact = NewGroupChatButton.AugurContact(self.driver)
-        self.jarrad_contact = NewGroupChatButton.JarradContact(self.driver)
         self.next_button = NewGroupChatButton.NextButton(self.driver)
         self.name_edit_box = NewGroupChatButton.NameEditBox(self.driver)
         self.save_button = NewGroupChatButton.SaveButton(self.driver)
+
+        self.chat_message_input = ChatMessageInput(self.driver)
+        self.send_message_button = SendMessageButton(self.driver)
+        self.user_name_text = UserNameText(self.driver)

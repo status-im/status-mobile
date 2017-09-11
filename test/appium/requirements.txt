@@ -12,8 +12,9 @@ lxml==3.8.0
 multidict==3.1.3
 namedlist==1.7
 py==1.4.34
-pytest==3.1.3
-pytest-xdist==1.18.2
+pytest==3.2.1
+pytest-forked==0.2
+pytest-xdist==1.20.0
 requests==2.18.3
 sauceclient==1.0.0
 selenium==2.53.6
