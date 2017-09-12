@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.wallet.history.styles
+(ns status-im.ui.screens.wallet.transactions.styles
   (:require [status-im.components.styles :as styles]))
 
 (def error-container

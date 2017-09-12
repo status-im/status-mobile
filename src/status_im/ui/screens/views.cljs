@@ -44,7 +44,7 @@
 
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
-            [status-im.ui.screens.wallet.history.views :as wallet-history]))
+            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]))
 
 (defn validate-current-view
   [current-view signed-up?]
@@ -103,8 +103,8 @@
                                   :transaction-details transaction-details
                                   :confirmation-success confirmation-success
                                   :contact-list-modal contact-list-modal
-                                  :wallet-transactions wallet-history/transactions
-                                  :wallet-transactions-filter wallet-history/filter-history
-                                  :wallet-transactions-sign-all wallet-history/sign-all
+                                  :wallet-transactions wallet-transactions/transactions
+                                  :wallet-transactions-filter wallet-transactions/filter-history
+                                  :wallet-transactions-sign-all wallet-transactions/sign-all
                                   (throw (str "Unknown modal view: " modal-view)))]
                   [component])]])]])))))
