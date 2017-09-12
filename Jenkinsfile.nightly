@@ -55,7 +55,7 @@ node {
       artifact.renameTo artifact_dir + filename
       def uploadSpec = '{ "files": [ { "pattern": "*apk/' + filename + '", "target": "nightlies-local" }]}'
       def buildInfo = server.upload(uploadSpec)
-      slackSend color: 'good', message: 'develop' + ' (Android) http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
+      apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
     }
 
     stage('Deploy (iOS)') {
@@ -63,7 +63,7 @@ node {
         def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
         sh 'sleep 10'
         def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()  
-        slackSend color: 'good', message: 'develop' + ' (iOS) https://i.diawi.com/' + hash
+        ipaUrl = 'https://i.diawi.com/' + hash
       }
     }
   } catch (e) {
