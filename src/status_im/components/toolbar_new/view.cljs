@@ -41,10 +41,14 @@
 
 ;; Content
 
+(defn content-wrapper [content]
+  [rn/view {:style tst/toolbar-container}
+   content])
+
 (defn content-title
   ([title] (content-title nil title))
   ([title-style title]
-   [rn/view {:style tst/toolbar-title-container}
+   [content-wrapper
     [rn/text {:style (merge tst/toolbar-title-text title-style)
               :font  :toolbar-title}
      title]]))
@@ -124,7 +128,7 @@
         [rn/view (tst/toolbar-nav-actions-container actions)
          [nav-button (or nav-action act/default-back)]])
       (or custom-content
-          [rn/view {:style tst/toolbar-title-container}
+          [rn/view {:style tst/toolbar-container}
            [rn/text {:style (merge tst/toolbar-title-text title-style)
                      :font  :toolbar-title}
             title]])

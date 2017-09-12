@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.wallet.send.styles
-  (:require [status-im.components.styles :as st]))
+  (:require [status-im.components.styles :as styles]))
 
 (def wallet-container
   {:flex             1
-   :background-color st/color-white})
+   :background-color styles/color-white})
 
 (def toolbar
-  {:background-color st/color-blue5
+  {:background-color styles/color-blue5
    :elevation        0})
 
 (def toolbar-title-container
@@ -15,7 +15,7 @@
    :margin-left    6})
 
 (def toolbar-title-text
-  {:color        st/color-white
+  {:color        styles/color-white
    :font-size    17
    :margin-right 4})
 
@@ -25,10 +25,3 @@
 
 (def toolbar-title-icon
   (merge toolbar-icon {:opacity 0.4}))
-
-(def toolbar-buttons-container
-  {:flex-direction  :row
-   :flex-shrink     1
-   :justify-content :space-between
-   :width           68
-   :margin-right    12})

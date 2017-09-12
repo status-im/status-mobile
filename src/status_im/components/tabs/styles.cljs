@@ -1,10 +1,10 @@
 (ns status-im.components.tabs.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.components.styles :as styles]
-            [status-im.utils.platform :as p]))
+            [status-im.utils.platform :as platform]))
 
 
-(def tabs-height (if p/ios? 52 56))
+(def tabs-height (if platform/ios? 52 56))
 (def tab-height (dec tabs-height))
 
 (defn tabs-container [hidden?]
@@ -41,7 +41,10 @@
    :margin-top 3
    :min-width  60
    :text-align :center
-   :color      (if active? styles/color-blue4 styles/color-black)})
+   :color      (cond
+                 active? styles/color-blue4
+                 text-only? styles/color-black
+                 :else styles/color-gray4)})
 
 (defn tab-icon [active?]
   {:color (if active? styles/color-blue4 styles/color-gray4)})
