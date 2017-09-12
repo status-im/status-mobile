@@ -39,8 +39,7 @@
             [cljs.core.async :as a]
             status-im.chat.handlers.webview-bridge
             status-im.chat.handlers.console
-            [taoensso.timbre :as log]
-            [tailrecursion.priority-map :refer [priority-map-by]]))
+            [taoensso.timbre :as log]))
 
 (register-handler :set-layout-height
   (fn [db [_ height]]
@@ -208,10 +207,6 @@
     init-chat
     load-commands!))
 
-(defn compare-chats
-  [{timesatmp1 :timestamp} {timestamp2 :timestamp}]
-  (compare timestamp2 timesatmp1))
-
 (defn initialize-chats
   [{:keys [loaded-chats chats] :accounts/keys [account-creation?] :as db} _]
   (let [chats' (if account-creation?
@@ -220,7 +215,7 @@
                       (map (fn [{:keys [chat-id] :as chat}]
                              (let [last-message (messages/get-last-message chat-id)]
                                [chat-id (assoc chat :last-message last-message)])))
-                      (into (priority-map-by compare-chats))))]
+                      (into {})))]
 
     (-> db
         (assoc :chats chats')
@@ -248,7 +243,7 @@
                                    prev-chat    (get chats chat-id)
                                    new-chat     (assoc chat :last-message last-message)]
                                [chat-id (merge prev-chat new-chat)])))
-                      (into (priority-map-by compare-chats)))]
+                      (into {}))]
       (-> (assoc db :chats chats')
           (init-console-chat true)))))
 
