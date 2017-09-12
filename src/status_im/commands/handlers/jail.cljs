@@ -99,6 +99,6 @@
 
 (reg-handler :set-local-storage
   (handlers/side-effect!
-    (fn [_ [{:keys [data chat_id]}]]
-      (local-storage/set-data {:chat-id chat_id
+    (fn [_ [{:keys [data chat-id]}]]
+      (local-storage/set-data {:chat-id chat-id
                                :data    data}))))
