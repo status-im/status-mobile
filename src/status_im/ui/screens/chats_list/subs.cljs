@@ -12,6 +12,8 @@
   :<- [:get :chats]
   :<- [:get-in [:toolbar-search :text]]
   (fn [[chats search-text]]
-    (if search-text
-      (filter #(search-filter search-text (second %)) chats)
-      chats)))
+    (let [unordered-chats (if search-text
+                            (filter #(search-filter search-text (second %))
+                                    chats)
+                            chats)]
+      (sort-by #(-> % second :timestamp) > unordered-chats))))
