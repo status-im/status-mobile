@@ -44,6 +44,12 @@
                                                from-long
                                                (plus time-zone-offset)))))
 
+(defn timestamp->long-date [ms]
+  (keyword (unparse (formatter "MMM DD YYYY HH:mm:ss")
+                    (-> ms
+                        from-long
+                        (plus time-zone-offset)))))
+
 (defn day-relative [ms]
   (when (pos? ms)
     (to-short-str ms #(label :t/datetime-today))))
