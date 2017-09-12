@@ -1,4 +1,4 @@
-(ns status-im.ui.screens.wallet.history.views
+(ns status-im.ui.screens.wallet.transactions.views
   (:require [re-frame.core :as re-frame]
             [reagent.core :as reagent]
             [status-im.components.button.view :as button]
@@ -10,7 +10,7 @@
             [status-im.components.tabs.views :as tabs]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.wallet.history.styles :as history.styles]
+            [status-im.ui.screens.wallet.transactions.styles :as transactions.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
@@ -46,13 +46,16 @@
       [history-action]])])
 
 (defn action-buttons [m]
-  [react/view {:style history.styles/action-buttons}
+  [react/view {:style transactions.styles/action-buttons}
    [button/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
    [button/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
 
 (defn- unsigned? [type] (= "unsigned" type))
 
-(defn- transaction-icon [k background-color color] {:icon k :icon-opts {:color color} :style (history.styles/transaction-icon-background background-color)})
+(defn- transaction-icon [k background-color color]
+  {:icon      k
+   :icon-opts {:color color}
+   :style     (transactions.styles/transaction-icon-background background-color)})
 
 (defn- transaction-type->icon [s]
   (case s
@@ -72,17 +75,18 @@
       (str (i18n/label :t/from) " " from))
     (when (unsigned? type)
       [action-buttons m])]
-   [list/item-icon {:icon :icons/forward :icon-opts history.styles/forward}]])
+   [list/item-icon {:icon :icons/forward :icon-opts transactions.styles/forward}]])
 
 ;; TODO(yenda) hook with re-frame
-(defn- empty-text [s] [react/text {:style history.styles/empty-text} s])
+(defn- empty-text [s] [react/text {:style transactions.styles/empty-text} s])
 
 (defview history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             transactions-loading?     [:wallet.transactions/transactions-loading?]
             error-message             [:wallet.transactions/error-message?]]
     [react/scroll-view {:style styles/flex}
-     (when error-message [wallet.views/error-message-view history.styles/error-container history.styles/error-message])
+     (when error-message
+       [wallet.views/error-message-view transactions.styles/error-container transactions.styles/error-message])
      [list/section-list {:sections        transactions-history-list
                          :render-fn       render-transaction
                          :empty-component (empty-text (i18n/label :t/transactions-history-empty))
@@ -113,16 +117,16 @@
 
 (defview sign-all []
   []
-  [react/keyboard-avoiding-view {:style history.styles/sign-all-view}
-   [react/view {:style history.styles/sign-all-done}
-    [button/primary-button {:style    history.styles/sign-all-done-button
+  [react/keyboard-avoiding-view {:style transactions.styles/sign-all-view}
+   [react/view {:style transactions.styles/sign-all-done}
+    [button/primary-button {:style    transactions.styles/sign-all-done-button
                             :text     (i18n/label :t/done)
                             :on-press #(re-frame/dispatch [:navigate-back])}]]
-   [react/view {:style history.styles/sign-all-popup}
-    [react/text {:style history.styles/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
-    [react/text {:style history.styles/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
-    [react/view {:style history.styles/sign-all-actions}
-     [react/text-input {:style             history.styles/sign-all-input
+   [react/view {:style transactions.styles/sign-all-popup}
+    [react/text {:style transactions.styles/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
+    [react/text {:style transactions.styles/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
+    [react/view {:style transactions.styles/sign-all-actions}
+     [react/text-input {:style             transactions.styles/sign-all-input
                         :secure-text-entry true
                         :placeholder       (i18n/label :t/transactions-sign-input-placeholder)}]
      [button/primary-button {:text (i18n/label :t/transactions-sign-all) :on-press #(on-sign-transaction %)}]]]])
@@ -170,12 +174,12 @@
 
 (defn- main-section [view-id tabs]
   (let [prev-view-id (reagent/atom @view-id)]
-    [tabs/swipable-tabs {:style            history.styles/main-section
-                         :style-tabs       history.styles/tabs
-                         :style-tab-active history.styles/tab-active
+    [tabs/swipable-tabs {:style            transactions.styles/main-section
+                         :style-tabs       transactions.styles/tabs
+                         :style-tab-active transactions.styles/tab-active
                          :on-view-change   #(do (reset! prev-view-id @view-id)
                                                 (reset! view-id %))}
-      tabs prev-view-id view-id]))
+     tabs prev-view-id view-id]))
 
 ;; TODO(yenda) must reflect selected wallet
 
