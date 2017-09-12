@@ -279,7 +279,7 @@ var status = {
         separator: separator
     },
     showSuggestions: function (view) {
-        statusSignals.showSuggestions(JSON.stringify(view));
+        status.sendSignal("show-suggestions", view);
     },
     setDefaultDb: function (db) {
         addContext("default-db", db);
@@ -291,7 +291,7 @@ var status = {
         if(typeof message !== "string") {
             message = JSON.stringify(message);
         }
-        statusSignals.sendMessage(message);
+        status.sendSignal("send-message", message);
     },
     addLogMessage: function (type, message) {
         var message = {
@@ -310,6 +310,14 @@ var status = {
             subscriptions: subscriptions,
             handler: handler
         };
+    },
+    sendSignal: function (eventName, data) {
+        var event = {
+            event: eventName,
+            data: data
+        };
+
+        statusSignals.sendSignal(JSON.stringify(event));
     }
 };
 
@@ -349,6 +357,8 @@ console = (function (old) {
     };
 }(console));
 
+var localStorage = {};
+
 localStorage.setItem = function(key, value) {
     if(value === null) {
         delete localStorageData[key];
@@ -356,7 +366,7 @@ localStorage.setItem = function(key, value) {
         localStorageData[key] = value;
     }
 
-    localStorage.set(JSON.stringify(localStorageData));
+    status.sendSignal("local-storage", JSON.stringify(localStorageData));
 };
 
 localStorage.getItem = function (key) {
