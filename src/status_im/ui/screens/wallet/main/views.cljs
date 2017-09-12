@@ -73,7 +73,7 @@
        :on-press show-not-implemented! ;; #(rf/dispatch [:navigate-to :wallet-send-transaction])
        :disabled? (not config/wallet-wip-enabled?)}
       {:text     (i18n/label :t/wallet-request)
-       :on-press show-not-implemented! ;; #(rf/dispatch [:navigate-to :wallet-request-transaction])
+       :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
        :disabled? (not config/wallet-wip-enabled?)}
       {:text      (i18n/label :t/wallet-exchange)
        :disabled? true}]]]])
@@ -102,7 +102,7 @@
     [react/view {:style wallet.styles/asset-item-value-container}
      [react/text {:style wallet.styles/asset-item-value} (str amount)]
      [react/text {:style      wallet.styles/asset-item-currency
-               :uppercase? true}
+                  :uppercase? true}
       id]]]])
 
 (defn render-add-asset-fn [{:keys [id currency amount]}]
@@ -127,7 +127,7 @@
                                    :renderItem (list/wrap-render-fn render-add-asset-fn)}]
        :render-section-header-fn #()
        :on-refresh               #(rf/dispatch [:update-wallet])
-       :refreshing               (or prices-loading? balance-loading?)}]]))
+       :refreshing               (boolean (or prices-loading? balance-loading?))}]]))
 
 (defview wallet []
   (letsubs [eth-balance      [:eth-balance]

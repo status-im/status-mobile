@@ -118,6 +118,7 @@
            background-color
            custom-content
            hide-border?
+           modal?
            border-style
            title-style
            style]}]
@@ -126,7 +127,7 @@
      [rn/view tst/toolbar
       (when-not hide-nav?
         [rn/view (tst/toolbar-nav-actions-container actions)
-         [nav-button (or nav-action act/default-back)]])
+         [nav-button (or nav-action (if modal? act/default-close act/default-back))]])
       (or custom-content
           [rn/view {:style tst/toolbar-container}
            [rn/text {:style (merge tst/toolbar-title-text title-style)
@@ -195,6 +196,7 @@
                                    nav-action
                                    actions
                                    style
+                                   modal?
                                    on-search-submit]
                             :as   opts}]
   (let [toggle-search-fn #(do
@@ -207,7 +209,8 @@
                                             (rf/dispatch [:set-in [:toolbar-search :text] ""])))]
                              [act/search-icon])
                            (into [(act/search #(toggle-search-fn search-key))] actions))]
-    [toolbar {:style          style
+    [toolbar {:modal?         modal?
+              :style          style
               :nav-action     (if show-search?
                                 (act/back #(toggle-search-fn nil))
                                 nav-action)

@@ -19,7 +19,8 @@
   (letsubs [show-search [:get-in [:toolbar-search :show]]
             search-text [:get-in [:toolbar-search :text]]]
     (toolbar-with-search
-      {:show-search?       (= show-search :contact-list)
+      {:modal?             true
+       :show-search?       (= show-search :contact-list)
        :search-text        search-text
        :search-key         :contact-list
        :title              (label :t/contacts)
@@ -61,20 +62,21 @@
             params [:get :contacts/click-params]]
     [drawer-view
      [view {:flex 1}
-      [status-bar {:type :modal}]
+      [status-bar]
       [contact-list-modal-toolbar]
       [list-view {:dataSource                (lw/to-datasource contacts)
                   :enableEmptySections       true
                   :renderRow                 (render-row click-handler action params)
                   :bounces                   false
                   :keyboardShouldPersistTaps :always
-                  :renderHeader              #(list-item
-                                                [view
-                                                 [actions-view action click-handler]
-                                                 [common/bottom-shadow]
-                                                 [common/form-title (label :t/choose-from-contacts)
-                                                  {:count-value (count contacts)}]
-                                                 [common/list-header]])
+                  :renderHeader              (when-not (:hide-actions? params)
+                                               #(list-item
+                                                  [view
+                                                   [actions-view action click-handler]
+                                                   [common/bottom-shadow]
+                                                   [common/form-title (label :t/choose-from-contacts)
+                                                    {:count-value (count contacts)}]
+                                                   [common/list-header]]))
                   :renderFooter              #(list-item [view
                                                           [common/list-footer]
                                                           [common/bottom-shadow]])

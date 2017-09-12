@@ -47,6 +47,9 @@
   {:icon    :icons/close
    :handler handler})
 
+(def default-close
+  (close default-handler))
+
 (defn close-white [handler]
   {:icon      :icons/close
    :icon-opts {:color :white}

@@ -43,6 +43,7 @@
             [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
 
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
+            [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
             [status-im.ui.screens.wallet.history.views :as wallet-history]))
 
@@ -63,6 +64,7 @@
                           (:wallet :chat-list :discover :contact-list) main-tabs
                           :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
+                          :wallet-request-transaction request-transaction
                           :discover-search-results discover-search-results
                           :new-chat new-chat
                           :new-group new-group

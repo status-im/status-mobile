@@ -11,3 +11,7 @@
   [db _]
   (re-frame/dispatch [:update-transactions])
   db)
+
+(defmethod navigation/preload-data! :wallet-request-transaction
+  [db _]
+  (dissoc db :wallet/request-transaction))

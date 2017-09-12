@@ -102,7 +102,8 @@
                   :accounts/login
                   :my-profile/drawer
                   :my-profile/profile
-                  :my-profile/default-name]
+                  :my-profile/default-name
+                  :wallet/request-transaction]
                  :opt-un
                  [::current-public-key
                   ::modal
