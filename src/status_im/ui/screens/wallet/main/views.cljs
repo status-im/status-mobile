@@ -21,16 +21,15 @@
   (utils/show-popup "TODO" "Not implemented yet!"))
 
 (defn toolbar-title []
-  [react/touchable-highlight {:on-press #(rf/dispatch [:navigate-to :wallet-list])
-                           :style wallet.styles/toolbar-title-container}
-   [react/view {:style wallet.styles/toolbar-title-inner-container}
+  [react/touchable-highlight {:on-press #(rf/dispatch [:navigate-to :wallet-list])}
+   [react/view {:style wallet.styles/toolbar-title-container}
     [react/text {:style wallet.styles/toolbar-title-text
-              :font  :toolbar-title}
+                 :font  :toolbar-title}
      (i18n/label :t/main-wallet)]
     [vi/icon
      :icons/dropdown
      {:container-style wallet.styles/toolbar-title-icon
-      :color :white}]]])
+      :color           :white}]]])
 
 (def transaction-history-action
   {:icon      :icons/transaction-history
@@ -40,7 +39,8 @@
 (defn toolbar-view []
   [toolbar/toolbar2 {:style wallet.styles/toolbar}
    [toolbar/nav-button (act/hamburger-white drawer/open-drawer!)]
-   [toolbar-title]
+   [toolbar/content-wrapper
+    [toolbar-title]]
    [toolbar/actions
     [(assoc (act/opts [{:text (i18n/label :t/wallet-settings) :value show-not-implemented!}]) :icon-opts {:color :white})
      transaction-history-action]]])
@@ -68,7 +68,7 @@
      [react/text {:style wallet.styles/value-variation-title}
       (i18n/label :t/wallet-total-value)]
      [change-display change]]
-    [btn/buttons wallet.styles/buttons
+    [btn/buttons {:style wallet.styles/buttons :button-text-style wallet.styles/main-button-text}
      [{:text     (i18n/label :t/wallet-send)
        :on-press show-not-implemented! ;; #(rf/dispatch [:navigate-to :wallet-send-transaction])
        :disabled? (not config/wallet-wip-enabled?)}

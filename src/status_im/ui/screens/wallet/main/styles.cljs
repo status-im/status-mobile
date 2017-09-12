@@ -1,4 +1,5 @@
 (ns status-im.ui.screens.wallet.main.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
@@ -23,11 +24,6 @@
    :elevation        0})
 
 (def toolbar-title-container
-  {:flex           1
-   :flex-direction :row
-   :margin-left    6})
-
-(def toolbar-title-inner-container
   {:flex-direction :row})
 
 (def toolbar-title-text
@@ -42,19 +38,12 @@
 (def toolbar-title-icon
   (merge toolbar-icon {:opacity 0.4}))
 
-(def toolbar-buttons-container
-  {:flex-direction  :row
-   :flex-shrink     1
-   :justify-content :space-between
-   :width           68
-   :padding         12})
-
 ;;;;;;;;;;;;;;;;;;
 ;; Main section ;;
 ;;;;;;;;;;;;;;;;;;
 
 (def main-section
-  {:padding          16
+  {:padding-vertical 24
    :background-color styles/color-blue4})
 
 (def total-balance-container
@@ -109,8 +98,15 @@
   (merge today-variation
          {:color styles/color-red-4}))
 
-(def buttons
-  {:margin-top 34})
+(defstyle buttons
+  {:margin-top        34
+   :android           {:margin-horizontal 21}
+   :ios               {:margin-horizontal 29}})
+
+(defstyle main-button-text
+  {:padding-vertical   13
+   :padding-horizontal nil
+   :android            {:letter-spacing 0.46}})
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Assets section ;;

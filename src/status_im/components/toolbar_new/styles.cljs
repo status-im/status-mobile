@@ -25,7 +25,7 @@
   {:flex-direction :row
    :margin-left    4})
 
-(defstyle toolbar-title-container
+(defstyle toolbar-container
   {:flex       1
    :android    {:padding-left 18}
    :ios        {:align-items  :center}})
