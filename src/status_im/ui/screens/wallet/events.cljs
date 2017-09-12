@@ -7,7 +7,8 @@
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.components.status :as status]
             [status-im.ui.screens.wallet.navigation]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            status-im.ui.screens.wallet.request.events))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
