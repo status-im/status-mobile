@@ -24,11 +24,6 @@
   (fn [transactions]
     (group-by :type (vals transactions))))
 
-(reg-sub :wallet.transactions/unsigned-transactions
-  :<- [:wallet.transactions/grouped-transactions]
-  (fn [transactions]
-    (:unsigned transactions)))
-
 (reg-sub :wallet.transactions/postponed-transactions-list
   :<- [:wallet.transactions/grouped-transactions]
   (fn [{:keys [postponed]}]
