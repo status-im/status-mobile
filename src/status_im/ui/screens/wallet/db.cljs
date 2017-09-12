@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.db
-  (:require [cljs.spec.alpha :as spec]))
-
+  (:require [cljs.spec.alpha :as spec]
+            status-im.ui.screens.wallet.request.db))
 ;; (angusiguess) If we add more error types we can treat them as 'one-of' the following
 (spec/def :wallet/error #{:error})
 
