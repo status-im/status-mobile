@@ -29,21 +29,22 @@
   ;; TODO(yenda) implement
   (utils/show-popup "TODO" "Delete Transaction"))
 
-(defn unsigned-action [unsigned-transactions]
-  [toolbar/text-action {:disabled? (zero? (count unsigned-transactions)) :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
+(defn unsigned-action []
+  ;; TODO subscribe to unsigned-transactions-count or pass it as parameter ?
+  [toolbar/text-action {:disabled? (zero? 0 #_(count unsigned-transactions)) :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
    (i18n/label :t/transactions-sign-all)])
 
 (def history-action
   {:icon      :icons/filter
    :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
 
-(defn toolbar-view [view-id unsigned-transactions]
+(defn toolbar-view [view-id]
   [toolbar/toolbar2 {:flat? true}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case @view-id
      :wallet-transactions-unsigned
-     [unsigned-action unsigned-transactions]
+     [unsigned-action]
 
      :wallet-transactions-history
      [toolbar/actions
@@ -101,22 +102,24 @@
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
                          :refreshing      transactions-loading?}]]))
 
-(defview unsigned-list [transactions]
+(defview unsigned-list []
   []
-  [react/scroll-view {:style styles/flex}
-   [list/flat-list {:data            transactions
-                    :render-fn       render-transaction
-                    :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]])
+  (let [transactions nil] ;; TODO replace by letsubs later
+    [react/scroll-view {:style styles/flex}
+     [list/flat-list {:data            transactions
+                      :render-fn       render-transaction
+                      :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]]))
 
-(defn- unsigned-transactions-title [transactions]
-  (let [count (count transactions)]
+(defn- unsigned-transactions-title []
+  ;; TODO subscribe to unsigned-transactions-count or pass it as parameter ?
+  (let [count 0 #_(count transactions)]
     (str (i18n/label :t/transactions-unsigned)
          (if (pos? count) (str " " count)))))
 
-(defn- tab-list [unsigned-transactions]
+(defn- tab-list []
   [{:view-id :wallet-transactions-unsigned
-    :title   (unsigned-transactions-title unsigned-transactions)
-    :screen  [unsigned-list unsigned-transactions]}
+    :title   (unsigned-transactions-title)
+    :screen  [unsigned-list]}
    {:view-id :wallet-transactions-history
     :title   (i18n/label :t/transactions-history)
     :screen  [history-list]}])
@@ -192,13 +195,12 @@
 ;; TODO(yenda) must reflect selected wallet
 
 (defview transactions []
-  [unsigned-transactions [:wallet.transactions/unsigned-transactions]]
-  (let [tabs         (tab-list unsigned-transactions)
+  (let [tabs         (tab-list)
         default-view (get-in tabs [0 :view-id])
         view-id      (reagent/atom default-view)]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
-     [toolbar-view view-id unsigned-transactions]
+     [toolbar-view view-id]
      [main-section view-id tabs]]))
 
 (defn transaction-details-header [{:keys [value date type]}]
