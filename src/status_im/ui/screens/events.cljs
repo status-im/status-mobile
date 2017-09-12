@@ -210,6 +210,18 @@
  (fn [_ _]
    {::get-fcm-token-fx nil}))
 
+(defn handle-jail-signal [{:keys[chat_id data]}]
+  (let [{:keys [event data]} (types/json->clj data)]
+    (case event
+      "local-storage" (dispatch [:set-local-storage {:chat-id chat_id
+                                                     :data    data}])
+      "show-suggestions" (dispatch [:show-suggestions-from-jail {:chat-id chat_id
+                                                                 :markup  data}])
+      "send-message" (dispatch [:send-message-from-jail {:chat-id chat_id
+                                                         :message data}])
+
+      (log/debug "Unknown jail signal " type))))
+
 (register-handler-fx
   :signal-event
   (fn [_ [_ event-str]]
@@ -221,11 +233,9 @@
         "transaction.failed"      (dispatch [:transaction-failed event])
         "node.started"            (dispatch [:status-node-started])
         "module.initialized"      (dispatch [:status-module-initialized])
-        "local_storage.set"       (dispatch [:set-local-storage event])
         "request_geo_permissions" (dispatch [:request-permissions [:geolocation]
                                              #(dispatch [:webview-geo-permissions-granted])])
-        "jail.send_message"       (dispatch [:send-message-from-jail event])
-        "jail.show_suggestions"   (dispatch [:show-suggestions-from-jail event])
+        "jail.signal"             (handle-jail-signal event)
         (log/debug "Event " type " not handled")))))
 
 (register-handler-fx

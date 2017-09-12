@@ -272,19 +272,19 @@
 
 (register-handler :send-message-from-jail
   (u/side-effect!
-    (fn [_ [_ {:keys [chat_id message]}]]
+    (fn [_ [_ {:keys [chat-id message]}]]
       (let [parsed-message (types/json->clj message)]
         (handle-message-from-bot {:message parsed-message
-                                  :chat-id chat_id})))))
+                                  :chat-id chat-id})))))
 
 (register-handler :show-suggestions-from-jail
   (u/side-effect!
-    (fn [_ [_ {:keys [chat_id markup]}]]
+    (fn [_ [_ {:keys [chat-id markup]}]]
       (let [markup' (types/json->clj markup)
             result  (assoc-in {} [:result :returned :markup] markup')]
         (dispatch [:suggestions-handler
                    {:result  result
-                    :chat-id chat_id}])))))
+                    :chat-id chat-id}])))))
 
 (register-handler ::send-message!
   (u/side-effect!
