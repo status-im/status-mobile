@@ -42,3 +42,7 @@
     (or search-mode?
         (and (= view-id :chat-list) chats-edit-mode?)
         (and (= view-id :contact-list) contacts-edit-mode?))))
+
+(reg-sub :network
+  (fn [db]
+    (:network db)))

@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Members"
    :not-implemented                       "!not implemented"
    :chat-name                             "Chat name"
@@ -20,7 +20,7 @@
    :camera-access-error                   "To grant the required camera permission, please, go to your system settings and make sure that Status > Camera is selected."
    :photos-access-error                   "To grant the required photos permission, please, go to your system settings and make sure that Status > Photos is selected."
 
-   ;drawer
+   ;;drawer
    :invite-friends                        "Invite friends"
    :faq                                   "FAQ"
    :switch-users                          "Switch users"
@@ -28,7 +28,7 @@
    :view-all                              "View all"
    :current-network                       "Current network"
 
-   ;chat
+   ;;chat
    :is-typing                             "is typing"
    :and-you                               "and you"
    :search-chat                           "Search chat"
@@ -48,11 +48,11 @@
    :faucet-success                        "Faucet request has been received"
    :faucet-error                          "Faucet request error"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Syncing..."
    :sync-synced                           "In sync"
 
-   ;messages
+   ;;messages
    :status-sending                        "Sending"
    :status-pending                        "Pending"
    :status-sent                           "Sent"
@@ -61,7 +61,7 @@
    :status-delivered                      "Delivered"
    :status-failed                         "Failed"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "second"
                                            :other "seconds"}
@@ -76,7 +76,7 @@
    :datetime-yesterday                    "yesterday"
    :datetime-today                        "today"
 
-   ;profile
+   ;;profile
    :profile                               "Profile"
    :edit-profile                          "Edit profile"
    :report-user                           "REPORT USER"
@@ -116,7 +116,7 @@
    :browsing-open-in-web-browser          "Open in web browser"
    :browsing-cancel                       "Cancel"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "Your contacts have been synchronized"
    :confirmation-code                     (str "Thanks! We've sent you a text message with a confirmation "
                                                "code. Please provide that code to confirm your phone number")
@@ -135,13 +135,13 @@
    :move-to-internal-failure-message      "We need to move some important files from external to internal storage. To do this, we need your permission. We won't be using external storage in future versions."
    :debug-enabled                         "Debug server has been launched! You can now execute *status-dev-cli scan* to find the server from your computer on the same network."
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "International 1"
    :phone-international                   "International 2"
    :phone-national                        "National"
    :phone-significant                     "Significant"
 
-   ;chats
+   ;;chats
    :chats                                 "Chats"
    :new-chat                              "New chat"
    :delete-chat                           "Delete chat"
@@ -153,7 +153,7 @@
    :topic-format                          "Wrong format [a-z0-9\\-]+"
    :public-group-topic                    "Topic"
 
-   ;discover
+   ;;discover
    :discover                              "Discover"
    :none                                  "None"
    :search-tags                           "Type your search tags here"
@@ -162,10 +162,10 @@
    :no-statuses-discovered                "No statuses discovered"
    :no-statuses-found                     "No statuses found"
 
-   ;settings
+   ;;settings
    :settings                              "Settings"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Contacts"
    :new-contact                           "New contact"
    :delete-contact                        "Delete contact"
@@ -183,7 +183,7 @@
    :enter-address                         "Enter address"
    :more                                  "more"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Remove"
    :save                                  "Save"
    :delete                                "Delete"
@@ -200,7 +200,7 @@
    :green                                 "Green"
    :red                                   "Red"
 
-   ;commands
+   ;;commands
    :money-command-description             "Send money"
    :location-command-description          "Send location"
    :phone-command-description             "Send phone number"
@@ -216,7 +216,7 @@
    :chat-send-eth-to                      "{{amount}} ETH to {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH from {{chat-name}}"
 
-   ;location command
+   ;;location command
    :your-current-location                 "Your current location"
    :places-nearby                         "Places nearby"
    :search-results                        "Search results"
@@ -226,7 +226,7 @@
    :sharing-copy-to-clipboard-address     "Copy the Address"
    :sharing-copy-to-clipboard-coordinates "Copy coordinates"
 
-   ;new-group
+   ;;new-group
    :group-chat-name                       "Chat name"
    :empty-group-chat-name                 "Please enter a name"
    :illegal-group-chat-name               "Please select another name"
@@ -241,11 +241,11 @@
    :contact-s                             {:one   "contact"
                                            :other "contacts"}
 
-   ;participants
+   ;;participants
    :add-participants                      "Add Participants"
    :remove-participants                   "Remove Participants"
 
-   ;protocol
+   ;;protocol
    :received-invitation                   "received chat invitation"
    :removed-from-chat                     "removed you from group chat"
    :left                                  "left"
@@ -253,7 +253,7 @@
    :removed                               "removed"
    :You                                   "You"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Add new contact"
    :import-qr                             "Import"
    :scan-qr                               "Scan QR"
@@ -267,7 +267,7 @@
    :can-not-add-yourself                  "You can't add yourself"
    :unknown-address                       "Unknown address"
 
-   ;login
+   ;;login
    :connect                               "Connect"
    :address                               "Address"
    :password                              "Password"
@@ -276,7 +276,7 @@
    :sign-in                               "Sign in"
    :wrong-password                        "Wrong password"
 
-   ;recover
+   ;;recover
    :recover-from-passphrase               "Recover from passphrase"
    :recover-explain                       "Please enter the passphrase for your password to recover access"
    :passphrase                            "Passphrase"
@@ -285,21 +285,21 @@
    :enter-valid-password                  "Please enter a password"
    :twelve-words-in-correct-order         "12 words in correct order"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Recover access"
    :add-account                           "Add account"
    :create-new-account                    "Create new account"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Done"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Invalid phone number"
    :amount                                "Amount"
    :not-enough-eth                        (str "Not enough ETH on balance "
                                                "({{balance}} ETH)")
 
-   ;transactions
+   ;;transactions
    :confirm                               "Confirm"
    :confirm-transactions                  {:one   "Confirm transaction"
                                            :other "Confirm {{count}} transactions"
@@ -324,8 +324,19 @@
    :data                                  "Data"
    :got-it                                "Got it"
    :contract-creation                     "Contract Creation"
+   :block                                 "Block"
+   :hash                                  "Hash"
+   :gas-limit                             "Gas limit"
+   :gas-price                             "Gas price"
+   :gas-used                              "Gas Used"
+   :cost-fee                              "Cost/Fee"
+   :nonce                                 "Nonce"
+   :confirmations                         "confirmations"
+   :confirmations-helper-text             "If you want to be sure your transaction will not be compromise wait until it gets at least 10 blocks confirmations"
+   :copy-transaction-hash                 "Copy transaction hash"
+   :open-on-etherscan                     "Open on Etherscan"
 
-   ;:webview
+   ;;webview
    :web-view-error                        "oops, error"
 
    ;;testfairy warning
@@ -350,6 +361,7 @@
    :share                                 "Share"
    :currency                              "Currency"
    :transactions                          "Transactions"
+   :transaction-details                   "Transaction details"
    :transactions-sign                     "Sign"
    :transactions-sign-all                 "Sign all"
    :transactions-sign-all-text            "Sign the transaction by entering your password.\nMake sure that the words above match your secret signing phrase"

@@ -8,12 +8,16 @@
             [status-im.components.status-bar :as status-bar]
             [status-im.components.styles :as styles]
             [status-im.components.tabs.views :as tabs]
+            [status-im.components.toolbar-new.actions :as actions]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.transactions.styles :as transactions.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+
+(defn- show-not-implemented! []
+  (utils/show-popup "TODO" "Not implemented yet!"))
 
 (defn on-sign-transaction
   [m]
@@ -50,6 +54,7 @@
    [button/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
    [button/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
 
+(defn- inbound? [type] (= "inbound" type))
 (defn- unsigned? [type] (= "unsigned" type))
 
 (defn- transaction-icon [k background-color color]
@@ -57,25 +62,28 @@
    :icon-opts {:color color}
    :style     (transactions.styles/transaction-icon-background background-color)})
 
-(defn- transaction-type->icon [s]
-  (case s
-    "unsigned" (transaction-icon :icons/dots-horizontal styles/color-gray4-transparent styles/color-gray7)
-    "inbound" (transaction-icon :icons/arrow-left styles/color-green-3-light styles/color-green-3)
-    "outbound" (transaction-icon :icons/arrow-right styles/color-blue4-transparent styles/color-blue4)
-    ("postponed" "pending")  (transaction-icon :icons/arrow-right styles/color-gray4-transparent styles/color-gray7)
-    (throw (str "Unknown transaction type: " s))))
+(defn- transaction-type->icon [k]
+  (case k
+    :unsigned               (transaction-icon :icons/dots-horizontal styles/color-gray4-transparent styles/color-gray7)
+    :inbound                (transaction-icon :icons/arrow-left styles/color-green-3-light styles/color-green-3)
+    :outbound               (transaction-icon :icons/arrow-right styles/color-blue4-transparent styles/color-blue4)
+    (:postponed :pending)   (transaction-icon :icons/arrow-right styles/color-gray4-transparent styles/color-gray7)
+    (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [to from type value symbol] :as m}]
+(defn render-transaction [{:keys [hash to from type value symbol] :as m}]
   [list/item
-   [list/item-icon (transaction-type->icon type)]
+   [list/item-icon (transaction-type->icon (keyword type))]
    [list/item-content
     (str value " " symbol)
-    (if to
-      (str (i18n/label :t/to) " " to)
-      (str (i18n/label :t/from) " " from))
+    (if (inbound? type)
+      (str (i18n/label :t/from) " " from)
+      (str (i18n/label :t/to) " " to))
     (when (unsigned? type)
       [action-buttons m])]
-   [list/item-icon {:icon :icons/forward :icon-opts transactions.styles/forward}]])
+   [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-transaction-details hash])}
+    [react/view
+     [list/item-icon {:icon :icons/forward
+                      :icon-opts transactions.styles/forward}]]]])
 
 ;; TODO(yenda) hook with re-frame
 (defn- empty-text [s] [react/text {:style transactions.styles/empty-text} s])
@@ -135,13 +143,13 @@
 
 (defn- item-tokens [{:keys [symbol label checked?]}]
   [list/item
-   [list/item-icon (transaction-type->icon "pending")] ;; TODO(jeluard) add proper token data
+   [list/item-icon (transaction-type->icon :pending)] ;; TODO(jeluard) add proper token data
    [list/item-content label symbol]
    [checkbox/checkbox {:checked? true #_checked?}]])
 
 (defn- item-type [{:keys [id label checked?]}]
   [list/item
-   [list/item-icon (transaction-type->icon id)]
+   [list/item-icon (transaction-type->icon (keyword id))]
    [list/item-content label]
    [checkbox/checkbox checked?]])
 
@@ -189,6 +197,70 @@
         default-view (get-in tabs [0 :view-id])
         view-id      (reagent/atom default-view)]
     [react/view {:style styles/flex}
-     [status-bar/status-bar {:type :modal-white}]
+     [status-bar/status-bar]
      [toolbar-view view-id unsigned-transactions]
      [main-section view-id tabs]]))
+
+(defn transaction-details-header [{:keys [value date type]}]
+  [react/view {:style transactions.styles/transaction-details-header}
+   [react/view {:style transactions.styles/transaction-details-header-icon}
+    [list/item-icon (transaction-type->icon type)]]
+   [react/view {:style transactions.styles/transaction-details-header-infos}
+    [react/text {:style transactions.styles/transaction-details-header-value} (str value " ETH")]
+    [react/text {:style transactions.styles/transaction-details-header-date} date]]])
+
+(defn progress-bar [progress]
+  [react/view {:style transactions.styles/progress-bar}
+   [react/view {:style (transactions.styles/progress-bar-done progress)}]
+   [react/view {:style (transactions.styles/progress-bar-todo (- 100 progress))}]])
+
+(defn transaction-details-confirmations [confirmations confirmations-progress]
+  [react/view {:style transactions.styles/transaction-details-block}
+   [progress-bar confirmations-progress]
+   [react/text {:style transactions.styles/transaction-details-confirmations-count}
+    (str confirmations " " (i18n/label :t/confirmations))]
+   [react/text {:style transactions.styles/transaction-details-confirmations-helper-text}
+    (i18n/label :t/confirmations-helper-text)]])
+
+(defn transaction-details-list-row
+  ([label value]
+   (transaction-details-list-row label value nil))
+  ([label value extra-value]
+   [react/view {:style transactions.styles/transaction-details-row}
+    [react/text {:style transactions.styles/transaction-details-item-label} (i18n/label label)]
+    [react/view {:style transactions.styles/transaction-details-item-value-wrapper}
+     [react/text {:style transactions.styles/transaction-details-item-value} (str value)]
+     [react/text {:style transactions.styles/transaction-details-item-extra-value} (str extra-value)]]]))
+
+(defn transaction-details-list [{:keys [block hash from from-wallet to to-wallet gas-limit gas-price-eth gas-used cost nonce data]}]
+  [react/view {:style transactions.styles/transaction-details-block}
+   [transaction-details-list-row :t/block block]
+   [transaction-details-list-row :t/hash hash]
+   [transaction-details-list-row :t/from (or from-wallet from) (when from-wallet from)]
+   [transaction-details-list-row :t/to (or to-wallet to) (when to-wallet to)]
+   [transaction-details-list-row :t/gas-limit gas-limit]
+   [transaction-details-list-row :t/gas-price gas-price-eth]
+   [transaction-details-list-row :t/gas-used gas-used]
+   [transaction-details-list-row :t/cost-fee (str cost " ETH")]
+   [transaction-details-list-row :t/nonce nonce]
+   [transaction-details-list-row :t/data data]])
+
+(defn details-action [hash url]
+  [(actions/opts [{:text (i18n/label :t/copy-transaction-hash) :value #(react/copy-to-clipboard hash)}
+                  {:text (i18n/label :t/open-on-etherscan) :value #(.openURL react/linking url)}])])
+
+(defview transaction-details []
+  (letsubs [{:keys [hash url] :as transaction-details} [:wallet.transactions/transaction-details]
+            confirmations                              [:wallet.transactions.details/confirmations]
+            confirmations-progress                     [:wallet.transactions.details/confirmations-progress]]
+    [react/view {:style styles/flex}
+     [status-bar/status-bar]
+     [toolbar/toolbar2 {}
+      toolbar/default-nav-back
+      [toolbar/content-title (i18n/label :t/transaction-details)]
+      [toolbar/actions (details-action hash url)]]
+     [react/scroll-view
+      [transaction-details-header transaction-details]
+      [transaction-details-confirmations confirmations confirmations-progress]
+      [react/view {:style transactions.styles/transaction-details-separator}]
+      [transaction-details-list transaction-details]]]))
