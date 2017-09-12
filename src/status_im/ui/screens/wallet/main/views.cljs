@@ -34,7 +34,7 @@
 (def transaction-history-action
   {:icon      :icons/transaction-history
    :icon-opts (merge {:color :white :style {:viewBox "-108 65.9 24 24"}} wallet.styles/toolbar-icon)
-   :handler   #(rf/dispatch [:navigate-to-modal :wallet-transactions])})
+   :handler   #(rf/dispatch [:navigate-to :wallet-transactions])})
 
 (defn toolbar-view []
   [toolbar/toolbar2 {:style wallet.styles/toolbar}

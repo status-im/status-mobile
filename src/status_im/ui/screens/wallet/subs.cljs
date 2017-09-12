@@ -2,9 +2,14 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.utils.money :as money]))
 
-(reg-sub :balance
+(reg-sub :wallet
   (fn [db]
-    (get-in db [:wallet :balance])))
+    (:wallet db)))
+
+(reg-sub :balance
+  :<- [:wallet]
+  (fn [wallet]
+    (:balance wallet)))
 
 (reg-sub :price
   (fn [db]
@@ -15,9 +20,10 @@
     (get-in db [:prices :last-day])))
 
 (reg-sub :wallet/error-message?
-  (fn [db]
-    (or (get-in db [:wallet :errors :balance-update])
-        (get-in db [:wallet :errors :prices-update]))))
+  :<- [:wallet]
+  (fn [wallet]
+    (or (get-in wallet [:errors :balance-update])
+        (get-in wallet [:errors :prices-update]))))
 
 (reg-sub :eth-balance
   :<- [:balance]
@@ -51,5 +57,6 @@
     (:prices-loading? db)))
 
 (reg-sub :wallet/balance-loading?
-  (fn [db]
-    (get-in db [:wallet :balance-loading?])))
+  :<- [:wallet]
+  (fn [wallet]
+    (:balance-loading? wallet)))

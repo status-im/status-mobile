@@ -15,7 +15,9 @@
    :padding-right 10
    :font-size     13})
 
-(def main-section styles/flex)
+(def main-section
+  {:flex             1
+   :background-color styles/color-white})
 
 (def tabs
   {:border-bottom-width 1
@@ -29,7 +31,7 @@
   {:color styles/color-gray7})
 
 (def empty-text
-  {:text-align       :center
+  {:text-align        :center
    :margin-top        22
    :margin-horizontal 92})
 
@@ -88,3 +90,80 @@
    :height           40
    :border-radius    32
    :background-color color})
+
+;; transaction details
+
+(def transaction-details-row
+  {:flex-direction  :row
+   :margin-vertical 5})
+
+(def transaction-details-item-label
+  {:flex         1
+   :margin-right 10
+   :color        styles/color-gray4
+   :font-size    14})
+
+(def transaction-details-item-value-wrapper
+  {:flex 5})
+
+(def transaction-details-item-value
+  {:font-size 14
+   :color     styles/color-black})
+
+(def transaction-details-item-extra-value
+  {:font-size 14
+   :color     styles/color-gray4})
+
+(def transaction-details-header
+  {:margin-horizontal 16
+   :margin-top        10
+   :flex-direction    :row})
+
+(def transaction-details-header-icon
+  {:margin-vertical 7})
+
+(def transaction-details-header-infos
+  {:flex            1
+   :flex-direction  :column
+   :margin-left     12
+   :margin-vertical 7})
+
+(def transaction-details-header-value
+  {:font-size 16
+   :color     styles/color-black})
+
+(def transaction-details-header-date
+  {:font-size 14
+   :color     styles/color-gray4})
+
+(def transaction-details-block
+  {:margin-horizontal 16})
+
+(def progress-bar
+  {:flex-direction  :row
+   :margin-vertical 10
+   :height          2})
+
+(defn progress-bar-done [done]
+  {:flex             done
+   :background-color styles/color-blue2})
+
+(defn progress-bar-todo [todo]
+  {:flex             todo
+   :background-color styles/color-blue2
+   :opacity          0.30})
+
+(def transaction-details-confirmations-count
+  {:color           styles/color-black
+   :font-size       15
+   :margin-vertical 2})
+
+(def transaction-details-confirmations-helper-text
+  {:color           styles/color-gray4
+   :font-size       14
+   :margin-vertical 2})
+
+(def transaction-details-separator
+  {:background-color styles/color-light-gray3
+   :height           1
+   :margin-vertical  10})
