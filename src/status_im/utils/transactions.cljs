@@ -3,33 +3,45 @@
             [status-im.utils.types :as types]
             [status-im.utils.money :as money]))
 
+(defn get-network-subdomain [network]
+  (case network
+    "testnet" "ropsten"
+    "mainnet" "api"))
+
+(defn get-transaction-details-url [network hash]
+  (let [network-subdomain (get-network-subdomain network)]
+    (str "https://" network-subdomain ".etherscan.io/tx/" hash)))
+
 (defn get-transaction-url [network account]
-  (let [network (case network
-                  "testnet" "ropsten"
-                  "mainnet" "api")]
-    (str "https://" network ".etherscan.io/api?module=account&action=txlist&address=0x"
+  (let [network-subdomain (get-network-subdomain network)]
+    (str "https://" network-subdomain ".etherscan.io/api?module=account&action=txlist&address=0x"
          account "&startblock=0&endblock=99999999&sort=desc&apikey=YourApiKeyToken?q=json")))
 
-(defn format-transaction [account {:keys [value to from timeStamp]}]
-  (let [transaction {:value (money/wei->ether value)
-                     ;; timestamp is in seconds, we convert it in ms
-                     :timestamp (str timeStamp "000")
-                     :symbol "ETH"}
-        inbound?    (= (str "0x" account) to)]
-    (if inbound?
-      (assoc transaction
-             :from from
-             :type :inbound)
-      (assoc transaction
-             :to to
-             :type :outbound))))
+(defn format-transaction [account {:keys [value timeStamp blockNumber hash from to gas gasPrice gasUsed nonce confirmations input]}]
+  (let [inbound?    (= (str "0x" account) to)]
+    {:value (money/wei->ether value)
+     ;; timestamp is in seconds, we convert it in ms
+     :timestamp (str timeStamp "000")
+     :symbol "ETH"
+     :type (if inbound? :inbound :outbound)
+     :block blockNumber
+     :hash  hash
+     :from from
+     :to to
+     :gas-limit gas
+     :gas-price gasPrice
+     :gas-used gasUsed
+     :nonce nonce
+     :confirmations confirmations
+     :data input}))
 
 (defn format-transactions-response [response account]
   (->> response
        types/json->clj
        :result
-       (map (partial format-transaction account))
-       (sort-by :timestamp)))
+       (reduce (fn [transactions {:keys [hash] :as transaction}]
+                 (assoc transactions hash (format-transaction account transaction)))
+               {})))
 
 (defn get-transactions [network account on-success on-error]
   (utils/http-get (get-transaction-url network account)

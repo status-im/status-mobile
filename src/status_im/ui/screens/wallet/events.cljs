@@ -130,3 +130,9 @@
     (-> db
         (assoc-error-message :prices-update err)
         (assoc :prices-loading? false))))
+
+(handlers/register-handler-fx
+  :show-transaction-details
+  (fn [{:keys [db]} [_ hash]]
+    {:db (assoc-in db [:wallet :current-transaction] hash)
+     :dispatch [:navigate-to :wallet-transaction-details]}))
