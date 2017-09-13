@@ -61,6 +61,28 @@ class NewGroupChatButton(BaseButton):
             self.locator = self.Locator.xpath_selector(
                 "//android.widget.TextView[@text='SAVE']")
 
+    class GroupChatOptions(BaseButton):
+        def __init__(self, driver):
+            super(NewGroupChatButton.GroupChatOptions, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector(
+                "//android.view.ViewGroup[2]//android.widget.TextView[@text='n']")
+
+    class ChatSettings(BaseButton):
+        def __init__(self, driver):
+            super(NewGroupChatButton.ChatSettings, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Settings']")
+
+    class UserOptions(BaseButton):
+        def __init__(self, driver):
+            super(NewGroupChatButton.UserOptions, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector('//android.widget.ImageView[@content-desc="chat-icon"]'
+                                                       '/../..//android.view.View')
+
+    class RemoveButton(BaseButton):
+        def __init__(self, driver):
+            super(NewGroupChatButton.RemoveButton, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Remove']")
+
 
 class PublicKeyEditBox(BaseEditBox):
 
@@ -118,6 +140,10 @@ class ChatsViewObject(BaseViewObject):
         self.next_button = NewGroupChatButton.NextButton(self.driver)
         self.name_edit_box = NewGroupChatButton.NameEditBox(self.driver)
         self.save_button = NewGroupChatButton.SaveButton(self.driver)
+        self.group_chat_options = NewGroupChatButton.GroupChatOptions(self.driver)
+        self.chat_settings = NewGroupChatButton.ChatSettings(self.driver)
+        self.user_options = NewGroupChatButton.UserOptions(self.driver)
+        self.remove_button = NewGroupChatButton.RemoveButton(self.driver)
 
         self.chat_message_input = ChatMessageInput(self.driver)
         self.send_message_button = SendMessageButton(self.driver)
