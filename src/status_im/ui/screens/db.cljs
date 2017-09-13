@@ -141,6 +141,7 @@
                   :chat/global-commands
                   :chat/loading-allowed
                   :chat/message-data
+                  :chat/handler-data
                   :chat/message-id->transaction-id
                   :chat/message-status
                   :chat/unviewed-messages

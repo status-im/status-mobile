@@ -20,7 +20,7 @@
 ;; (str 111122223333441239) => "111122223333441230"
 
 (defn bignumber [n]
-  (dependencies/BigNumber. (str n)))
+  (dependencies/Web3.prototype.toBigNumber (str n)))
 
 (def ether-unit-value (bignumber "1000000000000000000"))
 

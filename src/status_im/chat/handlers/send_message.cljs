@@ -2,6 +2,7 @@
   (:require [status-im.utils.handlers :refer [register-handler] :as u]
             [clojure.string :as s]
             [status-im.data-store.messages :as messages]
+            [status-im.data-store.handler-data :as handler-data]
             [status-im.components.status :as status]
             [status-im.utils.random :as random]
             [status-im.utils.datetime :as time]
@@ -23,17 +24,15 @@
             [status-im.utils.clocks :as clocks]))
 
 (defn prepare-command
-  [identity chat-id clock-value
-   {request-params  :params
-    request-command :command
-    :keys           [prefill prefillBotDb]
-    :as             request}
-   {:keys [id params command to-message handler-data content-type]}]
-  (let [content  (if request
-                   {:command        request-command
-                    :params         (assoc request-params :bot-db (:bot-db params))
-                    :prefill        prefill
-                    :prefill-bot-db prefillBotDb}
+  [identity chat-id clock-value 
+   {:keys [id params handler-data command to-message handler-data content-type]}]
+  (let [request  (:request handler-data) ; we are preparing `/request` command
+        status   (:status handler-data) ;; we are preparing command with async status handler 
+        content  (if request
+                   {:command        (:command request)
+                    :params         (assoc (:params request) :bot-db (:bot-db params))
+                    :prefill        (:prefill request)
+                    :prefill-bot-db (:prefillBotDb request)} 
                    {:command (:name command)
                     :params  params})
         content' (assoc content :handler-data handler-data
@@ -78,17 +77,15 @@
 (register-handler :prepare-command!
   (u/side-effect!
     (fn [{:keys [current-public-key network-status] :as db}
-         [_ add-to-chat-id {{:keys [handler-data
-                                    command]
+         [_ add-to-chat-id {{:keys [command]
                              :as   content} :command
                             chat-id         :chat-id
                             :as             params}]]
-      (let [clock-value   (messages/get-last-clock-value chat-id)
-            request       (:request handler-data)
+      (let [clock-value   (messages/get-last-clock-value chat-id) 
             hidden-params (->> (:params command)
                                (filter :hidden)
                                (map :name))
-            command'      (->> (prepare-command current-public-key chat-id clock-value request content)
+            command'      (->> (prepare-command current-public-key chat-id clock-value content)
                                (cu/check-author-direction db chat-id))]
         (dispatch [:update-message-overhead! chat-id network-status])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
@@ -97,26 +94,32 @@
           (dispatch [:console-respond-command params]))
         (when (and (= "send" (:name command))
                    (not= add-to-chat-id wallet-chat-id))
-          (let [ct       (if request
-                           c/content-type-wallet-request
-                           c/content-type-wallet-command)
-                content' (assoc content :id (random/id)
-                                        :content-type ct)
+          (let [content' (assoc content :id (random/id)
+                                        :content-type c/content-type-wallet-command)
                 params'  (assoc params :command content')]
             (dispatch [:prepare-command! wallet-chat-id params'])))))))
 
 (register-handler ::send-command!
   (u/side-effect!
     (fn [_ [_ add-to-chat-id params hidden-params]]
+      (dispatch [::check-preview-refetch add-to-chat-id (:command params)])
       (dispatch [::add-command add-to-chat-id params])
       (dispatch [::save-command! add-to-chat-id params hidden-params])
       (when (not= add-to-chat-id wallet-chat-id)
         (dispatch [::dispatch-responded-requests! params])
         (dispatch [::send-command-protocol! params])))))
 
-(register-handler ::add-command
-  (after (fn [_ [_ _ {:keys [handler]}]]
-           (when handler (handler))))
+(register-handler ::check-preview-refetch
+  (fn [db [_ chat-id {:keys [message-id] :as message}]]
+    (let [handler-data (get-in db [:handler-data message-id])]                
+      (if (:fetch-preview handler-data)
+        (do (dispatch [:request-command-data (assoc message :jail-id chat-id) :preview])
+            (handler-data/save-data {:message-id message-id
+                                     :data (dissoc handler-data :fetch-preview)})
+            (update-in db [:handler-data message-id] dissoc :fetch-preview))
+        db))))
+
+(register-handler ::add-command 
   (fn [db [_ add-to-chat-id {:keys [chat-id command]}]]
     (cu/add-message-to-db db add-to-chat-id chat-id command)))
 
@@ -150,18 +153,18 @@
             to           (get-in contacts [chat-id :address])
             identity     (or owner-id bot chat-id)
             bot-db       (get bot-db (or bot chat-id))
-            params       {:parameters params
+            jail-params  {:parameters params
                           :context    {:from            address
                                        :to              to
                                        :current-account (get accounts current-account-id)
-                                       :message-id      id}}]
+                                       :message-id      id}}] 
         (dispatch
           [:check-and-load-commands!
            identity
            #(status/call-jail
               {:jail-id  identity
                :path     [handler-type name :handler]
-               :params   params
+               :params   jail-params
                :callback (fn [res]
                            (dispatch [:command-handler! chat-id orig-params res]))})])))))
 
@@ -188,8 +191,8 @@
                                 (assoc :group-id chat-id :message-type :group-user-message)
                                 (not group-chat)
                                 (assoc :to chat-id :message-type :user-message))
-            params'     (assoc params :message message'')]
-        (dispatch [:update-message-overhead! chat-id network-status])
+            params'     (assoc params :message message'')] 
+        (dispatch [:update-message-overhead! chat-id network-status]) 
         (dispatch [::add-message params'])
         (dispatch [::save-message! params'])))))
 
@@ -272,19 +275,19 @@
 
 (register-handler :send-message-from-jail
   (u/side-effect!
-    (fn [_ [_ {:keys [chat_id message]}]]
+    (fn [_ [_ {:keys [chat-id message]}]]
       (let [parsed-message (types/json->clj message)]
         (handle-message-from-bot {:message parsed-message
-                                  :chat-id chat_id})))))
+                                  :chat-id chat-id})))))
 
 (register-handler :show-suggestions-from-jail
   (u/side-effect!
-    (fn [_ [_ {:keys [chat_id markup]}]]
+    (fn [_ [_ {:keys [chat-id markup]}]]
       (let [markup' (types/json->clj markup)
             result  (assoc-in {} [:result :returned :markup] markup')]
         (dispatch [:suggestions-handler
                    {:result  result
-                    :chat-id chat_id}])))))
+                    :chat-id chat-id}])))))
 
 (register-handler ::send-message!
   (u/side-effect!

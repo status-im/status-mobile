@@ -93,13 +93,6 @@
         (update :transactions dissoc hash)
         (update :transactions-queue dissoc hash))))
 
-(register-handler :wait-for-transaction
-  (after (fn [_ [_ message-id]]
-           (dispatch [::check-completed-transaction!
-                      {:message-id message-id}])))
-  (fn [db [_ message-id params]]
-    (assoc-in db [:transaction-subscribers message-id] params)))
-
 (defn remove-pending-message
   [{:keys [command->chat] :as db} message-id]
   (let [chat-id (get command->chat message-id)]
