@@ -15,7 +15,7 @@ class BaseElement(object):
 
         @classmethod
         def xpath_selector(locator, value):
-            return locator(By.XPATH, value)
+            return locator(MobileBy.XPATH, value)
 
         @classmethod
         def accessibility_id(locator, value):
@@ -51,12 +51,18 @@ class BaseElement(object):
                 action = TouchAction(self.driver)
                 action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
 
+    def is_element_present(self, sec=5):
+        try:
+            self.wait_for_element(sec)
+            return True
+        except TimeoutException:
+            return False
+
 
 class BaseEditBox(BaseElement):
 
     def __init__(self, driver):
         super(BaseEditBox, self).__init__(driver)
-        self.driver = driver
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
@@ -66,7 +72,6 @@ class BaseText(BaseElement):
 
     def __init__(self, driver):
         super(BaseText, self).__init__(driver)
-        self.driver = driver
 
     @property
     def text(self):
@@ -77,7 +82,6 @@ class BaseButton(BaseElement):
 
     def __init__(self, driver):
         super(BaseButton, self).__init__(driver)
-        self.driver = driver
 
     def click(self):
         self.find_element().click()

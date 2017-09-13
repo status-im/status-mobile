@@ -25,4 +25,4 @@ class TestSanity(SingleDeviceTestCase):
         if 'short' not in verification:
             home.type_message_edit_box.send_keys(verifications["valid"]["input"])
             home.confirm()
-        home.find_text(verifications[verification]["outcome"])
+        home.find_full_text(verifications[verification]["outcome"])

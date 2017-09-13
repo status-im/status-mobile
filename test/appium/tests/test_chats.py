@@ -2,7 +2,6 @@ import pytest
 from tests.basetestcase import MultiplyDeviceTestCase
 from tests.preconditions import set_password_as_new_user
 from views.home import HomeView
-from views.base_view import ElementByName
 
 
 @pytest.mark.sanity
@@ -35,13 +34,13 @@ class TestChats(MultiplyDeviceTestCase):
         chats_d2.send_message_button.click()
 
         chats_d1.back_button.click()
-        chats_d1.find_text(message_1)
+        chats_d1.find_full_text(message_1)
+        one_to_one_chat_d1 = chats_d1.element_by_text(message_1, 'button')
+        one_to_one_chat_d1.click()
 
-        one_to_one_chat_d2 = ElementByName(self.driver_2, user_d1_name)
+        one_to_one_chat_d2 = chats_d2.element_by_text(user_d1_name,  'button')
         one_to_one_chat_d2.click()
         chats_d2.chat_message_input.send_keys(message_2)
         chats_d2.send_message_button.click()
 
-        one_to_one_chat_d1 = ElementByName(self.driver_1, message_2)
-        one_to_one_chat_d1.click()
-        chats_d1.find_text(message_2)
+        chats_d1.find_full_text(message_2)

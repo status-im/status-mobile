@@ -38,7 +38,7 @@ class AbstractTestCase:
         desired_caps['deviceOrientation'] = "portrait"
         desired_caps['name'] = tests_data.name
         desired_caps['build'] = pytest.config.getoption('build')
-        desired_caps['idleTimeout'] = 800
+        desired_caps['idleTimeout'] = 1000
         return desired_caps
 
     def get_public_url(self, driver):
@@ -80,7 +80,7 @@ class SingleDeviceTestCase(AbstractTestCase):
     def setup_method(self, method):
         self.driver = webdriver.Remote(self.executor_sauce_lab,
                                        self.capabilities_sauce_lab)
-        self.driver.implicitly_wait(30)
+        self.driver.implicitly_wait(20)
 
     def teardown_method(self, method):
         self.print_sauce_lab_info(self.driver)
@@ -89,19 +89,25 @@ class SingleDeviceTestCase(AbstractTestCase):
 
 class MultiplyDeviceTestCase(AbstractTestCase):
 
+    @classmethod
+    def setup_class(cls):
+        cls.loop = asyncio.get_event_loop()
+
     def setup_method(self, method):
 
-        loop = asyncio.get_event_loop()
         self.driver_1, \
-        self.driver_2 = loop.run_until_complete(start_threads(2,
+        self.driver_2 = self.loop.run_until_complete(start_threads(2,
                                                               webdriver.Remote,
                                                               self.executor_sauce_lab,
                                                               self.capabilities_sauce_lab))
-        loop.close()
         for driver in self.driver_1, self.driver_2:
-            driver.implicitly_wait(30)
+            driver.implicitly_wait(20)
 
     def teardown_method(self, method):
         for driver in self.driver_1, self.driver_2:
             self.print_sauce_lab_info(driver)
             driver.quit()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.loop.close()
