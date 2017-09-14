@@ -357,12 +357,15 @@
     (fn [_ [_ message]]
       (pending-messages/delete message))))
 
+;; XXX: Here as part of handshake, so we can get the thing here and store it in DB
+;; Then we just need to figure out how to trigger notify from jail, I think. Similar to CreateAccount I'm imagining?
+;; contact-request-received ok so we get this, then what?
 (register-handler :contact-request-received
   (u/side-effect!
     (fn [{:contacts/keys [contacts]} [_ {:keys [from payload]}]]
       (when from
-        (let [{{:keys [name profile-image address status]} :contact
-               {:keys [public private]}                    :keypair} payload
+        (let [{{:keys [name profile-image address status fcm-token]} :contact
+               {:keys [public private]}                              :keypair} payload
               existing-contact (get contacts from)
               contact          {:whisper-identity from
                                 :public-key       public
@@ -370,13 +373,14 @@
                                 :address          address
                                 :status           status
                                 :photo-path       profile-image
-                                :name             name}
+                                :name             name
+                                :fcm-token        fcm-token}
               chat             {:name         name
                                 :chat-id      from
                                 :contact-info (prn-str contact)}]
           (if-not existing-contact
             (let [contact (assoc contact :pending? true)]
-              (dispatch [:add-contacts [contact]])
+              (dispatch [:add-contacts [contact]]) ;; if it doesn't exit, add contacts
               (dispatch [:add-chat from chat]))
             (when-not (:pending? existing-contact)
               (dispatch [:update-contact! contact])
