@@ -44,16 +44,17 @@
 (def base-separator
   {:height           1
    :background-color styles/color-gray5
-   :opacity          0.5
-   :margin-top       12
-   :margin-bottom    16})
+   :opacity          0.5})
 
 (def separator
   (merge
     base-separator
     {:margin-left   70}))
 
-(def section-separator base-separator)
+(defstyle section-separator
+  (merge base-separator
+         {:android {:margin-top 12}
+          :ios     {:margin-top 16}}))
 
 (defstyle section-header
   {:font-size       14

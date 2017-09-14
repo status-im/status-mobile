@@ -12,7 +12,6 @@
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
-            [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as wallet.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]))
@@ -69,12 +68,10 @@
       (i18n/label :t/wallet-total-value)]
      [change-display change]]
     [btn/buttons {:style wallet.styles/buttons :button-text-style wallet.styles/main-button-text}
-     [{:text     (i18n/label :t/wallet-send)
-       :on-press show-not-implemented! ;; #(rf/dispatch [:navigate-to :wallet-send-transaction])
-       :disabled? (not config/wallet-wip-enabled?)}
-      {:text     (i18n/label :t/wallet-request)
-       :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
-       :disabled? (not config/wallet-wip-enabled?)}
+     [{:text      (i18n/label :t/wallet-send)
+       :on-press  show-not-implemented!}
+      {:text      (i18n/label :t/wallet-request)
+       :on-press  show-not-implemented!}
       {:text      (i18n/label :t/wallet-exchange)
        :disabled? true}]]]])
 
@@ -82,7 +79,16 @@
   (case id
     "eth" {:source (:ethereum resources/assets) :style (wallet.styles/asset-border styles/color-gray-transparent-light)}))
 
-(defn render-assets-fn [{:keys [id currency amount]}]
+(defn add-asset []
+  [list/touchable-item show-not-implemented!
+   [react/view
+    [list/item
+     [list/item-icon {:icon :icons/add :style wallet.styles/add-asset-icon :icon-opts {:color :blue}}]
+     [react/view {:style wallet.styles/asset-item-value-container}
+      [react/text {:style wallet.styles/add-asset-text}
+       (i18n/label :t/wallet-add-asset)]]]]])
+
+(defn render-asset [{:keys [id currency amount]}]
   ;; TODO(jeluard) Navigate to asset details screen
   #_
   [list/touchable-item show-not-implemented!
@@ -95,39 +101,27 @@
                    :uppercase? true}
        id]]
      [list/item-icon {:icon :icons/forward}]]]]
-  [react/view
-   [list/item
-    (let [{:keys [source style]} (token->image id)]
-      [list/item-image source style])
-    [react/view {:style wallet.styles/asset-item-value-container}
-     [react/text {:style wallet.styles/asset-item-value} (str amount)]
-     [react/text {:style      wallet.styles/asset-item-currency
-                  :uppercase? true}
-      id]]]])
-
-(defn render-add-asset-fn [{:keys [id currency amount]}]
-  [list/touchable-item show-not-implemented!
-   [react/view
-    [list/item
-     [list/item-icon {:icon :icons/add :style wallet.styles/add-asset-icon :icon-opts {:color :blue}}]
-     [react/view {:style wallet.styles/asset-item-value-container}
-      [react/text {:style wallet.styles/add-asset-text}
-       (i18n/label :t/wallet-add-asset)]]]]])
+  (if id
+    [react/view
+     [list/item
+      (let [{:keys [source style]} (token->image id)]
+        [list/item-image source style])
+      [react/view {:style wallet.styles/asset-item-value-container}
+       [react/text {:style wallet.styles/asset-item-value} (str amount)]
+       [react/text {:style      wallet.styles/asset-item-currency
+                    :uppercase? true}
+        id]]]]
+    [add-asset]))
 
 (defn asset-section [eth prices-loading? balance-loading?]
   (let [assets [{:id "eth" :currency :eth :amount eth}]]
     [react/view {:style wallet.styles/asset-section}
      [react/text {:style wallet.styles/asset-section-title} (i18n/label :t/wallet-assets)]
-     [list/section-list
-      {:sections                 [{:key        :assets
-                                   :data       assets
-                                   :renderItem  (list/wrap-render-fn render-assets-fn)}
-                                  {:key        :add-asset
-                                   :data       [{}]
-                                   :renderItem (list/wrap-render-fn render-add-asset-fn)}]
-       :render-section-header-fn #()
-       :on-refresh               #(rf/dispatch [:update-wallet])
-       :refreshing               (boolean (or prices-loading? balance-loading?))}]]))
+     [list/flat-list
+      {:data       (conj assets {}) ;; Extra map triggers rendering for add-asset
+       :render-fn  render-asset
+       :on-refresh #(rf/dispatch [:update-wallet])
+       :refreshing (or prices-loading? balance-loading?)}]]))
 
 (defview wallet []
   (letsubs [eth-balance      [:eth-balance]

@@ -43,11 +43,11 @@
 ;;;;;;;;;;;;;;;;;;
 
 (def main-section
-  {:padding-vertical 24
-   :background-color styles/color-blue4})
+  {:background-color styles/color-blue4})
 
 (def total-balance-container
-  {:margin-top      18
+  {:padding-top     20
+   :padding-bottom  24
    :align-items     :center
    :justify-content :center})
 
@@ -58,20 +58,22 @@
   {:font-size 37
    :color     styles/color-white})
 
-(def total-balance-currency
-  {:font-size   37
-   :margin-left 9
-   :color       styles/color-white
-   :opacity     0.4})
+(defstyle total-balance-currency
+  {:font-size      37
+   :margin-left    9
+   :color          styles/color-white-transparent-5
+   :android        {:letter-spacing 1.5}
+   :ios            {:letter-spacing 1.16}})
 
 (def value-variation
   {:flex-direction :row
    :align-items    :center})
 
-(def value-variation-title
-  {:font-size 14
-   :color     styles/color-white
-   :opacity   0.6})
+(defstyle value-variation-title
+  {:font-size      14
+   :color          styles/color-white-transparent-6
+   :android        {:letter-spacing -0.18}
+   :ios            {:letter-spacing -0.2}})
 
 (def today-variation-container
   {:border-radius      100
