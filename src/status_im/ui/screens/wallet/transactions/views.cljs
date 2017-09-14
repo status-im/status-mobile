@@ -93,7 +93,7 @@
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             transactions-loading?     [:wallet.transactions/transactions-loading?]
             error-message             [:wallet.transactions/error-message?]]
-    [react/scroll-view {:style styles/flex}
+    [react/view {:style styles/flex}
      (when error-message
        [wallet.views/error-message-view transactions.styles/error-container transactions.styles/error-message])
      [list/section-list {:sections        transactions-history-list
@@ -105,7 +105,7 @@
 (defview unsigned-list []
   []
   (let [transactions nil] ;; TODO replace by letsubs later
-    [react/scroll-view {:style styles/flex}
+    [react/view {:style styles/flex}
      [list/flat-list {:data            transactions
                       :render-fn       render-transaction
                       :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]]))
@@ -180,7 +180,7 @@
     [toolbar/content-title (i18n/label :t/transactions-filter-title)]
     [toolbar/text-action {:handler #(utils/show-popup "TODO" "Select All")}
      (i18n/label :t/transactions-filter-select-all)]]
-   [react/scroll-view
+   [react/view {:style styles/flex}
     [list/section-list {:sections filter-data}]]])
 
 (defn- main-section [view-id tabs]
