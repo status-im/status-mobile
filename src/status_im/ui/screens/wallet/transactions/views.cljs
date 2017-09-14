@@ -137,7 +137,7 @@
   [list/item
    [list/item-icon (transaction-type->icon "pending")] ;; TODO(jeluard) add proper token data
    [list/item-content label symbol]
-   [checkbox/checkbox  {:checked? true #_checked?}]])
+   [checkbox/checkbox {:checked? true #_checked?}]])
 
 (defn- item-type [{:keys [id label checked?]}]
   [list/item
