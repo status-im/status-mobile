@@ -13,6 +13,7 @@
 (s/def :chat/expandable-view-height-to-value (s/nilable number?))
 (s/def :chat/global-commands (s/nilable map?))                              ; {key (keyword) command (map)} atm used for browse command
 (s/def :chat/loading-allowed (s/nilable boolean?))                          ;;allow to load more messages
+(s/def :chat/handler-data (s/nilable map?))
 (s/def :chat/message-data (s/nilable map?))
 (s/def :chat/message-id->transaction-id (s/nilable map?))
 (s/def :chat/message-status (s/nilable map?))

@@ -10,6 +10,7 @@
             [status-im.data-store.chats :as chats]
             [status-im.data-store.contacts :as contacts]
             [status-im.data-store.messages :as messages]
+            [status-im.data-store.handler-data :as handler-data]
             [status-im.data-store.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
@@ -219,6 +220,7 @@
 
     (-> db
         (assoc :chats chats')
+        (assoc :handler-data (handler-data/get-all))
         (dissoc :loaded-chats)
         (init-console-chat true))))
 
