@@ -18,6 +18,9 @@
                            :modal       {:height    20
                                          :bar-style "light-content"
                                          :color     "#2f3031"}
+                           :modal-white {:height    20
+                                         :bar-style "default"
+                                         :color     styles/color-white}
                            :transaction {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}

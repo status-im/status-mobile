@@ -52,6 +52,6 @@
    :font-size      15
    :letter-spacing -0.2})
 
-(def send-request-container
+(def button-container
   {:flex-direction :row
    :align-items    :center})

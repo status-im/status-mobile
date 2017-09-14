@@ -189,6 +189,6 @@
         default-view (get-in tabs [0 :view-id])
         view-id      (reagent/atom default-view)]
     [react/view {:style styles/flex}
-     [status-bar/status-bar {:type :modal}]
+     [status-bar/status-bar {:type :modal-white}]
      [toolbar-view view-id unsigned-transactions]
      [main-section view-id tabs]]))

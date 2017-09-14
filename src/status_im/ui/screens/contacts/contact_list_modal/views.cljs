@@ -62,7 +62,7 @@
             params [:get :contacts/click-params]]
     [drawer-view
      [view {:flex 1}
-      [status-bar]
+      [status-bar {:type :modal-white}]
       [contact-list-modal-toolbar]
       [list-view {:dataSource                (lw/to-datasource contacts)
                   :enableEmptySections       true
