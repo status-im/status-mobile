@@ -45,7 +45,8 @@
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
-            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]))
+            [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
+            [status-im.components.status-bar :as status-bar]))
 
 (defn validate-current-view
   [current-view signed-up?]

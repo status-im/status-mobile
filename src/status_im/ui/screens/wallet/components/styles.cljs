@@ -18,10 +18,12 @@
    :line-height    16
    :letter-spacing -0.2})
 
-(defstyle amount-container
+(defnstyle amount-container [active?]
   {:margin-top       8
    :height           52
-   :background-color styles/color-white-transparent-3
+   :background-color (if active?
+                       styles/color-white-transparent-4
+                       styles/color-white-transparent-3)
    :ios              {:border-radius 8}
    :android          {:border-radius 4}})
 
@@ -49,15 +51,22 @@
    :android          {:border-radius 4}})
 
 (defstyle wallet-container
-  {:margin-top       8
+  {:flex-direction   :row
+   :margin-top       8
    :height           52
    :background-color styles/color-white-transparent-3
-   :justify-content  :center
+   :align-items      :center
    :padding          14
    :ios              {:border-radius 8}
    :android          {:border-radius 4}})
 
-(def value
+(def wallet-name
   {:color          :white
+   :font-size      15
+   :letter-spacing -0.2})
+
+(def wallet-value
+  {:padding-left   6
+   :color          styles/color-white-transparent-5
    :font-size      15
    :letter-spacing -0.2})
