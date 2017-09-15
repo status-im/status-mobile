@@ -68,5 +68,5 @@
                             #(do (rf/dispatch [:accept-transactions password])
                                  (rf/dispatch [:set :confirmed-transactions-count (count transactions)]))
                             #(rf/dispatch [:set-in [:transactions-list-ui-props :confirmed?] true]))]
-         [sticky-button/sticky-button confirm-text confirm-fn]))
+         [sticky-button/sticky-button confirm-text confirm-fn true]))
      [offline-view/offline-view {:top (if platform/ios? 21 0)}]]))
