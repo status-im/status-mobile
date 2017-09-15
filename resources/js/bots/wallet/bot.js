@@ -357,13 +357,13 @@ function handleSend(params, context) {
         if (error) {
             status.sendSignal("handler-data", {
                 status: "failed",
-                message_id: context["message-id"],
+                messageId: context["message-id"],
                 error: error
             });
         } else {
             status.sendSignal("handler-data", {
                 status: "confirmed",
-                message_id: context["message-id"],
+                messageId: context["message-id"],
                 hash: hash
             });
         } 
