@@ -362,7 +362,7 @@ function handleSend(params, context) {
             });
         } else {
             status.sendSignal("handler-data", {
-                status: "confirmed",
+                status: "sent",
                 messageId: context["message-id"],
                 hash: hash
             });
@@ -451,7 +451,7 @@ function previewSend(params, context) {
     }
 
     if (!(context["handler-data"]
-          && context["handler-data"]["status"] === "confirmed")) {
+          && context["handler-data"]["status"] === "sent")) {
         var pendingRow = status.components.text(
             {
                 style: {
@@ -475,7 +475,7 @@ function previewSend(params, context) {
                     lineHeight: 18
                 }
             },
-            I18n.t('send_transaction_errors') + ": " + context["handler-data"]["error"]
+            I18n.t('send_transaction_failed')
         );
         markup.push(errorRow);
     }
