@@ -286,6 +286,15 @@
                    {:result  result
                     :chat-id chat_id}])))))
 
+(defn pseudo-send-notification [fcm-token message]
+  (if fcm-token
+    (do (println "*** pseudo-send notification fcm-token" fcm-token)
+        (println "*** pseudo-send notification message" message)
+        (status/notify fcm-token
+                       (fn [res]
+                         (println "*** NOTIFY RESULT FCM" res))))
+    (println "*** pseudo-send notification message not sending cause fcm-token missing")))
+
 (register-handler ::send-message!
   (u/side-effect!
     (fn [{:keys [web3 chats network-status]
@@ -294,7 +303,7 @@
           :as   db} [_ {{:keys [message-type]
                          :as   message} :message
                         chat-id         :chat-id}]]
-      (let [{:keys [dapp?]} (get contacts chat-id)]
+      (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
         (if dapp?
           (dispatch [::send-dapp-message chat-id message])
           (when message
@@ -321,8 +330,9 @@
                                    :username username)))
 
                 :else
-                (protocol/send-message! (assoc-in options
-                                                  [:message :to] (:to message)))))))))))
+                (do (protocol/send-message! (assoc-in options
+                                                      [:message :to] (:to message)))
+                    (pseudo-send-notification fcm-token (:message options)))))))))))
 
 (register-handler ::send-command-protocol!
   (u/side-effect!
