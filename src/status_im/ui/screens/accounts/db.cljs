@@ -18,6 +18,7 @@
 (spec/def :account/network (spec/nilable string?))
 (spec/def :account/phone (spec/nilable string?))
 (spec/def :account/signing-phrase :global/not-empty-string)
+(spec/def :account/fcm-token (spec/nilable string?))
 
 (spec/def :accounts/account (allowed-keys
                               :req-un [:account/name :account/address :account/public-key
@@ -25,7 +26,7 @@
                               :opt-un [:account/debug? :account/status :account/last-updated
                                        :account/updates-private-key :account/updates-public-key
                                        :account/email :account/signed-up? :account/network
-                                       :account/phone]))
+                                       :account/phone :account/fcm-token]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

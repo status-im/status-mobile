@@ -51,7 +51,8 @@
 
 (reg-fx
   ::send-contact-request-fx
-  (fn [{:keys [web3 current-public-key name whisper-identity photo-path current-account-id status
+  (fn [{:keys [web3 current-public-key name whisper-identity
+               photo-path current-account-id status fcm-token
                updates-public-key updates-private-key] :as params}]
     (protocol/contact-request!
       {:web3    web3
@@ -61,7 +62,8 @@
                  :payload    {:contact {:name          name
                                         :profile-image photo-path
                                         :address       current-account-id
-                                        :status        status}
+                                        :status        status
+                                        :fcm-token     fcm-token}
                               :keypair {:public  updates-public-key
                                         :private updates-private-key}}}})))
 
@@ -316,7 +318,7 @@
                                    (select-keys db [:current-public-key :web3])
                                    {:current-account-id current-account-id}
                                    (select-keys contact [:whisper-identity])
-                                   (select-keys current-account [:name :photo-path :status
+                                   (select-keys current-account [:name :photo-path :status :fcm-token
                                                                  :updates-public-key :updates-private-key]))})))
 
 (register-handler-fx
