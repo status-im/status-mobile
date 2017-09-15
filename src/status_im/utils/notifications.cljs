@@ -1,6 +1,7 @@
 (ns status-im.utils.notifications
   (:require [re-frame.core :as re-frame :refer [dispatch reg-fx]]
             [status-im.utils.handlers :as handlers]
+            [status-im.components.status :as status]
             [status-im.react-native.js-dependencies :as rn]
             [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
@@ -16,6 +17,12 @@
    (log/info "***update-fcm-token" fcm-token)
    (-> db
        (assoc-in [:accounts/accounts current-account-id :fcm-token] fcm-token))))
+
+;; NOTE: For easy testing of notifications bindings/interface in REPL
+(defn test-notify []
+  (status/notify "foobar"
+               (fn [res]
+                 (println "*** NOTIFY RESULT" res))))
 
 ;; NOTE: Only need to explicitly request permissions on iOS.
 (defn request-permissions []

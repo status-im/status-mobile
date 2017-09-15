@@ -286,11 +286,13 @@
                    {:result  result
                     :chat-id chat_id}])))))
 
-;; XXX and message I guess or at least context
 (defn pseudo-send-notification [fcm-token message]
   (if fcm-token
-    (do (println "*** pseud-send notification fcm-token" fcm-token)
-        (println "*** pseud-send notification message" message))
+    (do (println "*** pseudo-send notification fcm-token" fcm-token)
+        (println "*** pseudo-send notification message" message)
+        (status/notify fcm-token
+                       (fn [res]
+                         (println "*** NOTIFY RESULT FCM" res))))
     (println "*** pseudo-send notification message not sending cause fcm-token missing")))
 
 (register-handler ::send-message!
