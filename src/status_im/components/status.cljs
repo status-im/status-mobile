@@ -112,6 +112,11 @@
                    true)
                  false))))))
 
+;; XXX: How does this work on Android where FFI hasn't been implemented?
+(defn notify [token on-result]
+  (when status
+    (call-module #(.notify status token on-result))))
+
 (defn recover-account [passphrase password on-result]
   (when status
     (call-module #(.recoverAccount status passphrase password on-result))))
