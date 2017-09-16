@@ -361,8 +361,8 @@
   (u/side-effect!
     (fn [{:contacts/keys [contacts]} [_ {:keys [from payload]}]]
       (when from
-        (let [{{:keys [name profile-image address status]} :contact
-               {:keys [public private]}                    :keypair} payload
+        (let [{{:keys [name profile-image address status fcm-token]} :contact
+               {:keys [public private]}                              :keypair} payload
               existing-contact (get contacts from)
               contact          {:whisper-identity from
                                 :public-key       public
@@ -370,7 +370,8 @@
                                 :address          address
                                 :status           status
                                 :photo-path       profile-image
-                                :name             name}
+                                :name             name
+                                :fcm-token        fcm-token}
               chat             {:name         name
                                 :chat-id      from
                                 :contact-info (prn-str contact)}]
