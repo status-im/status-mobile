@@ -11,7 +11,10 @@
             [status-im.data-store.realm.schemas.account.v10.core :as v10]
             [status-im.data-store.realm.schemas.account.v11.core :as v11]
             [status-im.data-store.realm.schemas.account.v12.core :as v12]
+            [status-im.data-store.realm.schemas.account.v13.core :as v13]
             ))
+
+;; TODO(oskarth): Add failing test if directory vXX exists but isn't in schemas.
 
 ;; put schemas ordered by version
 (def schemas [{:schema        v1/schema
@@ -49,4 +52,7 @@
                :migration     v11/migration}
               {:schema        v12/schema
                :schemaVersion 12
-               :migration     v12/migration}])
+               :migration     v12/migration}
+              {:schema        v13/schema
+               :schemaVersion 13
+               :migration     v13/migration}])
