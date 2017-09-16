@@ -361,6 +361,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void notify(final String token, final Callback callback) {
+        Log.d(TAG, "notify");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    String res = Statusgo.Notify(token);
+
+                    callback.invoke(res);
+                }
+            };
+
+        thread.start();
+    }
+
+    @ReactMethod
     public void recoverAccount(final String passphrase, final String password, final Callback callback) {
         Log.d(TAG, "recoverAccount");
         if (!checkAvailability()) {

@@ -21,6 +21,7 @@
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.chat.handlers.console :as console]
             [status-im.utils.types :as types]
+            [status-im.utils.config :as config]
             [status-im.utils.clocks :as clocks]))
 
 (defn prepare-command
@@ -298,6 +299,14 @@
                    {:result  result
                     :chat-id chat-id}])))))
 
+(defn send-notification [fcm-token message]
+  (if (and fcm-token config/notifications-wip-enabled?)
+    (do (log/debug "send-notification fcm-token: " fcm-token)
+        (log/debug "send-notification message: " message)
+        (status/notify fcm-token (fn [res]
+                                   (log/debug "send-notification cb result: " res))))
+    (log/debug "send-notification message not sending because fcm-token is unavailable or notification flag is off")))
+
 (register-handler ::send-message!
   (u/side-effect!
     (fn [{:keys [web3 chats network-status]
@@ -306,7 +315,7 @@
           :as   db} [_ {{:keys [message-type]
                          :as   message} :message
                         chat-id         :chat-id}]]
-      (let [{:keys [dapp?]} (get contacts chat-id)]
+      (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
         (if dapp?
           (dispatch [::send-dapp-message chat-id message])
           (when message
@@ -333,8 +342,9 @@
                                    :username username)))
 
                 :else
-                (protocol/send-message! (assoc-in options
-                                                  [:message :to] (:to message)))))))))))
+                (do (protocol/send-message! (assoc-in options
+                                                      [:message :to] (:to message)))
+                    (send-notification fcm-token (:message options)))))))))))
 
 (register-handler ::send-command-protocol!
   (u/side-effect!
