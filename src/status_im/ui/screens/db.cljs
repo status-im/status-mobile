@@ -33,6 +33,7 @@
              :sync-state                 :done
              :wallet                     {}
              :prices                     {}
+             :notifications              {}
              :network                    "testnet"})
 
 ;;;;GLOBAL
@@ -174,4 +175,5 @@
                   :discoveries/new-discover
                   :wallet/wallet
                   :prices/prices
-                  :prices/prices-loading?]))
+                  :prices/prices-loading?
+                  :notifications/notifications]))
