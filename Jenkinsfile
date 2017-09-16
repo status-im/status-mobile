@@ -14,7 +14,7 @@ node {
       git([url: 'https://github.com/status-im/status-react.git', branch: env.BRANCH_NAME])
       // Checkout master because used for iOS Plist version information
       sh 'git checkout -- .'
-      sh 'git checkout master' 
+      sh 'git checkout -b master' 
       sh 'git checkout ' + env.BRANCH_NAME
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
