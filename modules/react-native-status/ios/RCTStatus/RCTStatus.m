@@ -311,6 +311,19 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)password
     callback(@[[NSString stringWithUTF8String: result]]);
 }
 
+////////////////////////////////////////////////////////////////////
+                                #pragma mark - Notify method
+//////////////////////////////////////////////////////////////////// notify
+RCT_EXPORT_METHOD(notify:(NSString *)token
+                 callback:(RCTResponseSenderBlock)callback) {
+   char * result = Notify((char *) [token UTF8String]);
+   callback(@[[NSString stringWithUTF8String: result]]);
+#if DEBUG
+   NSLog(@"Notify() method called");
+#endif
+}
+
+
 //////////////////////////////////////////////////////////////////// recoverAccount
 RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
                   password:(NSString *)password

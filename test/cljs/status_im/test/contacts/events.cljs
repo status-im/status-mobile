@@ -283,7 +283,8 @@
           (let [recieved-contact {:name "test"
                                   :profile-image ""
                                   :address new-contact-address
-                                  :status "test status"}
+                                  :status "test status"
+                                  :fcm-token "0xwhatever"}
                 recieved-contact' (merge new-contact
                                          (dissoc recieved-contact :profile-image)
                                          {:public-key new-contact-public-key

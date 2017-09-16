@@ -13,6 +13,8 @@
             [status-im.data-store.realm.schemas.account.v12.core :as v12]
             [status-im.data-store.realm.schemas.account.v13.core :as v13]))
 
+;; TODO(oskarth): Add failing test if directory vXX exists but isn't in schemas.
+
 ;; put schemas ordered by version
 (def schemas [{:schema        v1/schema
                :schemaVersion 1
