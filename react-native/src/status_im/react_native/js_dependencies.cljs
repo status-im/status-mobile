@@ -22,6 +22,7 @@
 (def mapbox-gl              (js/require "react-native-mapbox-gl"))
 (def nfc                    (js/require "nfc-react-native"))
 (def orientation            (js/require "react-native-orientation"))
+(def permissions            (js/require "react-native-permissions"))
 (def popup-menu             (js/require "react-native-popup-menu"))
 (def qr-code                (js/require "react-native-qrcode"))
 (def random-bytes           (js/require "react-native-randombytes"))
@@ -33,5 +34,3 @@
 (def webview-bridge         (js/require "react-native-webview-bridge"))
 (def svg                    (js/require "react-native-svg"))
 (def react-native-fcm       (js/require "react-native-fcm"))
-
-

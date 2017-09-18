@@ -76,6 +76,9 @@
       <string>MaterialIcons.ttf</string>
       <string>Octicons.ttf</string>
       <string>Zocial.ttf</string>
+      <string>Feather.ttf</string>
+      <string>MaterialCommunityIcons.ttf</string>
+      <string>SimpleLineIcons.ttf</string>
     </array>
     <key>UIBackgroundModes</key>
     <array>

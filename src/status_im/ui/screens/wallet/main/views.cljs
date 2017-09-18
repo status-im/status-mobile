@@ -5,6 +5,8 @@
             [status-im.components.button.view :as btn]
             [status-im.components.drawer.view :as drawer]
             [status-im.components.list.views :as list]
+            [status-im.components.camera :as camera]
+            [status-im.components.permissions :as permissions]
             [status-im.components.react :as react]
             [status-im.components.styles :as styles]
             [status-im.components.icons.vector-icons :as vi]
@@ -58,6 +60,23 @@
         (str (when pos-change? "+") change "%")
         "-%")]]))
 
+(defn navigate-to-send []
+  (if platform/android?
+    (rf/dispatch [:request-permissions
+               [:camera]
+               (fn []
+                 (camera/request-access
+                  #(if % (do
+                           (rf/dispatch [:set-in [:wallet :ios-camera-permitted?] true])
+                           (rf/dispatch [:navigate-to :wallet-send-transaction]))
+                       (utils/show-popup (i18n/label :t/error)
+                                         (i18n/label :t/camera-access-error)))))])
+    (permissions/check "photo" (fn [camera-perm]
+                                 (let [ios-camera-permitted? (boolean (get #{"authorized"} camera-perm))]
+                                   (rf/dispatch [:set-in [:wallet :ios-camera-permitted?]
+                                                 ios-camera-permitted?])
+                                   (rf/dispatch [:navigate-to :wallet-send-transaction]))))))
+
 (defn main-section [usd-value change error-message]
   [react/view {:style wallet.styles/main-section}
    (when error-message [wallet.views/error-message-view wallet.styles/error-container wallet.styles/error-message])
@@ -71,9 +90,7 @@
      [change-display change]]
     [btn/buttons {:style wallet.styles/buttons :button-text-style wallet.styles/main-button-text}
      [{:text      (i18n/label :t/wallet-send)
-       :on-press  #(do (rf/dispatch [:navigate-to :wallet-send-transaction])
-                       (when platform/android?
-                           (rf/dispatch [:request-permissions [:camera]])))
+       :on-press navigate-to-send
        :disabled? (not config/wallet-wip-enabled?)}
       {:text     (i18n/label :t/wallet-request)
        :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])

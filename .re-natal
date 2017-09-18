@@ -20,6 +20,7 @@
     "react-native-status",
     "react-native-camera",
     "react-native-qrcode",
+    "react-native-permissions",
     "react-native-orientation",
     "identicon.js",
     "react-native-fs",
@@ -44,7 +45,8 @@
     "emojilib",
     "react-native-mapbox-gl",
     "react-native-config",
-    "react-native-svg"
+    "react-native-svg",
+    "react-native-permissions"
   ],
   "imageDirs": [
     "resources/images"
