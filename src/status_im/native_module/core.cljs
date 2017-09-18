@@ -91,3 +91,6 @@
 
 (defn should-move-to-internal-storage? [callback]
   (module-interface/-should-move-to-internal-storage? rns-module callback))
+
+(defn notify [token callback]
+  (module-interface/-notify rns-module token callback))

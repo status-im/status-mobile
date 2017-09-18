@@ -216,6 +216,8 @@
     (call-function! params))
   (-call-web3 [this host payload callback]
     (call-web3 host payload callback))
+  (-notify [this token callback]
+    (notify token callback))
 
   ;; other calls
   (-move-to-internal-storage [this callback]
