@@ -14,6 +14,8 @@ I18n.translations = {
         send_explanation_3: 'probably within 30 seconds.',
         send_explanation_4: 'probably within a few seconds.',
         send_sending_to: 'to ',
+        send_transaction_pending: 'transaction pending',
+        send_transaction_failed: 'transaction failed',
 
         eth: 'ETH',
 

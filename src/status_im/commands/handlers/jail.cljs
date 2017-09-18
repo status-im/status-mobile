@@ -10,7 +10,8 @@
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log] 
-            [status-im.data-store.local-storage :as local-storage]))
+            [status-im.data-store.local-storage :as local-storage]
+            status-im.commands.events.jail))
 
 (defn command-handler!
   [_ [chat-id
