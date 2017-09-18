@@ -1,9 +1,9 @@
-(ns status-im.data-store.realm.schemas.account.v13.core
+(ns status-im.data-store.realm.schemas.account.v14.core
   (:require [status-im.data-store.realm.schemas.account.v11.chat :as chat]
             [status-im.data-store.realm.schemas.account.v1.chat-contact :as chat-contact]
             [status-im.data-store.realm.schemas.account.v6.command :as command]
             [status-im.data-store.realm.schemas.account.v9.command-parameter :as command-parameter]
-            [status-im.data-store.realm.schemas.account.v7.contact :as contact]
+            [status-im.data-store.realm.schemas.account.v14.contact :as contact]
             [status-im.data-store.realm.schemas.account.v1.discover :as discover]
             [status-im.data-store.realm.schemas.account.v1.kv-store :as kv-store]
             [status-im.data-store.realm.schemas.account.v10.message :as message]
@@ -37,4 +37,4 @@
              handler-data/schema])
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating v13 account database: " old-realm new-realm))
+  (log/debug "migrating v14 account database: " old-realm new-realm))
