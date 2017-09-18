@@ -19,8 +19,6 @@
             [status-im.ui.screens.contacts.contact-list-modal.views :refer [contact-list-modal]]
             [status-im.ui.screens.contacts.new-contact.views :refer [new-contact]]
 
-            [status-im.ui.screens.discover.views.search-results :refer [discover-search-results]]
-
             [status-im.ui.screens.qr-scanner.views :refer [qr-scanner]]
 
             [status-im.transactions.screens.confirmation-success :refer [confirmation-success]]
@@ -50,6 +48,10 @@
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent]]
 
             [status-im.components.status-bar :as status-bar]
+
+            [status-im.ui.screens.discover.search-results.views :as discover-search]
+            [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]
+            [status-im.ui.screens.discover.popular-hashtags.views :as discover-popular]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
@@ -77,7 +79,6 @@
                           :wallet-request-transaction request-transaction
                           :wallet-transactions wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
-                          :discover-search-results discover-search-results
                           :new-chat new-chat
                           :new-group new-group
                           :edit-contact-group edit-contact-group
@@ -96,6 +97,9 @@
                           :profile profile
                           :my-profile my-profile
                           :edit-my-profile edit-my-profile
+                          :discover-all-recent discover-recent/discover-all-recent
+                          :discover-all-hashtags discover-popular/discover-all-hashtags
+                          :discover-search-results discover-search/discover-search-results
                           :profile-photo-capture profile-photo-capture
                           :accounts accounts
                           :login login

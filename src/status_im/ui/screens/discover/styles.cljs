@@ -26,8 +26,10 @@
    :align-items      :center
    :justify-content  :center})
 
-(def section-spacing
-  {:padding 16})
+(def title
+  {:padding         16
+   :flex-direction  :row
+   :justify-content :space-between})
 
 ;; Popular
 
@@ -37,13 +39,20 @@
 (def carousel-page-style
   {})
 
-(def tag-name
+(def tag-button
   {:color           color-blue
    :font-size       14
    :padding-right   5
    :padding-bottom  2
    :align-items     :center
    :justify-content :center})
+
+(def tag-name
+  {:color            color-blue
+   :background-color :white
+   :font-size        14
+   :align-items      :center
+   :justify-content  :center})
 
 (def tag-count
   {:color           "#838c93"
@@ -61,8 +70,10 @@
    :padding-right  9})
 
 (def separator
-  {:background-color "rgb(200, 199, 204)"
-   :height           0.5})
+  {:background-color "rgb(238, 241, 245)"
+   :height           2
+   :margin-top       2
+   :margin-bottom    2})
 
 ;; Popular list item
 
@@ -70,28 +81,44 @@
   {:flex             1
    :background-color :white
    :padding-top      18
-   :padding-left     16})
+   :padding-left     16
+   })
 
 (def popular-list-item
-  {:flex-direction :row
+  {:flex-direction "column"
    :padding-bottom 16
+   :margin-right   10
    :top            1})
 
-(def popular-list-item-name
-  {:color          "black"
-   :font-size      15
-   :padding-bottom 4})
+(def popular-list-item-second-row
+  {:flex            1
+   :flex-direction  :row
+   :align-items     :center
+   :justify-content :space-between
+   :margin-bottom   5
+   :padding-top     25})
 
 (def popular-list-item-name-container
-  {:flex           0.8
-   :flex-direction "column"
-   :padding-top    16})
+  {:flex            0.3
+   :flex-direction  :row
+   :justify-content :flex-start})
+
+(def popular-list-item-name
+  {:margin-left 7
+   :color       "black"
+   :font-size   12})
 
 (def popular-list-item-avatar-container
-  {:flex           0.2
-   :flex-direction "column"
-   :align-items    :center
-   :padding-top    16})
+  {:flex-direction "column"})
+
+(def popular-list-chat-action
+  {:background-color "rgb(220, 214, 251)"
+   :flex-direction   :row
+   :border-radius    5
+   :padding          4})
+
+(def popular-list-chat-action-text
+  {:color "rgb(110, 0, 228)"})
 
 ;; discover_recent
 
@@ -118,7 +145,7 @@
    :justifyContent "center"})
 
 (def tag-title-container
-  {:flex           1
+  {:flex           0.2
    :alignItems     "center"
    :justifyContent "center"
    :flex-direction "row"})
@@ -147,3 +174,18 @@
 (def search-icon
   {:width  17
    :height 17})
+
+(def title-action-text
+  {:color "rgb(110, 0, 228)"})
+
+(def recent-statuses-preview-container
+  {:background-color toolbar-background2})
+
+(def recent-statuses-preview-content
+  {:border-radius    4
+   :padding-top      18
+   :padding-left     16
+   :margin-top       2
+   :margin-bottom    4
+   :margin-right     2
+   :background-color :white})
