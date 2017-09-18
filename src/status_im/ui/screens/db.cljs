@@ -151,6 +151,7 @@
                   :chat/public-group-topic
                   :chat/confirmation-code-sms-listener
                   :chat/messages
+                  :chat/handler-data
                   :chat/loaded-chats
                   :chat/bot-subscriptions
                   :chat/new-request

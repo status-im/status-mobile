@@ -2,7 +2,8 @@
   (:require [status-im.utils.handlers :refer [register-handler] :as u]
             [clojure.string :as s]
             [status-im.data-store.messages :as messages]
-            [status-im.components.status :as status]
+            [status-im.data-store.handler-data :as handler-data]
+            [status-im.native-module.core :as status]
             [status-im.utils.random :as random]
             [status-im.utils.datetime :as time]
             [re-frame.core :refer [enrich after dispatch path]]
@@ -105,9 +106,20 @@
                 params'  (assoc params :command content')]
             (dispatch [:prepare-command! wallet-chat-id params'])))))))
 
+(register-handler ::check-preview-refetch
+  (fn [db [_ chat-id {:keys [message-id] :as message}]]
+    (let [handler-data (get-in db [:handler-data message-id])]                
+      (if (:fetch-preview handler-data)
+        (do (dispatch [:request-command-data (assoc message :jail-id chat-id) :preview])
+            (handler-data/save-data {:message-id message-id
+                                     :data (dissoc handler-data :fetch-preview)})
+            (update-in db [:handler-data message-id] dissoc :fetch-preview))
+        db))))
+
 (register-handler ::send-command!
   (u/side-effect!
     (fn [_ [_ add-to-chat-id params hidden-params]]
+      (dispatch [::check-preview-refetch add-to-chat-id (:command params)])
       (dispatch [::add-command add-to-chat-id params])
       (dispatch [::save-command! add-to-chat-id params hidden-params])
       (when (not= add-to-chat-id wallet-chat-id)
@@ -150,7 +162,7 @@
             to           (get-in contacts [chat-id :address])
             identity     (or owner-id bot chat-id)
             bot-db       (get bot-db (or bot chat-id))
-            params       {:parameters params
+            jail-params  {:parameters params
                           :context    {:from            address
                                        :to              to
                                        :current-account (get accounts current-account-id)
@@ -161,7 +173,7 @@
            #(status/call-jail
               {:jail-id  identity
                :path     [handler-type name :handler]
-               :params   params
+               :params   jail-params
                :callback (fn [res]
                            (dispatch [:command-handler! chat-id orig-params res]))})])))))
 

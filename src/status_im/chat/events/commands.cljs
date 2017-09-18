@@ -13,13 +13,14 @@
 
 (defn generate-context
   "Generates context for jail call"
-  [{:keys [chats] :accounts/keys [current-account-id]} chat-id to group-id]
-  (merge {:platform platform/platform
-          :from     current-account-id
-          :to       to
-          :chat     {:chat-id    chat-id
-                     :group-chat (or (get-in chats [chat-id :group-chat])
-                                     (not (nil? group-id)))}}
+  [{:keys [chats handler-data] :accounts/keys [current-account-id]} message-id chat-id to group-id]
+  (merge {:platform     platform/platform
+          :from         current-account-id
+          :to           to
+          :chat         {:chat-id    chat-id
+                         :group-chat (or (get-in chats [chat-id :group-chat])
+                                         (not (nil? group-id)))}
+          :handler-data (get handler-data message-id)}
          i18n/delimeters))
 
 ;;;; Coeffects
@@ -69,7 +70,7 @@
  [trim-v]
  (fn [{:keys [db]}
       [{{:keys [command content-command params type]} :content
-        :keys [chat-id jail-id group-id] :as message}
+        :keys [chat-id jail-id group-id message-id] :as message}
        data-type]]
    (let [{:keys          [chats]
           :accounts/keys [current-account-id]
@@ -84,7 +85,7 @@
                             data-type]
              to            (get-in contacts [chat-id :address])
              jail-params   {:parameters params
-                            :context (generate-context db chat-id to group-id)}]
+                            :context (generate-context db message-id chat-id to group-id)}]
          {:chat-fx/call-jail {:jail-id                 jail-id
                               :path                    path
                               :params                  jail-params

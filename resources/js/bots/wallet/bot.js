@@ -352,11 +352,26 @@ function handleSend(params, context) {
         gasPrice: calculateGasPrice(params["bot-db"]["sliderValue"])
     };
 
-    try {
-        return web3.eth.sendTransaction(data);
-    } catch (err) {
-        return {error: err.message};
-    }
+
+    web3.eth.sendTransaction(data, function(error, hash) {
+        if (error) {
+            status.sendSignal("handler-data", {
+                status: "failed",
+                messageId: context["message-id"],
+                error: error
+            });
+        } else {
+            status.sendSignal("handler-data", {
+                status: "sent",
+                messageId: context["message-id"],
+                hash: hash
+            });
+        } 
+    });
+
+    return {
+        status: 'not-confirmed'
+    }; 
 }
 
 function previewSend(params, context) {
@@ -435,6 +450,36 @@ function previewSend(params, context) {
         markup = [firstRow];
     }
 
+    if (!(context["handler-data"]
+          && context["handler-data"]["status"] === "sent")) {
+        var pendingRow = status.components.text(
+            {
+                style: {
+                    color: "#9199a0",
+                    fontSize: 12,
+                    lineHeight: 18
+                }
+            },
+            I18n.t('send_transaction_pending')
+        ); 
+        markup.push(pendingRow);
+    }
+
+    if (context["handler-data"] 
+        && context["handler-data"]["status"] === "failed") {
+        var errorRow = status.components.text(
+            {
+                style: {
+                    color: "red",
+                    fontSize: 12,
+                    lineHeight: 18
+                }
+            },
+            I18n.t('send_transaction_failed')
+        );
+        markup.push(errorRow);
+    }
+    
     return {
         markup: status.components.view(
             {
