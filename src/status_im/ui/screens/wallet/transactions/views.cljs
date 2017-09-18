@@ -117,12 +117,12 @@
          (if (pos? count) (str " " count)))))
 
 (defn- tab-list []
-  [{:view-id :wallet-transactions-unsigned
-    :title   (unsigned-transactions-title)
-    :screen  [unsigned-list]}
-   {:view-id :wallet-transactions-history
+  [{:view-id :wallet-transactions-history
     :title   (i18n/label :t/transactions-history)
-    :screen  [history-list]}])
+    :screen  [history-list]}
+   {:view-id :wallet-transactions-unsigned
+    :title   (unsigned-transactions-title)
+    :screen  [unsigned-list]}])
 
 ;; Sign all
 
