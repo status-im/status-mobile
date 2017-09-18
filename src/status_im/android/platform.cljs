@@ -37,17 +37,16 @@
                                          :border-top-width 0.5}}
    :discover              {:subtitle {:color     styles/color-gray2
                                       :font-size 14}
-                           :popular  {:border-radius 1
+                           :popular  {:border-radius 4
                                       :margin-top    2
                                       :margin-bottom 4
-                                      :margin-right  2
-                                      :elevation     2}
+                                      :margin-right  2}
                            :tag      {:flex-direction   "column"
                                       :background-color "#7099e619"
                                       :border-radius    5
                                       :padding          4}
                            :item     {:status-text {:line-height 22
-                                                    :font-size   14}}}
+                                                    :font-size   16}}}
    :contacts              {:show-all-text-font :medium}
    :bottom-gradient       {:height 3}
    :input-label           {:left 4}
