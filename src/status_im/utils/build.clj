@@ -18,4 +18,4 @@
     (when-let [s (nil-acceptable-warning (analyzer/error-message warning-type extra))]
       (binding [*out* *err*]
         (println (analyzer/message env (str "\u001B[31mWARNING\u001B[0m: " s))))
-      (System/exit 1))))
+      #_(System/exit 1))))
