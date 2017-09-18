@@ -3,7 +3,7 @@
             [clojure.string :as s]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.handler-data :as handler-data]
-            [status-im.native-module.core :as status]
+            [status-im.components.status :as status]
             [status-im.utils.random :as random]
             [status-im.utils.datetime :as time]
             [re-frame.core :refer [enrich after dispatch path]]

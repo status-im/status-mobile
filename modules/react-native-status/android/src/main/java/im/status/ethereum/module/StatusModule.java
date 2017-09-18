@@ -148,6 +148,10 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             jsonConfig.put("LogEnabled", true);
             jsonConfig.put("LogFile", gethLogFileName);
             jsonConfig.put("LogLevel", "DEBUG");
+            JSONObject upstreamConfig = new JSONObject();
+            upstreamConfig.put("Enabled", true);
+            upstreamConfig.put("URL", "https://ropsten.infura.io/z6GCTmjdP3FETEJmMBI4");
+            jsonConfig.put("UpstreamConfig", upstreamConfig);
             String gethLogPath = dataFolder + "/" + gethLogFileName;
             File logFile = new File(gethLogPath);
             if (logFile.exists()) {
