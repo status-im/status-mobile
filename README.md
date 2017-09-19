@@ -22,7 +22,7 @@ If this interests you, **help us make Status a reality** - anyone can contribute
 
 Go straight to the [wiki](https://wiki.status.im) or [join our Slack](http://slack.status.im) or choose what interests you:
 
-- **Developer**  
+- **Developer**
 Developers are the heart of software and to keep Status beating we need all the help we can get! If you're looking to code in ClojureScript or Golang then Status is the project for you! We use React Native and there is even some Java/Objective-C too!  
 Want to learn more about it? Start by reading our [Developer Introduction](http://wiki.status.im/contributing/development/introduction/) which guides you through the technology stack and and start browsing [beginner issues](https://github.com/status-im/status-react/issues?q=is%3Aopen+is%3Aissue+label%3Abeginner). Then you can read how to [Build Status](http://wiki.status.im/contributing/development/building-status/), which talks about managing project dependencies, coding guidelines and testing procedures.  
 
