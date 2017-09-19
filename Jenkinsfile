@@ -20,6 +20,8 @@ node {
       sh 'cp .env.jenkins .env'
       sh 'lein deps && npm install && ./re-natal deps'
       sh 'sed -i "" "s/301000/1201000/g" node_modules/react-native/packager/src/JSTransformer/index.js'
+      sh 'ls ~/.m2/repository/status-im/status-go-ios-simulator/'
+      sh 'ls ~/.m2/repository/status-im/status-go-ios-simulator/develop-gba963cc'
       sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
       sh 'cd ios && pod install && cd ..'
     }
