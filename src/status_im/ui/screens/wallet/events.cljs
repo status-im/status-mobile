@@ -70,7 +70,7 @@
                    :success-event :update-prices-success
                    :error-event   :update-prices-fail}
      :db          (-> db
-                      (clear-error-message :price-update)
+                      (clear-error-message :prices-update)
                       (clear-error-message :balance-update)
                       (assoc-in [:wallet :balance-loading?] true)
                       (assoc :prices-loading? true))}))
