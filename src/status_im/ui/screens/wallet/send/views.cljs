@@ -51,14 +51,8 @@
      [vector-icons/icon :icons/browse {:color           :white
                                        :container-style send.styles/recipient-icon}]]]])
 
-(defview send-transaction []
-  (letsubs [camera-dimensions [:camera-dimensions]]
-    [react/view {:style send.styles/wallet-container}
-     [status-bar/status-bar {:type :wallet}]
-     [toolbar-view]
-     [react/view {:style send.styles/choose-recipient-container}
-      [react/text {:style send.styles/choose-recipient-label} (i18n/label :t/wallet-choose-recipient)]]
-            [react/view {:style     send.styles/qr-container
+(defn qr-scan-view [camera-dimensions]
+  [react/view {:style     send.styles/qr-container
                          :on-layout #(let [layout (.. % -nativeEvent -layout)]
                                     (re-frame/dispatch [:set-in [:wallet :camera-dimensions]
                                                         {:width  (.-width layout)
@@ -72,5 +66,40 @@
                                                              (str/replace #"ethereum:" ""))]
                                                 (re-frame/dispatch [:choose-recipient data])))}]
              [react/view {:style (send.styles/outer-bezel camera-dimensions)}]
-             [react/view {:style (send.styles/inner-bezel camera-dimensions)}]]
+   [react/view {:style (send.styles/inner-bezel camera-dimensions)}]])
+
+(defn request-camera-permissions
+  "Upon touching the QR permissions button, ask for user permission and change
+  the necessary app-state to display the QR scanner."
+  []
+  (re-frame/dispatch [:request-permissions
+                      [:camera]
+                      #(camera/request-access (fn [ios-camera-permitted?]
+                                               (re-frame/dispatch [:set-in
+                                                                   [:wallet :ios-camera-permitted?]
+                                                                   ios-camera-permitted?])))]))
+
+(defn qr-permissions-view []
+  [react/view {:style send.styles/qr-camera-access-container}
+   [react/text {:style send.styles/access-header} (i18n/label :t/camera-access)]
+   [react/text {:style send.styles/access-subheader}
+    (i18n/label :t/camera-permissions-label)]
+   [react/touchable-highlight {:on-press request-camera-permissions}
+    [react/view {:style send.styles/accept-button}
+     [react/text {:style send.styles/accept-button-text}
+      (i18n/label :t/allow-access)]]]])
+
+(defview send-transaction []
+  (letsubs [camera-dimensions [:camera-dimensions]
+            ios-camera-permitted? [:ios-camera-permitted?]]
+    [react/view {:style send.styles/wallet-container}
+     [status-bar/status-bar {:type :wallet}]
+     [toolbar-view]
+     [react/view {:style send.styles/choose-recipient-container}
+      [react/text {:style send.styles/choose-recipient-label}
+       (i18n/label :t/wallet-choose-recipient)]]
+     (case ios-camera-permitted?
+       nil [qr-permissions-view] #_[qr-scan-view camera-dimensions]
+       true [qr-scan-view camera-dimensions]
+       false [qr-permissions-view])
      [recipient-buttons]]))

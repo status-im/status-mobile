@@ -17,6 +17,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
+import com.tradle.react.UdpSocketsModule;
+import com.peel.react.TcpSocketsModule;
 import com.cboy.rn.splashscreen.SplashScreen;
 import com.testfairy.TestFairy;
 

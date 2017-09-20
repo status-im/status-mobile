@@ -29,3 +29,15 @@
             (.catch else-fn))))
 
     (then)))
+
+;; IOS compatible permissions request
+
+(def react-native-permissions rn-dependencies/permissions)
+
+(defn check
+  "Checks permissions via react-native-permissions
+   Takes a callback that expects one of:
+   #{\"authorized\" \"denied\" \"restricted\" \"undetermined\"}"
+  [permission then]
+  (-> (.check react-native-permissions permission)
+      (.then #(then %))))

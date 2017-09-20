@@ -69,6 +69,7 @@
     "react-native-linear-gradient": "2.0.0",
     "react-native-mapbox-gl": "github:mapbox/react-native-mapbox-gl#d2a0a851d57672132344596b26a4776172370937",
     "react-native-orientation": "github:youennPennarun/react-native-orientation",
+    "react-native-permissions": "^1.0.0",
     "react-native-popup-menu": "^0.7.1",
     "react-native-qrcode": "^0.2.6",
     "react-native-randombytes": "^2.1.0",

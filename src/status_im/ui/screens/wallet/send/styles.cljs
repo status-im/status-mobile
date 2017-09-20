@@ -75,6 +75,33 @@
   {:flex              1
    :margin-horizontal 32})
 
+(def qr-camera-access-container
+  {:flex            1
+   :align-items     :center
+   :justify-content :center})
+
+(def access-header
+  {:color       :white
+   :font-size   17
+   :font-weight :bold})
+
+(def access-subheader
+  {:color              :white
+   :opacity            0.6
+   :padding-horizontal 32
+   :padding-vertical   20
+   :text-align         :center})
+
+(def accept-button
+  {:background-color styles/color-white-transparent-2
+   :padding-horizontal 60
+   :padding-vertical 12
+   :border-radius 8})
+
+(def accept-button-text
+  {:color   :white
+   :opacity 1})
+
 (def preview
   {:flex            1
    :justify-content :flex-end
