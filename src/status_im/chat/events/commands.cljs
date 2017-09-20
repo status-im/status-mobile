@@ -25,9 +25,9 @@
 ;;;; Coeffects
 
 (reg-cofx
- ::get-persisted-message
- (fn [coeffects _]
-   (assoc coeffects :get-persisted-message msg-store/get-by-id)))
+  ::get-persisted-message
+  (fn [coeffects _]
+    (assoc coeffects :get-persisted-message msg-store/get-by-id)))
 
 ;;;; Effects
 
@@ -84,7 +84,7 @@
                              data-type]
               to            (get-in contacts [chat-id :address])
               jail-params   {:parameters params
-                             :context (generate-context db chat-id to group-id)}] 
+                             :context (generate-context db chat-id to group-id)}]
           {:chat-fx/call-jail {:jail-id                 jail-id
                                :path                    path
                                :params                  jail-params
