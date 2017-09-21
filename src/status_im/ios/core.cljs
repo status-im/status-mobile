@@ -44,7 +44,8 @@
        (fn []
          (when config/notifications-wip-enabled?
            (notifications/request-permissions)
-           (notifications/on-refresh-fcm-token)))
+           (notifications/on-refresh-fcm-token)
+           (notifications/on-notification)))
        :component-will-unmount
        (fn []
          (.stop react/http-bridge))
