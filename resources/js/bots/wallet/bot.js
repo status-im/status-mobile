@@ -38,6 +38,7 @@ status.defineSubscription(
 )
 
 function amountParameterBox(params, context) {
+
     if (!params["bot-db"]) {
         params["bot-db"] = {};
     }
@@ -68,12 +69,24 @@ function amountParameterBox(params, context) {
 
     var sliderValue = params["bot-db"]["sliderValue"] || 0;
 
-    status.setDefaultDb({
-        transaction: txData,
-        calculatedFee: calculateFee(sliderValue, txData),
-        feeExplanation: getFeeExplanation(sliderValue),
-        sliderValue: sliderValue
-    });
+    try {
+
+        status.setDefaultDb({
+            transaction: txData,
+            calculatedFee: calculateFee(sliderValue, txData),
+            feeExplanation: getFeeExplanation(sliderValue),
+            sliderValue: sliderValue
+        });
+
+    }catch (err){
+
+        status.setDefaultDb({
+            transaction: txData,
+            calculatedFee: "0",
+            feeExplanation: "",
+            sliderValue: sliderValue
+        });
+    }
 
     return {
         title: I18n.t('send_title'),
@@ -245,6 +258,7 @@ function amountParameterBox(params, context) {
             )]
         )
     };
+
 }
 
 var paramsSend = [
@@ -335,7 +349,7 @@ function validateSend(params, context) {
             )
         };
     }
-    
+
     var fee = calculateFee(
         params["bot-db"]["sliderValue"],
         {
@@ -373,7 +387,7 @@ function handleSend(params, context) {
     web3.eth.sendTransaction(data, function(error, hash) {
         if (error) {
             status.sendSignal("handler-result", {
-                status: "failed", 
+                status: "failed",
                 error: {
                     markup: status.components.validationMessage(
                         I18n.t('validation_tx_title'),
