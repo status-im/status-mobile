@@ -219,7 +219,10 @@
                                                                  :markup  data}])
       "send-message" (dispatch [:send-message-from-jail {:chat-id chat_id
                                                          :message data}])
-      "handler-data" (dispatch [:set-handler-data chat_id data]) 
+      "handler-result" (let [orig-params (:origParams data)]
+                         ;; TODO(janherich): figure out and fix chat_id from event
+                         (dispatch [:command-handler! (:chat-id orig-params) orig-params
+                                    {:result {:returned (dissoc data :origParams)}}])) 
       (log/debug "Unknown jail signal " type))))
 
 (register-handler-fx

@@ -27,6 +27,7 @@ Command.prototype.create = function (com) {
     this.description = com.description;
     this.handler = com.handler;
     this["has-handler"] = com.handler != null;
+    this["async-handler"] = (com.handler != null) && com.asyncHandler
     this["registered-only"] = com.registeredOnly;
     this.validator = com.validator;
     this.color = com.color;
@@ -41,6 +42,7 @@ Command.prototype.create = function (com) {
     this["execute-immediately?"] = com.executeImmediately;
     this["sequential-params"] = com.sequentialParams;
     this["hide-send-button"] = com.hideSendButton;
+    
     this.addToCatalog();
 
     return this;

@@ -352,26 +352,27 @@ function handleSend(params, context) {
         gasPrice: calculateGasPrice(params["bot-db"]["sliderValue"])
     };
 
-
     web3.eth.sendTransaction(data, function(error, hash) {
         if (error) {
-            status.sendSignal("handler-data", {
-                status: "failed",
-                messageId: context["message-id"],
-                error: error
+            status.sendSignal("handler-result", {
+                status: "failed", 
+                error: {
+                    markup: status.components.validationMessage(
+                        I18n.t('validation_tx_title'),
+                        I18n.t('validation_tx_failed')
+                    )
+                },
+                origParams: context["orig-params"]
             });
         } else {
-            status.sendSignal("handler-data", {
-                status: "sent",
-                messageId: context["message-id"],
-                hash: hash
+            status.sendSignal("handler-result", {
+                status: "success",
+                hash: hash,
+                origParams: context["orig-params"]
             });
         } 
     });
-
-    return {
-        status: 'not-confirmed'
-    }; 
+    // async handler, so we don't return anything immediately
 }
 
 function previewSend(params, context) {
@@ -449,36 +450,6 @@ function previewSend(params, context) {
     } else {
         markup = [firstRow];
     }
-
-    if (!(context["handler-data"]
-          && context["handler-data"]["status"] === "sent")) {
-        var pendingRow = status.components.text(
-            {
-                style: {
-                    color: "#9199a0",
-                    fontSize: 12,
-                    lineHeight: 18
-                }
-            },
-            I18n.t('send_transaction_pending')
-        ); 
-        markup.push(pendingRow);
-    }
-
-    if (context["handler-data"] 
-        && context["handler-data"]["status"] === "failed") {
-        var errorRow = status.components.text(
-            {
-                style: {
-                    color: "red",
-                    fontSize: 12,
-                    lineHeight: 18
-                }
-            },
-            I18n.t('send_transaction_failed')
-        );
-        markup.push(errorRow);
-    }
     
     return {
         markup: status.components.view(
@@ -512,6 +483,7 @@ var send = {
     params: paramsSend,
     validator: validateSend,
     handler: handleSend,
+    asyncHandler: true,
     preview: previewSend,
     shortPreview: shortPreviewSend
 };
