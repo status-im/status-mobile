@@ -45,7 +45,7 @@
      transaction-history-action]]])
 
 (defn- change-display [change]
-  (let [pos-change? (pos? change)]
+  (let [pos-change? (or (pos? change) (zero? change))]
     [react/view {:style (if pos-change?
                           wallet.styles/today-variation-container-positive
                           wallet.styles/today-variation-container-negative)}

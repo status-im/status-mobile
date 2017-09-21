@@ -46,11 +46,14 @@
 (reg-sub :portfolio-change
   :<- [:price]
   :<- [:last-day]
-  (fn [[price last-day]]
+  :<- [:balance]
+  (fn [[price last-day balance]]
     (when (and price last-day)
-      (-> (money/percent-change price last-day)
-          (money/with-precision 2)
-          .toNumber))))
+      (if (> balance 0)
+        (-> (money/percent-change price last-day)
+            (money/with-precision 2)
+            .toNumber)
+        0))))
 
 (reg-sub :prices-loading?
   (fn [db]
