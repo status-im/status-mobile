@@ -5,7 +5,7 @@ import re
 import shutil
 from datetime import datetime
 from os import environ
-from io import BytesIO
+from io import BytesIO, StringIO
 from sauceclient import SauceClient
 
 storage = 'http://artifacts.status.im:8081/artifactory/nightlies-local/'
@@ -50,6 +50,8 @@ def is_uploaded():
 
 
 def pytest_configure(config):
+    import logging
+    logging.basicConfig(level=logging.INFO)
     if is_master(config):
         if not is_uploaded():
             response = requests.get(storage + latest_apk, stream=True)

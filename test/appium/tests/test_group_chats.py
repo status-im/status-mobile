@@ -71,7 +71,7 @@ class TestGroupChats(MultiplyDeviceTestCase):
 
         # chats_d2.find_full_text("You\'ve removed " + user_name_d1)
 
-        chats_d2.chat_message_input.send_keys(message_1)
+        chats_d2.chat_message_input.send_keys(message_3)
         chats_d2.send_message_button.click()
 
         chats_d1.find_text_part("removed you from group chat")

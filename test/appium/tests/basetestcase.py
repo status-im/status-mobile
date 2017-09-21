@@ -59,7 +59,7 @@ class AbstractTestCase:
     @property
     def capabilities_local(self):
         desired_caps = dict()
-        desired_caps['deviceName'] = 'takoe'
+        desired_caps['deviceName'] = 'nexus_5'
         desired_caps['platformName'] = 'Android'
         desired_caps['appiumVersion'] = '1.6.5'
         desired_caps['platformVersion'] = '6.0'
