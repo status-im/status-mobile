@@ -68,7 +68,9 @@
        :component-did-mount
        (fn []
          (when config/notifications-wip-enabled?
-           (notifications/on-refresh-fcm-token)))
+           (notifications/on-refresh-fcm-token)
+           ;; TODO(oskarth): Background click_action handler
+           (notifications/on-notification)))
        :component-will-unmount
        (fn []
          (.stop react/http-bridge)
