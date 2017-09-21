@@ -106,20 +106,9 @@
                 params'  (assoc params :command content')]
             (dispatch [:prepare-command! wallet-chat-id params'])))))))
 
-(register-handler ::check-preview-refetch
-  (fn [db [_ chat-id {:keys [message-id] :as message}]]
-    (let [handler-data (get-in db [:handler-data message-id])]                
-      (if (:fetch-preview handler-data)
-        (do (dispatch [:request-command-data (assoc message :jail-id chat-id) :preview])
-            (handler-data/save-data {:message-id message-id
-                                     :data (dissoc handler-data :fetch-preview)})
-            (update-in db [:handler-data message-id] dissoc :fetch-preview))
-        db))))
-
 (register-handler ::send-command!
   (u/side-effect!
-    (fn [_ [_ add-to-chat-id params hidden-params]]
-      (dispatch [::check-preview-refetch add-to-chat-id (:command params)])
+    (fn [_ [_ add-to-chat-id params hidden-params]] 
       (dispatch [::add-command add-to-chat-id params])
       (dispatch [::save-command! add-to-chat-id params hidden-params])
       (when (not= add-to-chat-id wallet-chat-id)
@@ -162,11 +151,15 @@
             to           (get-in contacts [chat-id :address])
             identity     (or owner-id bot chat-id)
             bot-db       (get bot-db (or bot chat-id))
+            ;; TODO what's actually semantic difference between `:parameters` and `:context`
+            ;; and do we have some clear API for both ? seems very messy and unorganized now
             jail-params  {:parameters params
-                          :context    {:from            address
-                                       :to              to
-                                       :current-account (get accounts current-account-id)
-                                       :message-id      id}}]
+                          :context    (cond-> {:from            address
+                                               :to              to
+                                               :current-account (get accounts current-account-id)
+                                               :message-id      id}
+                                        (:async-handler command)
+                                        (assoc :orig-params orig-params))}] 
         (dispatch
           [:check-and-load-commands!
            identity
@@ -174,8 +167,11 @@
               {:jail-id  identity
                :path     [handler-type name :handler]
                :params   jail-params
-               :callback (fn [res]
-                           (dispatch [:command-handler! chat-id orig-params res]))})])))))
+               :callback (if (:async-handler command) ; async handler, we ignore return value
+                           (fn [_]
+                             (log/debug "Async command handler called"))
+                           (fn [res]
+                             (dispatch [:command-handler! chat-id orig-params res])))})])))))
 
 (register-handler :prepare-message
   (u/side-effect!

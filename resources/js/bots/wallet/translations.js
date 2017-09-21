@@ -14,8 +14,6 @@ I18n.translations = {
         send_explanation_3: 'probably within 30 seconds.',
         send_explanation_4: 'probably within a few seconds.',
         send_sending_to: 'to ',
-        send_transaction_pending: 'transaction pending',
-        send_transaction_failed: 'transaction failed',
 
         eth: 'ETH',
 
@@ -25,6 +23,8 @@ I18n.translations = {
         request_requesting_from: 'from ',
 
         validation_title: 'Amount',
+        validation_tx_title: 'Transaction',
+        validation_tx_failed: 'Transaction failed',
         validation_amount_specified: 'Amount must be specified',
         validation_invalid_number: 'Amount is not valid number',
         validation_amount_is_too_small: 'Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)',
