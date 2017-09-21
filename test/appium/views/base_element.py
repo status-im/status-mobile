@@ -3,6 +3,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from appium.webdriver.common.touch_action import TouchAction
+import logging
 
 
 class BaseElement(object):
@@ -36,6 +37,7 @@ class BaseElement(object):
         return None
 
     def find_element(self):
+        logging.info('Looking for %s' % self.name)
         return self.driver.find_element(self.locator.by, self.locator.value)
 
     def wait_for_element(self, seconds=10):
@@ -48,6 +50,7 @@ class BaseElement(object):
                 self.find_element()
                 break
             except NoSuchElementException:
+                logging.info('Scrolling to %s' % self.name)
                 action = TouchAction(self.driver)
                 action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
 
@@ -58,6 +61,10 @@ class BaseElement(object):
         except TimeoutException:
             return False
 
+    @property
+    def text(self):
+        return self.find_element().text
+
 
 class BaseEditBox(BaseElement):
 
@@ -66,6 +73,7 @@ class BaseEditBox(BaseElement):
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
+        logging.info('Type %s to %s' % (value, self.name))
 
 
 class BaseText(BaseElement):
@@ -75,7 +83,9 @@ class BaseText(BaseElement):
 
     @property
     def text(self):
-        return self.find_element().text
+        text = self.find_element().text
+        logging.info('%s is %s' % (self.name, text))
+        return text
 
 
 class BaseButton(BaseElement):
@@ -85,4 +95,5 @@ class BaseButton(BaseElement):
 
     def click(self):
         self.find_element().click()
+        logging.info('Tap on %s' % self.name)
         return self.navigate()
