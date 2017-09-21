@@ -51,8 +51,11 @@ function amountParameterBox(params, context) {
 
     var txData;
     var amount;
+
+
+
     try {
-        amount = params.args[1];
+        amount = params.args[1] || "0";
         txData = {
             to: contactAddress,
             value: web3.toWei(amount) || 0
