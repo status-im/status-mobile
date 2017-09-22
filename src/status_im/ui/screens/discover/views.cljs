@@ -84,7 +84,7 @@
      [toolbar-view (and current-view?
                         (= show-search :discover)) search-text]
      (if discoveries
-       [scroll-view (st/list-container tabs-hidden?)
+       [scroll-view st/list-container
         [discover-popular {:contacts        contacts
                            :current-account current-account}]
         [discover-recent {:current-account current-account}]]

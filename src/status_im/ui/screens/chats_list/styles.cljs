@@ -140,12 +140,10 @@
 (def chats-container
   {:flex 1})
 
-(defnstyle list-container [tabs-hidden?]
-  {:android {:background-color color-light-gray
-             :margin-bottom    20}
+(defstyle list-container
+  {:android {:background-color color-light-gray}
 
-   :ios     {:background-color color-white
-             :margin-bottom    (if tabs-hidden? 20 (+ 16 tabs-st/tabs-height))}})
+   :ios     {:background-color color-white}})
 
 (def toolbar-actions
   {:flex-direction :row

@@ -92,7 +92,7 @@
                                                              [common/list-footer]
                                                              [common/bottom-shadow]]))
                        :renderSeparator renderers/list-separator-renderer
-                       :style           (st/list-container tabs-hidden?)}]
+                       :style           st/list-container}]
      (when (and (not edit?)
                 (not search?)
                 (get-in platform-specific [:chats :action-button?]))
