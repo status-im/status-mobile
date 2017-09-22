@@ -52,8 +52,6 @@ function amountParameterBox(params, context) {
     var txData;
     var amount;
 
-    //ether amount
-
     try {
         amount = params.args[1] || "0";
         txData = {
