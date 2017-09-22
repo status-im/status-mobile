@@ -141,9 +141,8 @@
   {:flex            1
    :backgroundColor color-white})
 
-(defnstyle list-container [tabs-hidden?]
-  {:android {:margin-bottom 20}
-   :ios     {:margin-bottom (if tabs-hidden? 20 (+ 16 tabs-st/tabs-height))}})
+(def list-container
+  {:flex 1})
 
 (def search-icon
   {:width  17

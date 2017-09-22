@@ -122,7 +122,7 @@
             groups         [:all-added-groups]
             tabs-hidden?   [:tabs-hidden?]]
     [view {:flex 1}
-     [view (st/contacts-list-container tabs-hidden?)
+     [view st/contacts-list-container
       (if edit?
         [toolbar-edit]
         [toolbar-view])

@@ -10,10 +10,8 @@
   {:flex             1
    :background-color common/color-light-gray})
 
-(defnstyle contacts-list-container [tabs-hidden?]
-  {:flex    1
-   :android {:margin-bottom 20}
-   :ios     {:margin-bottom (if tabs-hidden? 20 (+ 16 tabs-st/tabs-height))}})
+(def contacts-list-container
+  {:flex 1})
 
 (def contacts-list
   {:background-color common/color-white})
