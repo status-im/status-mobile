@@ -75,10 +75,11 @@
   (fn [[transactions current-transaction network]]
     (let [{:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)]
       (merge transaction
-             {:cost (money/wei->ether (money/fee-value gas-used gas-price))
-              :gas-price-eth  (str (.toFixed (money/wei->ether gas-price)) " ETH")
-              :date (datetime/timestamp->long-date timestamp)
-              :url (transactions/get-transaction-details-url network hash)}
+             {:cost           (money/wei->ether (money/fee-value gas-used gas-price))
+              :gas-price-eth  (money/wei->str :eth gas-price)
+              :gas-price-gwei (money/wei->str :gwei gas-price)
+              :date           (datetime/timestamp->long-date timestamp)
+              :url            (transactions/get-transaction-details-url network hash)}
              ;; TODO (yenda) proper wallet logic when wallet switching is impletmented
              (if (= type :inbound)
                {:to-wallet "Main wallet"}
