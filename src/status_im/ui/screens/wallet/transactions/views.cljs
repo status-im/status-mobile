@@ -234,14 +234,14 @@
      [react/text {:style transactions.styles/transaction-details-item-value} (str value)]
      [react/text {:style transactions.styles/transaction-details-item-extra-value} (str extra-value)]]]))
 
-(defn transaction-details-list [{:keys [block hash from from-wallet to to-wallet gas-limit gas-price-eth gas-used cost nonce data]}]
+(defn transaction-details-list [{:keys [block hash from from-wallet to to-wallet gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
   [react/view {:style transactions.styles/transaction-details-block}
    [transaction-details-list-row :t/block block]
    [transaction-details-list-row :t/hash hash]
    [transaction-details-list-row :t/from (or from-wallet from) (when from-wallet from)]
    [transaction-details-list-row :t/to (or to-wallet to) (when to-wallet to)]
    [transaction-details-list-row :t/gas-limit gas-limit]
-   [transaction-details-list-row :t/gas-price gas-price-eth]
+   [transaction-details-list-row :t/gas-price gas-price-gwei gas-price-eth]
    [transaction-details-list-row :t/gas-used gas-used]
    [transaction-details-list-row :t/cost-fee (str cost " ETH")]
    [transaction-details-list-row :t/nonce nonce]
