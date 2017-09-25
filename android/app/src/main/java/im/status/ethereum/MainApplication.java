@@ -32,6 +32,7 @@ import me.alwx.HttpServer.HttpServerReactPackage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
@@ -43,6 +44,8 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
         @Override
         protected List<ReactPackage> getPackages() {
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG);
+            Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
                     new SvgPackage(),
@@ -51,7 +54,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new HttpServerReactPackage(),
                     new NfcReactNativePackage(),
                     new SplashScreenReactPackage(),
-                    new StatusPackage(BuildConfig.DEBUG),
+                    statusPackage,
                     new RealmReactPackage(),
                     new VectorIconsPackage(),
                     new ReactNativeContacts(),
@@ -65,7 +68,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG),
+                    new WebViewBridgePackage(BuildConfig.DEBUG, callRPC),
                     new ReactNativeConfigPackage()
                                                                                     ));
 
