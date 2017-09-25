@@ -75,25 +75,27 @@
 
 (defn icon
   ([name] (icon name nil))
-  ([name {:keys [color container-style style]}]
-   [react/view {:style container-style}
+  ([name {:keys [color container-style style accessibility-label]
+          :or {accessibility-label :icon}}]
+   [react/view {:style container-style
+                :accessibility-label accessibility-label}
     (if-let [icon-fn (get icons (normalize-property-name name))]
       (into []
             (concat
-              [svg (merge default-viewbox style)]
-              (icon-fn
-                (cond
-                  (keyword? color)
-                  (case color
-                    :dark styles/icon-dark-color
-                    :gray styles/icon-gray-color
-                    :blue styles/color-light-blue
-                    :active styles/color-blue4
-                    :white styles/color-white
-                    :red styles/icon-red-color
-                    styles/icon-dark-color)
-                  (string? color)
-                  color
-                  :else
-                  styles/icon-dark-color))))
+             [svg (merge default-viewbox style)]
+             (icon-fn
+              (cond
+                (keyword? color)
+                (case color
+                  :dark styles/icon-dark-color
+                  :gray styles/icon-gray-color
+                  :blue styles/color-light-blue
+                  :active styles/color-blue4
+                  :white styles/color-white
+                  :red styles/icon-red-color
+                  styles/icon-dark-color)
+                (string? color)
+                color
+                :else
+                styles/icon-dark-color))))
       (throw (js/Error. (str "Unknown icon: " name))))]))

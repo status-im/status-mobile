@@ -42,10 +42,11 @@
 
 (defn contact-extended-options [group-id]
   (fn [item]
-    [{:value #(dispatch [:remove-contact-from-group
-                         (:whisper-identity item)
-                         group-id])
-      :text  (label :t/remove-from-group)}]))
+    [{:value               #(dispatch [:remove-contact-from-group
+                                       (:whisper-identity item)
+                                       group-id])
+      :accessibility-label :remove-button
+      :text                (label :t/remove-from-group)}]))
 
 (defview edit-chat-group-contact-list []
   (letsubs [chat-name [:chat :name]
@@ -69,8 +70,7 @@
      (contact-extended-options group-id)]))
 
 (defview edit-contact-group-contact-list []
-  (letsubs [group [:get-contact-group]
-            type [:get-group-type]]
+  (letsubs [group [:get-contact-group]]
     [view styles/group-container
      [status-bar]
      [contact-list-toolbar (:name group)]

@@ -61,12 +61,13 @@
       :search-placeholder (i18n/label :t/search-for)}]))
 
 (defn chats-action-button []
-  [native-action-button {:button-color color-blue
-                         :offset-x     16
-                         :offset-y     40
-                         :spacing      13
-                         :hide-shadow  true
-                         :on-press     #(re-frame/dispatch [:navigate-to :new-chat])}])
+  [native-action-button {:button-color        color-blue
+                         :offset-x            16
+                         :offset-y            40
+                         :spacing             13
+                         :hide-shadow         true
+                         :accessibility-label :plus-button
+                         :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}])
 
 (defn chat-list-item [[chat-id chat] edit?]
   [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :chat chat-id])}
