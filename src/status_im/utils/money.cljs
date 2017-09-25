@@ -1,5 +1,6 @@
 (ns status-im.utils.money
-  (:require [status-im.js-dependencies :as dependencies]))
+  (:require [status-im.js-dependencies :as dependencies]
+            [clojure.string :as string]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
 ;; numbers Hence we want to use these functions instead of fromWei etc, which
@@ -22,10 +23,27 @@
 (defn bignumber [n]
   (dependencies/Web3.prototype.toBigNumber (str n)))
 
-(def ether-unit-value (bignumber "1000000000000000000"))
+(def eth-units
+  {:wei    (bignumber "1")
+   :kwei   (bignumber "1000")
+   :mwei   (bignumber "1000000")
+   :gwei   (bignumber "1000000000")
+   :szabo  (bignumber "1000000000000")
+   :finney (bignumber "1000000000000000")
+   :eth    (bignumber "1000000000000000000")
+   :keth   (bignumber "1000000000000000000000")
+   :meth   (bignumber "1000000000000000000000000")
+   :geth   (bignumber "1000000000000000000000000000")
+   :teth   (bignumber "1000000000000000000000000000000")})
+
+(defn wei-> [unit n]
+  (.dividedBy (bignumber n) (eth-units unit)))
+
+(defn wei->str [unit n]
+  (str (.toFixed (wei-> unit n)) " " (string/upper-case (name unit))))
 
 (defn wei->ether [n]
-  (.dividedBy (bignumber n) ether-unit-value))
+  (wei-> :eth n))
 
 (defn fee-value [gas gas-price]
   (.times (bignumber gas) (bignumber gas-price)))
