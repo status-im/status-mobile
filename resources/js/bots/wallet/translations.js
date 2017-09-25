@@ -22,6 +22,8 @@ I18n.translations = {
         request_requesting: 'Requesting ',
         request_requesting_from: 'from ',
 
+        validation_internal_title: 'Internal error',
+        validation_balance: 'Could not fetch current balance',
         validation_title: 'Amount',
         validation_tx_title: 'Transaction',
         validation_tx_failed: 'Transaction failed',

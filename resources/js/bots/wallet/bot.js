@@ -321,7 +321,20 @@ function validateSend(params, context) {
         };
     }
 
-    var balance = web3.eth.getBalance(context.from);
+    try {
+        var balance = web3.eth.getBalance(context.from);
+        if (isNaN(balance)) {
+            throw new Error();
+        }
+    } catch (err) {
+        return {
+            markup: status.components.validationMessage(
+                I18n.t('validation_internal_title'),
+                I18n.t('validation_balance')
+            )
+        };
+    }
+    
     var fee = calculateFee(
         params["bot-db"]["sliderValue"],
         {
