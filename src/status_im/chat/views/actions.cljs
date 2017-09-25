@@ -30,7 +30,7 @@
    :subtitle   (members-text members)
    :icon       :menu_group
    :icon-opts {:width  25
-                :height 19}
+               :height 19}
    ;; TODO not implemented: action Members
    :handler    nil})
 
@@ -90,26 +90,29 @@
                                custom-icon
                                handler
                                title
-                               subtitle]
+                               subtitle
+                               accessibility-label]
+                    :or       {accessibility-label :action}
                     icon-name :icon}]
   [touchable-highlight {:on-press (fn []
                                     (dispatch [:set-chat-ui-props {:show-actions? false}])
                                     (when handler
                                       (handler)))}
-   [view st/action-icon-row
+   [view {:accessibility-label accessibility-label
+          :style st/action-icon-row}
     [view st/action-icon-view
      (or custom-icon
-         [icon icon-name icon-style])]
-    [view st/action-view
-     [text {:style           st/action-title
-            :number-of-lines 1
-            :font            :medium}
-      title]
-     (when-let [subtitle subtitle]
-       [text {:style           st/action-subtitle
-              :number-of-lines 1
-              :font            :default}
-        subtitle])]]])
+         [icon icon-name icon-style])
+     [view st/action-view
+      [text {:style           st/action-title
+             :number-of-lines 1
+             :font            :medium}
+       title]
+      (when-let [subtitle subtitle]
+        [text {:style           st/action-subtitle
+               :number-of-lines 1
+               :font            :default}
+         subtitle])]]]])
 
 (defview actions-list-view []
   (letsubs [group-chat        [:chat :group-chat]
@@ -121,8 +124,8 @@
                          (group-chat-items members public?)
                          (user-chat-items chat-id))]
       [view (merge
-              (st/actions-wrapper status-bar-height)
-              (get-in platform-specific [:component-styles :actions-list-view]))
+             (st/actions-wrapper status-bar-height)
+             (get-in platform-specific [:component-styles :actions-list-view]))
        [view st/actions-separator]
        [view st/actions-view
         (for [action actions]

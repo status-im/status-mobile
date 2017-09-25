@@ -154,23 +154,24 @@
     (fn [{:keys [command-width container-width]}]
       (when (get-in @command [:command :sequential-params])
         (let [{:keys [placeholder hidden type]} (get-in @command [:command :params @arg-pos])]
-          [text-input (merge {:ref               #(dispatch [:set-chat-ui-props {:seq-input-ref %}])
-                              :style             (style/seq-input-text command-width container-width)
-                              :default-value     (or @seq-arg-input-text "")
-                              :on-change-text    #(do (dispatch [:set-chat-seq-arg-input-text %])
-                                                      (dispatch [:load-chat-parameter-box (:command @command)])
-                                                      (dispatch [:set-chat-ui-props {:validation-messages nil}]))
-                              :placeholder       placeholder
-                              :blur-on-submit    false
-                              :editable          (not @sending-in-progress?)
-                              :on-focus          #(dispatch [:set-chat-ui-props {:show-emoji? false}])
-                              :on-submit-editing (fn []
-                                                   (when-not (or (str/blank? @seq-arg-input-text)
-                                                                 (get-in @command [:command :hide-send-button]))
-                                                     (dispatch [:send-seq-argument]))
-                                                   (js/setTimeout
-                                                     #(dispatch [:chat-input-focus :seq-input-ref])
-                                                     100))}
+          [text-input (merge {:ref                 #(dispatch [:set-chat-ui-props {:seq-input-ref %}])
+                              :style               (style/seq-input-text command-width container-width)
+                              :default-value       (or @seq-arg-input-text "")
+                              :on-change-text      #(do (dispatch [:set-chat-seq-arg-input-text %])
+                                                        (dispatch [:load-chat-parameter-box (:command @command)])
+                                                        (dispatch [:set-chat-ui-props {:validation-messages nil}]))
+                              :placeholder         placeholder
+                              :accessibility-label :chat-request-input
+                              :blur-on-submit      false
+                              :editable            (not @sending-in-progress?)
+                              :on-focus            #(dispatch [:set-chat-ui-props {:show-emoji? false}])
+                              :on-submit-editing   (fn []
+                                                     (when-not (or (str/blank? @seq-arg-input-text)
+                                                                   (get-in @command [:command :hide-send-button]))
+                                                       (dispatch [:send-seq-argument]))
+                                                     (js/setTimeout
+                                                       #(dispatch [:chat-input-focus :seq-input-ref])
+                                                       100))}
                              (get-options type))])))))
 
 (defn input-view [_]

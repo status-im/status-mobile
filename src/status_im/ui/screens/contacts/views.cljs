@@ -109,9 +109,10 @@
                          :hide-shadow  true
                          :spacing      13}
    [native-action-button-item
-    {:title       (label :t/new-contact)
-     :buttonColor :#9b59b6
-     :onPress     #(dispatch [:navigate-to :new-contact])}
+    {:title               (label :t/new-contact)
+     :accessibility-label :new-contact
+     :buttonColor         :#9b59b6
+     :onPress             #(dispatch [:navigate-to :new-contact])}
     [ion-icon {:name  :md-create
                :style create-icon}]]])
 

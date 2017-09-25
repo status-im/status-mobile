@@ -36,7 +36,7 @@
      (when (and extended? (not (empty? extend-options)))
        [view st/more-btn-container
         [context-menu
-         [vi/icon :icons/options]
+         [vi/icon :icons/options {:accessibility-label :options}]
          extend-options
          nil
          st/more-btn]])]]])

@@ -90,7 +90,8 @@
     (fn []
       (let [show-actions @show-actions]
         [touchable-highlight
-         {:on-press #(dispatch [:set-chat-ui-props {:show-actions? (not show-actions)}])}
+         {:on-press            #(dispatch [:set-chat-ui-props {:show-actions? (not show-actions)}])
+          :accessibility-label :chat-menu}
          [view st/action
           (if show-actions
             [vi/icon :icons/dropdown-up]
