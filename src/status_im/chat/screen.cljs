@@ -88,15 +88,13 @@
 (defn toolbar-action []
   (let [show-actions (subscribe [:chat-ui-props :show-actions?])]
     (fn []
-      (if @show-actions
+      (let [show-actions @show-actions]
         [touchable-highlight
-         {:on-press #(dispatch [:set-chat-ui-props {:show-actions? false}])}
+         {:on-press #(dispatch [:set-chat-ui-props {:show-actions? (not show-actions)}])}
          [view st/action
-          [vi/icon :icons/dropdown-up]]]
-        [touchable-highlight
-         {:on-press #(dispatch [:set-chat-ui-props {:show-actions? true}])}
-         [view st/action
-          [chat-icon]]]))))
+          (if show-actions
+            [vi/icon :icons/dropdown-up]
+            [chat-icon])]]))))
 
 (defview add-contact-bar []
   [chat-id [:get :current-chat-id]
