@@ -103,17 +103,24 @@ def getVersionName = { ->
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "im.status.ethereum"
         minSdkVersion 18
-        targetSdkVersion 23
+        targetSdkVersion 24
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+        jackOptions {
+            enabled true
+        }
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
         }
     }
     dexOptions {
