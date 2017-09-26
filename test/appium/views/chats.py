@@ -28,9 +28,14 @@ class SwitchUsersButton(BaseButton):
         super(SwitchUsersButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='SWITCH USERS']")
 
+    def click(self):
+        time.sleep(2)
+        self.find_element().click()
+        logging.info('Tap on %s' % self.name)
+        return self.navigate()
+
     def navigate(self):
         from views.login import LoginView
-        time.sleep(2)
         return LoginView(self.driver)
 
 
@@ -143,7 +148,7 @@ class SendMessageButton(BaseButton):
         self.locator = self.Locator.accessibility_id("send-message-button")
 
     def click(self):
-        time.sleep(30)
+        time.sleep(10)
         self.find_element().click()
         logging.info('Tap on %s' % self.name)
 

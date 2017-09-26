@@ -32,6 +32,7 @@ class BaseViewObject(object):
     def send_int_as_keyevent(self, integer):
         keys = {0: 7, 1: 8, 2: 9, 3: 10, 4: 11,
                 5: 12, 6: 13, 7: 14, 8: 15, 9: 16}
+        time.sleep(2)
         self.driver.keyevent(keys[integer])
 
     def send_dot_as_keyevent(self):
@@ -66,16 +67,16 @@ class BaseViewObject(object):
 
     def get_balance(self, address):
         url = 'http://ropsten.etherscan.io/api?module=account&action=balance&address=0x%s&tag=latest' % address
-        return requests.request('GET', url).json()["result"]
+        return int(requests.request('GET', url).json()["result"])
 
     def get_donate(self, address, wait_time=300):
+        initial_balance = self.get_balance(address)
         response = requests.request('GET', 'http://46.101.129.137:3001/donate/0x%s' % address).json()
         counter = 0
         while True:
             if counter == wait_time:
-                logging.info("Donation was not received during %s seconds!" % wait_time)
-                break
-            elif self.get_balance(address) != '1000000000000000000':
+                pytest.fail("Donation was not received during %s seconds!" % wait_time)
+            elif self.get_balance(address) == initial_balance:
                 counter += 10
                 time.sleep(10)
                 logging.info('Waiting %s seconds for donation' % counter)
@@ -87,8 +88,7 @@ class BaseViewObject(object):
         counter = 0
         while True:
             if counter == wait_time:
-                logging.info('Balance is not changed during %s seconds, funds were not received!')
-                break
+                pytest.fail('Balance is not changed during %s seconds, funds were not received!' % wait_time)
             elif initial_balance == self.get_balance(recipient_address):
                 counter += 10
                 time.sleep(10)

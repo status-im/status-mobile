@@ -39,6 +39,7 @@ class AbstractTestCase:
         desired_caps['name'] = tests_data.name
         desired_caps['build'] = pytest.config.getoption('build')
         desired_caps['idleTimeout'] = 1000
+        desired_caps['commandTimeout'] = 600
         return desired_caps
 
     def get_public_url(self, driver):
