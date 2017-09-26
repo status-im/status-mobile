@@ -5,12 +5,10 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.github.status_im.status_go.cmd.Statusgo;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 public class StatusPackage implements ReactPackage {
 
@@ -38,14 +36,5 @@ public class StatusPackage implements ReactPackage {
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Collections.emptyList();
-    }
-
-    public Function<String, String> getCallRPC() {
-        return new Function<String, String>() {
-            @Override
-            public String apply(String payload) {
-                return Statusgo.CallRPC(payload);
-            }
-        };
     }
 }
