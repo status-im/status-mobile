@@ -32,7 +32,7 @@ import me.alwx.HttpServer.HttpServerReactPackage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
+import im.status.ethereum.function.Function;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
