@@ -10,7 +10,7 @@ import com.github.status_im.status_go.cmd.Statusgo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import im.status.ethereum.function.Function;
 
 public class StatusPackage implements ReactPackage {
 

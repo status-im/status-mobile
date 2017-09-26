@@ -108,19 +108,12 @@ android {
     defaultConfig {
         applicationId "im.status.ethereum"
         minSdkVersion 18
-        targetSdkVersion 24
+        targetSdkVersion 23
         multiDexEnabled true
         versionCode getVersionCode()
         versionName getVersionName()
         ndk {
             abiFilters "armeabi-v7a", "x86"
-        }
-        jackOptions {
-            enabled true
-        }
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
         }
     }
     dexOptions {
@@ -199,6 +192,7 @@ dependencies {
     compile project(':react-native-fcm')
     compile 'com.google.firebase:firebase-core:10.0.1' //this decides your firebase SDK version
 
+    compile 'status-im:function:0.0.1'
     compile fileTree(dir: "node_modules/realm/android/libs", include: ["*.jar"])
 }
 // Run this once to be able to run the application with BUCK
