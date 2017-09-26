@@ -17,12 +17,12 @@ class ContinueButtonAPK(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
 
 
-class TypeMessageEditBox(BaseEditBox):
+class ChatRequestInput(BaseEditBox):
 
     def __init__(self, driver):
-        super(TypeMessageEditBox, self).__init__(driver)
+        super(ChatRequestInput, self).__init__(driver)
         self.locator = \
-            self.Locator.xpath_selector("//*[@content-desc!='chat-message-input']")
+            self.Locator.xpath_selector("//android.widget.EditText[@content-desc!='chat-message-input']")
 
 
 class RequestPasswordIcon(BaseButton):
@@ -30,6 +30,12 @@ class RequestPasswordIcon(BaseButton):
     def __init__(self, driver):
         super(RequestPasswordIcon, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@content-desc='request-password']")
+
+    def click(self):
+        self.wait_for_element(60)
+        self.find_element().click()
+        logging.info('Tap on %s' % self.name)
+        return self.navigate()
 
 
 class HomeView(BaseViewObject):
@@ -45,5 +51,5 @@ class HomeView(BaseViewObject):
             except (NoSuchElementException, TimeoutException):
                 pass
 
-        self.type_message_edit_box = TypeMessageEditBox(driver)
+        self.chat_request_input = ChatRequestInput(driver)
         self.request_password_icon = RequestPasswordIcon(driver)

@@ -2,10 +2,9 @@ from tests import tests_data
 import time
 import requests
 import re
-import shutil
 from datetime import datetime
 from os import environ
-from io import BytesIO, StringIO
+from io import BytesIO
 from sauceclient import SauceClient
 
 storage = 'http://artifacts.status.im:8081/artifactory/nightlies-local/'
