@@ -345,12 +345,16 @@ function validateSend(params, context) {
 function handleSend(params, context) {
     var val = web3.toWei(params["amount"].replace(",", "."), "ether");
 
+    var gasPrice = calculateGasPrice(params["bot-db"]["sliderValue"]);
     var data = {
         from: context.from,
         to: params["bot-db"]["public"]["recipient"]["address"],
-        value: val,
-        gasPrice: calculateGasPrice(params["bot-db"]["sliderValue"])
+        value: val
     };
+
+    if (gasPrice) {
+        data.gasPrice = gasPrice;
+    }
 
     web3.eth.sendTransaction(data, function(error, hash) {
         if (error) {
