@@ -1,11 +1,21 @@
 function calculateFee(n, tx) {
     var estimatedGas = 21000;
     if (tx !== null) {
-        estimatedGas = web3.eth.estimateGas(tx);
+        try {
+            estimatedGas = web3.eth.estimateGas(tx);
+        } catch (err) {
+
+        }
     }
 
     var gasMultiplicator = Math.pow(1.4, n).toFixed(3);
-    var weiFee = web3.eth.gasPrice * gasMultiplicator * estimatedGas;
+    var gasPrice = 211000000000;
+    try {
+        gasPrice = web3.eth.gasPrice;
+    } catch (err) {
+
+    }
+    var weiFee = gasPrice * gasMultiplicator * estimatedGas;
     // force fee in eth to be of BigNumber type
     var ethFee = web3.toBigNumber(web3.fromWei(weiFee, "ether"));
     // always display 7 decimal places
@@ -14,7 +24,14 @@ function calculateFee(n, tx) {
 
 function calculateGasPrice(n) {
     var gasMultiplicator = Math.pow(1.4, n).toFixed(3);
-    return web3.eth.gasPrice * gasMultiplicator;
+    var gasPrice = 211000000000;
+    try {
+        gasPrice = web3.eth.gasPrice;
+    } catch (err) {
+
+    }
+
+    return gasPrice * gasMultiplicator;
 }
 
 status.defineSubscription(
