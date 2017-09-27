@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.transactions.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
+            [status-im.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.money :as money]
             [status-im.utils.transactions :as transactions]))
@@ -23,6 +24,32 @@
   :<- [:wallet.transactions/transactions]
   (fn [transactions]
     (group-by :type (vals transactions))))
+
+(defn format-unsigned-transaction [{:keys [message-id gas-price] :as transaction}]
+  (-> transaction
+      (update :value money/wei->ether)
+      (assoc :type           :unsigned
+             :confirmations  0
+             :symbol         "ETH"
+             :hash           message-id)))
+
+(reg-sub :wallet.transactions/unsigned-transactions
+  :<- [:transactions]
+  (fn [transactions]
+    (reduce (fn [acc {:keys [message-id] :as transaction}]
+              (assoc acc message-id (format-unsigned-transaction transaction)))
+            {}
+            transactions)))
+
+(reg-sub :wallet.transactions/unsigned-transactions-count
+  :<- [:wallet.transactions/unsigned-transactions]
+  (fn [unsigned-transactions]
+    (count unsigned-transactions)))
+
+(reg-sub :wallet.transactions/unsigned-transactions-list
+  :<- [:wallet.transactions/unsigned-transactions]
+  (fn [unsigned-transactions]
+    (vals unsigned-transactions)))
 
 (reg-sub :wallet.transactions/postponed-transactions-list
   :<- [:wallet.transactions/grouped-transactions]
@@ -69,17 +96,25 @@
     (:current-transaction wallet)))
 
 (reg-sub :wallet.transactions/transaction-details
+  :<- [:wallet.transactions/unsigned-transactions]
   :<- [:wallet.transactions/transactions]
   :<- [:wallet.transactions/current-transaction]
   :<- [:network]
-  (fn [[transactions current-transaction network]]
-    (let [{:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)]
+  (fn [[unsigned-transactions transactions current-transaction network]]
+    (let [transactions (merge transactions unsigned-transactions)
+          {:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)]
       (merge transaction
-             {:cost           (money/wei->ether (money/fee-value gas-used gas-price))
-              :gas-price-eth  (money/wei->str :eth gas-price)
+             {:gas-price-eth  (money/wei->str :eth gas-price)
               :gas-price-gwei (money/wei->str :gwei gas-price)
-              :date           (datetime/timestamp->long-date timestamp)
-              :url            (transactions/get-transaction-details-url network hash)}
+              :date           (datetime/timestamp->long-date timestamp)}
+             (if (= type :unsigned)
+               {:block     (i18n/label :not-applicable)
+                :cost      (i18n/label :not-applicable)
+                :gas-limit (i18n/label :not-applicable)
+                :gas-used  (i18n/label :not-applicable)
+                :nonce     (i18n/label :not-applicable)}
+               {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
+                :url  (transactions/get-transaction-details-url network hash)})
              ;; TODO (yenda) proper wallet logic when wallet switching is impletmented
              (if (= type :inbound)
                {:to-wallet "Main wallet"}

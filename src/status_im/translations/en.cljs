@@ -33,11 +33,11 @@
    :and-you              "and you"
    :search-chat          "Search chat"
    :members              {:one   "1 member"
-                                           :other "{{count}} members"
-                                           :zero  "no members"}
+                          :other "{{count}} members"
+                          :zero  "no members"}
    :members-active       {:one   "1 member"
-                                           :other "{{count}} members"
-                                           :zero  "no members"}
+                          :other "{{count}} members"
+                          :zero  "no members"}
    :public-group-status  "Public"
    :active-online        "Online"
    :active-unknown       "Unknown"
@@ -365,7 +365,7 @@
    :transactions-sign                     "Sign"
    :transactions-sign-all                 "Sign all"
    :transactions-sign-all-text            "Sign the transaction by entering your password.\nMake sure that the words above match your secret signing phrase"
-   :transactions-sign-input-placeholder   "Enter your passphrase"
+   :transactions-sign-input-placeholder   "Enter your password"
    :transactions-history                  "History"
    :transactions-unsigned                 "Unsigned"
    :transactions-history-empty            "You don't have a history transactions"
@@ -374,12 +374,12 @@
    :transactions-filter-tokens            "Tokens"
    :transactions-filter-type              "Type"
    :transactions-filter-select-all        "Select all"
+   :not-applicable                        "Not applicable for unsigned transactions"
+
    ;; Wallet Send
    :wallet-send-transaction               "Send a Transaction"
    :wallet-send-step-one                  "Step 1 of 3"
    :wallet-choose-recipient               "Choose Recipient"
    :wallet-choose-from-contacts           "Choose From Contacts"
    :wallet-address-from-clipboard         "Use Address From Clipboard"
-   :wallet-browse-photos                  "Browse Photos"
-
-   })
+   :wallet-browse-photos                  "Browse Photos"})
