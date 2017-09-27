@@ -11,7 +11,11 @@
 (spec/def ::waiting-signal? (spec/nilable boolean?))
 (spec/def ::signing? (spec/nilable boolean?))
 (spec/def ::later? (spec/nilable boolean?))
+(spec/def ::height double?)
+(spec/def ::width double?)
+(spec/def ::camera-dimensions (spec/keys :req-un [::height ::width]))
+(spec/def ::camera-flashlight #{:on :off})
 
 (spec/def :wallet/send-transaction (allowed-keys
                                      :opt-un [::amount ::to-address ::to-name ::amount-error ::password
-                                              ::waiting-signal? ::signing? ::transaction-id ::later?]))
+                                              ::waiting-signal? ::signing? ::transaction-id ::later? ::camera-dimensions ::camera-flashlight]))

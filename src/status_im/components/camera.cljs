@@ -16,7 +16,7 @@
 (def torch-modes (constants "TorchMode"))
 
 (defn set-torch [state]
-  (set! (.-torchMode default-camera) state))
+  (set! (.-torchMode default-camera) (get torch-modes state)))
 
 (defn request-access [callback]
   (if platform/android?

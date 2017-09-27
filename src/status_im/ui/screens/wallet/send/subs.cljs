@@ -3,7 +3,11 @@
 
 (re-frame/reg-sub :camera-dimensions
   (fn [db]
-    (get-in db [:wallet :camera-dimensions])))
+    (get-in db [:wallet/send-transaction :camera-dimensions])))
+
+(re-frame/reg-sub :camera-flashlight
+  (fn [db]
+    (get-in db [:wallet/send-transaction :camera-flashlight])))
 
 (re-frame/reg-sub
   :wallet.send/sign-enabled?
