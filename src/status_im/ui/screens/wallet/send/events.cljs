@@ -121,3 +121,10 @@
                ;;TODO (andrey) use ::discard-transaction fx instead
                {:dispatch-n [[:deny-transaction transaction-id]
                              [:status-im.transactions.handlers/remove-transaction transaction-id]]})))))
+
+(handlers/register-handler-db
+  :wallet/toggle-flashlight
+  (fn [db]
+    (let [flashlight-state (get-in db [:wallet/send-transaction :camera-flashlight])
+          toggled-state (if (= :on flashlight-state) :off :on)]
+      (assoc-in db [:wallet/send-transaction :camera-flashlight] toggled-state))))

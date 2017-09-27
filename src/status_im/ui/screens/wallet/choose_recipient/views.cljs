@@ -23,14 +23,15 @@
                        :action  :send
                        :params  {:hide-actions? true}}]))
 
-(defn toolbar-view []
+(defn toolbar-view [camera-flashlight]
   [toolbar/toolbar2 {:style        wallet.styles/toolbar
                      :no-sync-bar? true}
    [toolbar/nav-button (act/back-white act/default-handler)]
    [toolbar/content-title {:color :white} (i18n/label :t/wallet-choose-recipient)]
-   [toolbar/actions [{:icon      :icons/flash-active
+   [toolbar/actions [{:icon      (if (= :on camera-flashlight) :icons/flash-active
+                                     :icons/flash-inactive)
                       :icon-opts {:color :white}
-                      :handler   show-not-implemented!}]]])
+                      :handler #(re-frame/dispatch [:wallet/toggle-flashlight])}]]])
 
 (defn recipient-buttons []
   [react/view {:style styles/recipient-buttons}
@@ -74,18 +75,20 @@
                    :style  (styles/corner-right-bottom min-dimension)}]]))
 
 (defview choose-recipient []
-  (letsubs [camera-dimensions [:camera-dimensions]]
+  (letsubs [camera-dimensions [:camera-dimensions]
+            camera-flashlight [:camera-flashlight]]
     [react/view {:style styles/wallet-container}
      [status-bar/status-bar {:type :wallet}]
-     [toolbar-view]
+     [toolbar-view camera-flashlight]
      [react/view {:style     styles/qr-container
                   :on-layout #(let [layout (.. % -nativeEvent -layout)]
-                                (re-frame/dispatch [:set-in [:wallet :camera-dimensions]
+                                (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-dimensions]
                                                     {:width  (.-width layout)
                                                      :height (.-height layout)}]))}
       [camera/camera {:style         styles/preview
                       :aspect        :fill
                       :captureAudio  false
+                      :torchMode (camera/set-torch camera-flashlight)
                       :onBarCodeRead (fn [code]
                                        (let [data (-> code
                                                       .-data
