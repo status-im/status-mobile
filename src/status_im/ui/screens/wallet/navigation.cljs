@@ -15,3 +15,9 @@
 (defmethod navigation/preload-data! :wallet-request-transaction
   [db _]
   (dissoc db :wallet/request-transaction))
+
+(defmethod navigation/preload-data! :wallet-send-transaction
+  [db [event]]
+  (if (= event :navigate-back)
+    db
+    (dissoc db :wallet/send-transaction)))

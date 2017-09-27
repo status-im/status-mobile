@@ -112,6 +112,7 @@
                   :my-profile/profile
                   :my-profile/default-name
                   :wallet/request-transaction
+                  :wallet/send-transaction
                   :networks/selected-network
                   :networks/networks
                   :node/after-start

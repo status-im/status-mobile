@@ -24,6 +24,18 @@
                            (when on-cancel {:onPress on-cancel}))
                     {:text (or s "OK") :onPress on-accept :style "destructive"})))))
 
+(defn show-question
+  ([title content on-accept]
+   (show-question title content on-accept nil))
+  ([title content on-accept on-cancel]
+   (.alert (.-Alert rn-dependencies/react-native)
+           title
+           content
+           (clj->js
+             (vector (merge {:text (i18n/label :t/no)}
+                            (when on-cancel {:onPress on-cancel}))
+                     {:text (i18n/label :t/yes) :onPress on-accept})))))
+
 (defn http-post
   ([action data on-success]
    (http-post action data on-success nil))

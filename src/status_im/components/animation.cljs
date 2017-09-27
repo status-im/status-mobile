@@ -55,3 +55,5 @@
 
 (defn create-value-xy [x y]
   (js/ReactNative.Animated.ValueXY. (clj->js {:x x, :y y})))
+
+(def easing js/ReactNative.Easing)
