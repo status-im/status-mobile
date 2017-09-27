@@ -1,0 +1,6 @@
+framework module FirebaseMessaging {
+  umbrella header "FirebaseMessaging.h"
+  export *
+  module * { export *}
+  link "sqlite3"
+  link "z"}

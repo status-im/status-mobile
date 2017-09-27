@@ -30,6 +30,8 @@
 	<false/>
 	<key>IS_GCM_ENABLED</key>
 	<true/>
+  <key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
