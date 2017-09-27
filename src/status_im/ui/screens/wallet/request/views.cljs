@@ -7,7 +7,7 @@
     [status-im.components.toolbar-new.actions :as actions]
     [status-im.components.toolbar-new.view :as toolbar]
     [status-im.components.status-bar :as status-bar]
-    [status-im.ui.screens.wallet.send.styles :as wallet-styles]
+    [status-im.ui.screens.wallet.styles :as wallet.styles]
     [status-im.components.icons.vector-icons :as vi]
     [status-im.ui.screens.wallet.components.views :as components]
     [status-im.ui.screens.wallet.request.styles :as styles]
@@ -16,7 +16,7 @@
     [status-im.utils.platform :as platform]))
 
 (defn toolbar-view []
-  [toolbar/toolbar2 {:style wallet-styles/toolbar :hide-border? true}
+  [toolbar/toolbar2 {:style wallet.styles/toolbar :hide-border? true}
    [toolbar/nav-button (actions/back-white actions/default-handler)]
    [toolbar/content-title {:color :white} (i18n/label :t/request-transaction)]])
 
@@ -36,41 +36,40 @@
       :fgColor "#4360df"
       :size    256}]))
 
-(defn button-text [label]
-  [react/text {:style      styles/button-text
-               :font       (if platform/android? :medium :default)
-               :uppercase? (get-in platform/platform-specific [:uppercase?])} label])
-
 (views/defview request-transaction []
   ;;Because input field is in the end of view we will scroll to the end on input focus event
-  (views/letsubs [scroll (atom nil)]
-    [react/keyboard-avoiding-view wallet-styles/wallet-modal-container
+  (views/letsubs [amount-error [:get-in [:wallet/request-transaction :amount-error]]
+                  request-enabled? [:wallet.request/request-enabled?]
+                  scroll (atom nil)]
+    [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view]
      [react/scroll-view {:ref #(reset! scroll %)}
-      [react/view styles/main-container
+      [react/view components.styles/flex
         [react/view styles/network-container
          ;;TODO (andrey) name of active network should be used
          [components/network-label styles/network-label "Testnet"]
          [react/view styles/qr-container
           [qr-code]]]
-        [react/view styles/choose-wallet-container
+        [react/view wallet.styles/choose-wallet-container
          [components/choose-wallet]]
-        [react/view styles/amount-container
+        [react/view wallet.styles/amount-container
          [components/amount-input
-          {:input-options {:on-focus (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
+          {:error         amount-error
+           :input-options {:on-focus (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
                            :on-change-text
-                           #(re-frame/dispatch [:set-in [:wallet/request-transaction :amount] %])}}]
-         [react/view styles/choose-currency-container
-          [components/choose-currency styles/choose-currency]]]]]
-     [react/view styles/separator]
-     [react/view styles/buttons-container
+                           #(do (re-frame/dispatch [:set-in [:wallet/request-transaction :amount] %])
+                                (re-frame/dispatch [:wallet-validate-request-amount]))}}]
+         [react/view wallet.styles/choose-currency-container
+          [components/choose-currency wallet.styles/choose-currency]]]]]
+     [components/separator]
+     [react/view wallet.styles/buttons-container
       [react/touchable-highlight {:on-press #()}
-       [react/view styles/button-container
+       [react/view (wallet.styles/button-container false)
         [vi/icon :icons/share {:color :white :container-style styles/share-icon-container}]
-        [button-text (i18n/label :t/share)]]]
+        [components/button-text (i18n/label :t/share)]]]
       [react/view components.styles/flex]
-      [react/touchable-highlight {:on-press send-request}
-       [react/view styles/button-container
-        [button-text (i18n/label :t/send-request)]
-        [vi/icon :icons/forward {:color :white :container-style styles/forward-icon-container}]]]]]))
+      [react/touchable-highlight {:on-press (when request-enabled? send-request)}
+       [react/view (wallet.styles/button-container request-enabled?)
+        [components/button-text (i18n/label :t/send-request)]
+        [vi/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]]]))

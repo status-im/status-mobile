@@ -127,8 +127,7 @@
         (status/discard-transaction id)))))
 
 (register-handler ::transaction-queued
-  (after #(dispatch [:navigate-to-modal :unsigned-transactions]))
-  (fn [db [_ {:keys [id message_id args] :as transaction}]]
+  (fn [{:wallet/keys [send-transaction] :as db} [_ {:keys [id message_id args] :as transaction}]]
     (let [{:keys [from to value data gas gasPrice]} args]
       (if (transaction-valid? transaction)
         (let [transaction {:id         id
@@ -140,6 +139,9 @@
                            :gas-price  (.toDecimal js/Web3.prototype gasPrice)
                            :timestamp  (time/now-ms)
                            :message-id message_id}]
+          (if (:waiting-signal? send-transaction)
+            (dispatch [:wallet/transaction-queued id])
+            (dispatch [:navigate-to-modal :unsigned-transactions]))
           (assoc-in db [:transactions-queue id] transaction))
         db))))
 
@@ -147,7 +149,7 @@
   (u/side-effect!
     (fn [{:keys [transactions modal]} [_ {:keys [id response]}]]
       (let [{:keys [hash error]} response
-            {:keys [message-id]} (transactions id)]
+            {:keys [message-id]} (get transactions id)]
         (log/debug :parsed-response response)
         (when-not (and error (string? error) (not (s/blank? error)))
           (if (and message-id (not (s/blank? message-id)))

@@ -3,9 +3,6 @@
   (:require [status-im.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
-(def wallet-container
-  {:flex 1})
-
 (def error-container
   {:align-self       :center
    :justify-content  :center
@@ -19,12 +16,9 @@
    :padding-right 10
    :font-size     13})
 
-(def toolbar
-  {:background-color (if platform/ios? styles/color-blue4 styles/color-blue5)
-   :elevation        0})
-
 (def toolbar-title-container
-  {:flex-direction :row})
+  {:flex-direction :row
+   :padding-left   24})
 
 (def toolbar-title-text
   {:color        styles/color-white
@@ -59,21 +53,21 @@
    :color     styles/color-white})
 
 (defstyle total-balance-currency
-  {:font-size      37
-   :margin-left    9
-   :color          styles/color-white-transparent-5
-   :android        {:letter-spacing 1.5}
-   :ios            {:letter-spacing 1.16}})
+  {:font-size   37
+   :margin-left 9
+   :color       styles/color-white-transparent-5
+   :android     {:letter-spacing 1.5}
+   :ios         {:letter-spacing 1.16}})
 
 (def value-variation
   {:flex-direction :row
    :align-items    :center})
 
 (defstyle value-variation-title
-  {:font-size      14
-   :color          styles/color-white-transparent-6
-   :android        {:letter-spacing -0.18}
-   :ios            {:letter-spacing -0.2}})
+  {:font-size 14
+   :color     styles/color-white-transparent-6
+   :android   {:letter-spacing -0.18}
+   :ios       {:letter-spacing -0.2}})
 
 (def today-variation-container
   {:border-radius      100
@@ -101,9 +95,9 @@
          {:color styles/color-red-4}))
 
 (defstyle buttons
-  {:margin-top        34
-   :android           {:margin-horizontal 21}
-   :ios               {:margin-horizontal 29}})
+  {:margin-top 34
+   :android    {:margin-horizontal 21}
+   :ios        {:margin-horizontal 29}})
 
 (defstyle main-button-text
   {:padding-vertical   13
