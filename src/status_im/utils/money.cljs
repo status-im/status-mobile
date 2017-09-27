@@ -23,6 +23,9 @@
 (defn bignumber [n]
   (dependencies/Web3.prototype.toBigNumber (str n)))
 
+(defn to-wei [str]
+  (dependencies/Web3.prototype.toWei str "ether"))
+
 (def eth-units
   {:wei    (bignumber "1")
    :kwei   (bignumber "1000")

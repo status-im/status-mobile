@@ -104,7 +104,8 @@
                   :my-profile/drawer
                   :my-profile/profile
                   :my-profile/default-name
-                  :wallet/request-transaction]
+                  :wallet/request-transaction
+                  :wallet/send-transaction]
                  :opt-un
                  [::current-public-key
                   ::modal

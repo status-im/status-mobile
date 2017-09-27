@@ -106,3 +106,5 @@
 (def toolbar-text-action-disabled {:color styles/color-gray7})
 
 (def item-text-white-background {:color styles/color-blue4})
+
+(def ios-content-item {:position :absolute :right 90 :left 90})
