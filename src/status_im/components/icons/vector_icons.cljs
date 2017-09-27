@@ -40,6 +40,7 @@
             :icons/arrow-left          (slurp-svg "./resources/icons/arrow_left.svg")
             :icons/arrow-right         (slurp-svg "./resources/icons/arrow_right.svg")
             :icons/flash-active        (slurp-svg "./resources/icons/flash_active.svg")
+            :icons/flash-inactive      (slurp-svg "./resources/icons/flash_inactive.svg")
             :icons/attach              (slurp-svg "./resources/icons/attach.svg")
             :icons/back                (slurp-svg "./resources/icons/back.svg")
             :icons/browse              (slurp-svg "./resources/icons/browse.svg")
