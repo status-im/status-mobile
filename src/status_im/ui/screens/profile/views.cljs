@@ -21,7 +21,7 @@
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]])
-  (:require-macros [status-im.utils.views :refer [defview]]))
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])

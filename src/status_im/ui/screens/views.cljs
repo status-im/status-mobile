@@ -43,9 +43,12 @@
             [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
 
             [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
+            [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
+            [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent]]
+
             [status-im.components.status-bar :as status-bar]))
 
 (defn validate-current-view
@@ -65,6 +68,8 @@
                           (:wallet :chat-list :discover :contact-list) main-tabs
                           :wallet-list wallet-list-screen
                           :wallet-send-transaction send-transaction
+                          :wallet-transaction-sent transaction-sent
+                          :choose-recipient choose-recipient
                           :wallet-request-transaction request-transaction
                           :wallet-transactions wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
