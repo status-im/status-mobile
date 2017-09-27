@@ -20,39 +20,60 @@
   (utils/show-popup "TODO" "Not implemented yet!"))
 
 (defn on-sign-transaction
-  [m]
+  [password]
   ;; TODO(yenda) implement
-  (utils/show-popup "TODO" "Sign Transaction"))
+  (re-frame/dispatch [:accept-transactions password]))
 
 (defn on-delete-transaction
   [m]
   ;; TODO(yenda) implement
   (utils/show-popup "TODO" "Delete Transaction"))
 
-(defn unsigned-action []
-  ;; TODO subscribe to unsigned-transactions-count or pass it as parameter ?
-  [toolbar/text-action {:disabled? (zero? 0 #_(count unsigned-transactions)) :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
+(defn unsigned-action [unsigned-transactions-count]
+  [toolbar/text-action {:disabled? (zero? unsigned-transactions-count)
+                        :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
    (i18n/label :t/transactions-sign-all)])
 
 (def history-action
   {:icon      :icons/filter
    :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
 
-(defn toolbar-view [view-id]
+(defn toolbar-view [view-id unsigned-transactions-count]
   [toolbar/toolbar2 {:flat? true}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case @view-id
      :wallet-transactions-unsigned
-     [unsigned-action]
+     [unsigned-action unsigned-transactions-count]
 
      :wallet-transactions-history
      [toolbar/actions
       [history-action]])])
 
+;; Sign all
+
+(defview sign-all []
+  []
+  [react/keyboard-avoiding-view {:style transactions.styles/sign-all-view}
+   [react/view {:style transactions.styles/sign-all-done}
+    [button/primary-button {:style    transactions.styles/sign-all-done-button
+                            :text     (i18n/label :t/done)
+                            :on-press #(re-frame/dispatch [:navigate-back])}]]
+   [react/view {:style transactions.styles/sign-all-popup}
+    [react/text {:style transactions.styles/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
+    [react/text {:style transactions.styles/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
+    [react/view {:style transactions.styles/sign-all-actions}
+     [react/text-input {:style             transactions.styles/sign-all-input
+                        :secure-text-entry true
+                        :placeholder       (i18n/label :t/transactions-sign-input-placeholder)}]
+     [button/primary-button {:text (i18n/label :t/transactions-sign-all) :on-press #(println %)}]]]])
+
+
 (defn action-buttons [m]
   [react/view {:style transactions.styles/action-buttons}
-   [button/primary-button {:text (i18n/label :t/transactions-sign) :on-press #(on-sign-transaction m)}]
+   [button/primary-button {:text (i18n/label :t/transactions-sign)
+
+                           :on-press #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}]
    [button/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
 
 (defn- inbound? [type] (= "inbound" type))
@@ -103,44 +124,23 @@
                          :refreshing      (boolean transactions-loading?)}]]))
 
 (defview unsigned-list []
-  []
-  (let [transactions nil] ;; TODO replace by letsubs later
+  (letsubs [transactions [:wallet.transactions/unsigned-transactions-list]]
     [react/view {:style styles/flex}
      [list/flat-list {:data            transactions
                       :render-fn       render-transaction
                       :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]]))
 
-(defn- unsigned-transactions-title []
-  ;; TODO subscribe to unsigned-transactions-count or pass it as parameter ?
-  (let [count 0 #_(count transactions)]
-    (str (i18n/label :t/transactions-unsigned)
-         (if (pos? count) (str " " count)))))
+(defn- unsigned-transactions-title [unsigned-transactions-count]
+  (str (i18n/label :t/transactions-unsigned)
+       (if (pos? unsigned-transactions-count) (str " " unsigned-transactions-count))))
 
-(defn- tab-list []
+(defn- tab-list [unsigned-transactions-count]
   [{:view-id :wallet-transactions-history
     :title   (i18n/label :t/transactions-history)
     :screen  [history-list]}
    {:view-id :wallet-transactions-unsigned
-    :title   (unsigned-transactions-title)
+    :title   (unsigned-transactions-title unsigned-transactions-count)
     :screen  [unsigned-list]}])
-
-;; Sign all
-
-(defview sign-all []
-  []
-  [react/keyboard-avoiding-view {:style transactions.styles/sign-all-view}
-   [react/view {:style transactions.styles/sign-all-done}
-    [button/primary-button {:style    transactions.styles/sign-all-done-button
-                            :text     (i18n/label :t/done)
-                            :on-press #(re-frame/dispatch [:navigate-back])}]]
-   [react/view {:style transactions.styles/sign-all-popup}
-    [react/text {:style transactions.styles/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
-    [react/text {:style transactions.styles/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
-    [react/view {:style transactions.styles/sign-all-actions}
-     [react/text-input {:style             transactions.styles/sign-all-input
-                        :secure-text-entry true
-                        :placeholder       (i18n/label :t/transactions-sign-input-placeholder)}]
-     [button/primary-button {:text (i18n/label :t/transactions-sign-all) :on-press #(on-sign-transaction %)}]]]])
 
 ;; Filter history
 
@@ -195,13 +195,14 @@
 ;; TODO(yenda) must reflect selected wallet
 
 (defview transactions []
-  (let [tabs         (tab-list)
-        default-view (get-in tabs [0 :view-id])
-        view-id      (reagent/atom default-view)]
-    [react/view {:style styles/flex}
-     [status-bar/status-bar]
-     [toolbar-view view-id]
-     [main-section view-id tabs]]))
+  (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
+    (let [tabs         (tab-list unsigned-transactions-count)
+          default-view (get-in tabs [0 :view-id])
+          view-id      (reagent/atom default-view)]
+      [react/view {:style styles/flex}
+       [status-bar/status-bar]
+       [toolbar-view view-id unsigned-transactions-count]
+       [main-section view-id tabs]])))
 
 (defn transaction-details-header [{:keys [value date type]}]
   [react/view {:style transactions.styles/transaction-details-header}
@@ -243,7 +244,7 @@
    [transaction-details-list-row :t/gas-limit gas-limit]
    [transaction-details-list-row :t/gas-price gas-price-gwei gas-price-eth]
    [transaction-details-list-row :t/gas-used gas-used]
-   [transaction-details-list-row :t/cost-fee (str cost " ETH")]
+   [transaction-details-list-row :t/cost-fee cost]
    [transaction-details-list-row :t/nonce nonce]
    [transaction-details-list-row :t/data data]])
 
@@ -252,9 +253,9 @@
                   {:text (i18n/label :t/open-on-etherscan) :value #(.openURL react/linking url)}])])
 
 (defview transaction-details []
-  (letsubs [{:keys [hash url] :as transaction-details} [:wallet.transactions/transaction-details]
-            confirmations                              [:wallet.transactions.details/confirmations]
-            confirmations-progress                     [:wallet.transactions.details/confirmations-progress]]
+  (letsubs [{:keys [hash url type] :as transaction-details} [:wallet.transactions/transaction-details]
+            confirmations                                   [:wallet.transactions.details/confirmations]
+            confirmations-progress                          [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar2 {}
