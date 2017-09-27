@@ -7,7 +7,8 @@
             [status-im.components.context-menu :as context-menu]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.styles :as tst]
-            [status-im.components.icons.vector-icons :as vi]))
+            [status-im.components.icons.vector-icons :as vi]
+            [status-im.utils.platform :as platform]))
 
 ;; Navigation item
 
@@ -103,10 +104,15 @@
     action-items]
    [rn/view {:style (merge (tst/toolbar-wrapper background-color flat?) style)}
     [rn/view {:style tst/toolbar}
+     (when platform/ios?
+       [rn/view tst/ios-content-item
+        content-item])
      (when nav-item
        [rn/view {:style (tst/toolbar-nav-actions-container 0)}
         nav-item])
-     content-item
+     (if platform/ios?
+       [rn/view st/flex]
+       content-item)
      action-items]
     (when-not no-sync-bar? [sync-state-gradient-view/sync-state-gradient-view])]))
 
