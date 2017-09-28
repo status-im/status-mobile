@@ -121,13 +121,13 @@
      [list/section-list
       {:sections                 [{:key        :assets
                                    :data       assets
-                                   :renderItem  (list/wrap-render-fn render-assets-fn)}
+                                   :renderItem (list/wrap-render-fn render-assets-fn)}
                                   {:key        :add-asset
                                    :data       [{}]
                                    :renderItem (list/wrap-render-fn render-add-asset-fn)}]
        :render-section-header-fn #()
        :on-refresh               #(rf/dispatch [:update-wallet])
-       :refreshing               (or prices-loading? balance-loading?)}]]))
+       :refreshing               (boolean (or prices-loading? balance-loading?))}]]))
 
 (defview wallet []
   (letsubs [eth-balance      [:eth-balance]

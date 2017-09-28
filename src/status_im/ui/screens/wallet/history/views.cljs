@@ -87,7 +87,7 @@
                          :render-fn       render-transaction
                          :empty-component (empty-text (i18n/label :t/transactions-history-empty))
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
-                         :refreshing      transactions-loading?}]]))
+                         :refreshing      (boolean transactions-loading?)}]]))
 
 (defview unsigned-list [transactions]
   []
