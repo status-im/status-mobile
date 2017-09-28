@@ -1,28 +1,36 @@
 (ns status-im.ui.screens.wallet.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as st]
-            [status-im.components.styles :as styles]))
+  (:require [status-im.components.styles :as styles]))
+
+;; errors
+
+(defstyle error-container
+  {:flex-direction :row
+   :align-items    :center
+   :ios            {:padding-top    8
+                    :padding-bottom 8}
+   :android        {:padding-top    10
+                    :padding-bottom 10}})
+
+(def error-exclamation
+  {:background-color styles/color-red-2
+   :border-radius    100
+   :width            16
+   :height           16
+   :margin-left      12
+   :margin-right     6
+   :margin-top       2})
+
+
+;; wallet
 
 (def wallet-container
   {:flex 1})
 
 (defstyle toolbar
-          {:ios     {:background-color styles/color-blue4}
-           :android {:background-color styles/color-blue5
-                     :elevation        0}})
-
-(def wallet-exclamation-container
-  {:background-color st/color-red-2
-   :justify-content  :center
-   :margin-top       5
-   :margin-left      10
-   :margin-right     7
-   :margin-bottom    5
-   :border-radius    100})
-
-(def wallet-error-exclamation
-  {:width  16
-   :height 16})
+  {:ios     {:background-color styles/color-blue4}
+   :android {:background-color styles/color-blue5
+             :elevation        0}})
 
 (def buttons-container
   {:margin-vertical    15
