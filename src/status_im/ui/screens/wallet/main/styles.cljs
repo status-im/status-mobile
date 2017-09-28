@@ -3,18 +3,24 @@
   (:require [status-im.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
-(def error-container
+;; Errors
+
+(defstyle error-container
   {:align-self       :center
    :justify-content  :center
-   :border-radius    20
-   :flex-direction   :row
+   :ios              {:border-radius 20
+                      :margin-top    6}
+   :android          {:border-radius    4
+                      :margin-top       18}
    :background-color styles/color-blue5})
 
 (def error-message
   {:color         styles/color-white
-   :padding-top   3
    :padding-right 10
    :font-size     13})
+
+
+;; Toolbar
 
 (def toolbar-title-container
   {:flex-direction :row
@@ -32,9 +38,8 @@
 (def toolbar-title-icon
   (merge toolbar-icon {:opacity 0.4}))
 
-;;;;;;;;;;;;;;;;;;
-;; Main section ;;
-;;;;;;;;;;;;;;;;;;
+
+;; Main section
 
 (def main-section
   {:background-color styles/color-blue4})
@@ -104,9 +109,7 @@
    :padding-horizontal nil
    :android            {:letter-spacing 0.46}})
 
-;;;;;;;;;;;;;;;;;;;;
-;; Assets section ;;
-;;;;;;;;;;;;;;;;;;;;
+;; Assets section
 
 (def asset-section
   {:flex             1
@@ -127,18 +130,19 @@
   {:font-size 16
    :color     styles/color-black})
 
-(def add-asset-icon
+(defstyle add-asset-icon
   {:flex             1
    :justify-content  :center
    :align-items      :center
    :width            40
    :height           40
    :border-radius    32
-   :background-color styles/color-blue4-transparent})
+   :ios              {:background-color styles/color-blue4-transparent}})
 
-(def add-asset-text
+(defstyle add-asset-text
   {:font-size 16
-   :color     styles/color-blue4})
+   :ios       {:color styles/color-blue4}
+   :android   {:color styles/color-black}})
 
 (def asset-item-currency
   {:font-size   16

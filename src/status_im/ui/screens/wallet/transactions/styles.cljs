@@ -83,8 +83,7 @@
   {:background-color :transparent})
 
 (defn transaction-icon-background [color]
-  {:flex             1
-   :justify-content  :center
+  {:justify-content  :center
    :align-items      :center
    :width            40
    :height           40
