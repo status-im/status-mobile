@@ -121,7 +121,7 @@
       {:data       (conj assets {}) ;; Extra map triggers rendering for add-asset
        :render-fn  render-asset
        :on-refresh #(rf/dispatch [:update-wallet])
-       :refreshing (or prices-loading? balance-loading?)}]]))
+       :refreshing (boolean (or prices-loading? balance-loading?))}]]))
 
 (defview wallet []
   (letsubs [eth-balance      [:eth-balance]
