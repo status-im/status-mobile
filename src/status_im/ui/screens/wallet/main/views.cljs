@@ -61,7 +61,8 @@
 
 (defn main-section [usd-value change error-message]
   [react/view {:style styles/main-section}
-   (when error-message [wallet.views/error-message-view styles/error-container styles/error-message])
+   (when error-message
+     [wallet.views/error-message-view styles/error-container styles/error-message])
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
      [react/text {:style styles/total-balance-value} usd-value]
@@ -74,7 +75,7 @@
      [{:text      (i18n/label :t/wallet-send)
        :on-press  #(do (rf/dispatch [:navigate-to :wallet-send-transaction])
                        (when platform/android?
-                           (rf/dispatch [:request-permissions [:camera]])))
+                         (rf/dispatch [:request-permissions [:camera]])))
        :disabled? (not config/wallet-wip-enabled?)}
       {:text     (i18n/label :t/wallet-request)
        :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])

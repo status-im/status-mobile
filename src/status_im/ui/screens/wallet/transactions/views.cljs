@@ -72,7 +72,7 @@
 (defn action-buttons [m]
   [react/view {:style transactions.styles/action-buttons}
    [button/primary-button {:text (i18n/label :t/transactions-sign)
-
+                           :style {:margin-right 12}
                            :on-press #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}]
    [button/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
 
@@ -93,18 +93,19 @@
     (throw (str "Unknown transaction type: " k))))
 
 (defn render-transaction [{:keys [hash to from type value symbol] :as m}]
-  [list/item
-   [list/item-icon (transaction-type->icon (keyword type))]
-   [list/item-content
-    (str value " " symbol)
-    (if (inbound? type)
-      (str (i18n/label :t/from) " " from)
-      (str (i18n/label :t/to) " " to))
-    (when (unsigned? type)
-      [action-buttons m])]
-   [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-transaction-details hash])}
-    [react/view
+  [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
+   [react/view
+    [list/item
+     [list/item-icon (transaction-type->icon (keyword type))]
+     [list/item-content
+      (str value " " symbol)
+      (if (inbound? type)
+        (str (i18n/label :t/from) " " from)
+        (str (i18n/label :t/to) " " to))
+      (when (unsigned? type)
+        [action-buttons m])]
      [list/item-icon {:icon :icons/forward
+                      :style {:margin-top 10}
                       :icon-opts transactions.styles/forward}]]]])
 
 ;; TODO(yenda) hook with re-frame
@@ -262,7 +263,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]
       [toolbar/actions (details-action hash url)]]
-     [react/scroll-view
+     [react/scroll-view {:style transactions.styles/main-section}
       [transaction-details-header transaction-details]
       [transaction-details-confirmations confirmations confirmations-progress]
       [react/view {:style transactions.styles/transaction-details-separator}]

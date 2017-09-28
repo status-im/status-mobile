@@ -6,7 +6,7 @@
 
 (defn error-message-view [error-container-style error-message-style]
   [react/view {:style error-container-style}
-   [react/view {:style styles/wallet-exclamation-container}
+   [react/view {:style styles/error-container}
     [vector-icons/icon :icons/exclamation_mark {:color           :white
-                                                :container-style styles/wallet-error-exclamation}]]
-   [react/text {:style error-message-style} (i18n/label :t/wallet-error)]])
+                                                :container-style styles/error-exclamation}]
+    [react/text {:style error-message-style} (i18n/label :t/wallet-error)]]])
