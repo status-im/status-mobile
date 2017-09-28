@@ -136,7 +136,7 @@
   (when status
     (call-module #(.parseJail status chat-id file callback))))
 
-(defn call-jail [{:keys [jail-id path params callback]}]
+(defn execute-call [{:keys [jail-id path params callback]}]
   (when status
     (call-module
       #(do
@@ -154,7 +154,52 @@
                            (doseq [{:keys [type message]} messages]
                              (log/debug (str "VM console(" type ") - " message)))
                            (callback r')))]
-           (.callJail status jail-id (cljs->json path) (cljs->json params') cb))))))
+           (.callJail status jail-id (t/clj->json path) (t/clj->json params') cb))))))
+
+;; TODO(rasom): temporal solution, should be fixed on status-go side
+(def check-raw-calls-interval 200)
+(def interval-between-calls 100)
+;; contains all calls to jail before with duplicates
+(def raw-jail-calls (atom '()))
+;; contains only calls that passed duplication check
+(def jail-calls (atom '()))
+
+(defn remove-duplicate-calls
+  "Removes duplicates by [jail path] keys, remains the last one."
+  [[all-keys calls] {:keys [jail-id path] :as call}]
+  (if (contains? all-keys [jail-id path])
+    [all-keys calls]
+    [(conj all-keys [jail-id path])
+     (conj calls call)]))
+
+(defn check-raw-calls-loop!
+  "Only the last call with [jail path] key is added to jail-calls list
+  from raw-jail-calls"
+  []
+  (go-loop [_ nil]
+    (let [[_ new-calls] (reduce remove-duplicate-calls [#{} '()] @raw-jail-calls)]
+      (reset! raw-jail-calls '())
+      (swap! jail-calls (fn [old-calls]
+                          (concat new-calls old-calls))))
+    (recur (<! (timeout check-raw-calls-interval)))))
+
+(defn execute-calls-loop!
+  "Calls to jail are executed ne by one with interval-between-calls,
+  which reduces chances of response shuffling"
+  []
+  (go-loop [_ nil]
+    (let [next-call (last @jail-calls)]
+      (swap! jail-calls butlast)
+      (when next-call
+        (execute-call next-call)))
+    (recur (<! (timeout interval-between-calls)))))
+
+(check-raw-calls-loop!)
+(execute-calls-loop!)
+
+(defn call-jail [call]
+  (swap! raw-jail-calls conj call))
+;; TODO(rasom): end of sick magic, should be removed ^
 
 (defn call-function!
   [{:keys [chat-id function callback] :as opts}]
