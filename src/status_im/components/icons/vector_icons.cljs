@@ -77,6 +77,7 @@
   ([name] (icon name nil))
   ([name {:keys [color container-style style accessibility-label]
           :or {accessibility-label :icon}}]
+   ^{:key name}
    [react/view {:style container-style
                 :accessibility-label accessibility-label}
     (if-let [icon-fn (get icons (normalize-property-name name))]
