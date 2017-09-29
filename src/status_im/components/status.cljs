@@ -157,7 +157,7 @@
            (.callJail status jail-id (t/clj->json path) (t/clj->json params') cb))))))
 
 ;; TODO(rasom): temporal solution, should be fixed on status-go side
-(def check-raw-calls-interval 200)
+(def check-raw-calls-interval 400)
 (def interval-between-calls 100)
 ;; contains all calls to jail before with duplicates
 (def raw-jail-calls (atom '()))
