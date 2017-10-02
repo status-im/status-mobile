@@ -5,9 +5,9 @@
 
 (defn get-network-subdomain [network]
   (case network
-    "testnet" "ropsten"
-    "testnet_rpc" "ropsten"
-    "mainnet" "api"))
+    ("testnet" "testnet_rpc") "ropsten"
+    ("mainnet" "mainnet_rpc") "api"
+    ("rinkeby" "rinkeby_rpc") "rinkeby"))
 
 (defn get-transaction-details-url [network hash]
   (let [network-subdomain (get-network-subdomain network)]

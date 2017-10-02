@@ -30,18 +30,13 @@
 
 (def default-network "testnet_rpc")
 (def default-networks
-  {"mainnet"     {:id     "mainnet",
-                  :name   "Mainnet",
-                  :config (types/clj->json
-                            {:NetworkId 1
-                             :DataDir   "/ethereum/mainnet"})}
-   "testnet"     {:id     "testnet",
+  {"testnet"     {:id     "testnet",
                   :name   "Ropsten",
                   :config (types/clj->json
                             {:NetworkId 3
                              :DataDir   "/ethereum/testnet"})}
    "testnet_rpc" {:id     "testnet_rpc",
-                  :name   "Ropsten with RPC",
+                  :name   "Ropsten with upstream RPC",
                   :config (types/clj->json
                             {:NetworkId      3
                              :DataDir        "/ethereum/testnet_rpc"
@@ -51,4 +46,23 @@
                   :name   "Rinkeby",
                   :config (types/clj->json
                             {:NetworkId 4
-                             :DataDir   "/ethereum/rinkeby"})}})
+                             :DataDir   "/ethereum/rinkeby"})}
+   "rinkeby_rpc" {:id     "rinkeby_rpc",
+                  :name   "Rinkeby with upstream RPC",
+                  :config (types/clj->json
+                            {:NetworkId      4
+                             :DataDir        "/ethereum/rinkeby_rpc"
+                             :UpstreamConfig {:Enabled true
+                                              :URL     "https://rinkeby.infura.io/z6GCTmjdP3FETEJmMBI4"}})}
+   "mainnet"     {:id     "mainnet",
+                  :name   "Mainnet",
+                  :config (types/clj->json
+                            {:NetworkId 1
+                             :DataDir   "/ethereum/mainnet"})}
+   "mainnet_rpc" {:id     "mainnet_rpc",
+                  :name   "Mainnet with upstream RPC",
+                  :config (types/clj->json
+                            {:NetworkId      1
+                             :DataDir        "/ethereum/mainnet_rpc"
+                             :UpstreamConfig {:Enabled true
+                                              :URL     "https://mainnet.infura.io/z6GCTmjdP3FETEJmMBI4 "}})}})
