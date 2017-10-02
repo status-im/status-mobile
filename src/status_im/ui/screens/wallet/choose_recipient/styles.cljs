@@ -103,22 +103,22 @@
 
 (defn viewfinder-translucent [height width side]
   (let [viewport-offset 0.1666
-        height-offset (* viewport-offset height)
-        width-offset (* viewport-offset width)]
+        min-dimension (min height width)
+        min-offset (* viewport-offset min-dimension)]
     (cond-> {:position         :absolute
              :background-color :black
              :opacity          0.7}
-            (= :top side) (assoc :height height-offset
-                                 :width  width)
-            (= :right side) (assoc :height (- height height-offset)
-                                   :width width-offset
-                                   :bottom 0
-                                   :right 0)
-            (= :bottom side) (assoc :height height-offset
-                                    :width (- width width-offset)
-                                    :bottom 0
-                                    :left 0)
-            (= :left side) (assoc :height (- height (* 2 height-offset))
-                                  :width width-offset
-                                  :top height-offset
-                                  :left 0))))
+      (= :top side) (assoc :height min-offset
+                           :width  width)
+      (= :right side) (assoc :height (- height min-offset)
+                             :width min-offset
+                             :bottom 0
+                             :right 0)
+      (= :bottom side) (assoc :height min-offset
+                              :width (- width min-offset)
+                              :bottom 0
+                              :left 0)
+      (= :left side) (assoc :height (- height (* 2 min-offset))
+                            :width min-offset
+                            :top min-offset
+                            :left 0))))
