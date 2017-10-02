@@ -37,17 +37,20 @@
 
 ;;;; Handlers
 
-(handlers/register-handler-db
+(defn choose-address-and-name [db address name]
+  (update db :wallet/send-transaction assoc :to-address address :to-name name))
+
+(handlers/register-handler-fx
   :choose-recipient
-  (fn [db [_ recipient]]
-    (assoc-in db [:wallet :send :recipient] recipient)))
+  (fn [{:keys [db]} [_ address name]]
+    (let [{:keys [view-id]} db]
+      (cond-> {:db (choose-address-and-name db address name)}
+        (= :choose-recipient view-id) (assoc :dispatch [:navigate-back])))))
 
 (handlers/register-handler-fx
   :wallet-open-send-transaction
   (fn [{db :db} [_ address name]]
-    {:db         (update db :wallet/send-transaction
-                         #(assoc % :to-address address
-                                   :to-name name))
+    {:db         (choose-address-and-name db address name)
      :dispatch-n [[:navigate-back]
                   [:navigate-back]]}))
 
