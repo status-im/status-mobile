@@ -45,7 +45,7 @@
    [react/touchable-highlight {:style    (styles/recipient-touchable true)
                                :on-press #(react/get-from-clipboard
                                             (fn [clipboard]
-                                              (re-frame/dispatch [:choose-recipient clipboard])))}
+                                              (re-frame/dispatch [:choose-recipient clipboard nil])))}
     [react/view {:style styles/recipient-button}
      [react/text {:style styles/recipient-button-text}
       (i18n/label :t/wallet-address-from-clipboard)]
@@ -93,6 +93,6 @@
                                        (let [data (-> code
                                                       .-data
                                                       (string/replace #"ethereum:" ""))]
-                                         (re-frame/dispatch [:choose-recipient data])))}]
+                                         (re-frame/dispatch [:choose-recipient data nil])))}]
       [viewfinder camera-dimensions]]
      [recipient-buttons]]))
