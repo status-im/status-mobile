@@ -6,7 +6,7 @@ function calculateFee(n, tx) {
 
     var gasMultiplicator = Math.pow(1.4, n).toFixed(3);
     var weiFee = web3.eth.gasPrice * gasMultiplicator * estimatedGas;
-    // force fee in eth to be of BigNumber type
+    // force fee in ETH to be of BigNumber type
     var ethFee = web3.toBigNumber(web3.fromWei(weiFee, "ether"));
     // always display 7 decimal places
     return ethFee.toFixed(7);
@@ -26,7 +26,7 @@ status.defineSubscription(
 );
 
 function getFeeExplanation(n) {
-    return I18n.t('send_explanation') + I18n.t('send_explanation_' + (n + 2));
+    return I18n.t('send_explanation') + I18n.t('send_explanation_' + n);
 }
 
 status.defineSubscription(
@@ -196,8 +196,8 @@ function amountParameterBox(params, context) {
                     ),
                     status.components.slider(
                         {
-                            maximumValue: 2,
-                            minimumValue: -2,
+                            maximumValue: 4,
+                            minimumValue: 0,
                             onSlidingComplete: status.components.dispatch(
                                 [status.events.UPDATE_DB, "sliderValue"]
                             ),
