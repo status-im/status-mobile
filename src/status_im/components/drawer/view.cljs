@@ -27,7 +27,8 @@
             [status-im.utils.listview :as lw]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.protocol.core :as protocol]))
 
 (defonce drawer-atom (atom nil))
 (defn open-drawer! [] (.openDrawer @drawer-atom))
@@ -49,6 +50,8 @@
 (defn navigate-to-accounts []
   (close-drawer!)
   (save-profile!)
+  ;; TODO(rasom): probably not the best place for this call
+  (protocol/stop-whisper!)
   (rf/dispatch [:navigate-to :accounts]))
 
 (defview profile-picture []

@@ -19,3 +19,6 @@
       (fn [err res]
         (swap! password->keys assoc password res)
         (callback res)))))
+
+(defn reset-keys! []
+  (reset! password->keys {}))

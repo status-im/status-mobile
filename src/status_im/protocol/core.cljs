@@ -68,6 +68,12 @@
 
 (def stop-watching-all! f/remove-all-filters!)
 (def reset-all-pending-messages! d/reset-all-pending-messages!)
+(def reset-keys! shh-keys/reset-keys!)
+
+(defn stop-whisper! []
+  (stop-watching-all!)
+  (reset-all-pending-messages!)
+  (reset-keys!))
 
 (defn init-whisper!
   [{:keys [identity groups callback web3
@@ -75,8 +81,7 @@
     :as   options}]
   {:pre [(valid? ::options options)]}
   (debug :init-whisper)
-  (stop-watching-all!)
-  (d/reset-all-pending-messages!)
+  (stop-whisper!)
   (let [listener-options {:web3     web3
                           :identity identity
                           :callback callback}]
