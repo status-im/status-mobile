@@ -165,8 +165,8 @@
   returns all effects necessary for account update."
   [{{:keys          [network]
      :accounts/keys [accounts current-account-id] :as db} :db now :now} new-account-fields]
-  (let [current-account (get accounts current-account-id) 
-        new-account (update-account current-account new-account-fields now)]
+  (let [current-account (get accounts current-account-id)
+        new-account     (update-account current-account new-account-fields now)]
     {:db                        (assoc-in db [:accounts/accounts current-account-id] new-account)
      ::save-account             new-account
      ::broadcast-account-update (merge
@@ -177,13 +177,13 @@
 ;; TODO(janherich): remove this event once it's not used anymore
 (handlers/register-handler-fx
   :account-update
-  [(re-frame/inject-cofx :now) re-frame/trim-v]
+  [re-frame/trim-v]
   (fn [cofx [new-account-fields]]
     (account-update cofx new-account-fields)))
 
 (handlers/register-handler-fx
   :account-update-keys
-  [(re-frame/inject-cofx :get-new-keypair!) (re-frame/inject-cofx :now)]
+  [(re-frame/inject-cofx :get-new-keypair!)]
   (fn [{:keys [db keypair now]} _]
     (let [{:accounts/keys [accounts current-account-id]} db
           {:keys [public private]} keypair
@@ -200,7 +200,6 @@
 
 (handlers/register-handler-fx
   :send-account-update-if-needed
-  [(re-frame/inject-cofx :now)]
   (fn [{{:accounts/keys [accounts current-account-id]} :db now :now :as cofx} _]
     (let [{:keys [last-updated]} (get accounts current-account-id)
           needs-update? (> (- now last-updated) time/week)]

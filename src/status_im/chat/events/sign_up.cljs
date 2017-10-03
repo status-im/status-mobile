@@ -105,7 +105,7 @@
 
 (handlers/register-handler-fx
   ::contacts-synced
-  [re-frame/trim-v (re-frame/inject-cofx :random-id) (re-frame/inject-cofx :now)]
+  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{:keys [db random-id] :as cofx} [contacts]]
     (-> db
         (contacts-events/add-contacts contacts)
