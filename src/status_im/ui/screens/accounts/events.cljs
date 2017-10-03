@@ -165,8 +165,10 @@
   returns all effects necessary for account update."
   [{{:keys          [network]
      :accounts/keys [accounts current-account-id] :as db} :db now :now} new-account-fields]
-  (let [current-account (get accounts current-account-id) 
-        new-account (update-account current-account new-account-fields now)]
+  (let [current-account (get accounts current-account-id)
+        ;;TODO(rasom): decide if we really need to use :now coefx here
+        now'            (or now (js/Date.now))
+        new-account     (update-account current-account new-account-fields now')]
     {:db                        (assoc-in db [:accounts/accounts current-account-id] new-account)
      ::save-account             new-account
      ::broadcast-account-update (merge
