@@ -31,4 +31,4 @@
   :connect-network
   (fn [cofx [_ network]]
     (merge (accounts-events/account-update cofx {:network network})
-           {:dispatch-n [[:navigate-to-clean :accounts]]})))
+           {:dispatch [:navigate-to-clean :accounts]})))
