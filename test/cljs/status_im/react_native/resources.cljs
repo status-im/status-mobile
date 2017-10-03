@@ -26,6 +26,7 @@
    :augur              nil
    :ethlance           nil
    :commiteth          nil
+   :aigang             nil
    :etherplay          nil})
 
 (def assets
