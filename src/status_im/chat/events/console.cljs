@@ -113,7 +113,7 @@
 ;; TODO(janherich) remove this once send-message events are refactored
 (handlers/register-handler-fx
   :invoke-console-command-handler!
-  [re-frame/trim-v (re-frame/inject-cofx :random-id) (re-frame/inject-cofx :now)]
+  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [cofx [{:keys [chat-id command] :as command-params}]]
     (let [fx-fn (get console-commands->fx (-> command :command :name))]
       (-> cofx

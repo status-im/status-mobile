@@ -390,7 +390,7 @@
 
 (handlers/register-handler-fx
   :proceed-command
-  [re-frame/trim-v (re-frame/inject-cofx :random-id) (re-frame/inject-cofx :now)]
+  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{:keys [db random-id now]} [content]]
     (proceed-command db content random-id now)))
 
@@ -465,7 +465,7 @@
 
 (handlers/register-handler-fx
   :send-current-message
-  [(re-frame/inject-cofx :random-id) (re-frame/inject-cofx :now)]
+  [(re-frame/inject-cofx :random-id)]
   (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now} _]
     (let [input-text   (get-in db [:chats current-chat-id :input-text])
           chat-command (-> db

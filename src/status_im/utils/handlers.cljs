@@ -1,7 +1,7 @@
 (ns status-im.utils.handlers
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
-            [re-frame.core :refer [reg-event-db reg-event-fx]]
+            [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [taoensso.timbre :as log])
   (:require-macros status-im.utils.handlers))
@@ -40,15 +40,18 @@
   ([name middleware handler]
    (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) middleware] handler)))
 
+(def default-interceptors
+  [debug-handlers-names (when js/goog.DEBUG check-spec) (re-frame/inject-cofx :now)])
+
 (defn register-handler-db
   ([name handler] (register-handler-db name nil handler))
   ([name interceptors handler]
-   (reg-event-db name [debug-handlers-names (when js/goog.DEBUG check-spec) interceptors] handler)))
+   (reg-event-db name [default-interceptors interceptors] handler)))
 
 (defn register-handler-fx
   ([name handler] (register-handler-fx name nil handler))
   ([name interceptors handler]
-   (reg-event-fx name [debug-handlers-names (when js/goog.DEBUG check-spec) interceptors] handler)))
+   (reg-event-fx name [default-interceptors interceptors] handler)))
 
 (defn get-hashtags [status]
   (if status
