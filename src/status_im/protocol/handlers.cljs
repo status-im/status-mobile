@@ -1,6 +1,6 @@
 (ns status-im.protocol.handlers
   (:require [status-im.utils.handlers :as u]
-            [re-frame.core :refer [dispatch after]]
+            [re-frame.core :refer [dispatch after] :as re-frame]
             [status-im.utils.handlers :refer [register-handler]]
             [status-im.data-store.contacts :as contacts]
             [status-im.data-store.messages :as messages]
@@ -21,6 +21,10 @@
             [status-im.utils.scheduler :as s]
             [status-im.utils.web3-provider :as w3]
             [status-im.utils.datetime :as time]))
+
+(re-frame/reg-fx
+  :stop-whisper
+  (fn [] (protocol/stop-whisper!)))
 
 (register-handler :initialize-protocol
   (fn [db [_ current-account-id ethereum-rpc-url]]
