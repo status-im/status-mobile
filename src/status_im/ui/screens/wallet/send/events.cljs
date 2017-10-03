@@ -43,14 +43,15 @@
 (handlers/register-handler-fx
   ::transaction-completed
   (fn [{db :db} [_ {:keys [id response]}]]
-    (let [{:keys [hash error]} response]
-      ;; error is handling in TRANSACTION FAILED signal from status-go
-      (when-not (and error (string? error) (not (string/blank? error)))
-        {:db       (-> db
+    (let [{:keys [hash error]} response
+          db' (assoc-in db [:wallet/send-transaction :in-progress?] false)]
+      (if-not (and error (string? error) (not (string/blank? error)))
+        {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
                        (assoc-in [:wallet/send-transaction :transaction-id] nil)
                        (assoc-in [:wallet/send-transaction :wrong-password?] false))
-         :dispatch [:navigate-to :wallet-transaction-sent]}))))
+         :dispatch [:navigate-to :wallet-transaction-sent]}
+        {:db db'}))))
 
 (defn on-transactions-completed [raw-results]
   (let [results (:results (types/json->clj raw-results))]
@@ -95,10 +96,12 @@
       (if transaction-id
         {::accept-transaction {:id           transaction-id
                                :password     password
-                               :on-completed on-transactions-completed}}
-        {:db                (update-in db [:wallet/send-transaction]
-                                       #(assoc % :waiting-signal? true
-                                                 :later? later?))
+                               :on-completed on-transactions-completed}
+         :db (assoc-in db [:wallet/send-transaction :in-progress?] true)}
+        {:db (update db :wallet/send-transaction assoc
+                     :waiting-signal? true
+                     :later? later?
+                     :in-progress? true)
          ::send-transaction {:web3  web3
                              :from  (get-in accounts [current-account-id :address])
                              :to    (:to-address send-transaction)
@@ -119,9 +122,10 @@
   :wallet/discard-transaction
   (fn [{{:wallet/keys   [send-transaction] :as db} :db} _]
     (let [{:keys [transaction-id]} send-transaction]
-      (merge {:db (-> db
-                      (update-in [:wallet/send-transaction]
-                                 #(assoc % :signing? false :transaction-id nil :wrong-password? false)))}
+      (merge {:db (update db :wallet/send-transaction assoc
+                          :signing? false
+                          :transaction-id nil
+                          :wrong-password? false)}
              (when transaction-id
                {:discard-transaction transaction-id})))))
 
