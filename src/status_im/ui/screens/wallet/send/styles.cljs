@@ -61,3 +61,13 @@
    :font-size      15
    :letter-spacing -0.2
    :height         20})
+
+(def processing-view
+  {:position         :absolute
+   :top              0
+   :bottom           0
+   :right            0
+   :left             0
+   :align-items      :center
+   :justify-content  :center
+   :background-color (str styles/color-black "1A")})
