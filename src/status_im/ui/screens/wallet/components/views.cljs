@@ -7,6 +7,7 @@
             [reagent.core :as reagent]
             [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.components.animation :as animation]
+            [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.components.animations :as animations]))
 
@@ -73,16 +74,18 @@
 
 ;;TODO (andrey) this should be choose component with the list of wallets
 (views/defview choose-wallet [& [style]]
-  (views/letsubs [eth-balance [:eth-balance]]
+  (views/letsubs [balance [:balance]]
     [react/view
      [react/text {:style styles/label} (i18n/label :t/wallet)]
      [react/view (merge styles/wallet-container
                         style)
-      [react/text {:style styles/wallet-name} "Main wallet"]
+      [react/text {:style styles/wallet-name} (i18n/label :t/main-wallet)]
       [react/text {:style           styles/wallet-value
                    :number-of-lines 1
                    :ellipsizeMode   :middle}
-       (str eth-balance " ETH")]]]))
+       (if balance
+         (money/wei->str :eth balance)
+         "...")]]]))
 
 (defn network-label
   ([n] (network-label [{} n]))

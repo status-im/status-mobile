@@ -12,11 +12,13 @@
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.utils.config :as config]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.components.styles :as components.styles]
+            [status-im.components.button.styles :as button.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]))
 
 (defn- show-not-implemented! []
@@ -59,6 +61,11 @@
         (str (when pos-change? "+") change "%")
         "-%")]]))
 
+(defn- wallet-send []
+  (rf/dispatch [:navigate-to :wallet-send-transaction])
+  (when platform/android?
+    (rf/dispatch [:request-permissions [:camera]])))
+
 (defn main-section [usd-value change error-message]
   [react/view {:style styles/main-section}
    (when error-message
@@ -71,17 +78,13 @@
      [react/text {:style styles/value-variation-title}
       (i18n/label :t/wallet-total-value)]
      [change-display change]]
-    [btn/buttons {:style styles/buttons :button-text-style styles/main-button-text}
-     [{:text      (i18n/label :t/wallet-send)
-       :on-press  #(do (rf/dispatch [:navigate-to :wallet-send-transaction])
-                       (when platform/android?
-                         (rf/dispatch [:request-permissions [:camera]])))
-       :disabled? (not config/wallet-wip-enabled?)}
-      {:text     (i18n/label :t/wallet-request)
-       :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
-       :disabled? (not config/wallet-wip-enabled?)}
-      {:text      (i18n/label :t/wallet-exchange)
-       :disabled? true}]]]])
+    [react/view {:style (merge button.styles/buttons-container styles/buttons) :button-text-style styles/main-button-text}
+     [btn/button {:on-press wallet-send :style (button.styles/button-bar :first)}
+      (i18n/label :t/wallet-send)]
+     [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-request-transaction]) :style (button.styles/button-bar :other)}
+      (i18n/label :t/wallet-request)]
+     [btn/button {:disabled? true :style (button.styles/button-bar :last)}
+      (i18n/label :t/wallet-exchange)]]]])
 
 (defn- token->image [id]
   (case id
@@ -115,14 +118,14 @@
       (let [{:keys [source style]} (token->image id)]
         [list/item-image source style])
       [react/view {:style styles/asset-item-value-container}
-       [react/text {:style styles/asset-item-value} (str amount)]
+       [react/text {:style styles/asset-item-value} (str (money/wei->ether amount))]
        [react/text {:style      styles/asset-item-currency
                     :uppercase? true}
         id]]]]
     [add-asset]))
 
-(defn asset-section [eth prices-loading? balance-loading?]
-  (let [assets [{:id "eth" :currency :eth :amount eth}]]
+(defn asset-section [balance prices-loading? balance-loading?]
+  (let [assets [{:id "eth" :currency :eth :amount balance}]]
     [react/view {:style styles/asset-section}
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/flat-list
@@ -132,7 +135,7 @@
        :refreshing (boolean (or prices-loading? balance-loading?))}]]))
 
 (defview wallet []
-  (letsubs [eth-balance      [:eth-balance]
+  (letsubs [balance          [:balance]
             portfolio-value  [:portfolio-value]
             portfolio-change [:portfolio-change]
             prices-loading?  [:prices-loading?]
@@ -142,4 +145,4 @@
      [toolbar-view]
      [react/view components.styles/flex
       [main-section portfolio-value portfolio-change error-message]
-      [asset-section eth-balance prices-loading? balance-loading?]]]))
+      [asset-section balance prices-loading? balance-loading?]]]))

@@ -13,6 +13,7 @@
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.transactions.styles :as transactions.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]
+            [status-im.utils.money :as money]
             [status-im.utils.utils :as utils])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -98,7 +99,7 @@
     [list/item
      [list/item-icon (transaction-type->icon (keyword type))]
      [list/item-content
-      (str value " " symbol)
+      (money/wei->str :eth value)
       (if (inbound? type)
         (str (i18n/label :t/from) " " from)
         (str (i18n/label :t/to) " " to))
@@ -205,66 +206,70 @@
        [toolbar-view view-id unsigned-transactions-count]
        [main-section view-id tabs]])))
 
-(defn transaction-details-header [{:keys [value date type]}]
-  [react/view {:style transactions.styles/transaction-details-header}
-   [react/view {:style transactions.styles/transaction-details-header-icon}
+(defn- pretty-print-asset [symbol amount]
+  (case symbol
+    "ETH" (if amount (money/wei->str :eth amount) "...")))
+
+(defn details-header [{:keys [value date type symbol]}]
+  [react/view {:style transactions.styles/details-header}
+   [react/view {:style transactions.styles/details-header-icon}
     [list/item-icon (transaction-type->icon type)]]
-   [react/view {:style transactions.styles/transaction-details-header-infos}
-    [react/text {:style transactions.styles/transaction-details-header-value} (str value " ETH")]
-    [react/text {:style transactions.styles/transaction-details-header-date} date]]])
+   [react/view {:style transactions.styles/details-header-infos}
+    [react/text {:style transactions.styles/details-header-value} (pretty-print-asset symbol value)]
+    [react/text {:style transactions.styles/details-header-date} date]]])
 
 (defn progress-bar [progress]
   [react/view {:style transactions.styles/progress-bar}
    [react/view {:style (transactions.styles/progress-bar-done progress)}]
    [react/view {:style (transactions.styles/progress-bar-todo (- 100 progress))}]])
 
-(defn transaction-details-confirmations [confirmations confirmations-progress]
-  [react/view {:style transactions.styles/transaction-details-block}
+(defn details-confirmations [confirmations confirmations-progress]
+  [react/view {:style transactions.styles/details-block}
    [progress-bar confirmations-progress]
-   [react/text {:style transactions.styles/transaction-details-confirmations-count}
+   [react/text {:style transactions.styles/details-confirmations-count}
     (str confirmations " " (i18n/label :t/confirmations))]
-   [react/text {:style transactions.styles/transaction-details-confirmations-helper-text}
+   [react/text {:style transactions.styles/details-confirmations-helper-text}
     (i18n/label :t/confirmations-helper-text)]])
 
-(defn transaction-details-list-row
+(defn details-list-row
   ([label value]
-   (transaction-details-list-row label value nil))
+   (details-list-row label value nil))
   ([label value extra-value]
-   [react/view {:style transactions.styles/transaction-details-row}
-    [react/text {:style transactions.styles/transaction-details-item-label} (i18n/label label)]
-    [react/view {:style transactions.styles/transaction-details-item-value-wrapper}
-     [react/text {:style transactions.styles/transaction-details-item-value} (str value)]
-     [react/text {:style transactions.styles/transaction-details-item-extra-value} (str extra-value)]]]))
+   [react/view {:style transactions.styles/details-row}
+    [react/text {:style transactions.styles/details-item-label} (i18n/label label)]
+    [react/view {:style transactions.styles/details-item-value-wrapper}
+     [react/text {:style transactions.styles/details-item-value} (str value)]
+     [react/text {:style transactions.styles/details-item-extra-value} (str extra-value)]]]))
 
-(defn transaction-details-list [{:keys [block hash from from-wallet to to-wallet gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
-  [react/view {:style transactions.styles/transaction-details-block}
-   [transaction-details-list-row :t/block block]
-   [transaction-details-list-row :t/hash hash]
-   [transaction-details-list-row :t/from (or from-wallet from) (when from-wallet from)]
-   [transaction-details-list-row :t/to (or to-wallet to) (when to-wallet to)]
-   [transaction-details-list-row :t/gas-limit gas-limit]
-   [transaction-details-list-row :t/gas-price gas-price-gwei gas-price-eth]
-   [transaction-details-list-row :t/gas-used gas-used]
-   [transaction-details-list-row :t/cost-fee cost]
-   [transaction-details-list-row :t/nonce nonce]
-   [transaction-details-list-row :t/data data]])
+(defn details-list [{:keys [block hash from from-wallet to to-wallet gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
+  [react/view {:style transactions.styles/details-block}
+   [details-list-row :t/block block]
+   [details-list-row :t/hash hash]
+   [details-list-row :t/from (or from-wallet from) (when from-wallet from)]
+   [details-list-row :t/to (or to-wallet to) (when to-wallet to)]
+   [details-list-row :t/gas-limit gas-limit]
+   [details-list-row :t/gas-price gas-price-gwei gas-price-eth]
+   [details-list-row :t/gas-used gas-used]
+   [details-list-row :t/cost-fee cost]
+   [details-list-row :t/nonce nonce]
+   [details-list-row :t/data data]])
 
 (defn details-action [hash url]
   [(actions/opts [{:text (i18n/label :t/copy-transaction-hash) :value #(react/copy-to-clipboard hash)}
                   {:text (i18n/label :t/open-on-etherscan) :value #(.openURL react/linking url)}])])
 
 (defview transaction-details []
-  (letsubs [{:keys [hash url type] :as transaction-details} [:wallet.transactions/transaction-details]
-            confirmations                                   [:wallet.transactions.details/confirmations]
-            confirmations-progress                          [:wallet.transactions.details/confirmations-progress]]
+  (letsubs [{:keys [hash url type] :as transactions} [:wallet.transactions/details]
+            confirmations                            [:wallet.transactions.details/confirmations]
+            confirmations-progress                   [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/transaction-details)]
+      [toolbar/content-title (i18n/label :t/details)]
       [toolbar/actions (details-action hash url)]]
      [react/scroll-view {:style transactions.styles/main-section}
-      [transaction-details-header transaction-details]
-      [transaction-details-confirmations confirmations confirmations-progress]
-      [react/view {:style transactions.styles/transaction-details-separator}]
-      [transaction-details-list transaction-details]]]))
+      [details-header transactions]
+      [details-confirmations confirmations confirmations-progress]
+      [react/view {:style transactions.styles/details-separator}]
+      [details-list transactions]]]))

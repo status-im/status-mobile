@@ -362,6 +362,7 @@
    :wallet-total-value                    "Total value"
    :wallet-settings                       "Wallet Settings"
    :signing-phrase-description            "Sign the transaction by entering your password. Make sure that the words above match your secret signing phrase"
+   :wallet-insufficient-funds             "Insufficient funds"
    :request-transaction                   "Request Transaction"
    :send-request                          "Send request"
    :share                                 "Share"
@@ -385,7 +386,7 @@
    :view-transaction-details              "View Transaction Details"
    :transaction-description               "If you want to be sure you transaction will not be compromised wait until it gets at least 10 block confirmations"
    :transaction-sent                      "Transaction Sent"
-   :transaction-moved-text                "The transaction has ben successfully moved to “Unsigned”"
+   :transaction-moved-text                "The transaction has been successfully moved to “Unsigned”"
    :transaction-moved-title               "Transaction Moved"
    :sign-later-title                      "Sign Transaction Later?"
    :sign-later-text                       "You will be able to sign in in the transaction history"
@@ -398,7 +399,8 @@
    :wallet-choose-from-contacts           "Choose From Contacts"
    :wallet-address-from-clipboard         "Use Address From Clipboard"
    :wallet-browse-photos                  "Browse Photos"
-   :validation-amount-invalid-number      "Amount is not valid number"
+   :validation-amount-invalid             "Amount is not valid"
+   :validation-amount-invalid-number      "Amount is not a valid number"
    :validation-amount-is-too-precise      "Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)"
 
 
