@@ -114,7 +114,7 @@
   [view
    [status-bar]
    (let [hide-nav? (or (empty? accounts) show-actions? creating?)]
-     [toolbar/toolbar2 {}
+     [toolbar/toolbar2 {:show-sync-bar? true}
       (when-not hide-nav? toolbar/default-nav-back)
       [toolbar-content-view]
       [toolbar-action]])

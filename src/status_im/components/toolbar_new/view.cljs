@@ -98,7 +98,7 @@
   ([title] (toolbar2 nil title))
   ([props title] (toolbar2 props default-nav-back [content-title title]))
   ([props nav-item content-item] (toolbar2 props nav-item content-item [actions [{:image :blank}]]))
-  ([{:keys [background-color style flat? no-sync-bar?]}
+  ([{:keys [background-color style flat? show-sync-bar?]}
     nav-item
     content-item
     action-items]
@@ -114,7 +114,7 @@
        [rn/view st/flex]
        content-item)
      action-items]
-    (when-not no-sync-bar? [sync-state-gradient-view/sync-state-gradient-view])]))
+    (when show-sync-bar? [sync-state-gradient-view/sync-state-gradient-view])]))
 
 (defn toolbar
   "DEPRECATED

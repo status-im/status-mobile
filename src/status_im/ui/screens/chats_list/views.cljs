@@ -38,7 +38,7 @@
    (act/add #(re-frame/dispatch [:navigate-to :new-chat]))])
 
 (defn toolbar-view []
-  [toolbar/toolbar2 {}
+  [toolbar/toolbar2 {:show-sync-bar? true}
    [toolbar/nav-button (act/hamburger drawer/open-drawer!)]
    [toolbar/content-title (i18n/label :t/chats)]
    [toolbar/actions
@@ -47,7 +47,7 @@
       (android-toolbar-actions))]])
 
 (defn toolbar-edit []
-  [toolbar/toolbar2 {}
+  [toolbar/toolbar2 {:show-sync-bar? true}
    [toolbar/nav-button (act/back #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] false]))]
    [toolbar/content-title (i18n/label :t/edit-chats)]])
 

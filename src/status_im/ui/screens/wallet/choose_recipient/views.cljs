@@ -24,8 +24,7 @@
                        :params  {:hide-actions? true}}]))
 
 (defn toolbar-view [camera-flashlight]
-  [toolbar/toolbar2 {:style        wallet.styles/toolbar
-                     :no-sync-bar? true}
+  [toolbar/toolbar2 {:style wallet.styles/toolbar}
    [toolbar/nav-button (act/back-white act/default-handler)]
    [toolbar/content-title {:color :white} (i18n/label :t/wallet-choose-recipient)]
    [toolbar/actions [{:icon      (if (= :on camera-flashlight) :icons/flash-active
