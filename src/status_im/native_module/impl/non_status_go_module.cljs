@@ -16,9 +16,6 @@
     (re-frame/dispatch [:signal-event "{\"type\":\"node.started\",\"event\":{}}"])
     (re-frame/dispatch [:signal-event "{\"type\":\"node.ready\",\"event\":{}}"]))
   (-stop-node [this])
-  (-stop-rpc-server [this])
-  (-start-rpc-server [this])
-  (-restart-rpc [this])
   (-create-account [this password callback]
     (let [address (str "c9f5c0e2bea0aabb6b0b618e9f45ab0958" (gstring/format "%06d" (rand-int 100000)))]
       (callback (str "{\"address\":\"" address "\",\"pubkey\":\"0x046a313ba760e8853356b42a8732db1e2c339602977a3ac3d57ec2056449439b2c9f28e2e0dd243ac319f5da198b4a96f980d0ab6d4c7220ca7c5e1af2bd1ee8c7\",\"mnemonic\":\"robust rib ramp adult cannon amateur refuse burden review feel scout sell\",\"error\":\"\"}"))))

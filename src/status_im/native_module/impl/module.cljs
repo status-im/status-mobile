@@ -81,29 +81,6 @@
   (when status
     (call-module #(.startNode status config))))
 
-(defn stop-rpc-server []
-  (when status
-    (call-module #(.stopNodeRPCServer status))))
-
-(defn start-rpc-server []
-  (when status
-    (call-module #(.startNodeRPCServer status))))
-
-(defonce restarting-rpc (atom false))
-
-(defn restart-rpc []
-  (when-not @restarting-rpc
-    (reset! restarting-rpc true)
-    (log/debug :restart-rpc-on-post-error)
-
-    ;; todo maybe it would be better to use something like
-    ;; restart-rpc-server on status-go side
-    (stop-rpc-server)
-    (start-rpc-server)
-
-    (go (<! (timeout 3000))
-        (reset! restarting-rpc false))))
-
 (defonce account-creation? (atom false))
 
 (defn create-account [password on-result]
@@ -244,12 +221,6 @@
     (start-node config))
   (-stop-node [this]
     (stop-node))
-  (-stop-rpc-server [this]
-    (stop-rpc-server))
-  (-start-rpc-server [this]
-    (start-rpc-server))
-  (-restart-rpc [this]
-    (restart-rpc))
   (-create-account [this password callback]
     (create-account password callback))
   (-recover-account [this passphrase password callback]

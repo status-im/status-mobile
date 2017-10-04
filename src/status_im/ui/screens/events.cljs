@@ -159,16 +159,6 @@
     (status/module-initialized!)))
 
 (reg-fx
-  ::stop-rpc-server
-  (fn []
-    (status/stop-rpc-server)))
-
-(reg-fx
-  ::start-rpc-server
-  (fn []
-    (status/start-rpc-server)))
-
-(reg-fx
   ::request-permissions-fx
   (fn [[permissions then else]]
     (permissions/request-permissions permissions then else)))
@@ -348,10 +338,9 @@
 (register-handler-fx
   :app-state-change
   (fn [_ [_ state]]
-    (case state
-      "background" {::stop-rpc-server nil}
-      "active" {::start-rpc-server nil}
-      nil)))
+    ;; TODO(rasom): let's not remove this handler, it will be used for
+    ;; pausing node on entering background on android
+    ))
 
 (register-handler-fx
   :request-permissions
