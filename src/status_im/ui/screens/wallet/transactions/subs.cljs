@@ -3,7 +3,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.datetime :as datetime]
             [status-im.utils.money :as money]
-            [status-im.utils.transactions :as transactions]))
+            [status-im.utils.transactions :as transactions]
+            [status-im.utils.hex :as utils.hex]))
 
 (reg-sub :wallet.transactions/transactions-loading?
   :<- [:wallet]
@@ -25,18 +26,23 @@
   (fn [transactions]
     (group-by :type (vals transactions))))
 
-(defn format-unsigned-transaction [{:keys [message-id gas-price] :as transaction}]
+(defn format-unsigned-transaction [{:keys [id] :as transaction}]
   (assoc transaction
     :type           :unsigned
     :confirmations  0
     :symbol         "ETH"
-    :hash           message-id))
+    ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
+    :hash           id))
+
+(reg-sub :wallet/unsigned-transactions
+  (fn [db]
+    (vals (get-in db [:wallet :transactions-unsigned]))))
 
 (reg-sub :wallet.transactions/unsigned-transactions
-  :<- [:transactions]
+  :<- [:wallet/unsigned-transactions]
   (fn [transactions]
-    (reduce (fn [acc {:keys [message-id] :as transaction}]
-              (assoc acc message-id (format-unsigned-transaction transaction)))
+    (reduce (fn [acc {:keys [id] :as transaction}]
+              (assoc acc id (format-unsigned-transaction transaction)))
             {}
             transactions)))
 
@@ -134,3 +140,19 @@
       (if (>= confirmations max-confirmations)
         100
         (* 100 (/ confirmations max-confirmations))))))
+
+(reg-sub
+  :contacts-by-address
+  (fn [db]
+    (into {} (map (fn [[_ {:keys [address] :as contact}]]
+                    (when address
+                      [address contact]))
+                  (:contacts/contacts db)))))
+
+(reg-sub
+  :contact-by-address
+  :<- [:contacts-by-address]
+  (fn [contacts [_ address]]
+    (let [address' (when address
+                     (utils.hex/normalize-hex address))]
+      (contacts address'))))

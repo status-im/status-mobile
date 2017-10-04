@@ -21,11 +21,6 @@
 
             [status-im.ui.screens.qr-scanner.views :refer [qr-scanner]]
 
-            [status-im.transactions.screens.confirmation-success :refer [confirmation-success]]
-            [status-im.transactions.screens.unsigned-transactions :refer [unsigned-transactions]]
-            [status-im.transactions.screens.transaction-details :refer [transaction-details]]
-
-
             [status-im.ui.screens.group.views :refer [new-group edit-contact-group]]
             [status-im.ui.screens.group.chat-settings.views :refer [chat-group-settings]]
             [status-im.ui.screens.group.edit-contacts.views :refer [edit-contact-group-contact-list
@@ -40,7 +35,7 @@
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
             [status-im.ui.screens.profile.qr-code.views :refer [qr-code-view]]
 
-            [status-im.ui.screens.wallet.send.views :refer [send-transaction]]
+            [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal]]
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
@@ -109,8 +104,6 @@
                           :add-rpc-url add-rpc-url
                           :network-details network-details
                           (throw (str "Unknown view: " current-view)))]
-
-
           [(if android? menu-context view) common-styles/flex
            [view common-styles/flex
             [component]
@@ -122,11 +115,8 @@
                 (let [component (case modal-view
                                   :qr-scanner qr-scanner
                                   :qr-code-view qr-code-view
-                                  :unsigned-transactions unsigned-transactions
-                                  :transaction-details transaction-details
-                                  :confirmation-success confirmation-success
                                   :contact-list-modal contact-list-modal
                                   :wallet-transactions-filter wallet-transactions/filter-history
-                                  :wallet-transactions-sign-all wallet-transactions/sign-all
+                                  :wallet-send-transaction-modal send-transaction-modal
                                   (throw (str "Unknown modal view: " modal-view)))]
                   [component])]])]])))))

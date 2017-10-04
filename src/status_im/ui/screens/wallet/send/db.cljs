@@ -7,6 +7,7 @@
 (spec/def ::to-name (spec/nilable string?))
 (spec/def ::amount-error (spec/nilable string?))
 (spec/def ::password (spec/nilable string?))
+(spec/def ::wrong-password? (spec/nilable boolean?))
 (spec/def ::transaction-id (spec/nilable string?))
 (spec/def ::waiting-signal? (spec/nilable boolean?))
 (spec/def ::signing? (spec/nilable boolean?))
@@ -17,5 +18,5 @@
 (spec/def ::camera-flashlight #{:on :off})
 
 (spec/def :wallet/send-transaction (allowed-keys
-                                     :opt-un [::amount ::to-address ::to-name ::amount-error ::password
+                                     :opt-un [::amount ::to-address ::to-name ::amount-error ::password ::wrong-password?
                                               ::waiting-signal? ::signing? ::transaction-id ::later? ::camera-dimensions ::camera-flashlight]))

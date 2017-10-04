@@ -6,7 +6,6 @@
             status-im.debug.handlers
             status-im.network.handlers
             status-im.protocol.handlers
-            status-im.transactions.handlers
             status-im.ui.screens.accounts.events
             status-im.ui.screens.contacts.events
             status-im.ui.screens.discover.events
@@ -18,6 +17,8 @@
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.send.events
+            status-im.ui.screens.wallet.choose-recipient.events
+            status-im.ui.screens.wallet.transactions.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.components.permissions :as permissions]
@@ -348,10 +349,10 @@
 
 (register-handler-fx
   :app-state-change
-  (fn [_ [_ state]]
+  (fn [_ [_ state]]))
     ;; TODO(rasom): let's not remove this handler, it will be used for
     ;; pausing node on entering background on android
-    ))
+
 
 (register-handler-fx
   :request-permissions

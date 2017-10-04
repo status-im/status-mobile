@@ -21,7 +21,7 @@
              :line-height 12}})
 
 (def amount-text-input-container
-     {:margin-top 8})
+  {:margin-top 8})
 
 (def label-transparent
   (merge label
@@ -60,6 +60,14 @@
    :padding         14
    :ios             {:border-radius 8}
    :android         {:border-radius 4}})
+
+(defstyle container-disabled
+  {:border-width     1
+   :border-color     styles/color-white-transparent-4
+   :background-color nil
+   :ios              {:border-radius 8}
+   :android          {:border-radius 4}})
+
 
 (defstyle recipient-container
   {:flex-direction   :row

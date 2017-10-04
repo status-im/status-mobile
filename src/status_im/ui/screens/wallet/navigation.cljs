@@ -21,3 +21,7 @@
   (if (= event :navigate-back)
     db
     (dissoc db :wallet/send-transaction)))
+
+(defmethod navigation/preload-data! :wallet-send-transaction-modal
+  [db [_ _ value]]
+  (assoc db :wallet/send-transaction value))

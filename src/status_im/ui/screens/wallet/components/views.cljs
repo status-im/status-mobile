@@ -21,6 +21,17 @@
        [react/text {:style styles/tooltip-text} label]]
       [vector-icons/icon :icons/tooltip-triangle {:color :white :style styles/tooltip-triangle}]]]))
 
+;;TODO (andrey) temporary, should be removed later
+(defn amount-input-disabled [amount]
+  [react/view components.styles/flex
+   [react/text {:style styles/label} (i18n/label :t/amount)]
+   [react/view styles/amount-text-input-container
+    [react/view (merge (styles/amount-container false) styles/container-disabled)
+     [react/text-input
+      {:editable      false
+       :default-value amount
+       :style         styles/text-input}]]]])
+
 (defn amount-input []
   (let [active? (reagent/atom false)]
     (fn [& [{:keys [input-options style error]}]]
@@ -52,6 +63,22 @@
    [react/view (merge styles/currency-container
                       style)
     [react/text {:style styles/wallet-name} "ETH"]]])
+
+(defn choose-recipient-disabled [{:keys [address name]}]
+  [react/view
+   [react/text {:style styles/label} (i18n/label :t/recipient)]
+   [react/view (merge styles/recipient-container
+                      styles/container-disabled)
+    (when name
+      [react/view styles/recipient-name-container
+       [react/text {:style           (styles/participant true)
+                    :number-of-lines 1}
+        name]])
+    [react/view components.styles/flex
+     [react/text {:style           (styles/participant (not name))
+                  :number-of-lines 1
+                  :ellipsizeMode   :middle}
+      address]]]])
 
 (defn choose-recipient [{:keys [address name on-press style]}]
   (let [address? (and (not (nil? address)) (not= address ""))]

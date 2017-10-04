@@ -26,10 +26,11 @@
   (re-frame/dispatch [:accept-transactions password]))
 
 (defn on-delete-transaction
-  [m]
-  ;; TODO(yenda) implement
-  (utils/show-popup "TODO" "Delete Transaction"))
+  [{:keys [id]}]
+  ;; TODO(andrey) implement alert
+  (re-frame/dispatch [:wallet/discard-unsigned-transaction id]))
 
+;; TODO (andrey) implement
 (defn unsigned-action [unsigned-transactions-count]
   [toolbar/text-action {:disabled? (zero? unsigned-transactions-count)
                         :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
@@ -45,37 +46,24 @@
    [toolbar/content-title (i18n/label :t/transactions)]
    (case @view-id
      :wallet-transactions-unsigned
-     [unsigned-action unsigned-transactions-count]
+     nil ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
 
      :wallet-transactions-history
      [toolbar/actions
       [history-action]])])
 
-;; Sign all
-
-(defview sign-all []
-  []
-  [react/keyboard-avoiding-view {:style transactions.styles/sign-all-view}
-   [react/view {:style transactions.styles/sign-all-done}
-    [button/primary-button {:style    transactions.styles/sign-all-done-button
-                            :text     (i18n/label :t/done)
-                            :on-press #(re-frame/dispatch [:navigate-back])}]]
-   [react/view {:style transactions.styles/sign-all-popup}
-    [react/text {:style transactions.styles/sign-all-popup-sign-phrase} "one two three"] ;; TODO hook
-    [react/text {:style transactions.styles/sign-all-popup-text} (i18n/label :t/transactions-sign-all-text)]
-    [react/view {:style transactions.styles/sign-all-actions}
-     [react/text-input {:style             transactions.styles/sign-all-input
-                        :secure-text-entry true
-                        :placeholder       (i18n/label :t/transactions-sign-input-placeholder)}]
-     [button/primary-button {:text (i18n/label :t/transactions-sign-all) :on-press #(println %)}]]]])
-
-
-(defn action-buttons [m]
+(defn action-buttons [{:keys [id to value] :as transaction}]
   [react/view {:style transactions.styles/action-buttons}
-   [button/primary-button {:text (i18n/label :t/transactions-sign)
-                           :style {:margin-right 12}
-                           :on-press #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}]
-   [button/secondary-button {:text (i18n/label :t/delete) :on-press #(on-delete-transaction m)}]])
+   [button/primary-button {:style    {:margin-right 12}
+                           :on-press #(re-frame/dispatch [:navigate-to-modal
+                                                          :wallet-send-transaction-modal
+                                                          {:amount         (str (money/wei->ether value))
+                                                           :transaction-id id
+                                                           :to-address     to
+                                                           :to-name        to}])}
+                          (i18n/label :t/transactions-sign)]
+   [button/secondary-button {:on-press #(on-delete-transaction transaction)}
+                            (i18n/label :t/delete)]])
 
 (defn- inbound? [type] (= "inbound" type))
 (defn- unsigned? [type] (= "unsigned" type))
@@ -93,7 +81,7 @@
     (:postponed :pending)   (transaction-icon :icons/arrow-right styles/color-gray4-transparent styles/color-gray7)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash to from type value symbol] :as m}]
+(defn render-transaction [{:keys [hash to from type value symbol] :as transaction}]
   [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
    [react/view
     [list/item
@@ -104,7 +92,7 @@
         (str (i18n/label :t/from) " " from)
         (str (i18n/label :t/to) " " to))
       (when (unsigned? type)
-        [action-buttons m])]
+        [action-buttons transaction])]
      [list/item-icon {:icon :icons/forward
                       :style {:margin-top 10}
                       :icon-opts transactions.styles/forward}]]]])
@@ -259,14 +247,14 @@
                   {:text (i18n/label :t/open-on-etherscan) :value #(.openURL react/linking url)}])])
 
 (defview transaction-details []
-  (letsubs [{:keys [hash url type] :as transactions} [:wallet.transactions/details]
+  (letsubs [{:keys [hash url type] :as transactions} [:wallet.transactions/transaction-details]
             confirmations                            [:wallet.transactions.details/confirmations]
             confirmations-progress                   [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
-      [toolbar/content-title (i18n/label :t/details)]
+      [toolbar/content-title (i18n/label :t/transaction-details)]
       [toolbar/actions (details-action hash url)]]
      [react/scroll-view {:style transactions.styles/main-section}
       [details-header transactions]

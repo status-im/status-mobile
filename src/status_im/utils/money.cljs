@@ -26,6 +26,9 @@
 (defn to-wei [str]
   (dependencies/Web3.prototype.toWei str "ether"))
 
+(defn to-decimal [value]
+  (dependencies/Web3.prototype.toDecimal value))
+
 (def eth-units
   {:wei    (bignumber "1")
    :kwei   (bignumber "1000")

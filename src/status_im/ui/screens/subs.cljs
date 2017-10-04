@@ -13,7 +13,6 @@
             status-im.ui.screens.wallet.send.subs
             status-im.ui.screens.wallet.request.subs
             status-im.ui.screens.network-settings.subs
-            status-im.transactions.subs
             status-im.bots.subs))
 
 (reg-sub :get

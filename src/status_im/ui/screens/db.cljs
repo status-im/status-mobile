@@ -10,7 +10,6 @@
             status-im.chat.specs
             status-im.chat.new-public-chat.db
             status-im.ui.screens.profile.db
-            status-im.transactions.specs
             status-im.ui.screens.discover.db
             status-im.ui.screens.network-settings.db))
 
@@ -172,15 +171,6 @@
                   :chat/raw-unviewed-messages
                   :chat/bot-db
                   :chat/geolocation
-                  :transactions/transactions
-                  :transactions/transactions-queue
-                  :transactions/selected-transaction
-                  :transactions/confirm-transactions
-                  :transactions/confirmed-transactions-count
-                  :transactions/transactions-list-ui-props
-                  :transactions/transaction-details-ui-props
-                  :transactions/wrong-password-counter
-                  :transactions/wrong-password?
                   :discoveries/discoveries
                   :discoveries/discover-search-tags
                   :discoveries/tags
