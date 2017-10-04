@@ -36,18 +36,6 @@
   (module-interface/-stop-node rns-module))
 
 
-(defn stop-rpc-server []
-  (module-interface/-stop-rpc-server rns-module))
-
-
-(defn start-rpc-server []
-  (module-interface/-start-rpc-server rns-module))
-
-
-(defn restart-rpc []
-  (module-interface/-restart-rpc rns-module))
-
-
 (defn create-account [password callback]
   (module-interface/-create-account rns-module password callback))
 

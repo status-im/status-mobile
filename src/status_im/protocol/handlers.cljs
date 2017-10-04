@@ -397,7 +397,6 @@
             android-error? (re-find (re-pattern "Failed to connect") message)]
         (when (or ios-error? android-error?)
           (when android-error? (status/init-jail))
-          (status/restart-rpc)
           (dispatch [:load-commands!]))))))
 
 (register-handler
