@@ -49,3 +49,7 @@
 (reg-sub :network
   (fn [db]
     (:network db)))
+
+(reg-sub :sync-state
+  (fn [db]
+    (:sync-state db)))

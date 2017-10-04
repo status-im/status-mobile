@@ -74,7 +74,7 @@
 
 
 (defn sync-state-gradient-view []
-  (let [sync-state          (subscribe [:get :sync-state])
+  (let [sync-state          (subscribe [:sync-state])
         gradient-position   (anim/create-value 0)
         sync-state-opacity  (anim/create-value 0.0)
         in-progress-opacity (anim/create-value 0.0)

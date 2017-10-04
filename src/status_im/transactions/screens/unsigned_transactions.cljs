@@ -45,7 +45,7 @@
   [transactions       [:transactions]
    {:keys [password]} [:get :confirm-transactions]
    confirmed?         [:get-in [:transactions-list-ui-props :confirmed?]]
-   sync-state         [:get :sync-state]
+   sync-state         [:sync-state]
    network-status     [:get :network-status]]
   {:component-did-update   #(when-not (seq transactions) (rf/dispatch [:navigate-back]))
    :component-will-unmount #(rf/dispatch [:set-in [:transactions-list-ui-props :confirmed?] false])}
