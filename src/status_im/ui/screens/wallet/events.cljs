@@ -136,3 +136,8 @@
   (fn [{:keys [db]} [_ hash]]
     {:db (assoc-in db [:wallet :current-transaction] hash)
      :dispatch [:navigate-to :wallet-transaction-details]}))
+
+(handlers/register-handler-fx
+  :wallet/discard-unsigned-transaction
+  (fn [_ [_ transaction-id]]
+    {:discard-transaction transaction-id}))

@@ -36,8 +36,7 @@
 
 (defview sign-panel []
   (letsubs [account [:get-current-account]
-            ;;TODO (andrey) use send-transaction map after we remove old transactions ui
-            wrong-password? [:get :wrong-password?];[:get-in [:wallet/send-transaction :wrong-password?]]
+            wrong-password? [:get-in [:wallet/send-transaction :wrong-password?]]
             signing-phrase (:signing-phrase @account)
             bottom-value (animation/create-value -250)
             opacity-value (animation/create-value 0)]
@@ -58,14 +57,16 @@
      (when wrong-password?
        [components/tooltip (i18n/label :t/wrong-password)])]))
 
-(defview signing-buttons []
+
+;; "Cancel" and "Sign Transaction >" buttons, signing with password
+(defview signing-buttons [cancel-handler sign-handler]
   (letsubs [sign-enabled? [:wallet.send/sign-password-enabled?]]
     [react/view wallet.styles/buttons-container
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet/discard-transaction])}
+     [react/touchable-highlight {:on-press cancel-handler}
       [react/view (wallet.styles/button-container true)
        [components/button-text (i18n/label :t/cancel)]]]
      [react/view components.styles/flex]
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet/sign-transaction])}
+     [react/touchable-highlight {:on-press sign-handler}
       [react/view (wallet.styles/button-container sign-enabled?)
        [components/button-text (i18n/label :t/transactions-sign-transaction)]
        [vector-icons/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]]))
@@ -76,12 +77,13 @@
     (not (nil? to-address)) (not= to-address "")
     (not (nil? amount)) (not= amount "")))
 
-(defn- sign-buttons [amount-error to-address amount sufficient-funds?]
+;; "Sign Later" and "Sign Transaction >" buttons
+(defn- sign-buttons [amount-error to-address amount sufficient-funds? sign-later-handler]
   (let [sign-enabled? (sign-enabled? amount-error to-address amount)
         immediate-sign-enabled? (and sign-enabled? sufficient-funds?)]
     [react/view wallet.styles/buttons-container
      (when sign-enabled?
-       [react/touchable-highlight {:on-press sign-later}
+       [react/touchable-highlight {:on-press sign-later-handler}
         [react/view (wallet.styles/button-container sign-enabled?)
          [components/button-text (i18n/label :t/transactions-sign-later)]]])
      [react/view components.styles/flex]
@@ -119,13 +121,50 @@
              :input-options {:auto-focus     true
                              :default-value  amount
                              :on-change-text #(let [value (string/trim %)]
-                                                (re-frame/dispatch [:set-in [:wallet/send-transaction :amount] value])
-                                                (re-frame/dispatch [:wallet-validate-amount]))}}]
+                                                (re-frame/dispatch [:wallet/set-and-validate-amount value]))}}]
            [react/view wallet.styles/choose-currency-container
             [components/choose-currency wallet.styles/choose-currency]]]]]
         [components/separator]
         (if signing?
-          [signing-buttons]
-          [sign-buttons amount-error to-address amount sufficient-funds?])
+          [signing-buttons
+           #(re-frame/dispatch [:wallet/discard-transaction])
+           #(re-frame/dispatch [:wallet/sign-transaction])]
+          [sign-buttons amount-error to-address amount sufficient-funds? sign-later])
         (when signing?
           [sign-panel])]])))
+
+(defn toolbar-modal []
+  [toolbar/toolbar2 {:style wallet.styles/toolbar}
+   [toolbar/nav-button (act/close-white act/default-handler)]
+   [toolbar/content-title {:color :white} (i18n/label :t/send-transaction)]])
+
+(defview send-transaction-modal []
+  (letsubs [amount       [:get-in [:wallet/send-transaction :amount]]
+            amount-error [:get-in [:wallet/send-transaction :amount-error]]
+            signing?     [:get-in [:wallet/send-transaction :signing?]]
+            to-address   [:get-in [:wallet/send-transaction :to-address]]
+            to-name      [:get-in [:wallet/send-transaction :to-name]]
+            recipient    [:contact-by-address @to-name]]
+    [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
+     [react/view components.styles/flex
+      [status-bar/status-bar {:type :wallet}]
+      [toolbar-modal]
+      [react/scroll-view {:keyboardShouldPersistTaps :always}
+       [react/view components.styles/flex
+        [react/view wallet.styles/choose-participant-container
+         [components/choose-recipient-disabled {:address  to-address
+                                                :name     (:name recipient)}]]
+        [react/view wallet.styles/choose-wallet-container
+         [components/choose-wallet]]
+        [react/view wallet.styles/amount-container
+         [components/amount-input-disabled amount]
+         [react/view wallet.styles/choose-currency-container
+          [components/choose-currency wallet.styles/choose-currency]]]]]
+      [components/separator]
+      (if signing?
+        [signing-buttons
+         #(re-frame/dispatch [:wallet/cancel-signing-modal])
+         #(re-frame/dispatch [:wallet/sign-transaction-modal])]
+        [sign-buttons amount-error to-address amount true #(re-frame/dispatch [:navigate-back])])
+      (when signing?
+        [sign-panel])]]))

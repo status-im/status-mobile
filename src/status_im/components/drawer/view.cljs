@@ -101,52 +101,12 @@
                                                       status)
                                    :on-press        #(rf/dispatch [:my-profile.drawer/edit-status])}])])))
 
-(defview transaction-list-item [{:keys [to value timestamp] :as transaction}]
-  [recipient [:contact-by-address to]]
-  (let [eth-value      (str (money/wei->ether value))
-        value          (i18n/label-number eth-value)
-        recipient-name (or (:name recipient) to)]
-    [touchable-highlight {:on-press #(rf/dispatch [:navigate-to-modal :transaction-details transaction])}
-     [view {:style st/transaction}
-      [vi/icon :icons/arrow-right {:container-style st/transaction-icon}]
-      [view {:style st/transaction-info}
-       [view {:style st/transaction-value-container}
-        [text {:style st/transaction-value :font :medium} value]
-        [text {:style st/transaction-unit} "ETH"]]
-       [view {:style st/transaction-details-container}
-        [text {:style st/transaction-to} (i18n/label :t/to)]
-        [text {:style st/transaction-recipient :number-of-lines 1} recipient-name]
-        [text {:style st/transaction-time} (time/format-date "dd MMM HH:mm" (time/to-date timestamp))]]]
-      [view {:style st/transaction-picture}
-       (when recipient
-         [ci/chat-icon (:photo-path recipient) {:size 40}])]]]))
-
 (defn render-separator-fn [transactions-count]
   (fn [_ row-id _]
     (when (< row-id (dec transactions-count))
       (list-item
         ^{:key row-id}
         [common/separator {} st/transactions-list-separator]))))
-
-(defview unsigned-transactions []
-  [all-transactions [:transactions]]
-  (let [transactions (take 2 (sort-by :timestamp > all-transactions))]
-    (if (empty? transactions)
-      [view {:style st/empty-transactions-title-container}
-       [text {:style st/transactions-title} (i18n/label :t/no-unsigned-transactions)]]
-
-      [view
-       [view {:style st/transactions-title-container}
-        [text {:style st/transactions-title} (i18n/label :t/unsigned-transactions)]]
-       [list-view {:dataSource      (lw/to-datasource transactions)
-                   :renderSeparator (render-separator-fn (count transactions))
-                   :renderRow       (fn [row _ _] (list-item [transaction-list-item row]))}]
-       [touchable-opacity {:style    st/view-all-transactions-button
-                           :on-press #(rf/dispatch [:navigate-to-modal :unsigned-transactions])}
-        [text {:style      st/view-all-transactions-text
-               :font       (if platform/android? :medium :default)
-               :uppercase? platform/android?}
-         (i18n/label :t/view-all)]]])))
 
 (defview current-network []
   (letsubs [network [:get-current-account-network]]
@@ -182,7 +142,6 @@
         [options-btn]]
        [current-network]]
       [view
-       [unsigned-transactions]
        [switch-account]]]]))
 
 (defn drawer-view [items]

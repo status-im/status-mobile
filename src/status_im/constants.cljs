@@ -70,3 +70,9 @@
                              :DataDir        "/ethereum/mainnet_rpc"
                              :UpstreamConfig {:Enabled true
                                               :URL     "https://mainnet.infura.io/z6GCTmjdP3FETEJmMBI4 "}}}}))
+
+(def ^:const send-transaction-no-error-code        "0")
+(def ^:const send-transaction-default-error-code   "1")
+(def ^:const send-transaction-password-error-code  "2")
+(def ^:const send-transaction-timeout-error-code   "3")
+(def ^:const send-transaction-discarded-error-code "4")
