@@ -27,9 +27,27 @@
                           (assoc :new-networks (vals new-networks')))
        :save-networks new-networks'})))
 
+(defn network-with-upstream-rpc? [networks network]
+  (get-in networks [network :raw-config :UpstreamConfig :Enabled]))
+
+(defn connect-network [cofx [_ network]]
+  (merge (accounts-events/account-update cofx {:network network})
+         {:close-application nil}))
+
+(handlers/register-handler-fx ::save-network connect-network)
+
 (handlers/register-handler-fx
   :connect-network
-  (fn [cofx [_ network]]
-    (merge (accounts-events/account-update cofx {:network network})
-           {:dispatch [:navigate-to-clean :accounts]
-            :stop-whisper nil})))
+  (fn [{:keys [db] :as cofx} [_ network]]
+    (let [current-network (:network db)
+          networks        (:networks/networks db)]
+      (if (and (network-with-upstream-rpc? networks current-network)
+               (network-with-upstream-rpc? networks network))
+        (merge (accounts-events/account-update cofx {:network network})
+               {:dispatch     [:navigate-to-clean :accounts]
+                :stop-whisper nil})
+        {:show-confirmation {:title               "Warning!"
+                             :content             "App will be closed. When you restart it selected network will be used."
+                             :confirm-button-text "Confirm"
+                             :on-accept           #(dispatch [::save-network network])
+                             :on-cancel           nil}}))))

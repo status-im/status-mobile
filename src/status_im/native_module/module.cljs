@@ -21,5 +21,6 @@
   (-call-web3 [this host payload callback])
   (-module-initialized! [this])
   (-should-move-to-internal-storage? [this callback])
-  (-notify [this token callback]))
+  (-notify [this token callback])
+  (-close-application [this]))
 

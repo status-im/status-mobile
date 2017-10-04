@@ -61,4 +61,5 @@
     (impl/module-initialized!))
   (-should-move-to-internal-storage? [this callback]
     (impl/should-move-to-internal-storage? callback))
-  (-notify [this token callback]))
+  (-notify [this token callback])
+  (-close-application [this]))

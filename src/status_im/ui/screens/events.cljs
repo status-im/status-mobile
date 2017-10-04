@@ -18,7 +18,7 @@
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.send.events
-            [re-frame.core :refer [dispatch reg-fx reg-cofx]]
+            [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
@@ -185,6 +185,17 @@
   ::get-fcm-token-fx
   (fn []
     (notifications/get-fcm-token)))
+
+(re-frame/reg-fx
+  :show-confirmation
+  (fn [{:keys [title content confirm-button-text on-accept on-cancel]}]
+    (utils/show-confirmation title content confirm-button-text on-accept on-cancel)))
+
+
+(re-frame/reg-fx
+  :close-application
+  (fn [] (status/close-application)))
+
 
 ;;;; Handlers
 

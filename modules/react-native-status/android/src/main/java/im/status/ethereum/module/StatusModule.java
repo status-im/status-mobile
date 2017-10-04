@@ -670,4 +670,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         thread.start();
     }
+
+    @ReactMethod
+    public void closeApplication() {
+        System.exit(0);
+    }
 }

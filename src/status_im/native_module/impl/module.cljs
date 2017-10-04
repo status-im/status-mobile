@@ -235,6 +235,9 @@
   (when status
     (call-module #(.sendWeb3Request status host payload callback))))
 
+(defn close-application []
+  (.closeApplication status))
+
 (defrecord ReactNativeStatus []
   module/IReactNativeStatus
   ;; status-go calls
@@ -281,4 +284,6 @@
   (-module-initialized! [this]
     (module-initialized!))
   (-should-move-to-internal-storage? [this callback]
-    (should-move-to-internal-storage? callback)))
+    (should-move-to-internal-storage? callback))
+  (-close-application [this]
+    (close-application)))
