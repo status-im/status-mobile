@@ -92,50 +92,50 @@
 
 ;; transaction details
 
-(def transaction-details-row
+(def details-row
   {:flex-direction  :row
    :margin-vertical 5})
 
-(def transaction-details-item-label
+(def details-item-label
   {:flex         1
    :margin-right 10
    :color        styles/color-gray4
    :font-size    14})
 
-(def transaction-details-item-value-wrapper
+(def details-item-value-wrapper
   {:flex 5})
 
-(def transaction-details-item-value
+(def details-item-value
   {:font-size 14
    :color     styles/color-black})
 
-(def transaction-details-item-extra-value
+(def details-item-extra-value
   {:font-size 14
    :color     styles/color-gray4})
 
-(def transaction-details-header
+(def details-header
   {:margin-horizontal 16
    :margin-top        10
    :flex-direction    :row})
 
-(def transaction-details-header-icon
+(def details-header-icon
   {:margin-vertical 7})
 
-(def transaction-details-header-infos
+(def details-header-infos
   {:flex            1
    :flex-direction  :column
    :margin-left     12
    :margin-vertical 7})
 
-(def transaction-details-header-value
+(def details-header-value
   {:font-size 16
    :color     styles/color-black})
 
-(def transaction-details-header-date
+(def details-header-date
   {:font-size 14
    :color     styles/color-gray4})
 
-(def transaction-details-block
+(def details-block
   {:margin-horizontal 16})
 
 (def progress-bar
@@ -152,17 +152,17 @@
    :background-color styles/color-blue2
    :opacity          0.30})
 
-(def transaction-details-confirmations-count
+(def details-confirmations-count
   {:color           styles/color-black
    :font-size       15
    :margin-vertical 2})
 
-(def transaction-details-confirmations-helper-text
+(def details-confirmations-helper-text
   {:color           styles/color-gray4
    :font-size       14
    :margin-vertical 2})
 
-(def transaction-details-separator
+(def details-separator
   {:background-color styles/color-light-gray3
    :height           1
    :margin-vertical  10})

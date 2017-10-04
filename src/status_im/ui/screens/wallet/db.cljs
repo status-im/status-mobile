@@ -24,8 +24,11 @@
   (let [amount' (string/replace amount #"," ".")
         amount-splited (string/split amount' #"[.]")]
     (cond
-      (or (nil? amount) (= amount "") (= amount "0") (re-matches #"0[,.]0*$" amount))
+      (or (nil? amount) (= amount "") (re-matches #"0[,.]0*$" amount))
       nil
+
+      (= amount "0")
+      (i18n/label :t/validation-amount-invalid)
 
       (or (js/isNaN (js/parseFloat amount'))
           (try (when (<= (.toWei web3 amount' "ether") 0) true)

@@ -25,13 +25,6 @@
     (or (get-in wallet [:errors :balance-update])
         (get-in wallet [:errors :prices-update]))))
 
-(reg-sub :eth-balance
-  :<- [:balance]
-  (fn [balance]
-    (if balance
-      (money/wei->ether balance)
-      "...")))
-
 (reg-sub :portfolio-value
   :<- [:balance]
   :<- [:price]

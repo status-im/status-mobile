@@ -99,7 +99,7 @@
          :wallet/keys   [send-transaction]
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
     (let [{:keys [amount transaction-id password]} send-transaction
-          amount' (money/to-wei (string/replace amount #"," "."))]
+          amount-in-wei (money/to-wei (string/replace amount #"," "."))]
       (if transaction-id
         {::accept-transaction {:id           transaction-id
                                :password     password
@@ -110,7 +110,7 @@
          ::send-transaction {:web3  web3
                              :from  (get-in accounts [current-account-id :address])
                              :to    (:to-address send-transaction)
-                             :value amount'}}))))
+                             :value amount-in-wei}}))))
 
 (handlers/register-handler-fx
   :wallet/discard-transaction

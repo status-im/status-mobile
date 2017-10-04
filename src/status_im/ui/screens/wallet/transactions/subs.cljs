@@ -26,12 +26,11 @@
     (group-by :type (vals transactions))))
 
 (defn format-unsigned-transaction [{:keys [message-id gas-price] :as transaction}]
-  (-> transaction
-      (update :value money/wei->ether)
-      (assoc :type           :unsigned
-             :confirmations  0
-             :symbol         "ETH"
-             :hash           message-id)))
+  (assoc transaction
+    :type           :unsigned
+    :confirmations  0
+    :symbol         "ETH"
+    :hash           message-id))
 
 (reg-sub :wallet.transactions/unsigned-transactions
   :<- [:transactions]
