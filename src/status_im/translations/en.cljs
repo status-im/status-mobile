@@ -419,4 +419,7 @@
    :remove-network                        "Remove network"
    :network-settings                      "Network settings"
    :edit-network-warning                  "Be careful, editing the network data may disable this network for you"
-   :connecting-requires-login             "Connecting to another network requires login"})
+   :connecting-requires-login             "Connecting to another network requires login"
+   :close-app-title                       "Warning!"
+   :close-app-content                     "App will be closed. When you restart it selected network will be used."
+   :close-app-button                      "Confirm"})
