@@ -127,6 +127,68 @@
   {:background-color :white
    :padding-left     16})
 
+;; All dapps
+
+(def all-dapps-container
+  {:flex             1
+   :flex-direction   :row
+   :flex-grow        1
+   :background-color toolbar-background2})
+
+(def all-dapps-list
+  {:background-color styles/color-white
+   :flex             1
+   :flex-wrap        "wrap"
+   :padding          4
+   :margin           4
+   :flex-direction   :row})
+
+(def dapps-list-item
+  {:flex-direction   :column
+   ;; TODO(oskarth): Not straight columns and rows
+   ;; :border-radius 4
+   ;; :border-width  4
+   ;; :border-color  "red"
+   :margin           4
+   :padding          4})
+
+(def dapps-list-item-second-row
+  {:flex    1
+   :padding 4
+   :margin  4})
+
+(def dapps-list-item-name-container
+  {:background-color styles/color-white
+   :flex-direction   :column
+   :align-items      :center})
+
+(def dapps-list-item-name
+  {:margin-left 7
+   :padding     4
+   :margin      4
+   :color       styles/text1-color
+   :font-size   12})
+
+(def dapps-list-item-avatar-container
+  {:flex-direction :column
+   :padding        4
+   :margin         4
+   :align-items    :center})
+
+(def dapp-preview-container
+  {:background-color styles/color-white
+   :margin-top       16})
+
+(def dapp-preview-content
+  {:border-radius    4
+   :padding-top      4
+   :padding-left     4
+   :margin-top       2
+   :margin-bottom    4
+   :margin-right     2
+   :background-color styles/color-white
+   :size             10})
+
 ;; Discover tag
 
 (def discover-tag-toolbar

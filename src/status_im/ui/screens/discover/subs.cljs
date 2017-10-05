@@ -49,3 +49,12 @@
           current-tag (:current-tag db)
           tags        (:discover-search-tags db)]
       (get-discoveries-by-tags discoveries current-tag tags))))
+
+(reg-sub :get-all-dapps
+  (fn [db]
+    (let [dapp? (->> (get-in db [:group/contact-groups "dapps" :contacts])
+                     (map :identity)
+                     set)]
+      (->> (:contacts/contacts db)
+           (filter #(-> % key dapp?))
+           (into {})))))

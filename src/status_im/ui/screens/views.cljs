@@ -51,6 +51,7 @@
 
             [status-im.ui.screens.discover.search-results.views :as discover-search]
             [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]
+            [status-im.ui.screens.discover.all-dapps.views :as discover-all-dapps]
             [status-im.ui.screens.discover.popular-hashtags.views :as discover-popular]
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
             [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
@@ -100,6 +101,7 @@
                           :discover-all-recent discover-recent/discover-all-recent
                           :discover-all-hashtags discover-popular/discover-all-hashtags
                           :discover-search-results discover-search/discover-search-results
+                          :discover-all-dapps discover-all-dapps/main
                           :profile-photo-capture profile-photo-capture
                           :accounts accounts
                           :login login

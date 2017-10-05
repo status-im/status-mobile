@@ -168,6 +168,7 @@
    :public-chats                          "Public chats"
    :soon                                  "Soon"
    :public-chat-user-count                "{{count}} people"
+   :dapps                                 "DApps"
 
    ;;settings
    :settings                              "Settings"
