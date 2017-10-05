@@ -65,7 +65,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         if (status == null) {
             status = new ServiceConnector(currentActivity, StatusService.class);
             status.registerHandler(this);
-
         }
 
         status.bindService();
@@ -220,6 +219,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         String res = Statusgo.StartNode(config);
         Log.d(TAG, "StartNode result: " + res);
         Log.d(TAG, "Geth node started");
+	status.sendMessage();
     }
 
     private String getOldExternalDir() {
@@ -305,7 +305,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void startNode(final String config) {
         Log.d(TAG, "startNode");
-        status.sendMessage();
         if (!checkAvailability()) {
             return;
         }
