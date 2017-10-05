@@ -17,7 +17,7 @@
                                   :duration 250})))
 
 (defn offline-view [_]
-  (let [sync-state       (subscribe [:get :sync-state])
+  (let [sync-state       (subscribe [:sync-state])
         network-status   (subscribe [:get :network-status])
         offline-opacity  (anim/create-value 0.0)
         on-update        (fn [_ _]

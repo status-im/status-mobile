@@ -63,7 +63,7 @@
 ;;;;NODE
 
 (spec/def ::sync-listening-started (spec/nilable boolean?))
-(spec/def ::sync-state (spec/nilable keyword?))
+(spec/def ::sync-state (spec/nilable #{:pending :in-progress :synced :done :offline}))
 (spec/def ::sync-data (spec/nilable map?))
 
 ;;;;NAVIGATION

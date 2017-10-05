@@ -54,7 +54,7 @@
   [{:keys [id] :as transaction} [:get :selected-transaction]
    {:keys [password]}           [:get :confirm-transactions]
    confirmed?                   [:get-in [:transaction-details-ui-props :confirmed?]]
-   sync-state                   [:get :sync-state]
+   sync-state                   [:sync-state]
    network-status               [:get :network-status]]
   {:component-did-update   #(when-not transaction (rf/dispatch [:navigate-to-modal :unsigned-transactions]))
    :component-will-unmount #(rf/dispatch [:set-in [:transaction-details-ui-props :confirmed?] false])}

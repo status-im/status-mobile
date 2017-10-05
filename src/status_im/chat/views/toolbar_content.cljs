@@ -71,7 +71,7 @@
             show-actions? [:chat-ui-props :show-actions?]
             accounts      [:get-accounts]
             contact       [:get-in [:contacts/contacts @chat-id]]
-            sync-state    [:get :sync-state]
+            sync-state    [:sync-state]
             creating?     [:get :accounts/creating-account?]]
     [view (st/chat-name-view (or (empty? accounts)
                                  show-actions?
