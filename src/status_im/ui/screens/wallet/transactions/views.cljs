@@ -120,17 +120,25 @@
                       :render-fn       render-transaction
                       :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]]))
 
-(defn- unsigned-transactions-title [unsigned-transactions-count]
-  (str (i18n/label :t/transactions-unsigned)
-       (if (pos? unsigned-transactions-count) (str " " unsigned-transactions-count))))
+(defn unsigned-transactions-title [{:keys [uppercase? style]} title]
+  (let [unsigned-transactions-count (re-frame/subscribe [:wallet.transactions/unsigned-transactions-count])]
+    [react/view {:flex-direction :row}
+     [react/text {:style style
+                  :uppercase? uppercase?}
+      (i18n/label :t/transactions-unsigned)]
+     (when (pos? @unsigned-transactions-count)
+       [react/text {:style (merge
+                            style
+                            {:color styles/color-gray10})}
+        (str " " @unsigned-transactions-count)])]))
 
 (defn- tab-list [unsigned-transactions-count]
   [{:view-id :wallet-transactions-history
     :title   (i18n/label :t/transactions-history)
     :screen  [history-list]}
-   {:view-id :wallet-transactions-unsigned
-    :title   (unsigned-transactions-title unsigned-transactions-count)
-    :screen  [unsigned-list]}])
+   {:view-id  :wallet-transactions-unsigned
+    :title-fn unsigned-transactions-title
+    :screen   [unsigned-list]}])
 
 ;; Filter history
 

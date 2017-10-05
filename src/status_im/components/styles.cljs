@@ -25,6 +25,7 @@
 (def color-gray7 "#9fa3b4")
 (def color-gray8 "#6E777E")
 (def color-gray9 "#E9EBEC")
+(def color-gray10 "#9BA3A8")
 (def color-dark "#49545d")
 (def color-steel "#838b91")
 (def color-white "white")
