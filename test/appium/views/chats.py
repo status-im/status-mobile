@@ -148,7 +148,6 @@ class SendMessageButton(BaseButton):
         self.locator = self.Locator.accessibility_id("send-message-button")
 
     def click(self):
-        time.sleep(10)
         self.find_element().click()
         logging.info('Tap on %s' % self.name)
 
@@ -171,20 +170,26 @@ class SendFundsButton(BaseButton):
 
         def __init__(self, driver):
             super(SendFundsButton.FirstRecipient, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector('//android.view.ViewGroup[4]//'
-                                                       'android.widget.ImageView[@content-desc="chat-icon"]')
+            self.locator = self.Locator.xpath_selector("//*[@text='Choose recipient']/.."
+                                                       "//android.widget.ImageView[@content-desc='chat-icon']")
 
-    class ConfirmTransactionButton(BaseButton):
+    class SignTransactionButton(BaseButton):
 
         def __init__(self, driver):
-            super(SendFundsButton.ConfirmTransactionButton, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM TRANSACTION']")
+            super(SendFundsButton.SignTransactionButton, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//*[@text='SIGN TRANSACTION']")
 
     class PasswordInput(BaseEditBox):
 
         def __init__(self, driver):
             super(SendFundsButton.PasswordInput, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='Password']")
+
+    class EnterPasswordInput(BaseEditBox):
+
+        def __init__(self, driver):
+            super(SendFundsButton.EnterPasswordInput, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//android.widget.EditText[@NAF='true']")
 
     class ConfirmButton(BaseButton):
 
@@ -233,9 +238,10 @@ class ChatsViewObject(BaseViewObject):
 
         self.send_funds_button = SendFundsButton(self.driver)
         self.first_recipient_button = SendFundsButton.FirstRecipient(self.driver)
-        self.confirm_transaction_button = SendFundsButton.ConfirmTransactionButton(self.driver)
+        self.sign_transaction_button = SendFundsButton.SignTransactionButton(self.driver)
         self.confirm_button = SendFundsButton.ConfirmButton(self.driver)
         self.password_input = SendFundsButton.PasswordInput(self.driver)
+        self.enter_password_input = SendFundsButton.EnterPasswordInput(self.driver)
         self.got_it_button = SendFundsButton.GotItButton(self.driver)
 
         self.new_contact_button = NewContactButton(self.driver)

@@ -31,6 +31,10 @@ def pytest_addoption(parser):
                      action='store',
                      default='sauce-storage:' + latest_apk,
                      help='Please provide url or local path to apk')
+    parser.addoption('--env',
+                     action='store',
+                     default='sauce',
+                     help='Please specify environment: local/sauce')
 
 
 def pytest_runtest_setup(item):

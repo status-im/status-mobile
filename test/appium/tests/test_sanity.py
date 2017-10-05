@@ -1,4 +1,5 @@
 import pytest
+import time
 from tests.basetestcase import SingleDeviceTestCase
 from views.home import HomeView
 from tests.preconditions import set_password_as_new_user, recover_access
@@ -6,7 +7,7 @@ from tests import basic_user, transaction_users
 
 
 @pytest.mark.sanity
-class TestSanity(SingleDeviceTestCase):
+class TestAccess(SingleDeviceTestCase):
 
     def test_recover_access(self):
         home = HomeView(self.driver)
@@ -23,7 +24,7 @@ class TestSanity(SingleDeviceTestCase):
         recovered_user.click()
         login.password_input.send_keys(basic_user['password'])
         login.sign_in_button.click()
-        home.find_full_text('Chats', 10)
+        home.find_full_text('Chats', 60)
 
     @pytest.mark.parametrize("verification", ["invalid", "valid"])
     def test_sign_in(self, verification):
@@ -62,9 +63,10 @@ class TestSanity(SingleDeviceTestCase):
             home.confirm()
         home.find_full_text(verifications[verification]["outcome"])
 
-    @pytest.mark.parametrize("test, recipient, sender", [('group_chat', 'A_USER', 'B_USER'),
+    @pytest.mark.parametrize("test, recipient, sender", [('wrong_password', 'A_USER', 'B_USER'),
+                                                         ('group_chat', 'A_USER', 'B_USER'),
                                                          ('one_to_one_chat', 'B_USER', 'A_USER')],
-                             ids=['group_chat', 'one_to_one_chat'])
+                             ids=['group_chat', 'one_to_one_chat', 'wrong_password'])
     def test_send_transaction(self, test, recipient, sender):
         home = HomeView(self.driver)
         set_password_as_new_user(home)
@@ -102,18 +104,52 @@ class TestSanity(SingleDeviceTestCase):
 
         chats.send_funds_button.click()
         chats.first_recipient_button.click()
-        chats.send_int_as_keyevent(0)
-        chats.send_dot_as_keyevent()
-        chats.send_int_as_keyevent(1)
+        chats.send_as_keyevent('0,1')
         chats.send_message_button.click()
-        chats.confirm_transaction_button.wait_for_element(60)
-        chats.confirm_transaction_button.click()
-        chats.password_input.send_keys(transaction_users[sender]['password'])
-        chats.confirm_button.click()
-        chats.got_it_button.click()
+        chats.sign_transaction_button.wait_for_element(20)
+        chats.sign_transaction_button.click()
 
-        chats.find_full_text('0.1')
-        chats.find_full_text('Sent', 60)
-        if test == 'group_chat':
-            chats.find_full_text('to  ' + transaction_users[recipient]['username'], 60)
-        chats.verify_balance_is_updated(initial_balance_recipient, recipient_address)
+        if test == 'wrong_password':
+            chats.enter_password_input.send_keys('invalid')
+            chats.sign_transaction_button.click()
+            chats.find_full_text('Wrong password', 20)
+
+        else:
+            chats.enter_password_input.send_keys(transaction_users[recipient]['password'])
+            chats.sign_transaction_button.click()
+            chats.find_full_text('0.1')
+            chats.find_full_text('Sent', 60)
+            if test == 'group_chat':
+                chats.find_full_text('to  ' + transaction_users[recipient]['username'], 60)
+            chats.verify_balance_is_updated(initial_balance_recipient, recipient_address)
+
+    def test_send_transaction_from_daap(self):
+        home = HomeView(self.driver)
+        set_password_as_new_user(home)
+        chats = home.get_chats()
+
+        address = transaction_users['B_USER']['address']
+        initial_balance = chats.get_balance(address)
+        recover_access(chats,
+                       transaction_users['B_USER']['passphrase'],
+                       transaction_users['B_USER']['password'],
+                       transaction_users['B_USER']['username'])
+        if chats.get_balance(address) < 1000000000000000000:
+            chats.get_donate(address)
+
+        contacts = chats.contacts_button.click()
+        auction_house = contacts.auction_house_button.click()
+
+        auction_house.toggle_navigation_button.click()
+        auction_house.new_auction_button.click()
+        auction_house.name_to_reserve_input.click()
+        auction_name = time.strftime('%Y-%m-%d-%H-%M')
+        auction_house.send_as_keyevent(auction_name)
+        auction_house.register_name_button.click()
+
+        chats.sign_transaction_button.wait_for_element(20)
+        chats.sign_transaction_button.click()
+        chats.enter_password_input.send_keys(transaction_users['B_USER']['password'])
+        chats.sign_transaction_button.click()
+        auction_house.find_full_text('You are the proud owner of the name: ' + auction_name, 120)
+        chats.verify_balance_is_updated(initial_balance, address)

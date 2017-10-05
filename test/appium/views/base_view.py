@@ -11,12 +11,22 @@ class BackButton(BaseButton):
         super(BackButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@content-desc='toolbar-back-button']")
 
+    def click(self):
+        self.wait_for_element(30)
+        self.find_element().click()
+        logging.info('Tap on %s' % self.name)
+        return self.navigate()
+
 
 class ContactsButton(BaseButton):
 
     def __init__(self, driver):
         super(ContactsButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Contacts']")
+
+    def navigate(self):
+        from views.contacts import ContactsViewObject
+        return ContactsViewObject(self.driver)
 
 
 class BaseViewObject(object):
@@ -27,23 +37,25 @@ class BaseViewObject(object):
         self.contacts_button = ContactsButton(self.driver)
 
     def confirm(self):
+        logging.info("Tap 'Confirm' on native keyboard")
         self.driver.keyevent(66)
 
-    def send_int_as_keyevent(self, integer):
-        keys = {0: 7, 1: 8, 2: 9, 3: 10, 4: 11,
-                5: 12, 6: 13, 7: 14, 8: 15, 9: 16}
-        time.sleep(2)
-        self.driver.keyevent(keys[integer])
-
-    def send_dot_as_keyevent(self):
-        self.driver.keyevent(55)
+    def send_as_keyevent(self, string):
+        keys = {'0': 7, '1': 8, '2': 9, '3': 10, '4': 11, '5': 12, '6': 13, '7': 14, '8': 15, '9': 16,
+                ',': 55, '-': 69}
+        for i in string:
+            logging.info("Tap '%s' on native keyboard" % i)
+            time.sleep(1)
+            self.driver.keyevent(keys[i])
 
     def find_full_text(self, text, wait_time=60):
+        logging.info("Looking for full text: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
         return element.wait_for_element(wait_time)
 
     def find_text_part(self, text, wait_time=60):
+        logging.info("Looking for a text part: '%s'" % text)
         element = BaseElement(self.driver)
         element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
         return element.wait_for_element(wait_time)
