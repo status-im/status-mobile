@@ -12,9 +12,9 @@
 (defn show-confirmation
   ([title content on-accept]
    (show-confirmation title content nil on-accept))
-  ([title content s on-accept]
-   (show-confirmation title content s on-accept nil))
-  ([title content s on-accept on-cancel]
+  ([title content confirm-button-text on-accept]
+   (show-confirmation title content confirm-button-text on-accept nil))
+  ([title content confirm-button-text on-accept on-cancel]
    (.alert (.-Alert rn-dependencies/react-native)
            title
            content
@@ -22,7 +22,9 @@
            (clj->js
             (vector (merge {:text (i18n/label :t/cancel) :style "cancel"}
                            (when on-cancel {:onPress on-cancel}))
-                    {:text (or s "OK") :onPress on-accept :style "destructive"})))))
+                    {:text    (or confirm-button-text "OK")
+                     :onPress on-accept
+                     :style   "destructive"})))))
 
 (defn show-question
   ([title content on-accept]

@@ -351,7 +351,9 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
     });
 }
 
-
+RCT_EXPORT_METHOD(closeApplication) {
+    exit(0);
+}
 
 + (void)signalEvent:(const char *) signal
 {

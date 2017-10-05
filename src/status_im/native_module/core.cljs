@@ -86,3 +86,6 @@
 
 (defn notify [token callback]
   (module-interface/-notify rns-module token callback))
+
+(defn close-application []
+  (module-interface/-close-application rns-module))
