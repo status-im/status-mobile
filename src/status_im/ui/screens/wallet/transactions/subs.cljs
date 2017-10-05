@@ -67,18 +67,20 @@
        :key :pending
        :data pending})))
 
+(defn group-transactions-by-date [transactions]
+  (->> transactions
+       (group-by #(datetime/timestamp->date-key (:timestamp %)))
+       (sort-by key)
+       reverse
+       (map (fn [[date-key transactions]]
+              {:title (datetime/timestamp->mini-date (:timestamp (first transactions)))
+               :key   date-key
+               :data  (sort-by :timestamp > transactions)}))))
+
 (reg-sub :wallet.transactions/completed-transactions-list
   :<- [:wallet.transactions/grouped-transactions]
   (fn [{:keys [inbound outbound]}]
-    (->> (into inbound outbound)
-         (group-by #(datetime/timestamp->date-key (:timestamp %)))
-         (sort-by key)
-         reverse
-         (map (fn [[k v]]
-                {:title (datetime/timestamp->mini-date (:timestamp (first v)))
-                 :key   k
-                 ;; TODO (yenda investigate wether this sort-by is necessary or not)
-                 :data  (sort-by :timestamp v)})))))
+    (group-transactions-by-date (into inbound outbound))))
 
 (reg-sub :wallet.transactions/transactions-history-list
   :<- [:wallet.transactions/postponed-transactions-list]
@@ -115,7 +117,7 @@
                 :nonce     (i18n/label :not-applicable)}
                {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
                 :url  (transactions/get-transaction-details-url network hash)})
-             ;; TODO (yenda) proper wallet logic when wallet switching is impletmented
+             ;; TODO (yenda) proper wallet logic when wallet switching is implemented
              (if (= type :inbound)
                {:to-wallet "Main wallet"}
                {:from-wallet "Main wallet"})))))
