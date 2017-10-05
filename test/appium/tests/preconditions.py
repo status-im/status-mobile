@@ -19,6 +19,9 @@ def recover_access(chats, passphrase, password, username):
     login.password_input.send_keys(password)
     login.confirm_recover_access.click()
     recovered_user = login.element_by_text(username, 'button')
+    login.confirm()
     recovered_user.click()
     login.password_input.send_keys(password)
     login.sign_in_button.click()
+    login.find_full_text('Chats', 60)
+

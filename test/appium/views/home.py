@@ -32,7 +32,7 @@ class RequestPasswordIcon(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@content-desc='request-password']")
 
     def click(self):
-        self.wait_for_element(60)
+        self.wait_for_element(10)
         self.find_element().click()
         logging.info('Tap on %s' % self.name)
         return self.navigate()
@@ -44,12 +44,10 @@ class HomeView(BaseViewObject):
         super(HomeView, self).__init__(driver)
         self.continue_button_apk = ContinueButtonAPK(driver)
         self.ok_button_apk = OkButtonAPK(driver)
-
         for i in self.ok_button_apk, self.continue_button_apk:
             try:
                 i.click()
             except (NoSuchElementException, TimeoutException):
                 pass
-
         self.chat_request_input = ChatRequestInput(driver)
         self.request_password_icon = RequestPasswordIcon(driver)
