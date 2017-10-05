@@ -13,7 +13,8 @@
     [status-im.utils.platform :as platform]
     [status-im.i18n :as i18n]
     [status-im.ui.screens.discover.styles :as styles]
-    [status-im.ui.screens.contacts.styles :as contacts-st]))
+    [status-im.ui.screens.contacts.styles :as contacts-st]
+    [status-im.components.list.views :as components.list]))
 
 (defn get-hashtags [status]
   (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
@@ -30,7 +31,7 @@
     :on-search-submit   (fn [text]
                           (when-not (str/blank? text)
                             (let [hashtags (get-hashtags text)]
-                              ;TODO (goranjovic) - refactor double dispatch to a single call
+                              ;; TODO (goranjovic) - refactor double dispatch to a single call
                               (re-frame/dispatch [:set :discover-search-tags hashtags])
                               (re-frame/dispatch [:navigate-to :discover-search-results]))))}])
 
@@ -41,7 +42,7 @@
                        (get-in platform/platform-specific [:component-styles :discover :popular]))
      [react/view styles/row
       [react/view {}
-       ;TODO (goranjovic) - refactor double dispatch to a single call
+       ;; TODO (goranjovic) - refactor double dispatch to a single call
        [react/touchable-highlight {:on-press #(do (re-frame/dispatch [:set :discover-search-tags [tag]])
                                                   (re-frame/dispatch [:navigate-to :discover-search-results]))}
         [react/view {}
@@ -59,9 +60,9 @@
 (defview popular-hashtags-preview [{:keys [contacts current-account]}]
   (letsubs [popular-tags [:get-popular-tags 10]]
     [react/view styles/popular-container
-     ;TODO (goranjovic) - refactor double dispatch to a single call
+     ;; TODO (goranjovic) - refactor double dispatch to a single call
      [components/title :t/popular-tags :t/all #(do (re-frame/dispatch [:set :discover-search-tags (map :name popular-tags)])
-                                                   (re-frame/dispatch [:navigate-to :discover-all-hashtags]))]
+                                                   (re-frame/dispatch [:navigate-to :discover-all-hashtags])) true]
      (if (seq popular-tags)
        [carousel/carousel {:pageStyle styles/carousel-page-style
                            :gap       8
@@ -83,7 +84,7 @@
 
 (defn recent-statuses-preview [current-account discoveries]
   [react/view styles/recent-statuses-preview-container
-   [components/title :t/recent :t/all #(re-frame/dispatch [:navigate-to :discover-all-recent])]
+   [components/title :t/recent :t/all #(re-frame/dispatch [:navigate-to :discover-all-recent]) true]
    (if (seq discoveries)
      [carousel/carousel {:pageStyle styles/carousel-page-style
                          :gap       8
@@ -95,6 +96,41 @@
                                          :show-separator? false
                                          :current-account current-account}]])]
      [react/text (i18n/label :t/none)])])
+
+(def public-chats-mock-data
+  [{:name  "Status team"
+    :count 25
+    :color "#B2F3E3"}
+   {:name  "ETH news"
+    :count 12
+    :color "#F7A7E8"}
+   {:name  "All about Ethereum"
+    :count 32
+    :color "#C1B8F0"}])
+
+(defn render-public-chats-item [item]
+  [react/view styles/public-chats-item-container
+   [react/view styles/public-chats-icon-container
+    [react/view (styles/public-chats-icon (:color item))
+     [react/text {:style styles/public-chats-icon-text}
+                 (-> item :name first str)]]]
+   [react/view styles/public-chats-item-inner
+    [react/view styles/public-chats-item-name-container
+     ;; TODO(goranjovic) lightgray intentionally hardcoded while only a teaser
+     ;; will be removed and properly styled when enabled
+     [vi/icon :icons/public {:color "lightgray"}]
+     [react/text {:font  :medium
+                  :style styles/public-chats-item-name-text}
+                 (:name item)]]
+    [react/view {}
+     [react/text {:style {:color :lightgray}}
+      (i18n/label :t/public-chat-user-count {:count (:count item)})]]]])
+
+(defn public-chats-teaser []
+  [react/view {}
+   [components/title :t/public-chats :t/soon #() false]
+   [components.list/flat-list {:data      public-chats-mock-data
+                               :render-fn render-public-chats-item}]])
 
 (defview discover [current-view?]
   (letsubs [show-search     [:get-in [:toolbar-search :show]]
@@ -109,5 +145,6 @@
        [react/scroll-view styles/list-container
         [recent-statuses-preview current-account discoveries]
         [popular-hashtags-preview {:contacts        contacts
-                                   :current-account current-account}]]
+                                   :current-account current-account}]
+        [public-chats-teaser]]
        [empty-discoveries])]))
