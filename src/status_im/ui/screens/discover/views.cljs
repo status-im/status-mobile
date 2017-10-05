@@ -10,6 +10,7 @@
     [status-im.components.drawer.view :as drawer]
     [status-im.components.carousel.carousel :as carousel]
     [status-im.ui.screens.discover.components.views :as components]
+    [status-im.ui.screens.discover.all-dapps.views :as all-dapps]
     [status-im.utils.platform :as platform]
     [status-im.i18n :as i18n]
     [status-im.ui.screens.discover.styles :as styles]
@@ -137,7 +138,8 @@
             search-text     [:get-in [:toolbar-search :text]]
             contacts        [:get-contacts]
             current-account [:get-current-account]
-            discoveries     [:get-recent-discoveries]]
+            discoveries     [:get-recent-discoveries]
+            all-dapps       [:get-all-dapps]]
     [react/view styles/discover-container
      [toolbar-view (and current-view?
                         (= show-search :discover)) search-text]
@@ -146,5 +148,6 @@
         [recent-statuses-preview current-account discoveries]
         [popular-hashtags-preview {:contacts        contacts
                                    :current-account current-account}]
+        [all-dapps/preview all-dapps]
         [public-chats-teaser]]
        [empty-discoveries])]))
