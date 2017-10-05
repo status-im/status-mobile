@@ -1,8 +1,6 @@
 (ns status-im.ui.screens.discover.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle]])
-  (:require [status-im.components.styles :refer [color-white
-                                                 color-light-gray
-                                                 color-blue]]
+  (:require [status-im.components.styles :as styles]
             [status-im.components.toolbar.styles :refer [toolbar-background2]]
             [status-im.components.tabs.styles :as tabs-st]
             [status-im.utils.platform :as p]))
@@ -22,7 +20,7 @@
 
 (def empty-view
   {:flex             1
-   :background-color color-white
+   :background-color styles/color-white
    :align-items      :center
    :justify-content  :center})
 
@@ -40,7 +38,7 @@
   {})
 
 (def tag-button
-  {:color           color-blue
+  {:color           styles/color-blue
    :font-size       14
    :padding-right   5
    :padding-bottom  2
@@ -48,7 +46,7 @@
    :justify-content :center})
 
 (def tag-name
-  {:color            color-blue
+  {:color            styles/color-blue
    :background-color :white
    :font-size        14
    :align-items      :center
@@ -137,7 +135,7 @@
 
 (def discover-tag-container
   {:flex            1
-   :backgroundColor color-light-gray})
+   :backgroundColor styles/color-light-gray})
 
 (def tag-title-scroll
   {:flex           1
@@ -151,7 +149,7 @@
    :flex-direction "row"})
 
 (def tag-title
-  {:color          color-blue
+  {:color          styles/color-blue
    :font-size      14
    :padding-right  5
    :padding-bottom 2})
@@ -166,7 +164,7 @@
 
 (def discover-container
   {:flex            1
-   :backgroundColor color-white})
+   :backgroundColor styles/color-white})
 
 (def list-container
   {:flex 1})
@@ -175,8 +173,10 @@
   {:width  17
    :height 17})
 
-(def title-action-text
-  {:color "rgb(110, 0, 228)"})
+(defn title-action-text  [active?]
+  {:color (if active?
+            styles/color-blue
+            styles/color-gray-transparent)})
 
 (def recent-statuses-preview-container
   {:background-color toolbar-background2})
@@ -189,3 +189,40 @@
    :margin-bottom    4
    :margin-right     2
    :background-color :white})
+
+(def public-chats-item-container
+  {:flex-direction :row
+   :padding        3})
+
+(def public-chats-icon-width-ratio
+  0.15)
+
+(def public-chats-icon-container
+  {:flex public-chats-icon-width-ratio})
+
+(defn public-chats-icon [color]
+  {:width            50
+   :height           50
+   :border-radius    25
+   :background-color color
+   :flex-direction   :row
+   :justify-content  :center
+   :align-items      :center})
+
+(def public-chats-icon-text
+  {:font-size 25
+   :color     styles/color-gray-transparent-light})
+
+(def public-chats-item-inner
+  {:flex           (- 1 public-chats-icon-width-ratio)
+   :margin-left    10
+   :flex-direction :column})
+
+(def public-chats-item-name-container
+  {:flex-direction :row})
+
+(def public-chats-item-name-text
+  {:color       styles/color-gray-transparent
+   :font-weight :bold
+   :font-size   16
+   :margin-left 5})

@@ -12,14 +12,16 @@
             [status-im.components.icons.vector-icons :as vi]
             [status-im.i18n :as i18n]))
 
-(defn title [label-kw action-kw action-fn]
+(defn title [label-kw action-kw action-fn active?]
   [react/view st/title
    [react/text {:style      (get-in platform/platform-specific [:component-styles :discover :subtitle])
                 :uppercase? (get-in platform/platform-specific [:discover :uppercase-subtitles?])
                 :font       :medium}
     (i18n/label label-kw)]
    [react/touchable-highlight {:on-press action-fn}
-    [react/view {} [react/text {:style st/title-action-text} (i18n/label action-kw)]]]])
+    [react/view {}
+     [react/text {:style (st/title-action-text active?)}
+      (i18n/label action-kw)]]]])
 
 (defn tags-menu [tags]
   [react/view st/tag-title-container

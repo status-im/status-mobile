@@ -165,6 +165,9 @@
    :no-statuses-found                     "No statuses found"
    :chat                                  "Chat"
    :all                                   "All"
+   :public-chats                          "Public chats"
+   :soon                                  "Soon"
+   :public-chat-user-count                "{{count}} people"
 
    ;;settings
    :settings                              "Settings"
