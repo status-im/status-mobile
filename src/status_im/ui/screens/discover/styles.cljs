@@ -284,3 +284,66 @@
    :font-weight :bold
    :font-size   16
    :margin-left 5})
+
+
+(def dapp-details-container
+  {:flex-direction   :column
+   :background-color styles/color-light-gray})
+
+(def dapp-details-header
+  {:flex-direction   :row
+   :justify-content  :flex-start
+   :align-items      :center
+   :height           80
+   :background-color styles/color-white})
+
+(def dapp-details-icon
+  {:flex             0.15
+   :background-color styles/color-white
+   :padding-left     10})
+
+(def dapp-details-name-container
+  {:flex             0.85
+   :background-color styles/color-white})
+
+(def dapp-details-name-text
+  {:margin-left 10})
+
+(def dapp-details-action-container
+  {:flex-direction :row
+   :margin-top     15
+   :margin-bottom  15})
+
+(def dapp-details-action-icon-container
+  {:height           80
+   :flex             0.15
+   :justify-content  :center
+   :align-items      :center
+   :background-color styles/color-white})
+
+(def dapp-details-action-name-container
+  {:height           80
+   :flex             0.85
+   :background-color styles/color-white
+   :flex-direction   :row
+   :justify-content  :flex-start
+   :align-items      :center})
+
+(def dapp-details-action-name-text
+  {:margin-left 10
+   :color       styles/color-blue})
+
+(def dapp-details-section-container
+  {:background-color styles/color-white})
+
+(def dapp-details-section-title-container
+  {:background-color styles/color-white
+   :padding          10})
+
+(def dapp-details-section-title-text
+  {:color styles/color-gray})
+
+(def dapp-details-section-body-container
+  {:background-color styles/color-white
+   :padding-left     10
+   :padding-right    10})

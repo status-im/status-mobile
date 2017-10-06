@@ -29,6 +29,7 @@
              :selected-participants      #{}
              :discoveries                {}
              :discover-search-tags       '()
+             :discover-current-dapp      {}
              :tags                       []
              :sync-state                 :done
              :wallet                     {}
@@ -173,6 +174,7 @@
                   :chat/geolocation
                   :discoveries/discoveries
                   :discoveries/discover-search-tags
+                  :discoveries/discover-current-dapp
                   :discoveries/tags
                   :discoveries/current-tag
                   :discoveries/request-discoveries-timer

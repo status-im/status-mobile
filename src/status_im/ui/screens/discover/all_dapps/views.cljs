@@ -9,9 +9,15 @@
             [status-im.ui.screens.discover.components.views :as discover-components]
             [status-im.ui.screens.discover.styles :as styles]
             [status-im.i18n :as i18n]
-            [status-im.components.toolbar-new.view :as toolbar]))
+            [status-im.components.toolbar-new.view :as toolbar]
+            [taoensso.timbre :as log]))
+
+(defn navigate-to-dapp [dapp]
+  (do (re-frame/dispatch [:set :discover-current-dapp dapp])
+      (re-frame/dispatch [:navigate-to :discover-dapp-details])))
 
 (defn render-dapp [{:keys [name photo-path dapp?] :as dapp}]
+  [react/touchable-highlight {:on-press #(navigate-to-dapp dapp)}
     [react/view {:style styles/all-dapps-flat-list-item}
       [react/view styles/dapps-list-item-second-row
        [react/view styles/dapps-list-item-name-container
@@ -20,7 +26,7 @@
         [react/text {:style           styles/dapps-list-item-name
                      :font            :medium
                      :number-of-lines 1}
-         name]]]])
+         name]]]]])
 
 ;; TODO(oskarth): Carousel task, possibly different subcomponent
 (def dapp-item render-dapp)
@@ -39,8 +45,9 @@
                          :count      (count dapps)}
       (for [[_ dapp] dapps]
         ^{:key (str (:name dapp))}
-        [react/view styles/dapp-preview-content
-         [dapp-item dapp]])]
+        [react/touchable-highlight {:on-press #(navigate-to-dapp dapp)}
+         [react/view styles/dapp-preview-content
+          [dapp-item dapp]]])]
      [react/text (i18n/label :t/none)])])
 
 (defview main []

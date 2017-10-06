@@ -69,6 +69,7 @@
             :icons/grab                (slurp-svg "./resources/icons/grab.svg")
             :icons/share               (slurp-svg "./resources/icons/share.svg")
             :icons/tooltip-triangle    (slurp-svg "./resources/icons/tooltip-triangle.svg")
+            :icons/open                (slurp-svg "./resources/icons/open.svg")
             :icons/network             (slurp-svg "./resources/icons/network.svg")})
 
 (defn normalize-property-name [n]
