@@ -16,6 +16,11 @@
   (fn [wallet]
     (get-in wallet [:errors :transactions-update])))
 
+(reg-sub :wallet.transactions/current-tab
+  :<- [:wallet]
+  (fn [wallet]
+    (get wallet :current-tab 0)))
+
 (reg-sub :wallet.transactions/transactions
   :<- [:wallet]
   (fn [wallet]

@@ -35,10 +35,6 @@
    :border-bottom-width 2
    :border-bottom-color styles/color-white})
 
-(def tab-title-wrapper
-  {:min-width  60
-   :margin-top 3})
-
 (defnstyle tab-title [active? text-only?]
   {:ios        {:font-size (if text-only? 15 11)}
    :android    {:font-size (if text-only? 14 12)}
@@ -62,9 +58,9 @@
 
 (defn main-swiper [tabs-hidden?]
   (merge
-    swiper
-    {:position :absolute
-     :top      0
-     :left     0
-     :right    0
-     :bottom   (if tabs-hidden? 0 tabs-height)}))
+   swiper
+   {:position :absolute
+    :top      0
+    :left     0
+    :right    0
+    :bottom   (if tabs-hidden? 0 tabs-height)}))

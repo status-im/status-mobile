@@ -1,5 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.styles
-  (:require [status-im.components.styles :as styles]))
+  (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
+  (:require [status-im.components.styles :as styles]
+            [status-im.utils.platform :as platform]))
 
 (def error-container
   {:align-self       :center
@@ -19,13 +21,32 @@
   {:flex             1
    :background-color styles/color-white})
 
-(def tabs
-  {:border-bottom-width 1
-   :border-bottom-color styles/color-gray10-transparent})
+(def tab-height (if platform/ios? 51 55))
 
-(def tab-active
-  {:border-bottom-width 2
-   :border-bottom-color styles/color-blue4})
+(def tabs-container
+  {:flexDirection :row})
+
+(defnstyle tab [active?]
+  {:flex                1
+   :height              tab-height
+   :justify-content     :center
+   :align-items         :center
+   :border-bottom-width (if active? 2 1)
+   :border-bottom-color (if active?
+                          styles/color-blue4
+                          styles/color-gray10-transparent)})
+
+(defnstyle tab-title [active?]
+  {:ios        {:font-size 15}
+   :android    {:font-size 14}
+   :text-align :center
+   :color      (if active?
+                 styles/color-blue4
+                 styles/color-black)})
+
+(def tab-unsigned-transactions-count
+  (merge (tab-title false)
+         {:color styles/color-gray10}))
 
 (def forward
   {:color styles/color-gray7})
