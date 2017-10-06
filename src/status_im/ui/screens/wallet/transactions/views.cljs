@@ -1,13 +1,11 @@
 (ns status-im.ui.screens.wallet.transactions.views
   (:require [re-frame.core :as re-frame]
-            [reagent.core :as reagent]
             [status-im.components.button.view :as button]
             [status-im.components.checkbox.view :as checkbox]
             [status-im.components.list.views :as list]
             [status-im.components.react :as react]
             [status-im.components.status-bar :as status-bar]
             [status-im.components.styles :as styles]
-            [status-im.components.tabs.views :as tabs]
             [status-im.components.toolbar-new.actions :as actions]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :as i18n]
@@ -40,17 +38,14 @@
   {:icon      :icons/filter
    :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
 
-(defn toolbar-view [view-id unsigned-transactions-count]
+(defn toolbar-view [current-tab unsigned-transactions-count]
   [toolbar/toolbar2 {:flat? true}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
-   (case @view-id
-     :wallet-transactions-unsigned
-     nil ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
-
-     :wallet-transactions-history
-     [toolbar/actions
-      [history-action]])])
+   (case current-tab
+     0 [toolbar/actions [history-action]]
+     1 nil ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
+     )])
 
 (defn action-buttons [{:keys [id to value] :as transaction}]
   [react/view {:style transactions.styles/action-buttons}
@@ -61,9 +56,9 @@
                                                            :transaction-id id
                                                            :to-address     to
                                                            :to-name        to}])}
-                          (i18n/label :t/transactions-sign)]
+    (i18n/label :t/transactions-sign)]
    [button/secondary-button {:on-press #(on-delete-transaction transaction)}
-                            (i18n/label :t/delete)]])
+    (i18n/label :t/delete)]])
 
 (defn- inbound? [type] (= "inbound" type))
 (defn- unsigned? [type] (= "unsigned" type))
@@ -120,26 +115,6 @@
                       :render-fn       render-transaction
                       :empty-component (empty-text (i18n/label :t/transactions-unsigned-empty))}]]))
 
-(defn unsigned-transactions-title [{:keys [uppercase? style]} title]
-  (let [unsigned-transactions-count (re-frame/subscribe [:wallet.transactions/unsigned-transactions-count])]
-    [react/view {:flex-direction :row}
-     [react/text {:style style
-                  :uppercase? uppercase?}
-      (i18n/label :t/transactions-unsigned)]
-     (when (pos? @unsigned-transactions-count)
-       [react/text {:style (merge
-                            style
-                            {:color styles/color-gray10})}
-        (str " " @unsigned-transactions-count)])]))
-
-(defn- tab-list [unsigned-transactions-count]
-  [{:view-id :wallet-transactions-history
-    :title   (i18n/label :t/transactions-history)
-    :screen  [history-list]}
-   {:view-id  :wallet-transactions-unsigned
-    :title-fn unsigned-transactions-title
-    :screen   [unsigned-list]}])
-
 ;; Filter history
 
 (defn- item-tokens [{:keys [symbol label checked?]}]
@@ -181,26 +156,53 @@
    [react/view {:style styles/flex}
     [list/section-list {:sections filter-data}]]])
 
-(defn- main-section [view-id tabs]
-  (let [prev-view-id (reagent/atom @view-id)]
-    [tabs/swipable-tabs {:style            transactions.styles/main-section
-                         :style-tabs       transactions.styles/tabs
-                         :style-tab-active transactions.styles/tab-active
-                         :on-view-change   #(do (reset! prev-view-id @view-id)
-                                                (reset! view-id %))}
-     tabs prev-view-id view-id]))
+(defn transactions-history-tab [{:keys [active?]}]
+  [react/text {:uppercase? true
+               :style      (transactions.styles/tab-title active?)}
+   (i18n/label :t/transactions-history)])
 
-;; TODO(yenda) must reflect selected wallet
+(defview unsigned-transactions-tab [{:keys [active?]}]
+  (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
+    [react/view {:flex-direction :row}
+     [react/text {:style      (transactions.styles/tab-title active?)
+                  :uppercase? true}
+      (i18n/label :t/transactions-unsigned)]
+     (when (pos? unsigned-transactions-count)
+       [react/text {:style transactions.styles/tab-unsigned-transactions-count}
+        (str " " unsigned-transactions-count)])]))
+
+(defview tab [scroll-to index content]
+  (letsubs [current-tab [:wallet.transactions/current-tab]]
+    (let [active? (= index current-tab)]
+      [react/view (transactions.styles/tab active?)
+       [react/touchable-highlight {:on-press #(scroll-to index)}
+        [react/view
+         [content {:active? active?}]]]])))
+
+(defn swipable-tabs [current-tab]
+  (let [swiper (atom nil)]
+    (fn [current-tab]
+      (let [scroll-to (fn [index]
+                        (.scrollBy @swiper (- index current-tab)))]
+        [react/view transactions.styles/main-section
+         [react/view transactions.styles/tabs-container
+          [tab scroll-to 0 transactions-history-tab]
+          [tab scroll-to 1 unsigned-transactions-tab]]
+         [react/swiper {:loop             false
+                        :shows-pagination false
+                        :index            current-tab
+                        :ref              #(reset! swiper %)
+                        :on-index-changed #(re-frame/dispatch [:change-tab %])}
+          [history-list]
+          [unsigned-list]]]))))
 
 (defview transactions []
-  (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
-    (let [tabs         (tab-list unsigned-transactions-count)
-          default-view (get-in tabs [0 :view-id])
-          view-id      (reagent/atom default-view)]
-      [react/view {:style styles/flex}
-       [status-bar/status-bar]
-       [toolbar-view view-id unsigned-transactions-count]
-       [main-section view-id tabs]])))
+  (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]
+            current-tab                 [:wallet.transactions/current-tab]]
+    [react/view {:style styles/flex}
+     [status-bar/status-bar]
+     [toolbar-view current-tab unsigned-transactions-count]
+     [swipable-tabs current-tab]]))
 
 (defn- pretty-print-asset [symbol amount]
   (case symbol
