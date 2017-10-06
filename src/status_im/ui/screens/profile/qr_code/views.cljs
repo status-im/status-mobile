@@ -6,7 +6,8 @@
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.i18n :refer [label]]
-            [status-im.ui.screens.profile.qr-code.styles :as styles])
+            [status-im.ui.screens.profile.qr-code.styles :as styles]
+            [status-im.utils.eip.eip67 :as eip67])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview qr-code-view []
@@ -34,10 +35,7 @@
                                                                             :height (.-height layout)}]))}
       (when (:width dimensions)
         [react/view {:style (styles/qr-code-container dimensions)}
-         [qr-code {:value (if amount?
-                            (prn-str {:address (get contact qr-source)
-                                      :amount  amount})
-                            (str "ethereum:" (get contact qr-source)))
+         [qr-code {:value (eip67/generate-uri (get contact qr-source) (when amount? {:value  amount}))
                    :size  (- (min (:width dimensions)
                                   (:height dimensions))
                              80)}]])]

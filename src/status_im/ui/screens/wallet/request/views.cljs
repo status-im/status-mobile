@@ -13,6 +13,7 @@
     [status-im.ui.screens.wallet.request.styles :as styles]
     [status-im.components.styles :as components.styles]
     [status-im.i18n :as i18n]
+    [status-im.utils.eip.eip67 :as eip67]
     [status-im.utils.platform :as platform]))
 
 (defn toolbar-view []
@@ -30,8 +31,7 @@
 (views/defview qr-code []
   (views/letsubs [account [:get-current-account]]
     [components.qr-code/qr-code
-     {:value   (.stringify js/JSON (clj->js {:address (:address account)
-                                             :amount  0}))
+     {:value   (eip67/generate-uri (:address account))
       :size    256}]))
 
 (views/defview request-transaction []
