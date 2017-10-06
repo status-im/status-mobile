@@ -6,6 +6,7 @@
             [status-im.components.react :as react]
             [status-im.components.status-bar :as status-bar]
             [status-im.components.styles :as styles]
+            [status-im.components.tabs.views :as tabs]
             [status-im.components.toolbar-new.actions :as actions]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.i18n :as i18n]
@@ -43,8 +44,8 @@
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case current-tab
-     0 [toolbar/actions [history-action]]
-     1 nil ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
+     :transactions-history  [toolbar/actions [history-action]]
+     :unsigned-transactions nil ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
      )])
 
 (defn action-buttons [{:keys [id to value] :as transaction}]
@@ -156,12 +157,12 @@
    [react/view {:style styles/flex}
     [list/section-list {:sections filter-data}]]])
 
-(defn transactions-history-tab [{:keys [active?]}]
+(defn history-tab [active?]
   [react/text {:uppercase? true
                :style      (transactions.styles/tab-title active?)}
    (i18n/label :t/transactions-history)])
 
-(defview unsigned-transactions-tab [{:keys [active?]}]
+(defview unsigned-tab [active?]
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
     [react/view {:flex-direction :row}
      [react/text {:style      (transactions.styles/tab-title active?)
@@ -171,38 +172,24 @@
        [react/text {:style transactions.styles/tab-unsigned-transactions-count}
         (str " " unsigned-transactions-count)])]))
 
-(defview tab [scroll-to index content]
-  (letsubs [current-tab [:wallet.transactions/current-tab]]
-    (let [active? (= index current-tab)]
-      [react/view (transactions.styles/tab active?)
-       [react/touchable-highlight {:on-press #(scroll-to index)}
-        [react/view
-         [content {:active? active?}]]]])))
-
-(defn swipable-tabs [current-tab]
-  (let [swiper (atom nil)]
-    (fn [current-tab]
-      (let [scroll-to (fn [index]
-                        (.scrollBy @swiper (- index current-tab)))]
-        [react/view transactions.styles/main-section
-         [react/view transactions.styles/tabs-container
-          [tab scroll-to 0 transactions-history-tab]
-          [tab scroll-to 1 unsigned-transactions-tab]]
-         [react/swiper {:loop             false
-                        :shows-pagination false
-                        :index            current-tab
-                        :ref              #(reset! swiper %)
-                        :on-index-changed #(re-frame/dispatch [:change-tab %])}
-          [history-list]
-          [unsigned-list]]]))))
+(def tabs-list
+  [{:view-id :transactions-history
+    :content history-tab
+    :screen history-list}
+   {:view-id :unsigned-transactions
+    :content unsigned-tab
+    :screen unsigned-list}])
 
 (defview transactions []
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]
-            current-tab                 [:wallet.transactions/current-tab]]
+            current-tab [:get :view-id]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
      [toolbar-view current-tab unsigned-transactions-count]
-     [swipable-tabs current-tab]]))
+     [tabs/swipable-tabs tabs-list current-tab
+      {:navigation-event     :navigation-replace
+       :tab-style            transactions.styles/tab
+       :tabs-container-style transactions.styles/tabs-container}]]))
 
 (defn- pretty-print-asset [symbol amount]
   (case symbol
@@ -266,7 +253,7 @@
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]
       [toolbar/actions (details-action hash url)]]
-     [react/scroll-view {:style transactions.styles/main-section}
+     [react/scroll-view {:style styles/main-container}
       [details-header transactions]
       [details-confirmations confirmations confirmations-progress]
       [react/view {:style transactions.styles/details-separator}]

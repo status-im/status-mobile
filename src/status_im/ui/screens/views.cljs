@@ -75,7 +75,7 @@
                           :wallet-transaction-sent transaction-sent
                           :choose-recipient choose-recipient
                           :wallet-request-transaction request-transaction
-                          :wallet-transactions wallet-transactions/transactions
+                          (:transactions-history :unsigned-transactions) wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
                           :new-chat new-chat
                           :new-group new-group
