@@ -143,3 +143,7 @@
    :top      0
    :right    0
    :bottom   0})
+
+(def main-container
+  {:background-color color-white
+   :flex             1})

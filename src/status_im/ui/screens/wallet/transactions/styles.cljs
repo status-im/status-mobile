@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
   (:require [status-im.components.styles :as styles]
+            [status-im.components.tabs.styles :as tabs.styles]
             [status-im.utils.platform :as platform]))
 
 (def error-container
@@ -17,24 +18,18 @@
    :padding-right 10
    :font-size     13})
 
-(def main-section
-  {:flex             1
-   :background-color styles/color-white})
-
-(def tab-height (if platform/ios? 51 55))
-
-(def tabs-container
-  {:flexDirection :row})
-
 (defnstyle tab [active?]
   {:flex                1
-   :height              tab-height
+   :height              tabs.styles/tab-height
    :justify-content     :center
    :align-items         :center
    :border-bottom-width (if active? 2 1)
    :border-bottom-color (if active?
                           styles/color-blue4
                           styles/color-gray10-transparent)})
+
+(def tabs-container
+  {:flexDirection :row})
 
 (defnstyle tab-title [active?]
   {:ios        {:font-size 15}

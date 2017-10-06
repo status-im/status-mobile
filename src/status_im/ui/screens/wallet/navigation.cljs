@@ -7,7 +7,7 @@
   (re-frame/dispatch [:update-wallet])
   (assoc-in db [:wallet :current-tab] 0))
 
-(defmethod navigation/preload-data! :wallet-transactions
+(defmethod navigation/preload-data! :transactions-history
   [db _]
   (re-frame/dispatch [:update-transactions])
   db)

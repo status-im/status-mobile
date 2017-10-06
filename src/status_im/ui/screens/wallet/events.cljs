@@ -141,8 +141,3 @@
   :wallet/discard-unsigned-transaction
   (fn [_ [_ transaction-id]]
     {:discard-transaction transaction-id}))
-
-(handlers/register-handler-db
-  :change-tab
-  (fn [db [_ current-tab]]
-    (assoc-in db [:wallet :current-tab] current-tab)))
