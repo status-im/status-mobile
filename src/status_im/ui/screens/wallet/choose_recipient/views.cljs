@@ -1,21 +1,16 @@
 (ns status-im.ui.screens.wallet.choose-recipient.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.utils :as utils]
+            [status-im.components.camera :as camera]
+            [status-im.components.icons.vector-icons :as vector-icons]
+            [status-im.components.react :as react]
+            [status-im.components.status-bar :as status-bar]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.components.react :as react]
-            [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
             [status-im.utils.platform :as platform]
-            [status-im.components.status-bar :as status-bar]
-            [status-im.components.camera :as camera]
-            [clojure.string :as string]))
-
-(defn- show-not-implemented! []
-  (utils/show-popup "TODO" "Not implemented yet!"))
+            [status-im.ui.screens.wallet.styles :as wallet.styles]))
 
 (defn choose-from-contacts []
   (re-frame/dispatch [:navigate-to-modal
@@ -88,15 +83,10 @@
                                                                {:width  (.-width layout)
                                                                 :height (.-height layout)}]))}
       (when (or platform/android?
-                camera-permitted?)
-        [camera/camera {:style         styles/preview
-                        :aspect        :fill
-                        :captureAudio  false
-                        :torchMode     (camera/set-torch camera-flashlight)
-                        :onBarCodeRead (fn [code]
-                                         (let [data (-> code
-                                                        .-data
-                                                        (string/replace #"ethereum:" ""))]
-                                           (re-frame/dispatch [:choose-recipient data nil])))}])
+                camera-permitted?)[camera/camera {:style         styles/preview
+                      :aspect        :fill
+                      :captureAudio  false
+                      :torchMode (camera/set-torch camera-flashlight)
+                      :onBarCodeRead #(re-frame/dispatch [:choose-recipient (camera/get-qr-code-data %) nil])}])
       [viewfinder camera-dimensions]]
      [recipient-buttons]]))

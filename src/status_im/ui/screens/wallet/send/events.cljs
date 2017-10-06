@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.wallet.send.events
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
+            [status-im.native-module.core :as status]
             [status-im.utils.handlers :as handlers]
             [status-im.ui.screens.wallet.db :as wallet.db]
-            [status-im.native-module.core :as status]
             [status-im.utils.types :as types]
-            [clojure.string :as string]
             [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]))
+            [status-im.utils.utils :as utils]))
 
 ;;;; FX
 

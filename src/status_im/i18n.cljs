@@ -136,12 +136,18 @@
                            :delimiter                 delimiter
                            :separator                 separator})))))
 
+(def default-option-value "<no value>")
+
+(defn label-options [options]
+  ;; i18n ignores nil value, leading to misleading messages
+  (into {} (for [[k v] options] [k (or v default-option-value)])))
+
 (defn label
   ([path] (label path {}))
   ([path options]
    (if (exists? rn-dependencies/i18n.t)
      (let [options (update options :amount label-number)]
-       (.t rn-dependencies/i18n (name path) (clj->js options)))
+       (.t rn-dependencies/i18n (name path) (clj->js (label-options options))))
      (name path))))
 
 (defn label-pluralize [count path & options]
