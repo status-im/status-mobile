@@ -1,5 +1,6 @@
 (ns status-im.ui.screens.wallet.choose-recipient.events
-  (:require [status-im.utils.handlers :as handlers]))
+  (:require [status-im.i18n :as i18n]
+            [status-im.utils.handlers :as handlers]))
 
 (handlers/register-handler-db
   :wallet/toggle-flashlight
@@ -13,10 +14,13 @@
 
 (handlers/register-handler-fx
   :choose-recipient
-  (fn [{:keys [db]} [_ address name]]
-    (let [{:keys [view-id]} db]
-      (cond-> {:db (choose-address-and-name db address name)}
-              (= :choose-recipient view-id) (assoc :dispatch [:navigate-back])))))
+  (fn [{{:keys [web3] :as db} :db} [_ address name]]
+    (let [{:keys [view-id]} db
+          valid-address? (.isAddress web3 address)]
+      (cond-> {:db db}
+              (= :choose-recipient view-id) (assoc :dispatch [:navigate-back])
+              valid-address? (update :db #(choose-address-and-name % address name))
+              (not valid-address?) (assoc :show-error (i18n/label :t/wallet-invalid-address))))))
 
 (handlers/register-handler-fx
   :wallet-open-send-transaction
