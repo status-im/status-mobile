@@ -297,7 +297,7 @@
   (fn [_ _]
     {::get-fcm-token-fx nil}))
 
-(defn handle-jail-signal [{:keys[chat_id data]}]
+(defn handle-jail-signal [{:keys [chat_id data]}]
   (let [{:keys [event data]} (types/json->clj data)]
     (case event
       "local-storage" (dispatch [:set-local-storage {:chat-id chat_id
@@ -310,7 +310,7 @@
                          ;; TODO(janherich): figure out and fix chat_id from event
                          (dispatch [:command-handler! (:chat-id orig-params) orig-params
                                     {:result {:returned (dissoc data :origParams)}}])) 
-      (log/debug "Unknown jail signal " type))))
+      (log/debug "Unknown jail signal " event))))
 
 (register-handler-fx
   :signal-event
