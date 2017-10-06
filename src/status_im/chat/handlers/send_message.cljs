@@ -119,6 +119,7 @@
                                 (update-in [:content :params] #(apply dissoc % hidden-params))
                                 (dissoc :to-message :has-handler :raw-input))
                       preview (assoc :preview (pr-str preview)))]
+        (dispatch [:upsert-chat! {:chat-id chat-id}])
         (messages/save chat-id command)))))
 
 (register-handler ::dispatch-responded-requests!
@@ -201,8 +202,7 @@
            (dispatch [::send-message! params])))
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id message]}]]
-      (dispatch [:upsert-chat! {:chat-id   chat-id
-                                :timestamp (datetime/now-ms)}])
+      (dispatch [:upsert-chat! {:chat-id chat-id}])
       (messages/save chat-id message))))
 
 (register-handler ::send-dapp-message

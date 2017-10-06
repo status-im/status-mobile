@@ -48,7 +48,7 @@
   ;; We allow to change phone number only from console because this requires entering SMS verification code.
   (fn [{:keys [db]} _]
     (let [phone-command (first (get-in db [:contacts/contacts "console" :responses :phone]))]
-      {:dispatch-n [[:navigate-to :chat console-chat-id]
+      {:dispatch-n [[:navigate-to-chat console-chat-id]
                     [:select-chat-input-command phone-command]]})))
 
 (defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
