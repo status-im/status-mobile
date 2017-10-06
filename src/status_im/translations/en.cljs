@@ -401,6 +401,7 @@
    :wallet-choose-recipient               "Choose Recipient"
    :wallet-choose-from-contacts           "Choose From Contacts"
    :wallet-address-from-clipboard         "Use Address From Clipboard"
+   :wallet-invalid-address                "Address is invalid"
    :wallet-browse-photos                  "Browse Photos"
    :validation-amount-invalid             "Amount is not valid"
    :validation-amount-invalid-number      "Amount is not a valid number"

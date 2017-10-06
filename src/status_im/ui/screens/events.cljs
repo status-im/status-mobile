@@ -177,6 +177,11 @@
   (fn []
     (notifications/get-fcm-token)))
 
+(reg-fx
+  :show-error
+  (fn [content]
+    (utils/show-popup "Error" content)))
+
 (re-frame/reg-fx
   :show-confirmation
   (fn [{:keys [title content confirm-button-text on-accept on-cancel]}]
