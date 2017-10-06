@@ -182,10 +182,9 @@
 (reg-handler ::parse-commands! (u/side-effect! parse-commands!))
 
 (reg-handler ::add-commands
-  [(after (fn [_ [id]]
-            (dispatch [:invoke-commands-loading-callbacks id])
-            (dispatch [:invoke-chat-loaded-callbacks id]))) 
-   (after #(dispatch [:update-suggestions]))]
+  (after (fn [_ [id]]
+           (dispatch [:invoke-commands-loading-callbacks id])
+           (dispatch [:update-suggestions])))
   add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))

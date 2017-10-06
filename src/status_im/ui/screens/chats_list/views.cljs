@@ -70,7 +70,7 @@
                          :on-press            #(re-frame/dispatch [:navigate-to :new-chat])}])
 
 (defn chat-list-item [[chat-id chat] edit?]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :chat chat-id])}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to-chat chat-id])}
    [react/view
     [inner-item/chat-list-item-inner-view (assoc chat :chat-id chat-id) edit?]]])
 
