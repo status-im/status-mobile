@@ -83,7 +83,8 @@
     (status/parse-jail
       whisper-identity (str local-storage-js file)
       (fn [result]
-        (let [{:keys [error result]} (json->clj result)]
+        (let [{:keys [error result]} (json->clj result)
+              result (json->clj result)]
           (log/debug "Parsing commands results: " error result)
           (if error
             (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
