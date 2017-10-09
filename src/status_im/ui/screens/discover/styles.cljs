@@ -131,6 +131,7 @@
 
 (def all-dapps-container
   {:flex             1
+   :margin-top       16
    :background-color toolbar-background2})
 
 (def all-dapps-flat-list
