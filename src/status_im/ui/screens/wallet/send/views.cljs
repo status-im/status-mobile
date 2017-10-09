@@ -182,4 +182,5 @@
          in-progress?]
         [sign-buttons amount-error to-address amount true #(re-frame/dispatch [:navigate-back])])
       (when signing?
-        [sign-panel])]]))
+        [sign-panel])]
+     (when in-progress? [react/view send.styles/processing-view])]))

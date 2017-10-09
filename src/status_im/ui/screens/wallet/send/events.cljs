@@ -61,12 +61,16 @@
 (handlers/register-handler-fx
   ::transaction-modal-completed
   (fn [{db :db} [_ {:keys [id response]}]]
-    (let [{:keys [hash error]} response]
-      (when-not (and error (string? error) (not (string/blank? error)))
-        {:db       (-> db
+    (let [{:keys [hash error]} response
+          db' (assoc-in db [:wallet/send-transaction :in-progress?] false)
+          has-error? (and error (string? error) (not (string/blank? error)))]
+      (if has-error?
+        {:db db'}
+        {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
-                       (assoc-in [:wallet/send-transaction :transaction-id] nil)
-                       (assoc-in [:wallet/send-transaction :wrong-password?] false))
+                       (update :wallet/send-transaction assoc
+                               :transaction-id nil
+                               :wrong-password? false))
          :dispatch [:navigate-back]}))))
 
 (defn on-transactions-modal-completed [raw-results]
@@ -114,7 +118,8 @@
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
     (let [{:keys [amount transaction-id password]} send-transaction
           amount' (money/to-wei (string/replace amount #"," "."))]
-      {::accept-transaction {:id           transaction-id
+      {:db (assoc-in db [:wallet/send-transaction :in-progress?] true)
+       ::accept-transaction {:id           transaction-id
                              :password     password
                              :on-completed on-transactions-modal-completed}})))
 
