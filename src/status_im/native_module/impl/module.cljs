@@ -54,9 +54,9 @@
 (defn init-jail []
   (when status
     (call-module
-     (fn []
-       (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
-         (.initJail status init-js #(log/debug "jail initialized")))))))
+      (fn []
+        (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "'; " js-res/web3 )]
+          (.initJail status init-js #(log/debug "jail initialized")))))))
 
 (defonce listener-initialized (atom false))
 
@@ -138,7 +138,8 @@
               cb      (fn [jail-result]
                         (let [result (-> jail-result
                                          types/json->clj
-                                         (assoc :bot-id jail-id))]
+                                         (assoc :bot-id jail-id)
+                                         (update :result types/json->clj))]
                           (callback result)))]
           (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 

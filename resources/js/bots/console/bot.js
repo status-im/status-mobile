@@ -473,20 +473,24 @@ var phoneConfig = {
         placeholder: I18n.t('phone_placeholder')
     }],
     preview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                params.phone
-            )
-        };
+        if (params) {
+            return {
+                markup: status.components.text(
+                    {},
+                    params.phone
+                )
+            };
+        }
     },
     shortPreview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                params.phone
-            )
-        };
+        if (params) {
+            return {
+                markup: status.components.text(
+                    {},
+                    params.phone
+                )
+            };
+        }
     }
 };
 status.response(phoneConfig);
