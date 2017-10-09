@@ -86,7 +86,8 @@
   "A wrapper for FlatList.
    See https://facebook.github.io/react-native/docs/flatlist.html"
   [{:keys [data render-fn empty-component] :as props}]
-  {:pre [(sequential? data)]}
+  {:pre [(or (nil? data)
+             (sequential? data))]}
   (if (and (empty? data) empty-component)
     ;; TODO(jeluard) remove when native :ListEmptyComponent is supported
     empty-component
