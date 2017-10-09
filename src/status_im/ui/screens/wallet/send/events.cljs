@@ -34,8 +34,8 @@
 
 (handlers/register-handler-fx
   :wallet/set-and-validate-amount
-  (fn [{{:keys [web3] :wallet/keys [send-transaction] :as db} :db} [_ amount]]
-    (let [error (wallet.db/get-amount-validation-error amount web3)]
+  (fn [{{:wallet/keys [send-transaction] :as db} :db} [_ amount]]
+    (let [error (wallet.db/get-amount-validation-error amount)]
       {:db (-> db
                (assoc-in [:wallet/send-transaction :amount] amount)
                (assoc-in [:wallet/send-transaction :amount-error] error))})))
@@ -95,8 +95,7 @@
   (fn [{{:keys          [web3]
          :wallet/keys   [send-transaction]
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
-    (let [{:keys [amount transaction-id password]} send-transaction
-          amount-in-wei (money/to-wei (string/replace amount #"," "."))]
+    (let [{:keys [amount transaction-id password]} send-transaction]
       (if transaction-id
         {::accept-transaction {:id           transaction-id
                                :password     password
@@ -109,15 +108,14 @@
          ::send-transaction {:web3  web3
                              :from  (get-in accounts [current-account-id :address])
                              :to    (:to-address send-transaction)
-                             :value amount-in-wei}}))))
+                             :value (money/to-wei (money/normalize amount))}}))))
 
 (handlers/register-handler-fx
   :wallet/sign-transaction-modal
   (fn [{{:keys          [web3]
          :wallet/keys   [send-transaction]
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
-    (let [{:keys [amount transaction-id password]} send-transaction
-          amount' (money/to-wei (string/replace amount #"," "."))]
+    (let [{:keys [transaction-id password]} send-transaction]
       {:db (assoc-in db [:wallet/send-transaction :in-progress?] true)
        ::accept-transaction {:id           transaction-id
                              :password     password

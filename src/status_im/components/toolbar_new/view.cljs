@@ -18,7 +18,7 @@
    (merge {:on-press handler}
           (when accessibility-label
             {:accessibility-label accessibility-label}))
-   [rn/view{:style style}
+   [rn/view {:style style}
     item]])
 
 (defn nav-button
@@ -102,8 +102,10 @@
     nav-item
     content-item
     action-items]
-   [rn/view {:style (merge (tst/toolbar-wrapper background-color flat?) style)}
-    [rn/view {:style tst/toolbar}
+   ;; TODO remove extra view wen we remove sync-state-gradient
+   [rn/view
+    [rn/view {:style (merge (tst/toolbar background-color flat?) style)}
+     ;; On iOS title must be centered. Current solution is a workaround and eventually this will be sorted out using flex
      (when platform/ios?
        [rn/view tst/ios-content-item
         content-item])

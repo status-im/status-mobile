@@ -1,6 +1,6 @@
 (ns status-im.utils.money
-  (:require [status-im.js-dependencies :as dependencies]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [status-im.js-dependencies :as dependencies]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
 ;; numbers Hence we want to use these functions instead of fromWei etc, which
@@ -20,8 +20,24 @@
 ;; matters:
 ;; (str 111122223333441239) => "111122223333441230"
 
+(defn normalize
+  "A normalized string representation of an amount"
+  [str]
+  {:pre [(or (nil? str) (string? str))]}
+  (when str
+    (string/replace (string/trim str) #"," ".")))
+
 (defn bignumber [n]
   (dependencies/Web3.prototype.toBigNumber (str n)))
+
+(defn str->float [str]
+  (when str
+    (.toNumber (bignumber (normalize str)))))
+
+(defn valid? [str]
+  (try (> (str->float str) 0)
+       (catch :default err false)))
+
 
 (defn to-wei [str]
   (dependencies/Web3.prototype.toWei str "ether"))

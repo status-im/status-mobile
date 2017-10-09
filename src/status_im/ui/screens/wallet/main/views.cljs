@@ -27,8 +27,9 @@
 (defn toolbar-title []
   [react/touchable-highlight {:on-press #(rf/dispatch [:navigate-to :wallet-list])}
    [react/view {:style styles/toolbar-title-container}
-    [react/text {:style styles/toolbar-title-text
-                 :font  :toolbar-title}
+    [react/text {:style           styles/toolbar-title-text
+                 :font            :toolbar-title
+                 :number-of-lines 1}
      (i18n/label :t/main-wallet)]
     [vi/icon
      :icons/dropdown
@@ -68,18 +69,19 @@
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
      [react/text {:style styles/total-balance-value} usd-value]
-     [react/text {:style styles/total-balance-currency} "USD"]]
+     [react/text {:style styles/total-balance-currency} (i18n/label :t/usd-currency)]]
     [react/view {:style styles/value-variation}
      [react/text {:style styles/value-variation-title}
       (i18n/label :t/wallet-total-value)]
      [change-display change]]
-    [react/view {:style (merge button.styles/buttons-container styles/buttons) :button-text-style styles/main-button-text}
+    [react/view {:style (merge button.styles/buttons-container styles/buttons)}
      [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
-                  :style    (button.styles/button-bar :first)}
+                  :style    (button.styles/button-bar :first) :text-style styles/main-button-text}
       (i18n/label :t/wallet-send)]
-     [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-request-transaction]) :style (button.styles/button-bar :other)}
+     [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
+                  :style (button.styles/button-bar :other) :text-style styles/main-button-text}
       (i18n/label :t/wallet-request)]
-     [btn/button {:disabled? true :style (button.styles/button-bar :last)}
+     [btn/button {:disabled? true :style (button.styles/button-bar :last) :text-style styles/main-button-text}
       (i18n/label :t/wallet-exchange)]]]])
 
 (defn- token->image [id]

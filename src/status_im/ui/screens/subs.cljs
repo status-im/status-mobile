@@ -12,6 +12,7 @@
             status-im.ui.screens.wallet.transactions.subs
             status-im.ui.screens.wallet.send.subs
             status-im.ui.screens.wallet.request.subs
+            status-im.ui.screens.wallet.wallet-list.subs
             status-im.ui.screens.network-settings.subs
             status-im.bots.subs))
 
