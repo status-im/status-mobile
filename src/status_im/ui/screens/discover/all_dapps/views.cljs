@@ -3,30 +3,27 @@
   (:require [cljs.pprint :as pprint]
             [re-frame.core :as re-frame]
             [status-im.components.react :as react]
+            [status-im.components.list.views :as list]
             [status-im.components.chat-icon.screen :as chat-icon]
             [status-im.components.carousel.carousel :as carousel]
             [status-im.ui.screens.discover.components.views :as discover-components]
             [status-im.ui.screens.discover.styles :as styles]
-            [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
             [status-im.components.toolbar-new.view :as toolbar]))
 
-(defn dapp-item [dapp]
-  (let [{:keys [name photo-path dapp?]} dapp
-        ;; TODO(oskarth): Refactor this to be in discover styles, just uppercase
-        item-style (get-in platform/platform-specific [:component-styles :discover :item])]
-    [react/view
-     [react/view styles/dapps-list-item
+(defn render-dapp [{:keys [name photo-path dapp?] :as dapp}]
+    [react/view {:style styles/all-dapps-flat-list-item}
       [react/view styles/dapps-list-item-second-row
-      [react/view styles/dapps-list-item-name-container
-       [react/view (merge styles/dapps-list-item-avatar-container
-                          (:icon item-style))
-        ;; TODO(oskarth): Get rid of badge on icon
-        [react/view (chat-icon/contact-icon-contacts-tab dapp)]]
-       [react/text {:style           styles/dapps-list-item-name
-                    :font            :medium
-                    :number-of-lines 1}
-        name]]]]]))
+       [react/view styles/dapps-list-item-name-container
+        [react/view styles/dapps-list-item-avatar-container
+         [react/view (chat-icon/contact-icon-contacts-tab dapp)]]
+        [react/text {:style           styles/dapps-list-item-name
+                     :font            :medium
+                     :number-of-lines 1}
+         name]]]])
+
+;; TODO(oskarth): Carousel task, possibly different subcomponent
+(def dapp-item render-dapp)
 
 ;; TODO(oskarth): Move this to top level discover ns
 (defn preview [dapps]
@@ -50,15 +47,12 @@
   (letsubs [all-dapps    [:get-all-dapps]
             tabs-hidden? [:tabs-hidden?]]
     (when (seq all-dapps)
-      [react/view styles/discover-container
+      [react/view styles/all-dapps-container
        [toolbar/toolbar2 {}
         toolbar/default-nav-back
-        ;; TODO(oskarth): Lowercase for some reason
-        [react/view [react/text {} :t/dapps]]]
-       [react/scroll-view (styles/list-container tabs-hidden?)
-        [react/view styles/all-dapps-container
-         [react/view styles/all-dapps-list
-          (for [[_ dapp] all-dapps]
-            ^{:key (str (:name dapp))}
-            [dapp-item dapp])]]]])))
-
+        ;; TODO(oskarth): Lowercase and wrong style for some reason
+        [react/view [react/text :t/dapps]]]
+       [list/flat-list {:data                    (vals all-dapps)
+                        :render-fn               render-dapp
+                        :num-columns             3
+                        :content-container-style styles/all-dapps-flat-list}]])))
