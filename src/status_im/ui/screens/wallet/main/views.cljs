@@ -61,11 +61,6 @@
         (str (when pos-change? "+") change "%")
         "-%")]]))
 
-(defn- wallet-send []
-  (rf/dispatch [:navigate-to :wallet-send-transaction])
-  (when platform/android?
-    (rf/dispatch [:request-permissions [:camera]])))
-
 (defn main-section [usd-value change error-message]
   [react/view {:style styles/main-section}
    (when error-message
@@ -79,7 +74,8 @@
       (i18n/label :t/wallet-total-value)]
      [change-display change]]
     [react/view {:style (merge button.styles/buttons-container styles/buttons) :button-text-style styles/main-button-text}
-     [btn/button {:on-press wallet-send :style (button.styles/button-bar :first)}
+     [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
+                  :style    (button.styles/button-bar :first)}
       (i18n/label :t/wallet-send)]
      [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-request-transaction]) :style (button.styles/button-bar :other)}
       (i18n/label :t/wallet-request)]

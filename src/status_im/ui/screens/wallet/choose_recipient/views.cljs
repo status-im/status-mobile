@@ -9,6 +9,7 @@
             [status-im.components.react :as react]
             [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
+            [status-im.utils.platform :as platform]
             [status-im.components.status-bar :as status-bar]
             [status-im.components.camera :as camera]
             [clojure.string :as string]))
@@ -75,7 +76,8 @@
 
 (defview choose-recipient []
   (letsubs [camera-dimensions [:camera-dimensions]
-            camera-flashlight [:camera-flashlight]]
+            camera-flashlight [:camera-flashlight]
+            camera-permitted? [:get-in [:wallet/send-transaction :camera-permitted?]]]
     [react/view {:style styles/wallet-container}
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view camera-flashlight]
@@ -84,14 +86,16 @@
                                 (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-dimensions]
                                                     {:width  (.-width layout)
                                                      :height (.-height layout)}]))}
-      [camera/camera {:style         styles/preview
-                      :aspect        :fill
-                      :captureAudio  false
-                      :torchMode (camera/set-torch camera-flashlight)
-                      :onBarCodeRead (fn [code]
-                                       (let [data (-> code
-                                                      .-data
-                                                      (string/replace #"ethereum:" ""))]
-                                         (re-frame/dispatch [:choose-recipient data nil])))}]
+      (when (or platform/android?
+                camera-permitted?)
+        [camera/camera {:style         styles/preview
+                        :aspect        :fill
+                        :captureAudio  false
+                        :torchMode     (camera/set-torch camera-flashlight)
+                        :onBarCodeRead (fn [code]
+                                         (let [data (-> code
+                                                        .-data
+                                                        (string/replace #"ethereum:" ""))]
+                                           (re-frame/dispatch [:choose-recipient data nil])))}])
       [viewfinder camera-dimensions]]
      [recipient-buttons]]))

@@ -96,6 +96,14 @@
 (defn- sufficient-funds? [amount balance]
   (<= amount (money/wei->ether balance)))
 
+(defn request-camera-permissions []
+  (when platform/android?
+    (re-frame/dispatch [:request-permissions [:camera]]))
+  (camera/request-access
+   (fn [permitted?]
+     (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-permitted?] permitted?])
+     (re-frame/dispatch [:navigate-to :choose-recipient]))))
+
 (defview send-transaction []
   (letsubs [balance      [:balance]
             amount       [:get-in [:wallet/send-transaction :amount]]
@@ -114,7 +122,7 @@
           [react/view wallet.styles/choose-participant-container
            [components/choose-recipient {:address  to-address
                                          :name     to-name
-                                         :on-press #(re-frame/dispatch [:navigate-to :choose-recipient])}]]
+                                         :on-press request-camera-permissions}]]
           [react/view wallet.styles/choose-wallet-container
            [components/choose-wallet]]
           [react/view wallet.styles/amount-container
