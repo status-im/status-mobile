@@ -12,7 +12,8 @@
             [status-im.utils.transducers :as transducers]
             [status-im.utils.async :as async-util]
             [status-im.react-native.js-dependencies :as rn-dependencies]
-            [status-im.native-module.module :as module]))
+            [status-im.native-module.module :as module]
+            [status-im.utils.config :as config]))
 
 ;; if StatusModule is not initialized better to store
 ;; calls and make them only when StatusModule is ready
@@ -54,9 +55,16 @@
 (defn init-jail []
   (when status
     (call-module
-     (fn []
-       (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
-         (.initJail status init-js #(log/debug "jail initialized")))))))
+      (fn []
+        (let [init-js     (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "'; ")
+              init-js'    (if config/jsc-enabled?
+                            (str init-js js-res/web3)
+                            init-js)
+              log-message (str (if config/jsc-enabled?
+                                 "JavaScriptCore"
+                                 "OttoVM")
+                               " jail initialized")]
+          (.initJail status init-js' #(log/debug log-message)))))))
 
 (defonce listener-initialized (atom false))
 
@@ -138,8 +146,11 @@
               cb      (fn [jail-result]
                         (let [result (-> jail-result
                                          types/json->clj
-                                         (assoc :bot-id jail-id))]
-                          (callback result)))]
+                                         (assoc :bot-id jail-id))
+                              result' (if config/jsc-enabled?
+                                        (update result :result types/json->clj)
+                                        result)]
+                          (callback result')))]
           (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 
 ;; We want the mainting (time) windowed queue of all calls to the jail

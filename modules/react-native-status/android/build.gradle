@@ -15,6 +15,7 @@ android {
 dependencies {
     compile 'com.facebook.react:react-native:+'
     compile 'com.instabug.library:instabug:3+'
+    compile 'com.github.ericwlange:AndroidJSCore:3.0.1'
     compile 'status-im:function:0.0.1'
     compile(group: 'status-im', name: 'status-go', version: 'develop-g6927638', ext: 'aar')
 }
