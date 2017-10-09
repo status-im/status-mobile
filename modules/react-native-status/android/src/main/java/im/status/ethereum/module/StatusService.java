@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.*;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import java.util.concurrent.CountDownLatch;
 
 import java.lang.ref.WeakReference;
 
@@ -37,6 +38,8 @@ public class StatusService extends Service {
         }
     }
 
+    private static CountDownLatch applicationMessengerIsSet = new CountDownLatch(1);
+
     private final Messenger serviceMessenger = new Messenger(new IncomingHandler(this));
 
     private static Messenger applicationMessenger = null;
@@ -44,6 +47,7 @@ public class StatusService extends Service {
     private boolean handleMessage(Message message) {
         Log.d(TAG, "Received service message." + message.toString());
         applicationMessenger = message.replyTo;
+	applicationMessengerIsSet.countDown();
 
         return true;
     }
@@ -56,7 +60,12 @@ public class StatusService extends Service {
 
         Message replyMessage = Message.obtain(null, 0, 0, 0, null);
         replyMessage.setData(replyData);
-        sendReply(applicationMessenger, replyMessage);
+	try {
+	    applicationMessengerIsSet.await();
+	    sendReply(applicationMessenger, replyMessage);
+	} catch(InterruptedException e) {
+	    Log.d(TAG, "Interrupted during event signalling.");
+	}
     }
 
     @Nullable
