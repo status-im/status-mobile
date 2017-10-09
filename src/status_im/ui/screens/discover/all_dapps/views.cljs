@@ -57,8 +57,7 @@
       [react/view styles/all-dapps-container
        [toolbar/toolbar2 {}
         toolbar/default-nav-back
-        ;; TODO(oskarth): Lowercase and wrong style for some reason
-        [react/view [react/text :t/dapps]]]
+        [toolbar/content-title (i18n/label :t/dapps)]]
        [list/flat-list {:data                    (vals all-dapps)
                         :render-fn               render-dapp
                         :num-columns             3
