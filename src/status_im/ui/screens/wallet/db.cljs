@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.wallet.db
-  (:require [cljs.spec.alpha :as spec]
+  (:require [clojure.string :as string]
+            [cljs.spec.alpha :as spec]
+            [status-im.i18n :as i18n]
             status-im.ui.screens.wallet.request.db
             status-im.ui.screens.wallet.send.db
-            [status-im.i18n :as i18n]
-            [clojure.string :as string]))
+            [status-im.utils.money :as money]))
 
 ;; (angusiguess) If we add more error types we can treat them as 'one-of' the following
 (spec/def :wallet/error #{:error})
@@ -20,22 +21,19 @@
 ;; TODO(oskarth): spec for balance as BigNumber
 ;; TODO(oskarth): Spec for prices as as: {:from ETH, :to USD, :price 290.11, :last-day 304.17}
 
-(defn get-amount-validation-error [amount web3]
-  (let [amount' (string/replace amount #"," ".")
-        amount-splited (string/split amount' #"[.]")]
-    (cond
-      (or (nil? amount) (= amount "") (re-matches #"0[,.]0*$" amount))
-      nil
+(defn- empty-amount? [amount]
+  (or (nil? amount) (= amount "") (= amount "0") (re-matches #"0[,.]0*$" amount)))
 
-      (= amount "0")
-      (i18n/label :t/validation-amount-invalid)
+(defn- too-precise-amount? [amount]
+  (let [amount-splited (string/split amount #"[.]")]
+    (and (= (count amount-splited) 2) (> (count (last amount-splited)) 18))))
 
-      (or (js/isNaN (js/parseFloat amount'))
-          (try (when (<= (.toWei web3 amount' "ether") 0) true)
-               (catch :default err true)))
-      (i18n/label :t/validation-amount-invalid-number)
+(defn get-amount-validation-error [amount]
+  (when-not (empty-amount? amount)
+    (let [normalized-amount (money/normalize amount)]
+      (cond
+        (not (money/valid? normalized-amount))
+        (i18n/label :t/validation-amount-invalid-number)
 
-      (and (= (count amount-splited) 2) (> (count (last amount-splited)) 18))
-      (i18n/label :t/validation-amount-is-too-precise)
-
-      :else nil)))
+        (too-precise-amount? normalized-amount)
+        (i18n/label :t/validation-amount-is-too-precise)))))

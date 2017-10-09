@@ -23,13 +23,12 @@
 ;; Toolbar
 
 (def toolbar-title-container
-  {:flex-direction :row
-   :padding-left   24})
+  {:flex-direction :row})
 
 (def toolbar-title-text
-  {:color        styles/color-white
-   :font-size    17
-   :margin-right 4})
+  {:flex      -1
+   :color     styles/color-white
+   :font-size 17})
 
 (def toolbar-icon
   {:width  24
@@ -107,7 +106,10 @@
 (defstyle main-button-text
   {:padding-vertical   13
    :padding-horizontal nil
-   :android            {:letter-spacing 0.46}})
+   :android            {:font-size      13
+                        :letter-spacing 0.46}
+   :ios                {:font-size      15
+                        :letter-spacing -0.2}})
 
 ;; Assets section
 

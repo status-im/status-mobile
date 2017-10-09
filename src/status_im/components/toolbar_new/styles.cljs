@@ -9,16 +9,20 @@
 (def toolbar-icon-height 24)
 (def toolbar-icon-spacing 24)
 
+;; TODO remove when toolbar will be replaced by toolbar2
 (defn toolbar-wrapper [background-color flat?]
   {:background-color (or background-color toolbar-background1)
    :elevation        (if flat? 0 2)})
 
-(defstyle toolbar
-  {:flex-direction     :row
-   :align-items        :center
-   :justify-content    :space-between
-   :android            {:height 55}
-   :ios                {:height 56}})
+(defnstyle toolbar [background-color flat?]
+  {:flex             0
+   :flex-direction   :row
+   :align-items      :center
+   :justify-content  :space-between
+   :background-color (or background-color toolbar-background1)
+   :elevation        (if flat? 0 2)
+   :android          {:height 55}
+   :ios              {:height 56}})
 
 (defnstyle toolbar-nav-actions-container
   [actions]
@@ -47,7 +51,9 @@
 (def toolbar-border
   (get-in p/platform-specific [:component-styles :toolbar-border]))
 
-(def toolbar-actions {:flex-direction :row})
+(def toolbar-actions
+  {:flex           0
+   :flex-direction :row})
 
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction :row}

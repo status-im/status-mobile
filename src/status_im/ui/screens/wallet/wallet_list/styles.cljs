@@ -41,17 +41,19 @@
 ;; List item ;;
 ;;;;;;;;;;;;;;;
 
-(defnstyle wallet-item [color]
+(defstyle wallet-item
   {:flex             1
    :flex-direction   :row
    :align-items      :center
    :padding          16
-   :background-color (get wallet-colors color)
    :margin-bottom    12
    :android          {:border-radius 4
                       :padding-right 12}
    :ios              {:border-radius 8
                       :padding-right 8}})
+
+(def active-wallet-item
+  {:background-color (get wallet-colors :blue-1)})
 
 (def wallet-info
   {:flex-grow 1})

@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.send.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re-frame]
             [status-im.components.animation :as animation]
             [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.components.react :as react]
@@ -93,8 +92,8 @@
        [components/button-text (i18n/label :t/transactions-sign-transaction)]
        [vector-icons/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]]))
 
-(defn- sufficient-funds? [amount balance]
-  (<= amount (money/wei->ether balance)))
+(defn- sufficient-funds? [amount-in-eth balance]
+  (<= (money/str->float amount-in-eth) (money/wei->ether balance)))
 
 (defn request-camera-permissions []
   (when platform/android?
@@ -131,8 +130,7 @@
                                 (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
              :input-options {:auto-focus     true
                              :default-value  amount
-                             :on-change-text #(let [value (string/trim %)]
-                                                (re-frame/dispatch [:wallet/set-and-validate-amount value]))}}]
+                             :on-change-text #(re-frame/dispatch [:wallet/set-and-validate-amount %])}}]
            [react/view wallet.styles/choose-currency-container
             [components/choose-currency wallet.styles/choose-currency]]]]]
         [components/separator]

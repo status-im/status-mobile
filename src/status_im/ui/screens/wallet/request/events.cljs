@@ -14,7 +14,7 @@
 
 (handlers/register-handler-fx
   :wallet-validate-request-amount
-  (fn [{{:keys [web3] :wallet/keys [request-transaction] :as db} :db} _]
+  (fn [{{:wallet/keys [request-transaction] :as db} :db} _]
     (let [amount (:amount request-transaction)
-          error (wallet.db/get-amount-validation-error amount web3)]
+          error (wallet.db/get-amount-validation-error amount)]
       {:db (assoc-in db [:wallet/request-transaction :amount-error] error)})))

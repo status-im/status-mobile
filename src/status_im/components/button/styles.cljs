@@ -36,16 +36,17 @@
          (border position)))
 
 (defnstyle button-text [disabled?]
-  {:font-size          15
-   :font-weight        "normal"
+  {:font-weight        :normal
    :color              styles/color-white
    :padding-horizontal 16
    :android            (merge
-                         {:padding-vertical   10
-                          :letter-spacing     0.2}
+                         {:font-size          14
+                          :padding-vertical   10
+                          :letter-spacing     0.5}
                          (when disabled? {:opacity 0.4}))
    :ios                (merge
-                         {:padding-vertical 13
+                         {:font-size        15
+                          :padding-vertical 9
                           :letter-spacing   -0.2}
                          (when disabled? {:opacity 0.6}))})
 
