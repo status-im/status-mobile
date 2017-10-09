@@ -131,26 +131,19 @@
 
 (def all-dapps-container
   {:flex             1
-   :flex-direction   :row
-   :flex-grow        1
    :background-color toolbar-background2})
 
-(def all-dapps-list
-  {:background-color styles/color-white
-   :flex             1
-   :flex-wrap        "wrap"
-   :padding          4
-   :margin           4
-   :flex-direction   :row})
+(def all-dapps-flat-list
+  {:justify-content  :center
+   :flex-direction   :row
+   :flex-wrap        :wrap
+   :margin-top       8
+   :background-color styles/color-white})
 
-(def dapps-list-item
-  {:flex-direction   :column
-   ;; TODO(oskarth): Not straight columns and rows
-   ;; :border-radius 4
-   ;; :border-width  4
-   ;; :border-color  "red"
-   :margin           4
-   :padding          4})
+(def all-dapps-flat-list-item
+  {:margin 10
+   :width  100
+   :height 100})
 
 (def dapps-list-item-second-row
   {:flex    1
@@ -173,7 +166,10 @@
   {:flex-direction :column
    :padding        4
    :margin         4
-   :align-items    :center})
+   :align-items    :center
+   :ios            {:padding-top     0
+                    :bottom          -4
+                    :justify-content :flex-end}})
 
 (def dapp-preview-container
   {:background-color styles/color-white
@@ -225,8 +221,8 @@
    :height 17})
 
 (def discover-container
-  {:flex            1
-   :backgroundColor styles/color-white})
+  {:flex             1
+   :background-color styles/color-white})
 
 (def list-container
   {:flex 1})
