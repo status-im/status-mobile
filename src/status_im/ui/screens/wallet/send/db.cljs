@@ -16,10 +16,11 @@
 (spec/def ::width double?)
 (spec/def ::camera-dimensions (spec/keys :req-un [::height ::width]))
 (spec/def ::camera-flashlight #{:on :off})
+(spec/def ::camera-permitted? boolean?)
 (spec/def ::in-progress? boolean?)
 
 (spec/def :wallet/send-transaction (allowed-keys
                                      :opt-un [::amount ::to-address ::to-name ::amount-error ::password
                                               ::waiting-signal? ::signing? ::transaction-id ::later?
                                               ::camera-dimensions ::camera-flashlight ::in-progress?
-                                              ::wrong-password?]))
+                                              ::wrong-password? ::camera-permitted?]))
