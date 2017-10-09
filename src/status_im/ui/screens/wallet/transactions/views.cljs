@@ -76,7 +76,7 @@
     (:postponed :pending)   (transaction-icon :icons/arrow-right styles/color-gray4-transparent styles/color-gray7)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash to from type value symbol] :as transaction}]
+(defn render-transaction [{:keys [hash from-contact to-contact to from type value symbol] :as transaction}]
   [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
    [react/view
     [list/item
@@ -84,8 +84,8 @@
      [list/item-content
       (money/wei->str :eth value)
       (if (inbound? type)
-        (str (i18n/label :t/from) " " from)
-        (str (i18n/label :t/to) " " to))
+        (str (i18n/label :t/from) " " from-contact " " from)
+        (str (i18n/label :t/to) " " to-contact " " to))
       (when (unsigned? type)
         [action-buttons transaction])]
      [list/item-icon {:icon :icons/forward
@@ -239,12 +239,19 @@
      [react/text {:style transactions.styles/details-item-value} (str value)]
      [react/text {:style transactions.styles/details-item-extra-value} (str extra-value)]]]))
 
-(defn details-list [{:keys [block hash from from-wallet to to-wallet gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
+(defn details-list [{:keys [block hash
+                            from from-wallet from-contact
+                            to to-wallet to-contact
+                            gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
   [react/view {:style transactions.styles/details-block}
    [details-list-row :t/block block]
    [details-list-row :t/hash hash]
-   [details-list-row :t/from (or from-wallet from) (when from-wallet from)]
-   [details-list-row :t/to (or to-wallet to) (when to-wallet to)]
+   [details-list-row :t/from
+    (or from-wallet from-contact from)
+    (when (or from-wallet from-contact) from)]
+   [details-list-row :t/to
+    (or to-wallet to-contact to)
+    (when (or to-wallet to-contact) to)]
    [details-list-row :t/gas-limit gas-limit]
    [details-list-row :t/gas-price gas-price-gwei gas-price-eth]
    [details-list-row :t/gas-used gas-used]
