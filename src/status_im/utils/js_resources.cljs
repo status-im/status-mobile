@@ -49,3 +49,6 @@
 
 (defn local-storage-data [data]
   (str "var localStorageData = " (or data "{}") ";"))
+
+(defn network-id [id]
+  (str "status.ethereumNetworkId = " (or id "null") "; "))

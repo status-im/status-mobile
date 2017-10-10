@@ -493,16 +493,34 @@ var phoneConfig = {
 status.response(phoneConfig);
 status.command(phoneConfig);
 
-var faucets = [
-    /*{
-     name: "Ethereum Ropsten Faucet",
-     url: "http://faucet.ropsten.be:3001"
-     },*/
+var ropstenNetworkId = 3;
+var rinkebyNetworkId = 4;
+
+var ropstenFaucets = [
     {
         name: "Status Testnet Faucet",
         url: "http://46.101.129.137:3001",
     }
 ];
+
+var rinkebyFaucets = [
+    {
+        name: "Status Rinkeby Faucet",
+        url: "not specified yet",
+    }
+];
+
+function getFaucets(networkId) {
+    if (networkId == ropstenNetworkId) {
+        return ropstenFaucets;
+    } else if (networkId == rinkebyNetworkId) {
+        return rinkebyFaucets;
+    } else {
+        return [];
+    }
+}
+
+var faucets = getFaucets(status.ethereumNetworkId);
 
 function faucetSuggestions(params) {
     var suggestions = faucets.map(function (entry) {
@@ -535,49 +553,55 @@ function faucetSuggestions(params) {
     return {markup: view};
 }
 
-status.command({
-    name: "faucet",
-    title: I18n.t('faucet_title'),
-    description: I18n.t('faucet_description'),
-    color: "#7099e6",
-    registeredOnly: true,
-    params: [{
-        name: "url",
-        type: status.types.TEXT,
-        suggestions: faucetSuggestions,
-        placeholder: I18n.t('faucet_placeholder')
-    }],
-    preview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                params.url
-            )
-        };
-    },
-    shortPreview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                I18n.t('faucet_title') + ": " + params.url
-            )
-        };
-    },
-    validator: function (params, context) {
-        var f = faucets.map(function (entry) {
-            return entry.url;
-        });
+var faucetCommandConfig =
+    {
+        name: "faucet",
+        title: I18n.t('faucet_title'),
+        description: I18n.t('faucet_description'),
+        color: "#7099e6",
+        registeredOnly: true,
+        params: [{
+            name: "url",
+            type: status.types.TEXT,
+            suggestions: faucetSuggestions,
+            placeholder: I18n.t('faucet_placeholder')
+        }],
+        preview: function (params) {
+            return {
+                markup: status.components.text(
+                    {},
+                    params.url
+                )
+            };
+        },
+        shortPreview: function (params) {
+            return {
+                markup: status.components.text(
+                    {},
+                    I18n.t('faucet_title') + ": " + params.url
+                )
+            };
+        },
+        validator: function (params, context) {
+            var f = faucets.map(function (entry) {
+                return entry.url;
+            });
 
-        if (f.indexOf(params.url) == -1) {
-            var error = status.components.validationMessage(
-                I18n.t('faucet_incorrect_title'),
-                I18n.t('faucet_incorrect_description')
-            );
+            if (f.indexOf(params.url) == -1) {
+                var error = status.components.validationMessage(
+                    I18n.t('faucet_incorrect_title'),
+                    I18n.t('faucet_incorrect_description')
+                );
 
-            return {markup: error};
+                return {markup: error};
+            }
         }
     }
-});
+;
+
+if (faucets.length > 0) {
+    status.command(faucetCommandConfig);
+}
 
 function debugSuggestions(params) {
     var suggestions = ["On", "Off"].map(function (entry) {
