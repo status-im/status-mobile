@@ -5,12 +5,10 @@
             [status-im.components.react :as react]
             [status-im.components.list.views :as list]
             [status-im.components.chat-icon.screen :as chat-icon]
-            [status-im.components.carousel.carousel :as carousel]
             [status-im.ui.screens.discover.components.views :as discover-components]
             [status-im.ui.screens.discover.styles :as styles]
             [status-im.i18n :as i18n]
-            [status-im.components.toolbar-new.view :as toolbar]
-            [taoensso.timbre :as log]))
+            [status-im.components.toolbar-new.view :as toolbar]))
 
 (defn navigate-to-dapp [dapp]
   (do (re-frame/dispatch [:set :discover-current-dapp dapp])
@@ -40,14 +38,11 @@
     :t/all
     #(re-frame/dispatch [:navigate-to :discover-all-dapps])]
    (if (seq dapps)
-     ;; TODO(oskarth): Make this carousel show more dapps at a time
-     [carousel/carousel {:page-style styles/carousel-page-style
-                         :count      (count dapps)}
-      (for [[_ dapp] dapps]
-        ^{:key (str (:name dapp))}
-        [react/touchable-highlight {:on-press #(navigate-to-dapp dapp)}
-         [react/view styles/dapp-preview-content
-          [dapp-item dapp]]])]
+     ;; TODO(oskarth): Too wide margins bug
+     [list/flat-list {:data                    (vals dapps)
+                      :render-fn               render-dapp
+                      :horizontal              true
+                      :content-container-style styles/all-dapps-flat-list}]
      [react/text (i18n/label :t/none)])])
 
 (defview main []
