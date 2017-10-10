@@ -103,7 +103,7 @@
    :error-incorrect-name                  "Please select another name"
    :error-incorrect-email                 "Incorrect e-mail"
    :profile-testnet-icon                  "Testnet"
-   :profile-testnet-text                  "Ropsten Testnet Only. Please do not send real ETH or SNT to your address"
+   :profile-testnet-text                  "Testnet Only. Please do not send real ETH or SNT to your address"
 
    ;;make_photo
    :image-source-title                    "Profile image"
