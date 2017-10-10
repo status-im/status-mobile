@@ -251,7 +251,7 @@
                   {:text (i18n/label :t/open-on-etherscan) :value #(.openURL react/linking url)}])])
 
 (defview transaction-details []
-  (letsubs [{:keys [hash url type] :as transactions} [:wallet.transactions/transaction-details]
+  (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations                            [:wallet.transactions.details/confirmations]
             confirmations-progress                   [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style styles/flex}
@@ -259,9 +259,11 @@
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]
-      [toolbar/actions (details-action hash url)]]
-     [react/scroll-view {:style styles/main-container}
-      [details-header transactions]
-      [details-confirmations confirmations confirmations-progress]
-      [react/view {:style transactions.styles/details-separator}]
-      [details-list transactions]]]))
+      (when transaction [toolbar/actions (details-action hash url)])]
+     (if transaction
+       [react/scroll-view {:style styles/main-container}
+        [details-header transaction]
+        [details-confirmations confirmations confirmations-progress]
+        [react/view {:style transactions.styles/details-separator}]
+        [details-list transaction]]
+       [empty-text (i18n/label :t/unsigned-transaction-expired)])]))
