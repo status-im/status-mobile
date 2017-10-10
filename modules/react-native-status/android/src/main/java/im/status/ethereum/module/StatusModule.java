@@ -38,6 +38,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ServiceConnector status = null;
     private ExecutorService executor = null;
     private boolean debug;
+    private Jail jail = new Jail();
 
     StatusModule(ReactApplicationContext reactContext, boolean debug) {
         super(reactContext);
@@ -465,7 +466,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
             @Override
             public void run() {
-                Statusgo.InitJail(js);
+                //Statusgo.InitJail(js);
+                jail.initJail(js);
 
                 callback.invoke(false);
             }
@@ -485,7 +487,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
             @Override
             public void run() {
-                String res = Statusgo.Parse(chatId, js);
+                //String res = Statusgo.Parse(chatId, js);
+                String res = jail.parseJail(chatId, js);
+                Log.d(TAG, res);
                 Log.d(TAG, "endParseJail");
                 callback.invoke(res);
             }
@@ -507,7 +511,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 Log.d(TAG, "startCallJail");
-                String res = Statusgo.Call(chatId, path, params);
+                //String res = Statusgo.Call(chatId, path, params);
+                String res = jail.callJail(chatId, path, params);
                 Log.d(TAG, "endCallJail");
                 callback.invoke(res);
             }
