@@ -314,8 +314,10 @@
                                                          :message data}])
       "handler-result" (let [orig-params (:origParams data)]
                          ;; TODO(janherich): figure out and fix chat_id from event
-                         (dispatch [:command-handler! (:chat-id orig-params) orig-params
-                                    {:result {:returned (dissoc data :origParams)}}])) 
+                         (dispatch [:command-handler!
+                                    (:chat-id orig-params)
+                                    orig-params
+                                    (dissoc data :origParams)])) 
       (log/debug "Unknown jail signal " event))))
 
 (register-handler-fx

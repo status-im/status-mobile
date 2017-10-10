@@ -8,8 +8,7 @@
             [status-im.utils.datetime :as time]
             [re-frame.core :refer [enrich after dispatch path]]
             [status-im.chat.utils :as cu]
-            [status-im.constants :refer [console-chat-id
-                                         wallet-chat-id
+            [status-im.constants :refer [console-chat-id 
                                          text-content-type
                                          content-type-log-message
                                          content-type-command
@@ -79,7 +78,7 @@
 
 (register-handler :prepare-command!
   (u/side-effect!
-    (fn [{:keys [current-public-key network-status] :as db}
+    (fn [{:keys [current-public-key] :as db}
          [_ add-to-chat-id {{:keys [handler-data
                                     command]
                              :as   content} :command
@@ -92,29 +91,28 @@
                                (map :name))
             command'      (->> (prepare-command current-public-key chat-id clock-value request content)
                                (cu/check-author-direction db chat-id))]
-        (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
-        (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
-        (when (cu/console? chat-id)
-          (dispatch [:console-respond-command params]))
-        (when (and (= "send" (:name command))
-                   (not= add-to-chat-id wallet-chat-id))
-          (let [ct       (if request
-                           c/content-type-wallet-request
-                           c/content-type-wallet-command)
-                content' (assoc content :id (random/id)
-                                        :content-type ct)
-                params'  (assoc params :command content')]
-            (dispatch [:prepare-command! wallet-chat-id params'])))))))
+        ;; we need to request command preview before further command message flow
+        (dispatch [:request-command-message-data
+                   (assoc command'
+                          :chat-id add-to-chat-id
+                          :on-requested (fn [_]
+                                          [::send-command!
+                                           add-to-chat-id
+                                           (assoc params :command command')
+                                           hidden-params]))
+                   :preview])))))
 
 (register-handler ::send-command!
   (u/side-effect!
-    (fn [_ [_ add-to-chat-id params hidden-params]] 
+    (fn [{:keys [network-status]} [_ add-to-chat-id params hidden-params]]
+      (dispatch [:update-message-overhead! add-to-chat-id network-status])
+      (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
+      (when (cu/console? add-to-chat-id)
+        (dispatch [:console-respond-command params]))
       (dispatch [::add-command add-to-chat-id params])
-      (dispatch [::save-command! add-to-chat-id params hidden-params])
-      (when (not= add-to-chat-id wallet-chat-id)
-        (dispatch [::dispatch-responded-requests! params])
-        (dispatch [::send-command-protocol! params])))))
+      (dispatch [::save-command! add-to-chat-id params hidden-params]) 
+      (dispatch [::dispatch-responded-requests! params])
+      (dispatch [::send-command-protocol! params]))))
 
 (register-handler ::add-command
   (after (fn [_ [_ _ {:keys [handler]}]]
@@ -157,12 +155,11 @@
             ;; TODO what's actually semantic difference between `:parameters` and `:context`
             ;; and do we have some clear API for both ? seems very messy and unorganized now
             jail-params  {:parameters params
-                          :context    (cond-> {:from            address
-                                               :to              to
-                                               :current-account (get accounts current-account-id)
-                                               :message-id      id}
-                                        (:async-handler command)
-                                        (assoc :orig-params orig-params))}] 
+                          :context    {:from            address
+                                       :to              to
+                                       :current-account (get accounts current-account-id)
+                                       :message-id      id
+                                       :orig-params orig-params}}] 
         (dispatch
           [:check-and-load-commands!
            identity
@@ -170,11 +167,18 @@
               {:jail-id  identity
                :path     [handler-type name :handler]
                :params   jail-params
-               :callback (if (:async-handler command) ; async handler, we ignore return value
-                           (fn [_]
-                             (log/debug "Async command handler called"))
-                           (fn [res]
-                             (dispatch [:command-handler! chat-id orig-params res])))})])))))
+               :callback (fn [jail-result]
+                           (let [{:keys [flow hook data] :as returned} (get-in jail-result [:result :returned])]
+                             (log/debug (str "Command-handler returned: " jail-result))
+                             (cond
+                               (= "jailAsync" flow)
+                               (log/debug "Awaiting command handler result from jail")
+
+                               (= "appAsync" flow)
+                               (dispatch [(keyword hook) chat-id orig-params data])
+
+                               :else
+                               (dispatch [:command-handler! chat-id orig-params returned]))))})])))))
 
 (register-handler :prepare-message
   (u/side-effect!
