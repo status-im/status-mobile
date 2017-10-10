@@ -107,11 +107,11 @@
   ::contacts-synced
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{:keys [db random-id] :as cofx} [contacts]]
-    (-> db
+    (-> {:db db}
         (as-> fx
-            (merge fx
-                   (accounts-events/account-update (assoc cofx :db (:db fx)) {:signed-up? true})
-                   {:dispatch (sign-up/contacts-synchronised-event random-id)})))))
+              (merge fx
+                     (accounts-events/account-update (assoc cofx :db (:db fx)) {:signed-up? true})
+                     {:dispatch (sign-up/contacts-synchronised-event random-id)})))))
 
 (handlers/register-handler-fx
   ::http-request-failure
