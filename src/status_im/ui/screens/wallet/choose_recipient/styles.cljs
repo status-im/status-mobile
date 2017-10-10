@@ -62,7 +62,7 @@
    :border-color               "rgba(255, 255, 255, 0.3)"})
 
 (def qr-container
-  {:flex              1})
+  {:flex           1})
 
 (def preview
   {:flex            1
