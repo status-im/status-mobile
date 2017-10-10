@@ -151,7 +151,7 @@
     (if (not= page-width state-page-width)
       (do
         (reagent.core/set-state component {:pageWidth page-width})
-        (.setState component {:layout (.-layout (.-nativeEvent event))}))
+        (.setState component (clj->js {:layout (.-layout (.-nativeEvent event))})))
       (scroll-to component page-position 0))))
 
 (defn get-pages [component data children]
