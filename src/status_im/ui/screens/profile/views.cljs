@@ -205,11 +205,11 @@
 
 (defview my-profile []
   (letsubs [{:keys [status] :as current-account} [:get-current-account]
-            network [:get :network]]
+            testnet? [:testnet?]]
     [react/view styles/profile
      [status-bar]
      [my-profile-toolbar]
-     (when (= network "testnet")
+     (when testnet?
        [testnet-only])
      [react/scroll-view
       [react/view styles/profile-form
@@ -230,13 +230,13 @@
   (letsubs [{:keys [pending?
                     status
                     whisper-identity]
-             :as contact} [:contact]
-            chat-id [:get :current-chat-id]
-            network [:get :network]]
+             :as   contact} [:contact]
+            chat-id  [:get :current-chat-id]
+            testnet? [:testnet?]]
     [react/view styles/profile
      [status-bar]
      [profile-toolbar contact]
-     (when (= network "testnet")
+     (when testnet?
        [testnet-only])
      [react/scroll-view
       [react/view styles/profile-form
