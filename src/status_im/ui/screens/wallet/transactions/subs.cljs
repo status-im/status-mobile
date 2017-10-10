@@ -132,19 +132,20 @@
   (fn [[unsigned-transactions transactions current-transaction network]]
     (let [transactions (merge transactions unsigned-transactions)
           {:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)]
-      (merge transaction
-             {:gas-price-eth  (money/wei->str :eth gas-price)
-              :gas-price-gwei (money/wei->str :gwei gas-price)
-              :date           (datetime/timestamp->long-date timestamp)}
-             (if (= type :unsigned)
-               {:block     (i18n/label :not-applicable)
-                :cost      (i18n/label :not-applicable)
-                :gas-limit (i18n/label :not-applicable)
-                :gas-used  (i18n/label :not-applicable)
-                :nonce     (i18n/label :not-applicable)
-                :hash      (i18n/label :not-applicable)}
-               {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
-                :url  (transactions/get-transaction-details-url network hash)})))))
+      (when transaction
+        (merge transaction
+               {:gas-price-eth  (money/wei->str :eth gas-price)
+                :gas-price-gwei (money/wei->str :gwei gas-price)
+                :date           (datetime/timestamp->long-date timestamp)}
+               (if (= type :unsigned)
+                 {:block     (i18n/label :not-applicable)
+                  :cost      (i18n/label :not-applicable)
+                  :gas-limit (i18n/label :not-applicable)
+                  :gas-used  (i18n/label :not-applicable)
+                  :nonce     (i18n/label :not-applicable)
+                  :hash      (i18n/label :not-applicable)}
+                 {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
+                  :url  (transactions/get-transaction-details-url network hash)}))))))
 
 (reg-sub :wallet.transactions.details/confirmations
   :<- [:wallet.transactions/transaction-details]

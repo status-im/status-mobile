@@ -325,6 +325,7 @@
    :transaction                           "Transaction"
    :unsigned-transactions                 "Unsigned transactions"
    :no-unsigned-transactions              "No unsigned transactions"
+   :unsigned-transaction-expired          "Unsigned transaction expired"
    :enter-password-transactions           {:one   "Confirm transaction by entering your password"
                                            :other "Confirm transactions by entering your password"}
    :status                                "Status"
@@ -420,7 +421,7 @@
 
 
 
-   ;network settings
+   ;; network settings
    :new-network                           "New network"
    :add-network                           "Add network"
    :add-new-network                       "Add new network"
