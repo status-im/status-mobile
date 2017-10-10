@@ -81,11 +81,12 @@
     [react/view {:style styles/wallet-container}
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view camera-flashlight]
-     [react/view {:style     styles/qr-container
-                  :on-layout #(let [layout (.. % -nativeEvent -layout)]
-                                (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-dimensions]
-                                                    {:width  (.-width layout)
-                                                     :height (.-height layout)}]))}
+            [react/view {:style         styles/qr-container
+                         :pointerEvents :none
+                         :on-layout     #(let [layout (.. % -nativeEvent -layout)]
+                                           (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-dimensions]
+                                                               {:width  (.-width layout)
+                                                                :height (.-height layout)}]))}
       (when (or platform/android?
                 camera-permitted?)
         [camera/camera {:style         styles/preview
