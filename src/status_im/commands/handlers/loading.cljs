@@ -13,7 +13,7 @@
             [status-im.i18n :refer [label]]
             [status-im.utils.homoglyph :as h]
             [status-im.utils.js-resources :as js-res]
-            [status-im.utils.random :as random] 
+            [status-im.utils.random :as random]
             [status-im.bots.constants :as bots-constants]
             [status-im.utils.datetime :as time]
             [status-im.data-store.local-storage :as local-storage]
@@ -75,21 +75,26 @@
   (hash file))
 
 (defn parse-commands!
-  [_ [{{:keys [whisper-identity]} :contact
-       :keys                      [callback]}
-      file]]
+  [{:networks/keys [networks]
+    :keys          [network]
+    :as            db}
+   [{{:keys [whisper-identity]} :contact
+     :keys                      [callback]}
+    file]]
   (let [data             (local-storage/get-data whisper-identity)
-        local-storage-js (js-res/local-storage-data data)]
+        local-storage-js (js-res/local-storage-data data)
+        network-id       (get-in networks [network :raw-config :NetworkId])
+        ethereum-id-js   (js-res/network-id network-id)]
     (status/parse-jail
-      whisper-identity (str local-storage-js file)
-      (fn [result]
-        (let [{:keys [error result]} (json->clj result)]
-          (log/debug "Parsing commands results: " error result)
-          (if error
-            (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
-            (do
-              (dispatch [::add-commands whisper-identity file result])
-              (when callback (callback)))))))))
+     whisper-identity (str local-storage-js ethereum-id-js file)
+     (fn [result]
+       (let [{:keys [error result]} (json->clj result)]
+         (log/debug "Parsing commands results: " error result)
+         (if error
+           (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
+           (do
+             (dispatch [::add-commands whisper-identity file result])
+             (when callback (callback)))))))))
 
 (defn validate-hash
   [db [_ file]]
