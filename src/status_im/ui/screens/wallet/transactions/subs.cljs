@@ -33,11 +33,11 @@
 
 (defn format-unsigned-transaction [{:keys [id] :as transaction}]
   (assoc transaction
-    :type           :unsigned
-    :confirmations  0
-    :symbol         "ETH"
-    ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
-    :hash           id))
+         :type           :unsigned
+         :confirmations  0
+         :symbol         "ETH"
+         ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
+         :hash           id))
 
 (reg-sub :wallet/unsigned-transactions
   (fn [db]
@@ -124,7 +124,8 @@
                 :cost      (i18n/label :not-applicable)
                 :gas-limit (i18n/label :not-applicable)
                 :gas-used  (i18n/label :not-applicable)
-                :nonce     (i18n/label :not-applicable)}
+                :nonce     (i18n/label :not-applicable)
+                :hash      (i18n/label :not-applicable)}
                {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
                 :url  (transactions/get-transaction-details-url network hash)})
              ;; TODO (yenda) proper wallet logic when wallet switching is implemented
@@ -146,16 +147,14 @@
         100
         (* 100 (/ confirmations max-confirmations))))))
 
-(reg-sub
-  :contacts-by-address
+(reg-sub :contacts-by-address
   (fn [db]
     (into {} (map (fn [[_ {:keys [address] :as contact}]]
                     (when address
                       [address contact]))
                   (:contacts/contacts db)))))
 
-(reg-sub
-  :contact-by-address
+(reg-sub :contact-by-address
   :<- [:contacts-by-address]
   (fn [contacts [_ address]]
     (let [address' (when address
