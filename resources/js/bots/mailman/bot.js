@@ -62,8 +62,8 @@ status.command({
             {
                 source: {uri: uri},
                 style: {
-                    borderRadius: 5
-                    marginTop: 12
+                    borderRadius: 5,
+                    marginTop: 12,
                     height:    58
                 }
             }

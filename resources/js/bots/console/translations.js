@@ -300,7 +300,7 @@ I18n.translations = {
         password_placeholder2: '確認のためにパスワードを再入力してください',
         password_error: 'パスワードは6文字以上にしてください。',
         password_error1: 'パスワードが一致しません。',
-        password_validation_title: 'パスワード'
+        password_validation_title: 'パスワード',
 
         faucet_incorrect_title: 'フォーセットが違います',
         faucet_incorrect_description: '一覧の中から一つだけ選択してください',

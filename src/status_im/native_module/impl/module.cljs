@@ -54,7 +54,7 @@
   (when status
     (call-module
       (fn []
-        (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
+        (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "'; " js-res/web3 )]
           (.initJail status init-js #(log/debug "jail initialized")))))))
 
 (defonce listener-initialized (atom false))
@@ -137,6 +137,8 @@
                                :locale rn-dependencies/i18n.locale)
                cb      (fn [r]
                          (let [{:keys [result] :as r'} (t/json->clj r)
+                               result (t/json->clj result)
+                               r'     (assoc r' :result result)
                                {:keys [messages]} result]
                            (log/debug r')
                            (doseq [{:keys [type message]} messages]
@@ -145,8 +147,8 @@
            (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 
 ;; TODO(rasom): temporal solution, should be fixed on status-go side
-(def check-raw-calls-interval 400)
-(def interval-between-calls 100)
+(def check-raw-calls-interval 20)
+(def interval-between-calls 20)
 ;; contains all calls to jail before with duplicates
 (def raw-jail-calls (atom '()))
 ;; contains only calls that passed duplication check
