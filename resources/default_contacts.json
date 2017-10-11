@@ -33,14 +33,8 @@
             "ru": "Кошелек"
         },
         "photo-path": "icon_wallet_avatar",
-        "add-chat?": true,
         "dapp?": true,
-        "groups": ["dapps"],
         "has-global-command?": true,
-        "dapp-url":
-        {
-          "en": "https://status.im/dapps/wallet/"
-        },
         "bot-url": "local://wallet-bot",
         "unremovable?": true
     },

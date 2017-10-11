@@ -180,11 +180,13 @@
         (let [chats            (->> all-stored-chats
                                     (map (fn [{:keys [chat-id] :as chat}]
                                            [chat-id (assoc chat :last-message (get-last-stored-message chat-id))]))
-                                    (into {}))]
+                                    (into {}))
+              ;;TODO temporary hide wallet chat, this code should be deleted after wallet contact will be deleted
+              chats' (dissoc chats "wallet")]
           (-> new-db
               (assoc-in [:message-data :preview] message-previews)
               (assoc :handler-data (handler-data/get-all))
-              (assoc :chats chats)
+              (assoc :chats chats')
               (init-console-chat true)
               (update :dispatch-n conj event)))))))
 
