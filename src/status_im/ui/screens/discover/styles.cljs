@@ -68,10 +68,8 @@
    :padding-right  9})
 
 (def separator
-  {:background-color "rgb(238, 241, 245)"
-   :height           2
-   :margin-top       2
-   :margin-bottom    2})
+  {:background-color "#eef2f5"
+   :height           3})
 
 ;; Popular list item
 
@@ -79,19 +77,19 @@
   {:flex             1
    :background-color :white
    :padding-top      18
-   :padding-left     16
-   })
+   :padding-left     16})
 
 (def popular-list-item
   {:flex-direction "column"
+   :padding-left 16
+   :padding-vertical 10
    :padding-bottom 16
-   :margin-right   10
+   :padding-right 16
    :top            1})
 
 (def popular-list-item-second-row
   {:flex            1
    :flex-direction  :row
-   :align-items     :center
    :justify-content :space-between
    :margin-bottom   5
    :padding-top     25})
@@ -99,6 +97,7 @@
 (def popular-list-item-name-container
   {:flex            0.3
    :flex-direction  :row
+   :align-items :center
    :justify-content :flex-start})
 
 (def popular-list-item-name
@@ -110,13 +109,15 @@
   {:flex-direction "column"})
 
 (def popular-list-chat-action
-  {:background-color "rgb(220, 214, 251)"
+  {:background-color "rgba(67, 96, 223, 0.2)"
    :flex-direction   :row
-   :border-radius    5
+   :align-items      :center
+   :border-radius    4
    :padding          4})
 
 (def popular-list-chat-action-text
-  {:color "rgb(110, 0, 228)"})
+  {:color "#4360df"
+   :margin-right 8})
 
 ;; discover_recent
 
@@ -124,8 +125,7 @@
   {:background-color toolbar-background2})
 
 (def recent-list
-  {:background-color :white
-   :padding-left     16})
+  {:background-color :white})
 
 ;; All dapps
 
@@ -223,10 +223,12 @@
 
 (def discover-container
   {:flex             1
-   :background-color styles/color-white})
+   :background-color "#eef2f5"})
 
 (def list-container
-  {:flex 1})
+  {:flex 1
+   :padding-top 3
+   :background-color "#eef2f5"})
 
 (def search-icon
   {:width  17
