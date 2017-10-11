@@ -135,7 +135,7 @@
            style]}]
   (let [style (merge (tst/toolbar-wrapper background-color false) style)]
     [rn/view {:style style}
-     [rn/view tst/toolbar
+     [rn/view tst/toolbar-old
       (when-not hide-nav?
         [rn/view (tst/toolbar-nav-actions-container actions)
          [nav-button (or nav-action (if modal? act/default-close act/default-back))]])
