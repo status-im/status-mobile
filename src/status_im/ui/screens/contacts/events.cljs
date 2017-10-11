@@ -278,10 +278,14 @@
                                                         (assoc :bot id
                                                                :type :command))]))
                                (into {}))
-          contacts (into {} contacts-list)]
-      {:db         (assoc db :contacts/contacts contacts
+          contacts (into {} contacts-list)
+          ;;TODO temporary hide wallet contact, this code should be deleted after wallet contact will be deleted
+          contacts' (if (get-in contacts "wallet")
+                      (assoc-in contacts ["wallet" :pending?] true)
+                      contacts)]
+      {:db         (assoc db :contacts/contacts contacts'
                           :global-commands global-commands)
-       :dispatch-n (mapv (fn [_ contact] [:watch-contact contact]) contacts)})))
+       :dispatch-n (mapv (fn [_ contact] [:watch-contact contact]) contacts')})))
 
 (defn add-contacts
   "Creates effects map for adding contacts"
