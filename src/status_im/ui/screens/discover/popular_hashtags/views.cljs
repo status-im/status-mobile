@@ -5,6 +5,7 @@
             [status-im.ui.screens.discover.components.views :as components]
             [status-im.components.toolbar-new.view :as toolbar]))
 
+;; TOOD(oskarth): These styles should be either generic or popular, not recent-*
 (defview discover-all-hashtags []
   (letsubs [current-account [:get-current-account]
             popular-tags    [:get-popular-tags 10]

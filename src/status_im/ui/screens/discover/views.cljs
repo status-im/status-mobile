@@ -129,7 +129,7 @@
       (i18n/label :t/public-chat-user-count {:count (:count item)})]]]])
 
 (defn public-chats-teaser []
-  [react/view {}
+  [react/view styles/public-chats-container
    [components/title :t/public-chats :t/soon #() false]
    [list/flat-list {:data      public-chats-mock-data
                     :render-fn render-public-chats-item}]])
