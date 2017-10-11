@@ -59,13 +59,34 @@
    :android {:line-height 22
              :font-size   16}})
 
-(defstyle discover-list-item-avatar-container
-  {:flex-direction :column
-   :ios            {:padding-top     0
-                    :bottom          -4
-                    :justify-content :flex-end}})
+(def discover-list-item-name-container
+  {:flex            0.3
+   :flex-direction  :row
+   :justify-content :flex-start
+   :align-items     :center})
 
-;; Popular
+(def discover-list-item-name
+  {:margin-left 7
+   :color       styles/color-black
+   :font-size   12})
+
+(def discover-list-item
+  {:flex-direction :column
+   :padding-bottom 16
+   :margin-right   10
+   :top            1})
+
+(def discover-list-item-second-row
+  {:flex            1
+   :flex-direction  :row
+   :align-items     :center
+   :justify-content :space-between
+   :margin-bottom   5
+   :padding-top     25})
+
+
+(defstyle discover-list-item-avatar-container
+  {:flex-direction :column})
 
 (def popular-container
   {:background-color toolbar-background2})
@@ -123,30 +144,6 @@
                       :margin-top    2
                       :margin-bottom 4
                       :margin-right  2}})
-
-(def popular-list-item
-  {:flex-direction :column
-   :padding-bottom 16
-   :margin-right   10
-   :top            1})
-
-(def popular-list-item-second-row
-  {:flex            1
-   :flex-direction  :row
-   :align-items     :center
-   :justify-content :space-between
-   :margin-bottom   5
-   :padding-top     25})
-
-(def popular-list-item-name-container
-  {:flex            0.3
-   :flex-direction  :row
-   :justify-content :flex-start})
-
-(def popular-list-item-name
-  {:margin-left 7
-   :color       styles/color-black
-   :font-size   12})
 
 (def popular-list-chat-action
   {:background-color styles/color-light-blue7
@@ -213,7 +210,8 @@
 
 (def dapp-preview-container
   {:background-color styles/color-white
-   :margin-top       16})
+   :margin-top       16
+   :margin-bottom    4})
 
 (def dapp-preview-content
   {:border-radius    4
@@ -262,7 +260,7 @@
 
 (def discover-container
   {:flex             1
-   :background-color styles/color-white})
+   :background-color styles/color-light-gray})
 
 (def list-container
   {:flex 1})
@@ -287,6 +285,9 @@
    :margin-bottom    4
    :margin-right     2
    :background-color :white})
+
+(def public-chats-container
+  {:background-color styles/color-white})
 
 (def public-chats-item-container
   {:flex-direction :row

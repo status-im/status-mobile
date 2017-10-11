@@ -55,23 +55,24 @@
     (let [{:keys [name photo-path whisper-id message-id status]} message
           {account-photo-path :photo-path
            account-address    :public-key
-           account-name       :name} current-account
-          me?        (= account-address whisper-id)]
+           account-name       :name}                             current-account
+          me?                                                    (= account-address whisper-id)]
       [react/view
-       [react/view styles/popular-list-item
+       [react/view styles/discover-list-item
         [view/status-view {:id     message-id
                            :style  styles/discover-item-status-text
                            :status status}]
-        [react/view styles/popular-list-item-second-row
-         [react/view styles/popular-list-item-name-container
+        [react/view styles/discover-list-item-second-row
+         [react/view styles/discover-list-item-name-container
           [react/view styles/discover-list-item-avatar-container
            [chat-icon/chat-icon
             (display-image me? account-photo-path contact-photo-path photo-path whisper-id)
             {:size 20}]]
-          [react/text {:style           styles/popular-list-item-name
+          [react/text {:style           styles/discover-list-item-name
                        :font            :medium
                        :number-of-lines 1}
            (display-name me? account-name contact-name name whisper-id)]]
+
          (when-not me?
            [react/touchable-highlight {:on-press #(re-frame/dispatch [:start-chat whisper-id])}
             [react/view styles/popular-list-chat-action
