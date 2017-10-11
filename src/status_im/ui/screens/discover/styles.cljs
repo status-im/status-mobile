@@ -40,19 +40,6 @@
   {:ios     {:uppercase? false}
    :android {:uppercase? true}})
 
-(defstyle tag-view
-  {:margin-horizontal 2
-   :ios     {:flex-direction   :column
-             :background-color styles/color-light-blue6
-             :border-radius    4
-             :border-width     1
-             :border-color     styles/color-light-blue6
-             :padding          6}
-   :android {:flex-direction   :column
-             :background-color styles/color-light-blue6
-             :border-radius    5
-             :padding          4}})
-
 (defstyle discover-item-status-text
   {:ios     {:font-size      14
              :letter-spacing -0.1}
@@ -156,10 +143,10 @@
 
 ;; discover_recent
 
-(def recent-container
+(def status-list-outer
   {:background-color toolbar-background2})
 
-(def recent-list
+(def status-list-inner
   {:background-color :white
    :padding-left     16})
 
@@ -230,25 +217,34 @@
    :border-bottom-width 1})
 
 (def discover-tag-container
-  {:flex            1
-   :backgroundColor styles/color-light-gray})
-
-(def tag-title-scroll
-  {:flex           1
-   :alignItems     :center
-   :justifyContent :center})
+  {:flex             1
+   :background-color styles/color-light-gray})
 
 (def tag-title-container
-  {:flex           0.2
-   :alignItems     :center
-   :justifyContent :center
-   :flex-direction :row})
+  {:height           68
+   :margin-left      16
+   :align-items      :center
+   :justify-content  :flex-start
+   :flex-direction   :row
+   :background-color styles/color-light-gray})
+
+(defstyle tag-view
+  {:margin-horizontal 2
+   :padding           10
+   :padding-bottom    8
+   :height            36
+   :background-color  styles/color-white
+   :justify-content   :center
+   :align-items       :center
+   :flex-direction    :column
+   :ios               {:border-radius 8
+                       :border-color  styles/color-light-blue6}
+   :android           {:border-radius 4}})
 
 (def tag-title
-  {:color          styles/color-blue
-   :font-size      14
-   :padding-right  5
-   :padding-bottom 2})
+  {:color            styles/color-blue4
+   :background-color styles/color-white
+   :font-size        14})
 
 (def icon-back
   {:width  8

@@ -3,9 +3,27 @@
   (:require [status-im.components.react :as react]
             [status-im.ui.screens.discover.styles :as styles]
             [status-im.ui.screens.discover.components.views :as components]
+            [status-im.components.list.views :as list]
+            [re-frame.core :as re-frame]
+            [status-im.i18n :as i18n]
             [status-im.components.toolbar-new.view :as toolbar]))
 
-;; TOOD(oskarth): These styles should be either generic or popular, not recent-*
+(defn render-tag [tag]
+  [react/touchable-highlight {:on-press #(do (re-frame/dispatch [:set :discover-search-tags [tag]])
+                                             (re-frame/dispatch [:navigate-to :discover-search-results]))}
+   [react/view styles/tag-view
+    [react/text {:style styles/tag-title
+                 :font  :default}
+     (str " #" tag)]]])
+
+(defn tags-menu [tags]
+  [react/view styles/tag-title-container
+   [list/flat-list {:data                              tags
+                    :render-fn                         render-tag
+                    :horizontal                        true
+                    :shows-horizontal-scroll-indicator false
+                    :separator?                        false}]])
+
 (defview discover-all-hashtags []
   (letsubs [current-account [:get-current-account]
             popular-tags    [:get-popular-tags 10]
@@ -13,11 +31,11 @@
     [react/view styles/discover-container
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
-      [react/view {} [react/text {} "All hashtags"]]]
-     [components/tags-menu (map :name popular-tags)]
+      [toolbar/content-title (i18n/label :t/popular-tags)]]
+     [tags-menu (map :name popular-tags)]
      [react/scroll-view styles/list-container
-      [react/view styles/recent-container
-       [react/view styles/recent-list
+      [react/view styles/status-list-outer
+       [react/view styles/status-list-inner
         (let [discoveries (map-indexed vector discoveries)]
           (for [[i {:keys [message-id] :as message}] discoveries]
             ^{:key (str "message-hashtag-" message-id)}
