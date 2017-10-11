@@ -107,6 +107,7 @@
 
 (def wallet-value
   {:padding-left   6
+   :flex-shrink    1
    :color          styles/color-white-transparent-5
    :font-size      15
    :letter-spacing -0.2})
