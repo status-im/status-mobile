@@ -1,17 +1,14 @@
-(ns ^{:doc    "todo"
-      :author "Goran Jovic"}
-status-im.ui.screens.discover.dapp-details.views
+(ns status-im.ui.screens.discover.dapp-details.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-    [status-im.components.react :as react]
-    [status-im.ui.screens.discover.components.views :as components]
-    [status-im.components.chat-icon.screen :as chat-icon.screen]
-    [status-im.components.common.common :as common]
-    [status-im.components.icons.vector-icons :as vector-icons]
-    [status-im.components.toolbar-new.view :as toolbar]
-    [status-im.ui.screens.discover.styles :as styles]
-    [status-im.i18n :as i18n]
-    [re-frame.core :as re-frame]))
+  (:require [status-im.components.react :as react]
+            [status-im.ui.screens.discover.components.views :as components]
+            [status-im.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.components.common.common :as common]
+            [status-im.components.icons.vector-icons :as vector-icons]
+            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.ui.screens.discover.styles :as styles]
+            [status-im.i18n :as i18n]
+            [re-frame.core :as re-frame]))
 
 (defn section [title content]
   [react/view styles/dapp-details-section-container

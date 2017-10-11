@@ -1,5 +1,7 @@
 (ns status-im.components.styles)
 
+;; TODO(oskarth): Make a palette of all these colors
+
 (def color-transparent "transparent")
 (def color-blue "#7099e6")
 (def color-blue2 "#5b6dee")
@@ -26,6 +28,7 @@
 (def color-gray8 "#6E777E")
 (def color-gray9 "#E9EBEC")
 (def color-gray10 "#9BA3A8")
+(def color-gray11 "#EEF1F5")
 (def color-dark "#49545d")
 (def color-steel "#838b91")
 (def color-white "white")
@@ -42,12 +45,17 @@
 (def color-light-blue3 "#a0bcf0")
 (def color-light-blue4 "#f1f4f5")
 (def color-light-blue5 "#d9dff9")
+(def color-light-blue6 "#e3ebfa")
+(def color-light-blue7 "#dcd6fb")
 (def color-dark-blue-1 "#252c4a")
 (def color-dark-blue-2 "#1f253f")
 (def color-dark-blue-3 "#191f37")
+(def color-dark-blue-4 "#6e00e4")
 (def color-light-gray "#EEF2F5")
 (def color-light-gray2 "#ececf0")
 (def color-light-gray3 "#e8ebec")
+(def color-light-gray4 "#eff2f3")
+(def color-light-gray5 "#D7D7D7")
 (def color-red "red")
 (def color-red-2 "#d84b4b")
 (def color-red-3 "#FFC1BD")

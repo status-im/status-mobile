@@ -4,6 +4,12 @@
             [status-im.utils.utils :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
+;; DEPRECATION NOTICE
+;;
+;; NOTE(oskarth): These component-styles are legacy and should be removed,
+;; please don't add or modify these styles. Instead, use defstyle macro to
+;; inline platform-specific styles in the appropriate namespace
+
 (def component-styles
   {:status-bar            {:default     {:height    20
                                          :bar-style "default"
