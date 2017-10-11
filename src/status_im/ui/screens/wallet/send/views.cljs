@@ -91,8 +91,8 @@
        [components/button-text (i18n/label :t/transactions-sign-transaction)]
        [vector-icons/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]]))
 
-(defn- sufficient-funds? [amount-in-eth balance]
-  (<= (money/str->float amount-in-eth) (money/wei->ether balance)))
+(defn sufficient-funds? [amount-in-eth balance]
+  (.greaterThanOrEqualTo balance (money/bignumber (money/to-wei amount-in-eth))))
 
 (defn request-camera-permissions []
   (when platform/android?
@@ -110,7 +110,7 @@
             to-address   [:get-in [:wallet/send-transaction :to-address]]
             to-name      [:get-in [:wallet/send-transaction :to-name]]
             in-progress? [:get-in [:wallet/send-transaction :in-progress?]]]
-    (let [sufficient-funds? (sufficient-funds? amount balance)]
+    (let [sufficient-funds? (or (nil? amount) (sufficient-funds? amount balance))]
       [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :wallet}]
