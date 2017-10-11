@@ -1,22 +1,20 @@
 (ns status-im.ui.screens.discover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-    [re-frame.core :as re-frame]
-    [clojure.string :as str]
-    [status-im.components.react :as react]
-    [status-im.components.icons.vector-icons :as vi]
-    [status-im.components.toolbar-new.view :as toolbar]
-    [status-im.components.toolbar-new.actions :as act]
-    [status-im.components.drawer.view :as drawer]
-    [status-im.components.carousel.carousel :as carousel]
-    [status-im.ui.screens.discover.components.views :as components]
-    [status-im.ui.screens.discover.all-dapps.views :as all-dapps]
-    [status-im.utils.platform :as platform]
-    [status-im.i18n :as i18n]
-    [status-im.ui.screens.discover.styles :as styles]
-    [status-im.ui.screens.contacts.styles :as contacts-st]
-    [status-im.components.list.views :as components.list]
-    [status-im.react-native.resources :as resources]))
+  (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
+            [status-im.components.react :as react]
+            [status-im.components.icons.vector-icons :as vector-icons]
+            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.components.toolbar-new.actions :as actions]
+            [status-im.components.drawer.view :as drawer]
+            [status-im.components.carousel.carousel :as carousel]
+            [status-im.ui.screens.discover.components.views :as components]
+            [status-im.ui.screens.discover.all-dapps.views :as all-dapps]
+            [status-im.i18n :as i18n]
+            [status-im.ui.screens.discover.styles :as styles]
+            [status-im.ui.screens.contacts.styles :as contacts-st]
+            [status-im.components.list.views :as list]
+            [status-im.react-native.resources :as resources]))
 
 (defn empty-section [image-kw title-kw body-kw]
   [react/view styles/empty-section-container
@@ -30,7 +28,7 @@
      (i18n/label body-kw)]]])
 
 (defn get-hashtags [status]
-  (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
+  (let [hashtags (map #(string/lower-case (string/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
     (or hashtags [])))
 
 (defn toolbar-view [show-search? search-text]
@@ -40,9 +38,9 @@
     :search-key         :discover
     :title              (i18n/label :t/discover)
     :search-placeholder (i18n/label :t/search-tags)
-    :nav-action         (act/hamburger drawer/open-drawer!)
+    :nav-action         (actions/hamburger drawer/open-drawer!)
     :on-search-submit   (fn [text]
-                          (when-not (str/blank? text)
+                          (when-not (string/blank? text)
                             (let [hashtags (get-hashtags text)]
                               ;; TODO (goranjovic) - refactor double dispatch to a single call
                               (re-frame/dispatch [:set :discover-search-tags hashtags])
@@ -51,8 +49,7 @@
 
 (defview top-status-for-popular-hashtag [{:keys [tag current-account]}]
   (letsubs [discoveries [:get-popular-discoveries 1 [tag]]]
-    [react/view (merge styles/popular-list-container
-                       (get-in platform/platform-specific [:component-styles :discover :popular]))
+    [react/view styles/popular-list-container
      [react/view styles/row
       [react/view {}
        ;; TODO (goranjovic) - refactor double dispatch to a single call
@@ -123,7 +120,7 @@
     [react/view styles/public-chats-item-name-container
      ;; TODO(goranjovic) lightgray intentionally hardcoded while only a teaser
      ;; will be removed and properly styled when enabled
-     [vi/icon :icons/public {:color "lightgray"}]
+     [vector-icons/icon :icons/public {:color "lightgray"}]
      [react/text {:font  :medium
                   :style styles/public-chats-item-name-text}
                  (:name item)]]
@@ -134,8 +131,8 @@
 (defn public-chats-teaser []
   [react/view {}
    [components/title :t/public-chats :t/soon #() false]
-   [components.list/flat-list {:data      public-chats-mock-data
-                               :render-fn render-public-chats-item}]])
+   [list/flat-list {:data      public-chats-mock-data
+                    :render-fn render-public-chats-item}]])
 
 (defview discover [current-view?]
   (letsubs [show-search     [:get-in [:toolbar-search :show]]

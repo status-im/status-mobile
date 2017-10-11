@@ -1,15 +1,13 @@
 (ns status-im.ui.screens.discover.styles
-  (:require-macros [status-im.utils.styles :refer [defnstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]
-            [status-im.components.tabs.styles :as tabs-st]
-            [status-im.utils.platform :as p]))
+            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
 
 ;; Common
 
 (def row-separator
   {:border-bottom-width 1
-   :border-bottom-color "#eff2f3"})
+   :border-bottom-color styles/color-light-gray4})
 
 (def row
   {:flex-direction :row
@@ -28,6 +26,44 @@
   {:padding         16
    :flex-direction  :row
    :justify-content :space-between})
+
+(defstyle title-text
+  {:ios     {:color          styles/color-steel
+             :font-size      13
+             :letter-spacing 1}
+   :android {:color     styles/color-gray2
+             :font-size 14}})
+
+;; NOTE(oskarth): Hacky use of defstyle to get
+;; platform specific styles in place where they belong
+(defstyle subtitle-text-augment
+  {:ios     {:uppercase? false}
+   :android {:uppercase? true}})
+
+(defstyle tag-view
+  {:margin-horizontal 2
+   :ios     {:flex-direction   :column
+             :background-color styles/color-light-blue6
+             :border-radius    4
+             :border-width     1
+             :border-color     styles/color-light-blue6
+             :padding          6}
+   :android {:flex-direction   :column
+             :background-color styles/color-light-blue6
+             :border-radius    5
+             :padding          4}})
+
+(defstyle discover-item-status-text
+  {:ios     {:font-size      14
+             :letter-spacing -0.1}
+   :android {:line-height 22
+             :font-size   16}})
+
+(defstyle discover-list-item-avatar-container
+  {:flex-direction :column
+   :ios            {:padding-top     0
+                    :bottom          -4
+                    :justify-content :flex-end}})
 
 ;; Popular
 
@@ -53,7 +89,7 @@
    :justify-content  :center})
 
 (def tag-count
-  {:color           "#838c93"
+  {:color           styles/color-gray
    :font-size       12
    :padding-right   6
    :padding-bottom  2
@@ -62,28 +98,34 @@
 
 (def tag-count-container
   {:flex           0.2
-   :flex-direction "column"
-   :align-items    "flex-end"
+   :flex-direction :column
+   :align-items    :flex-end
    :padding-top    6
    :padding-right  9})
 
 (def separator
-  {:background-color "rgb(238, 241, 245)"
+  {:background-color styles/color-gray11
    :height           2
    :margin-top       2
    :margin-bottom    2})
 
 ;; Popular list item
 
-(def popular-list-container
+(defstyle popular-list-container
   {:flex             1
    :background-color :white
    :padding-top      18
    :padding-left     16
-   })
+   :ios              {:border-radius 3
+                      :border-width  1
+                      :border-color  styles/color-light-gray5}
+   :android          {:border-radius 4
+                      :margin-top    2
+                      :margin-bottom 4
+                      :margin-right  2}})
 
 (def popular-list-item
-  {:flex-direction "column"
+  {:flex-direction :column
    :padding-bottom 16
    :margin-right   10
    :top            1})
@@ -103,20 +145,17 @@
 
 (def popular-list-item-name
   {:margin-left 7
-   :color       "black"
+   :color       styles/color-black
    :font-size   12})
 
-(def popular-list-item-avatar-container
-  {:flex-direction "column"})
-
 (def popular-list-chat-action
-  {:background-color "rgb(220, 214, 251)"
+  {:background-color styles/color-light-blue7
    :flex-direction   :row
    :border-radius    5
    :padding          4})
 
 (def popular-list-chat-action-text
-  {:color "rgb(110, 0, 228)"})
+  {:color styles/color-dark-blue-4})
 
 ;; discover_recent
 
@@ -163,7 +202,7 @@
    :color       styles/text1-color
    :font-size   12})
 
-(def dapps-list-item-avatar-container
+(defstyle dapps-list-item-avatar-container
   {:flex-direction :column
    :padding        4
    :margin         4
@@ -189,7 +228,7 @@
 ;; Discover tag
 
 (def discover-tag-toolbar
-  {:border-bottom-color "#D7D7D7"
+  {:border-bottom-color styles/color-light-gray5
    :border-bottom-width 1})
 
 (def discover-tag-container
@@ -198,14 +237,14 @@
 
 (def tag-title-scroll
   {:flex           1
-   :alignItems     "center"
-   :justifyContent "center"})
+   :alignItems     :center
+   :justifyContent :center})
 
 (def tag-title-container
   {:flex           0.2
-   :alignItems     "center"
-   :justifyContent "center"
-   :flex-direction "row"})
+   :alignItems     :center
+   :justifyContent :center
+   :flex-direction :row})
 
 (def tag-title
   {:color          styles/color-blue
