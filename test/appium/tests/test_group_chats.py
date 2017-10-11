@@ -4,9 +4,10 @@ from tests.preconditions import set_password_as_new_user
 from views.home import HomeView
 
 
-@pytest.mark.sanity
+@pytest.mark.all
 class TestGroupChats(MultiplyDeviceTestCase):
 
+    @pytest.mark.chat
     def test_group_chat_send_receive_messages_and_remove_user(self):
 
         device_1, device_2 = HomeView(self.driver_1), \

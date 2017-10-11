@@ -4,7 +4,7 @@ from tests.preconditions import set_password_as_new_user
 from views.home import HomeView
 
 
-@pytest.mark.sanity
+@pytest.mark.all
 class TestChats(MultiplyDeviceTestCase):
 
     def test_one_to_one_chat(self):
