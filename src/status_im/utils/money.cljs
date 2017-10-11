@@ -28,22 +28,27 @@
     (string/replace (string/trim str) #"," ".")))
 
 (defn bignumber [n]
-  (dependencies/Web3.prototype.toBigNumber (str n)))
-
-(defn str->float [str]
   (when str
-    (.toNumber (bignumber (normalize str)))))
+    (try
+      (dependencies/Web3.prototype.toBigNumber (str n))
+      (catch :default err nil))))
 
 (defn valid? [str]
-  (try (> (str->float str) 0)
-       (catch :default err false)))
-
+  (when str
+    (when-let [bn (bignumber (normalize str))]
+      (.greaterThanOrEqualTo bn 0))))
 
 (defn to-wei [str]
-  (dependencies/Web3.prototype.toWei str "ether"))
+  (when str
+    (try
+      (dependencies/Web3.prototype.toWei (normalize str) "ether")
+      (catch :default err nil))))
 
-(defn to-decimal [value]
-  (dependencies/Web3.prototype.toDecimal value))
+(defn to-decimal [str]
+  (when str
+    (try
+      (dependencies/Web3.prototype.toDecimal (normalize str))
+      (catch :default err nil))))
 
 (def eth-units
   {:wei    (bignumber "1")

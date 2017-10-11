@@ -11,22 +11,19 @@
            "0.111122223333441239"))))
 
 (deftest valid?
-  (is (false? (money/valid? nil)))
-  (is (false? (money/valid? "a")))
-  (is (false? (money/valid? "-1")))
-  (is (false? (money/valid? "1a")))
+  (is (not (true? (money/valid? nil))))
+  (is (not (true? (money/valid? "a"))))
+  (is (not (true? (money/valid? "-1"))))
+  (is (not (true? (money/valid? "1a"))))
+  (is (not (true? (money/valid? "0,,"))))
   (is (true? (money/valid? "1")))
   (is (true? (money/valid? "1.1")))
-  (is (true? (money/valid? "1,1"))))
+  (is (true? (money/valid? "1,1")))
+  (is (true? (money/valid? "0.00000000000000000000001")))
+  (is (true? (money/valid? "0.0000000000000000000000000001"))))
 
 (deftest normalize
   (is (= nil (money/normalize nil)))
   (is (= "1" (money/normalize "  1 ")))
   (is (= "1.1" (money/normalize "1.1")))
   (is (= "1.1" (money/normalize "1,1"))))
-
-(deftest str->float
-  (is (= nil (money/str->float nil)))
-  (is (= 1 (money/str->float "  1 ")))
-  (is (= 1.1 (money/str->float "1.1")))
-  (is (= 1.1 (money/str->float "1,1"))))
