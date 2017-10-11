@@ -41,4 +41,4 @@
                                                                 {:message         row
                                                                  :current-account current-account}]))
                            :renderSeparator render-separator
-                           :style           styles/recent-list}])])))
+                           :style           styles/status-list-inner}])])))

@@ -15,8 +15,8 @@
         toolbar/default-nav-back
         [react/view {} [react/text {} "All recent"]]]
        [react/scroll-view (styles/list-container tabs-hidden?)
-        [react/view styles/recent-container
-         [react/view styles/recent-list
+        [react/view styles/status-list-outer
+         [react/view styles/status-list-inner
           (let [discoveries (map-indexed vector discoveries)]
             (for [[i {:keys [message-id] :as message}] discoveries]
               ^{:key (str "message-recent-" message-id)}

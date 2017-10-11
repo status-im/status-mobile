@@ -24,17 +24,6 @@
                   :uppercase? (:uppercase? styles/subtitle-text-augment)}
       (i18n/label action-kw)]]]])
 
-(defn tags-menu [tags]
-  [react/view styles/tag-title-container
-   (for [tag (take 3 tags)]
-     ^{:key (str "tag-" tag)}
-     [react/touchable-highlight {:on-press #(do (re-frame/dispatch [:set :discover-search-tags [tag]])
-                                                (re-frame/dispatch [:navigate-to :discover-search-results]))}
-      [react/view styles/tag-view
-       [react/text {:style styles/tag-title
-                    :font  :default}
-        (str " #" tag)]]])])
-
 (defn display-name [me? account-name contact-name name whisper-id]
   (cond
     me? account-name                                        ;status by current user
