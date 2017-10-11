@@ -348,3 +348,23 @@
   {:background-color styles/color-white
    :padding-left     10
    :padding-right    10})
+
+(def empty-section-container
+  {:flex-direction   :row
+   :margin-left      32
+   :padding-vertical 50})
+
+(def empty-section-image
+  {:height 70
+   :width  70})
+
+(def empty-section-description
+  {:flex-direction :column
+   :margin-left    12})
+
+(def empty-section-title-text
+  {:font-size 15})
+
+(def empty-section-body-text
+  {:margin-top 2
+   :font-size  14})

@@ -15,7 +15,19 @@
     [status-im.i18n :as i18n]
     [status-im.ui.screens.discover.styles :as styles]
     [status-im.ui.screens.contacts.styles :as contacts-st]
-    [status-im.components.list.views :as components.list]))
+    [status-im.components.list.views :as components.list]
+    [status-im.react-native.resources :as resources]))
+
+(defn empty-section [image-kw title-kw body-kw]
+  [react/view styles/empty-section-container
+   [react/image {:source (image-kw resources/ui)
+                 :style  styles/empty-section-image}]
+   [react/view styles/empty-section-description
+    [react/text {:font  :medium
+                 :style styles/empty-section-title-text}
+     (i18n/label title-kw)]
+    [react/text {:style styles/empty-section-body-text}
+     (i18n/label body-kw)]]])
 
 (defn get-hashtags [status]
   (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
@@ -73,15 +85,7 @@
           [top-status-for-popular-hashtag {:tag             name
                                            :contacts        contacts
                                            :current-account current-account}])]
-       [react/text (i18n/label :t/none)])]))
-
-
-(defn empty-discoveries []
-  [react/view contacts-st/empty-contact-groups
-   ;; todo change the icon
-   [vi/icon :icons/group-big {:style contacts-st/empty-contacts-icon}]
-   [react/text {:style contacts-st/empty-contacts-text}
-    (i18n/label :t/no-statuses-discovered)]])
+       [empty-section :empty-hashtags :t/no-hashtags-discovered-title :t/no-hashtags-discovered-body])]))
 
 (defn recent-statuses-preview [current-account discoveries]
   [react/view styles/recent-statuses-preview-container
@@ -96,7 +100,7 @@
          [components/discover-list-item {:message         discovery
                                          :show-separator? false
                                          :current-account current-account}]])]
-     [react/text (i18n/label :t/none)])])
+     [empty-section :empty-recent :t/no-statuses-discovered :t/no-statuses-discovered-body])])
 
 (def public-chats-mock-data
   [{:name  "Status team"
@@ -143,11 +147,9 @@
     [react/view styles/discover-container
      [toolbar-view (and current-view?
                         (= show-search :discover)) search-text]
-     (if discoveries
        [react/scroll-view styles/list-container
         [recent-statuses-preview current-account discoveries]
         [popular-hashtags-preview {:contacts        contacts
                                    :current-account current-account}]
         [all-dapps/preview all-dapps]
-        [public-chats-teaser]]
-       [empty-discoveries])]))
+        [public-chats-teaser]]]))
