@@ -7,7 +7,6 @@ Join us in creating a browser, messenger, and gateway to a decentralized world. 
 
 [![Getting started with Status](https://i.imgur.com/C0aZZEL.jpg)](https://www.youtube.com/watch?v=oDCSEmS9c3o "Getting started with Status")
 
-
 ## Why?
 
 We believe in a medium of pure free trade, economies with fair, permission-less access and a world without intermediaries. We want to create policies that can exist between friends or scale globally, we want to communicate securely and be uninhibited by legacy systems.   
@@ -36,7 +35,7 @@ John Dewey once said "Education is not preparation for life; education is life *
 Content is King, keeping our blog up to date and informing the community of news helps keep everyone on the same page. [Jump on our Slack](http://slack.status.im) and discuss with Carl how you can contribute.
 
 - **Marketing**  
-In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user acquisition, public relations or hype building, check out our [Community Outreach and Marketing Guide](http://wiki.status.im/contributing/outreach/) to see how you can spread the word.
+In this day and age attention is limited, we need all the help we can get to find people who are interested in Status, whether that is paid user acquisition, public relations or hype building, check out our [Getting Involved Guide](https://wiki.status.im/Getting_Involved) to see how you can spread the word.
 
 - **Testers**  
 It's bug hunting season! Status is currently in Alpha and there are sure to be a bunch of education, [grab your fresh copy of Status](https://wiki.status.im/Developer_Documentation#Building_Status) and shake your phone to submit bug reports, or start browsing our [Github Issues](http://github.com/status-im/status-react/issues). Every bug you find brings Status closer to stable, usable software for everyone to enjoy!
@@ -45,17 +44,17 @@ It's bug hunting season! Status is currently in Alpha and there are sure to be a
 Status is a visual interface to make permanent changes on the Blockchain, it handles crypto-tokens that have real value and allows 3rd party code execution. Security is paramount to its success. You are given permission to break Status as hard as you can, as long as you share your findings with the community!
 
 - **Design & User Experience**  
-It's all about that sex appeal, we want cryptocurrencies to be easy and fun to use, ugly software doesn't help adoption. [Check out our designs](http://wiki.status.im/contributing/design-guidelines/) and show us how to make them better!
+It's all about that sex appeal, we want cryptocurrencies to be easy and fun to use, ugly software doesn't help adoption. [Check out our designs](https://wiki.status.im/Design_Guidelines) and show us how to make them better!
 
 - **Evangelism**  
 Help us spread the word! Tell a friend *right now*, in fact tell **everyone** - yell from a mountain if you have to, every person counts!
 
 ## Status API 
-View our [developer documentation](https://docs.status.im/) and learn how to integrate your DApp into Status or build a decentralized chatbot.
+View our [developer documentation](https://wiki.status.im/Developer_Documentation) and learn how to integrate your DApp into Status or build a decentralized chatbot.
 
 ## Give me Binaries!
 
-Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://wiki.status.im/contributing/development/building-status/).
+Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://wiki.status.im/Developer_Documentation#Building_Status/).
 
 Alternatively, if you’re on Android you can try one of our nightly APK builds from [here](http://artifacts.status.im:8081/artifactory/nightlies-local/)
 
