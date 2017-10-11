@@ -17,8 +17,7 @@
    :ios     {:font-size      14
              :line-height    16
              :letter-spacing -0.2}
-   :android {:font-size   12
-             :line-height 12}})
+   :android {:font-size   12}})
 
 (def amount-text-input-container
   {:margin-top 8})
