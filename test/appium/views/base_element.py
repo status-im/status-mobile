@@ -52,8 +52,7 @@ class BaseElement(object):
         action = TouchAction(self.driver)
         for _ in range(5):
             try:
-                self.find_element()
-                break
+                return self.find_element()
             except NoSuchElementException:
                 logging.info('Scrolling to %s' % self.name)
                 action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()

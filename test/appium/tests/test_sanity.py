@@ -6,7 +6,7 @@ from tests.preconditions import set_password_as_new_user, recover_access
 from tests import basic_user, transaction_users
 
 
-@pytest.mark.sanity
+@pytest.mark.all
 class TestAccess(SingleDeviceTestCase):
 
     def test_recover_access(self):
@@ -63,9 +63,10 @@ class TestAccess(SingleDeviceTestCase):
             home.confirm()
         home.find_full_text(verifications[verification]["outcome"])
 
-    @pytest.mark.parametrize("test, recipient, sender", [('wrong_password', 'A_USER', 'B_USER'),
-                                                         ('group_chat', 'A_USER', 'B_USER'),
-                                                         ('one_to_one_chat', 'B_USER', 'A_USER')],
+    @pytest.mark.transaction
+    @pytest.mark.parametrize("test, recipient, sender", [('group_chat', 'A_USER', 'B_USER'),
+                                                         ('one_to_one_chat', 'B_USER', 'A_USER'),
+                                                         ('wrong_password', 'A_USER', 'B_USER')],
                              ids=['group_chat', 'one_to_one_chat', 'wrong_password'])
     def test_send_transaction(self, test, recipient, sender):
         home = HomeView(self.driver)
@@ -123,6 +124,7 @@ class TestAccess(SingleDeviceTestCase):
                 chats.find_full_text('to  ' + transaction_users[recipient]['username'], 60)
             chats.verify_balance_is_updated(initial_balance_recipient, recipient_address)
 
+    @pytest.mark.transaction
     def test_send_transaction_from_daap(self):
         home = HomeView(self.driver)
         set_password_as_new_user(home)

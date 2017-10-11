@@ -55,7 +55,7 @@ def is_uploaded():
 def pytest_configure(config):
     import logging
     logging.basicConfig(level=logging.INFO)
-    if is_master(config):
+    if is_master(config) and config.getoption('env') == 'sauce':
         if not is_uploaded():
             response = requests.get(storage + latest_apk, stream=True)
             response.raise_for_status()
