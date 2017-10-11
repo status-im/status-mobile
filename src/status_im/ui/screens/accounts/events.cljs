@@ -109,7 +109,7 @@
   (fn [{{:keys          [network]
          :networks/keys [networks]
          :as            db} :db} [_ {:keys [address] :as account} password]]
-    (let [address (utils/normalize-hex address)
+    (let [address (utils.hex/normalize-hex address)
           account' (assoc account
                           :network network
                           :networks networks
