@@ -164,7 +164,6 @@
    :search-tags                           "Type your search tags here"
    :popular-tags                          "Popular hashtags"
    :recent                                "Recent statuses"
-   :no-statuses-discovered                "No statuses discovered"
    :no-statuses-found                     "No statuses found"
    :chat                                  "Chat"
    :all                                   "All"
@@ -172,6 +171,10 @@
    :soon                                  "Soon"
    :public-chat-user-count                "{{count}} people"
    :dapps                                 "DApps"
+   :no-statuses-discovered                "No statuses discovered"
+   :no-statuses-discovered-body           "When somebody posts a status\nyou will see it here."
+   :no-hashtags-discovered-title          "No hashtags discovered"
+   :no-hashtags-discovered-body           "When a hashtag becomes popular\nyou will see it here."
 
    ;;settings
    :settings                              "Settings"
