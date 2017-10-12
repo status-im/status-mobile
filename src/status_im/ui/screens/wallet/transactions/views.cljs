@@ -26,8 +26,7 @@
 
 (defn on-delete-transaction
   [{:keys [id]}]
-  ;; TODO(andrey) implement alert
-  (re-frame/dispatch [:wallet/discard-unsigned-transaction id]))
+  (re-frame/dispatch [:wallet/discard-unsigned-transaction-with-confirmation id]))
 
 ;; TODO (andrey) implement
 (defn unsigned-action [unsigned-transactions-count]

@@ -1,13 +1,13 @@
 (ns status-im.ui.screens.wallet.events
   (:require [re-frame.core :as re-frame :refer [dispatch reg-fx]]
+            [status-im.i18n :as i18n]
+            [status-im.native-module.core :as status]
+            [status-im.ui.screens.wallet.db :as wallet.db]
+            [status-im.ui.screens.wallet.navigation]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
             [status-im.utils.utils :as utils]
-            [status-im.ui.screens.wallet.db :as wallet.db]
-
-            [status-im.native-module.core :as status]
-            [status-im.ui.screens.wallet.navigation]
             [taoensso.timbre :as log]
             status-im.ui.screens.wallet.request.events))
 
@@ -141,3 +141,11 @@
   :wallet/discard-unsigned-transaction
   (fn [_ [_ transaction-id]]
     {:discard-transaction transaction-id}))
+
+(handlers/register-handler-fx
+  :wallet/discard-unsigned-transaction-with-confirmation
+  (fn [cofx [_ transaction-id]]
+    {:show-confirmation {:title               (i18n/label :t/transactions-delete)
+                         :content             (i18n/label :t/transactions-delete-content)
+                         :confirm-button-text (i18n/label :t/confirm)
+                         :on-accept           #(re-frame/dispatch [:wallet/discard-unsigned-transaction transaction-id])}}))

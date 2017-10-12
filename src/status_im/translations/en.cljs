@@ -387,6 +387,8 @@
    :transactions-sign-later               "Sign Later"
    :transactions-sign-all-text            "Sign the transaction by entering your password.\nMake sure that the words above match your secret signing phrase"
    :transactions-sign-input-placeholder   "Enter your password"
+   :transactions-delete                   "Delete transaction"
+   :transactions-delete-content           "Transaction will be removed from unsigned list"
    :transactions-history                  "History"
    :transactions-unsigned                 "Unsigned"
    :transactions-history-empty            "You don't have a history transactions"
