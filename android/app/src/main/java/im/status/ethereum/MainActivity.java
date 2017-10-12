@@ -115,6 +115,15 @@ public class MainActivity extends ReactActivity {
 
             dialog.show();
         }
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                System.loadLibrary("status-logs");
+            }
+        };
+
+        thread.start();
     }
 
     @Override
