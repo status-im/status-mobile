@@ -40,7 +40,7 @@
        [react/view st/network-config-container
         [react/text {:style st/network-config-text}
          config]]
-       [react/view {:opacity 0.4}
+       #_[react/view {:opacity 0.4}
         [react/view st/edit-button-container
          [react/view st/edit-button
           [react/text {:style      st/edit-button-label
