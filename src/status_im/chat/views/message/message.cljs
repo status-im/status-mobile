@@ -126,34 +126,31 @@
 
 (defview message-content-command
   [{:keys [message-id content content-type chat-id to from outgoing] :as message}]
-  [commands [:get-commands-and-responses chat-id]
-   from-commands [:get-commands-and-responses from]
-   global-commands [:get :global-commands]
-   current-chat-id [:get-current-chat-id]
-   contact-chat [:get-in [:chats (if outgoing to from)]]
-   preview [:get-message-preview message-id]]
-  (let [commands (merge commands from-commands)
-        {:keys [command params]} (commands/set-command-for-content commands global-commands content)
-        {:keys     [name type]
-         icon-path :icon} command]
-    [view st/content-command-view
-     (when (:color command)
-       [view st/command-container
-        [view (pill-st/pill command)
-         [text {:style pill-st/pill-text
-                :font  :default}
-          (str (if (= :command type) chat-consts/command-char "?") name)]]])
-     (when icon-path
-       [view st/command-image-view
-        [icon icon-path st/command-image]])
-     [command-preview {:command         (:name command)
-                       :content-type    content-type
-                       :params          params
-                       :outgoing?       outgoing
-                       :preview         preview
-                       :contact-chat    contact-chat
-                       :contact-address (if outgoing to from)
-                       :current-chat-id current-chat-id}]]))
+  (letsubs [commands [:get-commands-for-chat chat-id]
+            current-chat-id [:get-current-chat-id]
+            contact-chat [:get-in [:chats (if outgoing to from)]]
+            preview [:get-message-preview message-id]]
+    (let [{:keys [command params]} (commands/replace-name-with-request message commands)
+          {:keys     [name type]
+           icon-path :icon} command]
+      [view st/content-command-view
+       (when (:color command)
+         [view st/command-container
+          [view (pill-st/pill command)
+           [text {:style pill-st/pill-text
+                  :font  :default}
+            (str (if (= :command type) chat-consts/command-char "?") name)]]])
+       (when icon-path
+         [view st/command-image-view
+          [icon icon-path st/command-image]])
+       [command-preview {:command         (:name command)
+                         :content-type    content-type
+                         :params          params
+                         :outgoing?       outgoing
+                         :preview         preview
+                         :contact-chat    contact-chat
+                         :contact-address (if outgoing to from)
+                         :current-chat-id current-chat-id}]])))
 
 (defn message-view
   [{:keys [same-author index group-chat] :as message} content]

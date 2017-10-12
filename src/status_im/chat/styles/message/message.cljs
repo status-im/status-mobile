@@ -120,7 +120,7 @@
    :android       {:font-size 13}
    :ios           {:font-size 14}})
 
-(def comand-request-view
+(def command-request-view
   {:paddingRight 16})
 
 (def command-request-message-view
