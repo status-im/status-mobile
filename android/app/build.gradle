@@ -159,6 +159,8 @@ android {
             }
         }
     }
+
+    sourceSets { main { jniLibs.srcDirs 'libs' } }
 }
 
 dependencies {
@@ -204,3 +206,20 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 // Must be at bottom to avoid dependency collision
 apply plugin: "com.google.gms.google-services"
+
+task hemroidBuild(type: Exec) {
+    def rootDir = project.rootDir
+    def localProperties = new File(rootDir, "local.properties")
+
+    def ndkDir = "$System.env.ANDROID_NDK_HOME"
+    if (localProperties.exists()) {
+        Properties properties = new Properties()
+        localProperties.withInputStream { instr ->
+            properties.load(instr)
+        }
+        ndkDir = properties.getProperty('ndk.dir')
+    }
+    executable "$ndkDir/ndk-build"
+}
+
+preBuild.dependsOn hemroidBuild
