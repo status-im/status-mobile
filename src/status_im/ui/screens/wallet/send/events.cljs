@@ -40,6 +40,11 @@
                (assoc-in [:wallet/send-transaction :amount] amount)
                (assoc-in [:wallet/send-transaction :amount-error] error))})))
 
+(def ^:private clear-send-properties {:transaction-id  nil
+                                      :wrong-password? false
+                                      :waiting-signal? false
+                                      :from-chat? false})
+
 (handlers/register-handler-fx
   ::transaction-completed
   (fn [{db :db} [_ {:keys [id response]}]]
@@ -48,8 +53,7 @@
       (if-not (and error (string? error) (not (string/blank? error)))
         {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
-                       (assoc-in [:wallet/send-transaction :transaction-id] nil)
-                       (assoc-in [:wallet/send-transaction :wrong-password?] false))
+                       (update :wallet/send-transaction merge clear-send-properties))
          :dispatch [:navigate-to :wallet-transaction-sent]}
         {:db db'}))))
 
@@ -68,9 +72,7 @@
         {:db db'}
         {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
-                       (update :wallet/send-transaction assoc
-                               :transaction-id nil
-                               :wrong-password? false))
+                       (update :wallet/send-transaction merge clear-send-properties)) 
          :dispatch [:navigate-back]}))))
 
 (defn on-transactions-modal-completed [raw-results]
@@ -121,16 +123,27 @@
                              :password     password
                              :on-completed on-transactions-modal-completed}})))
 
+(defn discard-transaction
+  [{{:wallet/keys [send-transaction] :as db} :db}]
+  (let [{:keys [transaction-id]} send-transaction]
+    (merge {:db (update db :wallet/send-transaction assoc
+                        :signing? false
+                        :transaction-id nil
+                        :wrong-password? false)}
+           (when transaction-id
+             {:discard-transaction transaction-id}))))
+
 (handlers/register-handler-fx
   :wallet/discard-transaction
-  (fn [{{:wallet/keys   [send-transaction] :as db} :db} _]
-    (let [{:keys [transaction-id]} send-transaction]
-      (merge {:db (update db :wallet/send-transaction assoc
-                          :signing? false
-                          :transaction-id nil
-                          :wrong-password? false)}
-             (when transaction-id
-               {:discard-transaction transaction-id})))))
+  (fn [cofx _]
+    (discard-transaction cofx)))
+
+(handlers/register-handler-fx
+  :wallet/discard-transaction-navigate-back
+  (fn [cofx _]
+    (-> cofx
+        discard-transaction
+        (assoc :dispatch [:navigate-back]))))
 
 (handlers/register-handler-fx
   :wallet/cancel-signing-modal

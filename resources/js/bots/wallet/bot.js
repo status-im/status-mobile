@@ -388,13 +388,12 @@ function validateSend(params, context) {
 }
 
 function handleSend(params, context) {
-    var val = web3.toWei(params["amount"].replace(",", "."), "ether");
-
     var gasPrice = calculateGasPrice(params["bot-db"]["sliderValue"]);
+
     var data = {
         from: context.from,
         to: params["bot-db"]["public"]["recipient"]["address"],
-        value: val
+        value: web3.toWei(params["amount"].replace(",","."), "ether")
     };
 
     if (gasPrice) {
@@ -403,25 +402,21 @@ function handleSend(params, context) {
 
     web3.eth.sendTransaction(data, function(error, hash) {
         if (error) {
-            status.sendSignal("handler-result", {
-                status: "failed",
-                error: {
-                    markup: status.components.validationMessage(
-                        I18n.t('validation_tx_title'),
-                        I18n.t('validation_tx_failed')
-                    )
-                },
-                origParams: context["orig-params"]
-            });
+            // Do nothing, as error handling will be done as response to transaction.failed event from go
         } else {
             status.sendSignal("handler-result", {
-                status: "success",
-                hash: hash,
+                result: {
+                    hash: hash
+                },
                 origParams: context["orig-params"]
             });
         } 
     });
-    // async handler, so we don't return anything immediately
+    
+    // jail async handler, we have to signal it
+    return {
+        flow: "jailAsync"
+    };
 }
 
 function previewSend(params, context) {
@@ -499,7 +494,7 @@ function previewSend(params, context) {
     } else {
         markup = [firstRow];
     }
-    
+
     return {
         markup: status.components.view(
             {
@@ -532,7 +527,6 @@ var send = {
     params: paramsSend,
     validator: validateSend,
     handler: handleSend,
-    asyncHandler: true,
     preview: previewSend,
     shortPreview: shortPreviewSend
 };

@@ -9,29 +9,21 @@
             [status-im.models.commands :as cm]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
-            [taoensso.timbre :as log] 
+            [taoensso.timbre :as log]
             [status-im.data-store.local-storage :as local-storage]))
 
 (defn command-handler!
-  [_ [chat-id
-      {:keys [command] :as params}
-      {:keys [result error]}]]
-  (let [{:keys [returned]} result
-        {handler-error :error} returned]
-    (cond
-      handler-error
-      (when-let [markup (:markup handler-error)]
-        (dispatch [:set-chat-ui-props {:validation-messages markup}]))
+  [_ [chat-id params {:keys [result error]}]] 
+  (cond
+    error
+    (when-let [markup (:markup error)]
+      (dispatch [:set-chat-ui-props {:validation-messages markup}]))
 
-      result
-      (let [command' (assoc command :handler-data returned)
-            params'  (assoc params :command command')] 
-        (dispatch [:prepare-command! chat-id params']))
+    result
+    (dispatch [:prepare-command! chat-id (assoc-in params [:command :handler-data] result)])
 
-      (not (or error handler-error))
-      (dispatch [:prepare-command! chat-id params])
-
-      :else nil)))
+    :else
+    (dispatch [:prepare-command! chat-id params])))
 
 (defn suggestions-handler!
   [{:keys [chats] :as db}
@@ -97,6 +89,6 @@
 
 (reg-handler :set-local-storage
   (handlers/side-effect!
-    (fn [_ [{:keys [data chat-id]}]]
-      (local-storage/set-data {:chat-id chat-id
-                               :data    data}))))
+   (fn [_ [{:keys [data chat-id]}]]
+     (local-storage/set-data {:chat-id chat-id
+                              :data    data}))))
