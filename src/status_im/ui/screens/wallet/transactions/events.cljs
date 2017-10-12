@@ -46,10 +46,11 @@
               ;;sending from wallet
               {:dispatch [:wallet.send-transaction/transaction-queued id]}
               ;;sending from chat
-              {:dispatch [:navigate-to-modal :wallet-send-transaction-modal {:amount (str (money/wei->ether value))
+              {:dispatch [:navigate-to-modal :wallet-send-transaction-modal {:amount         (str (money/wei->ether value))
                                                                              :transaction-id id
-                                                                             :to-address to
-                                                                             :to-name to}]}))))
+                                                                             :to-address     to
+                                                                             :to-name        to
+                                                                             :from-chat?     true}]}))))
       {:discard-transaction id})))
 
 ;TRANSACTION FAILED signal from status-go
