@@ -75,24 +75,25 @@
 (defn- section-separator []
   [rn/view lst/section-separator])
 
-(defn base-list-props [render-fn empty-component]
+(defn- base-list-props [render-fn empty-component separator?]
   (merge {:keyExtractor (fn [_ i] i)}
-         (when render-fn {:renderItem (wrap-render-fn render-fn)})
-         (when p/ios? {:ItemSeparatorComponent (fn [] (r/as-element [separator]))})
-         ; TODO(jeluard) Does not work with our current ReactNative version
-         (when empty-component {:ListEmptyComponent (r/as-element [empty-component])})))
+         (when render-fn               {:renderItem (wrap-render-fn render-fn)})
+         (when (and p/ios? separator?) {:ItemSeparatorComponent (fn [] (r/as-element [separator]))})
+         ;; TODO(jeluard) Does not work with our current ReactNative version
+         (when empty-component         {:ListEmptyComponent (r/as-element [empty-component])})))
 
 (defn flat-list
   "A wrapper for FlatList.
    See https://facebook.github.io/react-native/docs/flatlist.html"
-  [{:keys [data render-fn empty-component] :as props}]
+  [{:keys [data render-fn empty-component separator?] :as props
+    :or {separator? true}}]
   {:pre [(or (nil? data)
              (sequential? data))]}
   (if (and (empty? data) empty-component)
     ;; TODO(jeluard) remove when native :ListEmptyComponent is supported
     empty-component
     [flat-list-class
-     (merge (base-list-props render-fn empty-component)
+     (merge (base-list-props render-fn empty-component separator?)
             {:data (clj->js data)}
             props)]))
 
@@ -116,11 +117,13 @@
 (defn section-list
   "A wrapper for SectionList.
    See https://facebook.github.io/react-native/docs/sectionlist.html"
-  [{:keys [sections render-fn empty-component render-section-header-fn] :or {render-section-header-fn default-render-section-header} :as props}]
+  [{:keys [sections render-fn empty-component render-section-header-fn separator?] :as props
+    :or {render-section-header-fn default-render-section-header
+         separator?               true}}]
   (if (and (every? #(empty? (:data %)) sections) empty-component)
     empty-component
     [section-list-class
-     (merge (base-list-props render-fn empty-component)
+     (merge (base-list-props render-fn empty-component separator?)
             {:sections            (clj->js (map wrap-per-section-render-fn sections))
              :renderSectionHeader (wrap-render-section-header-fn render-section-header-fn)}
             (when p/ios? {:SectionSeparatorComponent (fn [] (r/as-element [section-separator]))})
