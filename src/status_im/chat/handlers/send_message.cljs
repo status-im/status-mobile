@@ -96,16 +96,7 @@
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
         (when (cu/console? chat-id)
-          (dispatch [:console-respond-command params]))
-        (when (and (= "send" (:name command))
-                   (not= add-to-chat-id wallet-chat-id))
-          (let [ct       (if request
-                           c/content-type-wallet-request
-                           c/content-type-wallet-command)
-                content' (assoc content :id (random/id)
-                                        :content-type ct)
-                params'  (assoc params :command content')]
-            (dispatch [:prepare-command! wallet-chat-id params'])))))))
+          (dispatch [:console-respond-command params]))))))
 
 (register-handler ::send-command!
   (u/side-effect!

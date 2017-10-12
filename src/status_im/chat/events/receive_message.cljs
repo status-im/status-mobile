@@ -82,14 +82,7 @@
           (update :dispatch-n conj [:request-command-preview enriched-message])
 
           (= (:content-type enriched-message) const/content-type-command-request)
-          (update :dispatch-n conj [:add-request chat-identifier enriched-message])
-          ;; TODO(janherich) refactor this ugly special treatment of wallet send commands for logged in user
-          (and (= (get-in message [:content :params :bot-db :public :recipient :whisper-identity])
-                  current-identity)
-               (= content-type const/content-type-command)
-               (not= chat-identifier const/wallet-chat-id)
-               (= "send" (get-in message [:content :command])))
-          (update :dispatch-n conj [:received-message (wallet-message (assoc message :message-id random-id))])))
+          (update :dispatch-n conj [:add-request chat-identifier enriched-message])))
       {:db db})))
 
 (def ^:private receive-interceptors

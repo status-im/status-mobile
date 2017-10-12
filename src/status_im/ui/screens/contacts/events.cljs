@@ -280,7 +280,7 @@
                                (into {}))
           contacts (into {} contacts-list)
           ;;TODO temporary hide wallet contact, this code should be deleted after wallet contact will be deleted
-          contacts' (if (get-in contacts "wallet")
+          contacts' (if (get contacts "wallet")
                       (assoc-in contacts ["wallet" :pending?] true)
                       contacts)]
       {:db         (assoc db :contacts/contacts contacts'
