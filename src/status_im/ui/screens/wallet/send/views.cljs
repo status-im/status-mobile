@@ -22,8 +22,7 @@
 (defn toolbar-view [signing?]
   [toolbar/toolbar2 {:style wallet.styles/toolbar}
    [toolbar/nav-button (act/back-white (if signing?
-                                         #(do (re-frame/dispatch [:wallet/discard-transaction])
-                                              (act/default-handler))
+                                         #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
                                          act/default-handler))]
    [toolbar/content-title {:color :white} (i18n/label :t/send-transaction)]])
 
@@ -144,9 +143,11 @@
           [sign-panel])]
        (when in-progress? [react/view send.styles/processing-view])])))
 
-(defn toolbar-modal []
+(defn toolbar-modal [from-chat?]
   [toolbar/toolbar2 {:style wallet.styles/toolbar}
-   [toolbar/nav-button (act/close-white act/default-handler)]
+   [toolbar/nav-button (act/close-white (if from-chat?
+                                          #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
+                                          act/default-handler))]
    [toolbar/content-title {:color :white} (i18n/label :t/send-transaction)]])
 
 (defview send-transaction-modal []
@@ -156,11 +157,12 @@
             to-address   [:get-in [:wallet/send-transaction :to-address]]
             to-name      [:get-in [:wallet/send-transaction :to-name]]
             recipient    [:contact-by-address @to-name]
-            in-progress? [:get-in [:wallet/send-transaction :in-progress?]]]
+            in-progress? [:get-in [:wallet/send-transaction :in-progress?]]
+            from-chat?   [:get-in [:wallet/send-transaction :from-chat?]]]
     [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
      [react/view components.styles/flex
       [status-bar/status-bar {:type :wallet}]
-      [toolbar-modal]
+      [toolbar-modal from-chat?]
       [react/scroll-view {:keyboardShouldPersistTaps :always}
        [react/view components.styles/flex
         [react/view wallet.styles/choose-participant-container
