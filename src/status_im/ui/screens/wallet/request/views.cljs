@@ -32,8 +32,6 @@
     [components.qr-code/qr-code
      {:value   (.stringify js/JSON (clj->js {:address (:address account)
                                              :amount  0}))
-      :bgColor :white
-      :fgColor "#4360df"
       :size    256}]))
 
 (views/defview request-transaction []
