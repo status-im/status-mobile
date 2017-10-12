@@ -31,7 +31,7 @@
 
 (defn actions-view []
   [react/view action-button-styles/actions-list
-   [react/view {:opacity 0.4}
+   #_[react/view {:opacity 0.4}
     [action-button/action-button
      {:label     (i18n/label :t/add-new-network)
       :icon      :icons/add
