@@ -79,43 +79,36 @@
         account         (get accounts current-account-id)
         commands        (-> (into [] global-commands)
                             (into commands))
-        {chat-contacts :contacts} (get chats chat-id)]
+        {chat-contacts :contacts
+         group-chat    :group-chat} (get chats chat-id)]
     (remove (fn [{:keys [scope]}]
               (or
                (and (:registered-only? scope)
                     (not (:address account)))
                (and (not (:personal-chats? scope))
-                    (= (count chat-contacts) 1))
+                    (not group-chat))
                (and (not (:group-chats? scope))
-                    (> (count chat-contacts) 1))
+                    group-chat)
                (and (not (:can-use-for-dapps? scope))
                     (every? (fn [{:keys [identity]}]
                               (get-in contacts [identity :dapp?]))
                             chat-contacts))))
             commands)))
 
-(defn set-command-for-content
-  "Sets the information about command for a specified message content.
-   We need to use this command because `command` field in persistent storage (db) doesn't
-   contain all information about command — we save only the name of it."
-  [commands global-commands content]
-  (if (map? content)
-    (let [{:keys [command bot]} content]
-      (if (and bot (not (bots-constants/mailman-bot? bot)))
-        (update content :command #((keyword bot) global-commands))
-        (update content :command #((keyword command) commands))))
-    content))
+(defn- commands-list->map [commands]
+  (->> commands
+       (map #(vector (:name %) %))
+       (into {})))
 
-(defn set-command-for-request
+(defn replace-name-with-request
   "Sets the information about command for a specified request."
-  [{:keys [message-id content] :as message} possible-requests possible-commands]
-  (let [requests (->> possible-requests
-                      (map (fn [{:keys [request] :as message}]
-                             [(:message-id request) message]))
-                      (into {}))
-        commands (->> possible-commands
-                      (map (fn [{:keys [name] :as message}]
-                             [name message]))
-                      (into {}))]
-    (assoc content :command (or (get requests message-id)
-                                (get commands (get content :command))))))
+  ([{:keys [content] :as message} commands requests]
+   (if (map? content)
+     (let [{:keys [command content-command]} content
+           commands (commands-list->map commands)
+           requests (commands-list->map requests)]
+       (assoc content :command (or (get requests (or content-command command))
+                                   (get commands command))))
+     content))
+  ([message commands]
+   (replace-name-with-request message commands [])))

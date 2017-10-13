@@ -3,6 +3,7 @@
             [status-im.data-store.chats :as chats]
             [status-im.chat.constants :as const]
             [status-im.chat.models.input :as input-model]
+            [status-im.chat.models.commands :as commands-model]
             [status-im.chat.utils :as chat-utils]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.constants :refer [response-suggesstion-resize-duration
@@ -62,15 +63,9 @@
   (fn [_ [_ chat-id]]
     (chats/get-by-id chat-id)))
 
-(reg-sub :get-commands-and-responses
-  (fn [{:keys [chats global-commands] :contacts/keys [contacts]} [_ chat-id]]
-    (->> (get-in chats [chat-id :contacts])
-         (filter :is-in-chat)
-         (mapv (fn [{:keys [identity]}]
-                 (let [{:keys [commands responses]} (get contacts identity)]
-                   (merge responses commands))))
-         (apply merge)
-         (merge global-commands))))
+(reg-sub :get-commands-for-chat
+  (fn [db [_ chat-id]]
+    (commands-model/commands-for-chat db chat-id)))
 
 (reg-sub
   :selected-chat-command
