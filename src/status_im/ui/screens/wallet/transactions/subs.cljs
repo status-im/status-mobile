@@ -160,10 +160,3 @@
       (if (>= confirmations max-confirmations)
         100
         (* 100 (/ confirmations max-confirmations))))))
-
-(reg-sub :contact-by-address
-  :<- [:contacts/by-address]
-  (fn [contacts [_ address]]
-    (let [address' (when address
-                     (utils.hex/normalize-hex address))]
-      (contacts address'))))

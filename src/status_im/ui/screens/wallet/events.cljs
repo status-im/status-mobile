@@ -138,6 +138,13 @@
      :dispatch [:navigate-to :wallet-transaction-details]}))
 
 (handlers/register-handler-fx
+  :wallet/show-sign-transaction
+  (fn [{:keys [db]} [_ id from-chat?]]
+    {:db       (assoc-in db [:wallet :send-transaction] {:id id
+                                                         :from-chat? from-chat?})
+     :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}))
+
+(handlers/register-handler-fx
   :wallet/discard-unsigned-transaction
   (fn [_ [_ transaction-id]]
     {:discard-transaction transaction-id}))
