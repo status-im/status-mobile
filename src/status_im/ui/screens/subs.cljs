@@ -53,3 +53,8 @@
 (reg-sub :sync-state
   (fn [db]
     (:sync-state db)))
+
+(reg-sub :syncing?
+  :<- [:sync-state]
+  (fn [sync-state]
+    (= sync-state :syncing)))

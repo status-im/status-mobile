@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
   (:require [status-im.components.styles :as styles]))
 
 ;; errors
@@ -12,8 +12,8 @@
    :android        {:padding-top    10
                     :padding-bottom 10}})
 
-(def error-exclamation
-  {:background-color styles/color-red-2
+(defnstyle exclamation [color]
+  {:background-color color
    :border-radius    100
    :width            16
    :height           16
@@ -21,6 +21,11 @@
    :margin-right     6
    :margin-top       2})
 
+(def error-exclamation
+  (exclamation styles/color-red-2))
+
+(def warning-exclamation
+  (exclamation :gold))
 
 ;; wallet
 
@@ -44,11 +49,10 @@
   {:margin-left 8})
 
 (defn button-container [enabled?]
-  (merge
-    {:flex-direction :row
-     :align-items    :center}
-    (when-not enabled?
-      {:opacity 0.4})))
+  (merge {:flex-direction :row
+          :align-items    :center}
+         (when-not enabled?
+           {:opacity 0.4})))
 
 (def wallet-modal-container
   {:flex             1

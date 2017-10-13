@@ -62,10 +62,12 @@
         (str (when pos-change? "+") change "%")
         "-%")]]))
 
-(defn main-section [usd-value change error-message]
+(defn main-section [usd-value change syncing? error-message]
   [react/view {:style styles/main-section}
-   (when error-message
-     [wallet.views/error-message-view styles/error-container styles/error-message])
+   (if syncing?
+     [wallet.views/wallet-syncing styles/error-container styles/error-message]
+     (when error-message
+       [wallet.views/error-message-view styles/error-container styles/error-message]))
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
      [react/text {:style styles/total-balance-value} usd-value]
@@ -75,10 +77,12 @@
       (i18n/label :t/wallet-total-value)]
      [change-display change]]
     [react/view {:style (merge button.styles/buttons-container styles/buttons)}
-     [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
+     [btn/button {:disabled? syncing?
+                  :on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])
                   :style    (button.styles/button-bar :first) :text-style styles/main-button-text}
       (i18n/label :t/wallet-send)]
-     [btn/button {:on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
+     [btn/button {:disabled? syncing?
+                  :on-press #(rf/dispatch [:navigate-to :wallet-request-transaction])
                   :style (button.styles/button-bar :other) :text-style styles/main-button-text}
       (i18n/label :t/wallet-request)]
      [btn/button {:disabled? true :style (button.styles/button-bar :last) :text-style styles/main-button-text}
@@ -141,10 +145,11 @@
             portfolio-value  [:portfolio-value]
             portfolio-change [:portfolio-change]
             prices-loading?  [:prices-loading?]
+            syncing?        [:syncing?]
             balance-loading? [:wallet/balance-loading?]
             error-message    [:wallet/error-message?]]
     [react/view {:style wallet.styles/wallet-container}
      [toolbar-view]
      [react/view components.styles/flex
-      [main-section portfolio-value portfolio-change error-message]
+      [main-section portfolio-value portfolio-change syncing? error-message]
       [asset-section balance prices-loading? balance-loading?]]]))
