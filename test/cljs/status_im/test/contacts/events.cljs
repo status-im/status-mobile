@@ -109,8 +109,7 @@
    :name "ÐApps"
    :order 1
    :timestamp 0
-   :contacts [{:identity "wallet"}
-              {:identity "oaken-water-meter"}
+   :contacts [{:identity "oaken-water-meter"}
               {:identity "melonport"}
               {:identity "bchat"}
               {:identity "Dentacoin"}
@@ -129,7 +128,7 @@
    :bot-url nil
    :whisper-identity "wallet"
    :dapp? true
-   :pending? false
+   :pending? true
    :unremovable? true
    :public-key nil})
 

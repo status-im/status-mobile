@@ -214,7 +214,7 @@
 (defn- prepare-default-contacts-events [contacts default-contacts] 
   [[:add-contacts
     (for [[id {:keys [name photo-path public-key add-chat? global-command
-                      dapp? dapp-url dapp-hash bot-url unremovable?]}] default-contacts
+                      dapp? dapp-url dapp-hash bot-url unremovable? pending?]}] default-contacts
           :let [id' (clojure.core/name id)]
           :when (not (get contacts id'))]
       {:whisper-identity id'
@@ -227,7 +227,8 @@
        :dapp-url         (:en dapp-url)
        :bot-url          bot-url
        :global-command   global-command
-       :dapp-hash        dapp-hash})]])
+       :dapp-hash        dapp-hash
+       :pending?         pending?})]])
 
 (defn- prepare-add-chat-events [contacts default-contacts]
   (for [[id {:keys [name add-chat?]}] default-contacts

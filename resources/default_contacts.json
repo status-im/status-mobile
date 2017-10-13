@@ -23,6 +23,7 @@
         },
         "unremovable?": true
     },
+
     "wallet":
     {
         "name":
@@ -34,6 +35,7 @@
         },
         "photo-path": "icon_wallet_avatar",
         "dapp?": true,
+        "pending?": true,
         "has-global-command?": true,
         "bot-url": "local://wallet-bot",
         "unremovable?": true
