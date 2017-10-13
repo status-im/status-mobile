@@ -3,6 +3,8 @@
             [status-im.utils.types :as types]
             [status-im.utils.money :as money]))
 
+(def etherscan-api-key "DMSI4UAAKUBVGCDMVP3H2STAMSAUV7BYFI")
+
 (defn get-network-subdomain [network]
   (case network
     ("testnet" "testnet_rpc") "ropsten"
@@ -16,7 +18,7 @@
 (defn get-transaction-url [network account]
   (let [network-subdomain (get-network-subdomain network)]
     (str "https://" network-subdomain ".etherscan.io/api?module=account&action=txlist&address=0x"
-         account "&startblock=0&endblock=99999999&sort=desc&apikey=YourApiKeyToken?q=json")))
+         account "&startblock=0&endblock=99999999&sort=desc&apikey=" etherscan-api-key "?q=json")))
 
 (defn- format-transaction [account {:keys [value timeStamp blockNumber hash from to gas gasPrice gasUsed nonce confirmations input]}]
   (let [inbound?    (= (str "0x" account) to)]
