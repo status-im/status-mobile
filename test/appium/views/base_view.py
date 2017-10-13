@@ -79,7 +79,11 @@ class BaseViewObject(object):
 
     def get_balance(self, address):
         url = 'http://ropsten.etherscan.io/api?module=account&action=balance&address=0x%s&tag=latest' % address
-        return int(requests.request('GET', url).json()["result"])
+        for i in range(5):
+            try:
+                return int(requests.request('GET', url).json()["result"])
+            except ValueError:
+                pass
 
     def get_donate(self, address, wait_time=300):
         initial_balance = self.get_balance(address)
