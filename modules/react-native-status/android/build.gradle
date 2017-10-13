@@ -16,5 +16,5 @@ dependencies {
     compile 'com.facebook.react:react-native:+'
     compile 'com.instabug.library:instabug:3+'
     compile 'status-im:function:0.0.1'
-    compile(group: 'status-im', name: 'status-go', version: 'bugfix-fix-loop-memory-alignment-g6d1096c-2', ext: 'aar')
+    compile(group: 'status-im', name: 'status-go', version: 'bugfix-network-switch-panic-gab8d1f1-11', ext: 'aar')
 }
