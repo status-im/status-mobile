@@ -30,6 +30,9 @@
                            :transaction {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
+                           :modal-wallet {:height    20
+                                          :bar-style "light-content"
+                                          :color     styles/color-blue4}
                            :wallet      {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-blue4}}

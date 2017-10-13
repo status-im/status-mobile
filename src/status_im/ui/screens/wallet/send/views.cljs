@@ -161,7 +161,7 @@
             from-chat?   [:get-in [:wallet/send-transaction :from-chat?]]]
     [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
      [react/view components.styles/flex
-      [status-bar/status-bar {:type :wallet}]
+      [status-bar/status-bar {:type :modal-wallet}]
       [toolbar-modal from-chat?]
       [react/scroll-view {:keyboardShouldPersistTaps :always}
        [react/view components.styles/flex

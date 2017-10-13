@@ -30,6 +30,10 @@
                            :modal-white {:height       0
                                          :bar-style    "light-content"
                                          :color        styles/color-black}
+                           ;;TODO because this bug in RN https://github.com/facebook/react-native/issues/7474
+                           :modal-wallet {:height       0
+                                          :bar-style    "light-content"
+                                          :color        styles/color-black}
                            :transaction {:height       0
                                          :bar-style    "light-content"
                                          :color        styles/color-dark-blue-2}
