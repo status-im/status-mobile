@@ -32,9 +32,11 @@
    [rn/view {:style lst/item}
     [rn/view {:style lst/left-item-wrapper}
      left-action]
-    content
-    [rn/view {:style lst/right-item-wrapper}
-     right-action]]))
+    [rn/view {:style lst/content-item-wrapper}
+     content]
+    (when right-action
+      [rn/view {:style lst/right-item-wrapper}
+       right-action])]))
 
 (defn touchable-item [handler item]
   [rn/touchable-highlight {:on-press handler}

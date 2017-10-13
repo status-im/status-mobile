@@ -107,12 +107,16 @@
      [react/view (merge styles/wallet-container
                         style)
       [react/text {:style styles/wallet-name} (i18n/label :t/main-wallet)]
-      [react/text {:style           styles/wallet-value
-                   :number-of-lines 1
-                   :ellipsizeMode   :middle}
-       (if balance
-         (money/wei->str :eth balance)
-         "...")]]]))
+      (if balance
+        [react/view {:style styles/wallet-value-container}
+         [react/text {:style           (merge styles/wallet-value styles/wallet-value-amount)
+                      :number-of-lines 1
+                      :ellipsize-mode  :tail}
+          (str (money/wei->ether balance))]
+         [react/text {:style styles/wallet-value}
+          (i18n/label :t/eth)]]
+        [react/text {:style styles/wallet-value}
+         "..."])]]))
 
 (defn network-label
   ([n] (network-label [{} n]))

@@ -116,9 +116,13 @@
       (let [{:keys [source style]} (token->image id)]
         [list/item-image source style])
       [react/view {:style styles/asset-item-value-container}
-       [react/text {:style styles/asset-item-value} (str (money/wei->ether amount))]
-       [react/text {:style      styles/asset-item-currency
-                    :uppercase? true}
+       [react/text {:style           styles/asset-item-value
+                    :number-of-lines 1
+                    :ellipsize-mode  :tail}
+        (str (money/wei->ether amount))]
+       [react/text {:style           styles/asset-item-currency
+                    :uppercase?      true
+                    :number-of-lines 1}
         id]]]]
     [add-asset]))
 
