@@ -73,15 +73,15 @@
 
 (defview message-content-command-request
   [{:keys [message-id chat-id]}]
-  (letsubs [requests [:chat-actions :possible-requests]
-            commands [:chat-actions :possible-commands]
+  (letsubs [commands [:get-commands-for-chat chat-id]
+            requests [:chat-actions :possible-requests]
             answered? [:is-request-answered? message-id]
             status-initialized? [:get :status-module-initialized?]
             markup [:get-message-preview message-id]]
     (fn [{:keys [message-id content from incoming-group] :as message}]
       (let [{:keys        [prefill prefill-bot-db prefillBotDb params]
              text-content :text} content
-            {:keys [command content]} (commands/set-command-for-request message requests commands)
+            {:keys [command content]} (commands/replace-name-with-request message commands requests)
             command          (if (and params command)
                                (merge command {:prefill        prefill
                                                :prefill-bot-db (or prefill-bot-db prefillBotDb)})
@@ -90,7 +90,7 @@
                                #(dispatch [:execute-command-immediately command])
                                (when (and (not answered?) status-initialized?)
                                  #(set-chat-command message-id command)))]
-        [view st/comand-request-view
+        [view st/command-request-view
          [touchable-highlight
           {:on-press on-press-handler}
           [view st/command-request-message-view
