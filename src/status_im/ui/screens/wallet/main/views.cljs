@@ -62,10 +62,12 @@
         (str (when pos-change? "+") change "%")
         "-%")]]))
 
-(defn main-section [usd-value change error-message]
+(defn main-section [usd-value change sync-state error-message]
   [react/view {:style styles/main-section}
-   (when error-message
-     [wallet.views/error-message-view styles/error-container styles/error-message])
+   (if (= sync-state :syncing)
+     [wallet.views/wallet-syncing styles/error-container styles/error-message]
+     (when error-message
+       [wallet.views/error-message-view styles/error-container styles/error-message]))
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
      [react/text {:style styles/total-balance-value} usd-value]
@@ -137,10 +139,11 @@
             portfolio-value  [:portfolio-value]
             portfolio-change [:portfolio-change]
             prices-loading?  [:prices-loading?]
+            sync-state       [:sync-state]
             balance-loading? [:wallet/balance-loading?]
             error-message    [:wallet/error-message?]]
     [react/view {:style wallet.styles/wallet-container}
      [toolbar-view]
      [react/view components.styles/flex
-      [main-section portfolio-value portfolio-change error-message]
+      [main-section portfolio-value portfolio-change sync-state error-message]
       [asset-section balance prices-loading? balance-loading?]]]))

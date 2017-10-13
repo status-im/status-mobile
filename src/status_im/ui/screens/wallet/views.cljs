@@ -10,3 +10,10 @@
     [vector-icons/icon :icons/exclamation_mark {:color           :white
                                                 :container-style styles/error-exclamation}]
     [react/text {:style error-message-style} (i18n/label :t/wallet-error)]]])
+
+(defn wallet-syncing [error-container-style error-message-style]
+  [react/view {:style error-container-style}
+   [react/view {:style styles/error-container}
+    [vector-icons/icon :icons/exclamation_mark {:color           :white
+                                                :container-style styles/warning-exclamation}]
+    [react/text {:style error-message-style} (i18n/label :t/sync-in-progress)]]])
