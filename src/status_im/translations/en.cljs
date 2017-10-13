@@ -103,7 +103,8 @@
    :error-incorrect-name                  "Please select another name"
    :error-incorrect-email                 "Incorrect e-mail"
    :profile-testnet-icon                  "Testnet"
-   :profile-testnet-text                  "Testnet Only. Please do not send real ETH or SNT to your address"
+   :testnet-text                          "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address."
+   :mainnet-text                          "You’re on the Mainnet. Real ETH will be send."
 
    ;;make_photo
    :image-source-title                    "Profile image"

@@ -42,6 +42,12 @@
 (def ropsten-id 3)
 (def rinkeby-id 4)
 
+(defn get-testnet-name [testnet-id]
+  (cond
+    (= testnet-id ropsten-id) "Ropsten"
+    (= testnet-id rinkeby-id) "Rinkeby"
+    :else "Unknown"))
+
 (def default-networks
   (transform-config
     {"testnet"     {:id     "testnet",

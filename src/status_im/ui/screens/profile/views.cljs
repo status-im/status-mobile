@@ -6,9 +6,7 @@
              [action-button action-button-disabled action-separator]]
             [status-im.components.action-button.styles :refer [actions-list]]
             [status-im.components.chat-icon.screen :refer [my-profile-icon]]
-            [status-im.components.common.common
-             :refer
-             [bottom-shadow form-spacer separator]]
+            [status-im.components.common.common :as common]
             [status-im.components.context-menu :refer [context-menu]]
             [status-im.components.list-selection :refer [share-options]]
             [status-im.components.react :as react]
@@ -21,7 +19,8 @@
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]]
-            [status-im.utils.config :as config])
+            [status-im.utils.config :as config]
+            [status-im.components.icons.vector-icons :as vector-icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
@@ -125,7 +124,7 @@
     :accessibility-label :profile-public-key}])
 
 (defn info-item-separator []
-  [separator styles/info-item-separator])
+  [common/separator styles/info-item-separator])
 
 (defn tag-view [tag]
   [react/text {:style {:color color-blue}
@@ -194,58 +193,50 @@
         [react/text {:style styles/profile-status-text}
          (colorize-status-hashtags status)]]]])])
 
-
-(defn testnet-only []
-  [react/view styles/testnet-only-container
-   [react/view styles/testnet-icon
-    [react/text {:style styles/testnet-icon-text}
-     (label :t/profile-testnet-icon)]]
-   [react/text {:style styles/testnet-only-text}
-    (label :t/profile-testnet-text)]])
+(defn network-info []
+  [react/view styles/network-info
+   [common/network-info]
+   [common/separator]])
 
 (defview my-profile []
-  (letsubs [{:keys [status] :as current-account} [:get-current-account]
-            testnet? [:testnet?]]
+  (letsubs [{:keys [status] :as current-account} [:get-current-account]]
     [react/view styles/profile
      [status-bar]
      [my-profile-toolbar]
-     (when testnet?
-       [testnet-only])
+     [network-info]
      [react/scroll-view
       [react/view styles/profile-form
        [profile-badge current-account]
        [profile-status status true]]
-      [form-spacer]
+      [common/form-spacer]
       [react/view actions-list
        [action-button {:label     (label :t/show-qr)
                        :icon      :icons/qr
                        :icon-opts {:color :blue}
                        :on-press  (show-qr current-account :public-key)}]]
-      [form-spacer]
+      [common/form-spacer]
       [react/view styles/profile-info-container
        [my-profile-info current-account]
-       [bottom-shadow]]]]))
+       [common/bottom-shadow]]]]))
 
 (defview profile []
   (letsubs [{:keys [pending?
                     status
                     whisper-identity]
              :as   contact} [:contact]
-            chat-id  [:get :current-chat-id]
-            testnet? [:testnet?]]
+            chat-id  [:get :current-chat-id]]
     [react/view styles/profile
      [status-bar]
      [profile-toolbar contact]
-     (when testnet?
-       [testnet-only])
+     [network-info]
      [react/scroll-view
       [react/view styles/profile-form
        [profile-badge contact]
        (when (and (not (nil? status)) (not (string/blank? status)))
          [profile-status status])]
-      [form-spacer]
+      [common/form-spacer]
       [profile-actions contact chat-id]
-      [form-spacer]
+      [common/form-spacer]
       [react/view styles/profile-info-container
        [profile-info contact]
-       [bottom-shadow]]]]))
+       [common/bottom-shadow]]]]))

@@ -114,12 +114,6 @@
          (money/wei->str :eth balance)
          "...")]]]))
 
-(defn network-label
-  ([n] (network-label [{} n]))
-  ([style n] [react/view (merge styles/network-container
-                                style)
-              [react/text {:style styles/network} n]]))
-
 (defn separator []
   [react/view styles/separator])
 
