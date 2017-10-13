@@ -8,7 +8,7 @@
 (spec/def ::amount-error (spec/nilable string?))
 (spec/def ::password (spec/nilable string?))
 (spec/def ::wrong-password? (spec/nilable boolean?))
-(spec/def ::transaction-id (spec/nilable string?))
+(spec/def ::id (spec/nilable string?))
 (spec/def ::waiting-signal? (spec/nilable boolean?))
 (spec/def ::signing? (spec/nilable boolean?))
 (spec/def ::later? (spec/nilable boolean?))
@@ -18,10 +18,10 @@
 (spec/def ::camera-flashlight #{:on :off})
 (spec/def ::camera-permitted? boolean?)
 (spec/def ::in-progress? boolean?)
-(spec/def ::from-chat? boolean?)
+(spec/def ::from-chat? (spec/nilable boolean?))
 
 (spec/def :wallet/send-transaction (allowed-keys
                                      :opt-un [::amount ::to-address ::to-name ::amount-error ::password
-                                              ::waiting-signal? ::signing? ::transaction-id ::later?
+                                              ::waiting-signal? ::signing? ::id ::later?
                                               ::camera-dimensions ::camera-flashlight ::in-progress?
                                               ::wrong-password? ::camera-permitted? ::from-chat?]))

@@ -21,37 +21,29 @@
        [react/text {:style styles/tooltip-text} label]]
       [vector-icons/icon :icons/tooltip-triangle {:color :white :style styles/tooltip-triangle}]]]))
 
-;;TODO (andrey) temporary, should be removed later
-(defn amount-input-disabled [amount]
-  [react/view components.styles/flex
-   [react/text {:style styles/label} (i18n/label :t/amount)]
-   [react/view styles/amount-text-input-container
-    [react/view (merge (styles/amount-container false) styles/container-disabled)
-     [react/text-input
-      {:editable      false
-       :default-value amount
-       :style         styles/text-input}]]]])
-
 (defn amount-input []
   (let [active? (reagent/atom false)]
-    (fn [& [{:keys [input-options style error]}]]
+    (fn [& [{:keys [input-options style error disabled?]}]]
       (let [{:keys [on-focus on-blur]} input-options]
         [react/view components.styles/flex
          [react/text {:style styles/label} (i18n/label :t/amount)]
          [react/view styles/amount-text-input-container
-          [react/view (merge (styles/amount-container @active?) style)
+          [react/view (merge (styles/amount-container @active?) (if disabled? styles/container-disabled style))
            [react/text-input
             (merge
-              {:keyboard-type          :numeric
-               :placeholder            "0.000"
-               :placeholder-text-color "#ffffff66"
-               :selection-color        :white
-               :style                  styles/text-input
-               :on-focus               #(do (reset! active? true)
-                                            (when on-focus (on-focus)))
-               :on-blur                #(do (reset! active? false)
-                                            (when on-blur (on-blur)))}
-              (dissoc input-options :on-focus :on-blur))]]
+             {:style styles/text-input}
+             (if disabled?
+               {:editable false}
+               {:keyboard-type          :numeric
+                :placeholder            "0.000"
+                :placeholder-text-color "#ffffff66"
+                :selection-color        :white
+                :style                  styles/text-input
+                :on-focus               #(do (reset! active? true)
+                                             (when on-focus (on-focus)))
+                :on-blur                #(do (reset! active? false)
+                                             (when on-blur (on-blur)))})
+             (dissoc input-options :on-focus :on-blur))]]
           (when-not (nil? error)
             [tooltip error])]]))))
 

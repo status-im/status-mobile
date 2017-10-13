@@ -34,13 +34,13 @@
 
 (handlers/register-handler-fx
   :wallet/set-and-validate-amount
-  (fn [{{:wallet/keys [send-transaction] :as db} :db} [_ amount]]
+  (fn [{:keys [db]} [_ amount]]
     (let [error (wallet.db/get-amount-validation-error amount)]
       {:db (-> db
-               (assoc-in [:wallet/send-transaction :amount] amount)
-               (assoc-in [:wallet/send-transaction :amount-error] error))})))
+               (assoc-in [:wallet :send-transaction :amount] amount)
+               (assoc-in [:wallet :send-transaction :amount-error] error))})))
 
-(def ^:private clear-send-properties {:transaction-id  nil
+(def ^:private clear-send-properties {:id  nil
                                       :wrong-password? false
                                       :waiting-signal? false
                                       :from-chat? false})
@@ -49,11 +49,11 @@
   ::transaction-completed
   (fn [{db :db} [_ {:keys [id response]}]]
     (let [{:keys [hash error]} response
-          db' (assoc-in db [:wallet/send-transaction :in-progress?] false)]
+          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
       (if-not (and error (string? error) (not (string/blank? error)))
         {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
-                       (update :wallet/send-transaction merge clear-send-properties))
+                       (update-in [:wallet :send-transaction] merge clear-send-properties))
          :dispatch [:navigate-to :wallet-transaction-sent]}
         {:db db'}))))
 
@@ -66,13 +66,13 @@
   ::transaction-modal-completed
   (fn [{db :db} [_ {:keys [id response]}]]
     (let [{:keys [hash error]} response
-          db' (assoc-in db [:wallet/send-transaction :in-progress?] false)
+          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)
           has-error? (and error (string? error) (not (string/blank? error)))]
       (if has-error?
         {:db db'}
         {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
-                       (update :wallet/send-transaction merge clear-send-properties))
+                       (update-in [:wallet :send-transaction] merge clear-send-properties))
          :dispatch [:navigate-back]}))))
 
 (defn on-transactions-modal-completed [raw-results]
@@ -82,56 +82,51 @@
 
 (handlers/register-handler-fx
   :wallet.send-transaction/transaction-queued
-  (fn [{{:wallet/keys [send-transaction] :as db} :db} _]
-    (let [{:keys [later? password transaction-id]} send-transaction]
+  (fn [{:keys [db]} _]
+    (let [{:keys [later? password id]} (get-in db [:wallet :send-transaction])]
       (if later?
-        {:db                      (assoc-in db [:wallet/send-transaction :waiting-signal?] false)
+        {:db                      (assoc-in db [:wallet :send-transaction :waiting-signal?] false)
          :dispatch                [:navigate-back]
          ::show-transaction-moved nil}
-        {::accept-transaction {:id           transaction-id
+        {::accept-transaction {:id           id
                                :password     password
                                :on-completed on-transactions-completed}}))))
 
 (handlers/register-handler-fx
   :wallet/sign-transaction
   (fn [{{:keys          [web3]
-         :wallet/keys   [send-transaction]
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
-    (let [{:keys [amount transaction-id password]} send-transaction]
-      (if transaction-id
-        {::accept-transaction {:id           transaction-id
+    (let [{:keys [amount id password to-address]} (get-in db [:wallet :send-transaction])]
+      (if id
+        {::accept-transaction {:id           id
                                :password     password
                                :on-completed on-transactions-completed}
-         :db (assoc-in db [:wallet/send-transaction :in-progress?] true)}
-        {:db (update db :wallet/send-transaction assoc
-                     :waiting-signal? true
-                     :later? later?
-                     :in-progress? true)
+         :db (assoc-in db [:wallet :send-transaction :in-progress?] true)}
+        {:db (update-in db [:wallet :send-transaction] assoc
+                        :waiting-signal? true
+                        :later? later?
+                        :in-progress? true)
          ::send-transaction {:web3  web3
                              :from  (get-in accounts [current-account-id :address])
-                             :to    (:to-address send-transaction)
+                             :to    to-address
                              :value (money/to-wei (money/normalize amount))}}))))
 
 (handlers/register-handler-fx
   :wallet/sign-transaction-modal
   (fn [{{:keys          [web3]
-         :wallet/keys   [send-transaction]
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
-    (let [{:keys [transaction-id password]} send-transaction]
-      {:db (assoc-in db [:wallet/send-transaction :in-progress?] true)
-       ::accept-transaction {:id           transaction-id
+    (let [{:keys [id password]} (get-in db [:wallet :send-transaction])]
+      {:db (assoc-in db [:wallet :send-transaction :in-progress?] true)
+       ::accept-transaction {:id           id
                              :password     password
                              :on-completed on-transactions-modal-completed}})))
 
 (defn discard-transaction
-  [{{:wallet/keys [send-transaction] :as db} :db}]
-  (let [{:keys [transaction-id]} send-transaction]
-    (merge {:db (update db :wallet/send-transaction assoc
-                        :signing? false
-                        :transaction-id nil
-                        :wrong-password? false)}
-           (when transaction-id
-             {:discard-transaction transaction-id}))))
+  [{:keys [db]}]
+  (let [{:keys [id]} (get-in db [:wallet :send-transaction])]
+    (merge {:db (update-in db [:wallet :send-transaction] merge clear-send-properties)}
+           (when id
+             {:discard-transaction id}))))
 
 (handlers/register-handler-fx
   :wallet/discard-transaction
@@ -147,7 +142,22 @@
 
 (handlers/register-handler-fx
   :wallet/cancel-signing-modal
-  (fn [{{:wallet/keys   [send-transaction] :as db} :db} _]
-    (let [{:keys [transaction-id]} send-transaction]
-      {:db (update-in db [:wallet/send-transaction]
-                      assoc :signing? false :wrong-password? false)})))
+  (fn [{:keys [db]} _]
+    {:db (update-in db [:wallet :send-transaction] assoc
+                    :signing? false
+                    :wrong-password? false)}))
+
+(handlers/register-handler-fx
+  :wallet.send/set-camera-dimensions
+  (fn [{:keys [db]} [_ camera-dimensions]]
+    {:db (assoc-in db [:wallet :send-transaction :camera-dimensions] camera-dimensions)}))
+
+(handlers/register-handler-fx
+  :wallet.send/set-password
+  (fn [{:keys [db]} [_ password]]
+    {:db (assoc-in db [:wallet :send-transaction :password] password)}))
+
+(handlers/register-handler-fx
+  :wallet.send/set-signing?
+  (fn [{:keys [db]} [_ signing?]]
+    {:db (assoc-in db [:wallet :send-transaction :signing?] signing?)}))
