@@ -20,14 +20,11 @@
       [react/view styles/dapps-list-item-second-row
        [react/view styles/dapps-list-item-name-container
         [react/view styles/dapps-list-item-avatar-container
-         [react/view (chat-icon/contact-icon-contacts-tab dapp)]]
+         [react/view [chat-icon/contact-icon-view dapp {:size 80}]]]
         [react/text {:style           styles/dapps-list-item-name
                      :font            :medium
                      :number-of-lines 1}
          name]]]]])
-
-;; TODO(oskarth): Carousel task, possibly different subcomponent
-(def dapp-item render-dapp)
 
 ;; TODO(oskarth): Move this to top level discover ns
 (defn preview [dapps]
@@ -38,11 +35,12 @@
     :t/all
     #(re-frame/dispatch [:navigate-to :discover-all-dapps])]
    (if (seq dapps)
-     ;; TODO(oskarth): Too wide margins bug
-     [list/flat-list {:data                    (vals dapps)
-                      :render-fn               render-dapp
-                      :horizontal              true
-                      :content-container-style styles/all-dapps-flat-list}]
+     [list/flat-list {:data                              (vals dapps)
+                      :render-fn                         render-dapp
+                      :horizontal                        true
+                      :separator?                        false
+                      :shows-horizontal-scroll-indicator false
+                      :content-container-style           styles/dapp-preview-flat-list}]
      [react/text (i18n/label :t/none)])])
 
 (defview main []
