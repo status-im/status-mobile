@@ -129,7 +129,8 @@
    :align-items    :center})
 
 (def asset-item-value
-  {:font-size 16
+  {:flex      -1
+   :font-size 16
    :color     styles/color-black})
 
 (defstyle add-asset-icon

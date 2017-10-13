@@ -38,8 +38,12 @@
 (def left-item-wrapper
   {:margin 14})
 
+(def content-item-wrapper
+  {:flex         1
+   :margin-right 16})
+
 (def right-item-wrapper
-  {:margin 16})
+  {:margin-right 16})
 
 (def base-separator
   {:height           1

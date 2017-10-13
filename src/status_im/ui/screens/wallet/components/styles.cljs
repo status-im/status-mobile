@@ -105,12 +105,18 @@
    :font-size      15
    :letter-spacing -0.2})
 
+(def wallet-value-container
+  {:flex           1
+   :flex-direction :row})
+
 (def wallet-value
   {:padding-left   6
-   :flex-shrink    1
    :color          styles/color-white-transparent-5
    :font-size      15
    :letter-spacing -0.2})
+
+(def wallet-value-amount
+  {:flex -1})
 
 (def separator
   {:height            1
