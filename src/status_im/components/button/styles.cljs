@@ -51,8 +51,11 @@
                          (when disabled? {:opacity 0.6}))})
 
 (defstyle button-borders
-  {:android           {:border-radius 4}
-   :ios               {:border-radius 8}})
+  {:android {:border-radius 4}
+   :ios     {:border-radius 8
+             ;; Border radius is ignored with transparent background unless overflow "hidden" is used
+             ;; See https://github.com/facebook/react-native/issues/13760
+             :overflow      :hidden}})
 
 (def primary-button
   (merge
