@@ -145,33 +145,39 @@
 
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]]
-    (let [{:keys [amount amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction]
-      [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
+    (if transaction
+      (let [{:keys [amount amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction]
+        [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
+         [react/view components.styles/flex
+          [status-bar/status-bar {:type :modal-wallet}]
+          [toolbar-modal from-chat?]
+          [common/network-info {:text-color :white}]
+          [react/scroll-view {:keyboardShouldPersistTaps :always}
+           [react/view components.styles/flex
+            [react/view wallet.styles/choose-participant-container
+             [components/choose-recipient-disabled {:address  to
+                                                    :name     to-name}]]
+            [react/view wallet.styles/choose-wallet-container
+             [components/choose-wallet]]
+            [react/view wallet.styles/amount-container
+             [components/amount-input
+              {:error (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
+               :disabled? true
+               :input-options {:default-value amount}}]
+             [react/view wallet.styles/choose-currency-container
+              [components/choose-currency wallet.styles/choose-currency]]]]]
+          [components/separator]
+          (if signing?
+            [signing-buttons
+             #(re-frame/dispatch [:wallet/cancel-signing-modal])
+             #(re-frame/dispatch [:wallet/sign-transaction-modal])
+             in-progress?]
+            [sign-buttons amount-error to amount sufficient-funds? #(re-frame/dispatch [:navigate-back])])
+          (when signing?
+            [sign-panel])
+          (when in-progress? [react/view send.styles/processing-view])]])
+      [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]
-        [toolbar-modal from-chat?]
-        [common/network-info {:text-color :white}]
-        [react/scroll-view {:keyboardShouldPersistTaps :always}
-         [react/view components.styles/flex
-          [react/view wallet.styles/choose-participant-container
-           [components/choose-recipient-disabled {:address  to
-                                                  :name     to-name}]]
-          [react/view wallet.styles/choose-wallet-container
-           [components/choose-wallet]]
-          [react/view wallet.styles/amount-container
-           [components/amount-input
-            {:error (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
-             :disabled? true
-             :input-options {:default-value amount}}]
-           [react/view wallet.styles/choose-currency-container
-            [components/choose-currency wallet.styles/choose-currency]]]]]
-        [components/separator]
-        (if signing?
-          [signing-buttons
-           #(re-frame/dispatch [:wallet/cancel-signing-modal])
-           #(re-frame/dispatch [:wallet/sign-transaction-modal])
-           in-progress?]
-          [sign-buttons amount-error to amount sufficient-funds? #(re-frame/dispatch [:navigate-back])])
-        (when signing?
-          [sign-panel])
-        (when in-progress? [react/view send.styles/processing-view])]])))
+        [toolbar-modal false]
+        [react/text {:style send.styles/empty-text} (i18n/label :t/unsigned-transaction-expired)]]])))
