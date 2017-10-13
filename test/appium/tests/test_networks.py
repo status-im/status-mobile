@@ -1,4 +1,5 @@
 import pytest
+from itertools import combinations_with_replacement
 from tests.basetestcase import MultiplyDeviceTestCase, SingleDeviceTestCase
 from tests.preconditions import set_password_as_new_user
 from views.home import HomeView
@@ -27,21 +28,13 @@ class TestNetwork(SingleDeviceTestCase):
 
 class TestNetworkChats(MultiplyDeviceTestCase):
 
-    networks = [['Ropsten', 'Ropsten with upstream RPC'], ['Ropsten', 'Rinkeby'],
-                ['Ropsten', 'Rinkeby with upstream RPC'], ['Ropsten', 'Mainnet'],
-                ['Ropsten', 'Mainnet with upstream RPC'], ['Ropsten', 'Ropsten'],
-                ['Ropsten with upstream RPC', 'Ropsten with upstream RPC'], ['Ropsten with upstream RPC', 'Rinkeby'],
-                ['Ropsten with upstream RPC', 'Rinkeby with upstream RPC'], ['Ropsten with upstream RPC', 'Mainnet'],
-                ['Ropsten with upstream RPC', 'Mainnet with upstream RPC'], ['Rinkeby', 'Rinkeby'],
-                ['Rinkeby', 'Rinkeby with upstream RPC'], ['Rinkeby', 'Mainnet'],
-                ['Rinkeby', 'Mainnet with upstream RPC'], ['Rinkeby with upstream RPC', 'Rinkeby with upstream RPC'],
-                ['Rinkeby with upstream RPC', 'Mainnet'], ['Rinkeby with upstream RPC', 'Mainnet with upstream RPC'],
-                ['Mainnet', 'Mainnet'], ['Mainnet', 'Mainnet with upstream RPC'],
-                ['Mainnet with upstream RPC', 'Mainnet with upstream RPC']]
+    network_combinations = list(combinations_with_replacement(
+        ['Ropsten', 'Rinkeby', 'Mainnet',
+         'Rinkeby with upstream RPC', 'Mainnet with upstream RPC', 'Rinkeby with upstream RPC'], 2))
 
     @pytest.mark.network_chat
-    @pytest.mark.parametrize("network", networks,
-                             ids=[i[0] + ' & ' + i[1] for i in networks])
+    @pytest.mark.parametrize("network", network_combinations,
+                             ids=[i[0] + ' & ' + i[1] for i in network_combinations])
     def test_one_to_one_chat_between(self, network):
         device_1, device_2 = HomeView(self.driver_1), HomeView(self.driver_2)
         set_password_as_new_user(device_1, device_2)
