@@ -70,18 +70,18 @@
                    :style  (styles/corner-right-bottom min-dimension)}]]))
 
 (defview choose-recipient []
-  (letsubs [camera-dimensions [:camera-dimensions]
-            camera-flashlight [:camera-flashlight]
-            camera-permitted? [:get-in [:wallet/send-transaction :camera-permitted?]]]
+  (letsubs [camera-dimensions [:wallet.send/camera-dimensions]
+            camera-flashlight [:wallet.send/camera-flashlight]
+            camera-permitted? [:wallet.send/camera-permitted?]]
     [react/view {:style styles/wallet-container}
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view camera-flashlight]
-            [react/view {:style         styles/qr-container
-                         :pointerEvents :none
-                         :on-layout     #(let [layout (.. % -nativeEvent -layout)]
-                                           (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-dimensions]
-                                                               {:width  (.-width layout)
-                                                                :height (.-height layout)}]))}
+     [react/view {:style         styles/qr-container
+                  :pointerEvents :none
+                  :on-layout     #(let [layout (.. % -nativeEvent -layout)]
+                                    (re-frame/dispatch [:wallet.send/set-camera-dimensions
+                                                        {:width  (.-width layout)
+                                                         :height (.-height layout)}]))}
       (when (or platform/android?
                 camera-permitted?)[camera/camera {:style         styles/preview
                       :aspect        :fill

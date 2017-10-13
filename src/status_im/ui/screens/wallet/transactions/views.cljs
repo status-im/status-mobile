@@ -50,12 +50,7 @@
 (defn action-buttons [{:keys [id to value] :as transaction}]
   [react/view {:style transactions.styles/action-buttons}
    [button/primary-button {:style    {:margin-right 12}
-                           :on-press #(re-frame/dispatch [:navigate-to-modal
-                                                          :wallet-send-transaction-modal
-                                                          {:amount         (str (money/wei->ether value))
-                                                           :transaction-id id
-                                                           :to-address     to
-                                                           :to-name        to}])}
+                           :on-press #(re-frame/dispatch [:wallet/show-sign-transaction id])}
     (i18n/label :t/transactions-sign)]
    [button/secondary-button {:on-press #(on-delete-transaction transaction)}
     (i18n/label :t/delete)]])

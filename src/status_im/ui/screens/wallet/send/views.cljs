@@ -1,23 +1,22 @@
 (ns status-im.ui.screens.wallet.send.views
-  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.components.animation :as animation]
+            [status-im.components.camera :as camera]
             [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.components.react :as react]
             [status-im.components.status-bar :as status-bar]
             [status-im.components.styles :as components.styles]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.components.camera :as camera]
-            [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]
+            [status-im.ui.screens.wallet.components.views :as components]
+            [status-im.ui.screens.wallet.send.animations :as send.animations]
+            [status-im.ui.screens.wallet.send.styles :as send.styles]
+            [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
-            [status-im.ui.screens.wallet.request.styles :as request.styles]
-            [status-im.ui.screens.wallet.components.views :as components]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.ui.screens.wallet.send.animations :as send.animations]
-            [status-im.ui.screens.wallet.send.styles :as send.styles]))
+            [status-im.utils.utils :as utils])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn toolbar-view [signing?]
   [toolbar/toolbar2 {:style wallet.styles/toolbar}
@@ -34,24 +33,24 @@
 
 (defview sign-panel []
   (letsubs [account [:get-current-account]
-            wrong-password? [:get-in [:wallet/send-transaction :wrong-password?]]
+            wrong-password? [:wallet.send/wrong-password?]
             signing-phrase (:signing-phrase @account)
             bottom-value (animation/create-value -250)
             opacity-value (animation/create-value 0)]
     {:component-did-mount #(send.animations/animate-sign-panel opacity-value bottom-value)}
     [react/animated-view {:style (send.styles/animated-sign-panel bottom-value)}
-      [react/animated-view {:style (send.styles/sign-panel opacity-value)}
-       [react/view send.styles/signing-phrase-container
-        [react/text {:style send.styles/signing-phrase} signing-phrase]]
-       [react/text {:style send.styles/signing-phrase-description} (i18n/label :t/signing-phrase-description)]
-       [react/view send.styles/password-container
-        [react/text-input
-         {:auto-focus             true
-          :secure-text-entry      true
-          :placeholder            (i18n/label :t/enter-password)
-          :placeholder-text-color "#939ba1"
-          :on-change-text         #(re-frame/dispatch [:set-in [:wallet/send-transaction :password] %])
-          :style                  send.styles/password}]]]
+     [react/animated-view {:style (send.styles/sign-panel opacity-value)}
+      [react/view send.styles/signing-phrase-container
+       [react/text {:style send.styles/signing-phrase} signing-phrase]]
+      [react/text {:style send.styles/signing-phrase-description} (i18n/label :t/signing-phrase-description)]
+      [react/view send.styles/password-container
+       [react/text-input
+        {:auto-focus             true
+         :secure-text-entry      true
+         :placeholder            (i18n/label :t/enter-password)
+         :placeholder-text-color "#939ba1"
+         :on-change-text         #(re-frame/dispatch [:wallet.send/set-password %])
+         :style                  send.styles/password}]]]
      (when wrong-password?
        [components/tooltip (i18n/label :t/wrong-password)])]))
 
@@ -86,31 +85,22 @@
         [react/view (wallet.styles/button-container sign-enabled?)
          [components/button-text (i18n/label :t/transactions-sign-later)]]])
      [react/view components.styles/flex]
-     [react/touchable-highlight {:on-press (when immediate-sign-enabled? #(re-frame/dispatch [:set-in [:wallet/send-transaction :signing?] true]))}
+     [react/touchable-highlight {:on-press (when immediate-sign-enabled? #(re-frame/dispatch [:wallet.send/set-signing? true]))}
       [react/view (wallet.styles/button-container immediate-sign-enabled?)
        [components/button-text (i18n/label :t/transactions-sign-transaction)]
        [vector-icons/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]]))
-
-(defn sufficient-funds? [amount-in-eth balance]
-  (.greaterThanOrEqualTo balance (money/bignumber (money/to-wei amount-in-eth))))
 
 (defn request-camera-permissions []
   (when platform/android?
     (re-frame/dispatch [:request-permissions [:camera]]))
   (camera/request-access
    (fn [permitted?]
-     (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-permitted?] permitted?])
+     (re-frame/dispatch [:set-in [:wallet :send-transaction :camera-permitted?] permitted?])
      (re-frame/dispatch [:navigate-to :choose-recipient]))))
 
 (defview send-transaction []
-  (letsubs [balance      [:balance]
-            amount       [:get-in [:wallet/send-transaction :amount]]
-            amount-error [:get-in [:wallet/send-transaction :amount-error]]
-            signing?     [:get-in [:wallet/send-transaction :signing?]]
-            to-address   [:get-in [:wallet/send-transaction :to-address]]
-            to-name      [:get-in [:wallet/send-transaction :to-name]]
-            in-progress? [:get-in [:wallet/send-transaction :in-progress?]]]
-    (let [sufficient-funds? (or (nil? amount) (sufficient-funds? amount balance))]
+  (letsubs [transaction [:wallet.send/transaction]]
+    (let [{:keys [amount amount-error signing? to-address to-name in-progress? sufficient-funds?]} transaction]
       [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :wallet}]
@@ -151,36 +141,33 @@
    [toolbar/content-title {:color :white} (i18n/label :t/send-transaction)]])
 
 (defview send-transaction-modal []
-  (letsubs [amount       [:get-in [:wallet/send-transaction :amount]]
-            amount-error [:get-in [:wallet/send-transaction :amount-error]]
-            signing?     [:get-in [:wallet/send-transaction :signing?]]
-            to-address   [:get-in [:wallet/send-transaction :to-address]]
-            to-name      [:get-in [:wallet/send-transaction :to-name]]
-            recipient    [:contact-by-address @to-name]
-            in-progress? [:get-in [:wallet/send-transaction :in-progress?]]
-            from-chat?   [:get-in [:wallet/send-transaction :from-chat?]]]
-    [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
-     [react/view components.styles/flex
-      [status-bar/status-bar {:type :wallet}]
-      [toolbar-modal from-chat?]
-      [react/scroll-view {:keyboardShouldPersistTaps :always}
+  (letsubs [transaction [:wallet.send/unsigned-transaction]]
+    (let [{:keys [amount amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction]
+      [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
-        [react/view wallet.styles/choose-participant-container
-         [components/choose-recipient-disabled {:address  to-address
-                                                :name     (:name recipient)}]]
-        [react/view wallet.styles/choose-wallet-container
-         [components/choose-wallet]]
-        [react/view wallet.styles/amount-container
-         [components/amount-input-disabled amount]
-         [react/view wallet.styles/choose-currency-container
-          [components/choose-currency wallet.styles/choose-currency]]]]]
-      [components/separator]
-      (if signing?
-        [signing-buttons
-         #(re-frame/dispatch [:wallet/cancel-signing-modal])
-         #(re-frame/dispatch [:wallet/sign-transaction-modal])
-         in-progress?]
-        [sign-buttons amount-error to-address amount true #(re-frame/dispatch [:navigate-back])])
-      (when signing?
-        [sign-panel])]
-     (when in-progress? [react/view send.styles/processing-view])]))
+        [status-bar/status-bar {:type :wallet}]
+        [toolbar-modal from-chat?]
+        [react/scroll-view {:keyboardShouldPersistTaps :always}
+         [react/view components.styles/flex
+          [react/view wallet.styles/choose-participant-container
+           [components/choose-recipient-disabled {:address  to
+                                                  :name     to-name}]]
+          [react/view wallet.styles/choose-wallet-container
+           [components/choose-wallet]]
+          [react/view wallet.styles/amount-container
+           [components/amount-input
+            {:error (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
+             :disabled? true
+             :input-options {:default-value amount}}]
+           [react/view wallet.styles/choose-currency-container
+            [components/choose-currency wallet.styles/choose-currency]]]]]
+        [components/separator]
+        (if signing?
+          [signing-buttons
+           #(re-frame/dispatch [:wallet/cancel-signing-modal])
+           #(re-frame/dispatch [:wallet/sign-transaction-modal])
+           in-progress?]
+          [sign-buttons amount-error to amount sufficient-funds? #(re-frame/dispatch [:navigate-back])])
+        (when signing?
+          [sign-panel])
+        (when in-progress? [react/view send.styles/processing-view])]])))

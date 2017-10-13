@@ -85,3 +85,6 @@
 
 (defn with-precision [n decimals]
   (.round (bignumber n) decimals))
+
+(defn sufficient-funds? [amount-in-eth balance]
+  (.greaterThanOrEqualTo balance (bignumber (to-wei amount-in-eth))))

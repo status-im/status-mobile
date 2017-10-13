@@ -6,12 +6,12 @@
 (handlers/register-handler-db
   :wallet/toggle-flashlight
   (fn [db]
-    (let [flashlight-state (get-in db [:wallet/send-transaction :camera-flashlight])
+    (let [flashlight-state (get-in db [:wallet :send-transaction :camera-flashlight])
           toggled-state (if (= :on flashlight-state) :off :on)]
-      (assoc-in db [:wallet/send-transaction :camera-flashlight] toggled-state))))
+      (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
 
 (defn choose-address-and-name [db address name]
-  (update db :wallet/send-transaction assoc :to-address address :to-name name))
+  (update-in db [:wallet :send-transaction] assoc :to-address address :to-name name))
 
 (handlers/register-handler-fx
   :choose-recipient

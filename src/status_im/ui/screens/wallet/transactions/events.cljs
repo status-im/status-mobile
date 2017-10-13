@@ -21,39 +21,35 @@
 
 ;;Handlers
 
-;TRANSACTION QUEUED signal from status-go
+;;TRANSACTION QUEUED signal from status-go
 (handlers/register-handler-fx
   :transaction-queued
   [(re-frame/inject-cofx :now)]
-  (fn [{{:wallet/keys [send-transaction] :as db} :db now :now} [_ {:keys [id message_id args] :as transaction}]]
+  (fn [{:keys [db now]} [_ {:keys [id message_id args] :as transaction}]]
     (if (transaction-valid? transaction)
-      (let [{:keys [from to value data gas gasPrice]} args]
-        (let [;;TODO (andrey) revisit this map later (this map from old transactions, idk if we need all these fields)
-              transaction {:id         id
-                           :from       from
-                           :to         to
-                           :value      (money/to-decimal value)
-                           :data       data
-                           :gas        (money/to-decimal gas)
-                           :gas-price  (money/to-decimal gasPrice)
-                           :timestamp  now
-                           :message-id message_id}]
-          (merge
-            {:db (-> db
-                     (assoc-in [:wallet :transactions-unsigned id] transaction)
-                     (assoc-in [:wallet/send-transaction :transaction-id] id))}
-            (if (:waiting-signal? send-transaction)
-              ;;sending from wallet
-              {:dispatch [:wallet.send-transaction/transaction-queued id]}
-              ;;sending from chat
-              {:dispatch [:navigate-to-modal :wallet-send-transaction-modal {:amount         (str (money/wei->ether value))
-                                                                             :transaction-id id
-                                                                             :to-address     to
-                                                                             :to-name        to
-                                                                             :from-chat?     true}]}))))
+      (let [{:keys [from to value data gas gasPrice]} args
+            ;;TODO (andrey) revisit this map later (this map from old transactions, idk if we need all these fields)
+            transaction                               {:id         id
+                                                       :from       from
+                                                       :to         to
+                                                       :value      (money/to-decimal value)
+                                                       :data       data
+                                                       :gas        (money/to-decimal gas)
+                                                       :gas-price  (money/to-decimal gasPrice)
+                                                       :timestamp  now
+                                                       :message-id message_id}]
+        (merge
+         {:db (-> db
+                  (assoc-in [:wallet :transactions-unsigned id] transaction)
+                  (assoc-in [:wallet :send-transaction :id] id))}
+         (if (get-in db [:wallet :send-transaction :waiting-signal?])
+           ;;sending from wallet
+           {:dispatch [:wallet.send-transaction/transaction-queued id]}
+           ;;sending from chat
+           {:dispatch [:navigate-to-modal :wallet-send-transaction-modal id :from-chat]})))
       {:discard-transaction id})))
 
-;TRANSACTION FAILED signal from status-go
+;;TRANSACTION FAILED signal from status-go
 (handlers/register-handler-fx
   :transaction-failed
   (fn [{{:accounts/keys [accounts current-account-id] :as db} :db} [_ {:keys [id args message_id error_code error_message] :as event}]]
@@ -63,7 +59,7 @@
 
         ;;WRONG PASSWORD
         constants/send-transaction-password-error-code
-        {:db (assoc-in db [:wallet/send-transaction :wrong-password?] true)}
+        {:db (assoc-in db [:wallet :send-transaction :wrong-password?] true)}
 
         ;;TODO (andrey) something weird here below, revisit
         ;;DISCARDED
@@ -73,6 +69,6 @@
 
         ;;NO ERROR, TIMEOUT or DEFAULT ERROR
         (merge
-          {:db (update-in db [:wallet :transactions-unsigned] dissoc id)}
-          (when (and message_id (= current-account-address transaction-initiator-address))
-            {:dispatch [:set-chat-ui-props {:validation-messages error_message}]}))))))
+         {:db (update-in db [:wallet :transactions-unsigned] dissoc id)}
+         (when (and message_id (= current-account-address transaction-initiator-address))
+           {:dispatch [:set-chat-ui-props {:validation-messages error_message}]}))))))
