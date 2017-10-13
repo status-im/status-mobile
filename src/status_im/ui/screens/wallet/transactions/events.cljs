@@ -37,16 +37,16 @@
                                                        :gas        (money/to-decimal gas)
                                                        :gas-price  (money/to-decimal gasPrice)
                                                        :timestamp  now
-                                                       :message-id message_id}]
+                                                       :message-id message_id}
+            sending-from-chat?                        (not (get-in db [:wallet :send-transaction :waiting-signal?]))]
         (merge
          {:db (-> db
                   (assoc-in [:wallet :transactions-unsigned id] transaction)
-                  (assoc-in [:wallet :send-transaction :id] id))}
-         (if (get-in db [:wallet :send-transaction :waiting-signal?])
-           ;;sending from wallet
-           {:dispatch [:wallet.send-transaction/transaction-queued id]}
-           ;;sending from chat
-           {:dispatch [:navigate-to-modal :wallet-send-transaction-modal id :from-chat]})))
+                  (assoc-in [:wallet :send-transaction :id] id)
+                  (assoc-in [:wallet :send-transaction :from-chat?] sending-from-chat?))}
+         (if sending-from-chat?
+           {:dispatch [:navigate-to-modal :wallet-send-transaction-modal]}
+           {:dispatch [:wallet.send-transaction/transaction-queued id]})))
       {:discard-transaction id})))
 
 ;;TRANSACTION FAILED signal from status-go

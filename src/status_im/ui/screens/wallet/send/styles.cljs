@@ -71,3 +71,8 @@
    :align-items      :center
    :justify-content  :center
    :background-color (str styles/color-black "1A")})
+
+(def empty-text
+  {:text-align        :center
+   :margin-top        22
+   :margin-horizontal 92})
