@@ -66,6 +66,7 @@
 (def color-green-2 "#448469")
 (def color-green-3 "#44d058")
 (def color-green-3-light "rgba(68, 208, 88, 0.2)")
+(def color-green-4 "#0dcd8d")
 (def color-cyan "#7adcfb")
 
 (def color-separator "#D6D6D6")

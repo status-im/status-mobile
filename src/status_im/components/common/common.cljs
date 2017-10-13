@@ -1,60 +1,74 @@
 (ns status-im.components.common.common
-  (:require [status-im.components.react :refer [view text linear-gradient]]
-            [status-im.components.icons.vector-icons :as vi]
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
+  (:require [status-im.components.react :as react]
+            [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.components.context-menu :refer [context-menu]]
-            [status-im.utils.platform :as p]
-            [status-im.components.common.styles :as st]))
+            [status-im.utils.platform :as platform]
+            [status-im.components.common.styles :as styles]
+            [status-im.i18n :as i18n]))
 
 (defn top-shadow []
-  (when p/android?
-    [linear-gradient
-     {:style  st/gradient-bottom
-      :colors st/gradient-top-colors}]))
+  (when platform/android?
+    [react/linear-gradient
+     {:style  styles/gradient-bottom
+      :colors styles/gradient-top-colors}]))
 
 (defn bottom-shadow []
-  (when p/android?
-    [linear-gradient
-     {:style  st/gradient-top
-      :colors st/gradient-bottom-colors}]))
+  (when platform/android?
+    [react/linear-gradient
+     {:style  styles/gradient-top
+      :colors styles/gradient-bottom-colors}]))
 
 (defn separator [style & [wrapper-style]]
-  [view (merge st/separator-wrapper wrapper-style)
-   [view (merge st/separator style)]])
+  [react/view (merge styles/separator-wrapper wrapper-style)
+   [react/view (merge styles/separator style)]])
 
 (defn form-spacer []
-  [view
+  [react/view
    [bottom-shadow]
-   [view st/form-spacer]
+   [react/view styles/form-spacer]
    [top-shadow]])
 
 (defn list-separator []
-  [separator st/list-separator])
+  [separator styles/list-separator])
 
 (defn list-footer []
-  [view st/list-header-footer-spacing])
+  [react/view styles/list-header-footer-spacing])
 
 (defn list-header []
- [view st/list-header-footer-spacing])
+ [react/view styles/list-header-footer-spacing])
 
 (defn form-title [label & [{:keys [count-value extended? options]}]]
-  [view
-   [view st/form-title-container
-    [view st/form-title-inner-container
-     [text {:style st/form-title
-            :font  :medium}
+  [react/view
+   [react/view styles/form-title-container
+    [react/view styles/form-title-inner-container
+     [react/text {:style styles/form-title
+                  :font  :medium}
       label]
      (when-not (nil? count-value)
-       [text {:style st/form-title-count
-              :font  :medium}
+       [react/text {:style styles/form-title-count
+                    :font  :medium}
         count-value])]
     (when extended?
-      [view
-       [view {:flex 1}]])
+      [react/view
+       [react/view {:flex 1}]])
     (when extended?
-      [view st/form-title-extend-container
+      [react/view styles/form-title-extend-container
        [context-menu
-        [vi/icon :icons/options]
+        [vector-icons/icon :icons/options]
         options
         nil
-        st/form-title-extend-button]])]
+        styles/form-title-extend-button]])]
    [top-shadow]])
+
+(defview network-info [{:keys [text-color]}]
+  (letsubs [testnet?     [:testnet?]
+            testnet-name [:testnet-name]]
+    [react/view
+     [react/view styles/network-container
+      [react/view styles/network-icon
+       [vector-icons/icon :icons/network {:color :white}]]
+      [react/text {:style (styles/network-text text-color)}
+       (if testnet?
+         (i18n/label :t/testnet-text {:testnet testnet-name})
+         (i18n/label :t/mainnet-text))]]]))

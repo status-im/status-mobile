@@ -9,6 +9,7 @@
             [status-im.components.toolbar-new.actions :as act]
             [status-im.components.toolbar-new.view :as toolbar]
             [status-im.components.camera :as camera]
+            [status-im.components.common.common :as common]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]
             [status-im.utils.money :as money]
@@ -116,6 +117,7 @@
        [react/view components.styles/flex
         [status-bar/status-bar {:type :wallet}]
         [toolbar-view signing?]
+        [common/network-info {:text-color :white}]
         [react/scroll-view {:keyboardShouldPersistTaps :always}
          [react/view components.styles/flex
           [react/view wallet.styles/choose-participant-container
@@ -164,6 +166,7 @@
      [react/view components.styles/flex
       [status-bar/status-bar {:type :modal-wallet}]
       [toolbar-modal from-chat?]
+      [common/network-info {:text-color :white}]
       [react/scroll-view {:keyboardShouldPersistTaps :always}
        [react/view components.styles/flex
         [react/view wallet.styles/choose-participant-container

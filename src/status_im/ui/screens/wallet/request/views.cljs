@@ -13,8 +13,9 @@
     [status-im.ui.screens.wallet.request.styles :as styles]
     [status-im.components.styles :as components.styles]
     [status-im.i18n :as i18n]
+    [status-im.utils.platform :as platform]
     [status-im.utils.eip.eip67 :as eip67]
-    [status-im.utils.platform :as platform]))
+    [status-im.components.common.common :as common]))
 
 (defn toolbar-view []
   [toolbar/toolbar2 {:style wallet.styles/toolbar :hide-border? true}
@@ -42,11 +43,10 @@
     [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view]
+     [common/network-info {:text-color :white}]
      [react/scroll-view {:ref #(reset! scroll %)}
       [react/view components.styles/flex
         [react/view styles/network-container
-         ;;TODO (andrey) name of active network should be used
-         [components/network-label styles/network-label "Testnet"]
          [react/view styles/qr-container
           [qr-code]]]
         [react/view wallet.styles/choose-wallet-container

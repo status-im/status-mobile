@@ -21,3 +21,9 @@
  :<- [:get-network-id]
  (fn [network-id]
    (contains? #{constants/rinkeby-id constants/ropsten-id} network-id)))
+
+(reg-sub
+  :testnet-name
+  :<- [:get-network-id]
+  (fn [network-id]
+    (constants/get-testnet-name network-id)))

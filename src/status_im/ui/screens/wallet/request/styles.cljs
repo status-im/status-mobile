@@ -2,15 +2,12 @@
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.components.styles :as styles]))
 
-(def network-label
-  {:margin-top 27})
-
 (def network-container
   {:flex        1
    :align-items :center})
 
 (defstyle qr-container
-  {:margin-top       16
+  {:margin-top       8
    :padding          16
    :background-color styles/color-white
    :ios              {:border-radius 8}
