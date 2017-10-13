@@ -165,9 +165,11 @@
    :background-color styles/color-white})
 
 (def all-dapps-flat-list-item
-  {:margin 10
-   :width  100
-   :height 100})
+  {:margin          10
+   :width           100
+   :height          140
+   :justify-content :center
+   :align-items     :center})
 
 (def dapps-list-item-second-row
   {:flex    1
@@ -200,15 +202,13 @@
    :margin-top       16
    :margin-bottom    4})
 
-(def dapp-preview-content
-  {:border-radius    4
-   :padding-top      4
-   :padding-left     4
-   :margin-top       2
-   :margin-bottom    4
-   :margin-right     2
-   :background-color styles/color-white
-   :size             10})
+(def dapp-preview-flat-list
+  {:justify-content  :center
+   :flex-direction   :row
+   :flex-wrap        :wrap
+   :margin-left      8
+   :margin-vertical  0
+   :background-color styles/color-white})
 
 ;; Discover tag
 
@@ -287,7 +287,7 @@
 
 (def public-chats-item-container
   {:flex-direction :row
-   :padding        3})
+   :padding        16})
 
 (def public-chats-icon-width-ratio
   0.15)
