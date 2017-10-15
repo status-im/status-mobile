@@ -4,11 +4,11 @@
             [clojure.string :as str]
             [status-im.components.react :refer [view text]]
             [status-im.utils.platform :refer [platform-specific]]
-            [status-im.components.styles :refer [color-blue color-black]]
+            [status-im.components.styles :refer [color-blue color-black color-blue4-faded]]
             [status-im.utils.utils :refer [hash-tag?]]))
 
 (defn tag-view [tag]
-  [text {:style {:color color-blue}
+  [text {:style {:color color-blue4-faded}
          :font :medium}
    (str tag " ")])
 
