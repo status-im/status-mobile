@@ -256,6 +256,7 @@
 
 (def discover-container
   {:flex             1
+   :margin-top       16
    :background-color styles/color-light-gray})
 
 (def list-container
