@@ -38,6 +38,14 @@
     (not (str/blank? photo-path)) photo-path
     :else (identicon/identicon whisper-id)))
 
+(defn chat-button [whisper-id]
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:start-chat whisper-id])}
+   [react/view styles/chat-button-container
+    [react/view styles/chat-button-inner
+      [vector-icons/icon :icons/chats {:color :active}]
+      [react/text {:style      styles/chat-button-text
+                   :uppercase? (:uppercase? styles/chat-button-text-case)} (i18n/label :t/chat)]]]])
+
 (defview discover-list-item [{:keys [message show-separator? current-account]}]
   (letsubs [{contact-name       :name
              contact-photo-path :photo-path} [:get-in [:contacts/contacts (:whisper-id message)]]]
@@ -56,16 +64,13 @@
           [react/view styles/discover-list-item-avatar-container
            [chat-icon/chat-icon
             (display-image me? account-photo-path contact-photo-path photo-path whisper-id)
-            {:size 20}]]
+            {:size 24}]]
           [react/text {:style           styles/discover-list-item-name
                        :font            :medium
                        :number-of-lines 1}
            (display-name me? account-name contact-name name whisper-id)]]
 
          (when-not me?
-           [react/touchable-highlight {:on-press #(re-frame/dispatch [:start-chat whisper-id])}
-            [react/view styles/popular-list-chat-action
-             [vector-icons/icon :icons/chats {:color "rgb(110, 0, 228)"}]
-             [react/text {:style styles/popular-list-chat-action-text} (i18n/label :t/chat)]]])]
+           (chat-button whisper-id))]
         (when show-separator?
           [react/view styles/separator])]])))
