@@ -41,9 +41,8 @@
                          :to           "me"}]))
           (log/debug "ignoring command: " command))))))
 
-(def faucet-base-url->url
-  {"http://faucet.ropsten.be:3001" "http://faucet.ropsten.be:3001/donate/0x%s"
-   "http://46.101.129.137:3001"    "http://46.101.129.137:3001/donate/0x%s"})
+(defn faucet-base-url->url [url]
+  (str url "/donate/0x%s"))
 
 (defn- faucet-response-event [message-id content]
   [:received-message
@@ -76,8 +75,8 @@
    (fn [{:keys [db random-id]} {:keys [params id]}]
      (let [{:accounts/keys [accounts current-account-id]} db
            current-address (get-in accounts [current-account-id :address])
-           faucet-url (get faucet-base-url->url (:url params))]
-       {:http-get {:url (gstring/format faucet-url current-address)
+           faucet-url      (faucet-base-url->url (:url params))]
+       {:http-get {:url                   (gstring/format faucet-url current-address)
                    :success-event-creator (fn [_]
                                             (faucet-response-event
                                              random-id
