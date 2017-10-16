@@ -33,10 +33,12 @@
              :elevation        0}})
 
 (def buttons-container
-  {:margin-vertical    15
-   :padding-horizontal 12
-   :flex-direction     :row
-   :align-items        :center})
+  {:flex-direction :row
+   :align-items    :center})
+
+(def button
+  {:padding-vertical   15
+   :padding-horizontal 12})
 
 (def forward-icon-container
   {:margin-left 8})
