@@ -506,7 +506,7 @@ var ropstenFaucets = [
 var rinkebyFaucets = [
     {
         name: "Status Rinkeby Faucet",
-        url: "not specified yet",
+        url: "http://51.15.60.23:3001",
     }
 ];
 
