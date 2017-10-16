@@ -13,11 +13,18 @@
 (defn choose-address-and-name [db address name]
   (update db :wallet/send-transaction assoc :to-address address :to-name name))
 
+(defn- extract-address [s]
+  ;; First try to parse as EIP67 URI, if not assume this is an address directly
+  (if-let [m (eip67/parse-uri s)]
+    (:address m)
+    s))
+
 (handlers/register-handler-fx
   :choose-recipient
   (fn [{{:keys [web3] :as db} :db} [_ data name]]
     (let [{:keys [view-id]} db
-          address (:address (eip67/parse-uri data))
+          address (extract-address data)
+          ;; isAddress works with or without address with leading '0x'
           valid-address? (.isAddress web3 address)]
       (cond-> {:db db}
               (= :choose-recipient view-id) (assoc :dispatch [:navigate-back])
