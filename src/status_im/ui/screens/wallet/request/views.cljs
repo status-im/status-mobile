@@ -62,12 +62,12 @@
           [components/choose-currency wallet.styles/choose-currency]]]]]
      [components/separator]
      [react/view wallet.styles/buttons-container
-      [react/touchable-highlight {:on-press #()}
+      [react/touchable-highlight {:style wallet.styles/button :disabled true}
        [react/view (wallet.styles/button-container false)
         [vi/icon :icons/share {:color :white :container-style styles/share-icon-container}]
         [components/button-text (i18n/label :t/share)]]]
       [react/view components.styles/flex]
-      [react/touchable-highlight {:on-press (when request-enabled? send-request)}
+      [react/touchable-highlight {:style wallet.styles/button :disabled (not request-enabled?) :on-press  send-request}
        [react/view (wallet.styles/button-container request-enabled?)
         [components/button-text (i18n/label :t/send-request)]
         [vi/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]]]))

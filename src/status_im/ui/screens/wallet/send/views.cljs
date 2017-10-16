@@ -60,11 +60,11 @@
 (defview signing-buttons [cancel-handler sign-handler in-progress?]
   (letsubs [sign-enabled? [:wallet.send/sign-password-enabled?]]
     [react/view wallet.styles/buttons-container
-     [react/touchable-highlight {:on-press cancel-handler}
+     [react/touchable-highlight {:style wallet.styles/button :on-press cancel-handler}
       [react/view (wallet.styles/button-container true)
        [components/button-text (i18n/label :t/cancel)]]]
      [react/view components.styles/flex]
-     [react/touchable-highlight {:on-press sign-handler}
+     [react/touchable-highlight {:style wallet.styles/button :on-press sign-handler}
       [react/view (wallet.styles/button-container sign-enabled?)
        (when in-progress? [react/activity-indicator {:animating? true}])
        [components/button-text (i18n/label :t/transactions-sign-transaction)]
@@ -82,11 +82,12 @@
         immediate-sign-enabled? (and sign-enabled? sufficient-funds?)]
     [react/view wallet.styles/buttons-container
      (when sign-enabled?
-       [react/touchable-highlight {:on-press sign-later-handler}
+       [react/touchable-highlight {:style wallet.styles/button :on-press sign-later-handler}
         [react/view (wallet.styles/button-container sign-enabled?)
          [components/button-text (i18n/label :t/transactions-sign-later)]]])
      [react/view components.styles/flex]
-     [react/touchable-highlight {:on-press (when immediate-sign-enabled? #(re-frame/dispatch [:set-in [:wallet/send-transaction :signing?] true]))}
+     [react/touchable-highlight {:style wallet.styles/button
+                                 :on-press (when immediate-sign-enabled? #(re-frame/dispatch [:set-in [:wallet/send-transaction :signing?] true]))}
       [react/view (wallet.styles/button-container immediate-sign-enabled?)
        [components/button-text (i18n/label :t/transactions-sign-transaction)]
        [vector-icons/icon :icons/forward {:color :white :container-style wallet.styles/forward-icon-container}]]]]))
