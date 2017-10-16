@@ -16,7 +16,8 @@
    [status-im.utils.handlers :as handlers]
    [status-im.ui.screens.accounts.statuses :as statuses]
    [status-im.utils.signing-phrase.core :as signing-phrase]
-   [status-im.utils.gfycat.core :refer [generate-gfy]]))
+   [status-im.utils.gfycat.core :refer [generate-gfy]]
+   [status-im.utils.hex :as utils.hex]))
 
 ;;;; Helper fns
 
@@ -108,13 +109,16 @@
   (fn [{{:keys          [network]
          :networks/keys [networks]
          :as            db} :db} [_ {:keys [address] :as account} password]]
-    (let [account' (assoc account :network network
-                                  :networks networks)]
+    (let [address (utils.hex/normalize-hex address)
+          account' (assoc account
+                          :network network
+                          :networks networks
+                          :address address)]
       (merge
-        {:db            (assoc-in db [:accounts/accounts address] account')
-         ::save-account account'}
-        (when password
-          {:dispatch-later [{:ms 400 :dispatch [:login-account address password true]}]})))))
+       {:db            (assoc-in db [:accounts/accounts address] account')
+        ::save-account account'}
+       (when password
+         {:dispatch-later [{:ms 400 :dispatch [:login-account address password true]}]})))))
 
 (handlers/register-handler-fx
   :create-new-account-handler
