@@ -51,6 +51,45 @@
    :margin-top        22
    :margin-horizontal 92})
 
+(defstyle amount-time
+  {:flex-direction  :row
+   :justify-content :space-between
+   :ios             {:padding-top 13}
+   :android         {:padding-top 14}})
+
+(def tx-amount
+  {:flex-grow    1
+   :flex-shrink  1
+   :margin-right 10
+   :font-size    17})
+
+(def tx-time
+  {:flex-grow   1 
+   :font-size   14
+   :text-align  :right
+   :color       styles/color-gray4})
+
+(def address-row
+  {:flex-direction :row
+   :padding-top    4})
+
+(def address-item
+  {:font-size 16
+   :color     styles/color-gray4})
+
+(def address-label
+  (merge address-item
+         {:margin-right 5}))
+
+(def address-contact
+  (merge address-item
+         {:color        styles/color-black
+          :margin-right 5}))
+
+(def address-hash
+  (merge address-item
+         {:flex-shrink 1}))
+
 (def action-buttons
   {:flex             1
    :flex-direction   :row

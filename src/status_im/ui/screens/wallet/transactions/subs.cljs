@@ -21,7 +21,7 @@
   (fn [wallet]
     (get wallet :current-tab 0)))
 
-(defn enrich-transaction [{:keys [type to from] :as transaction} contacts]
+(defn enrich-transaction [{:keys [type to from timestamp] :as transaction} contacts]
   ;; TODO (yenda) proper wallet logic when wallet switching is implemented
   (let [[contact-address key-contact key-wallet] (if (= type :inbound)
                                                    [from :from-contact :to-wallet]
@@ -30,7 +30,8 @@
         contact                                  (get contacts (utils.hex/normalize-hex contact-address))]
     (cond-> transaction
       contact (assoc key-contact (:name contact))
-      :always (assoc key-wallet wallet))))
+      :always (assoc key-wallet wallet
+                     :time-formatted (datetime/timestamp->time timestamp)))))
 
 (reg-sub :wallet.transactions/transactions
   :<- [:wallet]
