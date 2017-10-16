@@ -285,7 +285,7 @@ function validateSend(params, context) {
 
     try {
         var val = web3.toWei(amount, "ether");
-        if (val <= 0) {
+        if (val < 0) {
             throw new Error();
         }
     } catch (err) {
@@ -523,7 +523,7 @@ status.command({
 
         try {
             var val = web3.toWei(amount, "ether");
-            if (val <= 0) {
+            if (val < 0) {
                 throw new Error();
             }
         } catch (err) {
