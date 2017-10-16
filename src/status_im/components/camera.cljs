@@ -29,5 +29,4 @@
   (r/create-element default-camera (clj->js (merge {:inverted true} props))))
 
 (defn get-qr-code-data [code]
-  (when (= "QR_CODE" (.-type code))
-    (.-data code)))
+  (.-data code))
