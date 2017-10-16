@@ -82,7 +82,7 @@
 
 (defn init-console-chat
   [{:keys [chats] :accounts/keys [current-account-id] :as db} existing-account?]
-  (if (chats const/console-chat-id)
+  (if (get chats const/console-chat-id)
     {:db db}
     (cond-> {:db (-> db
                      (assoc :new-chat sign-up/console-chat)
@@ -177,12 +177,10 @@
       (if account-creation?
         {:db new-db
          :dispatch-n [event]}
-        (let [chats            (->> all-stored-chats
-                                    (map (fn [{:keys [chat-id] :as chat}]
-                                           [chat-id (assoc chat :last-message (get-last-stored-message chat-id))]))
-                                    (into {}))
-              ;;TODO temporary hide wallet chat, this code should be deleted after wallet contact will be deleted
-              chats' (dissoc chats "wallet")]
+        (let [chats (->> all-stored-chats
+                         (map (fn [{:keys [chat-id] :as chat}]
+                                [chat-id (assoc chat :last-message (get-last-stored-message chat-id))]))
+                         (into {}))]
           (-> new-db
               (assoc-in [:message-data :preview] message-previews)
               (assoc :handler-data (handler-data/get-all))

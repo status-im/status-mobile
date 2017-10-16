@@ -24,22 +24,6 @@
         "unremovable?": true
     },
 
-    "wallet":
-    {
-        "name":
-        {
-            "en": "Wallet",
-            "es": "Monedero",
-            "es-ar": "Monedero",
-            "ru": "Кошелек"
-        },
-        "photo-path": "icon_wallet_avatar",
-        "dapp?": true,
-        "pending?": true,
-        "bot-url": "local://wallet-bot",
-        "unremovable?": true
-    },
-
     "mailman":
     {
         "name":

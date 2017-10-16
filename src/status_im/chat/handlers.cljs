@@ -12,8 +12,7 @@
             [status-im.constants :refer [text-content-type
                                          content-type-command
                                          content-type-command-request
-                                         console-chat-id
-                                         wallet-chat-id]]
+                                         console-chat-id]]
             [status-im.utils.random :as random]
             [status-im.chat.sign-up :as sign-up-service]
             [status-im.ui.screens.navigation :as nav]

@@ -16,17 +16,11 @@
 (def content-type-status "status")
 
 (def max-chat-name-length 20)
-
-(def response-input-hiding-duration 100)
 (def response-suggesstion-resize-duration 100)
-
 (def default-number-of-messages 20)
 (def blocks-per-hour 120)
 
-(def default-number-of-discover-search-results 20)
-
 (def console-chat-id "console")
-(def wallet-chat-id "wallet")
 
 (def default-network "testnet_rpc")
 

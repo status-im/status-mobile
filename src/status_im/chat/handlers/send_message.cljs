@@ -5,7 +5,6 @@
             [status-im.chat.events.console :as console]
             [status-im.chat.utils :as cu]
             [status-im.constants :refer [console-chat-id
-                                         wallet-chat-id
                                          text-content-type
                                          content-type-log-message
                                          content-type-command
@@ -103,9 +102,8 @@
     (fn [_ [_ add-to-chat-id params hidden-params]]
       (dispatch [::add-command add-to-chat-id params])
       (dispatch [::save-command! add-to-chat-id params hidden-params])
-      (when (not= add-to-chat-id wallet-chat-id)
-        (dispatch [::dispatch-responded-requests! params])
-        (dispatch [::send-command-protocol! params])))))
+      (dispatch [::dispatch-responded-requests! params])
+      (dispatch [::send-command-protocol! params]))))
 
 (register-handler ::add-command
   (after (fn [_ [_ _ {:keys [handler]}]]
