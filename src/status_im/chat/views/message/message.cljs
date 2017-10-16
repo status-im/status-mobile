@@ -24,7 +24,6 @@
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
             [status-im.react-native.resources :as res]
             [status-im.constants :refer [console-chat-id
-                                         wallet-chat-id
                                          text-content-type
                                          content-type-log-message
                                          content-type-status
@@ -100,11 +99,7 @@
   (let [{:keys [recipient amount]} (walk/keywordize-keys params)]
     [text {:style st/command-text
            :font  :default}
-     (if (= current-chat-id wallet-chat-id)
-       (let [label-val (if outgoing? :t/chat-send-eth-to :t/chat-send-eth-from)]
-         (label label-val {:amount    amount
-                           :chat-name (or name contact-address recipient)}))
-       (label :t/chat-send-eth {:amount amount}))]))
+     (label :t/chat-send-eth {:amount amount})]))
 
 (defn wallet-command? [content-type]
   (#{c/content-type-wallet-command c/content-type-wallet-request} content-type))
@@ -294,9 +289,6 @@
         status          (cond (and (not (console/commands-with-delivery-status (:command content)))
                                    (cu/console? chat-id))
                               :seen
-
-                              (cu/wallet? chat-id)
-                              :sent
 
                               :else
                               (or delivery-status message-status app-db-message-status-value :sending))]

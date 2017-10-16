@@ -9,9 +9,6 @@
 (def not-console?
   (complement console?))
 
-(defn wallet? [s]
-  (= consts/wallet-chat-id s))
-
 (defn safe-trim [s]
   (when (string? s)
     (str/trim s)))

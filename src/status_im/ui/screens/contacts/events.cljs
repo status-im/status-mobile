@@ -271,10 +271,7 @@
   [(inject-cofx ::get-all-contacts)]
   (fn [{:keys [db all-contacts]} _]
     (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
-          contacts (into {} contacts-list)
-          contacts' (if (get contacts "wallet")
-                      (assoc-in contacts ["wallet" :pending?] true)
-                      contacts)]
+          contacts (into {} contacts-list)]
       {:db         (assoc db :contacts/contacts contacts)
        :dispatch-n (mapv (fn [_ contact] [:watch-contact contact]) contacts)})))
 

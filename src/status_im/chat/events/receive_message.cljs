@@ -32,18 +32,6 @@
   [{:accounts/keys [accounts current-account-id]}]
   (get-in accounts [current-account-id :public-key]))
 
-(defn- wallet-message
-  [{:keys [content-type] :as message}]
-  (log/debug "Wallet msg")
-  (let [wallet-ct (if (= content-type const/content-type-command)
-                    const/content-type-wallet-command
-                    const/content-type-wallet-request)]
-    (-> message
-        (assoc :clock-value 0
-               :chat-id const/wallet-chat-id
-               :content-type wallet-ct)
-        (dissoc :group-id))))
-
 (defn add-message
   [{:keys [db get-stored-message get-last-stored-message pop-up-chat?
            get-last-clock-value current-timestamp random-id]}

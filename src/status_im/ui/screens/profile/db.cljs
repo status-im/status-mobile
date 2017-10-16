@@ -13,7 +13,6 @@
     (every? false?
             [(string/blank? username)
              (homoglyph/matches username constants/console-chat-id)
-             (homoglyph/matches username constants/wallet-chat-id)
              (string/includes? username chat.constants/command-char)
              (string/includes? username chat.constants/bot-char)])))
 

@@ -100,7 +100,6 @@
                       :action  :request
                       :params  params}])
           :webview-scan-qr (dispatch [:show-scan-qr :webview-address-from-qr])
-          :webview-send-eth (dispatch [:webview-send-eth! params])
           :nfc (dispatch [:webview-nfc params])
           (log/error (str "Unknown event: " event')))))))
 
@@ -122,21 +121,6 @@
     (fn [{:keys [webview-bridge]} [_ data]]
       (when webview-bridge
         (.sendToBridge webview-bridge (t/clj->json data))))))
-
-(register-handler :webview-send-eth!
-  (u/side-effect!
-    (fn [{:accounts/keys [current-account-id]} [_ {:keys [amount address]}]]
-      (let [context    {:from current-account-id}
-            path       [:functions :send]
-            parameters {:context    context
-                        :parameters {:amount  amount
-                                     :address address}}]
-        (s/call-jail
-          {:jail-id  c/wallet-chat-id
-           :path     path
-           :params   parameters
-           :callback (fn [data]
-                       (log/debug :webview-send-eth-callback data))})))))
 
 (register-handler :webview-nfc
   (u/side-effect!
