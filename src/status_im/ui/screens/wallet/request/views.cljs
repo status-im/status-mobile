@@ -29,17 +29,18 @@
                        :action  :request
                        :params  {:hide-actions? true}}]))
 
-(views/defview qr-code []
+(views/defview qr-code [amount]
   (views/letsubs [account [:get-current-account]]
     [components.qr-code/qr-code
-     {:value   (eip67/generate-uri (:address account))
+     {:value   (eip67/generate-uri (:address account) {:value amount})
       :size    256}]))
 
 (views/defview request-transaction []
   ;;Because input field is in the end of view we will scroll to the end on input focus event
-  (views/letsubs [amount-error [:get-in [:wallet/request-transaction :amount-error]]
+  (views/letsubs [amount           [:get-in [:wallet/request-transaction :amount]]
+                  amount-error     [:get-in [:wallet/request-transaction :amount-error]]
                   request-enabled? [:wallet.request/request-enabled?]
-                  scroll (atom nil)]
+                  scroll           (atom nil)]
     [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view]
@@ -48,7 +49,7 @@
       [react/view components.styles/flex
         [react/view styles/network-container
          [react/view styles/qr-container
-          [qr-code]]]
+          [qr-code amount]]]
         [react/view wallet.styles/choose-wallet-container
          [components/choose-wallet]]
         [react/view wallet.styles/amount-container

@@ -10,30 +10,31 @@
           toggled-state (if (= :on flashlight-state) :off :on)]
       (assoc-in db [:wallet/send-transaction :camera-flashlight] toggled-state))))
 
-(defn choose-address-and-name [db address name]
-  (update db :wallet/send-transaction assoc :to-address address :to-name name))
+(defn choose-address-and-name [db address name amount]
+  (update db :wallet/send-transaction assoc :to-address address :to-name name :amount amount))
 
-(defn- extract-address [s]
-  ;; First try to parse as EIP67 URI, if not assume this is an address directly
-  (if-let [m (eip67/parse-uri s)]
-    (:address m)
-    s))
+(defn- extract-details
+  "First try to parse as EIP67 URI, if not assume this is an address directly.
+   Returns a map containing at least the `address` key"
+  [s]
+  (or (eip67/parse-uri s) {:address s}))
 
 (handlers/register-handler-fx
   :choose-recipient
   (fn [{{:keys [web3] :as db} :db} [_ data name]]
     (let [{:keys [view-id]} db
-          address (extract-address data)
+          m              (extract-details data)
+          address        (:address m)
           ;; isAddress works with or without address with leading '0x'
           valid-address? (.isAddress web3 address)]
       (cond-> {:db db}
               (= :choose-recipient view-id) (assoc :dispatch [:navigate-back])
-              valid-address? (update :db #(choose-address-and-name % address name))
+              valid-address? (update :db #(choose-address-and-name % address name (:value m)))
               (not valid-address?) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))))))
 
 (handlers/register-handler-fx
   :wallet-open-send-transaction
   (fn [{db :db} [_ address name]]
-    {:db         (choose-address-and-name db address name)
+    {:db         (choose-address-and-name db address name nil)
      :dispatch-n [[:navigate-back]
                   [:navigate-back]]}))
