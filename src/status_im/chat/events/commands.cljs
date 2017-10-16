@@ -55,12 +55,12 @@
 (handlers/register-handler-fx
   ::jail-command-data-response
   [re-frame/trim-v]
-  (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [message-id on-requested]} data-type]]
+  (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [message-id on-requested]} data-type]] 
     (cond-> {}
       returned
       (assoc :db (assoc-in db [:message-data data-type message-id] returned))
-      (and returned
-           (= :preview data-type))
+      (and (= :preview data-type)
+           returned)
       (assoc :update-message {:message-id message-id
                               :preview (prn-str returned)})
       on-requested

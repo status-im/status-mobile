@@ -73,8 +73,7 @@
           (dispatch [::invoke-command-handlers! params])
 
           :else
-          (dispatch [:prepare-command! chat-id params])))
-      (dispatch [:set-chat-ui-props {:sending-in-progress? false}]))))
+          (dispatch [:prepare-command! chat-id params]))))))
 
 (register-handler :prepare-command!
   (u/side-effect!
@@ -95,24 +94,30 @@
         (dispatch [:request-command-message-data
                    (assoc command'
                           :chat-id add-to-chat-id
-                          :on-requested (fn [_]
+                          :on-requested (fn [preview]
                                           [::send-command!
                                            add-to-chat-id
                                            (assoc params :command command')
                                            hidden-params]))
                    :preview])))))
 
-(register-handler ::send-command!
-  (u/side-effect!
-    (fn [{:keys [network-status]} [_ add-to-chat-id params hidden-params]]
-      (dispatch [:update-message-overhead! add-to-chat-id network-status])
-      (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
-      (when (cu/console? add-to-chat-id)
-        (dispatch [:console-respond-command params]))
-      (dispatch [::add-command add-to-chat-id params])
-      (dispatch [::save-command! add-to-chat-id params hidden-params]) 
-      (dispatch [::dispatch-responded-requests! params])
-      (dispatch [::send-command-protocol! params]))))
+(u/register-handler-fx ::send-command! 
+  (fn [{:keys [db] :as cofx} [_ add-to-chat-id {:keys [command-fx] :as command-params} hidden-params]]
+    (let [{:keys [network-status]} db
+          params (dissoc command-params :command-fx)]
+      
+      (cond-> {:dispatch-n [[:update-message-overhead! add-to-chat-id network-status]
+                            [::add-command add-to-chat-id params]
+                            [::save-command! add-to-chat-id params hidden-params]
+                            [::dispatch-responded-requests! params]
+                            [::send-command-protocol! params]]}
+        ;; TODO(janherich): this seems to be deprecated and not used anymore, investigate
+        (cu/console? add-to-chat-id)
+        (update :dispatch-n conj [:console-respond-command params])
+
+        command-fx
+        (as-> fx
+            (merge-with into fx command-fx))))))
 
 (register-handler ::add-command
   (after (fn [_ [_ _ {:keys [handler]}]]
