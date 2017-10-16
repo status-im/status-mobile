@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.choose-recipient.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.components.camera :as camera]
             [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.components.react :as react]
@@ -40,7 +41,7 @@
    [react/touchable-highlight {:style    (styles/recipient-touchable true)
                                :on-press #(react/get-from-clipboard
                                             (fn [clipboard]
-                                              (re-frame/dispatch [:choose-recipient clipboard nil])))}
+                                              (re-frame/dispatch [:choose-recipient (string/trim clipboard) nil])))}
     [react/view {:style styles/recipient-button}
      [react/text {:style styles/recipient-button-text}
       (i18n/label :t/wallet-address-from-clipboard)]
