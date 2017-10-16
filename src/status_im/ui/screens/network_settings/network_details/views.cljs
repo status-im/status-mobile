@@ -40,6 +40,8 @@
        [react/view st/network-config-container
         [react/text {:style st/network-config-text}
          config]]
+       ;; TODO(rasom): uncomment edit-button when it will be functional,
+       ;; https://github.com/status-im/status-react/issues/2104
        #_[react/view {:opacity 0.4}
         [react/view st/edit-button-container
          [react/view st/edit-button
