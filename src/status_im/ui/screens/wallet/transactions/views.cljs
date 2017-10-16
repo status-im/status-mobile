@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.views
   (:require [re-frame.core :as re-frame]
             [status-im.components.button.view :as button]
-            [status-im.components.checkbox.view :as checkbox]
+            [status-im.components.checkbox.view :as checkbox] 
             [status-im.components.list.views :as list]
             [status-im.components.react :as react]
             [status-im.components.status-bar :as status-bar]
@@ -71,21 +71,37 @@
     (:postponed :pending)   (transaction-icon :icons/arrow-right styles/color-gray4-transparent styles/color-gray7)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash from-contact to-contact to from type value symbol] :as transaction}]
-  [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
-   [react/view
-    [list/item
-     [list/item-icon (transaction-type->icon (keyword type))]
-     [list/item-content
-      (money/wei->str :eth value)
-      (if (inbound? type)
-        (str (i18n/label :t/from) " " from-contact " " from)
-        (str (i18n/label :t/to) " " to-contact " " to))
-      (when (unsigned? type)
-        [action-buttons transaction])]
-     [list/item-icon {:icon :icons/forward
-                      :style {:margin-top 10}
-                      :icon-opts transactions.styles/forward}]]]])
+(defn render-transaction [{:keys [hash from-contact to-contact to from type value symbol time-formatted] :as transaction}]
+  (let [[label contact address] (if (inbound? type)
+                                  [(i18n/label :t/from) from-contact from]
+                                  [(i18n/label :t/to) to-contact to])]
+    [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
+     [react/view
+      [list/item
+       [list/item-icon (transaction-type->icon (keyword type))]
+       [list/item-content
+        [react/view {:style transactions.styles/amount-time}
+         [react/text {:style transactions.styles/tx-amount
+                      :ellipsize-mode "tail"
+                      :number-of-lines 1}
+          (money/wei->str :eth value)]
+         [react/text {:style transactions.styles/tx-time}
+          time-formatted]]
+        [react/view {:style transactions.styles/address-row}
+         [react/text {:style transactions.styles/address-label}
+          label]
+         (when contact
+           [react/text {:style transactions.styles/address-contact}
+            contact])
+         [react/text {:style transactions.styles/address-hash
+                      :ellipsize-mode "middle"
+                      :number-of-lines 1}
+          address]] 
+        (when (unsigned? type)
+          [action-buttons transaction])]
+       [list/item-icon {:icon :icons/forward
+                        :style {:margin-top 10}
+                        :icon-opts transactions.styles/forward}]]]]))
 
 ;; TODO(yenda) hook with re-frame
 (defn- empty-text [s] [react/text {:style transactions.styles/empty-text} s])
@@ -115,13 +131,16 @@
 (defn- item-tokens [{:keys [symbol label checked?]}]
   [list/item
    [list/item-icon (transaction-type->icon :pending)] ;; TODO(jeluard) add proper token data
-   [list/item-content label symbol]
+   [list/item-content
+    [list/item-primary label]
+    [list/item-secondary symbol]]
    [checkbox/checkbox {:checked? true #_checked?}]])
 
 (defn- item-type [{:keys [id label checked?]}]
   [list/item
    [list/item-icon (transaction-type->icon (keyword id))]
-   [list/item-content label]
+   [list/item-content
+    [list/item-primary-only label]]
    [checkbox/checkbox checked?]])
 
 (def filter-data

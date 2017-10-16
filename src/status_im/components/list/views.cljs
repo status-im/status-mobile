@@ -5,7 +5,9 @@
   (defn render [{:keys [title subtitle]}]
     [item
      [item-icon {:icon :dots_vertical_white}]
-     [item-content title subtitle]
+     [item-content 
+      [item-primary title] 
+      [item-secondary subtitle]]
      [item-icon {:icon :arrow_right_gray}]])
 
   [flat-list {:data [{:title  \"\" :subtitle \"\"}] :render-fn render}]
@@ -54,15 +56,21 @@
     [rn/image {:source source
                :style  lst/item-image}]]))
 
+(defn item-primary
+  [primary]
+  [rn/text {:style lst/primary-text} primary])
+
+(defn item-primary-only
+  [primary]
+  [rn/text {:style lst/primary-text-only} primary])
+
+(defn item-secondary
+  [secondary]
+  [rn/text {:style lst/secondary-text :ellipsize-mode "middle" :number-of-lines 1} secondary])
+
 (defn item-content
-  ([primary] (item-content primary nil))
-  ([primary secondary] (item-content primary secondary nil))
-  ([primary secondary extra]
-   [rn/view {:style lst/item-text-view}
-    [rn/text {:style (if secondary lst/primary-text lst/primary-text-only)} primary]
-    (when secondary
-      [rn/text {:style lst/secondary-text :ellipsize-mode "middle" :number-of-lines 1} secondary])
-    extra]))
+  [& children]
+  (into [rn/view {:style lst/item-text-view}] (keep identity children)))
 
 (defn- wrap-render-fn [f]
   (fn [data]
