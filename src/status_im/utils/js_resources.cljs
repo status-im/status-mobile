@@ -23,13 +23,16 @@
 
 (def demo-bot-js (slurp-bot :demo_bot))
 
+(def wallet-js (slurp-bot :wallet))
+
 (def resources
   {:transactor-group-bot    transactor-group-js
    :transactor-personal-bot transactor-personal-js
    :console-bot             console-js
    :browse-bot              browse-js
    :mailman-bot             mailman-js
-   :demo-bot                demo-bot-js})
+   :demo-bot                demo-bot-js
+   :wallet-bot              wallet-js})
 
 (defn get-resource [url]
   (let [resource-name (keyword (subs url (count local-protocol)))]
