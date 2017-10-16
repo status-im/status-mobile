@@ -31,6 +31,8 @@
 
 (defn actions-view []
   [react/view action-button-styles/actions-list
+   ;; TODO(rasom): uncomment add-new-network button when it will be functional,
+   ;; https://github.com/status-im/status-react/issues/2104
    #_[react/view {:opacity 0.4}
     [action-button/action-button
      {:label     (i18n/label :t/add-new-network)
