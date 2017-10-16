@@ -25,6 +25,7 @@
     [status-im.translations.ja :as ja]
     [status-im.translations.ko :as ko]
     [status-im.translations.la :as la]
+    [status-im.translations.lt :as lt]
     [status-im.translations.lv :as lv]
     [status-im.translations.ms :as ms]
     [status-im.translations.nb :as nb]
@@ -79,6 +80,7 @@
                 :ja      ja/translations
                 :ko      ko/translations
                 :la      la/translations
+                :lt      lt/translations
                 :lv      lv/translations
                 :ms      ms/translations
                 :nb      nb/translations
