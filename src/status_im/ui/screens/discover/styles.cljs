@@ -48,6 +48,7 @@
 
 (def discover-list-item-name-container
   {:flex            0.3
+   :padding-right   30
    :flex-direction  :row
    :justify-content :flex-start
    :align-items     :center})
