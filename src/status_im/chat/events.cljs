@@ -184,7 +184,7 @@
           (-> new-db
               (assoc-in [:message-data :preview] message-previews)
               (assoc :handler-data (handler-data/get-all))
-              (assoc :chats chats')
+              (assoc :chats chats)
               (init-console-chat true)
               (update :dispatch-n conj event)))))))
 
