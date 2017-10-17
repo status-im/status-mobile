@@ -28,7 +28,7 @@
   (letsubs [current-account [:get-current-account]
             popular-tags    [:get-popular-tags 10]
             {:keys [discoveries]} [:get-popular-discoveries 10]] ;uses the tags passed via :discover-search-tags state
-    [react/view styles/discover-container
+    [react/view styles/all-recent-container
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/popular-tags)]]
@@ -39,6 +39,7 @@
         (let [discoveries (map-indexed vector discoveries)]
           (for [[i {:keys [message-id] :as message}] discoveries]
             ^{:key (str "message-hashtag-" message-id)}
-            [components/discover-list-item {:message         message
-                                            :show-separator? (not= (inc i) (count discoveries))
-                                            :current-account current-account}]))]]]]))
+            [components/discover-list-item-full
+             {:message         message
+              :show-separator? (not= (inc i) (count discoveries))
+              :current-account current-account}]))]]]]))
