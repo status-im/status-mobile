@@ -121,8 +121,7 @@
 (def separator
   {:height            1
    :margin-horizontal 15
-   :background-color  styles/color-white-transparent-1
-   :margin-top        16})
+   :background-color  styles/color-white-transparent-1})
 
 (def button-text
   {:color          :white

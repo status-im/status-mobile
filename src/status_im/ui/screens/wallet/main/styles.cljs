@@ -101,7 +101,7 @@
 (defstyle buttons
   {:margin-top 34
    :android    {:margin-horizontal 21}
-   :ios        {:margin-horizontal 29}})
+   :ios        {:margin-horizontal 30}})
 
 (defstyle main-button-text
   {:padding-vertical   13
