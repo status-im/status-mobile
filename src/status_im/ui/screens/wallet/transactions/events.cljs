@@ -32,7 +32,7 @@
               transaction {:id         id
                            :from       from
                            :to         to
-                           :value      (money/to-decimal value)
+                           :value      (money/bignumber value)
                            :data       data
                            :gas        (money/to-decimal gas)
                            :gas-price  (money/to-decimal gasPrice)
