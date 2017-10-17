@@ -38,5 +38,6 @@
 (def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})
 (def svg                    #js {:default #js {}})
+(def react-native-fcm       #js {:default #js {}})
 
 
