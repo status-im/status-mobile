@@ -62,7 +62,7 @@
       [react/view styles/tag-count-container
        [react/text {:style styles/tag-count
                     :font  :default}
-        (:total discoveries)]]]
+        (str (:total discoveries))]]]
      [components/discover-list-item {:message         (first (:discoveries discoveries))
                                      :show-separator? false
                                      :current-account current-account}]]))

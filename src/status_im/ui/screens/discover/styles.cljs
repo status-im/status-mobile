@@ -56,7 +56,7 @@
 (def discover-list-item-name
   {:margin-left 7
    :color       styles/color-black
-   :font-size   12})
+   :font-size   14})
 
 (def discover-list-item
   {:flex-direction :column
@@ -127,7 +127,7 @@
    :padding-left     16
    :ios              {:border-radius 3
                       :border-width  1
-                      :border-color  styles/color-light-gray5}
+                      :border-color  styles/color-white}
    :android          {:border-radius 4
                       :margin-top    2
                       :margin-bottom 4
@@ -204,7 +204,7 @@
    :padding     4
    :margin      4
    :color       styles/text1-color
-   :font-size   12})
+   :font-size   14})
 
 (defstyle dapps-list-item-avatar-container
   {:flex-direction :column
@@ -274,7 +274,6 @@
 
 (def discover-container
   {:flex             1
-   :margin-top       16
    :background-color styles/color-light-gray})
 
 (def list-container

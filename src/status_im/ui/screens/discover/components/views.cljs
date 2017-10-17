@@ -11,6 +11,7 @@
             [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]))
 
+;; TODO(oskarth): Too many positional args, refactor to map
 (defn title [label-kw action-kw action-fn active?]
   [react/view styles/title
    [react/text {:style      styles/title-text
