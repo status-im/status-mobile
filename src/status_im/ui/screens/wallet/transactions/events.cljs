@@ -67,8 +67,7 @@
         {:db       (update-in db [:wallet :transactions-unsigned] dissoc id)
          :dispatch [:set-chat-ui-props {:validation-messages nil}]}
 
-        ;;NO ERROR, TIMEOUT or DEFAULT ERROR
-        (merge
-         {:db (update-in db [:wallet :transactions-unsigned] dissoc id)}
-         (when (and message_id (= current-account-address transaction-initiator-address))
-           {:dispatch [:set-chat-ui-props {:validation-messages error_message}]}))))))
+        constants/send-transaction-timeout-error-code
+        {:db (update-in db [:wallet :transactions-unsigned] dissoc id)}
+
+        nil))))
