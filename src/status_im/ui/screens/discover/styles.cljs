@@ -58,20 +58,27 @@
    :color       styles/color-black
    :font-size   14})
 
+;; TODO(oskarth): These rules should be pulled out into more custom styles, not
+;; generic enough for discover-list-item
 (def discover-list-item
   {:flex-direction :column
    :padding-bottom 16
    :margin-right   10
    :top            1})
 
+(def discover-list-item-full
+  {:flex-direction    :column
+   :margin-top        16
+   :margin-horizontal 16
+   :margin-bottom     12})
+
+;; TODO(oskarth): Style too specific for full view, refactor
 (def discover-list-item-second-row
   {:flex            1
    :flex-direction  :row
    :align-items     :center
    :justify-content :space-between
-   :margin-bottom   5
    :padding-top     25})
-
 
 (defstyle discover-list-item-avatar-container
   {:flex-direction :column})
@@ -114,7 +121,7 @@
 
 (def separator
   {:background-color styles/color-gray11
-   :height           2
+   :height           4
    :margin-top       2
    :margin-bottom    2})
 
@@ -166,7 +173,7 @@
 
 (def status-list-inner
   {:background-color :white
-   :padding-left     16})
+   :margin-top       4})
 
 ;; All dapps
 
@@ -432,3 +439,8 @@
 (def empty-section-body-text
   {:margin-top 2
    :font-size  14})
+
+;; TODO(oskarth): Copy of existing style, generalize - discover-container overloaded
+(def all-recent-container all-dapps-container)
+(def all-popular-container all-dapps-container)
+
