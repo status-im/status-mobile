@@ -28,6 +28,9 @@
       [react/view {:flex 1}
        [status-bar/status-bar]
        [new-toolbar/toolbar]
+       [network-settings/network-badge
+        {:name       name
+         :connected? connected?}]
        (when-not connected?
          [react/touchable-highlight {:on-press #(rf/dispatch [:connect-network id])}
           [react/view st/connect-button-container
@@ -43,14 +46,14 @@
        ;; TODO(rasom): uncomment edit-button when it will be functional,
        ;; https://github.com/status-im/status-react/issues/2104
        #_[react/view {:opacity 0.4}
-        [react/view st/edit-button-container
-         [react/view st/edit-button
-          [react/text {:style      st/edit-button-label
-                       :uppercase? (get-in platform/platform-specific [:uppercase?])}
-           (i18n/label :t/edit-network-config)]]
-         #_[context-menu                                      ; TODO should be implemented later
-            [view st/edit-button
-             [text {:style st/edit-button-label} (i18n/label :t/edit-network-config)]]
-            options]
-         [react/text {:style st/edit-button-description}
-          (i18n/label :t/edit-network-warning)]]]])))
+          [react/view st/edit-button-container
+           [react/view st/edit-button
+            [react/text {:style      st/edit-button-label
+                         :uppercase? (get-in platform/platform-specific [:uppercase?])}
+             (i18n/label :t/edit-network-config)]]
+           #_[context-menu                                      ; TODO should be implemented later
+              [view st/edit-button
+               [text {:style st/edit-button-label} (i18n/label :t/edit-network-config)]]
+              options]
+           [react/text {:style st/edit-button-description}
+            (i18n/label :t/edit-network-warning)]]]])))
