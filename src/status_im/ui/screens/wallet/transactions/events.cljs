@@ -38,15 +38,15 @@
                                                        :gas-price  (money/to-decimal gasPrice)
                                                        :timestamp  now
                                                        :message-id message_id}
-            sending-from-chat?                        (not (get-in db [:wallet :send-transaction :waiting-signal?]))]
-        (merge
-         {:db (-> db
-                  (assoc-in [:wallet :transactions-unsigned id] transaction)
-                  (assoc-in [:wallet :send-transaction :id] id)
-                  (assoc-in [:wallet :send-transaction :from-chat?] sending-from-chat?))}
-         (if sending-from-chat?
-           {:dispatch [:navigate-to-modal :wallet-send-transaction-modal]}
-           {:dispatch [:wallet.send-transaction/transaction-queued id]})))
+            sending-from-chat?                        (not (get-in db [:wallet :send-transaction :waiting-signal?]))
+            new-db                                    (assoc-in db [:wallet :transactions-unsigned id] transaction)
+            sending-db                                {:id         id
+                                                       :from-chat? sending-from-chat?}] 
+        (if sending-from-chat?
+          {:db        (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completly reset sending state here
+           :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}
+          {:db       (update-in new-db [:wallet :send-transaction] merge sending-db) ; just update sending state as we are in wallet flow
+           :dispatch [:wallet.send-transaction/transaction-queued id]}))
       {:discard-transaction id})))
 
 ;;TRANSACTION FAILED signal from status-go
