@@ -33,7 +33,8 @@
    [discover-components/title
     :t/dapps
     :t/all
-    #(re-frame/dispatch [:navigate-to :discover-all-dapps])]
+    #(re-frame/dispatch [:navigate-to :discover-all-dapps])
+    true]
    (if (seq dapps)
      [list/flat-list {:data                              (vals dapps)
                       :render-fn                         render-dapp
