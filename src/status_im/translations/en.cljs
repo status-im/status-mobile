@@ -172,6 +172,7 @@
    :soon                                  "Soon"
    :public-chat-user-count                "{{count}} people"
    :dapps                                 "DApps"
+   :dapp-profile                          "DApp Profile"
    :no-statuses-discovered                "No statuses discovered"
    :no-statuses-discovered-body           "When somebody posts a status\nyou will see it here."
    :no-hashtags-discovered-title          "No hashtags discovered"

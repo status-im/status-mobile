@@ -350,19 +350,21 @@
    :justify-content  :flex-start
    :align-items      :center
    :height           80
-   :background-color styles/color-white})
+   :background-color styles/color-white
+   :margin-top       4})
 
 (def dapp-details-icon
-  {:flex             0.15
+  {:flex             0.2
    :background-color styles/color-white
-   :padding-left     10})
+   :margin-left      10})
 
 (def dapp-details-name-container
-  {:flex             0.85
+  {:flex             0.8
    :background-color styles/color-white})
 
-(def dapp-details-name-text
-  {:margin-left 10})
+(defstyle dapp-details-name-text
+  {:android {:font-size 16}
+   :ios     {:font-size 17}})
 
 (def dapp-details-action-container
   {:flex-direction :row
@@ -371,14 +373,21 @@
 
 (def dapp-details-action-icon-container
   {:height           80
-   :flex             0.15
+   :flex             0.2
    :justify-content  :center
    :align-items      :center
    :background-color styles/color-white})
 
+(defstyle dapp-details-open-icon
+  {:margin-left      10
+   :android {:width  72
+             :height 72}
+   :ios     {:width  64
+             :height 64}})
+
 (def dapp-details-action-name-container
   {:height           80
-   :flex             0.85
+   :flex             0.80
    :background-color styles/color-white
    :flex-direction   :row
    :justify-content  :flex-start
@@ -386,7 +395,7 @@
 
 (def dapp-details-action-name-text
   {:margin-left 10
-   :color       styles/color-blue})
+   :color       styles/color-blue4})
 
 (def dapp-details-section-container
   {:background-color styles/color-white})
@@ -401,7 +410,8 @@
 (def dapp-details-section-body-container
   {:background-color styles/color-white
    :padding-left     10
-   :padding-right    10})
+   :padding-right    10
+   :padding-bottom   16})
 
 (def empty-section-container
   {:flex-direction   :row

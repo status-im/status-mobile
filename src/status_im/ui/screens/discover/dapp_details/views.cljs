@@ -23,7 +23,7 @@
     [react/view styles/discover-container
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
-      [react/view]]
+      [toolbar/content-title (i18n/label :t/dapp-profile)]]
      [react/view styles/dapp-details-container
       [react/view styles/dapp-details-header
        [react/view styles/dapp-details-icon
@@ -33,7 +33,8 @@
                      :style styles/dapp-details-name-text} name]]]
       [react/view styles/dapp-details-action-container
        [react/view styles/dapp-details-action-icon-container
-        [vector-icons/icon :icons/open {:color :active}]]
+        [vector-icons/icon :icons/open {:color :active
+                                        :style styles/dapp-details-open-icon}]]
        [react/view styles/dapp-details-action-name-container
         [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-chat-with-contact dapp])}
          [react/view
