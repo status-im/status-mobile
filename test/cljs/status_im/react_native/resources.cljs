@@ -30,3 +30,7 @@
 
 (def assets
   {:ethereum nil})
+
+(def ui
+  {:empty-hashtags nil
+   :empty-recent   nil})
