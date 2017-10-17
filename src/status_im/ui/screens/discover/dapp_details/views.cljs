@@ -27,7 +27,7 @@
      [react/view styles/dapp-details-container
       [react/view styles/dapp-details-header
        [react/view styles/dapp-details-icon
-        [chat-icon.screen/chat-icon photo-path {:size 50}]]
+        [chat-icon.screen/chat-icon photo-path {:size 56}]]
        [react/view styles/dapp-details-name-container
         [react/text {:font  :medium
                      :style styles/dapp-details-name-text} name]]]
