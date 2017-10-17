@@ -243,6 +243,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/../../../../node_modules/React/**",
 					"$(SRCROOT)/../../../../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../../../node_modules/react-native-config/ios/ReactNativeConfig",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
@@ -271,6 +272,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/../../../../node_modules/React/**",
 					"$(SRCROOT)/../../../../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../../../node_modules/react-native-config/ios/ReactNativeConfig",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;

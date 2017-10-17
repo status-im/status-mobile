@@ -1,4 +1,5 @@
 #import "RCTStatus.h"
+#import "ReactNativeConfig.h"
 #import "React/RCTBridge.h"
 #import "React/RCTEventDispatcher.h"
 #import <Statusgo/Statusgo.h>
@@ -152,11 +153,11 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     NSString *dataDir = [configJSON objectForKey:@"DataDir"];
     NSString *upstreamURL = [configJSON valueForKeyPath:@"UpstreamConfig.URL"];
     NSString *networkDir = [rootUrl.path stringByAppendingString:dataDir];
-#ifdef DEBUG
-    int dev = 1;
-#else
+    NSString *devCluster = [ReactNativeConfig envFor:@"ETHEREUM_DEV_CLUSTER"];
     int dev = 0;
-#endif
+    if([devCluster isEqualToString:@"1"]){
+        dev = 1;
+    }
     char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId, dev);
     NSString *config = [NSString stringWithUTF8String: configChars];
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];

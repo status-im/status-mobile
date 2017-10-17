@@ -44,7 +44,12 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
         @Override
         protected List<ReactPackage> getPackages() {
-            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG);
+            boolean devCluster = false;
+            if (BuildConfig.ETHEREUM_DEV_CLUSTER == "1") {
+                devCluster = true;
+            }
+
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),

@@ -38,13 +38,15 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ServiceConnector status = null;
     private ExecutorService executor = null;
     private boolean debug;
+    private boolean devCluster;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
         }
         this.debug = debug;
+        this.devCluster = devCluster;
         reactContext.addLifecycleEventListener(this);
     }
 
@@ -160,7 +162,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         int dev = 0;
-        if (this.debug) {
+        if (this.devCluster) {
             dev = 1;
         }
 
