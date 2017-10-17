@@ -422,8 +422,10 @@
 
 (def empty-section-container
   {:flex-direction   :row
-   :margin-left      32
-   :padding-vertical 50})
+   :justify-content  :center
+   :align-items      :center
+   :padding-vertical 50
+   :margin-right     6})
 
 (def empty-section-image
   {:height 70
@@ -431,7 +433,7 @@
 
 (def empty-section-description
   {:flex-direction :column
-   :margin-left    12})
+   :margin-left    6})
 
 (def empty-section-title-text
   {:font-size 15})

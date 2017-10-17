@@ -174,9 +174,9 @@
    :dapps                                 "DApps"
    :dapp-profile                          "DApp Profile"
    :no-statuses-discovered                "No statuses discovered"
-   :no-statuses-discovered-body           "When somebody posts a status\nyou will see it here."
+   :no-statuses-discovered-body           "When somebody posts\na status you will see it here."
    :no-hashtags-discovered-title          "No hashtags discovered"
-   :no-hashtags-discovered-body           "When a hashtag becomes popular\nyou will see it here."
+   :no-hashtags-discovered-body           "When a hashtag becomes\npopular you will see it here."
 
    ;;settings
    :settings                              "Settings"
