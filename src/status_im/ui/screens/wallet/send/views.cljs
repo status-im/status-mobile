@@ -36,6 +36,7 @@
 (defview sign-panel []
   (letsubs [account [:get-current-account]
             wrong-password? [:get-in [:wallet/send-transaction :wrong-password?]]
+            signing-error [:get-in [:wallet/send-transaction :signing-error]]
             signing-phrase (:signing-phrase @account)
             bottom-value (animation/create-value -250)
             opacity-value (animation/create-value 0)]
@@ -53,9 +54,10 @@
           :placeholder-text-color "#939ba1"
           :on-change-text         #(re-frame/dispatch [:set-in [:wallet/send-transaction :password] %])
           :style                  send.styles/password}]]]
-     (when wrong-password?
-       [components/tooltip (i18n/label :t/wrong-password)])]))
-
+     (when (or wrong-password? signing-error)
+       [components/tooltip (if wrong-password?
+                             (i18n/label :t/wrong-password)
+                             signing-error)])]))
 
 ;; "Cancel" and "Sign Transaction >" buttons, signing with password
 (defview signing-buttons [cancel-handler sign-handler in-progress?]

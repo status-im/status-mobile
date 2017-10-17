@@ -41,6 +41,7 @@
                (assoc-in [:wallet/send-transaction :amount-error] error))})))
 
 (def ^:private clear-send-properties {:transaction-id  nil
+                                      :signing-error   nil
                                       :wrong-password? false
                                       :waiting-signal? false
                                       :from-chat? false})
@@ -55,7 +56,7 @@
                        (update-in [:wallet :transactions-unsigned] dissoc id)
                        (update :wallet/send-transaction merge clear-send-properties))
          :dispatch [:navigate-to :wallet-transaction-sent]}
-        {:db db'}))))
+        {:db (assoc-in db' [:wallet/send-transaction :signing-error] error)}))))
 
 (defn on-transactions-completed [raw-results]
   (let [results (:results (types/json->clj raw-results))]
@@ -69,7 +70,7 @@
           db' (assoc-in db [:wallet/send-transaction :in-progress?] false)
           has-error? (and error (string? error) (not (string/blank? error)))]
       (if has-error?
-        {:db db'}
+        {:db (assoc-in db' [:wallet/send-transaction :signing-error] error)}
         {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
                        (update :wallet/send-transaction merge clear-send-properties))
@@ -129,6 +130,7 @@
     (merge {:db (update db :wallet/send-transaction assoc
                         :signing? false
                         :transaction-id nil
+                        :signing-error   nil
                         :wrong-password? false)}
            (when transaction-id
              {:discard-transaction transaction-id}))))
@@ -150,4 +152,4 @@
   (fn [{{:wallet/keys   [send-transaction] :as db} :db} _]
     (let [{:keys [transaction-id]} send-transaction]
       {:db (update-in db [:wallet/send-transaction]
-                      assoc :signing? false :wrong-password? false)})))
+                      assoc :signing? false :wrong-password? false :signing-error nil)})))
