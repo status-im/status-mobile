@@ -32,7 +32,7 @@
 (views/defview qr-code [amount]
   (views/letsubs [account [:get-current-account]]
     [components.qr-code/qr-code
-     {:value   (eip67/generate-uri (:address account) {:value amount})
+     {:value   (eip67/generate-uri (:address account) (when amount {:value amount}))
       :size    256}]))
 
 (views/defview request-transaction []

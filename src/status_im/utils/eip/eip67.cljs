@@ -32,9 +32,13 @@
                                      (str (name k) key-value-separator  v))))
 
 (defn generate-uri
-  "Generate a EIP 67 URI based on `address` and an optional map of extra properties.
+  "Generate a EIP 67 URI based on `address` and an optional map (keyword, string) of extra properties.
    No validation of address format is performed."
   ([address] (generate-uri address nil))
   ([address m]
    (when address
-     (str scheme scheme-separator address (when m (str parameters-separator (generate-parameter-string m)))))))
+     (let [parameters (into {} (filter second m))] ;; filter nil values
+       (str scheme scheme-separator address
+            (when-not (empty? parameters)
+              (str parameters-separator (generate-parameter-string parameters))))))))
+
