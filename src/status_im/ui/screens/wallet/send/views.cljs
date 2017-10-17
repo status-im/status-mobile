@@ -26,11 +26,14 @@
                                          act/default-handler))]
    [toolbar/content-title {:color :white} (i18n/label :t/send-transaction)]])
 
-(defn sign-later []
+(defn sign-later-popup
+  [from-chat?]
   (utils/show-question
    (i18n/label :t/sign-later-title)
    (i18n/label :t/sign-later-text)
-   #(re-frame/dispatch [:wallet/sign-transaction true])))
+   #(re-frame/dispatch (if from-chat?
+                         [:navigate-back]
+                         [:wallet/sign-transaction true]))))
 
 (defview sign-panel []
   (letsubs [account [:get-current-account]
@@ -136,7 +139,7 @@
            #(re-frame/dispatch [:wallet/discard-transaction])
            #(re-frame/dispatch [:wallet/sign-transaction])
            in-progress?]
-          [sign-buttons amount-error to-address amount sufficient-funds? sign-later])
+          [sign-buttons amount-error to-address amount sufficient-funds? #(sign-later-popup false)])
         (when signing?
           [sign-panel])]
        (when in-progress? [react/view send.styles/processing-view])])))
@@ -177,7 +180,9 @@
              #(re-frame/dispatch [:wallet/cancel-signing-modal])
              #(re-frame/dispatch [:wallet/sign-transaction-modal])
              in-progress?]
-            [sign-buttons amount-error to amount sufficient-funds? #(re-frame/dispatch [:navigate-back])])
+            [sign-buttons amount-error to amount sufficient-funds? (if from-chat?
+                                                                     #(sign-later-popup true)
+                                                                     #(re-frame/dispatch [:navigate-back]))])
           (when signing?
             [sign-panel])
           (when in-progress? [react/view send.styles/processing-view])]])
