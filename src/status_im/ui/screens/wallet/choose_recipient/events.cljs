@@ -11,7 +11,10 @@
       (assoc-in db [:wallet :send-transaction :camera-flashlight] toggled-state))))
 
 (defn choose-address-and-name [db address name amount]
-  (update-in db [:wallet :send-transaction] assoc :to-address address :to-name name :amount amount))
+  (update-in
+    db [:wallet :send-transaction]
+    #(cond-> (assoc % :to-address address :to-name name)
+             amount (assoc :amount amount))))
 
 (defn- extract-details
   "First try to parse as EIP67 URI, if not assume this is an address directly.

@@ -14,5 +14,8 @@
 (deftest generate-uri
   (is (= nil (eip67/generate-uri nil)))
   (is (= "ethereum:0x1234" (eip67/generate-uri "0x1234")))
+  (is (= "ethereum:0x1234" (eip67/generate-uri "0x1234" nil)))
+  (is (= "ethereum:0x1234" (eip67/generate-uri "0x1234" {})))
+  (is (= "ethereum:0x1234" (eip67/generate-uri "0x1234" {:to nil})))
   (is (= "ethereum:0x1234?to=0x5678" (eip67/generate-uri "0x1234" {:to "0x5678"})))
   (is (= "ethereum:0x1234?to=0x5678&value=1" (eip67/generate-uri "0x1234" {:to "0x5678" :value 1}))))
