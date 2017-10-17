@@ -21,6 +21,14 @@
    :margin-right     6
    :margin-top       2})
 
+(def warning-exclamation
+  {:background-color :darkorange
+   :border-radius    100
+   :width            16
+   :height           16
+   :margin-left      12
+   :margin-right     6
+   :margin-top       2})
 
 ;; wallet
 
