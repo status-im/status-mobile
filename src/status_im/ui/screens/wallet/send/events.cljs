@@ -20,10 +20,9 @@
   ::send-transaction
   (fn [{:keys [web3] :as params}]
     (when web3
-      (.sendTransaction
-        (.-eth web3)
-        (clj->js (select-keys params [:from :to :value]))
-        #()))))
+      (.sendTransaction (.-eth web3)
+                        (clj->js (select-keys params [:from :to :value]))
+                        #()))))
 
 (re-frame/reg-fx
   ::show-transaction-moved
@@ -73,7 +72,8 @@
         {:db       (-> db'
                        (update-in [:wallet :transactions-unsigned] dissoc id)
                        (update-in [:wallet :send-transaction] merge clear-send-properties))
-         :dispatch [:navigate-back]}))))
+         :dispatch-n [[:navigate-back]
+                      [:navigate-to :wallet-transaction-sent]]}))))
 
 (defn on-transactions-modal-completed [raw-results]
   (let [results (:results (types/json->clj raw-results))]
