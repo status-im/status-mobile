@@ -101,14 +101,16 @@
      (re-frame/dispatch [:navigate-to :choose-recipient]))))
 
 (defview send-transaction []
-  (letsubs [transaction [:wallet.send/transaction]]
+  (letsubs [transaction [:wallet.send/transaction]
+            scroll      (atom nil)]
     (let [{:keys [amount amount-error signing? to-address to-name in-progress? sufficient-funds?]} transaction]
       [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :wallet}]
         [toolbar-view signing?]
         [common/network-info {:text-color :white}]
-        [react/scroll-view {:keyboardShouldPersistTaps :always}
+        [react/scroll-view {:keyboardShouldPersistTaps :always
+                            :ref #(reset! scroll %)}
          [react/view components.styles/flex
           [react/view wallet.styles/choose-participant-container
            [components/choose-recipient {:address  to-address
@@ -121,6 +123,7 @@
             {:error         (or amount-error
                                 (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
              :input-options {:auto-focus     true
+                             :on-focus       (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
                              :default-value  amount
                              :on-change-text #(re-frame/dispatch [:wallet/set-and-validate-amount %])}}]
            [react/view wallet.styles/choose-currency-container

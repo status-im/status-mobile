@@ -23,16 +23,20 @@
     (case position
       :first {:border-bottom-left-radius radius
               :border-top-left-radius    radius
-              :ios {:border-width 1}}
-      :last  {:border-bottom-right-radius radius
-              :border-top-right-radius    radius
-              :ios {:border-width 1}}
+              :ios                       {:border-top-width    1
+                                          :border-left-width   1
+                                          :border-bottom-width 1}}
+      :last {:border-bottom-right-radius radius
+             :border-top-right-radius    radius
+             :ios                        {:border-top-width    1
+                                          :border-right-width  1
+                                          :border-bottom-width 1}}
       {:android {:border-left-width  1
                  :border-right-width 1}
        :ios     {:border-width 1}})))
 
 (defnstyle button-bar [position]
-  (merge {:border-color  border-color}
+  (merge {:border-color border-color}
          (border position)))
 
 (defnstyle button-text [disabled?]
@@ -40,9 +44,9 @@
    :color              styles/color-white
    :padding-horizontal 16
    :android            (merge
-                         {:font-size          14
-                          :padding-vertical   10
-                          :letter-spacing     0.5}
+                         {:font-size        14
+                          :padding-vertical 10
+                          :letter-spacing   0.5}
                          (when disabled? {:opacity 0.4}))
    :ios                (merge
                          {:font-size        15

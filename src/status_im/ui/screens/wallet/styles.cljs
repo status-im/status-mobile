@@ -64,6 +64,7 @@
 
 (def amount-container
   {:margin-top        16
+   :margin-bottom     16
    :margin-horizontal 15
    :flex-direction    :row})
 
