@@ -321,18 +321,29 @@ function validateSend(params, context) {
 function handleSend(params, context) {
     var val = web3.toWei(params["amount"].replace(",", "."), "ether");
 
+    var gasPrice = calculateGasPrice(params["bot-db"]["sliderValue"]);
     var data = {
         from: context.from,
         to: context.to,
-        value: val,
-        gasPrice: calculateGasPrice(params["bot-db"]["sliderValue"])
+        value: val
     };
 
-    try {
-        return web3.eth.sendTransaction(data);
-    } catch (err) {
-        return {error: err.message};
+    if (gasPrice) {
+        data.gasPrice = gasPrice;
     }
+
+    web3.eth.sendTransaction(data, function(error, hash) {
+        if (error) {
+            // Do nothing, as error handling will be done as response to transaction.failed event from go 
+        } else {
+            status.sendSignal("handler-result", {
+                status: "success",
+                hash: hash,
+                origParams: context["orig-params"]
+            });
+        } 
+    });
+    // async handler, so we don't return anything immediately
 }
 
 function previewSend(params, context) {
@@ -424,6 +435,7 @@ var send = {
     params: paramsSend,
     validator: validateSend,
     handler: handleSend,
+    asyncHandler: true,
     preview: previewSend,
     shortPreview: shortPreviewSend
 };
