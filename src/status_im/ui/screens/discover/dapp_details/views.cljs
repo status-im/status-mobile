@@ -16,27 +16,29 @@
     [react/text {:font  :small
                  :style styles/dapp-details-section-title-text} title]]
    [react/view styles/dapp-details-section-body-container
-    [react/text {:font :medium} content]]])
+    [react/text {:font :medium
+                 :style styles/dapp-details-section-content-text} content]]])
 
 (defview dapp-details []
   (letsubs [{:keys [photo-path name dapp-url] :as dapp} [:get :discover-current-dapp]]
-    [react/view styles/discover-container
+    [react/view styles/dapp-details-container
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/dapp-profile)]]
-     [react/view styles/dapp-details-container
+     [react/view styles/dapp-details-inner-container
       [react/view styles/dapp-details-header
        [react/view styles/dapp-details-icon
         [chat-icon.screen/chat-icon photo-path {:size 56}]]
        [react/view styles/dapp-details-name-container
         [react/text {:font  :medium
                      :style styles/dapp-details-name-text} name]]]
-      [react/view styles/dapp-details-action-container
-       [react/view styles/dapp-details-action-icon-container
-        [vector-icons/icon :icons/open {:color :active
-                                        :style styles/dapp-details-open-icon}]]
-       [react/view styles/dapp-details-action-name-container
-        [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-chat-with-contact dapp])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-chat-with-contact dapp])}
+       [react/view styles/dapp-details-action-container
+        [react/view styles/dapp-details-action-icon-container
+         [vector-icons/icon :icons/open {:color           :active
+                                         :style           styles/dapp-details-open-icon
+                                         :container-style styles/dapp-details-open-icon-background}]]
+        [react/view styles/dapp-details-action-name-container
          [react/view
           [react/text {:font  :medium
                        :style styles/dapp-details-action-name-text} (i18n/label :t/open)]]]]]
