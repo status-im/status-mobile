@@ -4,7 +4,6 @@
             [status-im.components.react :refer [view
                                                 text
                                                 animated-view
-                                                linear-gradient
                                                 get-dimensions]]
             [status-im.components.sync-state.styles :as st]
             [status-im.components.animation :as anim]
@@ -18,20 +17,21 @@
                                   :duration 250})))
 
 (defn offline-view [_]
-  (let [sync-state       (subscribe [:get :sync-state])
+  (let [sync-state       (subscribe [:sync-state])
         network-status   (subscribe [:get :network-status])
         offline-opacity  (anim/create-value 0.0)
         on-update        (fn [_ _]
                            (anim/set-value offline-opacity 0)
                            (when (or (= @network-status :offline) (= @sync-state :offline))
                              (start-offline-animation offline-opacity)))
-        pending-contact? (subscribe [:chat :pending-contact?])
+        pending-contact? (subscribe [:current-contact :pending?])
         view-id          (subscribe [:get :view-id])]
     (r/create-class
       {:component-did-mount
        on-update
        :component-did-update
        on-update
+       :display-name "offline-view"
        :reagent-render
        (fn [{:keys [top]}]
          (when (or (= @network-status :offline) (= @sync-state :offline))

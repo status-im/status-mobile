@@ -1,0 +1,34 @@
+{
+    "dapps":
+    {
+        "name":
+        {
+            "en": "ÐApps"
+        },
+        "contacts":
+        [
+            "oaken-water-meter",
+            "melonport",
+            "bchat",
+            "Dentacoin",
+            "Augur",
+            "Ethlance",
+            "Commiteth"
+        ]
+    },
+    "state-of-dapps":
+    {
+        "name":
+        {
+            "en": "State of the ÐApps"
+        },
+        "contacts":
+        [
+            "flight-delays-suck",
+            "FirstBlood",
+            "auction-house",
+            "gnosis",
+            "mkr-market"
+        ]
+    }
+}

@@ -9,17 +9,68 @@
 
 #import "AppDelegate.h"
 
+#import <asl.h>
+#import "ReactNativeConfig.h"
+#import "React/RCTLog.h"
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
-#import <Instabug/Instabug.h>
 #import "SplashScreen.h"
+#import "TestFairy.h"
+#import "RNFIRMessaging.h"
+
+@import Instabug;
 
 @implementation AppDelegate
+
+/* Modified version of RCTDefaultLogFunction that also directs all app logs to TestFairy. */
+RCTLogFunction RCTTestFairyLogFunction = ^(
+  RCTLogLevel level,
+  __unused RCTLogSource source,
+  NSString *fileName,
+  NSNumber *lineNumber,
+  NSString *message
+  )
+{
+  NSString *log = RCTFormatLog([NSDate date], level, fileName, lineNumber, message);
+  fprintf(stderr, "%s\n", log.UTF8String);
+  fflush(stderr);
+
+  /* Only custom part */
+  TFLog(log);
+
+  int aslLevel;
+  switch(level) {
+  case RCTLogLevelTrace:
+    aslLevel = ASL_LEVEL_DEBUG;
+    break;
+  case RCTLogLevelInfo:
+    aslLevel = ASL_LEVEL_NOTICE;
+    break;
+  case RCTLogLevelWarning:
+    aslLevel = ASL_LEVEL_WARNING;
+    break;
+  case RCTLogLevelError:
+    aslLevel = ASL_LEVEL_ERR;
+    break;
+  case RCTLogLevelFatal:
+    aslLevel = ASL_LEVEL_CRIT;
+    break;
+  }
+  asl_log(NULL, NULL, aslLevel, "%s", message.UTF8String);
+
+};
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
+
+  /* Enable debug logs from React Native for release mode */
+  NSString *debugLogsEnabled = [ReactNativeConfig envFor:@"DEBUG_LOGS_ENABLED"];
+  if([debugLogsEnabled isEqualToString:@"1"]){
+    RCTSetLogThreshold(RCTLogLevelInfo - 1);
+    RCTSetLogFunction(RCTTestFairyLogFunction);
+  }
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
 
@@ -34,9 +85,36 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  [Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
   [SplashScreen show];
+  NSString *testfairyEnabled = [ReactNativeConfig envFor:@"TESTFAIRY_ENABLED"];
+  if([testfairyEnabled isEqualToString:@"1"]){
+    [TestFairy begin:@"969f6c921cb435cea1d41d1ea3f5b247d6026d55"];
+  }
+  [Instabug startWithToken:@"5534212f4a44f477c9ab270ab5cd2062" invocationEvent:IBGInvocationEventShake];
+
+  [FIRApp configure];
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+
   return YES;
+}
+
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
+{
+[RNFIRMessaging willPresentNotification:notification withCompletionHandler:completionHandler];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler
+{
+[RNFIRMessaging didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+}
+
+-(void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+[RNFIRMessaging didReceiveLocalNotification:notification];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+[RNFIRMessaging didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
 @end

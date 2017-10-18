@@ -1,27 +1,52 @@
 package im.status.ethereum.module;
 
 import android.app.Activity;
+import android.net.Uri;
+import android.os.*;
 import android.view.WindowManager;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.RemoteException;
+import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebStorage;
+
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import android.util.Log;
+import com.github.status_im.status_go.cmd.Statusgo;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.json.JSONObject;
+import org.json.JSONException;
+import com.instabug.library.Instabug;
 
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
     private static final String TAG = "StatusModule";
 
-    private StatusConnector status = null;
-
     private HashMap<String, Callback> callbacks = new HashMap<>();
 
-    StatusModule(ReactApplicationContext reactContext) {
+    private static StatusModule module;
+    private ServiceConnector status = null;
+    private ExecutorService executor = null;
+    private boolean debug;
+    private boolean devCluster;
+
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster) {
         super(reactContext);
+        if (executor == null) {
+            executor = Executors.newCachedThreadPool();
+        }
+        this.debug = debug;
+        this.devCluster = devCluster;
         reactContext.addLifecycleEventListener(this);
     }
 
@@ -32,84 +57,33 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @Override
     public void onHostResume() {  // Actvity `onResume`
+        module = this;
         Activity currentActivity = getCurrentActivity();
         if (currentActivity == null) {
             Log.d(TAG, "On host Activity doesn't exist");
             return;
         }
+
         if (status == null) {
-            status = new StatusConnector(currentActivity, StatusService.class);
+            status = new ServiceConnector(currentActivity, StatusService.class);
             status.registerHandler(this);
         }
 
         status.bindService();
 
-        WritableMap params = Arguments.createMap();
-        Log.d(TAG, "Send module.initialized event");
-        params.putString("jsonEvent", "{\"type\":\"module.initialized\"}");
-        getReactApplicationContext()
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("gethEvent", params);
+        signalEvent("{\"type\":\"module.initialized\"}");
     }
 
     @Override
-    public void onHostPause() {  // Actvity `onPause`
+    public void onHostPause() {
         if (status != null) {
             status.unbindService();
         }
     }
 
     @Override
-    public void onHostDestroy() {  // Actvity `onDestroy`
-        if (status != null) {
-            status.stopNode(null);
-        }
-    }
+    public void onHostDestroy() {
 
-    @Override
-    public void onConnectorConnected() {
-    }
-
-    @Override
-    public void onConnectorDisconnected() {
-    }
-
-    @Override
-    public boolean handleMessage(Message message) {
-
-        Log.d(TAG, "Received message: " + message.toString());
-        boolean isClaimed = true;
-        Bundle bundle = message.getData();
-        String callbackIdentifier = bundle.getString(StatusConnector.CALLBACK_IDENTIFIER);
-        String data = bundle.getString("data");
-        Callback callback = callbacks.remove(callbackIdentifier);
-        switch (message.what) {
-            case StatusMessages.MSG_START_NODE:
-            case StatusMessages.MSG_STOP_NODE:
-            case StatusMessages.MSG_LOGIN:
-            case StatusMessages.MSG_CREATE_ACCOUNT:
-            case StatusMessages.MSG_RECOVER_ACCOUNT:
-            case StatusMessages.MSG_COMPLETE_TRANSACTION:
-            case StatusMessages.MSG_JAIL_INIT:
-            case StatusMessages.MSG_JAIL_PARSE:
-            case StatusMessages.MSG_JAIL_CALL:
-                if (callback == null) {
-                    Log.d(TAG, "Could not find callback: " + callbackIdentifier);
-                } else {
-                    callback.invoke(data);
-                }
-                break;
-            case StatusMessages.MSG_GETH_EVENT:
-                String event = bundle.getString("event");
-                WritableMap params = Arguments.createMap();
-                params.putString("jsonEvent", event);
-                getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
-                break;
-            default:
-                isClaimed = false;
-        }
-
-        return isClaimed;
     }
 
     private boolean checkAvailability() {
@@ -120,92 +94,323 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return false;
         }
 
-        if (status == null) {
-            Log.d(TAG, "Status connector is null");
-            return false;
-        }
-
         return true;
     }
 
     // Geth
+    private void signalEvent(String jsonEvent) {
+        Log.d(TAG, "Signal event: " + jsonEvent);
+        WritableMap params = Arguments.createMap();
+        params.putString("jsonEvent", jsonEvent);
+        this.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
+    }
+
+    private void doStartNode(final String defaultConfig) {
+
+        Activity currentActivity = getCurrentActivity();
+
+        String root = currentActivity.getApplicationInfo().dataDir;
+        String dataFolder = root + "/ethereum/testnet";
+        Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
+
+        try {
+            final File newFile = new File(dataFolder);
+            // todo handle error?
+            newFile.mkdir();
+        } catch (Exception e) {
+            Log.e(TAG, "error making folder: " + dataFolder, e);
+        }
+
+        final String ropstenFlagPath = root + "/ropsten_flag";
+        final File ropstenFlag = new File(ropstenFlagPath);
+        if (!ropstenFlag.exists()) {
+            try {
+                final String chaindDataFolderPath = dataFolder + "/StatusIM/lightchaindata";
+                final File lightChainFolder = new File(chaindDataFolderPath);
+                if (lightChainFolder.isDirectory()) {
+                    String[] children = lightChainFolder.list();
+                    for (int i = 0; i < children.length; i++) {
+                        new File(lightChainFolder, children[i]).delete();
+                    }
+                }
+                lightChainFolder.delete();
+                ropstenFlag.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String testnetDataDir = root + "/ethereum/testnet";
+        String oldKeystoreDir = testnetDataDir + "/keystore";
+        String newKeystoreDir = root + "/keystore";
+        final File oldKeystore = new File(oldKeystoreDir);
+        if (oldKeystore.exists()) {
+            try {
+                final File newKeystore = new File(newKeystoreDir);
+                copyDirectory(oldKeystore, newKeystore);
+
+                if (oldKeystore.isDirectory()) {
+                    String[] children = oldKeystore.list();
+                    for (int i = 0; i < children.length; i++) {
+                        new File(oldKeystoreDir, children[i]).delete();
+                    }
+                }
+                oldKeystore.delete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int dev = 0;
+        if (this.devCluster) {
+            dev = 1;
+        }
+
+        String config = Statusgo.GenerateConfig(testnetDataDir, 3, dev);
+        try {
+            JSONObject customConfig = new JSONObject(defaultConfig);
+            JSONObject jsonConfig = new JSONObject(config);
+            String gethLogFileName = "geth.log";
+            jsonConfig.put("LogEnabled", false);
+            jsonConfig.put("LogFile", gethLogFileName);
+            jsonConfig.put("LogLevel", "DEBUG");
+            jsonConfig.put("DataDir", root + customConfig.get("DataDir"));
+            jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
+            try {
+                Object upstreamConfig = customConfig.get("UpstreamConfig");
+                if (upstreamConfig != null) {
+                    Log.d(TAG, "UpstreamConfig is not null");
+                    jsonConfig.put("UpstreamConfig", upstreamConfig);
+                }
+            } catch (Exception e) {
+
+            }
+            jsonConfig.put("KeyStoreDir", newKeystoreDir);
+            String gethLogPath = dataFolder + "/" + gethLogFileName;
+            File logFile = new File(gethLogPath);
+            if (logFile.exists()) {
+                logFile.delete();
+            }
+            try {
+                logFile.setReadable(true);
+                File parent = logFile.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                logFile.createNewFile();
+                logFile.setReadable(true);
+            } catch (Exception e) {
+                Log.d(TAG, "Can't create geth.log file!");
+            }
+            Uri gethLogUri = Uri.fromFile(logFile);
+            try {
+                Log.d(TAG, "Attach to geth.log to instabug " + gethLogUri.getPath());
+                Instabug.setFileAttachment(gethLogUri, gethLogFileName);
+            } catch (NullPointerException e) {
+                Log.d(TAG, "Instabug is not initialized!");
+            }
+
+            config = jsonConfig.toString();
+        } catch (JSONException e) {
+            Log.d(TAG, "Something went wrong " + e.getMessage());
+            Log.d(TAG, "Default configuration will be used");
+        }
+
+        Log.d(TAG, "Node config " + config);
+
+        String res = Statusgo.StartNode(config);
+        Log.d(TAG, "StartNode result: " + res);
+        Log.d(TAG, "Geth node started");
+	status.sendMessage();
+    }
+
+    private String getOldExternalDir() {
+        File extStore = Environment.getExternalStorageDirectory();
+        return extStore.exists() ? extStore.getAbsolutePath() + "/ethereum/testnet" : getNewInternalDir();
+    }
+
+    private String getNewInternalDir() {
+        Activity currentActivity = getCurrentActivity();
+        return currentActivity.getApplicationInfo().dataDir + "/ethereum/testnet";
+    }
+
+    private void deleteDirectory(File folder) {
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDirectory(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
+    }
+
+    private void copyDirectory(File sourceLocation, File targetLocation) throws IOException {
+        if (sourceLocation.isDirectory()) {
+            if (!targetLocation.exists() && !targetLocation.mkdirs()) {
+                throw new IOException("Cannot create dir " + targetLocation.getAbsolutePath());
+            }
+
+            String[] children = sourceLocation.list();
+            for (int i = 0; i < children.length; i++) {
+                copyDirectory(new File(sourceLocation, children[i]), new File(targetLocation, children[i]));
+            }
+        } else {
+            File directory = targetLocation.getParentFile();
+            if (directory != null && !directory.exists() && !directory.mkdirs()) {
+                throw new IOException("Cannot create dir " + directory.getAbsolutePath());
+            }
+
+            InputStream in = new FileInputStream(sourceLocation);
+            OutputStream out = new FileOutputStream(targetLocation);
+
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+        }
+    }
 
     @ReactMethod
-    public void startNode(Callback callback) {
+    public void shouldMoveToInternalStorage(Callback callback) {
+        String oldDir = getOldExternalDir();
+        String newDir = getNewInternalDir();
+
+        File oldDirFile = new File(oldDir);
+        File newDirFile = new File(newDir);
+
+        callback.invoke(oldDirFile.exists() && !newDirFile.exists());
+    }
+
+    @ReactMethod
+    public void moveToInternalStorage(Callback callback) {
+        String oldDir = getOldExternalDir();
+        String newDir = getNewInternalDir();
+
+        try {
+            File oldDirFile = new File(oldDir);
+            copyDirectory(oldDirFile, new File(newDir));
+            deleteDirectory(oldDirFile);
+        } catch (IOException e) {
+            Log.d(TAG, "Moving error: " + e);
+        }
+
+        callback.invoke();
+    }
+
+    @ReactMethod
+    public void startNode(final String config) {
         Log.d(TAG, "startNode");
         if (!checkAvailability()) {
-            callback.invoke(false);
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                doStartNode(config);
+            }
+        };
 
-        status.startNode(callbackIdentifier);
+        thread.start();
     }
 
     @ReactMethod
-    public void startNodeRPCServer() {
-        Log.d(TAG, "startNodeRPCServer");
-        final Activity activity = getCurrentActivity();
-        if (activity == null) {
-            return;
-        }
+    public void stopNode() {
 
-        status.startRPC();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Log.d(TAG, "stopNode");
+                String res = Statusgo.StopNode();
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void stopNodeRPCServer() {
-        Log.d(TAG, "stopNodeRPCServer");
-        final Activity activity = getCurrentActivity();
-        if (activity == null) {
-            return;
-        }
-
-        status.stopRPC();
-    }
-
-    @ReactMethod
-    public void login(String address, String password, Callback callback) {
+    public void login(final String address, final String password, final Callback callback) {
         Log.d(TAG, "login");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String result = Statusgo.Login(address, password);
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+                callback.invoke(result);
+            }
+        };
 
-        status.login(callbackIdentifier, address, password);
+        thread.start();
     }
 
     @ReactMethod
-    public void createAccount(String password, Callback callback) {
+    public void createAccount(final String password, final Callback callback) {
         Log.d(TAG, "createAccount");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.CreateAccount(password);
 
-        status.createAccount(callbackIdentifier, password);
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void recoverAccount(String passphrase, String password, Callback callback) {
-        Log.d(TAG, "recoverAccount");
+    public void notify(final String token, final Callback callback) {
+        Log.d(TAG, "notify");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    String res = Statusgo.Notify(token);
 
-        status.recoverAccount(callbackIdentifier, passphrase, password);
+                    callback.invoke(res);
+                }
+            };
+
+        thread.start();
+    }
+
+    @ReactMethod
+    public void recoverAccount(final String passphrase, final String password, final Callback callback) {
+        Log.d(TAG, "recoverAccount");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.RecoverAccount(password, passphrase);
+
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
     }
 
     private String createIdentifier() {
@@ -213,74 +418,102 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void completeTransaction(String hash, String password, Callback callback) {
-        Log.d(TAG, "completeTransaction");
+    public void completeTransactions(final String hashes, final String password, final Callback callback) {
+        Log.d(TAG, "completeTransactions");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        Log.d(TAG, "Complete transaction: " + hash);
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.CompleteTransactions(hashes, password);
+                callback.invoke(res);
+            }
+        };
 
-        status.completeTransaction(callbackIdentifier, hash, password);
+        thread.start();
     }
 
 
     @ReactMethod
-    public void discardTransaction(String id) {
+    public void discardTransaction(final String id) {
         Log.d(TAG, "discardTransaction");
         if (!checkAvailability()) {
             return;
         }
 
-        Log.d(TAG, "Discard transaction: " + id);
-        status.discardTransaction(id);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Statusgo.DiscardTransaction(id);
+            }
+        };
+
+        thread.start();
     }
 
     // Jail
 
     @ReactMethod
-    public void initJail(String js, Callback callback) {
+    public void initJail(final String js, final Callback callback) {
         Log.d(TAG, "initJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Statusgo.InitJail(js);
 
-        status.initJail(callbackIdentifier, js);
+                callback.invoke(false);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void parseJail(String chatId, String js, Callback callback) {
+    public void parseJail(final String chatId, final String js, final Callback callback) {
         Log.d(TAG, "parseJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.Parse(chatId, js);
+                Log.d(TAG, "endParseJail");
+                callback.invoke(res);
+            }
+        };
 
-        status.parseJail(callbackIdentifier, chatId, js);
+        thread.start();
     }
 
     @ReactMethod
-    public void callJail(String chatId, String path, String params, Callback callback) {
+    public void callJail(final String chatId, final String path, final String params, final Callback callback) {
         Log.d(TAG, "callJail");
+        Log.d(TAG, path);
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
-
-        status.callJail(callbackIdentifier, chatId, path, params);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "startCallJail");
+                String res = Statusgo.Call(chatId, path, params);
+                Log.d(TAG, "endCallJail");
+                callback.invoke(res);
+            }
+        });
     }
 
     @ReactMethod
@@ -329,5 +562,82 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 activity.getWindow().setSoftInputMode(mode);
             }
         });
+    }
+
+    @SuppressWarnings("deprecation")
+    @ReactMethod
+    public void clearCookies() {
+        Log.d(TAG, "clearCookies");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        } else {
+            CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(activity);
+            cookieSyncManager.startSync();
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.removeAllCookie();
+            cookieManager.removeSessionCookie();
+            cookieSyncManager.stopSync();
+            cookieSyncManager.sync();
+        }
+    }
+
+    @ReactMethod
+    public void clearStorageAPIs() {
+        Log.d(TAG, "clearStorageAPIs");
+        final Activity activity = getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        WebStorage storage = WebStorage.getInstance();
+        if (storage != null) {
+            storage.deleteAllData();
+        }
+    }
+
+    @Override
+    public boolean handleMessage(Message message) {
+
+        Log.d(TAG, "Received message: " + message.toString());
+        Bundle bundle = message.getData();
+
+        String event = bundle.getString("event");
+        signalEvent(event);
+
+        return true;
+    }
+
+    @Override
+    public void onConnectorConnected() {
+
+    }
+
+    @Override
+    public void onConnectorDisconnected() {
+
+    }
+
+    @ReactMethod
+    public void sendWeb3Request(final String host, final String payload, final Callback callback) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.CallRPC(payload);
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
+    }
+
+    @ReactMethod
+    public void closeApplication() {
+        System.exit(0);
     }
 }

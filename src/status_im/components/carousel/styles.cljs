@@ -3,7 +3,7 @@
 (def scroll-view-container
   {:flex 1})
 
-(defn content-container [sneak gap]
+(defn content-container [gap]
   {:paddingLeft (quot gap 2)
    :paddingRight (quot gap 2)})
 

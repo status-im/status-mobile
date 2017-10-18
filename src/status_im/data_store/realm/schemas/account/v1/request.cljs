@@ -9,5 +9,5 @@
                                        :default "open"}
                           :added      :date}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating request schema"))

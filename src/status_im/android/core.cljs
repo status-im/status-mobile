@@ -1,135 +1,87 @@
 (ns status-im.android.core
-  (:require [reagent.core :as r :refer [atom]]
+  (:require [reagent.core :as reagent]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [status-im.handlers]
-            [status-im.subs]
-            [status-im.components.react :refer [app-registry
-                                                keyboard
-                                                orientation
-                                                back-android
-                                                view
-                                                modal
-                                                splash-screen]]
-            [status-im.components.main-tabs :refer [main-tabs]]
-            [status-im.contacts.search-results :refer [contacts-search-results]]
-            [status-im.contacts.views.contact-list :refer [contact-list]]
-            [status-im.contacts.views.new-contact :refer [new-contact]]
-            [status-im.qr-scanner.screen :refer [qr-scanner]]
-            [status-im.discover.search-results :refer [discover-search-results]]
-            [status-im.chat.screen :refer [chat]]
-            [status-im.accounts.login.screen :refer [login]]
-            [status-im.accounts.recover.screen :refer [recover]]
-            [status-im.accounts.screen :refer [accounts]]
-            [status-im.transactions.screen :refer [confirm]]
-            [status-im.chats-list.screen :refer [chats-list]]
-            [status-im.new-group.screen :refer [new-group]]
-            [status-im.participants.views.add :refer [new-participants]]
-            [status-im.participants.views.remove :refer [remove-participants]]
-            [status-im.group-settings.screen :refer [group-settings]]
-            [status-im.profile.screen :refer [profile my-profile]]
-            [status-im.profile.photo-capture.screen :refer [profile-photo-capture]]
+            status-im.utils.db
+            status-im.ui.screens.db
+            status-im.ui.screens.events
+            status-im.ui.screens.subs
             status-im.data-store.core
-            [taoensso.timbre :as log]
-            [status-im.components.status :as status]
-            [status-im.chat.styles.screen :as st]
-            [status-im.accounts.views.qr-code :refer [qr-code-view]]))
+            [status-im.ui.screens.views :as views]
+            [status-im.components.react :as react]
+            [status-im.native-module.core :as status]
+            [status-im.utils.error-handler :as error-handler]
+            [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
+            [status-im.utils.notifications :as notifications]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
                        ;; todo: it might be better always return false from
                        ;; this listener and handle application's closing
                        ;; in handlers
-                       (let [stack (subscribe [:get :navigation-stack])]
-                         (when (< 1 (count @stack))
-                           (dispatch [:navigate-back])
-                           true)))]
-    (.addEventListener back-android "hardwareBackPress" new-listener)))
+                       (let [stack      (subscribe [:get :navigation-stack])
+                             creating?  (subscribe [:get :accounts/creating-account?])
+                             result-box (subscribe [:chat-ui-props :result-box])
+                             webview    (subscribe [:get :webview-bridge])]
+                         (cond
+                           @creating? true
+
+                           (and @webview (:can-go-back? @result-box))
+                           (do (.goBack @webview) true)
+
+                           (< 1 (count @stack))
+                           (do (dispatch [:navigate-back]) true)
+
+                           :else false)))]
+    (.addEventListener react/back-android "hardwareBackPress" new-listener)))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
 
-(defn validate-current-view
-  [current-view signed-up?]
-  (if (or (contains? #{:login :chat :recover :accounts} current-view)
-          signed-up?)
-    current-view
-    :chat))
+(defn app-state-change-handler [state]
+  (dispatch [:app-state-change state]))
 
 (defn app-root []
-  (let [signed-up?      (subscribe [:signed-up?])
-        view-id         (subscribe [:get :view-id])
-        account-id      (subscribe [:get :current-account-id])
-        keyboard-height (subscribe [:get :keyboard-height])
-        modal-view      (subscribe [:get :modal])]
-    (log/debug "Current account: " @account-id)
-    (r/create-class
+  (let [keyboard-height (subscribe [:get :keyboard-height])]
+    (reagent/create-class
       {:component-will-mount
        (fn []
-         (let [o (orientation->keyword (.getInitialOrientation orientation))]
+         (let [o (orientation->keyword (.getInitialOrientation react/orientation))]
            (dispatch [:set :orientation o]))
          (.addOrientationListener
-           orientation
-           #(dispatch [:set :orientation (orientation->keyword %)]))
-         (.lockToPortrait orientation)
-         (.addListener keyboard
+          react/orientation
+          #(dispatch [:set :orientation (orientation->keyword %)]))
+         (.lockToPortrait react/orientation)
+         (.addListener react/keyboard
                        "keyboardDidShow"
                        (fn [e]
                          (let [h (.. e -endCoordinates -height)]
                            (when-not (= h @keyboard-height)
                              (dispatch [:set :keyboard-height h])
                              (dispatch [:set :keyboard-max-height h])))))
-         (.addListener keyboard
+         (.addListener react/keyboard
                        "keyboardDidHide"
                        #(when-not (= 0 @keyboard-height)
                           (dispatch [:set :keyboard-height 0])))
-         (.hide splash-screen))
-       :render
+         (.hide react/splash-screen)
+         (.addEventListener react/app-state "change" app-state-change-handler))
+       :component-did-mount
        (fn []
-         (when @view-id
-           (let [current-view (validate-current-view @view-id @signed-up?)]
-             (let [component (case current-view
-                               :discover main-tabs
-                               :discover-search-results discover-search-results
-                               :add-participants new-participants
-                               :remove-participants remove-participants
-                               :chat-list main-tabs
-                               :new-group new-group
-                               :group-settings group-settings
-                               :contact-list main-tabs
-                               :contact-list-search-results contacts-search-results
-                               :group-contacts contact-list
-                               :new-contact new-contact
-                               :qr-scanner qr-scanner
-                               :chat chat
-                               :profile profile
-                               :profile-photo-capture profile-photo-capture
-                               :accounts accounts
-                               :login login
-                               :recover recover
-                               :my-profile my-profile)]
-               [view
-                {:flex 1}
-                [component]
-                (when @modal-view
-                  [view
-                   st/chat-modal
-                   [modal {:animation-type   :slide
-                           :transparent      false
-                           :on-request-close #(dispatch [:navigate-back])}
-                    (let [component (case @modal-view
-                                      :qr-scanner qr-scanner
-                                      :qr-code-view qr-code-view
-                                      :confirm confirm
-                                      :contact-list-modal contact-list)]
-                      [component])]])]))))})))
+         (when config/notifications-wip-enabled?
+           (notifications/on-refresh-fcm-token)
+           ;; TODO(oskarth): Background click_action handler
+           (notifications/on-notification)))
+       :component-will-unmount
+       (fn []
+         (.stop react/http-bridge)
+         (.removeEventListener react/app-state "change" app-state-change-handler))
+       :display-name "root"
+       :reagent-render views/main})))
 
-(defn init [& [env]]
-  (status/call-module status/init-jail)
-  (dispatch-sync [:reset-app])
-  (.registerComponent app-registry "StatusIm" #(r/reactify-component app-root))
-  (dispatch [:listen-to-network-status!])
-  (dispatch [:initialize-crypt])
-  (dispatch [:initialize-geth])
+(defn init []
+  (error-handler/register-exception-handler!)
+  (status/init-jail)
+  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
   (status/set-soft-input-mode status/adjust-resize)
-  (dispatch [:load-user-phone-number])
-  (init-back-button-handler!))
+  (init-back-button-handler!)
+  (dispatch-sync [:initialize-app]))

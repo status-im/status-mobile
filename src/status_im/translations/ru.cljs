@@ -8,6 +8,8 @@
    :chat-name                             "Имя чата"
    :notifications-title                   "Уведомления и звуки"
    :offline                               "Оффлайн"
+   :cancel                                "Отмена"
+   :next                                  "Продолжить"
 
    ;drawer
    :invite-friends                        "Пригласить друзей"
@@ -38,7 +40,7 @@
    ;messages
    :status-sending                        "Отправляется"
    :status-pending                        "в ожидании"
-   :status-sent                           "Отправить"
+   :status-sent                           "Отправлено"
    :status-seen-by-everyone               "Просмотрено всеми"
    :status-seen                           "Просмотрено"
    :status-delivered                      "Доставлено"
@@ -53,7 +55,7 @@
                                            :other "часы"}
    :datetime-day                          {:one   "день"
                                            :other "дни"}
-   :datetime-multiple                     "c" ; TODO probably wrong
+   :datetime-multiple                     "c"
    :datetime-ago                          "назад"
    :datetime-yesterday                    "вчера"
    :datetime-today                        "сегодня"
@@ -106,7 +108,7 @@
    :new-group-chat                        "Новый групповой чат"
 
    ;discover
-   :discover                             "Поиск"
+   :discover                              "Поиск"
    :none                                  "Нет"
    :search-tags                           "Введите теги для поиска сюда"
    :popular-tags                          "Популярные теги"
@@ -119,10 +121,11 @@
    ;contacts
    :contacts                              "Контакты"
    :new-contact                           "Новый контакт"
+   :edit-contacts                         "Редактирование контактов"
    :show-all                              "ПОКАЗАТЬ ВСЕ"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Люди"
-   :contacts-group-new-chat               "Начать новый час"
+   :contacts-group-new-chat               "Начать новый чат"
    :no-contacts                           "Пока нет контактов"
    :show-qr                               "Показать QR"
    :enter-address                         "Ввести адрес"
@@ -156,15 +159,14 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH в адрес {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH от {{chat-name}}"
-   :command-text-location                 "Место {{address}}"
-   :command-text-browse                   "Просматривается веб-страница {{webpage}}"
-   :command-text-send                     "Транзакция {{amount}} ETH"
-   :command-text-help                     "Помощь"
 
    ;new-group
    :group-chat-name                       "Имя чата"
    :empty-group-chat-name                 "Введите имя"
    :illegal-group-chat-name               "Выберите другое имя"
+   :new-group                             "Новая группа"
+   :group-name                            "Название группы"
+   :reorder-groups                        "Упорядочить группы"
 
    ;participants
    :add-participants                      "Добавить участников"
@@ -232,4 +234,76 @@
    :value                                 "Сумма"
 
    ;:webview
-   :web-view-error                        "ой, ошибка"})
+   :web-view-error                        "ой, ошибка"
+
+   :confirm                               "Подтвердить"
+   :phone-national                        "Государственный"
+   :transactions-confirmed                {:one   "Транзакция подтверждена"
+                                           :other "Подтверждено {{count}} транзакции(й)"
+                                           :zero  "Нет подтвержденных транзакций"}
+   :public-group-topic                    "Тема"
+   :debug-enabled                         "Запущен сервер отладки! Теперь вы можете добавить DApp, выполнив со своего компьютера *status-dev-cli scan*"
+   :new-public-group-chat                 "Присоединиться к общему чату"
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
+   :share-qr                              "Поделиться QR"
+   :feedback                              "Есть отзыв?\nВстряхните телефон!"
+   :twelve-words-in-correct-order         "12 слов в нужном порядке"
+   :remove-from-contacts                  "Удалить из контактов"
+   :delete-chat                           "Удалить чат"
+   :edit-chats                            "Изменить чаты"
+   :sign-in                               "Вход"
+   :create-new-account                    "Создать новый аккаунт"
+   :sign-in-to-status                     "Войти в Статус"
+   :got-it                                "Понятно"
+   :move-to-internal-failure-message      "Нам необходимо перенести некоторые важные файлы из внешнего хранилища во внутреннее. Для этого нам нужно ваше разрешение. В следующих версиях мы не будем использовать внешнее хранилище."
+   :edit-group                            "Изменить группу"
+   :delete-group                          "Удалить группу"
+   :browsing-title                        "Просматривать"
+   :browsing-cancel                       "Отмена"
+   :faucet-success                        "Заявка на сборщик получена"
+   :choose-from-contacts                  "Выбрать из контактов"
+   :phone-e164                            "Международная 1"
+   :remove-from-group                     "Удалить из группы"
+   :search-contacts                       "Поиск контактов"
+   :transaction                           "Транзакция"
+   :public-group-status                   "Общий"
+   :leave-chat                            "Выйти из чата"
+   :start-conversation                    "Начать разговор"
+   :topic-format                          "Неверный формат [a-z0-9\\-] +"
+   :faucet-error                          "Ошибка заявки на сборщик"
+   :phone-significant                     "Значительное"
+   :search-for                            "Искать..."
+   :phone-international                   "Международная 2"
+   :send-transaction                      "Отправить транзакцию"
+   :delete-contact                        "Удалить контакт"
+   :mute-notifications                    "Отключить звук в оповещениях"
+
+
+   :contact-s                             {:one   "контакт"
+                                           :other "контакты"}
+   :from                                  "От"
+   :search-chats                          "Поиск чатов"
+   :in-contacts                           "В контактах"
+
+   :type-a-message                        "Напишите сообщение..."
+   :type-a-command                        "Начинайте вводить команду..."
+   :shake-your-phone                      "Нашли ошибку или есть предложение? Просто ~потрясите~ телефон!"
+   :status-prompt                         "Создайте статус, чтобы люди знали о том, что вы предлагаете. Можно также использовать #хэштеги."
+   :add-a-status                          "Добавьте статус..."
+   :error                                 "Ошибка..."
+   :more                                  "Больше"
+   :no-statuses-found                     "Статусы не найдены"
+   :swow-qr                               "Показать QR-код"
+   :browsing-open-in-web-browser          "Открыть в веб-браузере"
+   :delete-group-prompt                   "Это не повлияет на контакты"
+   :edit-profile                          "Редактировать профиль"
+
+
+   :enter-password-transactions           {:one   "Подтвердите транзакцию, указав свой пароль"
+                                           :other "Подтвердите транзакции, указав свой пароль"}
+   :unsigned-transactions                 "Неподписанные транзакции"
+   :empty-topic                           "Пустая тема"
+   :to                                    "Кому"
+   :group-members                         "Участники группы"
+   :estimated-fee                         "Примерная комиссия"
+   :data                                  "Дата"})

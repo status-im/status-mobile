@@ -1,6 +1,5 @@
 (ns status-im.components.drag-drop
-  (:require [status-im.components.react :refer [animated pan-responder]]
-            [status-im.components.animation :as anim]))
+  (:require [status-im.components.react :refer [animated pan-responder]]))
 
 (defn pan-handlers [pan-responder]
   (js->clj (.-panHandlers pan-responder)))

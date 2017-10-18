@@ -1,5 +1,6 @@
 (ns ^:figwheel-no-load env.android.main
   (:require [reagent.core :as r]
+            [re-frisk-remote.core :as rr]
             [status-im.android.core :as core]
             [figwheel.client :as figwheel :include-macros true]))
 
@@ -10,7 +11,7 @@
 (def root-el (r/as-element [reloader]))
 (defn callback []
   (swap! cnt inc)
-  (status-im.components.status/init-jail)
+  (status-im.native-module.core/init-jail)
   (re-frame.core/dispatch [:load-commands!]))
 
 (figwheel/watch-and-reload
@@ -18,4 +19,4 @@
   :heads-up-display false
   :jsload-callback callback)
 
-(core/init)
+(rr/enable-re-frisk-remote! {:host "localhost:4567" :on-init core/init :pre-send (fn [db] (update db :chats #(into {} %)))})

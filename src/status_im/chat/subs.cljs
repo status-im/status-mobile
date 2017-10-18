@@ -1,269 +1,226 @@
 (ns status-im.chat.subs
-  (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [re-frame.core :refer [register-sub dispatch subscribe path]]
-            [status-im.utils.platform :refer [ios?]]
-            [status-im.models.commands :as commands]
+  (:require [re-frame.core :refer [reg-sub dispatch subscribe path]]
             [status-im.data-store.chats :as chats]
-            [status-im.constants :refer [response-suggesstion-resize-duration]]
-            [status-im.chat.constants :as c]
-            [status-im.chat.views.plain-message :as plain-message]
-            [status-im.chat.views.command :as command]
-            [status-im.constants :refer [content-type-status]]
-            [status-im.utils.platform :refer [platform-specific]]))
+            [status-im.chat.constants :as const]
+            [status-im.chat.models.input :as input-model]
+            [status-im.chat.models.commands :as commands-model]
+            [status-im.chat.utils :as chat-utils]
+            [status-im.chat.views.input.utils :as input-utils]
+            [status-im.constants :refer [response-suggesstion-resize-duration
+                                         content-type-status
+                                         console-chat-id]]
+            [status-im.commands.utils :as commands-utils]
+            [status-im.utils.platform :refer [platform-specific ios?]]
+            [taoensso.timbre :as log]
+            [clojure.string :as str]))
 
-(register-sub :chat-properties
-  (fn [db [_ properties]]
-    (->> properties
-         (map (fn [k]
-                [k (-> @db
-                       (get-in [:chats (:current-chat-id @db) k])
-                       (reaction))]))
-         (into {}))))
-
-(register-sub
+(reg-sub
   :chat-ui-props
-  (fn [db [_ ui-element]]
-    (reaction (get-in @db [:chat-ui-props ui-element]))))
+  (fn [db [_ ui-element chat-id]]
+    (let [current-chat-id (subscribe [:get-current-chat-id])
+          data (get-in db [:chat-ui-props (or chat-id @current-chat-id) ui-element])]
+      (cond-> data
+        (:markup data)
+        (update :markup commands-utils/generate-hiccup)
 
-(register-sub :chat
-  (fn [db [_ k]]
-    (-> @db
-        (get-in [:chats (:current-chat-id @db) k])
-        (reaction))))
+        (and  (= ui-element :validation-messages) data)
+        commands-utils/generate-hiccup))))
 
-(register-sub :get-current-chat-id
-  (fn [db _]
-    (reaction (:current-chat-id @db))))
+(reg-sub
+  :chat-input-margin
+  :<- [:get :keyboard-height]
+  (fn [kb-height]
+    (if ios? kb-height 0)))
 
-(register-sub :get-suggestions
-  (fn [db _]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:command-suggestions @chat-id])))))
+(reg-sub
+  :chats
+  (fn [db]
+    (:chats db)))
 
-(register-sub :get-commands
-  (fn [db [_ chat-id]]
-    (let [current-chat (or chat-id (@db :current-chat-id))]
-      (reaction (or (get-in @db [:chats current-chat :commands]) {})))))
+(reg-sub
+  :chat-actions
+  :<- [:chats]
+  :<- [:get-current-chat-id]
+  :<- [:chat :input-text]
+  (fn [[chats current-chat-id text] [_ type chat-id]]
+    (->> (get-in chats [(or chat-id current-chat-id) type])
+         (filter #(or (str/includes? (chat-utils/command-name %) (or text "")))))))
 
-(register-sub :get-chat-by-id
+(reg-sub
+  :chat
+  :<- [:chats]
+  :<- [:get-current-chat-id]
+  (fn [[chats id] [_ k chat-id]]
+    (get-in chats [(or chat-id id) k])))
+
+(reg-sub
+  :get-current-chat-id
+  (fn [db]
+    (:current-chat-id db)))
+
+(reg-sub
+  :get-chat-by-id
   (fn [_ [_ chat-id]]
-    (reaction (chats/get-by-id chat-id))))
+    (chats/get-by-id chat-id)))
 
-(register-sub :get-responses
+(reg-sub :get-commands-for-chat
   (fn [db [_ chat-id]]
-    (let [current-chat (or chat-id (@db :current-chat-id))]
-      (reaction (or (get-in @db [:chats current-chat :responses]) {})))))
+    (commands-model/commands-for-chat db chat-id)))
 
-(register-sub :get-commands-and-responses
+(reg-sub
+  :selected-chat-command
   (fn [db [_ chat-id]]
-    (reaction (or (->> (get-in @db [:chats chat-id])
-                       ((juxt :commands :responses))
-                       (apply merge))
-                  (->> (get @db :all-commands)
-                       ((juxt :commands :responses))
-                       (apply merge))))))
+    (let [current-chat-id (subscribe [:get :current-chat-id])
+          input-text      (subscribe [:chat :input-text])]
+      (input-model/selected-chat-command db (or chat-id @current-chat-id) @input-text))))
 
-(register-sub :get-chat-input-text
-  (fn [db _]
-    (->> [:chats (:current-chat-id @db) :input-text]
-         (get-in @db)
-         (reaction))))
-
-(register-sub :get-message-input-view-height
-  (fn [db _]
-    (reaction (get-in @db [:chats (:current-chat-id @db) :message-input-height]))))
-
-(register-sub :valid-plain-message?
-  (fn [_ _]
-    (let [input-message (subscribe [:get-chat-input-text])]
-      (reaction
-        (plain-message/message-valid? @input-message)))))
-
-(register-sub :valid-command?
-  (fn [_ [_ validator]]
-    (let [input (subscribe [:get-chat-command-content])]
-      (reaction (command/valid? @input validator)))))
-
-(register-sub :get-chat-command
-  (fn [db _]
-    (reaction (commands/get-chat-command @db))))
-
-(register-sub :get-command-parameter
+(reg-sub
+  :current-chat-argument-position
   (fn [db]
-    (let [command (subscribe [:get-chat-command])
-          chat-id (subscribe [:get-current-chat-id])]
-      (reaction
-        (let [parameter-index (commands/get-command-parameter-index @db @chat-id)]
-          (when parameter-index (nth (:params @command) parameter-index)))))))
+    (let [command       (subscribe [:selected-chat-command])
+          input-text    (subscribe [:chat :input-text])
+          seq-arguments (subscribe [:chat :seq-arguments])
+          selection     (subscribe [:chat-ui-props :selection])]
+      (input-model/current-chat-argument-position @command @input-text @selection @seq-arguments))))
 
-(register-sub :get-chat-command-content
-  (fn [db _]
-    (reaction (commands/get-chat-command-content @db))))
+(reg-sub
+  :chat-parameter-box
+  (fn [db]
+    (let [chat-id (subscribe [:get-current-chat-id])
+          command (subscribe [:selected-chat-command])
+          index   (subscribe [:current-chat-argument-position])]
+      (cond
+        (and @command (not= @index input-model/*no-argument-error*))
+        (let [command-name (get-in @command [:command :name])]
+          (get-in db [:chats @chat-id :parameter-boxes command-name @index]))
 
-(register-sub :get-chat-command-to-message-id
-  (fn [db _]
-    (reaction (commands/get-chat-command-to-message-id @db))))
+        (not @command)
+        (get-in db [:chats @chat-id :parameter-boxes :message])
 
-(register-sub :chat-command-request
-  (fn [db _]
-    (reaction (commands/get-chat-command-request @db))))
+        :default
+        nil))))
 
-(register-sub :get-current-chat
-  (fn [db _]
-    (let [current-chat-id (:current-chat-id @db)]
-      (reaction (get-in @db [:chats current-chat-id])))))
+(reg-sub
+ :show-parameter-box?
+  :<- [:chat-parameter-box]
+  :<- [:show-suggestions?]
+  :<- [:chat :input-text]
+  :<- [:chat-ui-props :validation-messages]
+  (fn [[chat-parameter-box show-suggestions? input-text validation-messages]]
+    (and (get chat-parameter-box :markup)
+         (not validation-messages)
+         (not show-suggestions?))))
 
-(register-sub :get-chat
+(reg-sub
+  :command-completion
   (fn [db [_ chat-id]]
-    (reaction (get-in @db [:chats chat-id]))))
+    (input-model/command-completion db chat-id)))
 
-(register-sub :get-content-suggestions
-  (fn [db _]
-    (reaction (get-in @db [:suggestions (:current-chat-id @db)]))))
+(reg-sub
+  :show-suggestions?
+  (fn [db [_ chat-id]]
+    (let [chat-id           (or chat-id (db :current-chat-id))
+          show-suggestions? (subscribe [:chat-ui-props :show-suggestions? chat-id])
+          input-text        (subscribe [:chat :input-text chat-id])
+          selected-command  (subscribe [:selected-chat-command chat-id])
+          requests          (subscribe [:chat :possible-requests chat-id])
+          commands          (subscribe [:chat :possible-commands chat-id])]
+      (and (or @show-suggestions? (input-model/starts-as-command? (str/trim (or @input-text ""))))
+           (not (:command @selected-command))
+           (or (not-empty @requests)
+               (not-empty @commands))))))
 
-(register-sub :command?
+(reg-sub :get-current-chat
   (fn [db]
-    (->> (get-in @db [:edit-mode (:current-chat-id @db)])
-         (= :command)
-         (reaction))))
+    (let [current-chat-id (:current-chat-id db)]
+      (get-in db [:chats current-chat-id]))))
 
-(register-sub :command-type
-  (fn []
-    (let [command (subscribe [:get-chat-command])]
-      (reaction (:type @command)))))
+(reg-sub :get-chat
+  (fn [db [_ chat-id]]
+    (get-in db [:chats chat-id])))
 
-(register-sub :messages-offset
-  (fn []
-    (let [command?            (subscribe [:command?])
-          type                (subscribe [:command-type])
-          command-suggestions (subscribe [:get-content-suggestions])]
-      (reaction
-        (cond (and @command? (= @type :response))
-              c/request-info-height
-
-              (and @command? (= @type :command) (seq @command-suggestions))
-              c/suggestions-header-height
-
-              :else 0)))))
-
-(register-sub :command-icon-width
-  (fn []
-    (let [width (subscribe [:get :command-icon-width])
-          type  (subscribe [:command-type])]
-      (reaction (if (= :command @type)
-                  @width
-                  0)))))
-
-(register-sub :get-requests
-  (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:chats @chat-id :requests])))))
-
-(register-sub :get-requests-map
-  (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (->> (get-in @db [:chats @chat-id :requests])
-                     (map #(vector (:message-id %) %))
-                     (into {}))))))
-
-(register-sub :get-request
-  (fn [_ [_ message-id]]
-    (let [requests (subscribe [:get-requests-map])]
-      (reaction (get @requests message-id)))))
-
-(register-sub :get-current-request
-  (fn []
-    (let [requests   (subscribe [:get-requests-map])
-          message-id (subscribe [:get-chat-command-to-message-id])]
-      (reaction (@requests @message-id)))))
-
-(register-sub :get-response
+(reg-sub :get-response
   (fn [db [_ n]]
     (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:chats @chat-id :responses n])))))
+      (get-in db [:contacts/contacts @chat-id :responses n]))))
 
-(register-sub :is-request-answered?
-  (fn [_ [_ message-id]]
-    (let [requests (subscribe [:get-requests])]
-      (reaction (not (some #(= message-id (:message-id %)) @requests))))))
+(reg-sub :is-request-answered?
+  :<- [:chat :requests]
+  (fn [requests [_ message-id]]
+    (not-any? #(= message-id (:message-id %)) requests)))
 
-(register-sub :validation-errors
-  (fn [db]
-    (let [current-chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:validation-errors @current-chat-id])))))
-
-(register-sub :custom-validation-errors
-  (fn [db]
-    (let [current-chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:custom-validation-errors @current-chat-id])))))
-
-(register-sub :unviewed-messages-count
+(reg-sub :unviewed-messages-count
   (fn [db [_ chat-id]]
-    (reaction (get-in @db [:unviewed-messages chat-id :count]))))
+    (get-in db [:unviewed-messages chat-id :count])))
 
-(register-sub :command-suggestions-height
+(reg-sub :web-view-extra-js
   (fn [db]
     (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction
-        (get-in @db [:animations :command-suggestions-height @chat-id])))))
+      (get-in db [:web-view-extra-js @chat-id]))))
 
-(register-sub :response-height
-  (fn [db [_ status-bar]]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction
-        (min (get-in @db [:animations :to-response-height @chat-id])
-             (if (> (:layout-height @db) 0)
-               (- (:layout-height @db)
-                  (get-in platform-specific [:component-styles :status-bar status-bar :height]))
-               0))))))
-
-(register-sub :web-view-url
+(reg-sub :all-messages-loaded?
   (fn [db]
     (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:web-view-url @chat-id])))))
+      (get-in db [:chats @chat-id :all-loaded?]))))
 
-(register-sub :web-view-extra-js
-  (fn [db]
+(reg-sub :photo-path
+  :<- [:get-contacts]
+  (fn [contacts [_ id]]
+    (:photo-path (contacts id))))
+
+(reg-sub :get-last-message
+  (fn [db [_ chat-id]]
+    (let [{:keys [last-message messages]} (get-in db [:chats chat-id])]
+      (->> (conj messages last-message)
+        (sort-by :clock-value >)
+        (filter :show?)
+        (first)))))
+
+(reg-sub :get-message-short-preview-markup
+  (fn [db [_ message-id]]
+    (get-in db [:message-data :short-preview message-id :markup])))
+
+(reg-sub :get-last-message-short-preview
+  (fn [db [_ chat-id]]
+    (let [last-message (subscribe [:get-last-message chat-id])
+          preview (subscribe [:get-message-short-preview-markup (:message-id @last-message)])]
+      (when-let [markup @preview]
+        (commands-utils/generate-hiccup markup)))))
+
+(reg-sub :get-default-container-area-height
+  :<- [:chat-ui-props :input-height]
+  :<- [:get :layout-height]
+  :<- [:chat-input-margin]
+  (fn [[input-height layout-height chat-input-margin]]
+    (let [bottom (+ input-height chat-input-margin)]
+      (input-utils/default-container-area-height bottom layout-height))))
+
+(reg-sub :get-max-container-area-height
+  :<- [:chat-ui-props :input-height]
+  :<- [:get :layout-height]
+  :<- [:chat-input-margin]
+  (fn [[input-height layout-height chat-input-margin]]
+    (let [bottom (+ input-height chat-input-margin)]
+      (input-utils/max-container-area-height bottom layout-height))))
+
+(reg-sub :chat-animations
+  (fn [db [_ key type]]
     (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:web-view-extra-js @chat-id])))))
+      (get-in db [:chat-animations @chat-id key type]))))
 
-(register-sub :animate?
-  (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:animate? @chat-id])))))
+(reg-sub :get-chat-last-outgoing-message
+  (fn [db [_ chat-id]]
+    (->> (:messages (get-in db [:chats chat-id]))
+         (filter :outgoing)
+         (sort-by :clock-value >)
+         (first))))
 
-(register-sub :kb-mode
-  (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:kb-mode @chat-id])))))
+(reg-sub :get-message-preview-markup
+  (fn [db [_ message-id]]
+    (get-in db [:message-data :preview message-id :markup])))
 
-(register-sub :input-margin
-  (fn []
-    (let [kb-height   (subscribe [:get :keyboard-height])
-          focused     (subscribe [:get :focused])
-          mode        (subscribe [:kb-mode])
-          kb-max      (subscribe [:get :keyboard-max-height])
-          show-emoji? (subscribe [:chat-ui-props :show-emoji?])]
-      (reaction
-       (cond @show-emoji? (or @kb-max c/emoji-container-height)
-             ios? @kb-height
-             (and @focused (= :pan @mode) (pos? @kb-height)) 20
-             :else 0)))))
-
-(register-sub :max-layout-height
-  (fn [db [_ status-bar]]
-    (let [layout-height     (subscribe [:get :layout-height])
-          input-margin      (subscribe [:input-margin])
-          status-bar-height (get-in platform-specific [:component-styles :status-bar status-bar :height])]
-      (reaction
-        (- @layout-height @input-margin status-bar-height)))))
-
-(register-sub :all-messages-loaded?
-  (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (reaction (get-in @db [:chats @chat-id :all-loaded?])))))
-
-(register-sub :photo-path
-  (fn [_ [_ id]]
-    (let [contacts (subscribe [:get :contacts])]
-      (reaction (:photo-path (@contacts id))))))
+(reg-sub :get-message-preview
+  (fn [db [_ message-id]]
+    (let [preview (subscribe [:get-message-preview-markup message-id])]
+      (when-let [markup @preview]
+        (commands-utils/generate-hiccup markup)))))

@@ -1,13 +1,11 @@
 (ns status-im.utils.identicon
-  (:require [clojure.string :as s]
-            [status-im.utils.utils :as u]))
+  (:require [status-im.js-dependencies :as dependencies]))
 
 (def default-size 40)
-
-(def identicon-js (js/require "identicon.js"))
 
 (defn identicon
   ([hash] (identicon hash default-size))
   ([hash options]
-    (str "data:image/png;base64," (.toString (new identicon-js hash options)))))
+    (str "data:image/png;base64,"
+         (str (new dependencies/identicon-js hash options)))))
 

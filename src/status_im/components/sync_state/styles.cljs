@@ -1,4 +1,5 @@
-(ns status-im.components.sync-state.styles)
+(ns status-im.components.sync-state.styles
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]]))
 
 (def sync-style-gradient
   {:position :relative
@@ -26,8 +27,9 @@
    :background-color "#5fc48d"
    :height           2})
 
-(defn offline-wrapper [top opacity window-width pending?]
-  {:opacity          opacity
+(defnstyle offline-wrapper [top opacity window-width pending?]
+  {:ios              {:z-index 0}
+   :opacity          opacity
    :width            window-width
    :top              (+ (+ 56 top) (if pending? 35 0))
    :position         :absolute

@@ -1,8 +1,6 @@
 (ns status-im.components.icons.custom-icons
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def ion-icon
-  (r/adapt-react-class (js/require "react-native-vector-icons/Ionicons")))
-
-(def oct-icon
-  (r/adapt-react-class (js/require "react-native-vector-icons/Octicons")))
+  (r/adapt-react-class (.-default rn-dependencies/vector-icons)))

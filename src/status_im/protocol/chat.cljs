@@ -1,6 +1,5 @@
 (ns status-im.protocol.chat
-  (:require [cljs.spec :as s]
-            [status-im.protocol.message :as m]
+  (:require [cljs.spec.alpha :as s]
             [status-im.protocol.web3.filtering :as f]
             [status-im.protocol.web3.delivery :as d]
             [taoensso.timbre :refer-macros [debug]]
@@ -41,25 +40,3 @@
                  :requires-ack? false)
                (assoc-in [:payload :group-id] (:group-id message))
                (dissoc :group-id)))))
-
-(defn send-clock-value-request!
-  [{:keys [web3 message]}]
-  (debug :send-clock-value-request message)
-  (d/add-pending-message!
-   web3
-   (merge message-defaults
-          (-> message
-              (assoc
-               :type :clock-value-request
-               :requires-ack? false)))))
-
-(defn send-clock-value!
-  [{:keys [web3 message]}]
-  (debug :send-clock-value message)
-  (d/add-pending-message!
-   web3
-   (merge message-defaults
-          (-> message
-              (assoc
-               :type :clock-value
-               :requires-ack? false)))))

@@ -1,7 +1,9 @@
 (ns status-im.components.toolbar.styles
   (:require [status-im.components.styles :refer [text1-color
                                                  color-white
-                                                 color-light-gray]]))
+                                                 color-light-gray
+                                                 color-blue
+                                                 color-black]]))
 
 (def toolbar-background1 color-white)
 (def toolbar-background2 color-light-gray)
@@ -48,8 +50,7 @@
 (defn toolbar-actions-container [actions-count custom]
   (merge {:flex-direction "row"
           :margin-left    toolbar-icon-spacing}
-         (when (and (= actions-count 0)
-                    (not custom))
+         (when (and (zero? actions-count) (not custom))
            {:width (+ toolbar-icon-width toolbar-icon-spacing)})))
 
 (def toolbar-action
@@ -74,10 +75,10 @@
    :margin-left 18
    :margin-top  2
    :font-size   14
-   :color       "#7099e6"})
+   :color       color-blue})
 
 (def toolbar-with-search-title
-  {:color       "#000000de"
+  {:color       color-black
    :align-self  :center
    :text-align  :center
    :font-size   16})
@@ -98,5 +99,5 @@
    :height 17})
 
 (def action-back
-  {:width  8
-   :height 14})
+  {:width  24
+   :height 24})

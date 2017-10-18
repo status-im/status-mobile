@@ -4,13 +4,12 @@
   (:refer-clojure :exclude [exists?]))
 
 (defn- normalize-contacts
-  [chats]
-  (map #(update % :contacts vals) chats))
+  [item]
+  (update item :contacts vals))
 
 (defn get-all
   []
-  (-> (data-store/get-all-active)
-      normalize-contacts))
+  (map normalize-contacts (data-store/get-all-active)))
 
 (defn get-by-id
   [id]
@@ -29,6 +28,10 @@
   [chat-id]
   (data-store/delete chat-id))
 
+(defn set-inactive
+  [chat-id]
+  (data-store/set-inactive chat-id))
+
 (defn get-contacts
   [chat-id]
   (data-store/get-contacts chat-id))
@@ -40,9 +43,7 @@
 (defn add-contacts
   [chat-id identities]
   (data-store/add-contacts chat-id identities)
-  ; TODO: move this somewhere else
-  ; TODO: temp. Update chat in db atom
-  (dispatch [:initialize-chats]))
+  (dispatch [:reload-chats]))
 
 (defn remove-contacts
   [chat-id identities]

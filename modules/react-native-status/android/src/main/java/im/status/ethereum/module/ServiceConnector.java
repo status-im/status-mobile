@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.*;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 public class ServiceConnector {
 
+    private static final String TAG = "ServiceConnector";
     /** Context of the activity from which this connector was launched */
     private Context context;
 
@@ -41,15 +43,15 @@ public class ServiceConnector {
 
             boolean isClaimed = false;
             //if (message.obj != null) {
-              //  String identifier = ((Bundle) message.obj).getString("identifier");
-                //if (identifier != null) {
+            //  String identifier = ((Bundle) message.obj).getString("identifier");
+            //if (identifier != null) {
 
-                    for (ConnectorHandler handler : handlers) {
+            for (ConnectorHandler handler : handlers) {
                 //        if (identifier.equals(handler.getID())) {
-                            isClaimed = handler.handleMessage(message);
-                  //      }
-                    }
-              //  }
+                isClaimed = handler.handleMessage(message);
+                //      }
+            }
+            //  }
             //}
             if (!isClaimed) {
                 super.handleMessage(message);
@@ -135,5 +137,17 @@ public class ServiceConnector {
     public void removeHandler(ConnectorHandler handler) {
 
         handlers.remove(handler);
+    }
+
+    public void sendMessage() {
+
+        Message msg = Message.obtain(null, 0, 0, 0);
+        msg.replyTo = clientMessenger;
+        try {
+            Log.d(TAG, "Sending message to service: ");
+            serviceMessenger.send(msg);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Exception sending message(" + msg.toString() + ") to service: ", e);
+        }
     }
 }

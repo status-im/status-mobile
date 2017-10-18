@@ -6,5 +6,5 @@
                           :is-in-chat {:type    "bool"
                                        :default true}}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating chat-contact schema"))

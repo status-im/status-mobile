@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 22
+        minSdkVersion 18
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -14,5 +14,7 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile(group: 'status-im', name: 'status-go', version: '1.1.0-14-g85f29c2', ext: 'aar')
+    compile 'com.instabug.library:instabug:3+'
+    compile 'status-im:function:0.0.1'
+    compile(group: 'status-im', name: 'status-go', version: 'develop-gb937245', ext: 'aar')
 }

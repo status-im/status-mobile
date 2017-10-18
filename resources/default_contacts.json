@@ -1,16 +1,71 @@
 {
-    "wallet":
+    "browse":
     {
         "name":
         {
-            "en": "Wallet",
-            "es": "Monedero",
-            "es-ar": "Monedero",
-            "ru": "Кошелек"
+            "en": "Browse"
         },
-        "photo-path": "icon_wallet_avatar",
-        "add-chat?": true,
-        "dapp?": true
+        "dapp?": true,
+        "bot-url": "local://browse-bot",
+        "global-command": {
+          "description":"Launch the browser",
+          "color": "#ffa500",
+          "name": "global",
+          "params": [{
+            "name": "url",
+            "placeholder":"URL",
+            "type":"text"
+          }],
+          "title":"Browser",
+          "registered-only":true,
+          "has-handler": false,
+          "fullscreen":true
+        },
+        "unremovable?": true
+    },
+
+    "mailman":
+    {
+        "name":
+        {
+            "en": "Mailman",
+            "ru": "Печкин"
+        },
+        "dapp?": true,
+        "mixable?": true,
+        "bot-url": "local://mailman-bot"
+    },
+
+    "transactor-group":
+    {
+        "name":
+        {
+            "en": "Transactor"
+        },
+        "dapp?": true,
+        "mixable?": true,
+        "bot-url": "local://transactor-group-bot"
+    },
+
+    "transactor-personal":
+    {
+        "name":
+        {
+            "en": "Transactor"
+        },
+        "dapp?": true,
+        "mixable?": true,
+        "bot-url": "local://transactor-personal-bot"
+    },
+
+    "demo-bot":
+    {
+        "name":
+        {
+            "en": "Demo bot"
+        },
+        "dapp?": true,
+        "bot-url": "local://demo-bot"
     },
 
     "0x0428c9d6c1aaaa8369a7c63819684f30e34396dc0907d49afeac85a0a774ccb919b3482097d992e66bcc538e7a0c6acf874c77748f396f53c0a102e10d1a37765b":
@@ -35,7 +90,8 @@
         "dapp-url":
         {
             "en": "http://auctionhouse.dappbench.com"
-        }
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "flight-delays-suck":
@@ -49,7 +105,8 @@
         "dapp-url":
         {
             "en": "https://fdd.etherisc.com"
-        }
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "mkr-market":
@@ -63,7 +120,23 @@
         "dapp-url":
         {
             "en": "https://mkr.market"
-        }
+        },
+        "groups": ["state-of-dapps"]
+    },
+
+    "FirstBlood":
+    {
+        "name":
+        {
+            "en": "FirstBlood"
+        },
+        "photo-path": "contacts://firstblood",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://app.firstblood.io"
+        },
+        "groups": ["state-of-dapps"]
     },
 
     "oaken-water-meter":
@@ -77,6 +150,127 @@
         "dapp-url":
         {
             "en": "http://waterflowdapp.projectoaken.com"
-        }
+        },
+        "groups": ["dapps"]
+    },
+
+    "gnosis":
+    {
+        "name":
+        {
+            "en": "Gnosis"
+        },
+        "photo-path": "contacts://gnosis",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://beta.gnosis.pm"
+        },
+        "groups": ["state-of-dapps"]
+    },
+
+    "melonport":
+    {
+        "name":
+        {
+            "en": "Melonport"
+        },
+        "photo-path": "contacts://melonport",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://portal.melonport.com/"
+        },
+        "groups": ["dapps"]
+    },
+
+    "bchat":
+    {
+        "name":
+        {
+            "en": "bchat"
+        },
+        "photo-path": "contacts://bchat",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
+        },
+        "groups": ["dapps"]
+    },
+    
+    "Dentacoin":
+    {
+        "name":
+        {
+            "en": "Dentacoin"
+        },
+        "photo-path": "contacts://dentacoin",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://dentacoin.com/testnet/"
+        },
+        "groups": ["dapps"]
+    },
+
+    "Augur":
+    {
+        "name":
+        {
+            "en": "Augur"
+        },
+        "photo-path": "contacts://augur",
+        "dapp?": true,
+        "dapp-url":
+        {
+          "en": "https://app.augur.net"
+        },
+        "groups": ["dapps"]
+    },
+
+    "Ethlance":
+    {
+        "name":
+        {
+            "en": "Ethlance"
+        },
+        "photo-path": "contacts://ethlance",
+        "dapp?": true,
+        "dapp-url":
+        {
+          "en": "https://district0x.github.io/ethlance/resources/public/"
+        },
+        "groups": ["dapps"]
+    },
+    
+    "Commiteth":
+    {
+        "name":
+        {
+            "en": "Commiteth"
+        },
+        "photo-path": "contacts://commiteth",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://commiteth.com"
+        },
+        "groups": ["dapps"]
+    },
+
+    "Etherplay":
+    {
+        "name":
+        {
+            "en": "Etherplay"
+        },
+        "photo-path": "contacts://etherplay",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://test.etherplay.io"
+        },
+        "groups": ["dapps"]
     }
 }

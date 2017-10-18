@@ -5,31 +5,37 @@
             [status-im.utils.types :as t]
             [status-im.i18n :refer [label]]
             [taoensso.timbre :as log]
-            [status-im.models.commands :as commands]
             [status-im.commands.utils :as cu]
-            [status-im.components.status :as s]
+            [status-im.native-module.core :as s]
+            [status-im.components.nfc :as nfc]
             [status-im.constants :as c]
             [cljs.reader :refer [read-string]]
-            [status-im.navigation.handlers :as nav]))
-
-(def web3 (js/require "web3"))
+            [status-im.ui.screens.navigation :as nav]
+            [cljs.spec.alpha :as spec]))
 
 (defn by-public-key [public-key contacts]
   (when-let [{:keys [address]} (contacts public-key)]
     (when address {:address address})))
 
+(defn wrap-hex [s]
+  (if (js/isNaN (.parseInt js/Number s))
+    s
+    (str "\"" s "\"")))
+
 (defn scan-qr-handler
-  [{:keys [contacts]} [_ _ data]]
-  (let [data'  (read-string data)
+  [{:contacts/keys [contacts]} [_ _ data]]
+  (let [data'  (try (read-string (wrap-hex data))
+                    (catch :default e data))
         data'' (cond
                  (map? data') data'
-                 (.isAddress web3.prototype data') {:address data'}
+                 (spec/valid? :global/address data') {:address data'}
                  (string? data') (by-public-key data' contacts)
                  :else nil)]
     (when data''
       (dispatch [:send-to-webview-bridge
                  {:params data''
-                  :event  (name :webview-send-transaction)}]))))
+                  :event  (name :webview-send-transaction)}]))
+    (dispatch [:navigate-back])))
 
 (register-handler :webview-address-from-qr
   (u/side-effect! scan-qr-handler))
@@ -38,7 +44,8 @@
   (fn [db [_ bridge]]
     (assoc db :webview-bridge bridge)))
 
-(defn contacts-click-handler [{:keys [whisper-identity] :as contact} action params]
+(defn contacts-click-handler
+  [{:keys [whisper-identity] :as contact} action params]
   (dispatch [:navigate-back])
   (when action
     (if (= contact :qr-scan)
@@ -46,19 +53,21 @@
         (dispatch [:show-scan-qr :webview-address-from-qr])
         (dispatch [:navigate-to-modal :qr-code-view {:qr-source :whisper-identity
                                                      :amount?   true}]))
-      (dispatch [:chat-with-command whisper-identity action params]))))
+      (dispatch [:chat-with-command whisper-identity action
+                 (assoc params :contact contact)]))))
+
 
 (register-handler ::send-command
   (u/side-effect!
-    (fn [db [_ command-key params]]
-      (let [command       (commands/get-response-or-command :commands db command-key)
-            command-input {:content       (str cu/command-prefix "0")
-                           :command       command
-                           :parameter-idx 0
-                           :params        {"amount" (:amount params)}
-                           :to-message-id nil}]
-        (dispatch [:validate-command command-input command])))))
-
+    (fn [{:keys [current-chat-id]
+          :contacts/keys [contacts]}
+         [_ command-key {:keys [contact amount]}]]
+      (let [command (get-in contacts [current-chat-id :commands command-key])]
+        (dispatch [:set-in [:bot-db current-chat-id :public :recipient] contact])
+        (dispatch [:proceed-command
+                   {:command  command,
+                    :metadata nil,
+                    :args     [(get contact :name) amount]}])))))
 
 (defn chat-with-command
   [_ [_ whisper-identity command-key params]]
@@ -91,15 +100,14 @@
                       :action  :request
                       :params  params}])
           :webview-scan-qr (dispatch [:show-scan-qr :webview-address-from-qr])
-          :webview-send-eth (dispatch [:webview-send-eth! params])
+          :nfc (dispatch [:webview-nfc params])
           (log/error (str "Unknown event: " event')))))))
 
 (defmethod nav/preload-data! :contact-list-modal
   [db [_ _ {:keys [handler action params]}]]
-  (assoc db :contacts-click-handler handler
-            :contacts-click-action action
-            :contacts-click-params params
-            :contacts-filter #(not (nil? (:address %)))))
+  (assoc db :contacts/click-handler handler
+            :contacts/click-action action
+            :contacts/click-params params))
 
 (def qr-context {:toolbar-title (label :t/address)})
 
@@ -114,16 +122,20 @@
       (when webview-bridge
         (.sendToBridge webview-bridge (t/clj->json data))))))
 
-(register-handler :webview-send-eth!
+(register-handler :webview-nfc
   (u/side-effect!
-    (fn [{:keys [current-account-id]} [_ {:keys [amount address]}]]
-      (let [context    {:from current-account-id}
-            path       [:functions :send]
-            parameters {:context    context
-                        :parameters {:amount  amount
-                                     :address address}}]
-        (s/call-jail c/wallet-chat-id
-                     path
-                     parameters
-                     (fn [data]
-                       (log/debug :webview-send-eth-callback data)))))))
+    (fn [_ [_ {:keys [event params]}]]
+      (let [callback #(dispatch [:send-to-webview-bridge {:params % :event "nfc"}])]
+        (case (keyword event)
+          :get-card-id (nfc/get-card-id #(callback {:event :get-card-id :card %})
+                                        #(callback {:event :get-card-id :error %}))
+          :read-tag    (let [{:keys [sectors]} params]
+                         (nfc/read-tag sectors
+                                       #(callback {:event :read-tag :card %})
+                                       #(callback {:event :read-tag :error %})))
+          :write-tag   (let [{:keys [sectors id]} params]
+                         (nfc/write-tag sectors
+                                        id
+                                        #(callback {:event :write-tag :card %})
+                                        #(callback {:event :write-tag :error %})))
+          :default)))))

@@ -74,7 +74,7 @@
 
 
 (defn sync-state-gradient-view []
-  (let [sync-state          (subscribe [:get :sync-state])
+  (let [sync-state          (subscribe [:sync-state])
         gradient-position   (anim/create-value 0)
         sync-state-opacity  (anim/create-value 0.0)
         in-progress-opacity (anim/create-value 0.0)
@@ -105,14 +105,15 @@
        on-update
        :component-did-update
        on-update
+       :display-name "sync-state-gradient-view"
        :reagent-render
        (fn []
          [view st/sync-style-gradient
           [animated-view {:style (st/loading-wrapper sync-state-opacity)}
            [animated-view {:style (st/gradient-wrapper in-progress-opacity gradient-position)}
             [linear-gradient {:colors    ["#89b1fe" "#8b5fe4" "#8b5fe4" "#89b1fe"]
-                              :start     [0, 1]
-                              :end       [1, 1]
+                              :start     {:x 0 :y 1}
+                              :end       {:x 1 :y 1}
                               :locations [0 0.3 0.7 1]
                               :style     (st/gradient gradient-width)}]]
            (when (not= @sync-state :in-progress)

@@ -2,13 +2,12 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.utils.utils :refer [http-post]]
             [taoensso.timbre :as log]
-            [status-im.utils.scheduler :as sch]
-            [status-im.data-store.messages :as messages]))
+            [status-im.utils.scheduler :as sch]))
 
 (defn sign-up
   [db phone-number message-id handler]
-  (let [current-account-id (get db :current-account-id)
-        {:keys [public-key address]} (get-in db [:accounts current-account-id])]
+  (let [current-account-id (get db :accounts/current-account-id)
+        {:keys [public-key address]} (get-in db [:accounts/accounts current-account-id])]
     (log/debug "signing up with public-key" public-key "and phone " phone-number)
     (http-post "sign-up" {:phone-number     phone-number
                           :whisper-identity public-key

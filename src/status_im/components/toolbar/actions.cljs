@@ -21,7 +21,7 @@
    :handler handler})
 
 (defn back [handler]
-  {:image   {:source {:uri :icon_back}
+  {:image   {:source {:uri :icon_back_dark}
              :style  st/action-back}
    :handler handler})
 

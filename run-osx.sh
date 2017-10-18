@@ -16,6 +16,8 @@ function tab () {
         cmd="; $args"
     fi
 
+    iterm_exists=`osascript -e "id of application \"iterm2\""`
+    if [ ! -z iterm_exists ]; then
     osascript &>/dev/null <<EOF
         tell application "iTerm2"
             tell current window
@@ -28,6 +30,11 @@ function tab () {
             end tell
         end tell
 EOF
+    else
+    osascript &>/dev/null <<END
+tell app "Terminal" to do script "cd \"$cdto\"$cmd"
+END
+    fi
 }
 
 if [ ! -z $1 ]
@@ -47,14 +54,14 @@ fi
 if [ "$device_type" = "genymotion" ]
 then
 # Find Device based on Android version 6.0.0
-device=$(/Applications/Genymotion\ Shell.app/Contents/MacOS/genyshell -c "devices list" | grep "6.0.0")
+device=$(/Applications/Genymotion\ Shell.app/Contents/MacOS/genyshell -c "devices list" | grep "6.0.0\|7.0.0")
 #echo ${device##*| }
 # Launch device in Genymotion
 open -a /Applications/Genymotion.app/Contents/MacOS/player.app --args --vm-name "${device##*| }"
 fi
 
 # Install deps, prepare for genymotion and figwheel
-lein deps && re-natal deps && re-natal use-android-device "${device_type}" && re-natal use-figwheel
+lein deps && ./re-natal deps && ./re-natal use-android-device "${device_type}" && ./re-natal use-figwheel
 
 # open figwheel in new tab
 tab "BUILD_IDS=${cljs_build} lein repl"

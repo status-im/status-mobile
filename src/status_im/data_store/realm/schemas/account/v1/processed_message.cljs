@@ -9,5 +9,5 @@
                                        :optional true}
                           :ttl        :int}})
 
-(defn migration [old-realm new-realm]
+(defn migration [_ _]
   (log/debug "migrating processed-message schema"))

@@ -53,5 +53,4 @@
 (defn get-layout [value-xy]
   (js->clj (.getLayout value-xy)))
 
-(defn create-value-xy [x y]
-  (js/ReactNative.Animated.ValueXY. (clj->js {:x x, :y y})))
+(defn easing [] js/ReactNative.Easing)

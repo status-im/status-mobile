@@ -1,8 +1,13 @@
 (ns status-im.protocol.message
-  (:require [cljs.spec :as s]))
+  (:require [cljs.spec.alpha :as s]))
 
 (s/def :message/ttl (s/and int? pos?))
 (s/def :message/from string?)
+(s/def :message/sig :message/from)
+(s/def :message/privateKeyID (s/nilable string?))
+(s/def :message/pub-key (s/nilable string?))
+(s/def :message/sym-key-id (s/nilable string?))
+(s/def :message/topic string?)
 (s/def :message/to (s/nilable string?))
 (s/def :message/message-id string?)
 (s/def :message/requires-ack? boolean?)
@@ -19,10 +24,10 @@
 (s/def :payload/new-keypair :message/keypair)
 
 (s/def :group-message/type
-  #{:group-message :group-invitation :add-group-identity
+  #{:public-group-message :group-message :group-invitation :add-group-identity
     :remove-group-identity :leave-group :update-group})
 
-(s/def :discover-message/type #{:online :status :discover :contact-request})
+(s/def :discover-message/type #{:online :status :discover :contact-request :update-keys})
 
 (s/def :message/type
   (s/or :group :group-message/type

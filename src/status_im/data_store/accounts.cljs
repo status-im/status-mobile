@@ -9,6 +9,3 @@
 
 (defn save [account update?]
   (data-store/save account update?))
-
-(defn save-all [accounts update?]
-  (data-store/save-all accounts update?))

@@ -2,25 +2,11 @@
   (:require [status-im.data-store.realm.messages :as data-store]
             [clojure.string :refer [join split]]
             [status-im.utils.random :refer [timestamp]]
+            [status-im.utils.utils :refer [update-if-present]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
-            [status-im.commands.utils :refer [generate-hiccup]]
             [cljs.reader :refer [read-string]]
-            [status-im.constants :as c]
-            [taoensso.timbre :as log])
+            [status-im.constants :as c])
   (:refer-clojure :exclude [update]))
-
-(defn- map-to-str
-  [m]
-  (join ";" (map #(join "=" %) (stringify-keys m))))
-
-(defn- str-to-map
-  [s]
-  (->> (keywordize-keys (apply hash-map (split s #"[;=]")))
-       (map (fn [[k v]]
-              [k (if (= k :params)
-                   (keywordize-keys (read-string v))
-                   v)]))
-       (into {})))
 
 (defn- user-statuses-to-map
   [user-statuses]
@@ -32,9 +18,9 @@
 (defn- command-type?
   [type]
   (contains?
-    #{c/content-type-command c/content-type-command-request
-      c/content-type-wallet-request c/content-type-wallet-command}
-    type))
+   #{c/content-type-command c/content-type-command-request
+     c/content-type-wallet-request c/content-type-wallet-command}
+   type))
 
 (def default-values
   {:outgoing       false
@@ -48,19 +34,20 @@
   (some-> (data-store/get-by-id message-id)
           (clojure.core/update :user-statuses user-statuses-to-map)))
 
+(defn get-message-content-by-id [message-id]
+  (when-let [{:keys [content-type content] :as message} (get-by-id message-id)]
+    (when (command-type? content-type)
+      (read-string content))))
+
 (defn get-messages
   [messages]
   (->> messages
        (mapv #(clojure.core/update % :user-statuses user-statuses-to-map))
        (into '())
        reverse
-       (keep (fn [{:keys [content-type preview] :as message}]
+       (keep (fn [{:keys [content-type] :as message}]
                (if (command-type? content-type)
-                 (-> message
-                     (clojure.core/update :content str-to-map)
-                     (assoc :rendered-preview
-                            (when preview
-                              (generate-hiccup (read-string preview)))))
+                 (clojure.core/update message :content read-string)
                  message)))))
 
 (defn get-count-by-chat-id
@@ -77,18 +64,20 @@
         reverse
         (keep (fn [{:keys [content-type preview] :as message}]
                 (if (command-type? content-type)
-                  (-> message
-                      (clojure.core/update :content str-to-map)
-                      (assoc :rendered-preview
-                             (when preview
-                               (generate-hiccup (read-string preview)))))
+                  (clojure.core/update message :content read-string)
                   message))))))
 
+(defn get-log-messages
+  [chat-id]
+  (->> (data-store/get-by-chat-id chat-id 0 100)
+       (filter #(= (:content-type %) c/content-type-log-message))
+       (map #(select-keys % [:content :timestamp]))))
+
 (defn get-last-message
-  [db chat-id]
+  [chat-id]
   (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
     (if (command-type? content-type)
-      (clojure.core/update message :content str-to-map)
+      (clojure.core/update message :content read-string)
       message)))
 
 (defn get-last-outgoing
@@ -108,14 +97,21 @@
   []
   (data-store/get-unviewed))
 
+(defn get-previews
+  []
+  (->> (data-store/get-all-as-list)
+       (filter :preview)
+       (reduce (fn [acc {:keys [message-id preview]}]
+                 (assoc acc message-id (read-string preview)))
+               {})))
+
 (defn save
   ;; todo remove chat-id parameter
-  [chat-id {:keys [message-id content]
-            :as   message}]
+  [chat-id {:keys [message-id content] :as message}]
   (when-not (data-store/exists? message-id)
     (let [content' (if (string? content)
                      content
-                     (map-to-str content))
+                     (pr-str content))
           message' (merge default-values
                           message
                           {:chat-id   chat-id
@@ -126,9 +122,8 @@
 (defn update
   [{:keys [message-id] :as message}]
   (when (data-store/exists? message-id)
-    (let [message (clojure.core/update message :user-statuses vals)]
+    (let [message (update-if-present message :user-statuses vals)]
       (data-store/save message))))
 
 (defn delete-by-chat-id [chat-id]
   (data-store/delete-by-chat-id chat-id))
-

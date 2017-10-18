@@ -4,8 +4,8 @@
   {
    ;common
    :members-title                         "Membros"
-   :not-implemented                       "!não implementado"
-   :chat-name                             "Nome do bate-papo"
+   :not-implemented                       "não implementado"
+   :chat-name                             "Nome do chat"
    :notifications-title                   "Notificações e sons"
    :offline                               "Offline"
 
@@ -17,7 +17,7 @@
    ;chat
    :is-typing                             "está digitando"
    :and-you                               "e você"
-   :search-chat                           "Pesquisar bate-papo"
+   :search-chat                           "Pesquisar chat"
    :members                               {:one   "1 membro"
                                            :other "{{count}} membros"
                                            :zero  "nenhum membro"}
@@ -36,7 +36,7 @@
    :sync-synced                           "Sincronizado"
 
    ;messages
-   :status-sending                        "Enviando"
+   :status-sending                        "Enviando..."
    :status-pending                        "Pendente"
    :status-sent                           "Enviado"
    :status-seen-by-everyone               "Visto por todos"
@@ -60,16 +60,16 @@
 
    ;profile
    :profile                               "Perfil"
-   :report-user                           "DENUNCIAR USUÁRIO"
+   :report-user                           "Denunciar usuário"
    :message                               "Mensagem"
    :username                              "Nome de usuário"
-   :not-specified                         "Não especificao"
+   :not-specified                         "Não especificado"
    :public-key                            "Chave pública"
    :phone-number                          "Número de telefone"
    :email                                 "E-mail"
    :profile-no-status                     "Nenhum status"
    :add-to-contacts                       "Adicionar aos contatos"
-   :error-incorrect-name                  "Por favor, selecione outro nome"
+   :error-incorrect-name                  "Nome incorreto"
    :error-incorrect-email                 "E-mail incorreto"
 
    ;;make_photo
@@ -94,12 +94,12 @@
    :account-generation-message            "Mê dê um segundinho. Tenho de fazer uns cálculos malucos para gerar a sua conta!"
 
    ;chats
-   :chats                                 "Bate-papos"
-   :new-chat                              "Novo bate-papo"
-   :new-group-chat                        "Novo bate-papo em grupo"
+   :chats                                 "Chats"
+   :new-chat                              "Novo chat"
+   :new-group-chat                        "Novo grupo de chat"
 
    ;discover
-   :discover                             "Descoberta"
+   :discover                              "Descobrir"
    :none                                  "Nenhum(a)"
    :search-tags                           "Digite suas tags de pesquisa aqui"
    :popular-tags                          "Tags populares"
@@ -112,10 +112,10 @@
    ;contacts
    :contacts                              "Contatos"
    :new-contact                           "Novo contato"
-   :show-all                              "MOSTRAR TODOS"
-   :contacts-group-dapps                  "ÐApps"
+   :show-all                              "Mostrar Todos"
+   :contacts-group-dapps                  "DApps"
    :contacts-group-people                 "Pessoas"
-   :contacts-group-new-chat               "Iniciar novo bate-papo"
+   :contacts-group-new-chat               "Iniciar novo chat"
    :no-contacts                           "Você ainda não tem contatos"
    :show-qr                               "Mostrar QR"
 
@@ -125,7 +125,7 @@
    :change-color                          "Alterar cor"
    :clear-history                         "Apagar histórico"
    :delete-and-leave                      "Excluir e sair"
-   :chat-settings                         "Configurações de bate-papo"
+   :chat-settings                         "Configurações do chat"
    :edit                                  "Editar"
    :add-members                           "Adicionar membros"
    :blue                                  "Azul"
@@ -148,13 +148,9 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH para {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH de {{chat-name}}"
-   :command-text-location                 "Localização: {{address}}"
-   :command-text-browse                   "Página de navegação: {{webpage}}"
-   :command-text-send                     "Transação: {{amount}} ETH"
-   :command-text-help                     "Ajuda"
 
    ;new-group
-   :group-chat-name                       "Nome do bate-papo"
+   :group-chat-name                       "Nome do chat"
    :empty-group-chat-name                 "Por favor, informe um nome"
    :illegal-group-chat-name               "Por favor, selecione outro nome"
 
@@ -163,8 +159,8 @@
    :remove-participants                   "Remover participantes"
 
    ;protocol
-   :received-invitation                   "recebeu o convite para o bate-papo"
-   :removed-from-chat                     "removeu você do bate-papo em grupo"
+   :received-invitation                   "recebeu o convite para o chat"
+   :removed-from-chat                     "removeu você do grupo"
    :left                                  "saiu"
    :invited                               "convidou"
    :removed                               "removeu"
@@ -223,4 +219,87 @@
    :value                                 "Valor"
 
    ;:webview
-   :web-view-error                        "Opa, erro"})
+   :web-view-error                        "Ops, erro"
+
+   :confirm                               "Confirmar"
+   :phone-national                        "Nacional"
+   :transactions-confirmed                {:one   "Transação confirmada"
+                                           :other "{{count}} transações confirmadas"
+                                           :zero  "Nenhuma transação confirmada"}
+   :public-group-topic                    "Assunto"
+   :debug-enabled                         "O servidor de debug foi inicializado! Você agora pode adicionar seu DApp ao executar *status-dev-cli scan* a partir de seu computador."
+   :new-public-group-chat                 "Juntar-se a bate-papo público."
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
+   :sharing-cancel                        "Cancelar"
+   :share-qr                              "Compartilhar QR"
+   :feedback                              "Tem comentários a fazer?\nAgite seu telefone!"
+   :twelve-words-in-correct-order         "12 palavras na ordem correta"
+   :remove-from-contacts                  "Remover dos contatos"
+   :delete-chat                           "Excluir bate-papo"
+   :edit-chats                            "Editar bate-papos"
+   :sign-in                               "Entrar"
+   :create-new-account                    "Criar nova conta"
+   :sign-in-to-status                     "Entrar para Status"
+   :got-it                                "Entendido"
+   :move-to-internal-failure-message      "Precisamos mover alguns arquivos importantes do armazenamento externo para o interno. Para fazer isso, precisamos de sua permissão. Não utilizaremos armazenamento externo em versões futuras."
+   :edit-group                            "Editar grupo"
+   :delete-group                          "Excluir grupo"
+   :browsing-title                        "Buscar"
+   :reorder-groups                        "Reorganizar grupos"
+   :browsing-cancel                       "Cancelar"
+   :faucet-success                        "Requisição faucet foi recebida"
+   :choose-from-contacts                  "Selecionar a partir dos contatos"
+   :new-group                             "Novo grupo"
+   :phone-e164                            "Internacional 1"
+   :remove-from-group                     "Remover do grupo"
+   :search-contacts                       "Buscar contatos"
+   :transaction                           "Transação"
+   :public-group-status                   "Público"
+   :leave-chat                            "Sair do bate-papo"
+   :start-conversation                    "Iniciar conversa"
+   :topic-format                          "Formato errado [a-z0-9\\-]+"
+   :enter-valid-public-key                "Por favor, insira uma chave pública válida ou capture um código QR"
+   :faucet-error                          "Erro na requisição faucet"
+   :phone-significant                     "Significante"
+   :search-for                            "Buscar por..."
+   :sharing-copy-to-clipboard             "Copiar para área de transferência"
+   :phone-international                   "Internacional 2"
+   :enter-address                         "Inserir endereço"
+   :send-transaction                      "Enviar transação"
+   :delete-contact                        "Excluir contato"
+   :mute-notifications                    "Silenciar notificações"
+
+
+   :contact-s                             {:one   "contato"
+                                           :other "contatos"}
+   :group-name                            "Nome do grupo"
+   :next                                  "Próximo"
+   :from                                  "De"
+   :search-chats                          "Buscar bate-papos"
+   :in-contacts                           "Em contatos"
+
+   :sharing-share                         "Compartilhar..."
+   :type-a-message                        "Digite uma mensagem..."
+   :type-a-command                        "Comece a digitar um comando..."
+   :shake-your-phone                      "Encontrou um erro ou tem uma sugestão? Basta ~agitar~ seu telefone!"
+   :status-prompt                         "Crie um status para ajudar as pessoas a saberem sobre as coisas que você está oferecendo. Você também pode utilizar #hashtags."
+   :add-a-status                          "Adicionar um status..."
+   :error                                 "Erro"
+   :edit-contacts                         "Editar contatos"
+   :more                                  "mais"
+   :cancel                                "Cancelar"
+   :no-statuses-found                     "Nenhum status encontrado"
+   :swow-qr                               "Exibir QR"
+   :browsing-open-in-web-browser          "Abrir no navegador de internet"
+   :delete-group-prompt                   "Isso não afetará os contatos"
+   :edit-profile                          "Editar perfil"
+
+
+   :enter-password-transactions           {:one   "Confirme a transação ao inserir sua senha"
+                                           :other "Confirme as transações ao inserir sua senha"}
+   :unsigned-transactions                 "Transações não assinadas"
+   :empty-topic                           "Assunto vazio"
+   :to                                    "Para"
+   :group-members                         "Participantes do grupo"
+   :estimated-fee                         "Taxa estimada"
+   :data                                  "Dados"})

@@ -1,7 +1,6 @@
 (ns status-im.components.toolbar.view
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.components.react :refer [view
-                                                icon
                                                 text
                                                 text-input
                                                 image
@@ -12,6 +11,8 @@
             [status-im.components.toolbar.actions :as act]
             [status-im.components.toolbar.styles :as st]
             [status-im.utils.platform :refer [platform-specific]]))
+
+;; TODO This is our old toolbar component. Please do not use it and consider moving legacy usage to the new toolbar_new component.
 
 (defn toolbar [{title                :title
                 nav-action           :nav-action
@@ -25,13 +26,13 @@
     [view {:style style}
      [view st/toolbar
       [view (st/toolbar-nav-actions-container actions)
-       (when (not hide-nav?)
+       (when-not hide-nav?
          (if nav-action
            [touchable-highlight {:on-press (:handler nav-action)}
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
              [image (:image nav-action)]]]
            [touchable-highlight {:on-press            #(dispatch [:navigate-back])
-                                 :accessibility-label :navigate-back}
+                                 :accessibility-label :toolbar-back-button}
             [view (get-in platform-specific [:component-styles :toolbar-nav-action])
              [image {:source {:uri :icon_back}
                      :style  icon-back}]]]))]
@@ -42,10 +43,12 @@
             title]])
       [view (st/toolbar-actions-container (count actions) custom-action)
        (if actions
-         (for [{action-image   :image
-                action-handler :handler} actions]
+         (for [{action-image        :image
+                action-handler      :handler
+                accessibility-label :accessibility-label} actions]
            ^{:key (str "action-" action-image)}
-           [touchable-highlight {:on-press action-handler}
+           [touchable-highlight {:on-press action-handler
+                                 :accessibility-label (:or accessibility-label :toolbar-action)}
             [view st/toolbar-action
              [image action-image]]])
          custom-action)]]
@@ -57,7 +60,6 @@
     (dispatch [:set-in [:toolbar-search :text] nil])))
 
 (defn- toolbar-with-search-content [{:keys [show-search?
-                                            search-key
                                             search-placeholder
                                             title
                                             on-search-submit]}]
@@ -67,6 +69,8 @@
       {:style             st/toolbar-search-input
        :auto-focus        true
        :placeholder       search-placeholder
+       :return-key-type   "search"
+       :on-blur           #(dispatch [:set-in [:toolbar-search :show] nil])
        :on-change-text    #(dispatch [:set-in [:toolbar-search :text] %])
        :on-submit-editing #(toolbar-search-submit on-search-submit)}]
      [view
@@ -82,8 +86,7 @@
                                    on-search-submit]
                             :as   opts}]
   (let [toggle-search-fn #(dispatch [:set-in [:toolbar-search :show] %])
-        actions          (if show-search?
-                           [(act/search #(toolbar-search-submit on-search-submit))]
+        actions          (if-not show-search?
                            (into actions [(act/search #(toggle-search-fn search-key))]))]
     [toolbar {:style          (merge st/toolbar-with-search style)
               :nav-action     (if show-search?

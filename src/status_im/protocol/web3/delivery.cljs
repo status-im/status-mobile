@@ -4,20 +4,22 @@
             [status-im.protocol.web3.transport :as t]
             [status-im.protocol.web3.utils :as u]
             [status-im.protocol.encryption :as e]
-            [cljs.spec :as s]
+            [cljs.spec.alpha :as s]
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [status-im.protocol.web3.keys :as shh-keys]))
 
 (defonce loop-state (atom nil))
 (defonce messages (atom {}))
 
 (defn prepare-message
-  [{:keys [payload keypair to] :as message}]
-  (debug :prepare-message!)
+  [web3 {:keys [payload keypair to from topics ttl key-password]
+         :as   message}
+   callback]
   (let [{:keys [public]} keypair
 
-        content (:content payload)
+        content  (:content payload)
         content' (if (and (not to) public content)
                    (e/encrypt public (prn-str content))
                    content)
@@ -28,56 +30,71 @@
                      (assoc :content content')
                      prn-str
                      u/from-utf8)]
-    (-> message
-        (select-keys [:from :to :topics :ttl])
-        (assoc :payload payload'))))
+    (shh-keys/get-sym-key
+      web3
+      (or key-password shh-keys/status-key-password)
+      (fn [status-key-id]
+        (callback
+          (merge
+            (select-keys message [:ttl])
+            (let [type (if to :asym :sym)]
+              (cond-> {:sig     from
+                       :topic   (first topics)
+                       :payload payload'}
+                      to (assoc :pubKey to)
+                      (not to) (assoc :symKeyID status-key-id)))))))))
 
 (s/def :shh/pending-message
-  (s/keys :req-un [:message/from :shh/payload :message/topics]
-          :opt-un [:message/ttl :message/to]))
+  (s/keys :req-un [:message/sig :shh/payload :message/topic]
+          :opt-un [:message/ttl :message/pubKey :message/symKeyID]))
 
-(defonce pending-mesage-callback (atom nil))
+(defonce pending-message-callback (atom nil))
 (defonce recipient->pending-message (atom {}))
 
 (defn set-pending-mesage-callback!
   [callback]
-  (reset! pending-mesage-callback callback))
+  (reset! pending-message-callback callback))
 
 (defn add-pending-message!
   [web3 {:keys [type message-id requires-ack? to ack?] :as message}]
   {:pre [(valid? :protocol/message message)]}
   (go
-    (debug :add-pending-message!)
+    (debug :add-pending-message! message)
     ;; encryption can take some time, better to run asynchronously
-    (let [message' (prepare-message message)]
-      (when (valid? :shh/pending-message message')
-        (let [group-id (get-in message [:payload :group-id])
-              pending-message {:id            message-id
-                               :ack?          (boolean ack?)
-                               :message       message'
-                               :to            to
-                               :type          type
-                               :group-id      group-id
-                               :requires-ack? (boolean requires-ack?)
-                               :attempts      0
-                               :was-sent?     false}]
-          (when (and @pending-mesage-callback requires-ack?)
-            (@pending-mesage-callback :pending pending-message))
-          (swap! messages assoc-in [web3 message-id to] pending-message)
-          (when to
-            (swap! recipient->pending-message
-                   update to set/union #{[web3 message-id to]})))))))
+    (prepare-message
+      web3 message
+      (fn [message']
+        (when (valid? :shh/pending-message message')
+          (let [group-id        (get-in message [:payload :group-id])
+                pending-message {:id            message-id
+                                 :ack?          (boolean ack?)
+                                 :message       message'
+                                 :to            to
+                                 :type          type
+                                 :group-id      group-id
+                                 :requires-ack? (boolean requires-ack?)
+                                 :attempts      0
+                                 :was-sent?     false}]
+            (when (and @pending-message-callback requires-ack?)
+              (@pending-message-callback :pending pending-message))
+            (swap! messages assoc-in [web3 message-id to] pending-message)
+            (when to
+              (swap! recipient->pending-message
+                     update to set/union #{[web3 message-id to]}))))))))
 
 (s/def :delivery/pending-message
-  (s/keys :req-un [:message/from :message/to :shh/payload
-                   :message/requires-ack? :payload/ack? ::id :message/topics
-                   ::attempts ::was-sent?]))
+  (s/keys :req-un [:message/sig :message/to :shh/payload :payload/ack? ::id
+                   :message/requires-ack? :message/topic ::attempts ::was-sent?]
+          :opt-un [:message/pubKey :message/symKeyID]))
 
-(defn add-prepeared-pending-message!
-  [web3 {:keys [message-id to] :as pending-message}]
+(defn add-prepared-pending-message!
+  [web3 {:keys [message-id to sym-key-id pub-key] :as pending-message}]
   {:pre [(valid? :delivery/pending-message pending-message)]}
-  (debug :add-prepeared-pending-message!)
-  (let [message (select-keys pending-message [:from :to :topics :payload])
+  (debug :add-prepared-pending-message!)
+  (let [message          (assoc
+                           (select-keys pending-message [:sig :topic :payload])
+                           :symKeyID sym-key-id
+                           :pubKey pub-key)
         pending-message' (assoc pending-message :message message
                                                 :id message-id)]
     (swap! messages assoc-in [web3 message-id to] pending-message')
@@ -89,7 +106,7 @@
   (swap! messages update web3
          (fn [messages]
            (when messages
-             (let [message (messages id)
+             (let [message  (messages id)
                    ;; Message that is send without specified "from" option
                    ;; is stored in pending "messages" map as
                    ;; {message-id {nil message}}.
@@ -108,17 +125,17 @@
 (defn message-was-sent! [web3 id to]
   (let [messages' (swap! messages update web3
                          (fn [messages]
-                           (let [message (get-in messages [id to])
+                           (let [message  (get-in messages [id to])
                                  message' (when message
                                             (assoc message :was-sent? true
                                                            :attempts 1))]
                              (if message'
                                (assoc-in messages [id to] message')
                                messages))))]
-    (when @pending-mesage-callback
+    (when @pending-message-callback
       (let [message (get-in messages' [web3 id to])]
         (when message
-          (@pending-mesage-callback :sent message))))))
+          (@pending-message-callback :sent message))))))
 
 (defn attempt-was-made! [web3 id to]
   (debug :attempt-was-made id)
@@ -128,10 +145,10 @@
                        :last-attempt (u/timestamp)))))
 
 (defn delivery-callback
-  [web3 post-error-callback {:keys [id requires-ack? to]}]
+  [web3 post-error-callback {:keys [id requires-ack? to]} message]
   (fn [error _]
     (when error
-      (log/warn :shh-post-error error)
+      (log/warn :shh-post-error error message)
       (when post-error-callback
         (post-error-callback error)))
     (when-not error
@@ -168,7 +185,7 @@
       ;; if message was not send less then max-attempts-number times
       ;; continue attempts
       (<= attempts max-attempts-number)
-      ;; check retransmition interval
+      ;; check retransmission interval
       (<= (+ last-attempt (* 1000 ack-not-received-s-interval)) (u/timestamp)))))
 
 (defn- check-ttl
@@ -191,7 +208,7 @@
   {:pre [(valid? ::delivery-options options)]}
   (debug :run-delivery-loop!)
   (let [previous-stop-flag @loop-state
-        stop? (atom false)]
+        stop?              (atom false)]
     ;; stop previous delivery loop if it exists
     (when previous-stop-flag
       (reset! previous-stop-flag true))
@@ -207,7 +224,7 @@
             (when (should-be-retransmitted? options data)
               (try
                 (let [message' (check-ttl message type ttl-config default-ttl)
-                      callback (delivery-callback web3 post-error-callback data)]
+                      callback (delivery-callback web3 post-error-callback data message')]
                   (t/post-message! web3 message' callback))
                 (catch :default err
                   (log/error :post-message-error err))

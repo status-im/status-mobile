@@ -1,27 +1,27 @@
 (ns status-im.data-store.realm.core
-  (:require [status-im.utils.utils :as u]
-            [status-im.utils.types :refer [to-string]]
+  (:require [status-im.utils.types :refer [to-string]]
             [status-im.data-store.realm.schemas.account.core :as account]
             [status-im.data-store.realm.schemas.base.core :as base]
             [taoensso.timbre :as log]
             [status-im.utils.fs :as fs]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [goog.string :as gstr]
+            [status-im.react-native.js-dependencies :as rn-dependencies])
   (:refer-clojure :exclude [exists?]))
-
-(def realm-class (js/require "realm"))
 
 (defn realm-version
   [file-name]
-  (.schemaVersion realm-class file-name))
+  (.schemaVersion rn-dependencies/realm file-name))
 
 (defn open-realm
   [options file-name]
   (let [options (merge options {:path file-name})]
     (when (cljs.core/exists? js/window)
-      (realm-class. (clj->js options)))))
+      (rn-dependencies/realm. (clj->js options)))))
 
 (defn close [realm]
-  (.close realm))
+  (when realm
+    (.close realm)))
 
 (defn migrate [file-name schemas]
   (let [current-version (realm-version file-name)]
@@ -36,9 +36,8 @@
   (open-realm (last schemas) file-name))
 
 (def new-account-filename "new-account")
-(def new-accout-realm-file (str new-account-filename ".realm"))
 
-(def base-realm (open-migrated-realm (.-defaultPath realm-class) base/schemas))
+(def base-realm (open-migrated-realm (.-defaultPath rn-dependencies/realm) base/schemas))
 
 (def account-realm (atom (open-migrated-realm new-account-filename account/schemas)))
 
@@ -122,9 +121,67 @@
 (defn filtered [results filter-query]
   (.filtered results filter-query))
 
+(defn add-js->clj-array
+  "Extends type with IEncodeClojure and treats it as js array."
+  [t]
+  (extend-type t
+    IEncodeClojure
+    (-js->clj
+      ([x options]
+       (vec (map #(apply clj->js % options) x))))))
+
+(defn add-js->clj-object [t]
+  "Extends type with IEncodeClojure and treats it as js object."
+  (extend-type t
+    IEncodeClojure
+    (-js->clj
+      ([x options]
+       (let [{:keys [keywordize-keys]} options
+             keyfn (if keywordize-keys keyword str)]
+         (dissoc
+           (into
+             {}
+             (for [k (js-keys x)]
+               ;; ignore properties that are added with IEncodeClojure
+               (if (#{"cljs$core$IEncodeClojure$"
+                      "cljs$core$IEncodeClojure$_js__GT_clj$arity$2"}
+                     k)
+                 [nil nil]
+                 (let [v (aget x k)]
+                   ;; check if property is of List type and wasn't succesfully
+                   ;; transformed to ClojureScript data structure
+                   (when (and v
+                              (not (string? v))
+                              (not (boolean? v))
+                              (not (number? v))
+                              (not (coll? v))
+                              (not (satisfies? IEncodeClojure v))
+                              (str/includes? (type->str (type v)) "List"))
+                     (add-js->clj-object (type v)))
+                   [(keyfn k) (js->clj v :keywordize-keys keywordize-keys)]))))
+           nil))))))
+
+(defn check-collection
+  "Checks if collection was succesfully transformed to ClojureScript,
+   extends it with IEncodeClojure if necessary"
+  [coll]
+  (cond
+    (not (coll? coll))
+    (do (add-js->clj-array (type coll))
+        (check-collection (js->clj coll :keywordize-keys true)))
+
+    (let [f (first coll)]
+      (and f (not (map? f))))
+    (do (add-js->clj-object (type (first coll)))
+        (js->clj coll :keywordize-keys true))
+
+    :else coll))
+
 (defn realm-collection->list [collection]
-  (-> (.map collection (fn [object _ _] object))
-      (js->clj :keywordize-keys true)))
+  (-> collection
+      (.map (fn [object _ _] object))
+      (js->clj :keywordize-keys true)
+      check-collection))
 
 (defn list->array [record list-field]
   (update-in record [list-field] (comp vec vals)))
@@ -133,12 +190,12 @@
   (-> (aget result 0)))
 
 (defn single-cljs [result]
-  (some-> (aget result 0)
-          (js->clj :keywordize-keys true)))
-
-(defn get-by-filter [realm schema-name filter]
-  (-> (.objects realm (name schema-name))
-      (.filtered filter)))
+  (let [res (some-> (aget result 0)
+                    (js->clj :keywordize-keys true))]
+    (if (and res (not (map? res)))
+      (do (add-js->clj-object (type res))
+          (js->clj res :keywordize-keys true))
+      res)))
 
 (defn- get-schema-by-name [opts]
   (->> opts
@@ -148,18 +205,17 @@
 
 (defn- field-type [realm schema-name field]
   (let [schema-by-name (get-schema-by-name (js->clj (.-schema realm) :keywordize-keys true))
-        field-def (get-in schema-by-name [schema-name :properties field])]
+        field-def      (get-in schema-by-name [schema-name :properties field])]
     (if (map? field-def)
       (:type field-def)
       field-def)))
 
-(defmulti to-query (fn [realm schema-name operator field value]
-                     operator))
+(defmulti to-query (fn [_ _ operator _ _] operator))
 
-(defmethod to-query :eq [schema schema-name operator field value]
+(defmethod to-query :eq [schema schema-name _ field value]
   (let [value         (to-string value)
         field-type    (field-type schema schema-name field)
-        escaped-value (when value (str/replace (str value) #"\"" "\\\""))
+        escaped-value (when value (gstr/escapeString (str value)))
         query         (str (name field) "=" (if (= "string" (name field-type))
                                               (str "\"" escaped-value "\"")
                                               value))]

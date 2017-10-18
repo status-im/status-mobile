@@ -1,5 +1,5 @@
 (ns status-im.utils.datetime
-  (:require [cljs-time.core :as t :refer [date-time now plus days hours before?]]
+  (:require [cljs-time.core :as t :refer [date-time plus days hours before?]]
             [cljs-time.coerce :refer [from-long to-long from-date]]
             [cljs-time.format :refer [formatters
                                       formatter
@@ -7,6 +7,9 @@
             [status-im.i18n :refer [label label-pluralize]]
             [goog.string :as gstring]
             goog.string.format))
+
+(defn now []
+  (t/now))
 
 (def hour (* 1000 60 60))
 (def day (* hour 24))
@@ -22,25 +25,40 @@
   ([ms]
    (to-short-str ms #(unparse (formatters :hour-minute) %)))
   ([ms today-format-fn]
-   (let [date       (from-long ms)
-         local      (plus date time-zone-offset)
-         today-date (t/today)
-         today      (date-time (t/year today-date)
-                               (t/month today-date)
-                               (t/day today-date))
-         yesterday  (plus today (days -1))]
+   (let [date      (from-long ms)
+         local     (plus date time-zone-offset)
+         today     (t/today-at-midnight)
+         yesterday (plus today (days -1))]
      (cond
-       (before? local yesterday) (unparse (formatter "dd MMM") local)
-       (before? local today) (label :t/datetime-yesterday)
+       (before? date yesterday) (unparse (formatter "dd MMM hh:mm") local)
+       (before? date today) (label :t/datetime-yesterday)
        :else (today-format-fn local)))))
 
+(defn timestamp->mini-date [ms]
+  (unparse (formatter "dd MMM") (-> ms
+                                    from-long
+                                    (plus time-zone-offset))))
+
+(defn timestamp->date-key [ms]
+  (keyword (unparse (formatter "YYYYMMDD") (-> ms
+                                               from-long
+                                               (plus time-zone-offset)))))
+
+(defn timestamp->long-date [ms]
+  (keyword (unparse (formatter "MMM DD YYYY HH:mm:ss")
+                    (-> ms
+                        from-long
+                        (plus time-zone-offset)))))
+
 (defn day-relative [ms]
-  (when (> ms 0)
+  (when (pos? ms)
     (to-short-str ms #(label :t/datetime-today))))
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]
-    (gstring/format "%s %s %s" diff name (label :t/datetime-ago))))
+    (label :t/datetime-ago-format {:ago (label :t/datetime-ago)
+                                   :number diff
+                                   :time-intervals name})))
 
 (defn time-ago [time]
   (let [diff (t/in-seconds (t/interval time (t/now)))]

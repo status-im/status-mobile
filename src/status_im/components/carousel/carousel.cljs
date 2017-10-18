@@ -6,11 +6,12 @@
                                                 text]]
             [status-im.components.carousel.styles :as st]
             [taoensso.timbre :as log]
-            [status-im.components.react :as r]))
+            [status-im.components.react :as r]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 
 (defn window-page-width []
-  (.-width (.get (.. r/react-native -Dimensions) "window")))
+  (.-width (.get (.. rn-dependencies/react-native -Dimensions) "window")))
 
 (def defaults {:gap 8
                :sneak 8
@@ -129,12 +130,6 @@
     (when (pos? initial-page)
       (go-to-page component initial-page))))
 
-(defn component-will-update [component new-argv]
-  (log/debug "component-will-update: "))
-
-(defn component-did-update [component old-argv]
-  (log/debug "component-did-update"))
-
 (defn component-will-receive-props [component new-argv]
   (let [props (rc/extract-props new-argv)]
     (log/debug "component-will-receive-props: props=" props)
@@ -156,14 +151,13 @@
     (if (not= page-width state-page-width)
       (do
         (reagent.core/set-state component {:pageWidth page-width})
-        (.setState component {:layout (.-layout (.-nativeEvent event))}))
+        (.setState component (clj->js {:layout (.-layout (.-nativeEvent event))})))
       (scroll-to component page-position 0))))
 
 (defn get-pages [component data children]
   (let [page-width (get-page-width data)
         page-style (get-page-style data)
         gap (get-gap data)
-        sneak (get-sneak data)
         count (get-count data)]
     (doall (map-indexed (fn [index child]
                    (let [page-index index
@@ -180,11 +174,10 @@
   (let [starting-position (atom 0)
         component (reagent.core/current-component)
         state (reagent.core/state component)
-        sneak (get-sneak state)
         gap (get-gap state)]
     (log/debug "reagent-render: " data state)
     [view {:style st/scroll-view-container}
-     [scroll-view {:contentContainerStyle (st/content-container sneak gap)
+     [scroll-view {:contentContainerStyle (st/content-container gap)
                    :automaticallyAdjustContentInsets false
                    :bounces false
                    :decelerationRate 0.9
@@ -197,12 +190,10 @@
                    :ref #(set! (.-scrollView component) %)}
       (get-pages component state children)]]))
 
-(defn carousel [data children]
+(defn carousel [_ _]
   (let [component-data {:component-did-mount component-did-mount
                         :component-will-mount component-will-mount
                         :component-will-receive-props component-will-receive-props
-                        :component-will-update component-will-update
-                        :component-did-update component-did-update
                         :display-name "carousel"
                         :reagent-render reagent-render}]
     (reagent.core/create-class component-data)))

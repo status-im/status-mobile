@@ -5,7 +5,7 @@
    ;common
    :members-title                         "Membri"
    :not-implemented                       "!non implementato"
-   :chat-name                             "Nome chat"
+   :chat-name                             "Nome della chat"
    :notifications-title                   "Notifiche e suoni"
    :offline                               "Offline"
 
@@ -62,19 +62,19 @@
    :profile                               "Profilo"
    :report-user                           "SEGNALA UTENTE"
    :message                               "Messaggio"
-   :username                              "Username"
+   :username                              "Nome dell'utente"
    :not-specified                         "Non specificato"
    :public-key                            "Chiave pubblica"
    :phone-number                          "Numero di telefono"
-   :email                                 "Email"
+   :email                                 "E-mail"
    :profile-no-status                     "Nessuno stato"
-   :add-to-contacts                       "Aggiunto ai contatti"
+   :add-to-contacts                       "Aggiungi ai contatti"
    :error-incorrect-name                  "Seleziona un altro nome"
    :error-incorrect-email                 "e-mail non valida"
 
    ;;make_photo
    :image-source-title                    "Immagine del profilo"
-   :image-source-make-photo               "Acquisisci"
+   :image-source-make-photo               "Catturare"
    :image-source-gallery                  "Scegli dalla galleria"
    :image-source-cancel                   "Elimina"
 
@@ -99,7 +99,7 @@
    :new-group-chat                        "Nuova chat di gruppo"
 
    ;discover
-   :discover                             "Scopri"
+   :discover                              "Scopri"
    :none                                  "Nessuno"
    :search-tags                           "Digita qui le tue etichette di ricerca"
    :popular-tags                          "Tag popolari"
@@ -112,7 +112,7 @@
    ;contacts
    :contacts                              "Contatti"
    :new-contact                           "Nuovo contatto"
-   :show-all                              "MOSTRA TUTTI"
+   :show-all                              "Mostra tutti"
    :contacts-group-dapps                  "ÐApps"
    :contacts-group-people                 "Persone"
    :contacts-group-new-chat               "Comincia una nuova chat"
@@ -124,7 +124,7 @@
    :save                                  "Salva"
    :change-color                          "Cambia colore"
    :clear-history                         "Cancella cronologia"
-   :delete-and-leave                      "Cancella e lascia"
+   :delete-and-leave                      "Elimina e lascia"
    :chat-settings                         "Impostazioni chat"
    :edit                                  "Modifica"
    :add-members                           "Aggiungi membri"
@@ -148,10 +148,6 @@
    :chat-send-eth                         "{{amount}} ETH"
    :chat-send-eth-to                      "{{amount}} ETH per {{chat-name}}"
    :chat-send-eth-from                    "{{amount}} ETH da {{chat-name}}"
-   :command-text-location                 "Posizione: {{address}}"
-   :command-text-browse                   "Naviga la pagina web: {{webpage}}"
-   :command-text-send                     "Transazione: {{amount}} ETH"
-   :command-text-help                     "Aiuto"
 
    ;new-group
    :group-chat-name                       "Nome chat"
@@ -184,14 +180,14 @@
 
 
    ;login
-   :connect                               "Connetti"
+   :connect                               "Connettiti"
    :address                               "Indirizzo"
    :password                              "Password"
    :login                                 "Accedi"
    :wrong-password                        "Password errata"
 
    ;recover
-   :recover-from-passphrase               "Recupera dalla passphrase"
+   :recover-from-passphrase               "Recupera l'account usando la passphrase"
    :recover-explain                       "Inserisci la passphrase per poter accedere alla tua password"
    :passphrase                            "Passphrase"
    :recover                               "Recupera"
@@ -209,7 +205,7 @@
    ;validation
    :invalid-phone                         "Numero di telefono non valido"
    :amount                                "Ammontare"
-   :not-enough-eth                        (str "ETH sul bilancio insufficiente "
+   :not-enough-eth                        (str "Non hai abbastanza ETH "
                                                "({{balance}} ETH)")
    ;transactions
    :confirm-transactions                  {:one   "Conferma transazione"
@@ -223,4 +219,87 @@
    :value                                 "Valore"
 
    ;:webview
-   :web-view-error                        "ops, errore"})
+   :web-view-error                        "ops, errore"
+
+   :confirm                               "Conferma"
+   :phone-national                        "Nazionale"
+   :transactions-confirmed                {:one   "Transazione confermata"
+                                           :other "{{count}} transazioni confermate"
+                                           :zero  "Nessuna transazione confermata"}
+   :public-group-topic                    "Argomento"
+   :debug-enabled                         "Il server di debug è stato avviato! Ora puoi aggiungere la tua DApp avviando *status-dev-cli scan* dal tuo computer"
+   :new-public-group-chat                 "Entra nella chat pubblica"
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
+   :sharing-cancel                        "Annulla"
+   :share-qr                              "Condividi QR"
+   :feedback                              "Hai suggerimenti?\nScuoti il tuo telefono!"
+   :twelve-words-in-correct-order         "12 parole nel corretto ordine"
+   :remove-from-contacts                  "Rimuovi dai contatti"
+   :delete-chat                           "Elimina chat"
+   :edit-chats                            "Modifica chat"
+   :sign-in                               "Accedi"
+   :create-new-account                    "Crea nuovo account"
+   :sign-in-to-status                     "Accedi a Stato"
+   :got-it                                "Ho capito"
+   :move-to-internal-failure-message      "Dobbiamo spostare alcuni file importanti dalla periferica di archiviazione esterna a quella interna. Per farlo, abbiamo bisogno del tuo permesso. Nelle versioni future non utilizzeremo periferiche di archiviazione esterna."
+   :edit-group                            "Modifica gruppo"
+   :delete-group                          "Elimina gruppo"
+   :browsing-title                        "Sfoglia"
+   :reorder-groups                        "Riordina gruppi"
+   :browsing-cancel                       "Annulla"
+   :faucet-success                        "La richiesta di Faucet è stata ricevuta"
+   :choose-from-contacts                  "Scegli dai contatti"
+   :new-group                             "Nuovo gruppo"
+   :phone-e164                            "Internazionale 1"
+   :remove-from-group                     "Rimuovi dal gruppo"
+   :search-contacts                       "Ricerca contatti"
+   :transaction                           "Transazione"
+   :public-group-status                   "Pubblica"
+   :leave-chat                            "Abbandona chat"
+   :start-conversation                    "Avvia conversazione"
+   :topic-format                          "Formato errato [a-z0-9\\-]+"
+   :enter-valid-public-key                "Inserisci una chiave pubblica valida o scansiona un codice QR"
+   :faucet-error                          "Errore durante richiesta di Faucet"
+   :phone-significant                     "Rilevante"
+   :search-for                            "Ricerca per..."
+   :sharing-copy-to-clipboard             "Copia su clipboard"
+   :phone-international                   "Internazionale 2"
+   :enter-address                         "Inserisci indirizzo"
+   :send-transaction                      "Invia transazione"
+   :delete-contact                        "Elimina contatto"
+   :mute-notifications                    "Disattiva suoni notifiche"
+
+
+   :contact-s                             {:one   "contatto"
+                                           :other "contatti"}
+   :group-name                            "Nome gruppo"
+   :next                                  "Avanti"
+   :from                                  "Da"
+   :search-chats                          "Ricerca chat"
+   :in-contacts                           "Nei contatti"
+
+   :sharing-share                         "Condividi..."
+   :type-a-message                        "Scrivi un messaggio..."
+   :type-a-command                        "Inizia a scrivere un messaggio..."
+   :shake-your-phone                      "Hai trovato un bug o hai un suggerimento? Devi solo ~scuotere~ il tuo telefono!"
+   :status-prompt                         "Crea uno stato per aiutare le persone a sapere cosa stai offrendo. Puoi usare anche gli #hashtag."
+   :add-a-status                          "Aggiungi uno stato..."
+   :error                                 "Errore"
+   :edit-contacts                         "Modifica contatti"
+   :more                                  "altro"
+   :cancel                                "Annulla"
+   :no-statuses-found                     "Nessuno stato trovato"
+   :swow-qr                               "Mostra QR"
+   :browsing-open-in-web-browser          "Apri nel browser web"
+   :delete-group-prompt                   "Ciò non avrà effetto sui contatti"
+   :edit-profile                          "Modifica profilo"
+
+
+   :enter-password-transactions           {:one   "Conferma la transazione digitando la tua password"
+                                           :other "Conferma le transazioni digitando la tua password"}
+   :unsigned-transactions                 "Transazioni non firmate"
+   :empty-topic                           "Argomento vuoto"
+   :to                                    "A"
+   :group-members                         "Membri del gruppo"
+   :estimated-fee                         "Tariffa stimata"
+   :data                                  "Dati"})

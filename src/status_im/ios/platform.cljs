@@ -1,30 +1,48 @@
 (ns status-im.ios.platform
   (:require [status-im.components.styles :as styles]
-            [status-im.utils.utils :as u]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+            [status-im.i18n :refer [label]]
+            [status-im.utils.utils :as utils]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
+
+;; DEPRECATION NOTICE
+;;
+;; NOTE(oskarth): These component-styles are legacy and should be removed,
+;; please don't add or modify these styles. Instead, use defstyle macro to
+;; inline platform-specific styles in the appropriate namespace
 
 (def component-styles
   {:status-bar            {:default     {:height    20
                                          :bar-style "default"
                                          :color     styles/color-white}
-                           :main        {:height    20
-                                         :bar-style "default"
-                                         :color     toolbar-background2}
+                           :main        {:height            20
+                                         :bar-style         "default"
+                                         :color             styles/color-white
+                                         :expandable-offset 8}
                            :transparent {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
                            :modal       {:height    20
                                          :bar-style "light-content"
-                                         :color     "#2f3031"}}
-   :toolbar               {:border-bottom-color styles/color-gray3
-                           :border-bottom-width 0.5}
+                                         :color     "#2f3031"}
+                           :modal-white {:height    20
+                                         :bar-style "default"
+                                         :color     styles/color-white}
+                           :transaction {:height    20
+                                         :bar-style "light-content"
+                                         :color     styles/color-transparent}
+                           :modal-wallet {:height    20
+                                          :bar-style "light-content"
+                                          :color     styles/color-blue4}
+                           :wallet      {:height    20
+                                         :bar-style "light-content"
+                                         :color     styles/color-blue4}}
    :sized-text            {:margin-top        -5
                            :additional-height 5}
    :actions-list-view     {:border-bottom-color styles/color-gray3
                            :border-bottom-width 0.5}
    :chat                  {:new-message {:border-top-color styles/color-gray3
                                          :border-top-width 0.5}}
-   :discover             {:subtitle {:color          styles/color-steel
+   :discover             {:subtitle  {:color          styles/color-steel
                                       :font-size      13
                                       :letter-spacing 1}
                            :popular  {:border-radius 3
@@ -42,9 +60,7 @@
                                       :icon        {:padding-top     0
                                                     :bottom          -4
                                                     :justify-content :flex-end}}}
-   :contacts              {:subtitle {:color          styles/color-steel
-                                      :font-size      13
-                                      :letter-spacing 1}}
+   :contacts              {:show-all-text-font :default}
    :bottom-gradient       {:height 1}
    :input-label           {:left 0}
    :input-error-text      {:margin-left 0}
@@ -52,10 +68,11 @@
                            :height          56
                            :align-items     :center
                            :justify-content :center}
-   :toolbar-last-activity {:color            styles/text2-color
-                           :background-color :transparent
-                           :top              0
-                           :font-size        14}})
+   :toolbar-border-container {:background-color styles/color-white}
+   :toolbar-border        {:height           1
+                           :background-color styles/color-gray5
+                           :opacity          0.5}
+   :text-field-focus-line-height 1})
 
 (def fonts
   {:light         {:font-family "SFUIText-Light"}
@@ -63,31 +80,38 @@
    :medium        {:font-family "SFUIText-Medium"}
    :bold          {:font-family "SFUIText-Bold"}
 
-   :toolbar-title {:font-family "SFUIText-Medium"}})
+   :toolbar-title {:font-family "SFUIText-Semibold"}
+   :roboto-mono   {:font-family "RobotoMono-Medium"}})
 
 ;; Dialogs
 
-(def react-native (js/require "react-native"))
+(defn action-sheet-options [options]
+  (let [destructive-opt-index (utils/first-index :destructive? options)
+        cancel-option         {:text (label :t/cancel)}
+        options               (conj options cancel-option)]
+    (clj->js (merge {:options           (mapv :text options)
+                     :cancelButtonIndex (dec (count options))}
+                    (when destructive-opt-index {:destructiveButtonIndex destructive-opt-index})))))
 
-(defn show-action-sheet [{:keys [options callback cancel-text]}]
-  (.showActionSheetWithOptions (.-ActionSheetIOS react-native)
-                               (clj->js {:options           (conj options cancel-text)
-                                         :cancelButtonIndex (count options)})
+(defn show-action-sheet [{:keys [options callback]}]
+  (.showActionSheetWithOptions (.-ActionSheetIOS rn-dependencies/react-native)
+                               (action-sheet-options options)
                                callback))
-
 
 ;; Structure to be exported
 
 (def platform-specific
-  {:component-styles  component-styles
-   :fonts             fonts
-   :list-selection-fn show-action-sheet
-   :tabs              {:tab-shadows? false}
-   :chats             {:action-button?       false
-                       :new-chat-in-toolbar? true}
-   :contacts          {:action-button?          false
-                       :new-contact-in-toolbar? true
-                       :uppercase-subtitles?    true
-                       :group-block-shadows?    false}
-   :discover         {:uppercase-subtitles? true}})
-
+  {:component-styles             component-styles
+   :fonts                        fonts
+   :list-selection-fn            show-action-sheet
+   :tabs                         {:tab-shadows? false}
+   :chats                        {:action-button?       false
+                                  :new-chat-in-toolbar? true
+                                  :render-separator?    true}
+   :uppercase?                   false
+   :contacts                     {:action-button?          false
+                                  :new-contact-in-toolbar? true}
+   :group-block-shadows?         false
+   :discover                     {:uppercase-subtitles? true}
+   :public-group-icon-container  {:margin-top 2}
+   :private-group-icon-container {:margin-top 2}})
