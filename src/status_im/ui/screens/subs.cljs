@@ -57,4 +57,4 @@
 (reg-sub :syncing?
   :<- [:sync-state]
   (fn [sync-state]
-    (= sync-state :syncing)))
+    (#{:pending :in-progress} sync-state)))
