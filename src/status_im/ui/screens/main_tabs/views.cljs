@@ -48,10 +48,11 @@
 (def tabs-list (map #(update % :content tab-content) tabs-list*))
 
 (views/defview main-tabs []
-  (views/letsubs [current-tab [:get :view-id]]
+  (views/letsubs [keyboard-height [:get :keyboard-height]
+                  current-tab     [:get :view-id]]
     [react/view styles/flex
      [status-bar {:type (if (= current-tab :wallet) :wallet :main)}]
      [drawer-view
-      [tabs/swipable-tabs tabs-list current-tab
+      [tabs/swipable-tabs tabs-list current-tab (zero? keyboard-height)
        {:bottom-tabs? true
         :navigation-event :navigate-to-tab}]]]))
