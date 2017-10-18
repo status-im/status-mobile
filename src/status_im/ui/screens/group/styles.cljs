@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.group.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (defn toolbar-icon [enabled?]
   {:width   20

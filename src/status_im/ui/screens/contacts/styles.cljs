@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.contacts.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as common]
-            [status-im.components.tabs.styles :as tabs-st]))
+  (:require [status-im.ui.components.styles :as common]
+            [status-im.ui.components.tabs.styles :as tabs-st]))
 
 (def toolbar-actions
   {:flex-direction :row})

@@ -1,7 +1,7 @@
 (ns status-im.native-module.impl.module
   (:require-macros
    [cljs.core.async.macros :as async :refer [go-loop go]])
-  (:require [status-im.components.react :as r]
+  (:require [status-im.ui.components.react :as r]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
             [cljs.core.async :as async :refer [<! timeout]]
@@ -138,7 +138,7 @@
               cb      (fn [jail-result]
                         (let [result (-> jail-result
                                          types/json->clj
-                                         (assoc :bot-id jail-id))] 
+                                         (assoc :bot-id jail-id))]
                           (callback result)))]
           (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 

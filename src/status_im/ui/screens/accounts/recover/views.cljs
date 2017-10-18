@@ -1,16 +1,16 @@
 (ns status-im.ui.screens.accounts.recover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.components.react :refer [view
-                                                text
-                                                image
-                                                keyboard-avoiding-view
-                                                touchable-highlight]]
-            [status-im.components.sticky-button :refer [sticky-button]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :as toolbar]
-            [status-im.components.toolbar.actions :as act]
+            [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
+            [status-im.ui.components.react :refer [view
+                                                   text
+                                                   image
+                                                   keyboard-avoiding-view
+                                                   touchable-highlight]]
+            [status-im.ui.components.sticky-button :refer [sticky-button]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as act]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.accounts.recover.styles :as st]
             [status-im.ui.screens.accounts.recover.db :as v]

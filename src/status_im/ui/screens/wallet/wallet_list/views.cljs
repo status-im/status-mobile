@@ -2,11 +2,11 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
-            [status-im.components.list.views :as list]
-            [status-im.components.react :as react]
-            [status-im.components.status-bar :as status-bar]
-            [status-im.components.toolbar.view :as toolbar]
-            [status-im.components.toolbar.actions :as actions]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as actions]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.wallet-list.styles :as styles]
             [status-im.utils.utils :as utils]))

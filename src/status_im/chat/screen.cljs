@@ -1,24 +1,24 @@
 (ns status-im.chat.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.components.react :refer [view
-                                                animated-view
-                                                text
-                                                modal
-                                                touchable-highlight
-                                                list-view
-                                                list-item]]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.chat-icon.screen :refer [chat-icon-view-action
-                                                           chat-icon-view-menu-item]]
+            [status-im.ui.components.react :refer [view
+                                                   animated-view
+                                                   text
+                                                   modal
+                                                   touchable-highlight
+                                                   list-view
+                                                   list-item]]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.chat-icon.screen :refer [chat-icon-view-action
+                                                              chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform :refer [platform-specific]]
-            [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
-            [status-im.components.toolbar.view :as toolbar]
+            [status-im.ui.components.invertible-scroll-view :refer [invertible-scroll-view]]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
             [status-im.chat.views.message.message :refer [chat-message]]
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
@@ -27,8 +27,8 @@
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
             [status-im.chat.constants :as chat-const]
             [status-im.i18n :refer [label label-pluralize]]
-            [status-im.components.animation :as anim]
-            [status-im.components.sync-state.offline :refer [offline-view]]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.sync-state.offline :refer [offline-view]]
             [status-im.constants :refer [content-type-status]]
             [taoensso.timbre :as log]
             [clojure.string :as str]))

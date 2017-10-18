@@ -1,7 +1,7 @@
 (ns status-im.chat.views.input.suggestions
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 scroll-view
                                                 touchable-highlight
                                                 text

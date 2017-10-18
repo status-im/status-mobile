@@ -14,8 +14,8 @@
             [status-im.chat.views.input.result-box :as result-box]
             [status-im.chat.views.input.suggestions :as suggestions]
             [status-im.chat.views.input.validation-messages :as validation-messages]
-            [status-im.components.animation :as anim]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.react :refer [view
                                                 animated-view
                                                 text
                                                 icon
@@ -23,7 +23,7 @@
                                                 text-input
                                                 touchable-highlight
                                                 dismiss-keyboard!]]
-            [status-im.components.icons.vector-icons :as vi]
+            [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
 

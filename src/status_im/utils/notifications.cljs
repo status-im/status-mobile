@@ -4,7 +4,7 @@
             [status-im.react-native.js-dependencies :as rn]
             [status-im.utils.config :as config]
             [status-im.utils.utils :as utils]
-            [status-im.components.react :refer [copy-to-clipboard]]
+            [status-im.ui.components.react :refer [copy-to-clipboard]]
             [taoensso.timbre :as log]))
 
 ;; Work in progress namespace responsible for push notifications and interacting

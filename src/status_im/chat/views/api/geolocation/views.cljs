@@ -1,16 +1,16 @@
 (ns status-im.chat.views.api.geolocation.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]]
                    [reagent.ratom :refer [reaction]])
-  (:require [status-im.components.react :refer [view image text touchable-highlight]]
+  (:require [status-im.ui.components.react :refer [view image text touchable-highlight]]
             [reagent.core :as r]
             [goog.string :as gstr]
             [status-im.utils.utils :refer [http-get]]
             [status-im.utils.types :refer [json->clj]]
             [status-im.chat.views.api.geolocation.styles :as st]
-            [status-im.components.mapbox :refer [mapview]]
+            [status-im.ui.components.mapbox :refer [mapview]]
             [re-frame.core :refer [dispatch subscribe]]
             [status-im.i18n :refer [label]]
-            [status-im.components.react :as components]))
+            [status-im.ui.components.react :as components]))
 
 (def mapbox-api "https://api.mapbox.com/geocoding/v5/mapbox.places/")
 (def access-token "pk.eyJ1Ijoic3RhdHVzaW0iLCJhIjoiY2oydmtnZjRrMDA3czMzcW9kemR4N2lxayJ9.Rz8L6xdHBjfO8cR3CDf3Cw")

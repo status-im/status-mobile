@@ -14,7 +14,7 @@
             [status-im.ui.screens.navigation :as navigation]
             [status-im.protocol.core :as protocol]
             [status-im.constants :as const]
-            [status-im.components.list-selection :as list-selection]
+            [status-im.ui.components.list-selection :as list-selection]
             status-im.chat.events.input
             status-im.chat.events.commands
             status-im.chat.events.animation

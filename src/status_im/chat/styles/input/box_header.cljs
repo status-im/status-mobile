@@ -1,5 +1,5 @@
 (ns status-im.chat.styles.input.box-header
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def header-height 33)
 

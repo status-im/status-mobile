@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.message.command-pill
   (:require  [status-im.utils.platform :as p]
-             [status-im.components.styles :refer [color-white]]))
+             [status-im.ui.components.styles :refer [color-white]]))
 
 (defn pill [command]
   {:backgroundColor   (:color command)

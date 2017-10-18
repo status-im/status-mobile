@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as styles]
-            [status-im.components.tabs.styles :as tabs.styles]
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.ui.components.tabs.styles :as tabs.styles]
             [status-im.utils.platform :as platform]))
 
 (def error-container

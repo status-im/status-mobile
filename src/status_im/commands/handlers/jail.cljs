@@ -5,7 +5,7 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.commands.utils :refer [reg-handler]]
             [clojure.string :as s]
-            [status-im.components.react :as r]
+            [status-im.ui.components.react :as r]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
             [taoensso.timbre :as log]

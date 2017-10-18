@@ -1,12 +1,12 @@
 (ns status-im.ui.screens.wallet.components.views
   (:require-macros [status-im.utils.views :as views])
-  (:require [status-im.components.react :as react]
-            [status-im.components.styles :as components.styles]
+  (:require [status-im.ui.components.react :as react]
+            [status-im.ui.components.styles :as components.styles]
             [status-im.ui.screens.wallet.components.styles :as styles]
             [status-im.i18n :as i18n]
             [reagent.core :as reagent]
-            [status-im.components.icons.vector-icons :as vector-icons]
-            [status-im.components.animation :as animation]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.animation :as animation]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.ui.screens.wallet.components.animations :as animations]))

@@ -1,6 +1,6 @@
 (ns status-im.chat.views.input.utils
   (:require [taoensso.timbre :as log]
-            [status-im.components.toolbar.styles :as toolbar-st]
+            [status-im.ui.components.toolbar.styles :as toolbar-st]
             [status-im.utils.platform :as p]))
 
 (def min-height     19)

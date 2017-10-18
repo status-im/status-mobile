@@ -1,6 +1,6 @@
 (ns status-im.commands.handlers.debug
   (:require [re-frame.core :as re-frame]
-            [status-im.components.react :as react]
+            [status-im.ui.components.react :as react]
             [status-im.data-store.accounts :as accounts]
             [status-im.data-store.messages :as messages]
             [status-im.utils.handlers :as handlers]

@@ -1,22 +1,22 @@
 (ns status-im.ui.screens.contacts.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.common.common :as common]
-            [status-im.components.react :refer [view text touchable-highlight scroll-view]]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.native-action-button :refer [native-action-button
-                                                               native-action-button-item]]
-            [status-im.components.toolbar.view :as toolbar]
-            [status-im.components.toolbar.actions :as act]
-            [status-im.components.drawer.view :as drawer]
-            [status-im.components.icons.custom-icons :refer [ion-icon]]
-            [status-im.components.contact.contact :refer [contact-view]]
+            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.react :refer [view text touchable-highlight scroll-view]]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.native-action-button :refer [native-action-button
+                                                                  native-action-button-item]]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as act]
+            [status-im.ui.components.drawer.view :as drawer]
+            [status-im.ui.components.icons.custom-icons :refer [ion-icon]]
+            [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.utils.platform :refer [platform-specific ios? android?]]
             [status-im.utils.utils :as u]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.contacts.styles :as st]
-            [status-im.components.styles :refer [color-blue
-                                                 create-icon]]))
+            [status-im.ui.screens.chats-list.styles :as chats-list.styles]
+            [status-im.ui.components.styles :refer [color-blue]]))
 
 (def ^:const contacts-limit 5)
 
@@ -114,7 +114,7 @@
      :buttonColor         :#9b59b6
      :onPress             #(dispatch [:navigate-to :new-contact])}
     [ion-icon {:name  :md-create
-               :style create-icon}]]])
+               :style chats-list.styles/create-icon}]]])
 
 (defview contact-groups-list [_]
   (letsubs [contacts       [:get-added-contacts-with-limit contacts-limit]

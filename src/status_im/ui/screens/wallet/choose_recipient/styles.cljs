@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.choose-recipient.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def wallet-container
   {:flex             1

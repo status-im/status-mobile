@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.network-settings.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def networks-list
   {:background-color common/color-light-gray})

@@ -1,5 +1,5 @@
 (ns status-im.android.platform
-  (:require [status-im.components.styles :as styles]
+  (:require [status-im.ui.components.styles :as styles]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 ;; DEPRECATION NOTICE

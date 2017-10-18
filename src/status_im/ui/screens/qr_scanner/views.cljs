@@ -2,10 +2,10 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
-            [status-im.components.react :as react]
-            [status-im.components.camera :as camera]
-            [status-im.components.status-bar :as status-bar]
-            [status-im.components.toolbar.view :as toolbar]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.camera :as camera]
+            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.qr-scanner.styles :as styles]))
 
 (defview qr-scanner-toolbar [title hide-nav?]
