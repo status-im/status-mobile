@@ -4,8 +4,8 @@
     [re-frame.core :as re-frame]
     [status-im.components.react :as react]
     [status-im.components.qr-code :as components.qr-code]
-    [status-im.components.toolbar-new.actions :as actions]
-    [status-im.components.toolbar-new.view :as toolbar]
+    [status-im.components.toolbar.actions :as actions]
+    [status-im.components.toolbar.view :as toolbar]
     [status-im.components.status-bar :as status-bar]
     [status-im.ui.screens.wallet.styles :as wallet.styles]
     [status-im.components.icons.vector-icons :as vi]
@@ -18,7 +18,7 @@
     [status-im.components.common.common :as common]))
 
 (defn toolbar-view []
-  [toolbar/toolbar2 {:style wallet.styles/toolbar :hide-border? true}
+  [toolbar/toolbar {:style wallet.styles/toolbar :hide-border? true}
    [toolbar/nav-button (actions/back-white actions/default-handler)]
    [toolbar/content-title {:color :white} (i18n/label :t/request-transaction)]])
 

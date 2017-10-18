@@ -6,7 +6,7 @@
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.components.sortable-list-view :refer [sortable-list-view sortable-item]]
             [status-im.components.common.common :as common]
             [status-im.ui.screens.group.styles :as styles]
@@ -14,8 +14,8 @@
 
 
 (defn toolbar-view []
-  [toolbar {:actions [{:image :blank}]
-            :title   (label :t/reorder-groups)}])
+  [toolbar/simple-toolbar
+   (label :t/reorder-groups)])
 
 (defn group-item [{:keys [name contacts] :as group}]
   (let [cnt (count contacts)]

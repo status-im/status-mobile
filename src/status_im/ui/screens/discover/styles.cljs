@@ -1,9 +1,10 @@
 (ns status-im.ui.screens.discover.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as styles]
-            [status-im.components.toolbar.styles :refer [toolbar-background2]]))
+  (:require [status-im.components.styles :as styles]))
 
 ;; Common
+
+(def background-color styles/color-light-gray)
 
 (def row-separator
   {:border-bottom-width 1
@@ -83,7 +84,7 @@
   {:flex-direction :column})
 
 (def popular-container
-  {:background-color toolbar-background2})
+  {:background-color background-color})
 
 (def carousel-page-style
   {})
@@ -168,7 +169,7 @@
 ;; discover_recent
 
 (def status-list-outer
-  {:background-color toolbar-background2})
+  {:background-color background-color})
 
 (def status-list-inner
   {:background-color :white
@@ -179,7 +180,7 @@
 (def all-dapps-container
   {:flex             1
    :margin-top       16
-   :background-color toolbar-background2})
+   :background-color background-color})
 
 (def all-dapps-flat-list
   {:justify-content  :center
@@ -292,7 +293,7 @@
             styles/color-gray-transparent)})
 
 (def recent-statuses-preview-container
-  {:background-color toolbar-background2})
+  {:background-color background-color})
 
 (def recent-statuses-preview-content
   {:border-radius    4

@@ -18,7 +18,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform :refer [platform-specific]]
             [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
             [status-im.chat.views.message.message :refer [chat-message]]
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
@@ -113,7 +113,7 @@
    creating? [:get :accounts/creating-account?]]
   [view
    [status-bar]
-   [toolbar/toolbar2 {:show-sync-bar? true}
+   [toolbar/toolbar {:show-sync-bar? true}
     (when-not (or show-actions? creating?)
       (if (empty? accounts)
         [toolbar/nav-clear-text (label :t/recover) #(dispatch [:navigate-to-modal :recover-modal])]

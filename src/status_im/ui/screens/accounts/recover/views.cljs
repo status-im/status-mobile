@@ -9,8 +9,8 @@
                                                 touchable-highlight]]
             [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar]]
-            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.toolbar.view :as toolbar]
+            [status-im.components.toolbar.actions :as act]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.accounts.recover.styles :as st]
             [status-im.ui.screens.accounts.recover.db :as v]
@@ -47,7 +47,8 @@
                         (spec/valid? ::v/password password))]
       [keyboard-avoiding-view {:style st/screen-container}
        [status-bar]
-       [toolbar {:title (i18n/label :t/recover-access) :modal? modal?}]
+       [toolbar/simple-toolbar {:modal? modal?}
+        (i18n/label :t/recover-access)]
        [passphrase-input (or passphrase "")]
        [password-input (or password "")]
        [view {:flex 1}]

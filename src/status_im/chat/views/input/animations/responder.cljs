@@ -5,7 +5,7 @@
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
             [status-im.utils.platform :as p]
-            [status-im.components.toolbar-new.styles :as toolbar-st]))
+            [status-im.components.toolbar.styles :as toolbar-st]))
 
 ;; todo bad name. Ideas?
 (defn enough-dy [gesture]

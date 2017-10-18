@@ -9,7 +9,7 @@
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.utils.listview :refer [to-datasource]]
@@ -24,12 +24,11 @@
 (defn group-toolbar [group-type edit?]
   [view
    [status-bar]
-   [toolbar
-    {:title (label
-              (if (= group-type :contact-group)
-                (if edit? :t/edit-group :t/new-group)
-                (if edit? :t/chat-settings :t/new-group-chat)))
-     :actions [{:image :blank}]}]])
+   [toolbar/simple-toolbar
+    (label
+      (if (= group-type :contact-group)
+        (if edit? :t/edit-group :t/new-group)
+        (if edit? :t/chat-settings :t/new-group-chat)))]])
 
 (defview group-name-view []
   (letsubs [new-group-name [:get :new-chat-name]]
