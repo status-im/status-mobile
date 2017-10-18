@@ -6,15 +6,15 @@
             [status-im.ui.screens.accounts.views :refer [account-badge]]
             [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.toolbar.view :as toolbar]
+            [status-im.components.toolbar.actions :as act]
             [status-im.ui.screens.accounts.login.styles :as st]
             [status-im.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.components.react :as components]))
 
 (defn login-toolbar []
-  [toolbar/toolbar2
+  [toolbar/toolbar
    {:background-color :transparent
     :hide-border?     true}
    [toolbar/nav-button (act/back-white #(dispatch [:navigate-back]))]

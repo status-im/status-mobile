@@ -4,12 +4,11 @@
     [status-im.utils.listview :as lw]
     [re-frame.core :as rf]
     [status-im.components.status-bar :as status-bar]
-    [status-im.components.toolbar-new.view :as toolbar-new]
+    [status-im.components.toolbar.view :as toolbar]
     [status-im.components.action-button.action-button :as action-button]
     [status-im.components.action-button.styles :as action-button-styles]
     [status-im.components.react :as react]
     [status-im.components.icons.vector-icons :as vi]
-    #_[status-im.components.context-menu :refer [context-menu]]
     [status-im.components.common.common :as common]
     [status-im.components.renderers.renderers :as renderers]
     [status-im.ui.screens.network-settings.styles :as st]
@@ -34,10 +33,10 @@
    ;; TODO(rasom): uncomment add-new-network button when it will be functional,
    ;; https://github.com/status-im/status-react/issues/2104
    #_[react/view {:opacity 0.4}
-    [action-button/action-button
-     {:label     (i18n/label :t/add-new-network)
-      :icon      :icons/add
-      :icon-opts {:color :blue}}]]
+      [action-button/action-button
+       {:label     (i18n/label :t/add-new-network)
+        :icon      :icons/add
+        :icon-opts {:color :blue}}]]
    #_[context-menu                                          ; TODO should be implemented later
       [action-button-view (i18n/label :t/add-new-network) :add_blue]
       [{:text (i18n/label :t/add-json-file) :value #(dispatch [:navigate-to :paste-json-text])}
@@ -64,7 +63,8 @@
   (views/letsubs [{:keys [network networks]} [:get-current-account]]
     [react/view {:flex 1}
      [status-bar/status-bar]
-     [toolbar-new/toolbar {:title (i18n/label :t/network-settings)}]
+     [toolbar/simple-toolbar
+      (i18n/label :t/network-settings)]
      [react/view {:flex 1}
       [react/list-view {:dataSource      (lw/to-datasource (vals networks))
                         :renderRow       (render-row network)

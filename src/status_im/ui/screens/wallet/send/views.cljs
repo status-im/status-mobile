@@ -7,8 +7,8 @@
             [status-im.components.react :as react]
             [status-im.components.status-bar :as status-bar]
             [status-im.components.styles :as components.styles]
-            [status-im.components.toolbar-new.actions :as act]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.components.toolbar.actions :as act]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.screens.wallet.send.animations :as send.animations]
@@ -20,7 +20,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn toolbar-view [signing?]
-  [toolbar/toolbar2 {:style wallet.styles/toolbar}
+  [toolbar/toolbar {:style wallet.styles/toolbar}
    [toolbar/nav-button (act/back-white (if signing?
                                          #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
                                          act/default-handler))]
@@ -142,7 +142,7 @@
        (when in-progress? [react/view send.styles/processing-view])])))
 
 (defn toolbar-modal [from-chat?]
-  [toolbar/toolbar2 {:style wallet.styles/toolbar}
+  [toolbar/toolbar {:style wallet.styles/toolbar}
    [toolbar/nav-button (act/close-white (if from-chat?
                                           #(re-frame/dispatch [:wallet/discard-transaction-navigate-back])
                                           act/default-handler))]

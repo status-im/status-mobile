@@ -7,8 +7,8 @@
             [status-im.components.status-bar :as status-bar]
             [status-im.components.styles :as styles]
             [status-im.components.tabs.views :as tabs]
-            [status-im.components.toolbar-new.actions :as actions]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.components.toolbar.actions :as actions]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.transactions.styles :as transactions.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]
@@ -39,13 +39,13 @@
    :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
 
 (defn toolbar-view [current-tab unsigned-transactions-count]
-  [toolbar/toolbar2 {:flat? true}
+  [toolbar/toolbar {:flat? true}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case current-tab
      :transactions-history  [toolbar/actions [history-action]]
-     :unsigned-transactions nil ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
-     )])
+     :unsigned-transactions nil)]) ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
+
 
 (defn action-buttons [{:keys [id to value] :as transaction}]
   [react/view {:style transactions.styles/action-buttons}
@@ -162,7 +162,7 @@
 (defview filter-history []
   []
   [react/view
-   [toolbar/toolbar2 {}
+   [toolbar/toolbar {}
     [toolbar/nav-clear-text (i18n/label :t/done)]
     [toolbar/content-title (i18n/label :t/transactions-filter-title)]
     [toolbar/text-action {:handler #(utils/show-popup "TODO" "Select All")}
@@ -269,7 +269,7 @@
             confirmations-progress                   [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
-     [toolbar/toolbar2 {}
+     [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]
       (when transaction [toolbar/actions (details-action hash url)])]

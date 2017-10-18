@@ -2,12 +2,11 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [status-im.components.react :as react]
             [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.ui.screens.discover.components.views :as components]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.discover.styles :as styles]
             [status-im.ui.screens.contacts.styles :as contacts-styles]
-            [status-im.components.toolbar-new.view :as toolbar]))
+            [status-im.components.toolbar.view :as toolbar]))
 
 ;; TOOD(oskarth): Refactor this, very similar to discover-all-hashtags view
 (defview discover-search-results []
@@ -16,7 +15,7 @@
             contacts        [:get-contacts]
             current-account [:get-current-account]]
       [react/view styles/discover-tag-container
-       [toolbar/toolbar2 {}
+       [toolbar/toolbar {}
         toolbar/default-nav-back
         [toolbar/content-title (str "#" (first tags) " " total)]]
        (if (empty? discoveries)

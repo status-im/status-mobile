@@ -4,8 +4,8 @@
             [clojure.string :as string]
             [status-im.components.react :as react]
             [status-im.components.icons.vector-icons :as vector-icons]
-            [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.components.toolbar-new.actions :as actions]
+            [status-im.components.toolbar.view :as toolbar]
+            [status-im.components.toolbar.actions :as actions]
             [status-im.components.drawer.view :as drawer]
             [status-im.components.carousel.carousel :as carousel]
             [status-im.ui.screens.discover.components.views :as components]
@@ -123,7 +123,7 @@
   (re-frame/dispatch [:create-new-public-chat topic]))
 
 (defn render-public-chats-item [{:keys [name color topic] :as item}]
-  [react/touchable-highlight {:on-press #(navigate-to-public-chat topic)}
+  [react/touchable-highlight {:on-press #(navigate-to-public-chat topic)}]
 
   [react/view styles/public-chats-item-container
    [react/view styles/public-chats-icon-container
@@ -138,7 +138,7 @@
       name]]
     [react/view {}
      [react/text {:style {:color :lightgray}}
-      (str "#" topic)]]]]])
+      (str "#" topic)]]]])
 
 (defn public-chats-teaser []
   [react/view styles/public-chats-container
@@ -158,13 +158,13 @@
     [react/view styles/discover-container
      [toolbar-view (and current-view?
                         (= show-search :discover)) search-text]
-       [react/scroll-view styles/list-container
-        [recent-statuses-preview {:contacts        contacts
+     [react/scroll-view styles/list-container
+      [recent-statuses-preview {:contacts        contacts
                                   :current-account current-account
                                   :discoveries     discoveries}]
-        [popular-hashtags-preview {:popular-tags        popular-tags
+      [popular-hashtags-preview {:popular-tags        popular-tags
                                    :popular-discoveries popular-discoveries
                                    :contacts            contacts
-                                   :current-account     current-account}]
-        [all-dapps/preview all-dapps]
-        [public-chats-teaser]]]))
+                                 :current-account     current-account}]
+      [all-dapps/preview all-dapps]
+      [public-chats-teaser]]]))

@@ -2,7 +2,7 @@
   (:require
     [re-frame.core :refer [dispatch]]
     [status-im.components.status-bar :as status-bar]
-    [status-im.components.toolbar-new.view :as toolbar-new]
+    [status-im.components.toolbar.view :as toolbar]
     [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
     [status-im.ui.screens.network-settings.views :as network-settings]
     [status-im.components.react :as react]
@@ -14,7 +14,8 @@
   (let [rpc-url "text"]
     [react/view {:flex 1}
      [status-bar/status-bar]
-     [toolbar-new/toolbar {:title (i18n/label :t/add-network)}]
+     [toolbar/simple-toolbar
+      (i18n/label :t/add-network)]
      [network-settings/network-badge]
      [react/view {:margin-top 8}
       [text-input-with-label {:label (i18n/label :t/rpc-url)}]]

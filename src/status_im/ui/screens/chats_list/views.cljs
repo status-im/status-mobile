@@ -8,9 +8,9 @@
             [status-im.components.drawer.view :as drawer]
             [status-im.components.styles :refer [color-blue]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.components.toolbar-new.actions :as act]
-            [status-im.components.toolbar-new.styles :as tst]
+            [status-im.components.toolbar.view :as toolbar]
+            [status-im.components.toolbar.actions :as act]
+            [status-im.components.toolbar.styles :as tst]
             [status-im.components.icons.custom-icons :refer [ion-icon]]
             [status-im.components.sync-state.offline :refer [offline-view]]
             [status-im.components.context-menu :refer [context-menu]]
@@ -38,7 +38,7 @@
    (act/add #(re-frame/dispatch [:navigate-to :new-chat]))])
 
 (defn toolbar-view []
-  [toolbar/toolbar2 {:show-sync-bar? true}
+  [toolbar/toolbar {:show-sync-bar? true}
    [toolbar/nav-button (act/hamburger drawer/open-drawer!)]
    [toolbar/content-title (i18n/label :t/chats)]
    [toolbar/actions
@@ -47,7 +47,7 @@
       (android-toolbar-actions))]])
 
 (defn toolbar-edit []
-  [toolbar/toolbar2 {:show-sync-bar? true}
+  [toolbar/toolbar {:show-sync-bar? true}
    [toolbar/nav-button (act/back #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] false]))]
    [toolbar/content-title (i18n/label :t/edit-chats)]])
 

@@ -1,103 +1,114 @@
 (ns status-im.components.toolbar.styles
-  (:require [status-im.components.styles :refer [text1-color
-                                                 color-white
-                                                 color-light-gray
-                                                 color-blue
-                                                 color-black]]))
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
+  (:require [status-im.components.styles :as styles]
+            [status-im.utils.platform :as p]))
 
-(def toolbar-background1 color-white)
-(def toolbar-background2 color-light-gray)
+(def toolbar-background1 styles/color-white)
 
 (def toolbar-height 56)
-(def toolbar-icon-width 32)
-(def toolbar-icon-spacing 8)
+(def toolbar-icon-width 24)
+(def toolbar-icon-height 24)
+(def toolbar-icon-spacing 24)
 
-(def toolbar-gradient
-  {:height 4})
+(defnstyle toolbar [background-color flat?]
+  {:flex             0
+   :flex-direction   :row
+   :align-items      :center
+   :justify-content  :space-between
+   :background-color (or background-color toolbar-background1)
+   :elevation        (if flat? 0 2)
+   :android          {:height 55}
+   :ios              {:height 56}})
 
-(defn toolbar-wrapper [background-color]
-  {:backgroundColor (or background-color toolbar-background1)
-   :elevation       2})
-
-(def toolbar
+(defnstyle toolbar-nav-actions-container
+  [actions]
   {:flex-direction :row
-   :height         toolbar-height})
+   :margin-left    4})
 
-(defn toolbar-nav-actions-container [actions]
-  {:width          (when (and actions (> (count actions) 0))
-                     (-> (+ toolbar-icon-width toolbar-icon-spacing)
-                         (* (count actions))
-                         (+ toolbar-icon-spacing)))
-   :flex-direction "row"})
-
-(def toolbar-nav-action
-  {:width           toolbar-height
-   :height          toolbar-height
-   :align-items     :center
-   :justify-content :center
-   :padding-right   12})
+(defstyle toolbar-container
+  {:flex       1
+   :android    {:padding-left 18}
+   :ios        {:align-items  :center}})
 
 (def toolbar-title-container
   {:flex           1
-   :alignItems     :center
-   :justifyContent :center})
+   :flex-direction :column
+   :margin-left    6})
 
-(def toolbar-title-text
-  {:margin-top 0
-   :color      text1-color
-   :font-size  16})
+(defstyle toolbar-title-text
+  {:color          styles/text1-color
+   :letter-spacing -0.2
+   :font-size      17
+   :ios            {:text-align "center"}})
+
+(def toolbar-border-container
+  (get-in p/platform-specific [:component-styles :toolbar-border-container]))
+
+(def toolbar-border
+  (get-in p/platform-specific [:component-styles :toolbar-border]))
+
+(def toolbar-actions
+  {:flex           0
+   :flex-direction :row})
 
 (defn toolbar-actions-container [actions-count custom]
-  (merge {:flex-direction "row"
-          :margin-left    toolbar-icon-spacing}
+  (merge {:flex-direction :row}
+         (when-not custom {:margin-right 4})
          (when (and (zero? actions-count) (not custom))
            {:width (+ toolbar-icon-width toolbar-icon-spacing)})))
 
 (def toolbar-action
   {:width           toolbar-icon-width
-   :height          toolbar-height
-   :margin-right    toolbar-icon-spacing
+   :height          toolbar-icon-height
    :align-items     :center
    :justify-content :center})
 
 (def toolbar-with-search
-  {:background-color toolbar-background2
-   :elevation        0})
+  {:background-color toolbar-background1})
 
-(def toolbar-with-search-content
-  {:flex            1
-   :align-items     :center
-   :justify-content :center})
+(defstyle toolbar-with-search-content
+  {:flex    1
+   :android {:padding-left 18}
+   :ios     {:align-items :center}})
 
-(def toolbar-search-input
-  {:flex        1
-   :align-self  :stretch
-   :margin-left 18
-   :margin-top  2
-   :font-size   14
-   :color       color-blue})
+(defstyle toolbar-search-input
+  {:line-height         24
+   :height              24
+   :font-size           17
+   :padding-top         0
+   :padding-left        0
+   :padding-bottom      0
+   :text-align-vertical :center
+   :color               styles/color-black
+   :ios                 {:padding-left   8
+                         :padding-top    2
+                         :letter-spacing -0.2}})
 
-(def toolbar-with-search-title
-  {:color       color-black
-   :align-self  :center
-   :text-align  :center
-   :font-size   16})
-
-
-;; Specific actions
-
-(def action-hamburger
-  {:width  16
-   :height 12})
-
-(def action-add
-  {:width  17
-   :height 17})
-
-(def action-search
-  {:width  17
-   :height 17})
-
-(def action-back
+(def action-default
   {:width  24
    :height 24})
+
+(def nav-item-button
+  {:padding-vertical   16
+   :padding-horizontal 12})
+
+(def nav-item-text
+  {:padding-vertical   18
+   :padding-horizontal 16})
+
+(defstyle item
+  {:ios     {:marginHorizontal 12
+             :marginVertical   16}
+   :android {:margin 16}})
+
+(def item-text
+  {:color     styles/color-blue4
+   :font-size 17})
+
+(def toolbar-text-action-disabled {:color styles/color-gray7})
+
+(def item-text-white-background {:color styles/color-blue4})
+
+;;TODO(goranjovic) - Breaks the toolbar title into new line on smaller screens
+;;e.g. see Discover > Popular hashtags on iPhone 5s
+(def ios-content-item {:position :absolute :right 40 :left 40})

@@ -6,7 +6,7 @@
             [status-im.components.list.views :as list]
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
-            [status-im.components.toolbar-new.view :as toolbar]))
+            [status-im.components.toolbar.view :as toolbar]))
 
 (defn render-tag [tag]
   [react/touchable-highlight {:on-press #(do (re-frame/dispatch [:set :discover-search-tags [tag]])
@@ -30,7 +30,7 @@
             contacts        [:get-contacts]
             {:keys [discoveries]} [:get-popular-discoveries 10]] ;uses the tags passed via :discover-search-tags state
     [react/view styles/all-recent-container
-     [toolbar/toolbar2 {}
+     [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/popular-tags)]]
      [tags-menu (map :name popular-tags)]

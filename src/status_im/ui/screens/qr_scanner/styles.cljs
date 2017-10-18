@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.qr-scanner.styles
   (:require [status-im.components.styles :refer [color-white]]
-            [status-im.components.toolbar.styles :refer [toolbar-height]]
+            [status-im.components.toolbar.styles :as toolbar.styles]
             [status-im.utils.platform :as p]))
 
 (def barcode-scanner-container
@@ -15,7 +15,7 @@
 (def rectangle-container
   {:position        :absolute
    :left            0
-   :top             toolbar-height
+   :top             toolbar.styles/toolbar-height
    :bottom          0
    :right           0
    :flex            1

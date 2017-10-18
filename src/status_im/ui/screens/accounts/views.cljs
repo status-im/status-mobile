@@ -4,7 +4,7 @@
             [status-im.ui.screens.accounts.styles :as st]
             [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.common.common :as common]
             [status-im.components.action-button.action-button :refer [action-button]]
             [status-im.utils.listview :as lw]

@@ -6,7 +6,7 @@
                                                 text list-view list-item]]
             [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
+            [status-im.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.ui.screens.contacts.styles :as cstyles]
