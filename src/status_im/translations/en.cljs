@@ -22,8 +22,8 @@
    :yes                                   "Yes"
    :no                                    "No"
 
-   :camera-access-error                   "To grant the required camera permission, please, go to your system settings and make sure that Status > Camera is selected."
-   :photos-access-error                   "To grant the required photos permission, please, go to your system settings and make sure that Status > Photos is selected."
+   :camera-access-error                   "To grant the required camera permission, please go to your system settings and make sure that Status > Camera is selected."
+   :photos-access-error                   "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
 
    ;;drawer
    :invite-friends                        "Invite friends"
@@ -93,7 +93,7 @@
    :email                                 "Email"
    :update-status                         "Update your status..."
    :add-a-status                          "Add a status..."
-   :status-prompt                         "Create a status to help people know about the things you are offering. You can use #hashtags too."
+   :status-prompt                         "Set your status. Using #hastags will help others discover you and talk about what's on your mind"
    :add-to-contacts                       "Add to contacts"
    :in-contacts                           "In contacts"
    :remove-from-contacts                  "Remove from contacts"
@@ -103,8 +103,8 @@
    :error-incorrect-name                  "Please select another name"
    :error-incorrect-email                 "Incorrect e-mail"
    :profile-testnet-icon                  "Testnet"
-   :testnet-text                          "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address."
-   :mainnet-text                          "You’re on the Mainnet. Real ETH will be send."
+   :testnet-text                          "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address"
+   :mainnet-text                          "You’re on the Mainnet. Real ETH will be sent"
 
    ;;make_photo
    :image-source-title                    "Profile image"
@@ -126,14 +126,14 @@
    :contacts-syncronized                  "Your contacts have been synchronized"
    :confirmation-code                     (str "Thanks! We've sent you a text message with a confirmation "
                                                "code. Please provide that code to confirm your phone number")
-   :incorrect-code                        (str "Sorry the code was incorrect, please enter again")
+   :incorrect-code                        (str "Sorry the code was incorrect, please enter it again")
    :generate-passphrase                   (str "I'll generate a passphrase for you so you can restore your "
-                                               "access or log in from another device")
+                                               "account or log in from another device.")
    :phew-here-is-your-passphrase          "*Phew* that was hard, here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :here-is-your-passphrase               "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :here-is-your-signing-phrase           "Here is your signing phrase. You will use it to verify your transactions. *Write it down and keep it safe!*"
-   :written-down                          "Make sure you had securely written it down"
-   :phone-number-required                 "Tap here to enter your phone number & I'll find your friends"
+   :written-down                          "Make sure you have written it down somewhere secure."
+   :phone-number-required                 "Tap here to enter your phone number & I'll find your friends."
    :shake-your-phone                      "Find a bug or have a suggestion? Just ~shake~ your phone!"
    :intro-status                          "Chat with me to setup your account and change your settings!"
    :intro-message1                        "Welcome to Status\nTap this message to set your password & get started!"
@@ -156,7 +156,7 @@
    :edit-chats                            "Edit chats"
    :search-chats                          "Search chats"
    :empty-topic                           "Empty topic"
-   :topic-format                          "Wrong format [a-z0-9\\-]+"
+   :topic-format                          "Wrong format [a-z0-9\\-+]"
    :public-group-topic                    "Topic"
 
    ;;discover
@@ -171,8 +171,8 @@
    :public-chats                          "Public chats"
    :soon                                  "Soon"
    :public-chat-user-count                "{{count}} people"
-   :dapps                                 "DApps"
-   :dapp-profile                          "DApp Profile"
+   :dapps                                 "ÐApps"
+   :dapp-profile                          "ÐApp profile"
    :no-statuses-discovered                "No statuses discovered"
    :no-statuses-discovered-body           "When somebody posts\na status you will see it here."
    :no-hashtags-discovered-title          "No hashtags discovered"
@@ -251,8 +251,8 @@
    :group-name                            "Group name"
    :edit-group                            "Edit group"
    :delete-group                          "Delete group"
-   :delete-group-confirmation             "This group will be removed from your groups. This will not affect contacts"
-   :delete-group-prompt                   "This will not affect contacts"
+   :delete-group-confirmation             "This group will be removed from your groups. This will not affect your contacts"
+   :delete-group-prompt                   "This will not affect your contacts"
    :group-members                         "Group members"
    :contact-s                             {:one   "contact"
                                            :other "contacts"}
@@ -276,7 +276,7 @@
    :swow-qr                               "Show QR"
    :name                                  "Name"
    :whisper-identity                      "Whisper Identity"
-   :address-explication                   "Maybe here should be some text explaining what an address is and where to look for it"
+   :address-explication                   "Your address is what identifies you on Ethereum and is a series of numbers and letters beginning with '0x'"
    :enter-valid-address                   "Please enter a valid address or scan a QR code"
    :enter-valid-public-key                "Please enter a valid public key or scan a QR code"
    :contact-already-added                 "The contact has already been added"
@@ -295,7 +295,7 @@
 
    ;;recover
    :recover-from-passphrase               "Recover from passphrase"
-   :recover-explain                       "Please enter the passphrase for your password to recover access"
+   :recover-explain                       "Please enter the passphrase for your account to recover access"
    :passphrase                            "Passphrase"
    :recover                               "Recover"
    :enter-valid-passphrase                "Please enter a passphrase"
@@ -313,7 +313,7 @@
    ;;validation
    :invalid-phone                         "Invalid phone number"
    :amount                                "Amount"
-   :not-enough-eth                        (str "Not enough ETH on balance "
+   :not-enough-eth                        (str "Insufficient funds. Your balance is: "
                                                "({{balance}} ETH)")
 
    ;;transactions
@@ -341,16 +341,16 @@
    :from                                  "From"
    :data                                  "Data"
    :got-it                                "Got it"
-   :contract-creation                     "Contract Creation"
+   :contract-creation                     "Contract creation"
    :block                                 "Block"
    :hash                                  "Hash"
    :gas-limit                             "Gas limit"
    :gas-price                             "Gas price"
-   :gas-used                              "Gas Used"
+   :gas-used                              "Gas used"
    :cost-fee                              "Cost/Fee"
    :nonce                                 "Nonce"
    :confirmations                         "confirmations"
-   :confirmations-helper-text             "If you want to be sure your transaction will not be compromise wait until it gets at least 10 blocks confirmations"
+   :confirmations-helper-text             "If you want to be sure your transaction will not be compromised, wait for at least 10 more blocks to be found"
    :copy-transaction-hash                 "Copy transaction hash"
    :open-on-etherscan                     "Open on Etherscan"
 
@@ -359,24 +359,24 @@
 
    ;;testfairy warning
    :testfairy-title                       "Warning!"
-   :testfairy-message                     "You are using app installed from a nightly build. For testing purposes this build includes session recording if wifi connection is used, so all your interaction with app is saved (as video and log) and might be used by development team to investigate possible issues. Saved video/log do not include your passwords. Recording is done only if app is installed from a nightly build. Nothing is recorded if app is installed from PlayStore or TestFlight."
+   :testfairy-message                     "You are using an app installed from a nightly build. For testing purposes this build includes session recording if wifi connection is used, so all your interactions with this app is saved (as video and logs) and might be used by our development team to investigate possible issues. Saved video/logs do not include your passwords. Recording is done only if the app is installed from a nightly build. Nothing is recorded if the app is installed from PlayStore or TestFlight."
 
    ;; wallet
    :wallet                                "Wallet"
    :wallets                               "Wallets"
    :your-wallets                          "Your wallets"
    :main-wallet                           "Main Wallet"
-   :wallet-error                          "Error Loading Data"
+   :wallet-error                          "Error loading data"
    :wallet-send                           "Send"
    :wallet-request                        "Request"
    :wallet-exchange                       "Exchange"
    :wallet-assets                         "Assets"
    :wallet-add-asset                      "Add asset"
    :wallet-total-value                    "Total value"
-   :wallet-settings                       "Wallet Settings"
+   :wallet-settings                       "Wallet settings"
    :signing-phrase-description            "Sign the transaction by entering your password. Make sure that the words above match your secret signing phrase"
    :wallet-insufficient-funds             "Insufficient funds"
-   :request-transaction                   "Request Transaction"
+   :request-transaction                   "Request transaction"
    :send-request                          "Send request"
    :share                                 "Share"
    :eth                                   "ETH"
@@ -386,27 +386,27 @@
    :transaction-details                   "Transaction details"
    :transactions-sign                     "Sign"
    :transactions-sign-all                 "Sign all"
-   :transactions-sign-transaction         "Sign Transaction"
-   :transactions-sign-later               "Sign Later"
+   :transactions-sign-transaction         "Sign transaction"
+   :transactions-sign-later               "Sign later"
    :transactions-sign-all-text            "Sign the transaction by entering your password.\nMake sure that the words above match your secret signing phrase"
    :transactions-sign-input-placeholder   "Enter your password"
    :transactions-delete                   "Delete transaction"
    :transactions-delete-content           "Transaction will be removed from unsigned list"
    :transactions-history                  "History"
    :transactions-unsigned                 "Unsigned"
-   :transactions-history-empty            "You don't have a history transactions"
-   :transactions-unsigned-empty           "You don't have unsigned transactions"
-   :transactions-filter-title             "Filter History"
+   :transactions-history-empty            "You don't have a transaction history"
+   :transactions-unsigned-empty           "You don't have any unsigned transactions"
+   :transactions-filter-title             "Filter history"
    :transactions-filter-tokens            "Tokens"
    :transactions-filter-type              "Type"
    :transactions-filter-select-all        "Select all"
-   :view-transaction-details              "View Transaction Details"
-   :transaction-description               "If you want to be sure you transaction will not be compromised wait until it gets at least 10 block confirmations"
-   :transaction-sent                      "Transaction Sent"
+   :view-transaction-details              "View transaction details"
+   :transaction-description               "If you want to be sure your transaction will not be compromised, wait until at least 10 more block have been found"
+   :transaction-sent                      "Transaction sent"
    :transaction-moved-text                "The transaction has been successfully moved to “Unsigned”"
-   :transaction-moved-title               "Transaction Moved"
-   :sign-later-title                      "Sign Transaction Later?"
-   :sign-later-text                       "You will be able to sign in the transaction history"
+   :transaction-moved-title               "Transaction moved"
+   :sign-later-title                      "Sign transaction later?"
+   :sign-later-text                       "You are able to sign in the transaction history"
    :not-applicable                        "Not applicable for unsigned transactions"
 
    ;; Wallet Send
@@ -443,5 +443,5 @@
    :edit-network-warning                  "Be careful, editing the network data may disable this network for you"
    :connecting-requires-login             "Connecting to another network requires login"
    :close-app-title                       "Warning!"
-   :close-app-content                     "App will be closed. When you restart it selected network will be used."
+   :close-app-content                     "App will be closed. When you restart it, the selected network will be used"
    :close-app-button                      "Confirm"})
