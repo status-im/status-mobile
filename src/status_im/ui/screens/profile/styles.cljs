@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.profile.styles
-  (:require [status-im.components.styles
+  (:require [status-im.ui.components.styles
              :as styles
              :refer
              [color-black

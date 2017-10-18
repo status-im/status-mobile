@@ -2,11 +2,11 @@
   (:require [clojure.set :as set]
             [clojure.walk :as w]
             [re-frame.core :refer [dispatch trim-v]]
-            [status-im.components.react :as components]
+            [status-im.ui.components.react :as components]
             [status-im.chat.views.input.web-view :as chat-web-view]
             [status-im.chat.views.input.validation-messages :as chat-validation-messages]
             [status-im.chat.views.api.choose-contact :as choose-contact]
-            [status-im.components.qr-code :as qr]
+            [status-im.ui.components.qr-code :as qr]
             [status-im.chat.views.api.geolocation.views :as geolocation]
             [status-im.utils.handlers :refer [register-handler]]
             [taoensso.timbre :as log]))

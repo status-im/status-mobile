@@ -2,11 +2,11 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as rf]
-    [status-im.components.status-bar :as status-bar]
-    [status-im.components.toolbar.view :as toolbar]
-    [status-im.components.context-menu :as context-menu]
+    [status-im.ui.components.status-bar :as status-bar]
+    [status-im.ui.components.toolbar.view :as toolbar]
+    [status-im.ui.components.context-menu :as context-menu]
     [status-im.ui.screens.network-settings.views :as network-settings]
-    [status-im.components.react :as react]
+    [status-im.ui.components.react :as react]
     [status-im.utils.platform :as platform]
     [status-im.i18n :as i18n]
     [status-im.ui.screens.network-settings.styles :as st]))

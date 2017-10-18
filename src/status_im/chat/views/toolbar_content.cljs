@@ -3,7 +3,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
             [cljs-time.core :as t]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 text
                                                 icon]]
             [status-im.i18n :refer [get-contact-translated

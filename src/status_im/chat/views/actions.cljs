@@ -2,8 +2,8 @@
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.chat.styles.screen :as styles]
-            [status-im.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.components.react :as react]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))

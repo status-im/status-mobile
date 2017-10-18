@@ -10,7 +10,7 @@
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.events.animation :as animation-events]
             [status-im.bots.events :as bots-events]
-            [status-im.components.react :as react-comp]
+            [status-im.ui.components.react :as react-comp]
             [status-im.utils.datetime :as time]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.random :as random]

@@ -1,26 +1,26 @@
 (ns status-im.ui.screens.profile.views
   (:require [clojure.string :as string]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.action-button.action-button
+            [status-im.ui.components.action-button.action-button
              :refer
              [action-button action-button-disabled action-separator]]
-            [status-im.components.action-button.styles :refer [actions-list]]
-            [status-im.components.chat-icon.screen :refer [my-profile-icon]]
-            [status-im.components.common.common :as common]
-            [status-im.components.context-menu :refer [context-menu]]
-            [status-im.components.list-selection :refer [share-options]]
-            [status-im.components.react :as react]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.styles :refer [color-blue]]
-            [status-im.components.toolbar.actions :as actions]
-            [status-im.components.toolbar.view :as toolbar]
+            [status-im.ui.components.action-button.styles :refer [actions-list]]
+            [status-im.ui.components.chat-icon.screen :refer [my-profile-icon]]
+            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.context-menu :refer [context-menu]]
+            [status-im.ui.components.list-selection :refer [share-options]]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.styles :refer [color-blue]]
+            [status-im.ui.components.toolbar.actions :as actions]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]]
             [status-im.utils.config :as config]
-            [status-im.components.icons.vector-icons :as vector-icons])
+            [status-im.ui.components.icons.vector-icons :as vector-icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []

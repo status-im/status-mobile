@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 ;; errors
 

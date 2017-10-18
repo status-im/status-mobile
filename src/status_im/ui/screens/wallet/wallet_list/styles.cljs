@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.wallet-list.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as st]
+  (:require [status-im.ui.components.styles :as st]
             [status-im.utils.platform :as platform]))
 
 (def screen-container

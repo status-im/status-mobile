@@ -2,7 +2,7 @@
   (:require [clojure.spec.alpha :as spec]
             [clojure.string :as string]
             [re-frame.core :as re-frame :refer [reg-fx trim-v]]
-            [status-im.components.react :refer [show-image-picker]]
+            [status-im.ui.components.react :refer [show-image-picker]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.ui.screens.profile.db :as db]
             [status-im.ui.screens.profile.navigation]

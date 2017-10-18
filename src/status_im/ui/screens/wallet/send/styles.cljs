@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.send.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def toolbar
   {:background-color styles/color-blue5

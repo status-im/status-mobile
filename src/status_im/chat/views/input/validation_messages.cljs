@@ -1,7 +1,7 @@
 (ns status-im.chat.views.input.validation-messages
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [status-im.components.react :as c]
+            [status-im.ui.components.react :as c]
             [status-im.chat.styles.input.validation-message :as style]
             [status-im.utils.listview :as lw]
             [status-im.i18n :as i18n]))

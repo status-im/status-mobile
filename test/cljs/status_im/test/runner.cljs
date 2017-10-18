@@ -8,7 +8,6 @@
             [status-im.test.profile.events]
             [status-im.test.bots.events]
             [status-im.test.chat.models.input]
-            [status-im.test.components.main-tabs]
             [status-im.test.i18n]
             [status-im.test.utils.utils]
             [status-im.test.utils.money]
@@ -39,7 +38,6 @@
  'status-im.test.bots.events
  'status-im.test.wallet.transactions.subs
  'status-im.test.chat.models.input
- 'status-im.test.components.main-tabs
  'status-im.test.i18n
  'status-im.test.utils.utils
  'status-im.test.utils.money

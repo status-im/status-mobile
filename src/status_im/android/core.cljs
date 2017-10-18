@@ -7,7 +7,7 @@
             status-im.ui.screens.subs
             status-im.data-store.core
             [status-im.ui.screens.views :as views]
-            [status-im.components.react :as react]
+            [status-im.ui.components.react :as react]
             [status-im.native-module.core :as status]
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.utils :as utils]

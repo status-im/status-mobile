@@ -4,7 +4,7 @@
             [clojure.walk :as walk]
             [reagent.core :as r]
             [status-im.i18n :refer [message-status-label]]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 text
                                                 image
                                                 icon
@@ -14,8 +14,8 @@
                                                 autolink
                                                 get-dimensions
                                                 dismiss-keyboard!]]
-            [status-im.components.animation :as anim]
-            [status-im.components.list-selection :refer [share share-or-open-map]]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.list-selection :refer [share share-or-open-map]]
             [status-im.chat.constants :as chat-consts]
             [status-im.chat.models.commands :as commands]
             [status-im.chat.styles.message.message :as st]
@@ -29,7 +29,7 @@
                                          content-type-status
                                          content-type-command
                                          content-type-command-request] :as c]
-            [status-im.components.chat-icon.screen :refer [chat-icon-message-status]]
+            [status-im.ui.components.chat-icon.screen :refer [chat-icon-message-status]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.platform :as platform]

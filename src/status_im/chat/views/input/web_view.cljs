@@ -2,8 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.webview-bridge :refer [webview-bridge]]
-            [status-im.components.react :refer [view text] :as components]
+            [status-im.ui.components.webview-bridge :refer [webview-bridge]]
+            [status-im.ui.components.react :refer [view text] :as components]
             [status-im.native-module.core :as status]
             [status-im.i18n :refer [label]]
             [status-im.utils.js-resources :as js-res]

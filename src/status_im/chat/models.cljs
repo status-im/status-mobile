@@ -1,5 +1,5 @@
 (ns status-im.chat.models
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (defn set-chat-ui-props
   "Updates ui-props in active chat by merging provided kvs into them"

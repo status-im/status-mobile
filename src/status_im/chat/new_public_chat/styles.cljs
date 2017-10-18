@@ -1,6 +1,6 @@
 (ns status-im.chat.new-public-chat.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def group-chat-name-input
   {:font-size      17

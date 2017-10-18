@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.profile.qr-code.styles
-  (:require [status-im.components.styles :refer [color-white]]))
+  (:require [status-im.ui.components.styles :refer [color-white]]))
 
 (def photo-container
   {:flex           0.2

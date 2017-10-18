@@ -3,21 +3,21 @@
   (:require [re-frame.core :refer [enrich after debug dispatch reg-fx]]
             [cljs.core.async :as a]
             [clojure.string :as string]
-            [status-im.components.styles :refer [default-chat-color]] 
+            [status-im.ui.components.styles :refer [default-chat-color]]
             [status-im.chat.constants :as chat-consts]
             [status-im.protocol.core :as protocol]
-            [status-im.data-store.chats :as chats] 
+            [status-im.data-store.chats :as chats]
             [status-im.data-store.messages :as messages]
             [status-im.data-store.pending-messages :as pending-messages]
             [status-im.constants :refer [text-content-type
                                          content-type-command
                                          content-type-command-request
                                          console-chat-id]]
-            [status-im.utils.random :as random] 
-            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u] 
+            [status-im.utils.random :as random]
+            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
             status-im.chat.events
             status-im.chat.handlers.requests
-            status-im.chat.handlers.send-message 
+            status-im.chat.handlers.send-message
             status-im.chat.handlers.webview-bridge))
 
 (defn remove-chat

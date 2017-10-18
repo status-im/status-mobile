@@ -1,17 +1,16 @@
 (ns status-im.ui.screens.group.add-contacts.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.renderers.renderers :as renderers]
-            [status-im.components.react :refer [view keyboard-avoiding-view
-                                                text list-view list-item]]
-            [status-im.components.sticky-button :refer [sticky-button]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar-with-search]]
+            [status-im.ui.components.renderers.renderers :as renderers]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.sticky-button :refer [sticky-button]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.ui.screens.contacts.styles :as cstyles]
             [status-im.i18n :refer [label]]
-            [status-im.components.contact.contact :refer [toogle-contact-view]]))
+            [status-im.ui.components.contact.contact :refer [toogle-contact-view]]))
 
 (defn on-toggle [checked? whisper-identity]
   (let [action (if checked? :deselect-contact :select-contact)]
@@ -28,14 +27,14 @@
   [toogle-contact-view contact :is-participant-selected? on-toggle-participant])
 
 (defn title-with-count [title count-value]
-  [view styles/toolbar-title-with-count
-   [text {:style styles/toolbar-title-with-count-text
-          :font  :toolbar-title}
+  [react/view styles/toolbar-title-with-count
+   [react/text {:style styles/toolbar-title-with-count-text
+                :font  :toolbar-title}
     title]
    (when (pos? count-value)
-     [view styles/toolbar-title-with-count-container
-      [text {:style styles/toolbar-title-with-count-text-count
-             :font  :toolbar-title}
+     [react/view styles/toolbar-title-with-count-container
+      [react/text {:style styles/toolbar-title-with-count-text-count
+                   :font  :toolbar-title}
        count-value]])])
 
 (defview toggle-list-toolbar [title contacts-count]
@@ -49,11 +48,11 @@
        :search-placeholder (label :t/search-contacts)})))
 
 (defn toggle-list [contacts render-function]
-  [view {:flex 1}
-   [list-view
+  [react/view {:flex 1}
+   [react/list-view
     {:dataSource                (to-datasource contacts)
      :renderRow                 (fn [row _ _]
-                                  (list-item ^{:key row} [render-function row]))
+                                  (react/list-item ^{:key row} [render-function row]))
      :renderSeparator           renderers/list-separator-renderer
      :renderFooter              renderers/list-footer-renderer
      :renderHeader              renderers/list-header-renderer
@@ -64,7 +63,7 @@
   (letsubs [contacts [:all-added-group-contacts-filtered]
             selected-contacts-count [:selected-contacts-count]
             group-type [:get-group-type]]
-    [keyboard-avoiding-view {:style styles/group-container}
+    [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
      [toggle-list-toolbar
       (label (if (= group-type :contact-group)
@@ -79,7 +78,7 @@
   (letsubs [contacts [:all-group-not-added-contacts-filtered]
             group [:get-contact-group]
             selected-contacts-count [:selected-contacts-count]]
-    [keyboard-avoiding-view {:style styles/group-container}
+    [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
      [toggle-list-toolbar (:name group) selected-contacts-count]
      [toggle-list contacts group-toggle-contact]
@@ -92,7 +91,7 @@
   (letsubs [contacts [:contacts-filtered :all-new-contacts]
             chat-name [:chat :name]
             selected-contacts-count [:selected-participants-count]]
-    [keyboard-avoiding-view {:style styles/group-container}
+    [react/keyboard-avoiding-view {:style styles/group-container}
      [status-bar]
      [toggle-list-toolbar chat-name selected-contacts-count]
      [toggle-list contacts group-toggle-participant]

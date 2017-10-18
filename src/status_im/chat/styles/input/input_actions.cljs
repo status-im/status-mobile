@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.input.input-actions
   (:require-macros [status-im.utils.styles :refer [defnstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def actions-container
   {:flex-direction :row

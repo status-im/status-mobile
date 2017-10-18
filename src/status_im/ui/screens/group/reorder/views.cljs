@@ -2,13 +2,13 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [reagent.core :as reagent]
             [re-frame.core :refer [dispatch dispatch-sync]]
-            [status-im.components.react :refer [view text list-item]]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.sticky-button :refer [sticky-button]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :as toolbar]
-            [status-im.components.sortable-list-view :refer [sortable-list-view sortable-item]]
-            [status-im.components.common.common :as common]
+            [status-im.ui.components.react :refer [view text list-item]]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.sticky-button :refer [sticky-button]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.sortable-list-view :refer [sortable-list-view sortable-item]]
+            [status-im.ui.components.common.common :as common]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.i18n :refer [label label-pluralize]]))
 

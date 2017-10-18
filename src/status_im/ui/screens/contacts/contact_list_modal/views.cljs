@@ -1,16 +1,16 @@
 (ns status-im.ui.screens.contacts.contact-list-modal.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.common.common :as common]
-            [status-im.components.renderers.renderers :as renderers]
-            [status-im.components.react :refer [view list-view list-item]]
-            [status-im.components.contact.contact :refer [contact-view]]
-            [status-im.components.action-button.action-button :refer [action-button
-                                                                      action-separator]]
-            [status-im.components.action-button.styles :refer [actions-list]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar-with-search]]
-            [status-im.components.drawer.view :refer [drawer-view]]
+            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.renderers.renderers :as renderers]
+            [status-im.ui.components.react :refer [view list-view list-item]]
+            [status-im.ui.components.contact.contact :refer [contact-view]]
+            [status-im.ui.components.action-button.action-button :refer [action-button
+                                                                         action-separator]]
+            [status-im.ui.components.action-button.styles :refer [actions-list]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
+            [status-im.ui.components.drawer.view :refer [drawer-view]]
             [status-im.ui.screens.contacts.styles :as st]
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]))

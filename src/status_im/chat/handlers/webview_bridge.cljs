@@ -3,7 +3,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.types :as types]
             [taoensso.timbre :as log]
-            [status-im.components.nfc :as nfc]))
+            [status-im.ui.components.nfc :as nfc]))
 
 (handlers/register-handler :set-webview-bridge
   (fn [db [_ bridge]]

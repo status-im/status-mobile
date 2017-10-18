@@ -2,13 +2,13 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [clojure.string :as str]
-            [status-im.components.react :as react]
+            [status-im.ui.components.react :as react]
             [status-im.ui.screens.discover.styles :as styles]
-            [status-im.components.status-view.view :as view]
+            [status-im.ui.components.status-view.view :as view]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.identicon :as identicon]
-            [status-im.components.chat-icon.screen :as chat-icon]
-            [status-im.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]))
 
 ;; TODO(oskarth): Too many positional args, refactor to map

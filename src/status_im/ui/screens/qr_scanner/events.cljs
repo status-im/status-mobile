@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.qr-scanner.events
   (:require [re-frame.core :as re-frame]
-            [status-im.components.camera :as camera]
+            [status-im.ui.components.camera :as camera]
             [status-im.ui.screens.navigation :as nav]
             [status-im.utils.handlers :as u :refer [register-handler]]
             [status-im.utils.utils :as utils]

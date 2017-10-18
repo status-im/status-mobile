@@ -2,13 +2,13 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [cljs.pprint :as pprint]
             [re-frame.core :as re-frame]
-            [status-im.components.react :as react]
-            [status-im.components.list.views :as list]
-            [status-im.components.chat-icon.screen :as chat-icon]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.screens.discover.components.views :as discover-components]
             [status-im.ui.screens.discover.styles :as styles]
             [status-im.i18n :as i18n]
-            [status-im.components.toolbar.view :as toolbar]))
+            [status-im.ui.components.toolbar.view :as toolbar]))
 
 (defn navigate-to-dapp [dapp]
   (do (re-frame/dispatch [:set :discover-current-dapp dapp])

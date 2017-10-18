@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.screen
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :as component.styles]))
+  (:require [status-im.ui.components.styles :as component.styles]))
 
 (def chat-view
   {:flex             1

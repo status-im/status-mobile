@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.components.animations
-  (:require [status-im.components.animation :as animation]))
+  (:require [status-im.ui.components.animation :as animation]))
 
 (defn animate-tooltip [bottom-value opacity-value]
   (fn []

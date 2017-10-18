@@ -1,5 +1,5 @@
 (ns status-im.ios.platform
-  (:require [status-im.components.styles :as styles]
+  (:require [status-im.ui.components.styles :as styles]
             [status-im.i18n :refer [label]]
             [status-im.utils.utils :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies]))

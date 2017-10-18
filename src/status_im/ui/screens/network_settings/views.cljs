@@ -3,14 +3,14 @@
   (:require
     [status-im.utils.listview :as lw]
     [re-frame.core :as rf]
-    [status-im.components.status-bar :as status-bar]
-    [status-im.components.toolbar.view :as toolbar]
-    [status-im.components.action-button.action-button :as action-button]
-    [status-im.components.action-button.styles :as action-button-styles]
-    [status-im.components.react :as react]
-    [status-im.components.icons.vector-icons :as vi]
-    [status-im.components.common.common :as common]
-    [status-im.components.renderers.renderers :as renderers]
+    [status-im.ui.components.status-bar :as status-bar]
+    [status-im.ui.components.toolbar.view :as toolbar]
+    [status-im.ui.components.action-button.action-button :as action-button]
+    [status-im.ui.components.action-button.styles :as action-button-styles]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.icons.vector-icons :as vi]
+    [status-im.ui.components.common.common :as common]
+    [status-im.ui.components.renderers.renderers :as renderers]
     [status-im.ui.screens.network-settings.styles :as st]
     [status-im.i18n :as i18n]))
 
