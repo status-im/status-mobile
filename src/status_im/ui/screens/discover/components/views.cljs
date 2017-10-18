@@ -17,7 +17,8 @@
    [react/text {:style      styles/title-text
                 :font       :medium}
     (i18n/label label-kw)]
-   [react/touchable-highlight {:on-press action-fn}
+   [react/touchable-highlight {:on-press action-fn
+                               :disabled (not active?)}
     [react/view {}
      ;; NOTE(oskarth): text-transform to uppercase not supported as RN style
      ;; https://github.com/facebook/react-native/issues/2088

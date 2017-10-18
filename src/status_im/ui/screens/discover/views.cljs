@@ -69,35 +69,37 @@
 
 (defview popular-hashtags-preview [{:keys [contacts current-account]}]
   (letsubs [popular-tags [:get-popular-tags 10]]
-    [react/view styles/popular-container
-     ;; TODO (goranjovic) - refactor double dispatch to a single call
-     [components/title :t/popular-tags :t/all #(do (re-frame/dispatch [:set :discover-search-tags (map :name popular-tags)])
-                                                   (re-frame/dispatch [:navigate-to :discover-all-hashtags])) true]
-     (if (seq popular-tags)
+    (let [has-content? (seq popular-tags)]
+      [react/view styles/popular-container
+       ;; TODO (goranjovic) - refactor double dispatch to a single call
+       [components/title :t/popular-tags :t/all #(do (re-frame/dispatch [:set :discover-search-tags (map :name popular-tags)])
+                                                     (re-frame/dispatch [:navigate-to :discover-all-hashtags])) has-content?]
+       (if has-content?
+         [carousel/carousel {:pageStyle styles/carousel-page-style
+                             :gap       8
+                             :sneak     16
+                             :count     (count popular-tags)}
+          (for [{:keys [name]} popular-tags]
+            [top-status-for-popular-hashtag {:tag             name
+                                             :contacts        contacts
+                                             :current-account current-account}])]
+         [empty-section :empty-hashtags :t/no-hashtags-discovered-title :t/no-hashtags-discovered-body])])))
+
+(defn recent-statuses-preview [current-account discoveries]
+  (let [has-content? (seq discoveries)]
+    [react/view styles/recent-statuses-preview-container
+     [components/title :t/recent :t/all #(re-frame/dispatch [:navigate-to :discover-all-recent]) has-content?]
+     (if has-content?
        [carousel/carousel {:pageStyle styles/carousel-page-style
                            :gap       8
                            :sneak     16
-                           :count     (count popular-tags)}
-        (for [{:keys [name]} popular-tags]
-          [top-status-for-popular-hashtag {:tag             name
-                                           :contacts        contacts
-                                           :current-account current-account}])]
-       [empty-section :empty-hashtags :t/no-hashtags-discovered-title :t/no-hashtags-discovered-body])]))
-
-(defn recent-statuses-preview [current-account discoveries]
-  [react/view styles/recent-statuses-preview-container
-   [components/title :t/recent :t/all #(re-frame/dispatch [:navigate-to :discover-all-recent]) true]
-   (if (seq discoveries)
-     [carousel/carousel {:pageStyle styles/carousel-page-style
-                         :gap       8
-                         :sneak     16
-                         :count     (count discoveries)}
-      (for [discovery discoveries]
-        [react/view styles/recent-statuses-preview-content
-         [components/discover-list-item {:message         discovery
-                                         :show-separator? false
-                                         :current-account current-account}]])]
-     [empty-section :empty-recent :t/no-statuses-discovered :t/no-statuses-discovered-body])])
+                           :count     (count discoveries)}
+        (for [discovery discoveries]
+          [react/view styles/recent-statuses-preview-content
+           [components/discover-list-item {:message         discovery
+                                           :show-separator? false
+                                           :current-account current-account}]])]
+       [empty-section :empty-recent :t/no-statuses-discovered :t/no-statuses-discovered-body])]))
 
 (def public-chats-mock-data
   [{:name  "Status team"
