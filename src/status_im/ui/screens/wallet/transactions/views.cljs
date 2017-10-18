@@ -180,7 +180,7 @@
     [react/view {:style styles/flex}
      [status-bar/status-bar]
      [toolbar-view current-tab unsigned-transactions-count]
-     [tabs/swipable-tabs tabs-list current-tab
+     [tabs/swipable-tabs tabs-list current-tab true
       {:navigation-event     :navigation-replace
        :tab-style            transactions.styles/tab
        :tabs-container-style transactions.styles/tabs-container}]]))
