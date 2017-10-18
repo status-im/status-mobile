@@ -36,11 +36,6 @@
   (fn [send-transaction]
     (:wrong-password? send-transaction)))
 
-(re-frame/reg-sub :wallet.send/signing-error
-  :<- [::send-transaction]
-  (fn [send-transaction]
-    (:signing-error send-transaction)))
-
 (re-frame/reg-sub :wallet.send/sign-password-enabled?
   :<- [::send-transaction]
   (fn [{:keys [password]}]
