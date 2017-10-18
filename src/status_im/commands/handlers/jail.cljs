@@ -8,8 +8,9 @@
             [status-im.components.react :as r]
             [status-im.constants :refer [console-chat-id]]
             [status-im.i18n :refer [get-contact-translated]]
-            [taoensso.timbre :as log] 
-            [status-im.data-store.local-storage :as local-storage]))
+            [taoensso.timbre :as log]
+            [status-im.data-store.local-storage :as local-storage]
+            [clojure.string :as str]))
 
 (defn command-handler!
   [_ [chat-id
@@ -37,11 +38,13 @@
    [{:keys [chat-id default-db command parameter-index result]}]]
   (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
         contains-markup? (contains? returned :markup)
+        current-input (get-in chats [chat-id :input-text])
         path (if command
                [:chats chat-id :parameter-boxes (:name command) parameter-index]
-               [:chats chat-id :parameter-boxes :message])]
+               (when-not (str/blank? current-input)
+                 [:chats chat-id :parameter-boxes :message]))]
     (dispatch [:choose-predefined-expandable-height :parameter-box (or (keyword height) :default)])
-    (when (and contains-markup? (not= (get-in db path) markup))
+    (when (and contains-markup? path (not= (get-in db path) markup))
       (dispatch [:set-in path returned])
       (when default-db
         (dispatch [:update-bot-db {:bot chat-id
