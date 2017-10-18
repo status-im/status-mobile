@@ -19,11 +19,9 @@
 (spec/def ::camera-permitted? boolean?)
 (spec/def ::in-progress? boolean?)
 (spec/def ::from-chat? (spec/nilable boolean?))
-(spec/def ::signing-error (spec/nilable string?))
 
 (spec/def :wallet/send-transaction (allowed-keys
                                      :opt-un [::amount ::to-address ::to-name ::amount-error ::password
                                               ::waiting-signal? ::signing? ::id ::later?
                                               ::camera-dimensions ::camera-flashlight ::in-progress?
-                                              ::wrong-password? ::camera-permitted? ::from-chat?
-                                              ::signing-error]))
+                                              ::wrong-password? ::camera-permitted? ::from-chat?]))

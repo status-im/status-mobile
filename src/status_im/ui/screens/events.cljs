@@ -18,7 +18,6 @@
             status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.send.events
             status-im.ui.screens.wallet.choose-recipient.events
-            status-im.ui.screens.wallet.transactions.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
             [status-im.native-module.core :as status]
             [status-im.components.permissions :as permissions]

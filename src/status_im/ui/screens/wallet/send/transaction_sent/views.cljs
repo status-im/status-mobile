@@ -24,12 +24,13 @@
       [react/view styles/gap]
       [react/text {:style styles/transaction-sent-description} (i18n/label :t/transaction-description)]]
      [react/view components.styles/flex]
-     [react/touchable-highlight {:on-press #()}; TODO (andrey) #(re-frame/dispatch [:navigate-to-clean :wallet-transaction-details])}
-      [react/view styles/transaction-details-container
-       [react/text {:style styles/transaction-details
-                    :font       (if platform/android? :medium :default)
-                    :uppercase? (get-in platform/platform-specific [:uppercase?])}
-        (i18n/label :t/view-transaction-details)]]]
+     ;; TODO (andrey) uncomment when will be implemented
+     #_[react/touchable-highlight {:on-press #()}; TODO (andrey) #(re-frame/dispatch [:navigate-to-clean :wallet-transaction-details])}
+        [react/view styles/transaction-details-container
+         [react/text {:style styles/transaction-details
+                      :font       (if platform/android? :medium :default)
+                      :uppercase? (get-in platform/platform-specific [:uppercase?])}
+          (i18n/label :t/view-transaction-details)]]]
      [components/separator]
      [react/touchable-highlight {:on-press #(re-frame/dispatch close-transaction-screen-event)}
       [react/view styles/got-it-container
