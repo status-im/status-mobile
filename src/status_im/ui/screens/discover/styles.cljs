@@ -348,17 +348,17 @@
    :margin-left 5})
 
 
-(def dapp-details-container
-  {:flex-direction   :column
-   :background-color styles/color-light-gray})
+(def dapp-details-inner-container
+  {:flex-direction   :column})
 
-(def dapp-details-header
+(defstyle dapp-details-header
   {:flex-direction   :row
    :justify-content  :flex-start
    :align-items      :center
    :height           80
    :background-color styles/color-white
-   :margin-top       4})
+   :margin-top       4
+   :android          {:elevation 2}})
 
 (def dapp-details-icon
   {:flex             0.2
@@ -370,57 +370,75 @@
    :background-color styles/color-white})
 
 (defstyle dapp-details-name-text
-  {:android {:font-size 16}
+  {:android {:font-size 16
+             :color     styles/color-gray6}
    :ios     {:font-size 17}})
 
-(def dapp-details-action-container
-  {:flex-direction :row
-   :margin-top     15
-   :margin-bottom  15
-   :android        {:height 64}
-   :ios            {:height 72}})
+(defstyle dapp-details-action-container
+  {:flex-direction   :row
+   :margin-top       15
+   :margin-bottom    15
+   :align-items      :center
+   :background-color styles/color-white
+   :android          {:height    64
+                      :elevation 2}
+   :ios              {:height 72}})
 
 (def dapp-details-action-icon-container
-  {:height           80
+  {:padding-left     10
    :flex             0.2
    :justify-content  :center
    :align-items      :center
    :background-color styles/color-white})
 
+(defstyle dapp-details-open-icon-background
+  {:ios {:background-color styles/color-blue4-transparent
+         :height           40
+         :width            40
+         :border-radius    20
+         :justify-content  :center
+         :align-items      :center}})
+
 (defstyle dapp-details-open-icon
-  {:margin-left 10
-   :width       24
+  {:width       24
    :height      24})
 
 (def dapp-details-action-name-container
-  {:height           80
-   :flex             0.80
+  {:flex             0.80
    :background-color styles/color-white
    :flex-direction   :row
    :justify-content  :flex-start
    :align-items      :center})
 
 (defstyle dapp-details-action-name-text
-  {:margin-left 10
-   :color       styles/color-blue4
-   :android     {:font-size 16}
+  {:color       styles/color-blue4
+   :android     {:font-size 16
+                 :color     styles/color-gray6}
    :ios         {:font-size 17}})
 
-(def dapp-details-section-container
-  {:background-color styles/color-white})
+(defstyle dapp-details-section-container
+  {:background-color styles/color-white
+   :android          {:elevation 2}})
 
 (def dapp-details-section-title-container
   {:background-color styles/color-white
    :padding          10})
 
-(def dapp-details-section-title-text
-  {:color styles/color-gray})
+(defstyle dapp-details-section-title-text
+  {:color   styles/color-gray
+   :ios     {:font-size 14}
+   :android {:font-size 12}})
 
 (def dapp-details-section-body-container
   {:background-color styles/color-white
    :padding-left     10
    :padding-right    10
    :padding-bottom   16})
+
+(defstyle dapp-details-section-content-text
+  {:ios     {:font-size 17}
+   :android {:font-size 16
+             :color     styles/color-gray6}})
 
 (def empty-section-container
   {:flex-direction   :row
@@ -447,4 +465,7 @@
 ;; TODO(oskarth): Copy of existing style, generalize - discover-container overloaded
 (def all-recent-container all-dapps-container)
 (def all-popular-container all-dapps-container)
+
+;; TODO(goranjovic): Using the same style in dapp-details screen - reconcile later
+(def dapp-details-container all-dapps-container)
 
