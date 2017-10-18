@@ -51,7 +51,7 @@
   and returns map with keys :db (new db with up-to-date suggestions) and (optionally)
   :call-jail-function with jail function call params, if request to jail needs
   to be made as a result of suggestions update."
-  [{:keys [chats current-chat-id current-account-id local-storage] :as db}]
+  [{:keys [chats current-chat-id] :as db}]
   (let [chat-text       (str/trim (or (get-in chats [current-chat-id :input-text]) ""))
         requests        (->> (commands-model/get-possible-requests db)
                              (remove (fn [{:keys [type]}]
@@ -64,15 +64,7 @@
                           (and dapp?
                                (str/blank? chat-text))
                           (assoc-in [:chats current-chat-id :parameter-boxes :message] nil))]
-    (cond-> {:db new-db}
-      (and dapp?
-           (not (str/blank? chat-text))
-           (every? empty? [requests commands]))
-      (assoc :call-jail-function {:chat-id    current-chat-id
-                                  :function   :on-message-input-change
-                                  :parameters {:message chat-text}
-                                  :context    {:data (get local-storage current-chat-id)
-                                               :from current-account-id}}))))
+    {:db new-db}))
 
 (defn set-chat-input-text
   "Set input text for current-chat and updates suggestions relevant to current input.
@@ -80,12 +72,30 @@
   When `:append?` is false or not provided, resets the current chat input with input text,
   otherwise input text is appended to the current chat input."
   [{:keys [current-chat-id] :as db} new-input & {:keys [append?]}]
-  (let [current-input (get-in db [:chats current-chat-id :input-text])]
-    (assoc-in db
-              [:chats current-chat-id :input-text]
-              (input-model/text->emoji (if append?
-                                         (str current-input new-input)
-                                         new-input)))))
+  (let [current-input (get-in db [:chats current-chat-id :input-text])
+        {:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])
+        chat-text (if append?
+                    (str current-input new-input)
+                    new-input)]
+    (cond-> db
+      true
+      (assoc-in [:chats current-chat-id :input-text] (input-model/text->emoji chat-text))
+
+      (and dapp? (str/blank? chat-text))
+      (assoc-in [:chats current-chat-id :parameter-boxes :message] nil))))
+
+(defn call-on-message-input-change
+  "Calls bot's `on-message-input-change` function"
+  [{:keys [current-chat-id current-account-id chats local-storage] :as db}]
+  (let [chat-text (str/trim (or (get-in chats [current-chat-id :input-text]) ""))
+        {:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])]
+    (cond-> {:db db}
+            (and dapp? (not (str/blank? chat-text)))
+            (assoc :call-jail-function {:chat-id    current-chat-id
+                                        :function   :on-message-input-change
+                                        :parameters {:message chat-text}
+                                        :context    {:data (get local-storage current-chat-id)
+                                                     :from current-account-id}}))))
 
 (defn set-chat-input-metadata
   "Set input metadata for active chat. Takes db and metadata and returns updated db."
@@ -330,19 +340,18 @@
   (fn [db]
     (input-model/modified-db-after-change db)))
 
-(handlers/register-handler-db
+(handlers/register-handler-fx
   :set-chat-input-text
   [re-frame/trim-v]
-  (fn [db [text]]
-    (set-chat-input-text db text)))
+  (fn [{:keys [db]} [text]]
+    (-> (set-chat-input-text db text)
+        (call-on-message-input-change))))
 
-(handlers/register-handler-fx
+(handlers/register-handler-db
   :add-to-chat-input-text
   [re-frame/trim-v]
-  (fn [{:keys [db]} [text-to-add]]
-    (-> db
-        (set-chat-input-text text-to-add :append? true)
-        update-suggestions)))
+  (fn [db [text-to-add]]
+    (set-chat-input-text db text-to-add :append? true)))
 
 (handlers/register-handler-fx
   :select-chat-input-command
