@@ -145,7 +145,7 @@
             portfolio-value  [:portfolio-value]
             portfolio-change [:portfolio-change]
             prices-loading?  [:prices-loading?]
-            syncing?        [:syncing?]
+            syncing?         [:syncing?]
             balance-loading? [:wallet/balance-loading?]
             error-message    [:wallet/error-message?]]
     [react/view {:style wallet.styles/wallet-container}
