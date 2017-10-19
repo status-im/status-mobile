@@ -29,9 +29,6 @@ class TestTransactions(SingleDeviceTestCase):
         recipient_key = transaction_users[recipient]['public_key']
         initial_balance_recipient = chats.get_balance(recipient_address)
 
-        if chats.get_balance(sender_address) < 1000000000000000000:
-            chats.get_donate(sender_address)
-
         chats.plus_button.click()
         chats.add_new_contact.click()
         chats.public_key_edit_box.send_keys(recipient_key)
@@ -65,8 +62,9 @@ class TestTransactions(SingleDeviceTestCase):
             chats.find_full_text('Wrong password', 20)
 
         else:
-            chats.enter_password_input.send_keys(transaction_users[recipient]['password'])
+            chats.enter_password_input.send_keys(transaction_users[sender]['password'])
             chats.sign_transaction_button.click()
+            chats.got_it_button.click()
             chats.find_full_text('0.1')
             chats.find_full_text('Sent', 60)
             if test == 'group_chat':
@@ -85,8 +83,6 @@ class TestTransactions(SingleDeviceTestCase):
                        transaction_users['B_USER']['passphrase'],
                        transaction_users['B_USER']['password'],
                        transaction_users['B_USER']['username'])
-        if chats.get_balance(address) < 1000000000000000000:
-            chats.get_donate(address)
 
         contacts = chats.contacts_button.click()
         auction_house = contacts.auction_house_button.click()
@@ -102,5 +98,6 @@ class TestTransactions(SingleDeviceTestCase):
         chats.sign_transaction_button.click()
         chats.enter_password_input.send_keys(transaction_users['B_USER']['password'])
         chats.sign_transaction_button.click()
+        chats.got_it_button.click()
         auction_house.find_full_text('You are the proud owner of the name: ' + auction_name, 120)
         chats.verify_balance_is_updated(initial_balance, address)
