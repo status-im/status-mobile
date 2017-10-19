@@ -227,7 +227,6 @@
 (def dapp-preview-flat-list
   {:justify-content  :center
    :flex-direction   :row
-   :flex-wrap        :wrap
    :margin-left      8
    :margin-vertical  0
    :background-color styles/color-white})
@@ -458,4 +457,3 @@
 ;; TODO(goranjovic): Using the same style in dapp-details screen - reconcile later
 (def dapp-details-container all-dapps-container)
 (def discover-tag-container all-dapps-container)
-

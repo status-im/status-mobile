@@ -1,7 +1,16 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "10.0.3.2",
+  "platforms": {
+    "ios": {
+      "host": "localhost",
+      "modules": []
+    },
+    "android": {
+      "host": "10.0.2.2",
+      "modules": []
+    }
+  },
   "modules": [
     "react-native-contacts",
     "react-native-invertible-scroll-view",
@@ -49,7 +58,6 @@
   "imageDirs": [
     "resources/images"
   ],
-  "iosHost": "localhost",
   "envRoots": {
     "dev": "env/dev",
     "prod": "env/prod"

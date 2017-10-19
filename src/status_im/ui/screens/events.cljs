@@ -24,6 +24,7 @@
             status-im.ui.screens.wallet.choose-recipient.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
             [status-im.native-module.core :as status]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
             [status-im.data-store.core :as data-store]
@@ -409,19 +410,19 @@
                 (fn []
                   (let [watch-id (atom nil)]
                     (.getCurrentPosition
-                     navigator.geolocation
-                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                     (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
+                      react/geolocation
+                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                      (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
                     (when platform/android?
                       (reset! watch-id
                               (.watchPosition
-                               navigator.geolocation
-                               #(do
-                                  (.clearWatch
-                                   navigator.geolocation
-                                   @watch-id)
-                                  (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
+                                react/geolocation
+                                #(do
+                                   (.clearWatch
+                                     react/geolocation
+                                     @watch-id)
+                                   (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
 
 (register-handler-db
   :update-geolocation

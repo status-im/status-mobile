@@ -14,7 +14,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
-import com.cboy.rn.splashscreen.SplashScreen;
+import org.devio.rn.splashscreen.SplashScreen;
 import com.testfairy.TestFairy;
 
 import java.util.Properties;

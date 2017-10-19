@@ -35,6 +35,7 @@
              (if disabled?
                {:editable false}
                {:keyboard-type          :numeric
+                :auto-capitalize        "none"
                 :placeholder            "0.000"
                 :placeholder-text-color "#ffffff66"
                 :selection-color        :white

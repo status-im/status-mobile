@@ -11,4 +11,4 @@
 
 (defn add-listener [listener]
   (when react-components/net-info
-    (.addEventListener (.-isConnected react-components/net-info) "change" listener)))
+    (.addEventListener (.-isConnected react-components/net-info) "connectionChange" listener)))
