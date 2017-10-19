@@ -28,9 +28,9 @@
   "Start figwheel for one or more builds"
   [build-ids cljs-builds]
   (ra/start-figwheel!
-    {:figwheel-options {:nrepl-port 7888}
-     :build-ids        build-ids
-     :all-builds       cljs-builds}))
+   {:figwheel-options {:nrepl-port 7888}
+    :build-ids        build-ids
+    :all-builds       cljs-builds}))
 
 (def start-cljs-repl ra/cljs-repl)
 
@@ -58,14 +58,14 @@
 
 (defn get-builds [ids all-builds]
   (keep
-    (fn [id]
-      (assoc
-        (let [build (get all-builds (get-id id))]
-          (if (test-id? id)
-            (get-test-build build)
-            build))
-        :id id))
-    ids))
+   (fn [id]
+     (assoc
+      (let [build (get all-builds (get-id id))]
+        (if (test-id? id)
+          (get-test-build build)
+          build))
+      :id id))
+   ids))
 
 (let [env-build-ids (System/getenv "BUILD_IDS")
       build-ids     (if env-build-ids
