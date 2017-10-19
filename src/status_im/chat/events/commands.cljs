@@ -24,26 +24,26 @@
 (defn request-command-message-data
   "Requests command message data from jail"
   [db
-   {{command-name         :command
+   {{command-name :command
      content-command-name :content-command
-     :keys                [content-command-scope
-                           scope
-                           params
-                           type
-                           bot]} :content
-    :keys                        [chat-id jail-id group-id] :as message}
+     :keys [content-command-scope scope params type bot]} :content
+    :keys [chat-id jail-id group-id] :as message}
    data-type]
   (let [{:keys          [chats]
          :accounts/keys [current-account-id]
          :contacts/keys [contacts]} db
-        jail-id (or bot jail-id chat-id)
-        jail-id (if (get-in chats [jail-id :group-chat])
-                  (get-in chats [jail-id :possible-commands (keyword command-name) :owner-id])
-                  jail-id)]
+        jail-id               (or bot jail-id chat-id)
+        jail-command-name     (or content-command-name command-name)
+        ;; here we're trying to use the default scope if there is no other scope provided
+        default-command-scope (-> (get-in contacts [jail-id :commands (keyword jail-command-name)])
+                                  first
+                                  :scope)]
     (if (get-in contacts [jail-id :commands-loaded?])
       (let [path        [(if (= :response (keyword type)) :responses :commands)
-                         [(if content-command-name content-command-name command-name)
-                          (commands-model/scope->bit-mask (or scope content-command-scope))]
+                         [jail-command-name
+                          (commands-model/scope->bit-mask (or scope
+                                                              content-command-scope
+                                                              default-command-scope))]
                          data-type]
             to          (get-in contacts [chat-id :address])
             jail-params {:parameters params
