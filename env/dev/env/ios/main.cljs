@@ -1,19 +1,23 @@
 (ns ^:figwheel-no-load env.ios.main
   (:require [reagent.core :as r]
-            [re-frisk-remote.core :as rr]
             [status-im.ios.core :as core]
-            [figwheel.client :as figwheel :include-macros true]
-            [cljs.pprint]))
+            [figwheel.client :as fw]
+            [env.config :as conf]))
 
 (enable-console-print!)
 
+(assert (exists? core/init) "Fatal Error - Your core.cljs file doesn't define an 'init' function!!! - Perhaps there was a compilation failure?")
+(assert (exists? core/app-root) "Fatal Error - Your core.cljs file doesn't define an 'app-root' function!!! - Perhaps there was a compilation failure?")
+
 (def cnt (r/atom 0))
 (defn reloader [] @cnt [core/app-root])
+
+;; Do not delete, root-el is used by the figwheel-bridge.js
 (def root-el (r/as-element [reloader]))
 
-(figwheel/watch-and-reload
- :websocket-url "ws://10.0.1.15:3449/figwheel-ws"
- :heads-up-display false
- :jsload-callback #(swap! cnt inc))
+(fw/start {
+           :websocket-url    (:ios conf/figwheel-urls)
+           :heads-up-display false
+           :jsload-callback  #(swap! cnt inc)})
 
-(rr/enable-re-frisk-remote! {:host "localhost:4567" :on-init core/init :pre-send (fn [db] (update db :chats #(into {} %)))})
+(core/init)
