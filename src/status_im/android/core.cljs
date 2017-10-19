@@ -33,7 +33,7 @@
                            (do (dispatch [:navigate-back]) true)
 
                            :else false)))]
-    (.addEventListener react/back-android "hardwareBackPress" new-listener)))
+    (.addEventListener react/back-handler "hardwareBackPress" new-listener)))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
