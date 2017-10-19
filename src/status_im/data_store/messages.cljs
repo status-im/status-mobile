@@ -1,24 +1,16 @@
 (ns status-im.data-store.messages
-  (:require [status-im.data-store.realm.messages :as data-store]
-            [clojure.string :refer [join split]]
-            [status-im.utils.random :refer [timestamp]]
-            [status-im.utils.utils :refer [update-if-present]]
-            [clojure.walk :refer [stringify-keys keywordize-keys]]
-            [cljs.reader :refer [read-string]]
-            [status-im.constants :as c]))
-
-(defn- user-statuses-to-map
-  [user-statuses]
-  (->> (vals user-statuses)
-       (mapv (fn [{:keys [whisper-identity] :as status}]
-               [whisper-identity status]))
-       (into {})))
+  (:refer-clojure :exclude [exists?])
+  (:require [cljs.reader :as reader]
+            [status-im.constants :as constants]
+            [status-im.data-store.realm.messages :as data-store]
+            [status-im.utils.random :as random]
+            [status-im.utils.utils :as utils]))
 
 (defn- command-type?
   [type]
   (contains?
-   #{c/content-type-command c/content-type-command-request
-     c/content-type-wallet-request c/content-type-wallet-command}
+   #{constants/content-type-command constants/content-type-command-request
+     constants/content-type-wallet-request constants/content-type-wallet-command}
    type))
 
 (def default-values
@@ -28,26 +20,17 @@
    :same-direction false
    :preview        nil})
 
+(defn exists? [message-id]
+  (data-store/exists? message-id))
+
 (defn get-by-id
   [message-id]
-  (some-> (data-store/get-by-id message-id)
-          (clojure.core/update :user-statuses user-statuses-to-map)))
+  (data-store/get-by-id message-id))
 
 (defn get-message-content-by-id [message-id]
   (when-let [{:keys [content-type content] :as message} (get-by-id message-id)]
     (when (command-type? content-type)
-      (read-string content))))
-
-(defn get-messages
-  [messages]
-  (->> messages
-       (mapv #(clojure.core/update % :user-statuses user-statuses-to-map))
-       (into '())
-       reverse
-       (keep (fn [{:keys [content-type] :as message}]
-               (if (command-type? content-type)
-                 (clojure.core/update message :content read-string)
-                 message)))))
+      (reader/read-string content))))
 
 (defn get-count-by-chat-id
   [chat-id]
@@ -57,26 +40,24 @@
   ([chat-id]
    (get-by-chat-id chat-id 0))
   ([chat-id from]
-   (->> (data-store/get-by-chat-id chat-id from c/default-number-of-messages)
-        (mapv #(clojure.core/update % :user-statuses user-statuses-to-map))
-        (into '())
+   (->> (data-store/get-by-chat-id chat-id from constants/default-number-of-messages)
         reverse
         (keep (fn [{:keys [content-type preview] :as message}]
                 (if (command-type? content-type)
-                  (clojure.core/update message :content read-string)
+                  (update message :content reader/read-string)
                   message))))))
 
 (defn get-log-messages
   [chat-id]
   (->> (data-store/get-by-chat-id chat-id 0 100)
-       (filter #(= (:content-type %) c/content-type-log-message))
+       (filter #(= (:content-type %) constants/content-type-log-message))
        (map #(select-keys % [:content :timestamp]))))
 
 (defn get-last-message
   [chat-id]
   (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
     (if (command-type? content-type)
-      (clojure.core/update message :content read-string)
+      (update message :content reader/read-string)
       message)))
 
 (defn get-last-outgoing
@@ -101,7 +82,7 @@
   (->> (data-store/get-all-as-list)
        (filter :preview)
        (reduce (fn [acc {:keys [message-id preview]}]
-                 (assoc acc message-id (read-string preview)))
+                 (assoc acc message-id (reader/read-string preview)))
                {})))
 
 (defn- prepare-content [content]
@@ -119,13 +100,13 @@
                           message
                           {:chat-id   chat-id
                            :content   content'
-                           :timestamp (timestamp)})]
+                           :timestamp (random/timestamp)})]
       (data-store/save message'))))
 
 (defn update-message
   [{:keys [message-id] :as message}]
   (when (data-store/exists? message-id)
-    (let [message (update-if-present message :user-statuses vals)]
+    (let [message (utils/update-if-present message :user-statuses vals)]
       (data-store/save message))))
 
 (defn delete-by-chat-id [chat-id]

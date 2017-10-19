@@ -11,7 +11,7 @@
 
 (defn get-all-as-list
   [ordering]
-  (realm/realm-collection->list (get-all ordering)))
+  (realm/js-object->clj (get-all ordering)))
 
 (defn get-tag-by-name [tag]
   (log/debug "Getting tag: " tag)
@@ -33,8 +33,8 @@
 (defn- get-tags
   [message-id]
   (-> (realm/get-one-by-field-clj @realm/account-realm :discover :message-id message-id)
-      (:tags)
-      (vals)))
+      :tags
+      vals))
 
 (defn- upsert-discover [{:keys [message-id tags] :as discover}]
   (log/debug "Creating/updating discover with tags: " tags)
@@ -76,4 +76,4 @@
 (defn get-all-tags []
   (-> (realm/get-all @realm/account-realm :tag)
       (realm/sorted :count :desc)
-      realm/realm-collection->list))
+      realm/js-object->clj))

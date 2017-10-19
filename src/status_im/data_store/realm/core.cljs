@@ -6,6 +6,8 @@
             [status-im.utils.fs :as fs]
             [clojure.string :as str]
             [goog.string :as gstr]
+            [cognitect.transit :as transit]
+            [clojure.walk :as walk]
             [status-im.react-native.js-dependencies :as rn-dependencies])
   (:refer-clojure :exclude [exists?]))
 
@@ -121,81 +123,46 @@
 (defn filtered [results filter-query]
   (.filtered results filter-query))
 
-(defn add-js->clj-array
-  "Extends type with IEncodeClojure and treats it as js array."
-  [t]
-  (extend-type t
-    IEncodeClojure
-    (-js->clj
-      ([x options]
-       (vec (map #(apply clj->js % options) x))))))
+(def map->vec
+  (comp vec vals))
 
-(defn add-js->clj-object [t]
-  "Extends type with IEncodeClojure and treats it as js object."
-  (extend-type t
-    IEncodeClojure
-    (-js->clj
-      ([x options]
-       (let [{:keys [keywordize-keys]} options
-             keyfn (if keywordize-keys keyword str)]
-         (dissoc
-           (into
-             {}
-             (for [k (js-keys x)]
-               ;; ignore properties that are added with IEncodeClojure
-               (if (#{"cljs$core$IEncodeClojure$"
-                      "cljs$core$IEncodeClojure$_js__GT_clj$arity$2"}
-                     k)
-                 [nil nil]
-                 (let [v (aget x k)]
-                   ;; check if property is of List type and wasn't succesfully
-                   ;; transformed to ClojureScript data structure
-                   (when (and v
-                              (not (string? v))
-                              (not (boolean? v))
-                              (not (number? v))
-                              (not (coll? v))
-                              (not (satisfies? IEncodeClojure v))
-                              (str/includes? (type->str (type v)) "List"))
-                     (add-js->clj-object (type v)))
-                   [(keyfn k) (js->clj v :keywordize-keys keywordize-keys)]))))
-           nil))))))
+(def reader (transit/reader :json))
 
-(defn check-collection
-  "Checks if collection was succesfully transformed to ClojureScript,
-   extends it with IEncodeClojure if necessary"
-  [coll]
-  (cond
-    (not (coll? coll))
-    (do (add-js->clj-array (type coll))
-        (check-collection (js->clj coll :keywordize-keys true)))
+(defn js-object->clj
+  "Converts any js type/object into a map recursively
+  Performs 5 times better than iterating over the object keys
+  and that would require special care for collections"
+  [js-object]
+  (let [o (->> js-object
+               (.stringify js/JSON)
+               (transit/read reader))]
+    (walk/keywordize-keys (if (map? o)
+                            (map->vec o)
+                            o))))
 
-    (let [f (first coll)]
-      (and f (not (map? f))))
-    (do (add-js->clj-object (type (first coll)))
-        (js->clj coll :keywordize-keys true))
+(defn fix-map->vec
+  "Takes a map m and a keyword k
+  Updates the value in k, a map representing a list, into a vector
+  example: {:0 0 :1 1} -> [0 1]"
+  [m k]
+  (update m k map->vec))
 
-    :else coll))
-
-(defn realm-collection->list [collection]
-  (-> collection
-      (.map (fn [object _ _] object))
-      (js->clj :keywordize-keys true)
-      check-collection))
-
-(defn list->array [record list-field]
-  (update-in record [list-field] (comp vec vals)))
+(defn fix-map
+  "Takes a map m, a keyword k and an id id
+  Updates the value in k, a map representing a list, into a map using
+  the id extracted from the value as a key
+  example: {:0 {:id 1 :a 2} :1 {:id 2 :a 2}} -> {1 {:id 1 :a 2} 2 {:id 2 :a 2}}"
+  [m k id]
+  (update m k #(reduce (fn [acc [_ v]]
+                         (assoc acc (get v id) v))
+                       {}
+                       %)))
 
 (defn single [result]
-  (-> (aget result 0)))
+  (aget result 0))
 
-(defn single-cljs [result]
-  (let [res (some-> (aget result 0)
-                    (js->clj :keywordize-keys true))]
-    (if (and res (not (map? res)))
-      (do (add-js->clj-object (type res))
-          (js->clj res :keywordize-keys true))
-      res)))
+(def single-clj
+  (comp first js-object->clj))
 
 (defn- get-schema-by-name [opts]
   (->> opts
@@ -229,7 +196,7 @@
   (single (get-by-field realm schema-name field value)))
 
 (defn get-one-by-field-clj [realm schema-name field value]
-  (single-cljs (get-by-field realm schema-name field value)))
+  (single-clj (get-by-field realm schema-name field value)))
 
 (defn get-by-fields [realm schema-name op fields]
   (let [queries (map (fn [[k v]]
