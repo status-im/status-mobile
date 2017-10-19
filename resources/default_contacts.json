@@ -138,23 +138,8 @@
         },
         "groups": ["state-of-dapps"]
     },
-
-    "oaken-water-meter":
-    {
-        "name":
-        {
-            "en": "Oaken Water Meter"
-        },
-        "photo-path": "contacts://oaken-water-meter",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://waterflowdapp.projectoaken.com"
-        },
-        "groups": ["dapps"]
-    },
-
-    "gnosis":
+    
+   "gnosis":
     {
         "name":
         {
@@ -181,7 +166,24 @@
         {
             "en": "https://portal.melonport.com/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "Melonport is a system of tools you can use to set up, manage and invest in digital assets and create management strategies using customisable, predefined ruleset."
+    },
+    
+    "oaken-water-meter":
+    {
+        "name":
+        {
+            "en": "Oaken Water Meter"
+        },
+        "photo-path": "contacts://oaken-water-meter",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://waterflowdapp.projectoaken.com"
+        },
+        "groups": ["dapps"],
+        "description": "Project Oaken is a secure, autonomous, machine to machine IOT platform built to provide the underlying infrastructure needed to power smart cities."
     },
 
     "bchat":
@@ -196,7 +198,8 @@
         {
             "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "bchat (block chat) is a web forum built using a suite of smart contracts known as the Smart Ethereum Bulletin Board (sebb)."
     },
     
     "Dentacoin":
@@ -211,7 +214,8 @@
         {
             "en": "http://dentacoin.com/testnet/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "The blockchain solution for the global dental industry, aimed at improving dental care worldwide and making it affordable through crowd power."
     },
 
     "Augur":
@@ -226,7 +230,8 @@
         {
           "en": "https://app.augur.net"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "Augur combines the magic of prediction markets with the power of a decentralized network to create a stunningly accurate forecasting tool - and the chance for real money trading profits."
     },
 
     "Ethlance":
@@ -241,7 +246,8 @@
         {
           "en": "https://district0x.github.io/ethlance/resources/public/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "The future of work is now. Hire people or work yourself in return for ETH."
     },
     
     "Commiteth":
@@ -256,7 +262,8 @@
         {
             "en": "https://commiteth.com"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "CommitETH is a GitHub bounty bot that incentivizes pull request submissions by attaching ETH or any ERC20-compatible token to open issues in GitHub."
     },
 
     "Etherplay":
@@ -271,6 +278,7 @@
         {
             "en": "http://test.etherplay.io"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "A transparent skill game platform. Play games and win ETH!"
     }
 }
