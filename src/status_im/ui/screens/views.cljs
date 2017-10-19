@@ -40,7 +40,7 @@
             [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
-            [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent]]
+            [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
 
             [status-im.components.status-bar :as status-bar]
 
@@ -123,5 +123,6 @@
                                   :contact-list-modal contact-list-modal
                                   :wallet-transactions-filter wallet-transactions/filter-history
                                   :wallet-send-transaction-modal send-transaction-modal
+                                  :wallet-transaction-sent-modal transaction-sent-modal
                                   (throw (str "Unknown modal view: " modal-view)))]
                   [component])]])]])))))
