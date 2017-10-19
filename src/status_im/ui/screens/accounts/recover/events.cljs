@@ -45,7 +45,7 @@
       (when-not (str/blank? public-key)
         {:db         (update db :accounts/recover assoc :passphrase "" :password "")
          :dispatch-n [[:add-account account]
-                      [:navigate-back]]}))))
+                      [:navigate-to-clean :accounts]]}))))
 
 (register-handler-fx
   :recover-account

@@ -40,16 +40,23 @@
                              :secure-text-entry true
                              :error             error}]]))
 
-(defview recover []
+(defview recover [& [modal?]]
   (letsubs [{:keys [passphrase password]} [:get :accounts/recover]]
     (let [valid-form? (and
                         (spec/valid? ::v/passphrase passphrase)
                         (spec/valid? ::v/password password))]
       [keyboard-avoiding-view {:style st/screen-container}
        [status-bar]
-       [toolbar {:title   (i18n/label :t/recover-access)}]
+       [toolbar {:title (i18n/label :t/recover-access) :modal? modal?}]
        [passphrase-input (or passphrase "")]
        [password-input (or password "")]
        [view {:flex 1}]
        (when valid-form?
-         [sticky-button (i18n/label :t/recover-access) #(dispatch [:recover-account passphrase password])])])))
+         [sticky-button
+          (i18n/label :t/recover-access)
+          #(do
+             (when modal? (dispatch [:navigate-back]))
+             (dispatch [:recover-account passphrase password]))])])))
+
+(defview recover-modal []
+  [recover true])

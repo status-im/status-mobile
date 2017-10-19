@@ -8,7 +8,7 @@
             [status-im.components.context-menu :refer [menu-context]]
 
             [status-im.ui.screens.accounts.login.views :refer [login]]
-            [status-im.ui.screens.accounts.recover.views :refer [recover]]
+            [status-im.ui.screens.accounts.recover.views :refer [recover recover-modal]]
             [status-im.ui.screens.accounts.views :refer [accounts]]
 
             [status-im.chat.screen :refer [chat]]
@@ -120,6 +120,7 @@
                 (let [component (case modal-view
                                   :qr-scanner qr-scanner
                                   :qr-code-view qr-code-view
+                                  :recover-modal recover-modal
                                   :contact-list-modal contact-list-modal
                                   :wallet-transactions-filter wallet-transactions/filter-history
                                   :wallet-send-transaction-modal send-transaction-modal
