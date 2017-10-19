@@ -13,7 +13,9 @@
 (def emoji-picker           (js/require "react-native-emoji-picker"))
 (def fs                     (js/require "react-native-fs"))
 (def http-bridge            (js/require "react-native-http-bridge"))
-(def i18n                   (js/require "react-native-i18n"))
+;; i18n is now exported in default object of the module
+;; https://github.com/AlexanderZaytsev/react-native-i18n/blob/master/index.js
+(def i18n                   (.-default (js/require "react-native-i18n")))
 (def image-crop-picker      (js/require "react-native-image-crop-picker"))
 (def image-resizer          (js/require "react-native-image-resizer"))
 (def instabug               (js/require "instabug-reactnative"))
@@ -33,5 +35,3 @@
 (def webview-bridge         (js/require "react-native-webview-bridge"))
 (def svg                    (js/require "react-native-svg"))
 (def react-native-fcm       (js/require "react-native-fcm"))
-
-

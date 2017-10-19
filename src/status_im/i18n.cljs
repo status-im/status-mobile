@@ -325,7 +325,7 @@
 (set! (.-translations rn-dependencies/i18n)
       (clj->js translations-by-locale))
 
-;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed https://github.com/fnando/i18n-js/issues/460
+;;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed https://github.com/fnando/i18n-js/issues/460
 
 (def delimeters
   "This function is a hack: mobile Safari doesn't support toLocaleString(), so we need to pass

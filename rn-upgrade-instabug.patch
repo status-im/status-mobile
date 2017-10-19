@@ -1,0 +1,11 @@
+--- node_modules/instabug-reactnative/ios/RNInstabug/InstabugReactBridge.h.bak	2017-11-23 00:50:00.000000000 +0100
++++ node_modules/instabug-reactnative/ios/RNInstabug/InstabugReactBridge.h	2017-11-23 00:50:38.000000000 +0100
+@@ -7,7 +7,7 @@
+ //
+ 
+ #import <Foundation/Foundation.h>
+-#import "RCTBridgeModule.h"
++#import <React/RCTBridgeModule.h>
+ #import "RCTEventEmitter.h"
+ 
+ @interface InstabugReactBridge : RCTEventEmitter <RCTBridgeModule>

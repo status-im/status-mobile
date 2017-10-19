@@ -56,7 +56,7 @@
 (defnstyle input-view [content-height single-line-input?]
   {:flex           1
    :font-size      14
-   :padding-top    5
+   :padding-top    9
    :padding-bottom 5
    :height         (if single-line-input?
                      min-input-height
