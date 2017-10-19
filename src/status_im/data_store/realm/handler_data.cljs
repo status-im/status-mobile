@@ -5,7 +5,7 @@
   (realm/get-all @realm/account-realm :handler-data))
 
 (defn get-all-as-list []
-  (realm/realm-collection->list (get-all)))
+  (realm/js-object->clj (get-all)))
 
 (defn get-by-message-id
   [message-id]

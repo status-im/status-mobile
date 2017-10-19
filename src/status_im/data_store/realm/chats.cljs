@@ -12,13 +12,13 @@
 
 (defn get-all-as-list
   []
-  (realm/realm-collection->list (get-all)))
+  (realm/js-object->clj (get-all)))
 
 (defn get-all-active
   []
   (-> (realm/get-by-field @realm/account-realm :chat :is-active true)
       (realm/sorted :timestamp :desc)
-      realm/realm-collection->list))
+      realm/js-object->clj))
 
 (defn- groups
   [active?]
@@ -28,15 +28,14 @@
 
 (defn get-active-group-chats
   []
-  (map
-    (fn [{:keys [chat-id public-key private-key public?]}]
-      (let [group {:group-id chat-id
-                   :public?  public?}]
-        (if (and public-key private-key)
-          (assoc group :keypair {:private private-key
-                                 :public  public-key})
-          group)))
-    (realm/realm-collection->list (groups true))))
+  (map (fn [{:keys [chat-id public-key private-key public?]}]
+         (let [group {:group-id chat-id
+                      :public?  public?}]
+           (if (and public-key private-key)
+             (assoc group :keypair {:private private-key
+                                    :public  public-key})
+             group)))
+       (realm/js-object->clj (groups true))))
 
 (defn- get-by-id-obj
   [chat-id]
@@ -46,7 +45,7 @@
   [chat-id]
   (-> @realm/account-realm
       (realm/get-one-by-field-clj :chat :chat-id chat-id)
-      (realm/list->array :contacts)))
+      (realm/fix-map->vec :contacts)))
 
 (defn save
   [chat update?]

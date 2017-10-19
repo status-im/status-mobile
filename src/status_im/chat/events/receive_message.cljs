@@ -18,6 +18,11 @@
                                    (chat-store/is-active? chat-id))))))
 
 (re-frame/reg-cofx
+ :message-exists?
+ (fn [cofx]
+   (assoc cofx :message-exists? msg-store/exists?)))
+
+(re-frame/reg-cofx
  :get-last-clock-value
  (fn [cofx]
    (assoc cofx :get-last-clock-value msg-store/get-last-clock-value)))
@@ -33,7 +38,7 @@
   (get-in accounts [current-account-id :public-key]))
 
 (defn add-message
-  [{:keys [db get-stored-message get-last-stored-message pop-up-chat?
+  [{:keys [db message-exists? get-last-stored-message pop-up-chat?
            get-last-clock-value current-timestamp random-id]}
    {:keys [from group-id chat-id content-type
            message-id timestamp clock-value]
@@ -44,7 +49,7 @@
     ;; proceed with adding message if message is not already stored in realm,
     ;; it's not from current user (outgoing message) and it's for relevant chat
     ;; (either current active chat or new chat not existing yet)
-    (if (and (not (get-stored-message chat-identifier))
+    (if (and (not (message-exists? message-id))
              (not= from current-identity)
              (pop-up-chat? chat-identifier))
       (let [group-chat?      (not (nil? group-id))
@@ -78,7 +83,7 @@
       {:db db})))
 
 (def ^:private receive-interceptors
-  [(re-frame/inject-cofx :get-stored-message) (re-frame/inject-cofx :get-last-stored-message)
+  [(re-frame/inject-cofx :message-exists?) (re-frame/inject-cofx :get-last-stored-message)
    (re-frame/inject-cofx :pop-up-chat?) (re-frame/inject-cofx :get-last-clock-value)
    (re-frame/inject-cofx :current-timestamp) (re-frame/inject-cofx :random-id)
    re-frame/trim-v])

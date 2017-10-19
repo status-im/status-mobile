@@ -3,13 +3,14 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
-                 [org.clojure/clojurescript "1.9.908"]
+                 [org.clojure/clojurescript "1.9.946"]
                  [org.clojure/core.async "0.3.443"]
                  [reagent "0.6.0" :exclusions [cljsjs/react cljsjs/react-dom cljsjs/react-dom-server]]
                  [re-frame "0.10.1"]
                  [com.andrewmcveigh/cljs-time "0.5.0"]
                  [com.taoensso/timbre "4.10.0"]
-                 [hickory "0.7.1"]]
+                 [hickory "0.7.1"]
+                 [com.cognitect/transit-cljs "0.8.243"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.13"]
             [lein-re-frisk "0.5.1"]]
