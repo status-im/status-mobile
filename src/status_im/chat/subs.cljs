@@ -53,6 +53,19 @@
   (fn [[chats id] [_ k chat-id]]
     (get-in chats [(or chat-id id) k])))
 
+(defn get-suggested-commands
+  [[commands requests]]
+  (let [vec->map-by-name #(into {} (map vector (map :name %) %))
+        commands-map     (vec->map-by-name commands)
+        requests-map     (vec->map-by-name requests)]
+    (vals (merge commands-map requests-map))))
+
+(reg-sub
+ :get-suggested-commands
+ :<- [:chat :possible-commands]
+ :<- [:chat :possible-requests]
+ get-suggested-commands)
+
 (reg-sub
   :get-current-chat-id
   (fn [db]
@@ -219,8 +232,10 @@
   (fn [db [_ message-id]]
     (get-in db [:message-data :preview message-id :markup])))
 
-(reg-sub :get-message-preview
-  (fn [db [_ message-id]]
-    (let [preview (subscribe [:get-message-preview-markup message-id])]
-      (when-let [markup @preview]
-        (commands-utils/generate-hiccup markup)))))
+(reg-sub
+ :get-message-preview
+ (fn [[_ message-id]]
+   [(subscribe [:get-message-preview-markup message-id])])
+ (fn [[markup]]
+   (when markup
+     (commands-utils/generate-hiccup markup))))
