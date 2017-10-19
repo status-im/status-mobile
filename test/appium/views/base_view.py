@@ -18,6 +18,13 @@ class BackButton(BaseButton):
         return self.navigate()
 
 
+class DenyButton(BaseButton):
+
+    def __init__(self, driver):
+        super(DenyButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Deny']")
+
+
 class ContactsButton(BaseButton):
 
     def __init__(self, driver):
@@ -29,12 +36,59 @@ class ContactsButton(BaseButton):
         return ContactsViewObject(self.driver)
 
 
+class WalletButton(BaseButton):
+
+    def __init__(self, driver):
+        super(WalletButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Wallet']")
+
+    def navigate(self):
+        from views.wallet import WalletViewObject
+        return WalletViewObject(self.driver)
+
+
+class YesButton(BaseButton):
+
+    def __init__(self, driver):
+        super(YesButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Yes']")
+
+
+class NoButton(BaseButton):
+
+    def __init__(self, driver):
+        super(NoButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='No']")
+
+
+class OkButtonAPK(BaseButton):
+
+    def __init__(self, driver):
+        super(OkButtonAPK, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='OK']")
+
+
+class ContinueButtonAPK(BaseButton):
+
+    def __init__(self, driver):
+        super(ContinueButtonAPK, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
+
+
 class BaseViewObject(object):
 
     def __init__(self, driver):
         self.driver = driver
+
+        self.yes_button = YesButton(self.driver)
+        self.no_button = NoButton(self.driver)
         self.back_button = BackButton(self.driver)
+        self.deny_button = DenyButton(self.driver)
+        self.continue_button_apk = ContinueButtonAPK(driver)
+        self.ok_button_apk = OkButtonAPK(driver)
+
         self.contacts_button = ContactsButton(self.driver)
+        self.wallet_button = WalletButton(self.driver)
 
     def confirm(self):
         logging.info("Tap 'Confirm' on native keyboard")
@@ -87,18 +141,19 @@ class BaseViewObject(object):
 
     def get_donate(self, address, wait_time=300):
         initial_balance = self.get_balance(address)
-        response = requests.request('GET', 'http://46.101.129.137:3001/donate/0x%s' % address).json()
         counter = 0
-        while True:
-            if counter == wait_time:
-                pytest.fail("Donation was not received during %s seconds!" % wait_time)
-            elif self.get_balance(address) == initial_balance:
-                counter += 10
-                time.sleep(10)
-                logging.info('Waiting %s seconds for donation' % counter)
-            else:
-                logging.info('Got %s for %s' % (response["amount"], address))
-                break
+        if initial_balance < 1000000000000000000:
+            response = requests.request('GET', 'http://46.101.129.137:3001/donate/0x%s' % address).json()
+            while True:
+                if counter == wait_time:
+                    pytest.fail("Donation was not received during %s seconds!" % wait_time)
+                elif self.get_balance(address) == initial_balance:
+                    counter += 10
+                    time.sleep(10)
+                    logging.info('Waiting %s seconds for donation' % counter)
+                else:
+                    logging.info('Got %s for %s' % (response["amount"], address))
+                    break
 
     def verify_balance_is_updated(self, initial_balance, recipient_address, wait_time=120):
         counter = 0

@@ -179,6 +179,12 @@ class SendFundsButton(BaseButton):
             super(SendFundsButton.SignTransactionButton, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='SIGN TRANSACTION']")
 
+    class SignLaterButton(BaseButton):
+
+        def __init__(self, driver):
+            super(SendFundsButton.SignLaterButton, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//*[@text='SIGN LATER']")
+
     class PasswordInput(BaseEditBox):
 
         def __init__(self, driver):
@@ -202,8 +208,6 @@ class SendFundsButton(BaseButton):
         def __init__(self, driver):
             super(SendFundsButton.GotItButton, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='GOT IT']")
-
-
 
 
 class ChatsViewObject(BaseViewObject):
@@ -237,8 +241,10 @@ class ChatsViewObject(BaseViewObject):
         self.user_name_text = UserNameText(self.driver)
 
         self.send_funds_button = SendFundsButton(self.driver)
+
         self.first_recipient_button = SendFundsButton.FirstRecipient(self.driver)
         self.sign_transaction_button = SendFundsButton.SignTransactionButton(self.driver)
+        self.sign_later_button = SendFundsButton.SignLaterButton(self.driver)
         self.confirm_button = SendFundsButton.ConfirmButton(self.driver)
         self.password_input = SendFundsButton.PasswordInput(self.driver)
         self.enter_password_input = SendFundsButton.EnterPasswordInput(self.driver)

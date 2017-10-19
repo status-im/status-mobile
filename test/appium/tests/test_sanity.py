@@ -44,7 +44,7 @@ class TestAccess(SingleDeviceTestCase):
         login.first_account_button.click()
         login.password_input.send_keys(verifications[verification]['input'])
         login.sign_in_button.click()
-        home.find_full_text(verifications[verification]["outcome"], 10)
+        home.find_full_text(verifications[verification]["outcome"], 60)
 
     @pytest.mark.parametrize("verification", ["short", "mismatch"])
     def test_password(self, verification):
