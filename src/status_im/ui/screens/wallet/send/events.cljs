@@ -148,7 +148,7 @@
                    (update-in [:wallet :send-transaction] merge clear-send-properties))}
           (if modal?
             {:dispatch-n [[:navigate-back]
-                          [:navigate-to :wallet-transaction-sent]]}
+                          [:navigate-to-modal :wallet-transaction-sent-modal]]}
             {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
