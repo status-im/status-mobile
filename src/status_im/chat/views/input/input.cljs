@@ -35,8 +35,7 @@
      (chat-utils/command-name command)]]])
 
 (defview commands-view []
-  [commands [:chat :possible-commands]
-   requests [:chat :possible-requests]
+  [all-commands [:get-suggested-commands]
    show-suggestions? [:show-suggestions?]]
   [view style/commands-root
    [view style/command-list-icon-container
@@ -48,11 +47,10 @@
    [scroll-view {:horizontal                     true
                  :showsHorizontalScrollIndicator false
                  :keyboardShouldPersistTaps      :always}
-    (let [all-commands (apply conj commands requests)]
-      [view style/commands
-       (for [[index command] (map-indexed vector all-commands)]
-         ^{:key (str "command-" index)}
-         [command-view (= index 0) command])])]])
+    [view style/commands
+     (for [[index command] (map-indexed vector all-commands)]
+       ^{:key (str "command-" index)}
+       [command-view (= index 0) command])]]])
 
 (defn- basic-text-input [_]
   (let [input-text           (subscribe [:chat :input-text])
