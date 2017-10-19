@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.wallet-list.views
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.components.list.views :as list]

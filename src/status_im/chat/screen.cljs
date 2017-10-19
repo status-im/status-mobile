@@ -113,11 +113,13 @@
    creating? [:get :accounts/creating-account?]]
   [view
    [status-bar]
-   (let [hide-nav? (or (empty? accounts) show-actions? creating?)]
-     [toolbar/toolbar2 {:show-sync-bar? true}
-      (when-not hide-nav? toolbar/default-nav-back)
-      [toolbar-content-view]
-      [toolbar-action]])
+   [toolbar/toolbar2 {:show-sync-bar? true}
+    (when-not (or show-actions? creating?)
+      (if (empty? accounts)
+        [toolbar/nav-clear-text (label :t/recover) #(dispatch [:navigate-to-modal :recover-modal])]
+        toolbar/default-nav-back))
+    [toolbar-content-view]
+    [toolbar-action]]
    [add-contact-bar]])
 
 (defn get-intro-status-message [all-messages]

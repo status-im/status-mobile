@@ -51,8 +51,7 @@
    :android         {:align-items    :flex-start
                      :margin-left    (if show-actions 66 18)
                      :padding-bottom 6}
-   :ios             {:align-items :center
-                     :margin-left (if show-actions 54 6)}})
+   :ios             {:align-items :center}})
 
 (def chat-name-text
   {:color      color-gray6
