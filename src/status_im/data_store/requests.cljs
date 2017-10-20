@@ -9,6 +9,10 @@
   [chat-id]
   (data-store/get-open-by-chat-id chat-id))
 
+(defn get-available-by-chat-id
+  [chat-id]
+  (data-store/get-available-by-chat-id chat-id))
+
 (defn save
   [request]
   (data-store/save request))

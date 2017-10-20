@@ -16,6 +16,22 @@
       (realm/sorted :added :desc)
       (realm/realm-collection->list)))
 
+;; NOTE(oskarth): phone command in Console can be answered again, so we want to list this
+;; TODO(oskarth): Refactor this, either by extending and/or query or changing status of message
+(defn- get-reanswerable-by-chat-id
+  [chat-id]
+  (-> (realm/get-by-fields @realm/account-realm :request :and [[:chat-id chat-id]
+                                                               [:type "phone"]
+                                                               [:status "answered"]])
+      (realm/sorted :added :desc)
+      (realm/realm-collection->list)))
+
+(defn get-available-by-chat-id
+  [chat-id]
+  (-> ((juxt get-open-by-chat-id get-reanswerable-by-chat-id) chat-id)
+      flatten
+      vec))
+
 (defn save
   [request]
   (realm/save @realm/account-realm :request request true))
