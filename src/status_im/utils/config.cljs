@@ -21,4 +21,5 @@
 (def notifications-wip-enabled? (enabled? (get-config :NOTIFICATIONS_WIP_ENABLED 0)))
 (def stub-status-go? (enabled? (get-config :STUB_STATUS_GO 0)))
 (def network-switching-enabled? (enabled? (get-config :NETWORK_SWITCHING 0)))
+(def mainnet-networks-enabled? (enabled? (get-config :MAINNET_NETWORKS_ENABLED 0)))
 
