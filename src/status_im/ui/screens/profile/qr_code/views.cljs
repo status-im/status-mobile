@@ -11,8 +11,8 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview qr-code-view []
-  (letsubs [{:keys [photo-path address name] :as contact} [:get-in [:qr-modal :contact]]
-            {:keys [qr-source amount? dimensions]} [:get :qr-modal]
+  (letsubs [{:keys [photo-path address name]} [:get-in [:qr-modal :contact]]
+            {:keys [qr-source qr-value amount? dimensions]} [:get :qr-modal]
             {:keys [amount]} [:get :contacts/click-params]]
     [react/view styles/wallet-qr-code
      [status-bar {:type :modal}]
@@ -35,15 +35,18 @@
                                                                             :height (.-height layout)}]))}
       (when (:width dimensions)
         [react/view {:style (styles/qr-code-container dimensions)}
-         [qr-code {:value (eip67/generate-uri (get contact qr-source) (when amount? {:value  amount}))
-                   :size  (- (min (:width dimensions)
-                                  (:height dimensions))
-                             80)}]])]
+         (when-let [value (eip67/generate-uri qr-value (when amount? {:value  amount}))]
+           [qr-code {:value value
+                     :size  (- (min (:width dimensions)
+                                    (:height dimensions))
+                               80)}])])]
      [react/view styles/footer
-      [react/view styles/wallet-info
-       [react/text {:style styles/wallet-name-text} (label :t/main-wallet)]
-       [react/text {:style styles/wallet-address-text} address]]
-
+      (if (= :address qr-source)
+        [react/view styles/wallet-info
+         [react/text {:style styles/wallet-name-text} (label :t/main-wallet)]
+         [react/text {:style styles/wallet-address-text} address]]
+        [react/view styles/wallet-info
+         [react/text {:style styles/wallet-name-text} (label :t/public-key)]])
       [react/touchable-highlight {:onPress #(dispatch [:navigate-back])}
        [react/view styles/done-button
         [react/text {:style styles/done-button-text} (label :t/done)]]]]]))
