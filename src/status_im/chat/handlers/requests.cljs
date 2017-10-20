@@ -26,7 +26,7 @@
   [{:keys [current-chat-id] :as db} [_ chat-id]]
   (let [chat-id' (or chat-id current-chat-id)
         ;; todo maybe limit is needed
-        requests (requests/get-open-by-chat-id chat-id')
+        requests  (requests/get-available-by-chat-id chat-id')
         requests' (map #(update % :type keyword) requests)]
     (assoc-in db [:chats chat-id' :requests] requests')))
 
