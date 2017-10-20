@@ -80,12 +80,8 @@
        :reagent-render
        (fn [{:keys [draggable? custom-header]} & elements]
          @to-changed-height @changes-counter @max-height
-         (let [{expandable-offset :expandable-offset
-                status-bar-height :height} (get-in p/platform-specific [:component-styles :status-bar :main])
-               bottom (+ @input-height @chat-input-margin)
-               height (if @fullscreen?
-                        (+ @max-height status-bar-height expandable-offset)
-                        anim-value)]
+         (let [bottom (+ @input-height @chat-input-margin)
+               height (if @fullscreen? @max-height anim-value)]
            [view style/overlap-container
             (when (and (not hide-overlay?)
                        (not @fullscreen?))
