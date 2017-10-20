@@ -25,7 +25,6 @@
 
 (def connect-button-container
   {:margin-top        8
-   :align-items       :center
    :margin-bottom     16
    :margin-horizontal 16})
 
@@ -34,11 +33,9 @@
    :align-items      :center
    :justify-content  :center
    :background-color common/color-light-blue
-   :ios              {:width         343
-                      :border-radius 8
+   :ios              {:border-radius 8
                       :opacity       0.9}
-   :android          {:width         328
-                      :border-radius 4}})
+   :android          {:border-radius 4}})
 
 (defstyle connect-button-label
   {:color   common/color-white
