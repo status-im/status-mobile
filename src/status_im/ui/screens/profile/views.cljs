@@ -96,13 +96,14 @@
       nil
       styles/profile-info-item-button])])
 
-(defn show-qr [contact qr-source]
+(defn show-qr [contact qr-source qr-value]
   #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
-                                                :qr-source qr-source}]))
+                                                :qr-source qr-source
+                                                :qr-value  qr-value}]))
 
 (defn profile-options [contact k text]
   (into []
-        (concat [{:value (show-qr contact k)
+        (concat [{:value (show-qr contact k text)
                   :text  (label :t/show-qr)}]
                 (when text
                   (share-options text)))))
@@ -199,7 +200,7 @@
    [common/separator]])
 
 (defview my-profile []
-  (letsubs [{:keys [status] :as current-account} [:get-current-account]]
+  (letsubs [{:keys [status public-key] :as current-account} [:get-current-account]]
     [react/view styles/profile
      [status-bar]
      [my-profile-toolbar]
@@ -213,7 +214,7 @@
        [action-button {:label     (label :t/show-qr)
                        :icon      :icons/qr
                        :icon-opts {:color :blue}
-                       :on-press  (show-qr current-account :public-key)}]]
+                       :on-press  (show-qr current-account :public-key public-key)}]]
       [common/form-spacer]
       [react/view styles/profile-info-container
        [my-profile-info current-account]
