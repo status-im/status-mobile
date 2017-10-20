@@ -95,7 +95,7 @@ function amountParameterBox(params, context) {
             sliderValue: sliderValue
         });
 
-    }catch (err){
+    } catch (err) {
 
         status.setDefaultDb({
             transaction: txData,

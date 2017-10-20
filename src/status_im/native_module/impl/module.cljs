@@ -4,7 +4,7 @@
   (:require [status-im.components.react :as r]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
-            [cljs.core.async :refer [<! timeout]]
+            [cljs.core.async :as async :refer [<! timeout]]
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.platform :as p]
             [status-im.utils.scheduler :as scheduler]
@@ -126,9 +126,10 @@
 (defn execute-call [{:keys [jail-id path params callback]}]
   (when status
     (call-module
-      #(do
+     #(do 
          (log/debug :call-jail :jail-id jail-id)
          (log/debug :call-jail :path path)
+         (log/debug :call-jail :params params)
          ;; this debug message can contain sensitive info
          #_(log/debug :call-jail :params params)
          (let [params' (update params :context assoc
@@ -154,7 +155,8 @@
 (defn remove-duplicate-calls
   "Removes duplicates by [jail path] keys, remains the last one."
   [[all-keys calls] {:keys [jail-id path] :as call}]
-  (if (contains? all-keys [jail-id path])
+  (if (and (contains? all-keys [jail-id path])
+           (not= (second path) :subscription))
     [all-keys calls]
     [(conj all-keys [jail-id path])
      (conj calls call)]))
@@ -167,7 +169,7 @@
     (let [[_ new-calls] (reduce remove-duplicate-calls [#{} '()] @raw-jail-calls)]
       (reset! raw-jail-calls '())
       (swap! jail-calls (fn [old-calls]
-                           (concat new-calls old-calls))))
+                          (concat new-calls old-calls))))
     (recur (<! (timeout check-raw-calls-interval)))))
 
 (defn execute-calls-loop!
@@ -175,8 +177,8 @@
   which reduces chances of response shuffling"
   []
   (go-loop [_ nil]
-    (let [next-call (last @jail-calls)]
-      (swap! jail-calls butlast)
+    (let [next-call (first @jail-calls)]
+      (swap! jail-calls rest)
       (when next-call
         (execute-call next-call)))
     (recur (<! (timeout interval-between-calls)))))

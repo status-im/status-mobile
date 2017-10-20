@@ -46,6 +46,10 @@
 
 ;;;; Helper functions
 
+(defn- extract-command-request-owners [commands requests]
+  [commands requests]
+  (into #{} (keep :owner-id) (concat commands requests)))
+
 (defn update-suggestions
   "Update suggestions for current chat input, takes db as the only argument
   and returns map with keys :db (new db with up-to-date suggestions) and (optionally)
@@ -58,9 +62,14 @@
                                        (= type :grant-permissions))))
         commands        (commands-model/commands-for-chat db current-chat-id)
         {:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])
-        new-db          (cond-> db
-                          true (assoc-in [:chats current-chat-id :possible-requests] requests)
-                          true (assoc-in [:chats current-chat-id :possible-commands] commands)
+        ;; TODO(janherich) surely there is a better place to merge in possible commands/request/subscriptions into current chat
+        ;; then in `:update-suggestions` which is called whenever commands for chat are loaded, chat view is opened
+        ;; or new message is received from network - it's unnecessary to call it as a response to last two events
+        new-db          (cond-> (-> db
+                                    (update-in [:chats current-chat-id] merge {:possible-commands commands
+                                                                               :possible-requests requests})
+                                    (bots-events/add-active-bot-subscriptions (extract-command-request-owners
+                                                                               commands requests)))
                           (and dapp?
                                (str/blank? chat-text))
                           (assoc-in [:chats current-chat-id :parameter-boxes :message] nil))]
@@ -90,12 +99,12 @@
   (let [chat-text (str/trim (or (get-in chats [current-chat-id :input-text]) ""))
         {:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])]
     (cond-> {:db db}
-            (and dapp? (not (str/blank? chat-text)))
-            (assoc :call-jail-function {:chat-id    current-chat-id
-                                        :function   :on-message-input-change
-                                        :parameters {:message chat-text}
-                                        :context    {:data (get local-storage current-chat-id)
-                                                     :from current-account-id}}))))
+      (and dapp? (not (str/blank? chat-text)))
+      (assoc :call-jail-function {:chat-id    current-chat-id
+                                  :function   :on-message-input-change
+                                  :parameters {:message chat-text}
+                                  :context    {:data (get local-storage current-chat-id)
+                                               :from current-account-id}}))))
 
 (defn set-chat-input-metadata
   "Set input metadata for active chat. Takes db and metadata and returns updated db."
@@ -193,14 +202,14 @@
                                 (load-chat-parameter-box new-db (:command command)))]
     (cond-> {:db new-db}
 
-            chat-parameter-box-fx
-            (merge chat-parameter-box-fx)
+      chat-parameter-box-fx
+      (merge chat-parameter-box-fx)
 
-            (and (= selection (+ (count const/command-char)
-                                 (count (get-in command [:command :name]))
-                                 (count const/spacing-char)))
-                 (get-in command [:command :sequential-params]))
-            (merge (chat-input-focus new-db :seq-input-ref)))))
+      (and (= selection (+ (count const/command-char)
+                           (count (get-in command [:command :name]))
+                           (count const/spacing-char)))
+           (get-in command [:command :sequential-params]))
+      (merge (chat-input-focus new-db :seq-input-ref)))))
 
 (defn select-chat-input-command
   "Selects command + (optional) arguments as input for active chat"
@@ -221,19 +230,19 @@
                                             (input-model/join-command-args prefill)))))
         fx  (assoc (load-chat-parameter-box db' command) :db db')]
     (cond-> fx
-            prefill-bot-db (update :db bots-events/update-bot-db {:db prefill-bot-db})
+      prefill-bot-db (update :db bots-events/update-bot-db {:db prefill-bot-db})
 
-            (not (and sequential-params
-                      prevent-auto-focus?))
-            (merge (chat-input-focus (:db fx) :input-ref))
+      (not (and sequential-params
+                prevent-auto-focus?))
+      (merge (chat-input-focus (:db fx) :input-ref))
 
-            sequential-params
-            (as-> fx'
-                  (cond-> (update fx' :db
-                                  set-chat-seq-arg-input-text
-                                  (str/join const/spacing-char prefill))
-                          (not prevent-auto-focus?)
-                          (merge fx' (chat-input-focus (:db fx') :seq-input-ref)))))))
+      sequential-params
+      (as-> fx'
+          (cond-> (update fx' :db
+                          set-chat-seq-arg-input-text
+                          (str/join const/spacing-char prefill))
+            (not prevent-auto-focus?)
+            (merge fx' (chat-input-focus (:db fx') :seq-input-ref)))))))
 
 (defn set-contact-as-command-argument
   "Sets contact as command argument for active chat"
