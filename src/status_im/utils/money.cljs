@@ -66,8 +66,11 @@
 (defn wei-> [unit n]
   (.dividedBy (bignumber n) (eth-units unit)))
 
+(defn to-fixed [bn]
+  (.toFixed bn))
+
 (defn wei->str [unit n]
-  (str (.toFixed (wei-> unit n)) " " (string/upper-case (name unit))))
+  (str (to-fixed (wei-> unit n)) " " (string/upper-case (name unit))))
 
 (defn wei->ether [n]
   (wei-> :eth n))

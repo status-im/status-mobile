@@ -123,7 +123,7 @@
        [react/text {:style           styles/asset-item-value
                     :number-of-lines 1
                     :ellipsize-mode  :tail}
-        (money/wei->str :eth amount)]
+        (money/to-fixed (money/wei-> :eth amount))]
        [react/text {:style           styles/asset-item-currency
                     :uppercase?      true
                     :number-of-lines 1}
