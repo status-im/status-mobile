@@ -178,8 +178,7 @@
     [{:value #(dispatch [:my-profile/change-phone-number])
       :text  (label :t/edit)}]]
    [info-item-separator]
-   (when config/network-switching-enabled?
-     [network-settings])])
+   [network-settings]])
 
 (defn profile-status [status & [edit?]]
   [react/view styles/profile-status-container
