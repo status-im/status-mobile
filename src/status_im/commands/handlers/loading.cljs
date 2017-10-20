@@ -182,13 +182,7 @@
 (reg-handler ::add-commands
   [(after (fn [_ [id]]
             (dispatch [:invoke-commands-loading-callbacks id])
-            (dispatch [:invoke-chat-loaded-callbacks id])))
-   (after (fn [{:contacts/keys [contacts]} [id]]
-            (let [subscriptions (get-in contacts [id :subscriptions])]
-              (doseq [[name opts] subscriptions]
-                (dispatch [:register-bot-subscription
-                           (assoc opts :bot id
-                                       :name name)])))))
+            (dispatch [:invoke-chat-loaded-callbacks id]))) 
    (after #(dispatch [:update-suggestions]))]
   add-commands)
 

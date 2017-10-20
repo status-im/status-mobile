@@ -3,7 +3,7 @@
             [status-im.utils.handlers :as handlers]
             [status-im.utils.utils :refer [show-popup]]
             [status-im.utils.types :refer [json->clj]]
-            [status-im.commands.utils :refer [generate-hiccup reg-handler]]
+            [status-im.commands.utils :refer [reg-handler]]
             [clojure.string :as s]
             [status-im.components.react :as r]
             [status-im.constants :refer [console-chat-id]]

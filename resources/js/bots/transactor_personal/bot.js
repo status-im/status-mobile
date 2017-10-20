@@ -35,7 +35,7 @@ status.defineSubscription(
     function(params) {
         return getFeeExplanation(params.value);
     }
-)
+);
 
 function amountParameterBox(params, context) {
     if (!params["bot-db"]) {
@@ -62,13 +62,25 @@ function amountParameterBox(params, context) {
 
     var sliderValue = params["bot-db"]["sliderValue"] || 0;
 
-    status.setDefaultDb({
-        transaction: txData,
-        calculatedFee: calculateFee(sliderValue, txData),
-        feeExplanation: getFeeExplanation(sliderValue),
-        sliderValue: sliderValue
-    });
+    try {
 
+        status.setDefaultDb({
+            transaction: txData,
+            calculatedFee: calculateFee(sliderValue, txData),
+            feeExplanation: getFeeExplanation(sliderValue),
+            sliderValue: sliderValue
+        });
+
+    } catch (err) {
+
+        status.setDefaultDb({
+            transaction: txData,
+            calculatedFee: "0",
+            feeExplanation: "",
+            sliderValue: sliderValue
+        });
+    }
+    
     return {
         title: I18n.t('send_title'),
         showBack: true,
