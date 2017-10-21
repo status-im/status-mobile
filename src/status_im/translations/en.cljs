@@ -275,7 +275,7 @@
    :scan-qr                               "Scan QR code"
    :name                                  "Name"
    :whisper-identity                      "Whisper Identity"
-   :address-explication                   "Your address is what identifies you on Ethereum and is a series of numbers and letters beginning with '0x'"
+   :address-explication                   "Your public key is what identifies you on Ethereum and is a series of numbers and letters"
    :enter-valid-address                   "Please enter a valid address or scan a QR code"
    :enter-valid-public-key                "Please enter a valid public key or scan a QR code"
    :contact-already-added                 "The contact has already been added"
