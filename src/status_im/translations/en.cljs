@@ -351,7 +351,7 @@
    :confirmations                         "Confirmations"
    :confirmations-helper-text             "Please wait for at least 12 confirmations to make sure your transaction is processed securely"
    :copy-transaction-hash                 "Copy transaction hash"
-   :open-on-etherscan                     "Open on Etherscan.org"
+   :open-on-etherscan                     "Open on Etherscan.io"
 
    ;;webview
    :web-view-error                        "oops, error"
