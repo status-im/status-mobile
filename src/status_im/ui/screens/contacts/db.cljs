@@ -23,6 +23,7 @@
 (spec/def :contact/photo-path (spec/nilable string?))
 (spec/def :contact/status (spec/nilable string?))
 (spec/def :contact/fcm-token (spec/nilable string?))
+(spec/def :contact/description (spec/nilable string?))
 
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/last-online (spec/nilable int?))
@@ -67,7 +68,8 @@
              :contact/responses
              :contact/debug?
              :contact/subscriptions
-             :contact/fcm-token]))
+             :contact/fcm-token
+             :contact/description]))
 
 ;;Contact list ui props
 (spec/def :contact-list-ui/edit? boolean?)

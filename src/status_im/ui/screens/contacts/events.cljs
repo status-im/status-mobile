@@ -211,9 +211,12 @@
        :timestamp (random/timestamp)
        :contacts  (mapv #(hash-map :identity %) contacts)})]])
 
+;; TODO(oskarth): Consider getting rid of the :when so we can overwrite default
+;; contacts with default_contacts.json This requires changing semantics of
+;; update-pending-status (from :add-contacts handler) too.
 (defn- prepare-default-contacts-events [contacts default-contacts]
   [[:add-contacts
-    (for [[id {:keys [name photo-path public-key add-chat? pending?
+    (for [[id {:keys [name photo-path public-key add-chat? pending? description
                       dapp? dapp-url dapp-hash bot-url unremovable? mixable?]}] default-contacts
           :let [id' (clojure.core/name id)]
           :when (not (get contacts id'))]
@@ -228,6 +231,7 @@
        :dapp?            dapp?
        :dapp-url         (:en dapp-url)
        :bot-url          bot-url
+       :description      description
        :dapp-hash        dapp-hash})]])
 
 (defn- prepare-add-chat-events [contacts default-contacts]
