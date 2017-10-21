@@ -13,6 +13,7 @@
                           :mixable?         {:type :bool :default false}
                           :status           {:type :string :optional true}
                           :fcm-token        {:type :string :optional true}
+                          :description      {:type :string :optional true}
                           :public-key       {:type     :string
                                              :optional true}
                           :private-key      {:type     :string
