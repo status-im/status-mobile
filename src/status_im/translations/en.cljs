@@ -383,6 +383,7 @@
    :usd-currency                          "USD"
    :transactions                          "Transactions"
    :transaction-details                   "Transaction details"
+   :transaction-failed                    "Transaction failed"
    :transactions-sign                     "Sign"
    :transactions-sign-all                 "Sign all"
    :transactions-sign-transaction         "Sign transaction"
