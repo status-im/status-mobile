@@ -84,10 +84,11 @@
                                                         {:width  (.-width layout)
                                                          :height (.-height layout)}]))}
       (when (or platform/android?
-                camera-permitted?)[camera/camera {:style         styles/preview
-                      :aspect        :fill
-                      :captureAudio  false
-                      :torchMode (camera/set-torch camera-flashlight)
-                      :onBarCodeRead #(re-frame/dispatch [:choose-recipient (camera/get-qr-code-data %) nil])}])
+                camera-permitted?)
+        [camera/camera {:style         styles/preview
+                        :aspect        :fill
+                        :captureAudio  false
+                        :torchMode     (camera/set-torch camera-flashlight)
+                        :onBarCodeRead #(re-frame/dispatch [:choose-recipient (camera/get-qr-code-data %) nil])}])
       [viewfinder camera-dimensions]]
      [recipient-buttons]]))

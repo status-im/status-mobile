@@ -405,12 +405,6 @@
     (load-chat-parameter-box db command)))
 
 (handlers/register-handler-fx
-  :proceed-command
-  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
-  (fn [{:keys [db random-id now]} [content]]
-    (proceed-command db content random-id now)))
-
-(handlers/register-handler-fx
   ::proceed-validation
   [re-frame/trim-v]
   (fn [_ [{:keys [markup validationHandler parameters]} proceed-events]]

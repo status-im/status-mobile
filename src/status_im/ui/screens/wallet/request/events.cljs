@@ -1,16 +1,22 @@
 (ns status-im.ui.screens.wallet.request.events
   (:require
     [status-im.utils.handlers :as handlers]
-    [status-im.ui.screens.wallet.db :as wallet.db]))
+    [status-im.ui.screens.wallet.db :as wallet.db]
+    [re-frame.core :as re-frame]))
+
+(defn chat-loaded-callback [amount]
+  (fn []
+    (re-frame/dispatch [:select-chat-input-command {:name "request" :prefill [amount]}])
+    ;;TODO get rid of timeout
+    (js/setTimeout #(re-frame/dispatch [:send-current-message]) 100)))
 
 (handlers/register-handler-fx
   :wallet-send-request
-  (fn [{{:wallet/keys [request-transaction]} :db} [_ {:keys [whisper-identity] :as contact}]]
+  (fn [{{:wallet/keys [request-transaction]} :db} [_ {:keys [whisper-identity]}]]
     {:dispatch-n [[:navigate-back]
                   [:navigate-to-clean :chat-list]
-                  [:chat-with-command whisper-identity :request
-                   {:contact contact
-                    :amount (:amount request-transaction)}]]}))
+                  [:add-chat-loaded-callback whisper-identity (chat-loaded-callback (:amount request-transaction))]
+                  [:start-chat whisper-identity]]}))
 
 (handlers/register-handler-fx
   :wallet-validate-request-amount

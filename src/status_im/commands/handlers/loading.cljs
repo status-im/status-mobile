@@ -44,11 +44,13 @@
                dapp-url
                bot-url
                dapp?]} :contact
+       callback        :callback
        :as             params}]]
-  (when bot-url
+  (if bot-url
     (if-let [resource (js-res/get-resource bot-url)]
       (dispatch [::validate-hash params resource])
-      (http-get-commands params bot-url))))
+      (http-get-commands params bot-url))
+    (when callback (callback))))
 
 (defn dispatch-loaded!
   [db [{{:keys [whisper-identity]} :contact

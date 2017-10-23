@@ -65,27 +65,27 @@
         commands-loaded?  (get-in db [:contacts/contacts chat-id :commands-loaded?])
         bot-url           (get-in db [:contacts/contacts chat-id :bot-url])
         was-opened?       (get-in db [:chats chat-id :was-opened?])
-        call-init-command #(when (and (not was-opened?) bot-url)
-                             (status/call-function!
-                               {:chat-id  chat-id
-                                :function :init
-                                :context  {:from current-account-id}}))]
+        call-init-command #(do
+                             (dispatch [:invoke-chat-loaded-callbacks chat-id])
+                             (when (and (not was-opened?) bot-url)
+                               (status/call-function!
+                                 {:chat-id  chat-id
+                                  :function :init
+                                  :context  {:from current-account-id}})))]
        ; Reset validation messages, if any
        (dispatch [:set-chat-ui-props {:validation-messages nil}])
        (dispatch [:load-requests! chat-id])
         ;; todo rewrite this. temporary fix for https://github.com/status-im/status-react/issues/607
        #_(dispatch [:load-commands! chat-id])
-        (if-not commands-loaded?
-          (dispatch [:load-commands! chat-id call-init-command])
-          (do
-            (call-init-command)
-            (dispatch [:invoke-chat-loaded-callbacks chat-id])))
-        (if (and (seq messages)
-                 (not= (count messages) 1))
-          db'
-          (-> db'
-              load-messages!
-              init-chat))))
+       (if-not commands-loaded?
+         (dispatch [:load-commands! chat-id call-init-command])
+         (call-init-command))
+       (if (and (seq messages)
+                (not= (count messages) 1))
+         db'
+         (-> db'
+             load-messages!
+             init-chat))))
 
 (register-handler :add-chat-loaded-callback
   (fn [db [_ chat-id callback]]
