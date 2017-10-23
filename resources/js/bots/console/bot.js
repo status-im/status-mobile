@@ -497,7 +497,7 @@ var rinkebyNetworkId = 4;
 var ropstenFaucets = [
     {
         name: "Status Testnet Faucet",
-        url: "http://46.101.129.137:3001",
+        url: "http://51.15.45.169:3001",
     }
 ];
 
