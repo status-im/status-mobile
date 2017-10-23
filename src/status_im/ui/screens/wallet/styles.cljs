@@ -5,21 +5,32 @@
 ;; errors
 
 (defstyle error-container
-  {:flex-direction :row
-   :align-items    :center
-   :ios            {:padding-top    8
-                    :padding-bottom 8}
-   :android        {:padding-top    10
-                    :padding-bottom 10}})
+  {:align-self       :center
+   :justify-content  :center
+   :ios              {:border-radius 20
+                      :margin-top    6}
+   :android          {:border-radius 4
+                      :margin-top    18}
+   :background-color styles/color-blue5})
+
+(defstyle error-message-container
+  {:flex-direction     :row
+   :align-items        :center
+   :padding-horizontal 15
+   :ios                {:padding-vertical 8}
+   :android            {:padding-vertical 10}})
+
 
 (defnstyle exclamation [color]
   {:background-color color
    :border-radius    100
    :width            16
    :height           16
-   :margin-left      12
-   :margin-right     6
-   :margin-top       2})
+   :margin-right     6})
+
+(def error-message
+  {:color         styles/color-white
+   :font-size     13})
 
 (def error-exclamation
   (exclamation styles/color-red-2))

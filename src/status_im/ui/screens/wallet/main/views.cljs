@@ -65,9 +65,9 @@
 (defn main-section [usd-value change syncing? error-message]
   [react/view {:style styles/main-section}
    (if syncing?
-     [wallet.views/wallet-syncing styles/error-container styles/error-message]
+     wallet.views/wallet-syncing
      (when error-message
-       [wallet.views/error-message-view styles/error-container styles/error-message]))
+       wallet.views/error-message-view))
    [react/view {:style styles/total-balance-container}
     [react/view {:style styles/total-balance}
      [react/text {:style styles/total-balance-value} usd-value]

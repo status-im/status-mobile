@@ -3,23 +3,6 @@
   (:require [status-im.components.styles :as styles]
             [status-im.utils.platform :as platform]))
 
-;; Errors
-
-(defstyle error-container
-  {:align-self       :center
-   :justify-content  :center
-   :ios              {:border-radius 20
-                      :margin-top    6}
-   :android          {:border-radius    4
-                      :margin-top       18}
-   :background-color styles/color-blue5})
-
-(def error-message
-  {:color         styles/color-white
-   :padding-right 10
-   :font-size     13})
-
-
 ;; Toolbar
 
 (def toolbar-title-container
@@ -36,7 +19,6 @@
 
 (def toolbar-title-icon
   (merge toolbar-icon {:opacity 0.4}))
-
 
 ;; Main section
 
