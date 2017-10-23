@@ -15,7 +15,7 @@
                                                 get-dimensions
                                                 dismiss-keyboard!]]
             [status-im.components.animation :as anim]
-            [status-im.components.list-selection :refer [share browse share-or-open-map]]
+            [status-im.components.list-selection :refer [share share-or-open-map]]
             [status-im.chat.constants :as chat-consts]
             [status-im.chat.models.commands :as commands]
             [status-im.chat.styles.message.message :as st]
@@ -200,7 +200,7 @@
      (if simple-text?
        [autolink {:style   (st/text-message message)
                   :text    (apply str parsed-text)
-                  :onPress #(browse %)}]
+                  :onPress #(dispatch [:browse-link-from-message %])}]
        [text {:style (st/text-message message)} parsed-text]))])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))

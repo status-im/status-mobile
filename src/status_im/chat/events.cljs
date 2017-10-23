@@ -12,6 +12,7 @@
             [status-im.data-store.chats :as chats-store]
             [status-im.protocol.core :as protocol]
             [status-im.constants :as const]
+            [status-im.components.list-selection :as list-selection]
             status-im.chat.events.input
             status-im.chat.events.commands
             status-im.chat.events.animation
@@ -77,6 +78,11 @@
   :protocol-send-seen
   (fn [params]
     (protocol/send-seen! params)))
+
+(re-frame/reg-fx
+  :browse
+  (fn [[command link]]
+    (list-selection/browse command link)))
 
 ;;;; Helper fns
 
@@ -251,3 +257,8 @@
         {:db (assoc-in [:chats current-chat-id :messages] (get-stored-messages current-chat-id))
          ;; TODO(janherich): make this dispatch into fn call once commands loading is refactored
          :dispatch [:load-commands! current-chat-id]}))))
+
+(handlers/register-handler-fx
+  :browse-link-from-message
+  (fn [{{:keys [global-commands]} :db} [_ link]]
+    {:browse [(:browse global-commands) link]}))
