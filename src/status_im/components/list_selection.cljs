@@ -28,7 +28,7 @@
                                          :default))
                         :cancel-text (label :t/sharing-cancel)})))
 
-(defn browse [link]
+(defn browse [command link]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       (label :t/browsing-title)
                         :options     [{:text (label :t/browsing-browse)}
@@ -37,9 +37,10 @@
                                        (case index
                                          0 (do
                                              (dispatch [:select-chat-input-command
-                                                        {:bot     "browse"
-                                                         :prefill [link]}])
-                                             (js/setTimeout #(dispatch [:send-current-message]) 500))
+                                                        (assoc (first command) :prefill [link])
+                                                        nil
+                                                        true])
+                                             (js/setTimeout #(dispatch [:send-current-message]) 100))
                                          1 (.openURL linking link)
                                          :default))
                         :cancel-text (label :t/browsing-cancel)})))
