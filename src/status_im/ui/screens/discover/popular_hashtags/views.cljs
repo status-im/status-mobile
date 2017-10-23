@@ -27,6 +27,7 @@
 (defview discover-all-hashtags []
   (letsubs [current-account [:get-current-account]
             popular-tags    [:get-popular-tags 10]
+            contacts        [:get-contacts]
             {:keys [discoveries]} [:get-popular-discoveries 10]] ;uses the tags passed via :discover-search-tags state
     [react/view styles/all-recent-container
      [toolbar/toolbar2 {}
@@ -42,4 +43,5 @@
             [components/discover-list-item-full
              {:message         message
               :show-separator? (not= (inc i) (count discoveries))
+              :contacts        contacts
               :current-account current-account}]))]]]]))

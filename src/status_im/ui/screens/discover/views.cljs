@@ -47,7 +47,7 @@
                               (re-frame/dispatch [:navigate-to :discover-search-results]))))}])
 
 
-(defview top-status-for-popular-hashtag [{:keys [tag current-account]}]
+(defview top-status-for-popular-hashtag [{:keys [tag current-account contacts]}]
   (letsubs [discoveries [:get-popular-discoveries 1 [tag]]]
     [react/view styles/popular-list-container
      [react/view styles/row
@@ -65,7 +65,8 @@
         (str (:total discoveries))]]]
      [components/discover-list-item {:message         (first (:discoveries discoveries))
                                      :show-separator? false
-                                     :current-account current-account}]]))
+                                     :current-account current-account
+                                     :contacts        contacts}]]))
 
 (defview popular-hashtags-preview [{:keys [contacts current-account]}]
   (letsubs [popular-tags [:get-popular-tags 10]]
@@ -85,7 +86,7 @@
                                              :current-account current-account}])]
          [empty-section :empty-hashtags :t/no-hashtags-discovered-title :t/no-hashtags-discovered-body])])))
 
-(defn recent-statuses-preview [current-account discoveries]
+(defn recent-statuses-preview [{:keys [current-account contacts discoveries]}]
   (let [has-content? (seq discoveries)]
     [react/view styles/recent-statuses-preview-container
      [components/title :t/recent :t/all #(re-frame/dispatch [:navigate-to :discover-all-recent]) has-content?]
@@ -98,7 +99,8 @@
           [react/view styles/recent-statuses-preview-content
            [components/discover-list-item {:message         discovery
                                            :show-separator? false
-                                           :current-account current-account}]])]
+                                           :current-account current-account
+                                           :contacts        contacts}]])]
        [empty-section :empty-recent :t/no-statuses-discovered :t/no-statuses-discovered-body])]))
 
 (def public-chats-mock-data
@@ -147,7 +149,9 @@
      [toolbar-view (and current-view?
                         (= show-search :discover)) search-text]
        [react/scroll-view styles/list-container
-        [recent-statuses-preview current-account discoveries]
+        [recent-statuses-preview {:contacts        contacts
+                                  :current-account current-account
+                                  :discoveries     discoveries}]
         [popular-hashtags-preview {:contacts        contacts
                                    :current-account current-account}]
         [all-dapps/preview all-dapps]
