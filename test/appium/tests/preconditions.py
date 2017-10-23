@@ -1,5 +1,3 @@
-
-
 def set_password_as_new_user(*args):
     for view in args:
         view.request_password_icon.click()
@@ -7,7 +5,8 @@ def set_password_as_new_user(*args):
         view.confirm()
         view.chat_request_input.send_keys("qwerty1234")
         view.confirm()
-        view.find_full_text("Tap here to validate your phone number & I\'ll find your friends.")
+        view.find_full_text(
+            "Here is your signing phrase. You will use it to verify your transactions. Write it down and keep it safe!")
 
 
 def recover_access(home, passphrase, password, username):
@@ -21,4 +20,3 @@ def recover_access(home, passphrase, password, username):
     login.password_input.send_keys(password)
     login.sign_in_button.click()
     login.find_full_text('Chats', 60)
-

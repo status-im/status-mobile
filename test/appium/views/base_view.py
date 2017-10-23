@@ -6,7 +6,6 @@ import requests
 
 
 class BackButton(BaseButton):
-
     def __init__(self, driver):
         super(BackButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@content-desc='toolbar-back-button']")
@@ -19,14 +18,12 @@ class BackButton(BaseButton):
 
 
 class DenyButton(BaseButton):
-
     def __init__(self, driver):
         super(DenyButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Deny']")
 
 
 class ContactsButton(BaseButton):
-
     def __init__(self, driver):
         super(ContactsButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Contacts']")
@@ -37,7 +34,6 @@ class ContactsButton(BaseButton):
 
 
 class WalletButton(BaseButton):
-
     def __init__(self, driver):
         super(WalletButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Wallet']")
@@ -48,35 +44,56 @@ class WalletButton(BaseButton):
 
 
 class YesButton(BaseButton):
-
     def __init__(self, driver):
         super(YesButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Yes']")
 
 
 class NoButton(BaseButton):
-
     def __init__(self, driver):
         super(NoButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='No']")
 
 
 class OkButtonAPK(BaseButton):
-
     def __init__(self, driver):
         super(OkButtonAPK, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='OK']")
 
 
 class ContinueButtonAPK(BaseButton):
-
     def __init__(self, driver):
         super(ContinueButtonAPK, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
 
 
-class BaseViewObject(object):
+def get_ethereum_price_in_usd() -> float:
+    url = 'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
+    return float(requests.request('GET', url).json()['USD'])
 
+
+def get_transactions(address: str) -> dict:
+    url = 'http://ropsten.etherscan.io/api?module=account&action=txlist&address=0x%s&sort=desc' % address
+    return requests.request('GET', url=url).json()['result']
+
+
+def is_transaction_successful(transaction_hash: str) -> int:
+    url = "https://ropsten.etherscan.io/api?module=transaction&action=getstatus&txhash=%s" % transaction_hash
+    return not int(requests.request('GET', url=url).json()['result']['isError'])
+
+
+def verify_transaction_in_ropsten(address: str, transaction_hash: str):
+    transactions = get_transactions(address=address)
+    for transaction in transactions:
+        if transaction['hash'] == transaction_hash:
+            logging.info('Transaction is found in Ropsten network')
+            if not is_transaction_successful(transaction_hash=transaction_hash):
+                pytest.fail('Transaction is not successful')
+            return
+    pytest.fail('Transaction was not found via Ropsten API')
+
+
+class BaseViewObject(object):
     def __init__(self, driver):
         self.driver = driver
 
