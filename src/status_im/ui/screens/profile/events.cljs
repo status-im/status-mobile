@@ -29,12 +29,10 @@
 (handlers/register-handler-fx
   :profile/send-transaction
   [trim-v]
-  (fn [{:keys [db]} [chat-id contact-id]]
-    {:dispatch-n [[:navigate-to :chat chat-id]
-                  [:select-chat-input-command {:name "send"}]
-                  [:set-contact-as-command-argument {:arg-index 0
-                                                     :bot-db-key "recipient"
-                                                     :contact (get-in db [:contacts/contacts contact-id])}]]}))
+  (fn [_ [chat-id]]
+    {:dispatch [:navigate-to :chat chat-id]
+     ;;TODO get rid of timeout
+     :dispatch-later [{:ms 100 :dispatch [:select-chat-input-command {:name "send"}]}]}))
 
 (handlers/register-handler-fx
   :profile/send-message
