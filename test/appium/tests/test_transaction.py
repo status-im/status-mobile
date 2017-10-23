@@ -16,12 +16,11 @@ class TestTransactions(SingleDeviceTestCase):
                              ids=['group_chat', 'one_to_one_chat', 'wrong_password'])
     def test_send_transaction(self, test, recipient, sender):
         home = HomeView(self.driver)
-        set_password_as_new_user(home)
-        chats = home.get_chats()
-        recover_access(chats,
+        recover_access(home,
                        transaction_users[sender]['passphrase'],
                        transaction_users[sender]['password'],
                        transaction_users[sender]['username'])
+        chats = home.get_chats()
         chats.wait_for_syncing_complete()
 
         sender_address = transaction_users[sender]['address']
@@ -74,16 +73,14 @@ class TestTransactions(SingleDeviceTestCase):
     @pytest.mark.transaction
     def test_send_transaction_from_daap(self):
         home = HomeView(self.driver)
-        set_password_as_new_user(home)
+        recover_access(home,
+                       transaction_users['B_USER']['passphrase'],
+                       transaction_users['B_USER']['password'],
+                       transaction_users['B_USER']['username'])
         chats = home.get_chats()
 
         address = transaction_users['B_USER']['address']
         initial_balance = chats.get_balance(address)
-        recover_access(chats,
-                       transaction_users['B_USER']['passphrase'],
-                       transaction_users['B_USER']['password'],
-                       transaction_users['B_USER']['username'])
-
         contacts = chats.contacts_button.click()
         auction_house = contacts.auction_house_button.click()
 

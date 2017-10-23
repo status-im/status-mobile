@@ -7,14 +7,11 @@ def set_password_as_new_user(*args):
         view.confirm()
         view.chat_request_input.send_keys("qwerty1234")
         view.confirm()
-        view.find_full_text("Tap here to enter your phone number & I\'ll find your friends")
+        view.find_full_text("Tap here to validate your phone number & I\'ll find your friends.")
 
 
-def recover_access(chats, passphrase, password, username):
-    chats.back_button.click()
-    chats.profile_button.click()
-    login = chats.switch_users_button.click()
-    login.recover_access_button.click()
+def recover_access(home, passphrase, password, username):
+    login = home.recover_button.click()
     login.passphrase_input.send_keys(passphrase)
     login.password_input.send_keys(password)
     login.confirm_recover_access.click()

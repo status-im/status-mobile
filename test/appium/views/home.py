@@ -24,6 +24,17 @@ class RequestPasswordIcon(BaseButton):
         return self.navigate()
 
 
+class RecoverButton(BaseButton):
+
+    def __init__(self, driver):
+        super(RecoverButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Recover']")
+
+    def navigate(self):
+        from views.login import LoginView
+        return LoginView(self.driver)
+
+
 class HomeView(BaseViewObject):
 
     def __init__(self, driver):
@@ -33,5 +44,6 @@ class HomeView(BaseViewObject):
                 i.click()
             except (NoSuchElementException, TimeoutException):
                 pass
-        self.chat_request_input = ChatRequestInput(driver)
-        self.request_password_icon = RequestPasswordIcon(driver)
+        self.chat_request_input = ChatRequestInput(self.driver)
+        self.request_password_icon = RequestPasswordIcon(self.driver)
+        self.recover_button = RecoverButton(self.driver)
