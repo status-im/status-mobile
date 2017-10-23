@@ -9,7 +9,8 @@
 (defview discover-all-recent []
   (letsubs [discoveries     [:get-recent-discoveries]
             tabs-hidden?    [:tabs-hidden?]
-            current-account [:get-current-account]]
+            current-account [:get-current-account]
+            contacts        [:get-contacts]]
     [react/view styles/all-recent-container
      [toolbar/toolbar2 {}
       toolbar/default-nav-back
@@ -24,4 +25,5 @@
                [components/discover-list-item-full
                 {:message         message
                  :show-separator? (not= (inc i) (count discoveries))
+                 :contacts        contacts
                  :current-account current-account}]))]]])]))

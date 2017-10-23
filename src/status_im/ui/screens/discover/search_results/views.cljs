@@ -19,6 +19,7 @@
 (defview discover-search-results []
   (letsubs [{:keys [discoveries total]} [:get-popular-discoveries 250]
             tags            [:get :discover-search-tags]
+            contacts        [:get-contacts]
             current-account [:get-current-account]]
     (let [datasource (to-datasource discoveries)]
       [react/view styles/discover-tag-container
@@ -39,6 +40,7 @@
                            :renderRow       (fn [row _ _]
                                               (react/list-item [components/discover-list-item
                                                                 {:message         row
-                                                                 :current-account current-account}]))
+                                                                 :current-account current-account
+                                                                 :contacts        contacts}]))
                            :renderSeparator render-separator
                            :style           styles/status-list-inner}])])))
