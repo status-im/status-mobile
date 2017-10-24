@@ -1,6 +1,6 @@
 (ns status-im.native-module.impl.module
   (:require-macros
-    [cljs.core.async.macros :refer [go-loop go]])
+   [cljs.core.async.macros :as async :refer [go-loop go]])
   (:require [status-im.components.react :as r]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
@@ -9,6 +9,8 @@
             [status-im.utils.platform :as p]
             [status-im.utils.scheduler :as scheduler]
             [status-im.utils.types :as types]
+            [status-im.utils.transducers :as transducers]
+            [status-im.utils.async :as async-util]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.native-module.module :as module]))
 
@@ -28,7 +30,7 @@
   (swap! calls conj args))
 
 (defn call-module [f]
-  ;(log/debug :call-module f)
+  ;;(log/debug :call-module f)
   (if @module-initialized?
     (f)
     (store-call f)))
@@ -52,9 +54,9 @@
 (defn init-jail []
   (when status
     (call-module
-      (fn []
-        (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
-          (.initJail status init-js #(log/debug "jail initialized")))))))
+     (fn []
+       (let [init-js (str js-res/status-js "I18n.locale = '" rn-dependencies/i18n.locale "';")]
+         (.initJail status init-js #(log/debug "jail initialized")))))))
 
 (defonce listener-initialized (atom false))
 
@@ -70,7 +72,6 @@
 (defn move-to-internal-storage [on-result]
   (when status
     (call-module #(.moveToInternalStorage status on-result))))
-
 
 (defn stop-node []
   (when status
@@ -126,79 +127,76 @@
 (defn execute-call [{:keys [jail-id path params callback]}]
   (when status
     (call-module
-     #(do 
-         (log/debug :call-jail :jail-id jail-id)
-         (log/debug :call-jail :path path)
-         (log/debug :call-jail :params params)
-         ;; this debug message can contain sensitive info
-         #_(log/debug :call-jail :params params)
-         (let [params' (update params :context assoc
-                               :debug js/goog.DEBUG
-                               :locale rn-dependencies/i18n.locale)
-               cb      (fn [r]
-                         (let [{:keys [result] :as r'} (types/json->clj r)
-                               {:keys [messages]} result]
-                           (log/debug r')
-                           (doseq [{:keys [type message]} messages]
-                             (log/debug (str "VM console(" type ") - " message)))
-                           (callback r')))]
-           (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
+     #(do
+        (log/debug :call-jail :jail-id jail-id)
+        (log/debug :call-jail :path path)
+        ;; this debug message can contain sensitive info
+        #_(log/debug :call-jail :params params)
+        (let [params' (update params :context assoc
+                              :debug js/goog.DEBUG
+                              :locale rn-dependencies/i18n.locale)
+              cb      (fn [r]
+                        (let [{:keys [result] :as r'} (types/json->clj r)
+                              {:keys [messages]} result]
+                          (log/debug r')
+                          (doseq [{:keys [type message]} messages]
+                            (log/debug (str "VM console(" type ") - " message)))
+                          (callback r')))]
+          (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 
-;; TODO(rasom): temporal solution, should be fixed on status-go side
-(def check-raw-calls-interval 400)
-(def interval-between-calls 100)
-;; contains all calls to jail before with duplicates
-(def raw-jail-calls (atom '()))
-;; contains only calls that passed duplication check
-(def jail-calls (atom '()))
+;; We want the mainting (time) windowed queue of all calls to the jail
+;; in order to de-duplicate certain type of calls made in rapid succession
+;; where it's beneficial to only execute the last call of that type.
+;;
+;; The reason why is to improve performance and user feedback, for example
+;; when making command argument suggestion lookups, everytime the command
+;; input changes (so the user types/deletes a character), we need to fetch
+;; new suggestions.
+;; However the process of asynchronously fetching and displaying them
+;; is unfortunately not instant, so without de-duplication, given that user
+;; typed N characters in rapid succession, N percievable suggestion updates
+;; will be performed after user already stopped typing, which gives
+;; impression of slow, unresponsive UI.
+;;
+;; With de-duplication in some timeframe (set to 400ms currently), only
+;; the last suggestion call for given jail-id jail-path combination is
+;; made, and the UI feedback is much better + we save some unnecessary
+;; calls to jail.
 
-(defn remove-duplicate-calls
-  "Removes duplicates by [jail path] keys, remains the last one."
-  [[all-keys calls] {:keys [jail-id path] :as call}]
-  (if (and (contains? all-keys [jail-id path])
-           (not (#{:subscription :preview} (last path))))
-    [all-keys calls]
-    [(conj all-keys [jail-id path])
-     (conj calls call)]))
+(def ^:private queue-flush-time 400)
 
-(defn check-raw-calls-loop!
-  "Only the last call with [jail path] key is added to jail-calls list
-  from raw-jail-calls"
-  []
-  (go-loop [_ nil]
-    (let [[_ new-calls] (reduce remove-duplicate-calls [#{} '()] @raw-jail-calls)]
-      (reset! raw-jail-calls '())
-      (swap! jail-calls (fn [old-calls]
-                          (concat new-calls old-calls))))
-    (recur (<! (timeout check-raw-calls-interval)))))
+(def ^:private call-queue (async/chan))
+(def ^:private deduplicated-calls (async/chan))
 
-(defn execute-calls-loop!
-  "Calls to jail are executed ne by one with interval-between-calls,
-  which reduces chances of response shuffling"
-  []
-  (go-loop [_ nil]
-    (let [next-call (first @jail-calls)]
-      (swap! jail-calls rest)
-      (when next-call
-        (execute-call next-call)))
-    (recur (<! (timeout interval-between-calls)))))
+(async-util/chunked-pipe! call-queue deduplicated-calls queue-flush-time)
 
-(check-raw-calls-loop!)
-(execute-calls-loop!)
+(defn compare-calls
+  "Used as comparator deciding which calls should be de-duplicated.
+  Whenever we fetch suggestions, we only want to issue the last call
+  done in the `queue-flush-time` window, for all other calls, we have
+  de-duplicate based on call identity"
+  [{:keys [jail-id path] :as call}]
+  (if (= :suggestions (last path))
+    [jail-id path]
+    call))
+
+(go-loop []
+  (doseq [call (sequence (transducers/last-distinct-by compare-calls) (<! deduplicated-calls))]
+    (execute-call call))
+  (recur))
 
 (defn call-jail [call]
-  (swap! raw-jail-calls conj call))
-;; TODO(rasom): end of sick magic, should be removed ^
+  (async/put! call-queue call))
 
 (defn call-function!
   [{:keys [chat-id function callback] :as opts}]
   (let [path   [:functions function]
         params (select-keys opts [:parameters :context])]
     (call-jail
-      {:jail-id  chat-id
-       :path     path
-       :params   params
-       :callback (or callback #(dispatch [:received-bot-response {:chat-id chat-id} %]))})))
+     {:jail-id  chat-id
+      :path     path
+      :params   params
+      :callback (or callback #(dispatch [:received-bot-response {:chat-id chat-id} %]))})))
 
 (defn set-soft-input-mode [mode]
   (when status
