@@ -5,15 +5,14 @@
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.action-button.action-button :refer [action-button action-separator]]
             [status-im.ui.components.react :refer [view text touchable-highlight
-                                                   keyboard-avoiding-view list-view list-item]]
+                                                   keyboard-avoiding-view]]
             [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [status-im.ui.components.sticky-button :refer [sticky-button]]
-            [status-im.utils.listview :refer [to-datasource]]
-            [status-im.ui.components.renderers.renderers :as renderers]
             [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.i18n :refer [label]]
@@ -139,10 +138,9 @@
        (when save-btn-enabled?
          [sticky-button (label :t/save) #(dispatch [:set-contact-group-name])])])))
 
-(defn render-row [row _ _]
-  (list-item
-    ^{:key row}
-    [contact-view {:contact row}]))
+(defn- render-contact [contact]
+  [contact-view {:contact contact}])
+
 
 (defview new-group []
   (letsubs [contacts [:selected-group-contacts]
@@ -154,12 +152,11 @@
        [group-toolbar group-type false]
        [group-name-view]
        [view styles/list-view-container
-        [list-view {:dataSource                (to-datasource contacts)
-                    :enableEmptySections       true
-                    :renderRow                 render-row
-                    :bounces                   false
-                    :keyboardShouldPersistTaps :always
-                    :renderSeparator           renderers/list-separator-renderer}]]
+        [list/flat-list {:data contacts
+                         :render-fn                 render-contact
+                         :bounces                   false
+                         :keyboardShouldPersistTaps :always
+                         :enableEmptySections       true}]]
        (when save-btn-enabled?
          [sticky-button (label :t/save)
           (if (= group-type :contact-group)

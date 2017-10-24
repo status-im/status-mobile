@@ -6,5 +6,5 @@
    :margin-bottom 0})
 
 (def contacts-list
-  {:backgroundColor common/color-light-gray})
+  {:background-color common/color-light-gray})
 

@@ -1,16 +1,10 @@
 (ns status-im.chat.screen
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.status-bar.view :as status-bar]
-            [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
             [status-im.chat.styles.screen :as style]
-            [status-im.utils.listview :as listview]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.invertible-scroll-view :as scroll-view]
-            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.chat.views.toolbar-content :as toolbar-content]
             [status-im.chat.views.message.message :as message]
             [status-im.chat.views.message.datemark :as message-datemark]
@@ -18,9 +12,15 @@
             [status-im.chat.views.actions :as actions]
             [status-im.chat.views.bottom-info :as bottom-info]
             [status-im.i18n :as i18n]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.status-bar.view :as status-bar]
+            [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
+            [status-im.ui.components.animation :as anim]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.sync-state.offline :as offline]
-            [clojure.string :as string]))
+            [status-im.ui.components.toolbar.view :as toolbar]))
 
 (defview chat-icon []
   (letsubs [{:keys [chat-id group-chat name color]} [:get-current-chat]]
@@ -65,26 +65,25 @@
 
 (defmethod message-row :datemark
   [{{:keys [value]} :row}]
-  (react/list-item [message-datemark/chat-datemark value]))
+  [message-datemark/chat-datemark value])
 
 (defmethod message-row :default
   [{:keys [group-chat current-public-key row]}]
-  (react/list-item [message/chat-message (assoc row
-                                                :group-chat group-chat
-                                                :current-public-key current-public-key)]))
+  [message/chat-message (assoc row
+                               :group-chat group-chat
+                               :current-public-key current-public-key)])
 
 (defview messages-view [chat-id group-chat]
   (letsubs [messages           [:get-chat-messages chat-id]
             current-public-key [:get-current-public-key]]
-    [react/list-view {:renderRow                 (fn [row _ index]
-                                                   (message-row {:group-chat         group-chat
-                                                                 :current-public-key current-public-key
-                                                                 :row                row}))
-                      :renderScrollComponent     #(scroll-view/invertible-scroll-view (js->clj %))
-                      :onEndReached              #(re-frame/dispatch [:load-more-messages])
-                      :enableEmptySections       true
-                      :keyboardShouldPersistTaps (if platform/android? :always :handled)
-                      :dataSource                (listview/to-datasource-inverted messages)}]))
+    [list/flat-list {:data                      messages
+                     :render-fn                 #(message-row {:group-chat         group-chat
+                                                               :current-public-key current-public-key
+                                                               :row                %1})
+                     :inverted                  true
+                     :onEndReached              #(re-frame/dispatch [:load-more-messages])
+                     :enableEmptySections       true
+                     :keyboardShouldPersistTaps (if platform/android? :always :handled)}]))
 
 (defview chat []
   (letsubs [{:keys [chat-id group-chat input-text]} [:get-current-chat]

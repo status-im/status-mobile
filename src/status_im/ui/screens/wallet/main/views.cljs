@@ -101,7 +101,7 @@
         [react/text {:style           styles/asset-item-currency
                      :uppercase?      true
                      :number-of-lines 1}
-         symbol]]
+         (clojure.core/name symbol)]]
        [list/item-icon {:icon :icons/forward}]]]]
     [add-asset]))
 

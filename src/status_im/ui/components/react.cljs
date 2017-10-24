@@ -1,6 +1,7 @@
 (ns status-im.ui.components.react
   (:require-macros [status-im.utils.views :as views])
-  (:require [reagent.core :as r]
+  (:require [clojure.string :as string]
+            [reagent.core :as r]
             [status-im.ui.components.styles :as st]
             [status-im.utils.utils :as u]
             [status-im.utils.platform :refer [platform-specific ios?]]
@@ -40,7 +41,6 @@
 (def status-bar (get-class "StatusBar"))
 (def drawer-layout (adapt-class (.-default drawer)))
 
-(def list-view-class (get-class "ListView"))
 (def scroll-view (get-class "ScrollView"))
 (def web-view (get-class "WebView"))
 (def keyboard-avoiding-view-class (get-class "KeyboardAvoidingView"))
@@ -82,7 +82,7 @@
   ([{:keys [uppercase?] :as opts} t & ts]
    (r/as-element
      (let [ts (cond->> (conj ts t)
-                       uppercase? (map clojure.string/upper-case))]
+                       uppercase? (map #(when % (string/upper-case %))))]
        (vec (concat
               [text-class (add-font-style :style opts)]
               ts))))))
@@ -105,11 +105,6 @@
    [image {:source     {:uri (keyword (str "icon_" (name n)))}
            :resizeMode "contain"
            :style      style}]))
-
-;; TODO Migrate to new FlatList and SectionList when appropriate (see components.list). ListView will eventually get deprecated
-;; see https://facebook.github.io/react-native/docs/using-a-listview.html
-(defn list-view [props]
-  [list-view-class (merge {:enableEmptySections true} props)])
 
 (defn touchable-highlight [props content]
   [touchable-highlight-class

@@ -19,7 +19,6 @@
 (def image-crop-picker      (js/require "react-native-image-crop-picker"))
 (def image-resizer          (js/require "react-native-image-resizer"))
 (def instabug               (js/require "instabug-reactnative"))
-(def invertible-scroll-view (js/require "react-native-invertible-scroll-view"))
 (def linear-gradient        (js/require "react-native-linear-gradient"))
 (def mapbox-gl              (js/require "react-native-mapbox-gl"))
 (def nfc                    (js/require "nfc-react-native"))

@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.common.common :as common]
-            [status-im.ui.components.renderers.renderers :as renderers]
+            [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.native-action-button :refer [native-action-button]]
             [status-im.ui.components.drawer.view :as drawer]
@@ -15,7 +15,6 @@
             [status-im.ui.components.sync-state.offline :refer [offline-view]]
             [status-im.ui.components.context-menu :refer [context-menu]]
             [status-im.ui.components.tabs.styles :refer [tabs-height]]
-            [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.screens.chats-list.views.inner-item :as inner-item]
             [status-im.ui.screens.chats-list.styles :as st]
             [status-im.i18n :as i18n]
@@ -84,18 +83,17 @@
        edit?                      [toolbar-edit]
        (= show-search :chat-list) [toolbar-search]
        :else                      [toolbar-view])
-     [react/list-view {:dataSource      (to-datasource chats)
-                       :renderRow       (fn [[id :as row] _ _]
-                                          (react/list-item ^{:key id} [chat-list-item row edit?]))
-                       :renderHeader    (when-not (empty? chats) renderers/list-header-renderer)
-                       :renderFooter    (when-not (empty? chats)
-                                          #(react/list-item [react/view
-                                                             [common/list-footer]
-                                                             [common/bottom-shadow]]))
-                       :renderSeparator renderers/list-separator-renderer
-                       :style           st/list-container}]
+     [list/flat-list {:style           st/list-container
+                      :data            chats
+                      :render-fn       (fn [chat] [chat-list-item chat edit?])
+                      :header          (when-not (empty? chats) list/default-header)
+                      :footer          (when-not (empty? chats)
+                                         [react/view
+                                          [common/list-footer]
+                                          [common/bottom-shadow]])}]
+
      (when (and (not edit?)
-                (not= show-search :chat-list) 
+                (not= show-search :chat-list)
                 (get-in platform-specific [:chats :action-button?]))
        [chats-action-button])
      [offline-view]]))

@@ -62,6 +62,10 @@
     base-separator
     {:margin-left   70}))
 
+(defstyle list-header-footer-spacing
+  {:android {:background-color styles/color-white
+             :height           8}})
+
 (defstyle section-separator
   (merge base-separator
          {:android {:margin-top 12}

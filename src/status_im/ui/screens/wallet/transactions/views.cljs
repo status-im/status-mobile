@@ -146,17 +146,16 @@
     [list/item-primary label]
     [list/item-secondary symbol]]])
 
-(defn- item-filter-type [{:keys [id label checked?]}]
-  (let [kid (keyword id)]
-    [item-filter {:icon (transaction-type->icon kid) :checked? checked? :path {:type kid}}
-     [list/item-content
-      [list/item-primary-only label]]]))
+(defn- render-item-filter [{:keys [id label checked?]}]
+  [item-filter {:icon (transaction-type->icon id) :checked? checked? :path {:type id}}
+   [list/item-content
+    [list/item-primary-only label]]])
 
 (defn- wrap-filter-data [m]
   ;; TODO(jeluard) Restore tokens filtering once token support is added
   [{:title      (i18n/label :t/transactions-filter-type)
     :key        :type
-    :renderItem (list/wrap-render-fn item-filter-type)
+    :render-fn  render-item-filter ;(list/wrap-render-fn item-filter-type)
     :data       (:type m)}])
 
 (defview filter-history []

@@ -40,7 +40,7 @@
      [list/flat-list {:data                              (vals dapps)
                       :render-fn                         render-dapp
                       :horizontal                        true
-                      :separator?                        false
+                      :default-separator?                false
                       :shows-horizontal-scroll-indicator false
                       :content-container-style           styles/dapp-preview-flat-list}]
      [react/text (i18n/label :t/none)])])
