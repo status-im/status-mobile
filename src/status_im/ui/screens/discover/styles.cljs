@@ -29,8 +29,7 @@
 
 (defstyle title-text
   {:ios     {:color          styles/color-steel
-             :font-size      13
-             :letter-spacing 1}
+             :font-size      13}
    :android {:color     styles/color-gray2
              :font-size 14}})
 
@@ -326,8 +325,7 @@
    :align-items      :center})
 
 (def public-chats-icon-text
-  {:font-size 25
-   :color     styles/color-gray-transparent-light})
+  {:font-size 25})
 
 (def public-chats-item-inner
   {:flex           (- 1 public-chats-icon-width-ratio)
@@ -338,11 +336,8 @@
   {:flex-direction :row})
 
 (def public-chats-item-name-text
-  {:color       styles/color-gray-transparent
-   :font-weight :bold
-   :font-size   16
+  {:font-size   16
    :margin-left 5})
-
 
 (def dapp-details-inner-container
   {:flex-direction   :column})

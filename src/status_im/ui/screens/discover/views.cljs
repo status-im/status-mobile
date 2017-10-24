@@ -104,20 +104,20 @@
        [empty-section :empty-recent :t/no-statuses-discovered :t/no-statuses-discovered-body])]))
 
 ;; TODO(oskarth): Figure out chat count how to get from public chat list subscription
+;; TODO(oskarth): Move colors into common namespace
 (def public-chats-mock-data
   [{:name  "Status"
     :topic "status"
     :count 25
-    :color "#B2F3E3"}
+    :color "#77DCC6"}
    {:name  "ETH news"
     :topic "ethnews"
     :count 12
-    :color "#F7A7E8"}
+    :color "#DC77CE"}
    {:name  "All about Ethereum"
     :topic "ethereum"
     :count 32
-    :color "#C1B8F0"}])
-
+    :color "#778CDC"}])
 
 (defn navigate-to-public-chat [topic]
   (re-frame/dispatch [:create-new-public-chat topic]))
@@ -132,9 +132,7 @@
       (-> name first str)]]]
    [react/view styles/public-chats-item-inner
     [react/view styles/public-chats-item-name-container
-     ;; TODO(goranjovic) lightgray intentionally hardcoded while only a teaser
-     ;; will be removed and properly styled when enabled
-     [vector-icons/icon :icons/public {:color "lightgray"}]
+     [vector-icons/icon :icons/public-chat]
      [react/text {:font  :medium
                   :style styles/public-chats-item-name-text}
       name]]
@@ -144,7 +142,7 @@
 
 (defn public-chats-teaser []
   [react/view styles/public-chats-container
-   [components/title :t/public-chats :t/soon #() false]
+   [components/title-no-action :t/public-chats]
    [list/flat-list {:data      public-chats-mock-data
                     :render-fn render-public-chats-item}]])
 
