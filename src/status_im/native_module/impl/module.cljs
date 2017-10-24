@@ -156,7 +156,7 @@
   "Removes duplicates by [jail path] keys, remains the last one."
   [[all-keys calls] {:keys [jail-id path] :as call}]
   (if (and (contains? all-keys [jail-id path])
-           (not= (second path) :subscription))
+           (not (#{:subscription :preview} (last path))))
     [all-keys calls]
     [(conj all-keys [jail-id path])
      (conj calls call)]))

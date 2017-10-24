@@ -16,7 +16,8 @@
             [status-im.data-store.realm.schemas.account.v5.group-contact :as group-contact]
             [status-im.data-store.realm.schemas.account.v8.local-storage :as local-storage]
             [status-im.data-store.realm.schemas.account.v13.handler-data :as handler-data]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [cljs.reader :as reader]))
 
 (def schema [chat/schema
              chat-contact/schema
@@ -36,15 +37,34 @@
              local-storage/schema
              handler-data/schema])
 
+(defn chat-by-id [realm chat-id]
+  (some-> realm
+          (.objects "chat")
+          (.filtered (str "chat-id = \"" chat-id "\""))
+          (aget 0)))
+
+(defn migrate-commands [realm content-type]
+  (some-> realm
+          (.objects "message")
+          (.filtered (str "content-type = \"" content-type "\""))
+          (.map (fn [object _ _]
+                  (let [group-id (aget object "group-id")
+                        {:keys [bot] :as content} (reader/read-string (aget object "content"))]
+                    (when-not bot
+                      (let [chat-id  (aget object "chat-id")
+                            chat     (chat-by-id realm chat-id)
+                            group?   (aget chat "group-chat")
+                            bot-name (if group?
+                                       "transactor-group"
+                                       "transactor-personal")
+                            content' (assoc content :bot bot-name)]
+                        (aset object "content" (pr-str content')))))))))
+
 (defn migration [old-realm new-realm]
   (log/debug "migrating v16 account database: " old-realm new-realm)
-  (when-let [wallet-chat (some-> new-realm
-                                 (.objects "chat")
-                                 (.filtered "chat-id = \"wallet\"")
-                                 (aget 0))]
+  (when-let [wallet-chat (chat-by-id new-realm "wallet")]
     (.delete new-realm wallet-chat))
-  (when-let [wallet-contact (some-> new-realm
-                                    (.objects "contact")
-                                    (.filtered "whisper-identity = \"wallet\"")
-                                    (aget 0))]
-    (.delete new-realm wallet-contact)))
+  (when-let [wallet-contact (chat-by-id new-realm "wallet")]
+    (.delete new-realm wallet-contact))
+  (migrate-commands new-realm "command-request")
+  (migrate-commands new-realm "command"))
