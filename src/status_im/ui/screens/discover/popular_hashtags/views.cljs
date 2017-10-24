@@ -22,7 +22,7 @@
                     :render-fn                         render-tag
                     :horizontal                        true
                     :shows-horizontal-scroll-indicator false
-                    :separator?                        false}]])
+                    :default-separator?                false}]])
 
 (defview discover-all-hashtags []
   (letsubs [current-account [:get-current-account]

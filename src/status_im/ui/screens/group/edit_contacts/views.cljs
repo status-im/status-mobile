@@ -1,14 +1,13 @@
 (ns status-im.ui.screens.group.edit-contacts.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :refer [dispatch]]
+  (:require [re-frame.core :as re-frame]
             [status-im.ui.components.contact.contact :refer [contact-view]]
-            [status-im.ui.components.renderers.renderers :as renderers]
-            [status-im.ui.components.react :refer [view list-view list-item]]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
-            [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.screens.group.styles :as styles]
-            [status-im.i18n :refer [label]]))
+            [status-im.i18n :as i18n]))
 
 (defview contact-list-toolbar [title]
   (letsubs [show-search [:get-in [:toolbar-search :show]]
@@ -18,35 +17,33 @@
        :search-text        search-text
        :search-key         :contact-list
        :title              title
-       :search-placeholder (label :t/search-contacts)})))
+       :search-placeholder (i18n/label :t/search-contacts)})))
 
 (defn contacts-list [contacts extended? extend-options]
-  [view {:flex 1}
-   [list-view {:dataSource                (to-datasource contacts)
-               :enableEmptySections       true
-               :renderRow                 (fn [row _ _]
-                                            (list-item
-                                              ^{:key row}
-                                              [contact-view {:contact        row
-                                                             :extended?      extended?
-                                                             :extend-options (extend-options row)}]))
-               :bounces                   false
-               :keyboardShouldPersistTaps :always
-               :renderSeparator           renderers/list-separator-renderer
-               :renderFooter              renderers/list-footer-renderer
-               :renderHeader              renderers/list-header-renderer}]])
+  [react/view {:flex 1}
+   [list/flat-list {:data                      contacts
+                    :enableEmptySections       true
+                    :renderRow                 (fn [contact]
+                                                 [contact-view {:contact        contact
+                                                                :extended?      extended?
+                                                                :extend-options (extend-options contact)}])
+
+                    :bounces                   false
+                    :keyboardShouldPersistTaps :always
+                    :footer                    list/default-footer
+                    :header                    list/default-header}]])
 
 (defn chat-extended-options [item]
-  [{:value #(dispatch [:remove-group-chat-participants #{(:whisper-identity item)}])
-    :text  (label :t/remove)}])
+  [{:value #(re-frame/dispatch [:remove-group-chat-participants #{(:whisper-identity item)}])
+    :text  (i18n/label :t/remove)}])
 
 (defn contact-extended-options [group-id]
   (fn [item]
-    [{:value               #(dispatch [:remove-contact-from-group
-                                       (:whisper-identity item)
-                                       group-id])
+    [{:value               #(re-frame/dispatch [:remove-contact-from-group
+                                                (:whisper-identity item)
+                                                group-id])
       :accessibility-label :remove-button
-      :text                (label :t/remove-from-group)}]))
+      :text                (i18n/label :t/remove-from-group)}]))
 
 (defview edit-chat-group-contact-list []
   (letsubs [chat-name [:chat :name]
@@ -54,7 +51,7 @@
             current-pk [:get :current-public-key]
             group-admin [:chat :group-admin]]
     (let [admin? (= current-pk group-admin)]
-      [view styles/group-container
+      [react/view styles/group-container
        [status-bar]
        [contact-list-toolbar chat-name]
        [contacts-list
@@ -71,7 +68,7 @@
 
 (defview edit-contact-group-contact-list []
   (letsubs [group [:get-contact-group]]
-    [view styles/group-container
+    [react/view styles/group-container
      [status-bar]
      [contact-list-toolbar (:name group)]
      [contacts-list-view (:group-id group)]]))
