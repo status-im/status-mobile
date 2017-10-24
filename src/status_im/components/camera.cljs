@@ -11,7 +11,6 @@
       (js->clj)
       (keywordize-keys)))
 
-(def aspects (constants "Aspect"))
 (def capture-targets (constants "CaptureTarget"))
 (def torch-modes (constants "TorchMode"))
 

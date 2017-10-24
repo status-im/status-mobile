@@ -5,13 +5,12 @@
             [status-im.components.react :as rn]))
 
 (defn action-button [{:keys [label icon icon-opts on-press label-style cyrcle-color]}]
-  [rn/touchable-highlight {:on-press on-press}
    [rn/view st/action-button
     [rn/view (st/action-button-icon-container cyrcle-color)
      [vi/icon icon icon-opts]]
     [rn/view st/action-button-label-container
      [rn/text {:style (merge st/action-button-label label-style)}
-      label]]]])
+      label]]])
 
 (defn action-button-disabled [{:keys [label icon]}]
   [rn/view st/action-button

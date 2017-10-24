@@ -51,8 +51,7 @@
   (if ios?
     [rn/touchable-highlight {:style    trigger-style
                              :on-press #(open-ios-menu options)}
-     [rn/view
-      trigger]]
+     ]
     [menu {:onSelect #(when % (do (%) nil))}
      [menu-trigger {:style trigger-style} trigger]
      [menu-options (context-menu-options custom-styles)

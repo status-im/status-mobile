@@ -10,7 +10,6 @@
             [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
             [status-im.components.status-bar :as status-bar]
-            [status-im.components.camera :as camera]
             [clojure.string :as string]))
 
 (defn- show-not-implemented! []
@@ -84,14 +83,5 @@
                                 (re-frame/dispatch [:set-in [:wallet/send-transaction :camera-dimensions]
                                                     {:width  (.-width layout)
                                                      :height (.-height layout)}]))}
-      [camera/camera {:style         styles/preview
-                      :aspect        :fill
-                      :captureAudio  false
-                      :torchMode (camera/set-torch camera-flashlight)
-                      :onBarCodeRead (fn [code]
-                                       (let [data (-> code
-                                                      .-data
-                                                      (string/replace #"ethereum:" ""))]
-                                         (re-frame/dispatch [:choose-recipient data nil])))}]
       [viewfinder camera-dimensions]]
      [recipient-buttons]]))

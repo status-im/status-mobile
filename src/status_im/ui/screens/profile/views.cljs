@@ -23,17 +23,17 @@
             [status-im.utils.utils :refer [hash-tag?]]
             [status-im.utils.config :as config])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-
+  
 (defn my-profile-toolbar []
   [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
-                                              :text  (label :t/edit)}])]}])
+                                              :text  "Edit"}])]}])
 
 (defn profile-toolbar [contact]
   [toolbar/toolbar
    (when (and (not (:pending? contact))
               (not (:unremovable? contact)))
      {:actions [(actions/opts [{:value #(dispatch [:hide-contact contact])
-                                :text  (label :t/remove-from-contacts)}])]})])
+                                :text  "Remove"}])]})])
 
 (defn online-text [last-online]
   (let [last-online-date (time/to-date last-online)
@@ -41,7 +41,7 @@
     (if (and (pos? last-online)
              (<= last-online-date now-date))
       (time/time-ago last-online-date)
-      (label :t/active-unknown))))
+      (label "Unknown"))))
 
 (defn profile-badge [{:keys [name last-online] :as contact}]
   [react/view styles/profile-badge
@@ -50,29 +50,29 @@
    [react/view styles/profile-badge-name-container
     [react/text {:style           styles/profile-name-text
                  :number-of-lines 1}
-     name]
-    (when-not (nil? last-online)
+     "Satoshi N."]
+    (when (nil? last-online)
       [react/view styles/profile-activity-status-container
        [react/text {:style styles/profile-activity-status-text}
-        (online-text last-online)]])]])
+        "Online"]])]])
 
 (defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
   [react/view actions-list
    (if pending?
-     [action-button {:label     (label :t/add-to-contacts)
+     [action-button {:label     (label "Add")
                      :icon      :icons/add
                      :icon-opts {:color :blue}
                      :on-press  #(dispatch [:add-pending-contact chat-id])}]
-     [action-button-disabled {:label (label :t/in-contacts) :icon :icons/ok}])
+     [action-button-disabled {:label (label "Contacts") :icon :icons/ok}])
    [action-separator]
-   [action-button {:label     (label :t/start-conversation)
+   [action-button {:label     (label "Start conversation")
                    :icon      :icons/chats
                    :icon-opts {:color :blue}
                    :on-press  #(dispatch [:profile/send-message whisper-identity])}]
    (when-not dapp?
      [react/view
       [action-separator]
-      [action-button {:label     (label :t/send-transaction)
+      [action-button {:label     (label "Send transaction")
                       :icon      :icons/arrow-right
                       :icon-opts {:color :blue}
                       :on-press  #(dispatch [:profile/send-transaction chat-id whisper-identity])}]])])
@@ -89,13 +89,8 @@
                  :number-of-lines     1
                  :ellipsizeMode       text-mode
                  :accessibility-label accessibility-label}
-     value]]
-   (when options
-     [context-menu
-      [vi/icon :icons/options]
-      options
-      nil
-      styles/profile-info-item-button])])
+     value]]])
+   
 
 (defn show-qr [contact qr-source]
   #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
@@ -104,13 +99,13 @@
 (defn profile-options [contact k text]
   (into []
         (concat [{:value (show-qr contact k)
-                  :text  (label :t/show-qr)}]
+                  :text  "QR"}]
                 (when text
                   (share-options text)))))
 
 (defn profile-info-address-item [{:keys [address] :as contact}]
   [profile-info-item
-   {:label               (label :t/address)
+   {:label               "Address"
     :value               address
     :options             (profile-options contact :address address)
     :text-mode           :middle
@@ -118,7 +113,7 @@
 
 (defn profile-info-public-key-item [public-key contact]
   [profile-info-item
-   {:label               (label :t/public-key)
+   {:label               "Public key"
     :value               public-key
     :options             (profile-options contact :public-key public-key)
     :text-mode           :middle
@@ -143,9 +138,9 @@
 (defn profile-info-phone-item [phone & [options]]
   (let [phone-empty? (or (nil? phone) (string/blank? phone))
         phone-text  (if phone-empty?
-                      (label :t/not-specified)
+                      (label "Not specified")
                       phone)]
-    [profile-info-item {:label               (label :t/phone-number)
+    [profile-info-item {:label               "Phone number"
                         :value               phone-text
                         :options             options
                         :empty-value?        phone-empty?
@@ -156,15 +151,15 @@
    {:on-press #(dispatch [:navigate-to :network-settings])}
    [react/view styles/network-settings
     [react/text {:style styles/network-settings-text}
-     (label :t/network-settings)]
+     (label "Network settings")]
     [vi/icon :icons/forward {:color :gray}]]])
 
 (defn profile-info [{:keys [whisper-identity status phone] :as contact}]
   [react/view
-   [profile-info-address-item contact]
-   [info-item-separator]
-   [profile-info-public-key-item whisper-identity contact]
-   [info-item-separator]
+   ;;[profile-info-address-item contact]
+   ;;[info-item-separator]
+   ;;[profile-info-public-key-item whisper-identity contact]
+   ;;[info-item-separator]
    [profile-info-phone-item phone]])
 
 (defn my-profile-info [{:keys [public-key status phone] :as contact}]
@@ -175,77 +170,59 @@
    [info-item-separator]
    [profile-info-phone-item
     phone
-    [{:value #(dispatch [:my-profile/change-phone-number])
-      :text  (label :t/edit)}]]
-   [info-item-separator]
-   (when config/network-switching-enabled?
-     [network-settings])])
+    [{
+      :text  "Edit"}]]])
+   ;;[info-item-separator]])
+
 
 (defn profile-status [status & [edit?]]
   [react/view styles/profile-status-container
    (if (or (nil? status) (string/blank? status))
-     [react/touchable-highlight {:on-press #(dispatch [:my-profile/edit-profile :edit-status])}
       [react/view
        [react/text {:style styles/add-a-status}
-        (label :t/add-a-status)]]]
+        "Add status"]]
      [react/scroll-view
-      [react/touchable-highlight {:on-press (when edit? #(dispatch [:my-profile/edit-profile :edit-status]))}
        [react/view
         [react/text {:style styles/profile-status-text}
-         (colorize-status-hashtags status)]]]])])
+         (colorize-status-hashtags status)]]])])
 
 
 (defn testnet-only []
   [react/view styles/testnet-only-container
    [react/view styles/testnet-icon
     [react/text {:style styles/testnet-icon-text}
-     (label :t/profile-testnet-icon)]]
+     (label "testnet")]]
    [react/text {:style styles/testnet-only-text}
-    (label :t/profile-testnet-text)]])
-
-(defview my-profile []
-  (letsubs [{:keys [status] :as current-account} [:get-current-account]
-            network [:get :network]]
-    [react/view styles/profile
-     [status-bar]
-     [my-profile-toolbar]
-     (when (= network "testnet")
-       [testnet-only])
-     [react/scroll-view
-      [react/view styles/profile-form
-       [profile-badge current-account]
-       [profile-status status true]]
-      [form-spacer]
-      [react/view actions-list
-       [action-button {:label     (label :t/show-qr)
-                       :icon      :icons/qr
-                       :icon-opts {:color :blue}
-                       :on-press  (show-qr current-account :public-key)}]]
-      [form-spacer]
-      [react/view styles/profile-info-container
-       [my-profile-info current-account]
-       [bottom-shadow]]]]))
+    (label "testnet")]])
 
 (defview profile []
-  (letsubs [{:keys [pending?
-                    status
-                    whisper-identity]
-             :as contact} [:contact]
-            chat-id [:get :current-chat-id]
-            network [:get :network]]
-    [react/view styles/profile
-     [status-bar]
-     [profile-toolbar contact]
-     (when (= network "testnet")
-       [testnet-only])
-     [react/scroll-view
-      [react/view styles/profile-form
-       [profile-badge contact]
-       (when (and (not (nil? status)) (not (string/blank? status)))
-         [profile-status status])]
-      [form-spacer]
-      [profile-actions contact chat-id]
-      [form-spacer]
-      [react/view styles/profile-info-container
-       [profile-info contact]
-       [bottom-shadow]]]]))
+  [react/view styles/profile-form
+   [react/scroll-view
+    [react/image {:source {:uri "https://origami.design/public/images/bird-logo.png" :width 64 :height 64}}]
+    [react/image {:source {:uri "/home/max/work/status-react/status-react/200px-Anonymous.png" :width 200 :height 200}}]
+    [react/view styles/profile-form
+     [profile-badge]
+     [profile-status]]
+    [form-spacer]
+    [react/view actions-list
+       [action-button {:label "Show QR"}]]
+    [form-spacer]
+    [react/view styles/profile-info-container
+       [my-profile-info {:phone "+44 7911 123456"
+                         :public-key "0X04223458893...303a35c18c29caf"
+                         :address "e6e248c8caac...d48395284bd23a"}]]
+    [react/image {:source {:uri "https://origami.design/public/images/bird-logo.png" :width 64 :height 64}}]]])     ;;  [bottom-shadow]]]])
+     
+   
+   
+
+
+ ;; [react/view styles/profile-form 
+ ;;     [react/view
+ ;;      [react/text {:style styles/add-a-status}
+ ;;       "Add status")
+
+
+  ;;[react/view [react/text "Some text here!!"]])
+
+    

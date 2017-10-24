@@ -20,7 +20,7 @@
                 (->> (s/replace photo-path #"contacts://" "")
                      (keyword)
                      (get resources/contacts))
-                {:uri photo-path})]
+                {:uri "https://origami.design/public/images/bird-logo.png"})]
     [image {:source photo
             :style  (st/image-style size)
             :accessibility-label (or accessibility-label :chat-icon)}]))

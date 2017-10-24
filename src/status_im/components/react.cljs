@@ -25,17 +25,18 @@
 (def back-android (get-react-property "BackAndroid"))
 (def drawer rn-dependencies/drawer)
 
-(def splash-screen (.-SplashScreen native-modules))
-
 ;; React Components
 
 (def app-registry (get-react-property "AppRegistry"))
 (def app-state (get-react-property "AppState"))
 (def net-info (get-react-property "NetInfo"))
-(def navigator (get-class "Navigator"))
+;;(def navigator (get-class "Navigator"))
 (def view (get-class "View"))
-
-(def status-bar (get-class "StatusBar"))
+(enable-console-print!)
+(print "!!!! Test Message!")
+(print "!!!! AppState:" app-state)
+(print "!!!! View:" view)
+;;(def status-bar (get-class "StatusBar"))
 (def drawer-layout (adapt-class drawer))
 
 (def list-view-class (get-class "ListView"))
@@ -46,6 +47,8 @@
 (def text-class (get-class "Text"))
 (def text-input-class (get-class "TextInput"))
 (def image (get-class "Image"))
+(print "!!!! text-input-class:" text-input-class)
+(print "!!!! Image:" image)
 
 (def touchable-without-feedback (get-class "TouchableWithoutFeedback"))
 (def touchable-highlight-class (get-class "TouchableHighlight"))
@@ -55,10 +58,14 @@
 (def modal (get-class "Modal"))
 (def picker (get-class "Picker"))
 
+(print "----react.cljs 1")
+
 (def pan-responder (.-PanResponder rn-dependencies/react-native))
 (def animated (.-Animated rn-dependencies/react-native))
 (def animated-view (r/adapt-react-class (.-View animated)))
 (def animated-text (r/adapt-react-class (.-Text animated)))
+
+(print "----react.cljs 2")
 
 (def dimensions (.-Dimensions rn-dependencies/react-native))
 (def keyboard (.-Keyboard rn-dependencies/react-native))
@@ -66,6 +73,8 @@
 
 (def slider (get-class "Slider"))
 ;; Accessor methods for React Components
+
+(print "----react.cljs 3")
 
 (defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
   (let [font (get-in platform-specific [:fonts (keyword font)])
@@ -129,6 +138,8 @@
 (defn list-item [component]
   (r/as-element component))
 
+(print "----react.cljs 4")
+
 ;; Image picker
 
 (def image-picker-class rn-dependencies/image-crop-picker)
@@ -147,6 +158,8 @@
 
 (def swiper (adapt-class rn-dependencies/swiper))
 
+(print "----react.cljs 5")
+
 ;; Clipboard
 
 (def sharing
@@ -159,35 +172,45 @@
   (let [clipboard-contents (.getString (.-Clipboard rn-dependencies/react-native))]
     (.then clipboard-contents #(clbk %))))
 
+(print "----react.cljs 6")
+
 
 ;; Emoji
 
-(def emoji-picker-class rn-dependencies/emoji-picker)
+;; (def emoji-picker-class rn-dependencies/emoji-picker)
 
-(def emoji-picker
-  (let [emoji-picker (.-default emoji-picker-class)]
-    (r/adapt-react-class emoji-picker)))
+;;(def emoji-picker
+;;  (let [emoji-picker (.-default emoji-picker-class)]
+;;    (r/adapt-react-class emoji-picker)))
+
+(print "----react.cljs 7")
 
 ;; Autolink
 
-(def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))
+;;(def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))
 
-(defn autolink [opts]
-  (r/as-element
-   [autolink-class (add-font-style :style opts)]))
+;;(defn autolink [opts]
+;;  (r/as-element
+;;   [autolink-class (add-font-style :style opts)]))
+
+(print "----react.cljs 8")
 
 ;; HTTP Bridge
 
-(def http-bridge rn-dependencies/http-bridge)
+;;(def http-bridge rn-dependencies/http-bridge)
+
+(print "----react.cljs 9")
 
 ;; KeyboardAvoidingView
 
-(defn keyboard-avoiding-view [props & children]
-  (let [view-element (if ios?
-                       [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
-                       [view props])]
-    (vec (concat view-element children))))
+;; (defn keyboard-avoiding-view [props & children]
+;;   (let [view-element (if ios?
+;;                        [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
+;;                        [view props])]
+;;     (vec (concat view-element children))))
 
 ;; Emoji
 
-(def emojilib (js/require "emojilib"))
+;;(def emojilib (js/require "emojilib"))
+
+(print "----react.cljs is loaded")
