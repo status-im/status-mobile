@@ -103,23 +103,33 @@
                                            :contacts        contacts}]])]
        [empty-section :empty-recent :t/no-statuses-discovered :t/no-statuses-discovered-body])]))
 
+;; TODO(oskarth): Figure out chat count how to get from public chat list subscription
 (def public-chats-mock-data
-  [{:name  "Status team"
+  [{:name  "Status"
+    :topic "status"
     :count 25
     :color "#B2F3E3"}
    {:name  "ETH news"
+    :topic "ethnews"
     :count 12
     :color "#F7A7E8"}
    {:name  "All about Ethereum"
+    :topic "ethereum"
     :count 32
     :color "#C1B8F0"}])
 
-(defn render-public-chats-item [item]
+
+(defn navigate-to-public-chat [topic]
+  (re-frame/dispatch [:create-new-public-chat topic]))
+
+(defn render-public-chats-item [{:keys [name color topic] :as item}]
+  [react/touchable-highlight {:on-press #(navigate-to-public-chat topic)}
+
   [react/view styles/public-chats-item-container
    [react/view styles/public-chats-icon-container
-    [react/view (styles/public-chats-icon (:color item))
+    [react/view (styles/public-chats-icon color)
      [react/text {:style styles/public-chats-icon-text}
-                 (-> item :name first str)]]]
+      (-> name first str)]]]
    [react/view styles/public-chats-item-inner
     [react/view styles/public-chats-item-name-container
      ;; TODO(goranjovic) lightgray intentionally hardcoded while only a teaser
@@ -127,10 +137,10 @@
      [vector-icons/icon :icons/public {:color "lightgray"}]
      [react/text {:font  :medium
                   :style styles/public-chats-item-name-text}
-                 (:name item)]]
+      name]]
     [react/view {}
      [react/text {:style {:color :lightgray}}
-      (i18n/label :t/public-chat-user-count {:count (:count item)})]]]])
+      (str "#" topic)]]]]])
 
 (defn public-chats-teaser []
   [react/view styles/public-chats-container
