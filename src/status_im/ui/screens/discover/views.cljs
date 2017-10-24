@@ -47,8 +47,8 @@
                               (re-frame/dispatch [:navigate-to :discover-search-results]))))}])
 
 
-(defview top-status-for-popular-hashtag [{:keys [tag current-account contacts]}]
-  (letsubs [discoveries [:get-popular-discoveries 1 [tag]]]
+(defn top-status-for-popular-hashtag [{:keys [tag item current-account contacts]}]
+  (let [{:keys [discovery total]} item]
     [react/view styles/popular-list-container
      [react/view styles/row
       [react/view {}
@@ -62,29 +62,29 @@
       [react/view styles/tag-count-container
        [react/text {:style styles/tag-count
                     :font  :default}
-        (str (:total discoveries))]]]
-     [components/discover-list-item {:message         (first (:discoveries discoveries))
+        (str total)]]]
+     [components/discover-list-item {:message         discovery
                                      :show-separator? false
                                      :current-account current-account
                                      :contacts        contacts}]]))
 
-(defview popular-hashtags-preview [{:keys [contacts current-account]}]
-  (letsubs [popular-tags [:get-popular-tags 10]]
-    (let [has-content? (seq popular-tags)]
-      [react/view styles/popular-container
-       ;; TODO (goranjovic) - refactor double dispatch to a single call
-       [components/title :t/popular-tags :t/all #(do (re-frame/dispatch [:set :discover-search-tags (map :name popular-tags)])
-                                                     (re-frame/dispatch [:navigate-to :discover-all-hashtags])) has-content?]
-       (if has-content?
-         [carousel/carousel {:pageStyle styles/carousel-page-style
-                             :gap       8
-                             :sneak     16
-                             :count     (count popular-tags)}
-          (for [{:keys [name]} popular-tags]
-            [top-status-for-popular-hashtag {:tag             name
-                                             :contacts        contacts
-                                             :current-account current-account}])]
-         [empty-section :empty-hashtags :t/no-hashtags-discovered-title :t/no-hashtags-discovered-body])])))
+(defn popular-hashtags-preview [{:keys [popular-discoveries popular-tags contacts current-account]}]
+  (let [has-content? (seq popular-tags)]
+    [react/view styles/popular-container
+     ;; TODO (goranjovic) - refactor double dispatch to a single call
+     [components/title :t/popular-tags :t/all #(do (re-frame/dispatch [:set :discover-search-tags (map :name popular-tags)])
+                                                   (re-frame/dispatch [:navigate-to :discover-all-hashtags])) has-content?]
+     (if has-content?
+       [carousel/carousel {:pageStyle styles/carousel-page-style
+                           :gap       8
+                           :sneak     16
+                           :count     (count popular-tags)}
+        (for [[tag item] popular-discoveries]
+          [top-status-for-popular-hashtag {:tag             tag
+                                           :item            item
+                                           :contacts        contacts
+                                           :current-account current-account}])]
+       [empty-section :empty-hashtags :t/no-hashtags-discovered-title :t/no-hashtags-discovered-body])]))
 
 (defn recent-statuses-preview [{:keys [current-account contacts discoveries]}]
   (let [has-content? (seq discoveries)]
@@ -139,12 +139,14 @@
                     :render-fn render-public-chats-item}]])
 
 (defview discover [current-view?]
-  (letsubs [show-search     [:get-in [:toolbar-search :show]]
-            search-text     [:get-in [:toolbar-search :text]]
-            contacts        [:get-contacts]
-            current-account [:get-current-account]
-            discoveries     [:get-recent-discoveries]
-            all-dapps       [:get-all-dapps]]
+  (letsubs [show-search         [:get-in [:toolbar-search :show]]
+            search-text         [:get-in [:toolbar-search :text]]
+            contacts            [:get-contacts]
+            current-account     [:get-current-account]
+            discoveries         [:get-recent-discoveries]
+            all-dapps           [:get-all-dapps]
+            popular-tags        [:get-popular-tags 10]
+            popular-discoveries [:get-top-discovery-per-tag 10]]
     [react/view styles/discover-container
      [toolbar-view (and current-view?
                         (= show-search :discover)) search-text]
@@ -152,7 +154,9 @@
         [recent-statuses-preview {:contacts        contacts
                                   :current-account current-account
                                   :discoveries     discoveries}]
-        [popular-hashtags-preview {:contacts        contacts
-                                   :current-account current-account}]
+        [popular-hashtags-preview {:popular-tags        popular-tags
+                                   :popular-discoveries popular-discoveries
+                                   :contacts            contacts
+                                   :current-account     current-account}]
         [all-dapps/preview all-dapps]
         [public-chats-teaser]]]))

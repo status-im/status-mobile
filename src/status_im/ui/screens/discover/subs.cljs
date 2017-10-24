@@ -35,6 +35,14 @@
         {:discoveries (take limit discoveries)
          :total       (count discoveries)}))))
 
+(reg-sub :get-top-discovery-per-tag
+  (fn [{:keys [discoveries tags]} [_ limit]]
+    (let [tag-names (map :name (take limit tags))]
+     (for [tag tag-names]
+       (let [results (get-discoveries-by-tags discoveries tag nil)]
+          [tag {:discovery (first results)
+                :total     (count results)}])))))
+
 (reg-sub :get-recent-discoveries
   (fn [db]
     (sort-by :created-at > (vals (:discoveries db)))))
