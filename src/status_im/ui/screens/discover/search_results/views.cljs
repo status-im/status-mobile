@@ -1,8 +1,6 @@
 (ns status-im.ui.screens.discover.search-results.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.utils.listview :refer [to-datasource]]
-            [status-im.components.status-bar :as status-bar]
-            [status-im.components.react :as react]
+  (:require [status-im.components.react :as react]
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.toolbar.view :refer [toolbar]]
             [status-im.ui.screens.discover.components.views :as components]
@@ -11,36 +9,29 @@
             [status-im.ui.screens.contacts.styles :as contacts-styles]
             [status-im.components.toolbar-new.view :as toolbar]))
 
-(defn render-separator [_ row-id _]
-  (react/list-item [react/view {:style styles/row-separator
-                                :key   row-id}]))
-
-
+;; TOOD(oskarth): Refactor this, very similar to discover-all-hashtags view
 (defview discover-search-results []
   (letsubs [{:keys [discoveries total]} [:get-popular-discoveries 250]
             tags            [:get :discover-search-tags]
             contacts        [:get-contacts]
             current-account [:get-current-account]]
-    (let [datasource (to-datasource discoveries)]
       [react/view styles/discover-tag-container
-       [status-bar/status-bar]
        [toolbar/toolbar2 {}
         toolbar/default-nav-back
-        [react/view {:flex-direction  :row
-                     :justify-content :flex-start}
-         [react/text {} (str "#" (first tags) " " total)]]]
+        [toolbar/content-title (str "#" (first tags) " " total)]]
        (if (empty? discoveries)
          [react/view styles/empty-view
           [vi/icon :icons/group-big {:style contacts-styles/empty-contacts-icon}]
           [react/text {:style contacts-styles/empty-contacts-text}
            (i18n/label :t/no-statuses-found)]]
-         ;TODO (goranjovic) replace this with status-im.components.list.views
-         ;as per https://github.com/status-im/status-react/issues/1840
-         [react/list-view {:dataSource      datasource
-                           :renderRow       (fn [row _ _]
-                                              (react/list-item [components/discover-list-item
-                                                                {:message         row
-                                                                 :current-account current-account
-                                                                 :contacts        contacts}]))
-                           :renderSeparator render-separator
-                           :style           styles/status-list-inner}])])))
+         [react/scroll-view styles/list-container
+          [react/view styles/status-list-outer
+           [react/view styles/status-list-inner
+            (let [discoveries (map-indexed vector discoveries)]
+              (for [[i {:keys [message-id] :as message}] discoveries]
+                ^{:key (str "message-hashtag-" message-id)}
+                [components/discover-list-item-full
+                 {:message         message
+                  :show-separator? (not= (inc i) (count discoveries))
+                  :contacts        contacts
+                  :current-account current-account}]))]]])]))
