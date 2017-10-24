@@ -64,7 +64,8 @@
     :to           "me"}])
 
 (def start-signup-events
-  [[:received-message
+  ;; TODO(janherich): show this message again once `/phone` command is working properly again
+  [#_[:received-message
     {:message-id   (random/id)
      :content      (command-content
                     :phone
