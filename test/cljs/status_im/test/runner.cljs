@@ -16,7 +16,9 @@
             [status-im.test.utils.erc20]
             [status-im.test.utils.random]
             [status-im.test.utils.gfycat.core]
-            [status-im.test.utils.signing-phrase.core]))
+            [status-im.test.utils.signing-phrase.core]
+            [status-im.test.utils.transducers]
+            [status-im.test.utils.async]))
 
 (enable-console-print!)
 
@@ -27,6 +29,7 @@
 (set! goog.DEBUG false)
 
 (doo-tests
+ 'status-im.test.utils.async
  'status-im.test.chat.events
  'status-im.test.accounts.events
  ;;'status-im.test.contacts.events
@@ -43,4 +46,5 @@
  'status-im.test.utils.erc20
  'status-im.test.utils.random
  'status-im.test.utils.gfycat.core
- 'status-im.test.utils.signing-phrase.core)
+ 'status-im.test.utils.signing-phrase.core
+ 'status-im.test.utils.transducers)
