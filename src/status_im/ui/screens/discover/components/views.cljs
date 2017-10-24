@@ -26,6 +26,13 @@
                   :uppercase? (:uppercase? styles/subtitle-text-augment)}
       (i18n/label action-kw)]]]])
 
+ ;; TODO(oskarth): Reconcile with above fn
+(defn title-no-action [label-kw]
+  [react/view styles/title
+   [react/text {:style      styles/title-text
+                :font       :medium}
+    (i18n/label label-kw)]])
+
 (defn display-name [me? account-name contact-name name whisper-id]
   (cond
     me? account-name                                        ;status by current user
