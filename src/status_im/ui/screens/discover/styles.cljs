@@ -241,10 +241,6 @@
   {:border-bottom-color styles/color-light-gray5
    :border-bottom-width 1})
 
-(def discover-tag-container
-  {:flex             1
-   :background-color styles/color-light-gray})
-
 (def tag-title-container
   {:height           68
    :margin-left      16
@@ -468,4 +464,5 @@
 
 ;; TODO(goranjovic): Using the same style in dapp-details screen - reconcile later
 (def dapp-details-container all-dapps-container)
+(def discover-tag-container all-dapps-container)
 
