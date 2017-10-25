@@ -64,7 +64,10 @@
   (log/debug "migrating v16 account database: " old-realm new-realm)
   (when-let [wallet-chat (chat-by-id new-realm "wallet")]
     (.delete new-realm wallet-chat))
-  (when-let [wallet-contact (chat-by-id new-realm "wallet")]
+  (when-let [wallet-contact (some-> new-realm
+                                    (.objects "contact")
+                                    (.filtered (str "whisper-identity = \"wallet\""))
+                                    (aget 0))]
     (.delete new-realm wallet-contact))
   (migrate-commands new-realm "command-request")
   (migrate-commands new-realm "command"))
