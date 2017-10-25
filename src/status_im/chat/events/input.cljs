@@ -52,9 +52,7 @@
 
 (defn update-suggestions
   "Update suggestions for current chat input, takes db as the only argument
-  and returns map with keys :db (new db with up-to-date suggestions) and (optionally)
-  :call-jail-function with jail function call params, if request to jail needs
-  to be made as a result of suggestions update."
+  and returns new db with up-to date suggestions"
   [{:keys [chats current-chat-id] :as db}]
   (let [chat-text       (str/trim (or (get-in chats [current-chat-id :input-text]) ""))
         requests        (->> (commands-model/get-possible-requests db)
@@ -73,7 +71,7 @@
                           (and dapp?
                                (str/blank? chat-text))
                           (assoc-in [:chats current-chat-id :parameter-boxes :message] nil))]
-    {:db new-db}))
+    new-db))
 
 (defn set-chat-input-text
   "Set input text for current-chat and updates suggestions relevant to current input.
@@ -131,7 +129,7 @@
         seq-params? (-> (input-model/selected-chat-command db current-chat-id)
                         (get-in [:command :sequential-params]))]
     (if seq-params?
-      {:db (set-chat-seq-arg-input-text db arg)}
+      (set-chat-seq-arg-input-text db arg)
       (let [arg          (str/replace arg (re-pattern const/arg-wrapping-char) "")
             command-name (first command)
             command-args (into [] (rest command))
@@ -155,7 +153,7 @@
   (let [parameter-index (input-model/argument-position db)]
     (when (and command (> parameter-index -1))
       (let [data    (get-in db [:local-storage current-chat-id])
-            bot-db  (get bot-db (or bot current-chat-id))
+            bot-db  (get bot-db owner-id)
             path    [(if (= :command type) :commands :responses)
                      [name
                       (if (= :command type)
@@ -176,7 +174,7 @@
                                          :from current-account-id
                                          :to   to}
                                         (input-model/command-dependent-context-params current-chat-id command))}]
-        {:call-jail {:jail-id (or bot owner-id current-chat-id)
+        {:call-jail {:jail-id owner-id
                      :path    path
                      :params  params
                      :callback-events-creator (fn [jail-response]
@@ -214,9 +212,9 @@
 (defn select-chat-input-command
   "Selects command + (optional) arguments as input for active chat"
   [{:keys [current-chat-id chat-ui-props] :as db}
-   {:keys [prefill prefill-bot-db sequential-params name] :as command} metadata prevent-auto-focus?]
+   {:keys [prefill prefill-bot-db sequential-params name owner-id] :as command} metadata prevent-auto-focus?]
   (let [db' (-> db
-                bots-events/clear-bot-db
+                (bots-events/clear-bot-db owner-id)
                 clear-seq-arguments
                 (model/set-chat-ui-props {:show-suggestions?   false
                                           :show-emoji?         false
@@ -230,7 +228,8 @@
                                             (input-model/join-command-args prefill)))))
         fx  (assoc (load-chat-parameter-box db' command) :db db')]
     (cond-> fx
-      prefill-bot-db (update :db bots-events/update-bot-db {:db prefill-bot-db})
+      prefill-bot-db (update :db bots-events/update-bot-db {:db  prefill-bot-db
+                                                            :bot owner-id})
 
       (not (and sequential-params
                 prevent-auto-focus?))
@@ -246,15 +245,18 @@
 
 (defn set-contact-as-command-argument
   "Sets contact as command argument for active chat"
-  [db {:keys [bot-db-key contact arg-index]}]
+  [{:keys [current-chat-id] :as db} {:keys [bot-db-key contact arg-index]}]
   (let [name    (str/replace (:name contact) (re-pattern const/arg-wrapping-char) "")
-        contact (select-keys contact [:address :whisper-identity :name :photo-path :dapp?])]
-    (-> (set-command-argument db arg-index name true)
-        (as-> fx
-            (merge fx (bots-events/set-in-bot-db
-                       (:db fx)
-                       {:path [:public (keyword bot-db-key)]
-                        :value contact})))
+        contact (select-keys contact [:address :whisper-identity :name :photo-path :dapp?])
+        command-owner (-> db
+                          (input-model/selected-chat-command current-chat-id)
+                          :command
+                          :owner-id)]
+    (-> db
+        (set-command-argument arg-index name true)
+        (bots-events/set-in-bot-db {:bot   command-owner
+                                    :path  [:public (keyword bot-db-key)]
+                                    :value contact})
         (as-> fx
             (let [{:keys [current-chat-id]
                    :as new-db}             (:db fx)
@@ -283,7 +285,7 @@
                                  {:url  (i18n/get-contact-translated chat-id :dapp-url dapp-url)
                                   :name (i18n/get-contact-translated chat-id :name name)}))
         owner-id        (:owner-id command)
-        bot-db          (get bot-db chat-id)
+        bot-db          (get bot-db owner-id)
         params          (merge (input-model/args->params content)
                                {:bot-db   bot-db
                                 :metadata metadata})
@@ -374,10 +376,10 @@
   (fn [db [data]]
     (set-chat-input-metadata db data)))
 
-(handlers/register-handler-fx
+(handlers/register-handler-db
   :set-command-argument
   [re-frame/trim-v]
-  (fn [{:keys [db]} [[index arg move-to-next?]]]
+  (fn [db [[index arg move-to-next?]]]
     (set-command-argument db index arg move-to-next?)))
 
 (handlers/register-handler-fx
@@ -393,9 +395,9 @@
     (when-let [cmp-ref (get-in chat-ui-props [current-chat-id ref])]
       {::blur-rn-component cmp-ref})))
 
-(handlers/register-handler-fx
+(handlers/register-handler-db
   :update-suggestions
-  (fn [{:keys [db]} _]
+  (fn [db _]
     (update-suggestions db)))
 
 (handlers/register-handler-fx
@@ -443,18 +445,18 @@
   [re-frame/trim-v]
   (fn [{{:keys [current-public-key current-chat-id]
          :accounts/keys [current-account-id] :as db} :db} [{:keys [command] :as command-message}]]
-    (-> db
-        clear-seq-arguments
-        (set-chat-input-metadata nil)
-        (set-chat-input-text nil)
-        (model/set-chat-ui-props {:sending-in-progress? false})
-        update-suggestions
-        ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
-        (assoc :dispatch [:check-commands-handlers! {:message (get-in db [:chats current-chat-id :input-text])
-                                                     :command  command-message
-                                                     :chat-id  current-chat-id
-                                                     :identity current-public-key
-                                                     :address  current-account-id}]))))
+    {:db (-> db
+             clear-seq-arguments
+             (set-chat-input-metadata nil)
+             (set-chat-input-text nil)
+             (model/set-chat-ui-props {:sending-in-progress? false})
+             update-suggestions)
+     ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
+     :dispatch [:check-commands-handlers! {:message (get-in db [:chats current-chat-id :input-text])
+                                           :command  command-message
+                                           :chat-id  current-chat-id
+                                           :identity current-public-key
+                                           :address  current-account-id}]}))
 
 (handlers/register-handler-fx
   ::check-command-type
@@ -500,15 +502,15 @@
         ;; no command detected, when not empty, proceed by sending text message without command processing
         (if (str/blank? input-text)
           {:db db}
-          (-> db
-              (set-chat-input-metadata nil)
-              (set-chat-input-text nil)
-              update-suggestions
-              ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
-              (assoc :dispatch [:prepare-message {:message  input-text
-                                                  :chat-id  current-chat-id
-                                                  :identity current-public-key
-                                                  :address  (:accounts/current-account-id db)}])))))))
+          {:db (-> db
+                   (set-chat-input-metadata nil)
+                   (set-chat-input-text nil)
+                   update-suggestions)
+           ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
+           :dispatch [:prepare-message {:message  input-text
+                                        :chat-id  current-chat-id
+                                        :identity current-public-key
+                                        :address  (:accounts/current-account-id db)}]})))))
 
 ;; TODO: remove this handler and leave only helper fn once all invocations are refactored
 (handlers/register-handler-db
@@ -561,10 +563,10 @@
     (let [input-text (get-in db [:chats current-chat-id :input-text])
           command    (input-model/selected-chat-command db current-chat-id input-text)]
       (if (get-in command [:command :sequential-params])
-        (-> (set-command-argument db 0 "" false)
-            (update :db set-chat-seq-arg-input-text "")
-            (as-> fx
-                (merge fx (load-chat-parameter-box (:db fx) (:command command)))))
+        (-> db
+            (set-command-argument 0 "" false)
+            (set-chat-seq-arg-input-text "")
+            (load-chat-parameter-box (:command command)))
         (let [arg-pos (input-model/argument-position db)]
           (when (pos? arg-pos)
             (let [input-text (get-in db [:chats current-chat-id :input-text])
@@ -585,9 +587,9 @@
   (fn [{:keys [db]} [params]]
     (set-contact-as-command-argument db params)))
 
-(handlers/register-handler-fx
+(handlers/register-handler-db
   :show-suggestions
-  (fn [{:keys [db]} _]
+  (fn [db _]
     (-> db
         (model/toggle-chat-ui-prop :show-suggestions?)
         (model/set-chat-ui-props {:validation-messages nil})

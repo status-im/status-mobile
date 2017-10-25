@@ -30,10 +30,11 @@
 (handlers/register-handler-fx
   :profile/send-transaction
   [trim-v]
-  (fn [_ [chat-id]]
-    {:dispatch [:navigate-to :chat chat-id]
-     ;;TODO get rid of timeout
-     :dispatch-later [{:ms 100 :dispatch [:select-chat-input-command {:name "send"}]}]}))
+  (fn [{:keys [db]} [chat-id]]
+    (let [send-command (first (get-in db [:contacts/contacts "transactor-personal" :commands :send]))]
+      {:dispatch [:navigate-to :chat chat-id]
+       ;;TODO get rid of timeout
+       :dispatch-later [{:ms 100 :dispatch [:select-chat-input-command send-command]}]})))
 
 (handlers/register-handler-fx
   :profile/send-message
@@ -45,9 +46,10 @@
   :my-profile/update-phone-number
   ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
   ;; We allow to change phone number only from console because this requires entering SMS verification code.
-  (fn [_ _]
-    {:dispatch-n [[:navigate-to :chat console-chat-id]
-                  [:select-chat-input-command {:name "phone"}]]}))
+  (fn [{:keys [db]} _]
+    (let [phone-command (first (get-in db [:contacts/contacts "console" :responses :phone]))]
+      {:dispatch-n [[:navigate-to :chat console-chat-id]
+                    [:select-chat-input-command phone-command]]})))
 
 (defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))
