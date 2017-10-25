@@ -139,12 +139,12 @@
                    (dispatch (on-contacts-event-creator (add-identity contacts-by-hash contacts))))))))
 
 (reg-fx
-  ::request-contacts-by-address
+  ::request-contact-by-address
   (fn [id]
     (http-post "get-contacts-by-address" {:addresses [id]}
                (fn [{:keys [contacts]}]
-                 (if (> (count contacts) 0)
-                   (let [{:keys [whisper-identity]} (first contacts)
+                 (if-let [contact (first contacts)]
+                   (let [{:keys [whisper-identity]} contact
                          contact {:name             (generate-gfy whisper-identity)
                                   :address          id
                                   :photo-path       (identicon whisper-identity)
@@ -431,7 +431,7 @@
   :add-contact-handler
   (fn [{:keys [db]} [_ id]]
     (if (spec/valid? :global/address id)
-      {::request-contacts-by-address id}
+      {::request-contact-by-address id}
       {:dispatch (if (get-in db [:contacts/contacts id])
                    [:add-pending-contact id]
                    [:add-new-contact-and-open-chat {:name             (generate-gfy id)
