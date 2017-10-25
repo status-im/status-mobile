@@ -35,7 +35,7 @@
 
 (defn suggestions-handler!
   [{:keys [chats] :as db}
-   [{:keys [chat-id default-db command parameter-index result]}]]
+   [{:keys [chat-id bot-id default-db command parameter-index result]}]]
   (let [{:keys [markup height] :as returned} (get-in result [:result :returned])
         contains-markup? (contains? returned :markup)
         current-input (get-in chats [chat-id :input-text])
@@ -47,36 +47,35 @@
     (when (and contains-markup? path (not= (get-in db path) markup))
       (dispatch [:set-in path returned])
       (when default-db
-        (dispatch [:update-bot-db {:bot chat-id
+        (dispatch [:update-bot-db {:bot bot-id
                                    :db  default-db}])))))
 
 (defn suggestions-events-handler!
-  [{:keys [current-chat-id bot-db] :as db} [[n & data :as ev] val]]
-  (log/debug "Suggestion event: " n (first data) val)
-  (let [{:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])]
-    (case (keyword n)
-      :set-command-argument
-      (let [[index value move-to-next?] (first data)]
-        (dispatch [:set-command-argument [index value move-to-next?]]))
-      :set-value
-      (dispatch [:set-chat-input-text (first data)])
-      :set
-      (let [opts {:bot   current-chat-id
-                  :path  (mapv keyword data)
-                  :value val}]
-        (dispatch [:set-in-bot-db opts]))
-      :set-command-argument-from-db
-      (let [[index arg move-to-next?] (first data)
-            path  (keyword arg)
-            value (str (get-in bot-db [current-chat-id path]))]
-        (dispatch [:set-command-argument [index value move-to-next?]]))
-      :set-value-from-db
-      (let [path  (keyword (first data))
-            value (str (get-in bot-db [current-chat-id path]))]
-        (dispatch [:set-chat-input-text value]))
-      :focus-input
-      (dispatch [:chat-input-focus :input-ref])
-      nil)))
+  [{:keys [bot-db] :as db} [bot-id [n & data :as ev] val]]
+  (log/debug "Suggestion event: " n (first data) val) 
+  (case (keyword n)
+    :set-command-argument
+    (let [[index value move-to-next?] (first data)]
+      (dispatch [:set-command-argument [index value move-to-next?]]))
+    :set-value
+    (dispatch [:set-chat-input-text (first data)])
+    :set
+    (let [opts {:bot   bot-id
+                :path  (mapv keyword data)
+                :value val}]
+      (dispatch [:set-in-bot-db opts]))
+    :set-command-argument-from-db
+    (let [[index arg move-to-next?] (first data)
+          path  (keyword arg)
+          value (str (get-in bot-db [bot-id path]))]
+      (dispatch [:set-command-argument [index value move-to-next?]]))
+    :set-value-from-db
+    (let [path  (keyword (first data))
+          value (str (get-in bot-db [bot-id path]))]
+      (dispatch [:set-chat-input-text value]))
+    :focus-input
+    (dispatch [:chat-input-focus :input-ref])
+    nil))
 
 (defn print-error-message! [message]
   (fn [_ params]

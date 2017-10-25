@@ -120,9 +120,9 @@
   (when status
     (call-module #(.discardTransaction status id))))
 
-(defn parse-jail [chat-id file callback]
+(defn parse-jail [bot-id file callback]
   (when status
-    (call-module #(.parseJail status chat-id file callback))))
+    (call-module #(.parseJail status bot-id file callback))))
 
 (defn execute-call [{:keys [jail-id path params callback]}]
   (when status

@@ -4,19 +4,22 @@
     [status-im.ui.screens.wallet.db :as wallet.db]
     [re-frame.core :as re-frame]))
 
-(defn chat-loaded-callback [amount]
+(defn chat-loaded-callback [request-command]
   (fn []
-    (re-frame/dispatch [:select-chat-input-command {:name "request" :prefill [amount]}])
+    (re-frame/dispatch [:select-chat-input-command request-command])
     ;;TODO get rid of timeout
     (js/setTimeout #(re-frame/dispatch [:send-current-message]) 100)))
 
 (handlers/register-handler-fx
   :wallet-send-request
-  (fn [{{:wallet/keys [request-transaction]} :db} [_ {:keys [whisper-identity]}]]
-    {:dispatch-n [[:navigate-back]
-                  [:navigate-to-clean :chat-list]
-                  [:add-chat-loaded-callback whisper-identity (chat-loaded-callback (:amount request-transaction))]
-                  [:start-chat whisper-identity]]}))
+  (fn [{{:wallet/keys [request-transaction] :as db} :db} [_ {:keys [whisper-identity]}]]
+    (let [request-command (first (get-in db [:contacts/contacts "transactor-personal" :commands :request]))] 
+      {:dispatch-n [[:navigate-back]
+                    [:navigate-to-clean :chat-list]
+                    [:add-chat-loaded-callback whisper-identity (chat-loaded-callback
+                                                                 (assoc request-command
+                                                                        :prefill [(:amount request-transaction)]))]
+                    [:start-chat whisper-identity]]})))
 
 (handlers/register-handler-fx
   :wallet-validate-request-amount
