@@ -23,7 +23,7 @@
          [react/view [chat-icon/contact-icon-view dapp {:size 80}]]]
         [react/text {:style           styles/dapps-list-item-name
                      :font            :medium
-                     :number-of-lines 1}
+                     :number-of-lines 2}
          name]]]]])
 
 ;; TODO(oskarth): Move this to top level discover ns
