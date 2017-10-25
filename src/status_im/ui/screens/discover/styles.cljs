@@ -210,7 +210,8 @@
    :padding     4
    :margin      4
    :color       styles/text1-color
-   :font-size   14})
+   :font-size   14
+   :text-align  :center})
 
 (defstyle dapps-list-item-avatar-container
   {:flex-direction :column
