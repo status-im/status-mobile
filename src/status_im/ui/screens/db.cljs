@@ -34,6 +34,7 @@
              :tags                       []
              :sync-state                 :done
              :wallet                     {}
+             :wallet.transactions        constants/default-wallet-transactions
              :prices                     {}
              :notifications              {}
              :network                    constants/default-network
@@ -177,6 +178,7 @@
                   :discoveries/request-discoveries-timer
                   :discoveries/new-discover
                   :wallet/wallet
+                  :wallet/wallet.transactions
                   :prices/prices
                   :prices/prices-loading?
                   :notifications/notifications]))

@@ -111,12 +111,3 @@
 
 (defn asset-border [color]
   {:border-color color :border-width 1 :border-radius 32})
-
-(def corner-dot
-  {:position         :absolute
-   :top              12
-   :right            6
-   :width            4
-   :height           4
-   :border-radius    2
-   :background-color styles/color-cyan})

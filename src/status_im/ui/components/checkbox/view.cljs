@@ -1,11 +1,13 @@
 (ns status-im.ui.components.checkbox.view
-  (:require [cljs.spec.alpha :as s]
-            [status-im.ui.components.checkbox.styles :as cst]
-            [status-im.ui.components.react :as rn]
-            [status-im.utils.platform :as p]))
+  (:require [reagent.core :as reagent]
+            [status-im.ui.components.checkbox.styles :as styles]
+            [status-im.ui.components.react :as react]))
 
-(defn checkbox [{:keys [on-press checked?]}]
-  [rn/touchable-highlight {:on-press on-press}
-   [rn/view (cst/icon-check-container checked?)
+;; TODO(jeluard) Migrate to native checkbox provided by RN 0.49
+;; https://facebook.github.io/react-native/docs/checkbox.html
+
+(defn checkbox [{:keys [on-value-change checked?]}]
+  [react/touchable-highlight {:style styles/wrapper :on-press #(do (when on-value-change (on-value-change (not checked?))))}
+   [react/view (styles/icon-check-container checked?)
     (when checked?
-      [rn/icon :check_on cst/check-icon])]])
+      [react/icon :check_on styles/check-icon])]])

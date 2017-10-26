@@ -10,6 +10,12 @@
   {:flex           1
    :flex-direction :column})
 
+(def item-checkbox
+  {:flex            1
+   :flex-direction  :column
+   :align-items     :center
+   :justify-content :center})
+
 (def primary-text-base
   {:font-size   17
    :color       styles/color-black})

@@ -161,3 +161,7 @@
       (if (>= confirmations max-confirmations)
         100
         (* 100 (/ confirmations max-confirmations))))))
+
+(reg-sub :wallet.transactions/filters
+  (fn [db]
+    (get-in db [:wallet.transactions :filters])))

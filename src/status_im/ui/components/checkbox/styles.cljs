@@ -2,11 +2,13 @@
   (:require-macros [status-im.utils.styles :refer [defnstyle]])
   (:require [status-im.ui.components.styles :as st]))
 
+(def wrapper
+  {:padding 16})
+
 (defnstyle icon-check-container [checked?]
   {:background-color (if checked? st/color-light-blue st/color-gray5)
    :alignItems     :center
    :justifyContent :center
-   :margin-right   16
    :android        {:border-radius 2
                     :width         17
                     :height        17}

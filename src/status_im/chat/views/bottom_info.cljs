@@ -3,13 +3,13 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.ui.components.react :refer [view
-                                                animated-view
-                                                image
-                                                text
-                                                icon
-                                                touchable-highlight
-                                                list-view
-                                                list-item]]
+                                                   animated-view
+                                                   image
+                                                   text
+                                                   icon
+                                                   touchable-highlight
+                                                   list-view
+                                                   list-item]]
             [status-im.ui.components.chat-icon.screen :refer [chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.i18n :refer [label label-pluralize message-status-label]]
