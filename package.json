@@ -7,21 +7,14 @@
     "postinstall": "./postinstall.sh"
   },
   "devDependencies": {
-    "rn-nodeify": "^8.1.0",
+    "rn-nodeify": "^8.2.0",
+    "babel-plugin-transform-es2015-block-scoping": "6.15.0",
     "sleep": "^5.1.1"
   },
   "dependencies": {
     "assert": "^1.4.1",
     "awesome-phonenumber": "^2.1.1",
-    "babel-core": "^6.26.0",
-    "babel-generator": "^6.26.0",
-    "babel-helper-builder-react-jsx": "^6.26.0",
-    "babel-plugin-transform-es2015-block-scoping": "^6.26.0",
-    "babel-plugin-transform-es2015-parameters": "^6.24.1",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-regenerator": "^6.26.0",
-    "babel-preset-react-native": "^4.0.0",
-    "babel-register": "^6.26.0",
+    "babel-preset-react-native": "4.0.0",
     "bignumber.js": "github:status-im/bignumber.js#master",
     "browserify-zlib": "^0.2.0",
     "buffer": "^5.0.8",
@@ -38,15 +31,16 @@
     "identicon.js": "github:status-im/identicon.js",
     "instabug-reactnative": "git+https://github.com/status-im/instabug-reactnative.git",
     "nfc-react-native": "github:yenda/nfc-react-native",
+    "node-libs-react-native": "1.0.1",
     "os-browserify": "^0.3.0",
     "path-browserify": "0.0.0",
-    "process": "^0.11.5",
+    "process": "^0.11.10",
     "punycode": "^2.1.0",
     "querystring-es3": "^0.2.1",
     "re-natal": "^0.7.2",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-native": "^0.49.3",
+    "react-native": "^0.48.4",
     "react-native-action-button": "^2.0.13",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-autolink": "^1.1.1",
@@ -115,7 +109,9 @@
     "tty": "tty-browserify",
     "vm": "vm-browserify",
     "net": "react-native-tcp",
-    "fcm": "react-native-fcm"
+    "fcm": "react-native-fcm",
+    "tls": false,
+    "child_process": false
   },
   "react-native": {
     "crypto": "react-native-crypto",
@@ -141,6 +137,8 @@
     "tty": "tty-browserify",
     "vm": "vm-browserify",
     "net": "react-native-tcp",
-    "fcm": "react-native-fcm"
+    "fcm": "react-native-fcm",
+    "tls": false,
+    "child_process": false
   }
 }
