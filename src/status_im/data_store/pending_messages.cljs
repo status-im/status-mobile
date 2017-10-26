@@ -25,13 +25,13 @@
 
 (defn save
   [{:keys [id to group-id message] :as pending-message}]
-  (let [{:keys [sig symKeyID pubKey topic payload]} message
+  (let [{:keys [sig sym-key-password pubKey topic payload]} message
         id'      (get-id id to)
         chat-id  (or group-id to)
         message' (-> pending-message
                      (assoc :id id'
                             :sig sig
-                            :sym-key-id symKeyID
+                            :sym-key-password sym-key-password
                             :pub-key pubKey
                             :message-id id
                             :chat-id chat-id

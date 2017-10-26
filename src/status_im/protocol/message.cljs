@@ -6,7 +6,7 @@
 (s/def :message/sig :message/from)
 (s/def :message/privateKeyID (s/nilable string?))
 (s/def :message/pub-key (s/nilable string?))
-(s/def :message/sym-key-id (s/nilable string?))
+(s/def :message/sym-key-password (s/nilable string?))
 (s/def :message/topic string?)
 (s/def :message/to (s/nilable string?))
 (s/def :message/message-id string?)
