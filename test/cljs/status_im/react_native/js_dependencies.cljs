@@ -5,7 +5,6 @@
 (def autolink               #js {:default #js {}})
 (def config                 #js {:default #js {}})
 (def camera                 #js {:constants #js {}})
-(def circle-checkbox        #js {})
 (def contacts               #js {})
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})

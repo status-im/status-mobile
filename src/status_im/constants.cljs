@@ -1,5 +1,6 @@
 (ns status-im.constants
-  (:require [status-im.utils.types :as types]
+  (:require [status-im.i18n :as i18n]
+            [status-im.utils.types :as types]
             [status-im.utils.config :as config]))
 
 (def ethereum-rpc-url "http://localhost:8545")
@@ -24,6 +25,15 @@
 (def console-chat-id "console")
 
 (def default-network "testnet_rpc")
+
+(def default-wallet-transactions
+  {:filters
+   {:type [{:id :inbound   :label (i18n/label :t/incoming)  :checked? true}
+           {:id :outbound  :label (i18n/label :t/outgoing)  :checked? true}
+           {:id :pending   :label (i18n/label :t/pending)   :checked? true}
+           ;; TODO(jeluard) Restore once we support postponing transaction
+           #_
+           {:id :postponed :label (i18n/label :t/postponed) :checked? true}]}})
 
 (defn- transform-config [networks]
   (->> networks

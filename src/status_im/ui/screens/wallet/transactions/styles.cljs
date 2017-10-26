@@ -225,3 +225,12 @@
   {:background-color styles/color-light-gray3
    :height           1
    :margin-vertical  10})
+
+(def corner-dot
+  {:position         :absolute
+   :top              0
+   :right            0
+   :width            4
+   :height           4
+   :border-radius    2
+   :background-color styles/color-cyan})
