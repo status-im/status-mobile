@@ -57,7 +57,7 @@
 (re-frame/reg-fx
   :update-message
   (fn [message]
-    (msg-store/update message)))
+    (msg-store/update-message message)))
 
 (re-frame/reg-fx
   :save-message
