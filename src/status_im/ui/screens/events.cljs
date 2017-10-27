@@ -365,19 +365,19 @@
                 (fn []
                   (let [watch-id (atom nil)]
                     (.getCurrentPosition
-                      navigator.geolocation
-                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
-                      (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
+                     navigator.geolocation
+                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                     #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
+                     (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
                     (when platform/android?
                       (reset! watch-id
                               (.watchPosition
-                                navigator.geolocation
-                                #(do
-                                   (.clearWatch
-                                     navigator.geolocation
-                                     @watch-id)
-                                   (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
+                               navigator.geolocation
+                               #(do
+                                  (.clearWatch
+                                   navigator.geolocation
+                                   @watch-id)
+                                  (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
 
 (register-handler-db
   :update-geolocation
