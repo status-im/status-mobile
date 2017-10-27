@@ -5,8 +5,7 @@
             [status-im.utils.utils :refer [update-if-present]]
             [clojure.walk :refer [stringify-keys keywordize-keys]]
             [cljs.reader :refer [read-string]]
-            [status-im.constants :as c])
-  (:refer-clojure :exclude [update]))
+            [status-im.constants :as c]))
 
 (defn- user-statuses-to-map
   [user-statuses]
@@ -105,13 +104,17 @@
                  (assoc acc message-id (read-string preview)))
                {})))
 
+(defn- prepare-content [content]
+  (pr-str
+   (update content :params dissoc :password :password-confirmation)))
+
 (defn save
   ;; todo remove chat-id parameter
   [chat-id {:keys [message-id content] :as message}]
   (when-not (data-store/exists? message-id)
     (let [content' (if (string? content)
                      content
-                     (pr-str content))
+                     (prepare-content content))
           message' (merge default-values
                           message
                           {:chat-id   chat-id
@@ -119,7 +122,7 @@
                            :timestamp (timestamp)})]
       (data-store/save message'))))
 
-(defn update
+(defn update-message
   [{:keys [message-id] :as message}]
   (when (data-store/exists? message-id)
     (let [message (update-if-present message :user-statuses vals)]

@@ -302,7 +302,7 @@
                                (assoc message :message-status status))
                              ;; we need to dissoc preview because it has been saved before
                              (dissoc :preview))]
-            (messages/update message')))))))
+            (messages/update-message message')))))))
 
 (defn update-message-status [status]
   (fn [db
@@ -347,8 +347,8 @@
     (fn [_ [_ {:keys [type id] :as pending-message}]]
       (pending-messages/save pending-message)
       (when (#{:message :group-message} type)
-        (messages/update {:message-id      id
-                          :delivery-status :pending}))))
+        (messages/update-message {:message-id id
+                          :delivery-status    :pending}))))
   (fn [db [_ {:keys [type id to group-id]}]]
     (if (#{:message :group-message} type)
       (let [chat-id        (or group-id to)

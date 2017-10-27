@@ -45,8 +45,31 @@
     (log/debug "v17 Removing contact" (pr-str contact))
     (.delete new-realm contact)))
 
+(defn command-with-wrong-bot? [bot command]
+  (and
+   (#{"transactor-personal" "transactor-group"} bot)
+   (not (#{"send" "request"} command))))
+
+(defn update-commands [new-realm content-type]
+  (some-> new-realm
+          (.objects "message")
+          (.filtered (str "content-type = \"" content-type "\""))
+          (.map (fn [object _ _]
+                  (let [{:keys [bot command] :as content} (reader/read-string (aget object "content"))
+                        content' (cond->
+                                  content
+
+                                  (= "password" command)
+                                  (update :params dissoc :password :password-confirmation)
+
+                                  (command-with-wrong-bot? bot command)
+                                  (assoc :bot nil))]
+                    (aset object "content" (pr-str content')))))))
+
 ;; NOTE(oskarth): Resets Realm for some dApps to be loaded by default_contacts.json instead.
 (defn migration [old-realm new-realm]
   (log/debug "migrating v17 account database: " old-realm new-realm)
   (doseq [contact ["oaken-water-meter" "gnosis" "Commiteth" "melonport"]]
-    (remove-contact! new-realm contact)))
+    (remove-contact! new-realm contact))
+  (update-commands new-realm "command")
+  (update-commands new-realm "command-request"))
