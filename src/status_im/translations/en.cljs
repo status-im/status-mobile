@@ -26,11 +26,7 @@
    :photos-access-error                   "To grant the required photos permission, please go to your system settings and make sure that Status > Photos is selected."
 
    ;;drawer
-   :invite-friends                        "Invite friends"
-   :faq                                   "FAQ"
    :switch-users                          "Switch users"
-   :feedback                              "Got feedback?\nShake your phone!"
-   :view-all                              "View all"
    :current-network                       "Current network"
 
    ;;chat
@@ -58,7 +54,6 @@
    :sync-synced                           "In sync"
 
    ;;messages
-   :status-sending                        "Sending"
    :status-pending                        "Pending"
    :status-sent                           "Sent"
    :status-seen-by-everyone               "Seen by everyone"
@@ -76,7 +71,6 @@
                                            :other "hours"}
    :datetime-day                          {:one   "day"
                                            :other "days"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "ago"
    :datetime-yesterday                    "yesterday"
    :datetime-today                        "today"
@@ -84,13 +78,10 @@
    ;;profile
    :profile                               "Profile"
    :edit-profile                          "Edit profile"
-   :report-user                           "REPORT USER"
    :message                               "Message"
-   :username                              "Username"
    :not-specified                         "Not specified"
    :public-key                            "Public key"
    :phone-number                          "Phone number"
-   :email                                 "Email"
    :update-status                         "Update your status..."
    :add-a-status                          "Add a status..."
    :status-prompt                         "Set your status. Using #hastags will help others discover you and talk about what's on your mind"
@@ -99,10 +90,6 @@
    :remove-from-contacts                  "Remove from contacts"
    :start-conversation                    "Start conversation"
    :send-transaction                      "Send transaction"
-   :share-qr                              "Share QR"
-   :error-incorrect-name                  "Please select another name"
-   :error-incorrect-email                 "Incorrect e-mail"
-   :profile-testnet-icon                  "Testnet"
    :testnet-text                          "You’re on the {{testnet}} Testnet. Do not send real ETH or SNT to your address"
    :mainnet-text                          "You’re on the Mainnet. Real ETH will be sent"
 
@@ -110,7 +97,6 @@
    :image-source-title                    "Profile image"
    :image-source-make-photo               "Capture"
    :image-source-gallery                  "Select from gallery"
-   :image-source-cancel                   "Cancel"
 
    ;;sharing
    :sharing-copy-to-clipboard             "Copy to clipboard"
@@ -127,12 +113,9 @@
    :confirmation-code                     (str "Thanks! We've sent you a text message with a confirmation "
                                                "code. Please provide that code to confirm your phone number")
    :incorrect-code                        (str "Sorry the code was incorrect, please enter it again")
-   :generate-passphrase                   (str "I'll generate a passphrase for you so you can restore your "
-                                               "account or log in from another device.")
    :phew-here-is-your-passphrase          "Phew, that was hard. Here is your passphrase, *write this down and keep it safe!* You will need it to recover your account."
    :here-is-your-passphrase               "Here is your passphrase, *write this down and keep this safe!* You will need it to recover your account."
    :here-is-your-signing-phrase           "Here is your signing phrase. You will use it to verify your transactions. *Write it down and keep it safe!*"
-   :written-down                          "Make sure you have written it down somewhere secure."
    :phone-number-required                 "Tap here to validate your phone number & I'll find your friends."
    :shake-your-phone                      "Found a bug or have a suggestion? Just ~shake~ your phone!"
    :intro-status                          "Chat with me to setup your account and change your settings."
@@ -149,7 +132,6 @@
 
    ;;chats
    :chats                                 "Chats"
-   :new-chat                              "New chat"
    :delete-chat                           "Delete chat"
    :new-group-chat                        "New group chat"
    :new-public-group-chat                 "Join public chat"
@@ -189,9 +171,6 @@
    :remove-from-group                     "Remove from group"
    :edit-contacts                         "Edit contacts"
    :search-contacts                       "Search contacts"
-   :show-all                              "SHOW ALL"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "People"
    :contacts-group-new-chat               "Start new chat"
    :choose-from-contacts                  "Choose from contacts"
    :no-contacts                           "No contacts yet"
@@ -203,34 +182,15 @@
    :remove                                "Remove"
    :save                                  "Save"
    :delete                                "Delete"
-   :change-color                          "Change color"
    :clear-history                         "Clear history"
    :mute-notifications                    "Mute notifications"
    :leave-chat                            "Leave chat"
-   :delete-and-leave                      "Delete and leave"
    :chat-settings                         "Chat settings"
    :edit                                  "Edit"
    :add-members                           "Add members"
-   :blue                                  "Blue"
-   :purple                                "Purple"
-   :green                                 "Green"
-   :red                                   "Red"
 
    ;;commands
-   :money-command-description             "Send money"
-   :location-command-description          "Send location"
-   :phone-command-description             "Send phone number"
-   :phone-request-text                    "Phone number request"
-   :confirmation-code-command-description "Send confirmation code"
-   :confirmation-code-request-text        "Confirmation code request"
-   :send-command-description              "Send command"
-   :request-command-description           "Send request"
-   :keypair-password-command-description  ""
-   :help-command-description              "Help"
-   :request                               "Request"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH to {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH from {{chat-name}}"
 
    ;;location command
    :your-current-location                 "Your current location"
@@ -243,23 +203,14 @@
    :sharing-copy-to-clipboard-coordinates "Copy coordinates"
 
    ;;new-group
-   :group-chat-name                       "Chat name"
-   :empty-group-chat-name                 "Please enter a name"
-   :illegal-group-chat-name               "Please select another name"
    :new-group                             "New group"
    :reorder-groups                        "Reorder groups"
-   :group-name                            "Group name"
    :edit-group                            "Edit group"
    :delete-group                          "Delete group"
    :delete-group-confirmation             "This group will be removed from your groups. This will not affect your contacts"
    :delete-group-prompt                   "This will not affect your contacts"
-   :group-members                         "Group members"
    :contact-s                             {:one   "contact"
                                            :other "contacts"}
-
-   ;;participants
-   :add-participants                      "Add Participants"
-   :remove-participants                   "Remove Participants"
 
    ;;protocol
    :received-invitation                   "received chat invitation"
@@ -271,12 +222,9 @@
 
    ;;new-contact
    :add-new-contact                       "Add new contact"
-   :import-qr                             "Import"
    :scan-qr                               "Scan QR code"
    :name                                  "Name"
-   :whisper-identity                      "Whisper Identity"
    :address-explication                   "Your public key is used to generate your address on Ethereum and is a series of numbers and letters. You can find it easily in your profile"
-   :enter-valid-address                   "Please enter a valid address or scan a QR code"
    :enter-valid-public-key                "Please enter a valid public key or scan a QR code"
    :contact-already-added                 "The contact has already been added"
    :can-not-add-yourself                  "You can't add yourself"
@@ -286,24 +234,18 @@
    :connect                               "Connect"
    :address                               "Address"
    :password                              "Password"
-   :login                                 "Login"
    :sign-in-to-status                     "Sign in to Status"
    :sign-in                               "Sign in"
    :wrong-password                        "Wrong password"
    :enter-password                        "Enter password"
 
    ;;recover
-   :recover-from-passphrase               "Recover from passphrase"
-   :recover-explain                       "Please enter the passphrase for your account to recover access"
    :passphrase                            "Passphrase"
    :recover                               "Recover"
-   :enter-valid-passphrase                "Please enter a passphrase"
-   :enter-valid-password                  "Please enter a password"
    :twelve-words-in-correct-order         "12 words in correct order"
 
    ;;accounts
    :recover-access                        "Recover access"
-   :add-account                           "Add account"
    :create-new-account                    "Create new account"
 
    ;;wallet-qr-code
@@ -312,35 +254,17 @@
    ;;validation
    :invalid-phone                         "Invalid phone number"
    :amount                                "Amount"
-   :not-enough-eth                        (str "Insufficient funds. Your balance is: "
-                                               "({{balance}} ETH)")
 
    ;;transactions
    :confirm                               "Confirm"
-   :confirm-transactions                  {:one   "Confirm transaction"
-                                           :other "Confirm {{count}} transactions"
-                                           :zero  "No transactions"}
-   :transactions-confirmed                {:one   "Transaction confirmed"
-                                           :other "{{count}} transactions confirmed"
-                                           :zero  "No transactions confirmed"}
    :transaction                           "Transaction"
-   :unsigned-transactions                 "Unsigned transactions"
-   :no-unsigned-transactions              "No unsigned transactions"
    :unsigned-transaction-expired          "Unsigned transaction expired"
-   :enter-password-transactions           {:one   "Confirm transaction by entering your password"
-                                           :other "Confirm transactions by entering your password"}
    :status                                "Status"
-   :pending-confirmation                  "Pending confirmation"
    :recipient                             "Recipient"
-   :one-more-item                         "One more item"
-   :fee                                   "Fee"
-   :estimated-fee                         "Est. fee"
-   :value                                 "Value"
    :to                                    "To"
    :from                                  "From"
    :data                                  "Data"
    :got-it                                "Got it"
-   :contract-creation                     "Contract creation"
    :block                                 "Block"
    :hash                                  "Hash"
    :gas-limit                             "Gas limit"
@@ -388,8 +312,6 @@
    :transactions-sign-all                 "Sign all"
    :transactions-sign-transaction         "Sign transaction"
    :transactions-sign-later               "Sign later"
-   :transactions-sign-all-text            "Sign all transactions by entering your password.\nMake sure that the words above match your secret signing phrase"
-   :transactions-sign-input-placeholder   "Enter your password"
    :transactions-delete                   "Delete transaction"
    :transactions-delete-content           "Transaction will be removed from 'Unsigned' list"
    :transactions-history                  "History"
@@ -410,14 +332,11 @@
    :not-applicable                        "Not applicable for unsigned transactions"
 
    ;; Wallet Send
-   :wallet-send-transaction               "Send Transaction"
-   :wallet-send-step                      "Step {{step}} of {{number}}"
    :wallet-choose-recipient               "Choose Recipient"
    :wallet-choose-from-contacts           "Choose From Contacts"
    :wallet-address-from-clipboard         "Use Address From Clipboard"
    :wallet-invalid-address                "Invalid address: \n {{data}}"
    :wallet-browse-photos                  "Browse Photos"
-   :validation-amount-invalid             "Amount is not valid"
    :validation-amount-invalid-number      "Amount is not a valid number"
    :validation-amount-is-too-precise      "Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)"
 
@@ -432,7 +351,6 @@
    :paste-json-as-text                    "Paste JSON as text"
    :paste-json                            "Paste JSON"
    :specify-rpc-url                       "Specify a RPC URL"
-   :edit-rpc-url                          "Edit a RPC URL"
    :edit-network-config                   "Edit network config"
    :connected                             "Connected"
    :process-json                          "Process JSON"
