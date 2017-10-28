@@ -37,6 +37,21 @@
              local-storage/schema
              handler-data/schema])
 
+
+(defn remove-chat-with-contact! [new-realm whisper-identity]
+  (when-let [chat-contact (some-> new-realm
+                                  (.objects "chat-contact")
+                                  (.filtered (str "identity = \"" whisper-identity "\""))
+                                  (aget 0))]
+    (log/debug "v17 Removing chat-contact with contact" (pr-str chat-contact))
+    (.delete new-realm chat-contact))
+  (when-let [chat (some-> new-realm
+                          (.objects "chat")
+                          (.filtered (str "chat-id = \"" whisper-identity "\""))
+                          (aget 0))]
+    (log/debug "v17 Removing chat with contact" (pr-str chat))
+    (.delete new-realm chat)))
+
 (defn remove-contact! [new-realm whisper-identity]
   (when-let [contact (some-> new-realm
                              (.objects "contact")
@@ -69,7 +84,8 @@
 ;; NOTE(oskarth): Resets Realm for some dApps to be loaded by default_contacts.json instead.
 (defn migration [old-realm new-realm]
   (log/debug "migrating v17 account database: " old-realm new-realm)
-  (doseq [contact ["oaken-water-meter" "gnosis" "Commiteth" "melonport"]]
-    (remove-contact! new-realm contact))
+  (doseq [contact-id ["oaken-water-meter" "gnosis" "Commiteth" "melonport" "Etherplay"]]
+    (remove-chat-with-contact! new-realm contact-id)
+    (remove-contact! new-realm contact-id))
   (update-commands new-realm "command")
   (update-commands new-realm "command-request"))
