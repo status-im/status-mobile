@@ -248,37 +248,8 @@
         },
         "groups": ["dapps"],
         "description": "The future of work is now. Hire people or work yourself in return for ETH."
-    },
-    
-    "Commiteth":
-    {
-        "name":
-        {
-            "en": "Commiteth"
-        },
-        "photo-path": "contacts://commiteth",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://commiteth.com"
-        },
-        "groups": ["dapps"],
-        "description": "CommitETH is a GitHub bounty bot that incentivizes pull request submissions by attaching ETH or any ERC20-compatible token to open issues in GitHub."
-    },
-
-    "Etherplay":
-    {
-        "name":
-        {
-            "en": "Etherplay"
-        },
-        "photo-path": "contacts://etherplay",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://test.etherplay.io"
-        },
-        "groups": ["dapps"],
-        "description": "A transparent skill game platform. Play games and win ETH!"
     }
+
+
+
 }
