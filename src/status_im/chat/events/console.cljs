@@ -87,19 +87,22 @@
                                              (i18n/label :t/faucet-error)))}}))
 
    "debug"
-   (fn [{:keys [random-id db] :as cofx} {:keys [params id]}]
+   (fn [{:keys [db random-id now] :as cofx} {:keys [params id]}]
      (let [debug? (= "On" (:mode params))]
-       (assoc fx :dispatch-n (if debug?
-                               [[:initialize-debugging {:force-start? true}]
-                                [:received-message
-                                 {:message-id   random-id
-                                  :content      (i18n/label :t/debug-enabled)
-                                  :content-type const/text-content-type
-                                  :outgoing     false
-                                  :chat-id      const/console-chat-id
-                                  :from         const/console-chat-id
-                                  :to           "me"}]]
-                               [[:stop-debugging]]))))})
+       (-> {:db db}
+           (accounts-events/account-update {:debug?       debug?
+                                            :last-updated now})
+           (assoc :dispatch-n (if debug?
+                                [[:initialize-debugging {:force-start? true}]
+                                 [:received-message
+                                  {:message-id   random-id
+                                   :content      (i18n/label :t/debug-enabled)
+                                   :content-type const/text-content-type
+                                   :outgoing     false
+                                   :chat-id      const/console-chat-id
+                                   :from         const/console-chat-id
+                                   :to           "me"}]]
+                                [[:stop-debugging]])))))})
 
 (def commands-names (set (keys console-commands->fx)))
 

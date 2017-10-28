@@ -4,6 +4,7 @@
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 ;; Only android is supported!
+
 (defn add-sms-listener
   "Message format: {:originatingAddress string, :body string}. Returns
   cancelable subscription."

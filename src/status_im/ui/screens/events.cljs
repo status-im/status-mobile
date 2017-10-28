@@ -26,7 +26,6 @@
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
             [status-im.ui.screens.db :refer [app-db]]
-            [status-im.utils.sms-listener :as sms-listener-util]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
             [status-im.utils.config :as config]
@@ -114,11 +113,6 @@
     (utils/http-get url
                     #(dispatch (success-event-creator %))
                     #(dispatch (failure-event-creator %)))))
-
-(reg-fx
-  :remove-sms-listener
-  (fn [subscription]
-    (sms-listener-util/remove-sms-listener subscription)))
 
 (reg-fx
   ::init-store

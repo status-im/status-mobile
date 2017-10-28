@@ -429,7 +429,7 @@ function phoneSuggestions(params, context) {
 
     suggestions = ph.map(function (phone) {
         return status.components.touchable(
-            {onPress: status.components.dispatch([status.events.SET_VALUE, phone.number])},
+            {onPress: status.components.dispatch([status.events.SET_COMMAND_ARGUMENT, [0, phone.number]])},
             status.components.view(suggestionContainerStyle,
                 [status.components.view(suggestionSubContainerStyle,
                     [

@@ -161,29 +161,19 @@
           (when (seq hashtags)
             {:dispatch [:broadcast-status status hashtags]}))))))
 
-(defn- update-account [current-account new-fields now]
-  (merge current-account (assoc new-fields :last-updated now)))
-
 (defn account-update
   "Takes map of coeffects containing `:db` and `:now` keys + new account fields,
   returns all effects necessary for account update."
-  [{{:keys          [network]
-     :accounts/keys [accounts current-account-id] :as db} :db now :now} new-account-fields]
+  [{{:accounts/keys [accounts current-account-id] :as db} :db :as fx} new-account-fields]
   (let [current-account (get accounts current-account-id)
-        new-account     (update-account current-account new-account-fields now)]
-    {:db                        (assoc-in db [:accounts/accounts current-account-id] new-account)
-     ::save-account             new-account
-     ::broadcast-account-update (merge
-                                 (select-keys db [:current-public-key :web3])
-                                 (select-keys new-account [:name :photo-path :status
-                                                           :updates-public-key :updates-private-key]))}))
-
-;; TODO(janherich): remove this event once it's not used anymore
-(handlers/register-handler-fx
-  :account-update
-  [re-frame/trim-v]
-  (fn [cofx [new-account-fields]]
-    (account-update cofx new-account-fields)))
+        new-account     (merge current-account new-account-fields)]
+    (-> fx
+        (assoc-in [:db :accounts/accounts current-account-id] new-account)
+        (assoc ::save-account new-account)
+        (assoc ::broadcast-account-update (merge
+                                           (select-keys db [:current-public-key :web3])
+                                           (select-keys new-account [:name :photo-path :status
+                                                                     :updates-public-key :updates-private-key]))))))
 
 (handlers/register-handler-fx
   :account-update-keys
@@ -192,9 +182,9 @@
     (let [{:accounts/keys [accounts current-account-id]} db
           {:keys [public private]} keypair
           current-account (get accounts current-account-id)
-          new-account     (update-account current-account {:updates-public-key  public
-                                                           :updates-private-key private}
-                                          now)]
+          new-account     (merge current-account {:updates-public-key  public
+                                                  :updates-private-key private
+                                                  :last-updated        now})]
       {:db                (assoc-in db [:accounts/accounts current-account-id] new-account)
        ::save-account     new-account
        ::send-keys-update (merge
@@ -204,14 +194,14 @@
 
 (handlers/register-handler-fx
   :send-account-update-if-needed
-  (fn [{{:accounts/keys [accounts current-account-id]} :db now :now :as cofx} _]
+  (fn [{{:accounts/keys [accounts current-account-id] :as db} :db now :now} _]
     (let [{:keys [last-updated]} (get accounts current-account-id)
           needs-update? (> (- now last-updated) time/week)]
       (log/info "Need to send account-update: " needs-update?)
       (when needs-update?
         ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
         ;; account with network update when last update was more then week ago
-        (account-update cofx nil)))))
+        (account-update {:db db} nil)))))
 
 (handlers/register-handler-db
   :set-current-account
