@@ -31,19 +31,22 @@
 (defn network-with-upstream-rpc? [networks network]
   (get-in networks [network :raw-config :UpstreamConfig :Enabled]))
 
-(defn connect-network [cofx [_ network]]
-  (merge (accounts-events/account-update cofx {:network network})
-         {:close-application nil}))
-
-(handlers/register-handler-fx ::save-network connect-network)
+(handlers/register-handler-fx
+ ::save-network
+ (fn [{:keys [db now]} [_ network]]
+   (accounts-events/account-update {:db                db
+                                    :close-application nil}
+                                   {:network      network
+                                    :last-updated now})))
 
 (handlers/register-handler-fx
   :connect-network
-  (fn [{:keys [db] :as cofx} [_ network]]
+  (fn [{:keys [db now]} [_ network]]
     (let [current-network (:network db)
           networks        (:networks/networks db)]
       (if (network-with-upstream-rpc? networks current-network)
-        (merge (accounts-events/account-update cofx {:network network})
+        (merge (accounts-events/account-update {:db db} {:network      network
+                                                         :last-updated now})
                {:dispatch     [:navigate-to-clean :accounts]
                 :stop-whisper nil})
         {:show-confirmation {:title               (i18n/label :t/close-app-title)

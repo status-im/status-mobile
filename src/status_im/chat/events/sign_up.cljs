@@ -1,11 +1,13 @@
 (ns status-im.chat.events.sign-up
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]
-            [status-im.utils.phone-number :as phone-number-util]
             [status-im.constants :as const]
             [status-im.chat.sign-up :as sign-up]
+            [status-im.utils.handlers :as handlers]
+            [status-im.utils.phone-number :as phone-number-util]
+            [status-im.utils.sms-listener :as sms-listener]
             [status-im.ui.screens.accounts.events :as accounts-events]
-            [status-im.ui.screens.contacts.events :as contacts-events]))
+            [status-im.ui.screens.contacts.events :as contacts-events]
+            [taoensso.timbre :as log]))
 
 ;;;; Helpers fns
 
@@ -14,8 +16,7 @@
   [db phone-number message-id]
   (let [current-account-id (:accounts/current-account-id db)
         {:keys [public-key address]} (get-in db [:accounts/accounts current-account-id])]
-    {:dispatch sign-up/start-listening-confirmation-code-sms-event
-     :http-post {:action                "sign-up"
+    {:http-post {:action                "sign-up"
                  :data                  {:phone-number     (phone-number-util/format-phone-number phone-number)
                                          :whisper-identity public-key
                                          :address          address}
@@ -43,49 +44,83 @@
     (sign-up db phone-number message-id)))
 
 (defn- message-seen [{:keys [db] :as fx} message-id]
-  (merge fx
-         {:db             (assoc-in db [:message-data :statuses message-id] {:status :seen})
-          :update-message {:message-id     message-id
-                           :message-status :seen}}))
+  (-> fx
+      (assoc-in [:db :message-data :statuses message-id :status] :seen)
+      (assoc :update-message {:message-id     message-id
+                              :message-status :seen})))
 
 (handlers/register-handler-fx
-  ::sign-up-success
-  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
-  (fn [{:keys [db random-id]} message-id]
-    (-> {:db db
-         :dispatch-n [;; create manual way for entering confirmation code
-                      (sign-up/enter-confirmation-code-event random-id)
-                      ;; create automatic way for receiving confirmation code
-                      sign-up/start-listening-confirmation-code-sms-event]}
-        (message-seen message-id))))
+ :start-listening-confirmation-code-sms
+ [re-frame/trim-v]
+ (fn [{:keys [db]} [sms-listener]]
+   {:db (if-not (:confirmation-code-sms-listener db)
+          (assoc db :confirmation-code-sms-listener sms-listener)
+          db)}))
+
+(defn stop-listening-confirmation-code-sms [{:keys [db] :as fx}]
+  (-> fx
+      (update db dissoc :confirmation-code-sms-listener)
+      (update ::remove-sms-listener assoc (:confirmation-code-sms-listener db))))
+
+(re-frame/reg-fx
+ ::remove-sms-listener
+ (fn [subscription]
+   (sms-listener/remove-sms-listener subscription)))
+
+(defn- sms-receive-handler [{confirmation-code :body}]
+  (when-let [matches (re-matches #"(\d{4})" confirmation-code)]
+    (re-frame/dispatch [::sign-up-confirm (second matches)])))
+
+(def start-listening-confirmation-code-sms-event
+  [:request-permissions
+   [:receive-sms]
+   (fn []
+     (let [listener (sms-listener/add-sms-listener sms-receive-handler)]
+       (re-frame/dispatch [:start-listening-confirmation-code-sms listener])))])
 
 (handlers/register-handler-fx
-  :start-listening-confirmation-code-sms
-  [re-frame/trim-v]
-  (fn [{:keys [db]} [sms-listener]]
-    {:db (if-not (:confirmation-code-sms-listener db)
-           (assoc db :confirmation-code-sms-listener sms-listener)
-           db)}))
+ ::sign-up-success
+ [re-frame/trim-v (re-frame/inject-cofx :random-id)]
+ (fn [{:keys [db random-id]} message-id]
+   (-> {:db         db
+        :dispatch-n [;; create manual way for entering confirmation code
+                     (sign-up/enter-confirmation-code-event random-id)
+                     ;; create automatic way for receiving confirmation code
+                     start-listening-confirmation-code-sms-event]}
+       (message-seen message-id))))
+
+(defn- extract-last-phone-number [chats]
+  (let [phone-message (->> (get-in chats ["console" :messages])
+                           (some (fn [{:keys [type content] :as message}]
+                                   (when (and (= type :response)
+                                              (= (:command content) "phone"))
+                                     message))))]
+    (get-in phone-message [:content :params :phone])))
 
 (handlers/register-handler-fx
   ::sign-up-confirm
   (fn [{:keys [db]} [confirmation-code message-id]]
     (sign-up-confirm db confirmation-code message-id)))
 
-(defn- sign-up-confirmed [{:keys [db] :as fx}]
-  (cond-> (update fx :dispatch-n conj [:request-permissions
-                                       [:read-contacts]
-                                       #(re-frame/dispatch [:sync-contacts (fn [contacts]
-                                                                             [::contacts-synced contacts])])])
-    (:confirmation-code-sms-listener db)
-    (merge {:db                  (dissoc db :confirmation-code-sms-listener)
-            :remove-sms-listener (:confirmation-code-sms-listener db)})))
+(defn- sign-up-confirmed [{:keys [db] :as fx} now]
+  (let [last-phone-number (extract-last-phone-number (:chats db))]
+    (cond->
+      (stop-listening-confirmation-code-sms fx)
+
+      true
+      (update :dispatch-n conj [:request-permissions [:read-contacts]
+                                #(re-frame/dispatch [:sync-contacts (fn [contacts]
+                                                                      [::contacts-synced contacts])])])
+
+      last-phone-number
+      (accounts-events/account-update {:phone        last-phone-number
+                                       :last-updated now}))))
 
 (handlers/register-handler-fx
   ::sign-up-confirm-response
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
-  (fn [{:keys [db random-id]} [{:keys [message status]} message-id]]
-    (cond-> {:db db
+  (fn [{:keys [db random-id now]} [{:keys [message status]} message-id]]
+    (cond-> {:db         db
              :dispatch-n [[:received-message
                            {:message-id   random-id
                             :content      message
@@ -98,7 +133,7 @@
       (message-seen message-id)
 
       (= "confirmed" status)
-      sign-up-confirmed
+      (sign-up-confirmed now)
 
       (= "failed" status)
       (update :dispatch-n conj (sign-up/incorrect-confirmation-code-event random-id)))))
@@ -106,12 +141,11 @@
 (handlers/register-handler-fx
   ::contacts-synced
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
-  (fn [{:keys [db random-id] :as cofx} [contacts]]
+  (fn [{:keys [db random-id now] :as cofx} [contacts]]
     (-> {:db db}
-        (as-> fx
-              (merge fx
-                     (accounts-events/account-update (assoc cofx :db (:db fx)) {:signed-up? true})
-                     {:dispatch (sign-up/contacts-synchronised-event random-id)})))))
+        (accounts-events/account-update {:signed-up?   true
+                                         :last-updated now})
+        (assoc :dispatch (sign-up/contacts-synchronised-event random-id)))))
 
 (handlers/register-handler-fx
   ::http-request-failure

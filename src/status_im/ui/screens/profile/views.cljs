@@ -175,7 +175,7 @@
    [info-item-separator]
    [profile-info-phone-item
     phone
-    [{:value #(dispatch [:my-profile/change-phone-number])
+    [{:value #(dispatch [:my-profile/update-phone-number])
       :text  (label :t/edit)}]]
    [info-item-separator]
    [network-settings]])

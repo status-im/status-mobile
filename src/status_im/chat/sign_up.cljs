@@ -2,8 +2,6 @@
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.components.styles :refer [default-chat-color]]
             [status-im.utils.random :as random]
-            [status-im.utils.sms-listener :refer [add-sms-listener
-                                                  remove-sms-listener]]
             [status-im.constants :as const]
             [status-im.chat.constants :as chat-const]
             [status-im.i18n :refer [label]]
@@ -17,21 +15,14 @@
    :content-type const/text-content-type
    :outgoing     true})
 
-;; todo fn name is not too smart, but...
-(defn command-content
-  [command content]
-  {:command (name command)
-   :content content})
-
 ;; -- Send phone number ----------------------------------------
 (defn- confirmation-code-event [correct? message-id]
   [:received-message
    {:message-id   message-id
-    :content      (command-content
-                   :confirmation-code
-                   (if correct?
-                     (label :t/confirmation-code)
-                     (label :t/incorrect-code)))
+    :content      {:command "confirmation-code"
+                   :content (if correct?
+                              (label :t/confirmation-code)
+                              (label :t/incorrect-code))}
     :content-type const/content-type-command-request
     :outgoing     false
     :chat-id      const/console-chat-id
@@ -40,17 +31,6 @@
 
 (def enter-confirmation-code-event (partial confirmation-code-event true))
 (def incorrect-confirmation-code-event (partial confirmation-code-event false))
-
-(defn- sms-receive-handler [{confirmation-code :body}]
-  (when-let [matches (re-matches #"(\d{4})" confirmation-code)]
-    (dispatch [:sign-up-confirm (second matches)])))
-
-(def start-listening-confirmation-code-sms-event
-  [:request-permissions
-   [:receive-sms]
-   (fn []
-     (let [listener (add-sms-listener sms-receive-handler)]
-       (dispatch [:start-listening-confirmation-code-sms listener])))])
 
 ;; -- Send confirmation code and synchronize contacts---------------------------
 (defn contacts-synchronised-event [message-id]
@@ -64,12 +44,10 @@
     :to           "me"}])
 
 (def start-signup-events
-  ;; TODO(janherich): show this message again once `/phone` command is working properly again
-  [#_[:received-message
+  [[:received-message
     {:message-id   (random/id)
-     :content      (command-content
-                    :phone
-                    (label :t/phone-number-required))
+     :content      {:command "phone"
+                    :content (label :t/phone-number-required)}
      :content-type const/content-type-command-request
      :outgoing     false
      :chat-id      const/console-chat-id
@@ -98,9 +76,8 @@
 (def move-to-internal-failure-event
   [:received-message
    {:message-id   chat-const/move-to-internal-failure-message-id
-    :content      (command-content
-                   :grant-permissions
-                   (label :t/move-to-internal-failure-message))
+    :content      {:command "grant-permissions"
+                   :content (label :t/move-to-internal-failure-message)}
     :content-type const/content-type-command-request
     :outgoing     false
     :chat-id      const/console-chat-id
@@ -159,9 +136,8 @@
     const/console-chat-id
     {:chat-id      const/console-chat-id
      :message-id   chat-const/intro-message1-id
-     :content      (command-content
-                    :password
-                    (label :t/intro-message1))
+     :content      {:command "password"
+                    :content (label :t/intro-message1)}
      :content-type const/content-type-command-request
      :outgoing     false
      :from         const/console-chat-id
