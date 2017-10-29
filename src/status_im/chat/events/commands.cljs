@@ -89,7 +89,7 @@
       {:dispatch [:request-permissions
                   [:read-external-storage]
                   #(re-frame/dispatch [:initialize-geth])]}
-      (log/debug "ignoring command: " command))))
+      (log/debug "ignoring command: " command-name))))
 
 (handlers/register-handler-fx
   :request-command-preview
