@@ -117,7 +117,11 @@
    {:name  "All about Ethereum"
     :topic "ethereum"
     :count 32
-    :color "#778CDC"}])
+    :color "#778CDC"}
+   {:name  "Devcon"
+    :topic "devcon"
+    :count 47
+    :color "#77DCC6"}])
 
 (defn navigate-to-public-chat [topic]
   (re-frame/dispatch [:create-new-public-chat topic]))
