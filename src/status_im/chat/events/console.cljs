@@ -39,7 +39,7 @@
                          :chat-id      const/console-chat-id
                          :from         const/console-chat-id
                          :to           "me"}]))
-          (log/debug "ignoring command: " command))))))
+          (log/debug "ignoring command: " name))))))
 
 (defn faucet-base-url->url [url]
   (str url "/donate/0x%s"))
