@@ -1,4 +1,4 @@
-(ns status-im.data-store.realm.schemas.account.v17.pending-message
+(ns status-im.data-store.realm.schemas.account.v18.pending-message
   (:require [taoensso.timbre :as log]))
 
 (def schema {:name       :pending-message
@@ -23,4 +23,4 @@
                           :was-sent?        :bool}})
 
 (defn migration [old-realm new-realm]
-  (log/debug "migrating pending-message schema v12"))
+  (log/debug "migrating pending-message schema v18"))
