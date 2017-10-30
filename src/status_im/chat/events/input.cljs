@@ -387,6 +387,12 @@
     (chat-input-focus db ref)))
 
 (handlers/register-handler-fx
+ :chat-input-focus-with-delay
+ [re-frame/trim-v]
+ (fn [_ [ref delay-ms]]
+   {:dispatch-later [{:ms delay-ms :dispatch [:chat-input-focus ref]}]}))
+
+(handlers/register-handler-fx
   :chat-input-blur
   [re-frame/trim-v]
   (fn [{{:keys [current-chat-id chat-ui-props]} :db} [ref]]

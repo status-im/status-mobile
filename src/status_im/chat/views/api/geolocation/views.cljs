@@ -1,16 +1,15 @@
 (ns status-im.chat.views.api.geolocation.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]]
                    [reagent.ratom :refer [reaction]])
-  (:require [status-im.components.react :refer [view image text touchable-highlight]]
-            [reagent.core :as r]
+  (:require [reagent.core :as r]
             [goog.string :as gstr]
+            [re-frame.core :as re-frame]
+            [status-im.components.react :as react :refer [view image text touchable-highlight]]
             [status-im.utils.utils :refer [http-get]]
             [status-im.utils.types :refer [json->clj]]
             [status-im.chat.views.api.geolocation.styles :as st]
             [status-im.components.mapbox :refer [mapview]]
-            [re-frame.core :refer [dispatch subscribe]]
-            [status-im.i18n :refer [label]]
-            [status-im.components.react :as components]))
+            [status-im.i18n :refer [label]]))
 
 (def mapbox-api "https://api.mapbox.com/geocoding/v5/mapbox.places/")
 (def access-token "pk.eyJ1Ijoic3RhdHVzaW0iLCJhIjoiY2oydmtnZjRrMDA3czMzcW9kemR4N2lxayJ9.Rz8L6xdHBjfO8cR3CDf3Cw")
@@ -29,17 +28,18 @@
    :longitude (or longitude 0)})
 
 (defn place-item [{:keys [title address pin-style] [latitude longitude] :center}]
-  [touchable-highlight {:on-press #(do
-                                     (dispatch [:set-command-argument [0
-                                                                       (str (or address title)
-                                                                            "&amp;" latitude
-                                                                            "&amp;" longitude)
-                                                                       false]])
-                                     (dispatch [:send-seq-argument]))}
+  [touchable-highlight
+   {:on-press (fn []
+                (re-frame/dispatch [:set-command-argument [0
+                                                           (str (or address title)
+                                                                "&amp;" latitude
+                                                                "&amp;" longitude)
+                                                           false]])
+                (re-frame/dispatch [:send-seq-argument]))}
    [view (st/place-item-container address)
     [view st/place-item-title-container
      [view (st/place-item-circle-icon pin-style)]
-     [text {:style st/place-item-title
+     [text {:style           st/place-item-title
             :number-of-lines 1
             :font :medium}
       title]]
@@ -51,17 +51,17 @@
 (defview current-location-map-view []
   (letsubs [geolocation [:get :geolocation]
             command     [:selected-chat-command]]
-    {:component-will-mount #(dispatch [:request-geolocation-update])
-     :component-did-mount (fn [_] (js/setTimeout #(dispatch [:chat-input-focus :seq-input-ref]) 400))}
+    {:component-will-mount #(re-frame/dispatch [:request-geolocation-update])
+     :component-did-mount #(re-frame/dispatch [:chat-input-focus-with-delay :seq-input-ref 400])}
     (let [coord (select-keys (:coords geolocation) [:latitude :longitude])]
       [view
        (if (not (empty? coord))
          [view
           [mapview {:onTap #(do
-                              (dispatch [:set-command-argument [0 "Dropped pin" false]])
-                              (dispatch [:set-chat-seq-arg-input-text "Dropped pin"])
-                              (dispatch [:chat-input-blur :seq-input-ref])
-                              (dispatch [:load-chat-parameter-box (:command command)]))
+                              (re-frame/dispatch [:set-command-argument [0 "Dropped pin" false]])
+                              (re-frame/dispatch [:set-chat-seq-arg-input-text "Dropped pin"])
+                              (re-frame/dispatch [:chat-input-blur :seq-input-ref])
+                              (re-frame/dispatch [:load-chat-parameter-box (:command command)]))
                     :initialCenterCoordinate (get-coord coord)
                     :showsUserLocation true
                     :initialZoomLevel 10
@@ -72,14 +72,14 @@
                     :pitchEnabled false
                     :style st/map-view}]]
          [view st/map-activity-indicator-container
-          [components/activity-indicator {:animating true}]])])))
+          [react/activity-indicator {:animating true}]])])))
 
 (defn current-location-view []
-  (let [geolocation      (subscribe [:get :geolocation])
+  (let [geolocation      (re-frame/subscribe [:get :geolocation])
         cur-loc-geocoded (r/atom nil)
         result (reaction (when @geolocation (get-places (:coords @geolocation) cur-loc-geocoded)))]
     (r/create-class
-      {:component-will-mount #(dispatch [:request-geolocation-update])
+      {:component-will-mount #(re-frame/dispatch [:request-geolocation-update])
        :display-name "current-location-view"
        :reagent-render
        (fn []
@@ -92,11 +92,11 @@
                     [place-item {:title (:text feature) :address place_name :center center}])])))})))
 
 (defn places-nearby-view []
-  (let [geolocation      (subscribe [:get :geolocation])
+  (let [geolocation      (re-frame/subscribe [:get :geolocation])
         cur-loc-geocoded (r/atom nil)
         result (reaction (when @geolocation (get-places (:coords @geolocation) cur-loc-geocoded true)))]
     (r/create-class
-      {:component-will-mount #(dispatch [:request-geolocation-update])
+      {:component-will-mount #(re-frame/dispatch [:request-geolocation-update])
        :render
          (fn []
            (let [_ @result]
@@ -114,7 +114,7 @@
                        (:features @cur-loc-geocoded)))])))})))
 
 (defn places-search []
-  (let [seq-arg-input-text (subscribe [:chat :seq-argument-input-text])
+  (let [seq-arg-input-text (re-frame/subscribe [:chat :seq-argument-input-text])
         places             (r/atom nil)
         result             (reaction (http-get (str mapbox-api @seq-arg-input-text
                                                     ".json?access_token=" access-token)
@@ -137,7 +137,7 @@
                     (:features @places)))]))))))
 
 (defn dropped-pin []
-  (let [geolocation     @(subscribe [:get :geolocation])
+  (let [geolocation     @(re-frame/subscribe [:get :geolocation])
         pin-location    (r/atom nil)
         pin-geolocation (r/atom nil)
         pin-nearby      (r/atom nil)

@@ -27,6 +27,8 @@
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
 
+;; TODO(alwx): dispatch simplification
+
 (defn command-view [first? command]
   [touchable-highlight {:on-press #(dispatch [:select-chat-input-command command nil])}
    [view
@@ -162,9 +164,7 @@
                                                      (when-not (or (str/blank? @seq-arg-input-text)
                                                                    (get-in @command [:command :hide-send-button]))
                                                        (dispatch [:send-seq-argument]))
-                                                     (js/setTimeout
-                                                       #(dispatch [:chat-input-focus :seq-input-ref])
-                                                       100))}
+                                                     (dispatch [:chat-input-focus-with-delay :seq-input-ref 100]))}
                              (get-options type))])))))
 
 (defn input-view [_]
@@ -226,9 +226,7 @@
                                               (do
                                                 (when-not (str/blank? seq-arg-input-text)
                                                   (dispatch [:send-seq-argument]))
-                                                (js/setTimeout
-                                                  (fn [] (dispatch [:chat-input-focus :seq-input-ref]))
-                                                  100))
+                                                (dispatch [:chat-input-focus-with-delay :seq-input-ref 100]))
                                               (dispatch [:send-current-message]))}
             [view {:style               style/send-message-container
                    :accessibility-label :send-message-button}
