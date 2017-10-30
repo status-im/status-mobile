@@ -9,6 +9,37 @@ from tests import basic_user
 @pytest.mark.all
 class TestAccess(SingleDeviceTestCase):
 
+    @pytest.mark.profile
+    def test_change_profile_name_and_status(self):
+        home = HomeView(self.driver)
+        set_password_as_new_user(home)
+        chats = home.get_chats()
+        chats.back_button.click()
+        chats.profile_button.click()
+        profile = chats.profile_icon.click()
+
+        new_status = '#newstatus'
+        new_username = 'NewUserName!'
+
+        profile.user_status_box.click()
+        profile.user_status_input.clear()
+        profile.user_status_input.send_keys(new_status)
+        profile.username_input.clear()
+        profile.username_input.send_keys(new_username)
+        profile.save_button.click()
+        profile.back_button.click()
+
+        chats.profile_button.click()
+        login = chats.switch_users_button.click()
+        user = login.element_by_text(new_username, 'button')
+        user.click()
+        login.password_input.send_keys('qwerty1234')
+        login.sign_in_button.click()
+        home.find_full_text('Chats', 60)
+        chats.profile_button.click()
+        for text in new_status + ' ', new_username:
+            chats.find_full_text(text, 5)
+
     def test_recover_access(self):
         home = HomeView(self.driver)
         set_password_as_new_user(home)

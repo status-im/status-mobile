@@ -53,7 +53,7 @@ class TestWallet(SingleDeviceTestCase):
         wallet = chats.wallet_button.click()
         wallet.send_button.click()
         wallet.amount_edit_box.click()
-        amount = '0,00%s' % datetime.now().strftime('%f')[:3]
+        amount = '0,0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S')
         wallet.send_as_keyevent(amount)
         wallet.confirm()
         wallet.chose_recipient_button.click()

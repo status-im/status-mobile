@@ -1,5 +1,4 @@
 from views.base_view import BaseViewObject
-import pytest
 import time
 from views.base_element import *
 
@@ -10,33 +9,31 @@ class ProfileButton(BaseButton):
         super(ProfileButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('toolbar-hamburger-menu')
 
+    class ProfileIcon(BaseButton):
 
-class ProfileIcon(BaseButton):
+        def __init__(self, driver):
+            super(ProfileButton.ProfileIcon, self).__init__(driver)
+            self.locator = self.Locator.accessibility_id('drawer-profile-icon')
 
-    def __init__(self, driver):
-        super(ProfileIcon, self).__init__(driver)
-        self.locator = self.Locator.accessibility_id('drawer-profile-icon')
+        def navigate(self):
+            from views.profile import ProfileViewObject
+            return ProfileViewObject(self.driver)
 
-    def navigate(self):
-        from views.profile import ProfileViewObject
-        return ProfileViewObject(self.driver)
+    class SwitchUsersButton(BaseButton):
 
+        def __init__(self, driver):
+            super(ProfileButton.SwitchUsersButton, self).__init__(driver)
+            self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='SWITCH USERS']")
 
-class SwitchUsersButton(BaseButton):
+        def click(self):
+            time.sleep(2)
+            self.find_element().click()
+            logging.info('Tap on %s' % self.name)
+            return self.navigate()
 
-    def __init__(self, driver):
-        super(SwitchUsersButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='SWITCH USERS']")
-
-    def click(self):
-        time.sleep(2)
-        self.find_element().click()
-        logging.info('Tap on %s' % self.name)
-        return self.navigate()
-
-    def navigate(self):
-        from views.login import LoginView
-        return LoginView(self.driver)
+        def navigate(self):
+            from views.login import LoginView
+            return LoginView(self.driver)
 
 
 class PlusButton(BaseButton):
@@ -88,12 +85,6 @@ class NewGroupChatButton(BaseButton):
             super(NewGroupChatButton.NameEditBox, self).__init__(driver)
             self.locator = \
                 self.Locator.xpath_selector("//android.widget.EditText[@NAF='true']")
-
-    class SaveButton(BaseButton):
-        def __init__(self, driver):
-            super(NewGroupChatButton.SaveButton, self).__init__(driver)
-            self.locator = self.Locator.xpath_selector(
-                "//android.widget.TextView[@text='SAVE']")
 
     class GroupChatOptions(BaseButton):
         def __init__(self, driver):
@@ -150,6 +141,13 @@ class SendMessageButton(BaseButton):
     def click(self):
         self.find_element().click()
         logging.info('Tap on %s' % self.name)
+
+
+class AddToContacts(BaseButton):
+
+    def __init__(self, driver):
+        super(AddToContacts, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Add to contacts']")
 
 
 class UserNameText(BaseText):
@@ -217,8 +215,8 @@ class ChatsViewObject(BaseViewObject):
         self.driver = driver
 
         self.profile_button = ProfileButton(self.driver)
-        self.profile_icon = ProfileIcon(self.driver)
-        self.switch_users_button = SwitchUsersButton(self.driver)
+        self.profile_icon = ProfileButton.ProfileIcon(self.driver)
+        self.switch_users_button = ProfileButton.SwitchUsersButton(self.driver)
 
         self.plus_button = PlusButton(self.driver)
         self.add_new_contact = AddNewContactButton(self.driver)
@@ -230,7 +228,6 @@ class ChatsViewObject(BaseViewObject):
         self.new_group_chat_button = NewGroupChatButton(self.driver)
         self.next_button = NewGroupChatButton.NextButton(self.driver)
         self.name_edit_box = NewGroupChatButton.NameEditBox(self.driver)
-        self.save_button = NewGroupChatButton.SaveButton(self.driver)
         self.group_chat_options = NewGroupChatButton.GroupChatOptions(self.driver)
         self.chat_settings = NewGroupChatButton.ChatSettings(self.driver)
         self.user_options = NewGroupChatButton.UserOptions(self.driver)
@@ -238,6 +235,7 @@ class ChatsViewObject(BaseViewObject):
 
         self.chat_message_input = ChatMessageInput(self.driver)
         self.send_message_button = SendMessageButton(self.driver)
+        self.add_to_contacts = AddToContacts(self.driver)
         self.user_name_text = UserNameText(self.driver)
 
         self.send_funds_button = SendFundsButton(self.driver)
