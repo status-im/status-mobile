@@ -129,7 +129,6 @@
      #(do 
          (log/debug :call-jail :jail-id jail-id)
          (log/debug :call-jail :path path)
-         (log/debug :call-jail :params params)
          ;; this debug message can contain sensitive info
          #_(log/debug :call-jail :params params)
          (let [params' (update params :context assoc
