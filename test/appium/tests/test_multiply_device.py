@@ -1,11 +1,59 @@
 import pytest
 from tests.basetestcase import MultiplyDeviceTestCase
-from tests.preconditions import set_password_as_new_user
+from tests.preconditions import set_password_as_new_user, change_user_details
 from views.home import HomeView
 
 
 @pytest.mark.all
-class TestChats(MultiplyDeviceTestCase):
+class TestMultiplyDevices(MultiplyDeviceTestCase):
+
+    @pytest.mark.discover
+    def test_new_profile_name_and_status_on_discover(self):
+        device_1, device_2 = HomeView(self.driver_1), HomeView(self.driver_2)
+        set_password_as_new_user(device_1, device_2)
+        device_1.back_button.click()
+        device_2.back_button.click()
+
+        chats_d1, chats_d2 = device_1.get_chats(), device_2.get_chats()
+        chats_d2.profile_button.click()
+        profile_d2 = chats_d2.profile_icon.click()
+        d2_public_key = profile_d2.public_key_text.text
+
+        chats_d1.plus_button.click()
+        chats_d1.add_new_contact.click()
+        chats_d1.public_key_edit_box.send_keys(d2_public_key)
+        chats_d1.confirm()
+        chats_d1.confirm_public_key_button.click()
+        chats_d1.chat_message_input.send_keys('test123')
+        chats_d1.send_message_button.click()
+        chats_d2.back_button.click()
+
+        new_chat_d2 = chats_d2.element_by_text('test123', 'button')
+        new_chat_d2.click()
+
+        chats_d1.back_button.click()
+        chats_d1.back_button.click()
+        chats_d2.add_to_contacts.click()
+        chats_d2.back_button.click()
+        chats_d1.profile_button.click()
+        chats_d2.profile_button.click()
+
+        profile_d1, profile_d2 = chats_d1.profile_icon.click(), chats_d2.profile_icon.click()
+        users_details = change_user_details(profile_d1, profile_d2)
+        profile_d1.back_button.click()
+        profile_d2.back_button.click()
+        discover_d1 = profile_d1.discover_button.click()
+        discover_d2 = profile_d2.discover_button.click()
+        for device in discover_d1, discover_d2:
+            device.all_popular.click()
+            for k in users_details:
+                device.find_full_text(users_details[k]['name'])
+                device.find_full_text(' ' + users_details[k]['status'])
+            device.back_button.click()
+            device.all_recent.click()
+            for k in users_details:
+                device.find_full_text(users_details[k]['name'])
+                device.find_full_text(users_details[k]['status'] + ' ')
 
     @pytest.mark.chat
     def test_one_to_one_chat(self):

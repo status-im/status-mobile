@@ -43,6 +43,16 @@ class WalletButton(BaseButton):
         return WalletViewObject(self.driver)
 
 
+class DiscoverButton(BaseButton):
+    def __init__(self, driver):
+        super(DiscoverButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Discover']")
+
+    def navigate(self):
+        from views.discover import DiscoverView
+        return DiscoverView(self.driver)
+
+
 class YesButton(BaseButton):
     def __init__(self, driver):
         super(YesButton, self).__init__(driver)
@@ -93,6 +103,13 @@ def verify_transaction_in_ropsten(address: str, transaction_hash: str):
     pytest.fail('Transaction was not found via Ropsten API')
 
 
+class SaveButton(BaseButton):
+    def __init__(self, driver):
+        super(SaveButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='SAVE']")
+
+
 class BaseViewObject(object):
     def __init__(self, driver):
         self.driver = driver
@@ -106,6 +123,9 @@ class BaseViewObject(object):
 
         self.contacts_button = ContactsButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
+        self.discover_button = DiscoverButton(self.driver)
+
+        self.save_button = SaveButton(self.driver)
 
     def confirm(self):
         logging.info("Tap 'Confirm' on native keyboard")

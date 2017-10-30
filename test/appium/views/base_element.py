@@ -82,6 +82,10 @@ class BaseEditBox(BaseElement):
         self.find_element().set_value(value)
         logging.info('Set %s to %s' % (value, self.name))
 
+    def clear(self):
+        self.find_element().clear()
+        logging.info('Clear text in %s' % self.name)
+
 
 class BaseText(BaseElement):
 

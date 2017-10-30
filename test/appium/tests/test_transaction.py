@@ -4,6 +4,7 @@ from tests.basetestcase import SingleDeviceTestCase
 from views.home import HomeView
 from tests.preconditions import set_password_as_new_user, recover_access
 from tests import transaction_users
+from selenium.common.exceptions import NoSuchElementException
 
 
 @pytest.mark.all
@@ -65,7 +66,10 @@ class TestTransactions(SingleDeviceTestCase):
             chats.sign_transaction_button.click()
             chats.got_it_button.click()
             chats.find_full_text('0.1')
-            chats.find_full_text('Sent', 60)
+            try:
+                chats.find_full_text('Sent', 10)
+            except NoSuchElementException:
+                chats.find_full_text('Delivered', 10)
             if test == 'group_chat':
                 chats.find_full_text('to  ' + transaction_users[recipient]['username'], 60)
             chats.verify_balance_is_updated(initial_balance_recipient, recipient_address)
