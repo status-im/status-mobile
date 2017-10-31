@@ -120,7 +120,7 @@
     (if (nil? error)
       {:db         (assoc db :accounts/login {})
        :dispatch-n (concat
-                     [[:debug-server-stop]
+                     [[:stop-debugging]
                       [:set-current-account address]
                       [:initialize-account address]]
                      (if new-account?

@@ -3,7 +3,7 @@
             status-im.chat.handlers
             status-im.commands.handlers.jail
             status-im.commands.handlers.loading
-            status-im.debug.handlers
+            status-im.commands.handlers.debug
             status-im.network.handlers
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events
@@ -252,7 +252,7 @@
                   [:load-contact-groups]
                   [:init-chat]
                   [:init-discoveries]
-                  [:init-debug-mode address]
+                  [:initialize-debugging {:address address}]
                   [:send-account-update-if-needed]
                   [:start-requesting-discoveries]
                   [:remove-old-discoveries!]
