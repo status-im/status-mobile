@@ -1,4 +1,4 @@
-(ns status-im.translations.en)
+(ns status-im.translations.es)
 
 (def translations
   {
