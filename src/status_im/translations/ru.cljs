@@ -2,308 +2,363 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Участники"
    :not-implemented                       "!не реализовано"
    :chat-name                             "Имя чата"
    :notifications-title                   "Уведомления и звуки"
    :offline                               "Оффлайн"
+   :search-for                            "Поиск..."
    :cancel                                "Отмена"
    :next                                  "Продолжить"
+   :open                                  "Открыть"
+   :description                           "Описание"
+   :url                                   "Сслылка"
+   :type-a-message                        "Напечатать сообщение..."
+   :type-a-command                        "Начать ввод комманды..."
+   :error                                 "Ошибка"
+   :unknown-status-go-error               "Неизвестный статус-произошла ошибка"
+   :node-unavailable                      "Нет запущенного ethereum узла"
+   :yes                                   "Да"
+   :no                                    "Нет"
 
-   ;drawer
-   :invite-friends                        "Пригласить друзей"
-   :faq                                   "ЧАВО"
-   :switch-users                          "Переключить пользователей"
+   :camera-access-error                   "Чтобы сделать камеру доступной, пожалуйста зайдите в настройки системы и убедитесь что разрешение Status > Камера выбрано."
+   :photos-access-error                   "Чтобы сделать фото доступными, пожалуйста зайдите в настройки системы и убедитесь что разрешение Status > Фото выбрано."
 
-   ;chat
+   ;;drawer
+   :switch-users                          "Сменить пользователей"
+   :current-network                       "текущая сеть"
+
+   ;;chat
    :is-typing                             "печатает"
    :and-you                               "и вы"
    :search-chat                           "Поиск по чату"
-   :members                               {:one   "1 член"
-                                           :other "{{count}} члена(ов)"
-                                           :zero  "нет членов"}
-   :members-active                        {:one   "1 член, 1 активный"
-                                           :other "{{count}} члена(ов), {{count}} активных"
-                                           :zero  "нет членов"}
+   :members                               {:one   "1 участник"
+                                           :other "{{count}} участника(ов)"
+                                           :zero  "нет участника(ов)"}
+   :members-active                        {:one   "1  участник"
+                                           :other "{{count}} участника(ов)"
+                                           :zero  "нет участника(ов)"}
+   :public-group-status                   "Публичная"
    :active-online                         "В сети"
    :active-unknown                        "Неизвестно"
    :available                             "Доступно"
    :no-messages                           "Нет сообщений"
    :suggestions-requests                  "Запросы"
    :suggestions-commands                  "Команды"
+   :faucet-success                        "Был получен кран запрос"
+   :faucet-error                          "Ошибка кран запроса"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Синхронизация..."
    :sync-synced                           "Синхронизируется"
 
-   ;messages
-   :status-sending                        "Отправляется"
-   :status-pending                        "в ожидании"
+   ;;messages
+   :status-pending                        "Ожидание"
    :status-sent                           "Отправлено"
-   :status-seen-by-everyone               "Просмотрено всеми"
-   :status-seen                           "Просмотрено"
+   :status-seen-by-everyone               "Виден для всех"
+   :status-seen                           "Виден"
    :status-delivered                      "Доставлено"
-   :status-failed                         "Ошибка"
+   :status-failed                         "Неудачно"
 
-   ;datetime
+   ;;datetime
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "секунда"
-                                           :other "секунды"}
+                                           :other "секунд(ы)"}
    :datetime-minute                       {:one   "минута"
-                                           :other "минуты"}
+                                           :other "минут(ы)"}
    :datetime-hour                         {:one   "час"
-                                           :other "часы"}
+                                           :other "часа(ов)"}
    :datetime-day                          {:one   "день"
-                                           :other "дни"}
-   :datetime-multiple                     "c"
+                                           :other "дня(ей)"}
    :datetime-ago                          "назад"
    :datetime-yesterday                    "вчера"
    :datetime-today                        "сегодня"
 
-   ;profile
+   ;;profile
    :profile                               "Профиль"
-   :report-user                           "ПОЖАЛОВАТЬСЯ НА ПОЛЬЗОВАТЕЛЯ"
+   :edit-profile                          "Изменить профиль"
    :message                               "Сообщение"
-   :username                              "Имя пользователя"
    :not-specified                         "Не указано"
    :public-key                            "Публичный ключ"
    :phone-number                          "Номер телефона"
-   :email                                 "Электронная почта"
-   :profile-no-status                     "Нет статуса"
+   :update-status                         "Обновить ваш статус..."
+   :add-a-status                          "Добавить статус..."
+   :status-prompt                         "Поставьте ваш статус. Использование #Хэштэгов поможет остальным узнать о вас и обсудить то, что вы предлагаете"
    :add-to-contacts                       "Добавить в контакты"
-   :error-incorrect-name                  "Выберите другое имя"
-   :error-incorrect-email                 "Неправильная электронная почта"
+   :in-contacts                           "В контактах"
+   :remove-from-contacts                  "Убрать из контактов"
+   :start-conversation                    "Начать общение"
+   :send-transaction                      "Отправить транзакцию"
+   :testnet-text                          "Вы подключены к тестовой сети {{testnet}}. Не отправляйте ETH или SNT на ваш адрес"
+   :mainnet-text                          "Вы в основной сети. Будет производиться отправка настоящего ETH"
 
    ;;make_photo
    :image-source-title                    "Изображение профиля"
-   :image-source-make-photo               "Сфотографировать"
+   :image-source-make-photo               "Снять"
    :image-source-gallery                  "Выбрать из галереи"
-   :image-source-cancel                   "Отмена"
 
    ;;sharing
-   :sharing-copy-to-clipboard             "Скопировать"
-   :sharing-share                         "Поделиться..."
+   :sharing-copy-to-clipboard             "Поделиться..."
    :sharing-cancel                        "Отмена"
 
-   ;sign-up
+   :browsing-title                        "Обзор"
+   :browsing-browse                       "@обзор"
+   :browsing-open-in-web-browser          "Открыть в вэб браузере"
+   :browsing-cancel                       "Отмена"
+
+   ;;sign-up
    :contacts-syncronized                  "Ваши контакты синхронизированы"
    :confirmation-code                     (str "Спасибо! Мы отправили вам СМС с кодом подтверждения."
-                                               "Введите этот код для подтверждения своего номера телефона")
-   :incorrect-code                        (str "Извините, код неправильный, введите еще раз")
-   :generate-passphrase                   (str "Я создам для вас парольную фразу, чтобы вы смогли восстановить ваш"
-                                               "доступ или войти с другого устройства")
-   :phew-here-is-your-passphrase          (str "*Уф*, это было непросто, вот ваша парольная фраза, *запишите ее и сохраните в надежном месте!* "
-                                               "Она будет нужна вам для восстановления аккаунта.")
-   :here-is-your-passphrase               (str "Вот ваша парольная фраза, *запишите ее и сохраните в надежном месте!* "
-                                               "Она будет нужна вам для восстановления аккаунта.")
-   :written-down                          "Убедитесь, что вы записали ее в надежном месте"
-   :phone-number-required                 "Нажмите сюда для ввода своего номера телефона и поиска своих друзей"
-   :intro-status                          "Пообщайтесь со мной в чате, чтобы настроить свой аккаунт и изменить свои настройки!"
+                                               "код. Введите этот код для подтверждения вашего номера телефона")
+   :incorrect-code                        (str "Извените неверный код, пожалуйста попробуйте ещё раз")
+   :phew-here-is-your-passphrase          "Фух, это было непросто. Это ваша кодовая фраза, *запишите ее и храните в надежном месте!* Она вам потребуется для восстановления аккаунта."
+   :here-is-your-passphrase               "Это ваша кодовая фраза,*запишите ее и храните в надежном месте!* Она вам потребуется для восстановления аккаунта."
+   :here-is-your-signing-phrase           "Это ваша подпись. Вы будете её использовать для совершения транзакций. *запишите ее и храните в надежном месте!*"
+   :phone-number-required                 "Нажмите сюда для подтверждения вашего номера телефона и мы начнем поиск ваших друзей"
+   :shake-your-phone                      "Нашли ошибку или есть предложение? Просто ~потрясите~ телефон!"
+   :intro-status                          "Пообщайтесь со мной в чате, чтобы настроить ваш аккаунт и изменить свои параметры!"
    :intro-message1                        "Добро пожаловать в Статус\nНажмите на это сообщение, чтобы установить пароль и начать!"
-   :account-generation-message            "Секундочку, мне нужно выполнить безумно сложные расчеты для создания вашего аккаунта!"
+   :account-generation-message            "Секундочку, мне необходимо произвести безумно сложные вычисления для создания вашего аккаунта!"
+   :move-to-internal-failure-message      "Нам необходимо перенести некоторые важные файлы с внешнего накопителя на внутренний. Для этого нам необходимо ваше разрешение. В следующих версиях мы не будем использовать внешний накопитель."
+   :debug-enabled                         "Произведен запуск Debug сервера! Выполнив *status-dev-cli scan* на вашем компьютере, вы найдёте сервер в той-же сети."
 
-   ;chats
+   ;;phone types
+   :phone-e164                            "Международный 1"
+   :phone-international                   "Международный 2"
+   :phone-national                        "Государственный"
+   :phone-significant                     "Особый"
+
+   ;;chats
    :chats                                 "Чаты"
-   :new-chat                              "Новый чат"
+   :delete-chat                           "Удалить чат"
    :new-group-chat                        "Новый групповой чат"
+   :new-public-group-chat                 "Присоединиться к публичному чату"
+   :edit-chats                            "Изменить чаты"
+   :search-chats                          "Поиск по чату"
+   :empty-topic                           "Пустой заголовок"
+   :topic-format                          "Неверный формат [a-z0-9\\-]+"
+   :public-group-topic                    "Заголовок"
 
-   ;discover
-   :discover                              "Поиск"
+   ;;discover
+   :discover                              "Исследовать"
    :none                                  "Нет"
    :search-tags                           "Введите теги для поиска сюда"
-   :popular-tags                          "Популярные теги"
-   :recent                                "Последние"
+   :popular-tags                          "Популярные #Хэштеги"
+   :recent                                "Последние статусы"
+   :no-statuses-found                     "Статусы не найдены"
+   :chat                                  "Чат"
+   :all                                   "Все"
+   :public-chats                          "Публичные чаты"
+   :soon                                  "Скоро"
+   :public-chat-user-count                "{{count}} участника(ов)"
+   :dapps                                 "ÐAppЫ"
+   :dapp-profile                          "ÐApp профиль"
    :no-statuses-discovered                "Статусы не обнаружены"
+   :no-statuses-discovered-body           "Когда ктонибудь опубликует\nстатус вы увидите его здесь."
+   :no-hashtags-discovered-title          "#Хэштегов не обнаружено"
+   :no-hashtags-discovered-body           "Когда #Хэштег становится\nпопулярным вы увидите его здесь."
 
-   ;settings
-   :settings                              "Настройки"
+   ;;settings
+   :settings                              "Параметры"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Контакты"
    :new-contact                           "Новый контакт"
-   :edit-contacts                         "Редактирование контактов"
-   :show-all                              "ПОКАЗАТЬ ВСЕ"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Люди"
+   :delete-contact                        "Удалить контакт"
+   :delete-contact-confirmation           "Этот контакт будет удален из вашего списка контактов"
+   :remove-from-group                     "Убрать из группы"
+   :edit-contacts                         "Изменить контакты"
+   :search-contacts                       "Поиск контактов"
    :contacts-group-new-chat               "Начать новый чат"
-   :no-contacts                           "Пока нет контактов"
-   :show-qr                               "Показать QR"
-   :enter-address                         "Ввести адрес"
+   :choose-from-contacts                  "Выбирите из контактов"
+   :no-contacts                           "Контактов пока нет"
+   :show-qr                               "Покажите QR-код"
+   :enter-address                         "Введите адрес"
+   :more                                  "ещё"
 
-   ;group-settings
-   :remove                                "Удалить"
+   ;;group-settings
+   :remove                                "Убрать"
    :save                                  "Сохранить"
-   :change-color                          "Изменить цвет"
+   :delete                                "Удалить"
    :clear-history                         "Очистить историю"
-   :delete-and-leave                      "Удалить и оставить"
+   :mute-notifications                    "Отключить оповещения"
+   :leave-chat                            "Покинуть чат"
    :chat-settings                         "Настройки чата"
    :edit                                  "Изменить"
-   :add-members                           "Добавить членов"
-   :blue                                  "Синий"
-   :purple                                "Фиолетовый"
-   :green                                 "Зеленый"
-   :red                                   "Красный"
+   :add-members                           "Добавить пользователя"
 
-   ;commands
-   :money-command-description             "Отправить деньги"
-   :location-command-description          "Отправить местоположение"
-   :phone-command-description             "Отправить номер телефона"
-   :phone-request-text                    "Запрос номера телефона"
-   :confirmation-code-command-description "Отправить код подтверждения"
-   :confirmation-code-request-text        "Запрос кода подтверждения"
-   :send-command-description              "Отправить местоположение"
-   :request-command-description           "Отправить запрос"
-   :keypair-password-command-description  ""
-   :help-command-description              "Помощь"
-   :request                               "Запрос"
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH в адрес {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH от {{chat-name}}"
 
-   ;new-group
-   :group-chat-name                       "Имя чата"
-   :empty-group-chat-name                 "Введите имя"
-   :illegal-group-chat-name               "Выберите другое имя"
+   ;;location command
+   :your-current-location                 "Ваше текущее местоположение"
+   :places-nearby                         "Места рядом"
+   :search-results                        "Результаты поиска"
+   :dropped-pin                           "Булавка"
+   :location                              "Место"
+   :open-map                              "Открыть карту"
+   :sharing-copy-to-clipboard-address     "Копировать адрес"
+   :sharing-copy-to-clipboard-coordinates "Скопировать координаты"
+
+   ;;new-group
    :new-group                             "Новая группа"
-   :group-name                            "Название группы"
    :reorder-groups                        "Упорядочить группы"
+   :edit-group                            "Изменить группу"
+   :delete-group                          "Удалить группу"
+   :delete-group-confirmation             "Эта группа будет удалена из списка ваших групп. Это не повлияет на выши контакты"
+   :delete-group-prompt                   "Это не повлияет на выши контакты"
+   :contact-s                             {:one   "контакт"
+                                           :other "контакты"}
 
-   ;participants
-   :add-participants                      "Добавить участников"
-   :remove-participants                   "Удалить участников"
-
-   ;protocol
-   :received-invitation                   "получил(а) приглашение в чат"
-   :removed-from-chat                     "удалил(а) вас из группового чата"
-   :left                                  "осталось"
+   ;;protocol
+   :received-invitation                   "получено приглашение в чат"
+   :removed-from-chat                     "убрал(а) вас из группового чата"
+   :left                                  "покинул(а)"
    :invited                               "приглашен(а)"
-   :removed                               "удален(а)"
+   :removed                               "убран(а)"
    :You                                   "Вы"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Добавить новый контакт"
-   :import-qr                             "Импорт"
-   :scan-qr                               "Сканировать QR"
+   :scan-qr                               "Сканировать QR-код"
    :name                                  "Имя"
-   :whisper-identity                      "Скрытая личность"
-   :address-explication                   "Может быть, здесь должен быть какой-то текст, поясняющий адрес и то, где его искать"
-   :enter-valid-address                   "Введите действительный адрес или сканируйте QR-код"
-   :enter-valid-public-key                "Введите действительный публичный ключ или сканируйте QR-код"
-   :contact-already-added                 "Контакт уже добавлен"
-   :can-not-add-yourself                  "Вы не можете добавить себя"
+   :address-explication                   "Ваш публичный ключ используется для создания вашего адреса в сети Ethereum и является набором букв и цифр. Вы можете легко найти его у себя в профиле"
+   :enter-valid-public-key                "Пожалуйста введите публичный ключ или отсканируйте QR-код"
+   :contact-already-added                 "Этот контакт уже добавлен"
+   :can-not-add-yourself                  "Вы не можете добавить самого себя"
    :unknown-address                       "Неизвестный адрес"
 
-
-   ;login
+   ;;login
    :connect                               "Подключиться"
    :address                               "Адрес"
    :password                              "Пароль"
-   :login                                 "Вход"
-   :wrong-password                        "Неверный пароль"
-
-   ;recover
-   :recover-from-passphrase               "Восстановление с помощью парольной фразы"
-   :recover-explain                       "Введите парольную фразу вместо вашего пароля для восстановления доступа"
-   :passphrase                            "Парольная фраза"
-   :recover                               "Восстановить"
-   :enter-valid-passphrase                "Введите парольную фразу"
-   :enter-valid-password                  "Введите пароль"
-
-   ;accounts
-   :recover-access                        "Восстановить доступ"
-   :add-account                           "Добавить аккаунт"
-
-   ;wallet-qr-code
-   :done                                  "Готово"
-   :main-wallet                           "Основной кошелек"
-
-   ;validation
-   :invalid-phone                         "Неверный номер телефона"
-   :amount                                "Сумма"
-   :not-enough-eth                        (str "Не хватает ETH на балансе "
-                                               "({{balance}} ETH)")
-   ;transactions
-   :confirm-transactions                  {:one   "Подтвердить транзакцию"
-                                           :other "Подтвердите {{count}} транзакции(ий)"
-                                           :zero  "Нет транзакций"}
-   :status                                "Статус"
-   :pending-confirmation                  "В ожидании подтверждения"
-   :recipient                             "Получатель"
-   :one-more-item                         "Еще одна позиция"
-   :fee                                   "Комиссия"
-   :value                                 "Сумма"
-
-   ;:webview
-   :web-view-error                        "ой, ошибка"
-
-   :confirm                               "Подтвердить"
-   :phone-national                        "Государственный"
-   :transactions-confirmed                {:one   "Транзакция подтверждена"
-                                           :other "Подтверждено {{count}} транзакции(й)"
-                                           :zero  "Нет подтвержденных транзакций"}
-   :public-group-topic                    "Тема"
-   :debug-enabled                         "Запущен сервер отладки! Теперь вы можете добавить DApp, выполнив со своего компьютера *status-dev-cli scan*"
-   :new-public-group-chat                 "Присоединиться к общему чату"
-   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
-   :share-qr                              "Поделиться QR"
-   :feedback                              "Есть отзыв?\nВстряхните телефон!"
-   :twelve-words-in-correct-order         "12 слов в нужном порядке"
-   :remove-from-contacts                  "Удалить из контактов"
-   :delete-chat                           "Удалить чат"
-   :edit-chats                            "Изменить чаты"
-   :sign-in                               "Вход"
-   :create-new-account                    "Создать новый аккаунт"
    :sign-in-to-status                     "Войти в Статус"
-   :got-it                                "Понятно"
-   :move-to-internal-failure-message      "Нам необходимо перенести некоторые важные файлы из внешнего хранилища во внутреннее. Для этого нам нужно ваше разрешение. В следующих версиях мы не будем использовать внешнее хранилище."
-   :edit-group                            "Изменить группу"
-   :delete-group                          "Удалить группу"
-   :browsing-title                        "Просматривать"
-   :browsing-cancel                       "Отмена"
-   :faucet-success                        "Заявка на сборщик получена"
-   :choose-from-contacts                  "Выбрать из контактов"
-   :phone-e164                            "Международная 1"
-   :remove-from-group                     "Удалить из группы"
-   :search-contacts                       "Поиск контактов"
+   :sign-in                               "Войти"
+   :wrong-password                        "Неверный пароль"
+   :enter-password                        "Введите пароль"
+
+   ;;recover
+   :passphrase                            "Ключевая фраза"
+   :recover                               "восстановить"
+   :twelve-words-in-correct-order         "12 слов в верном порядке"
+
+   ;;accounts
+   :recover-access                        "Восстановить доступ"
+   :create-new-account                    "Создать новый аккаунт"
+
+   ;;wallet-qr-code
+   :done                                  "Готово"
+
+   ;;validation
+   :invalid-phone                         "Неверный номер телефона"
+   :amount                                "Количестро"
+
+   ;;transactions
+   :confirm                               "Подтвердить"
    :transaction                           "Транзакция"
-   :public-group-status                   "Общий"
-   :leave-chat                            "Выйти из чата"
-   :start-conversation                    "Начать разговор"
-   :topic-format                          "Неверный формат [a-z0-9\\-] +"
-   :faucet-error                          "Ошибка заявки на сборщик"
-   :phone-significant                     "Значительное"
-   :search-for                            "Искать..."
-   :phone-international                   "Международная 2"
-   :send-transaction                      "Отправить транзакцию"
-   :delete-contact                        "Удалить контакт"
-   :mute-notifications                    "Отключить звук в оповещениях"
-
-
-   :contact-s                             {:one   "контакт"
-                                           :other "контакты"}
-   :from                                  "От"
-   :search-chats                          "Поиск чатов"
-   :in-contacts                           "В контактах"
-
-   :type-a-message                        "Напишите сообщение..."
-   :type-a-command                        "Начинайте вводить команду..."
-   :shake-your-phone                      "Нашли ошибку или есть предложение? Просто ~потрясите~ телефон!"
-   :status-prompt                         "Создайте статус, чтобы люди знали о том, что вы предлагаете. Можно также использовать #хэштеги."
-   :add-a-status                          "Добавьте статус..."
-   :error                                 "Ошибка..."
-   :more                                  "Больше"
-   :no-statuses-found                     "Статусы не найдены"
-   :swow-qr                               "Показать QR-код"
-   :browsing-open-in-web-browser          "Открыть в веб-браузере"
-   :delete-group-prompt                   "Это не повлияет на контакты"
-   :edit-profile                          "Редактировать профиль"
-
-
-   :enter-password-transactions           {:one   "Подтвердите транзакцию, указав свой пароль"
-                                           :other "Подтвердите транзакции, указав свой пароль"}
-   :unsigned-transactions                 "Неподписанные транзакции"
-   :empty-topic                           "Пустая тема"
+   :unsigned-transaction-expired          "Истек срок неподписанной транзакции"
+   :status                                "Статус"
+   :recipient                             "Получатель"
    :to                                    "Кому"
-   :group-members                         "Участники группы"
-   :estimated-fee                         "Примерная комиссия"
-   :data                                  "Дата"})
+   :from                                  "От кого"
+   :data                                  "Data"
+   :got-it                                "Понятно"
+   :block                                 "Блок"
+   :hash                                  "Хэш"
+   :gas-limit                             "Gas лимит"
+   :gas-price                             "Gas цена"
+   :gas-used                              "Gas использованно"
+   :cost-fee                              "Стоимость/Комиссия"
+   :nonce                                 "Данное время"
+   :confirmations                         "Подтверждений"
+   :confirmations-helper-text             "Пожалуйста дождитесь хотябы 12 подтверждений, чтобы быть уверенным в том, что ваша транзакция прошла успешно "
+   :copy-transaction-hash                 "Скопировать хэш транзакции"
+   :open-on-etherscan                     "Открыть в Etherscan.io"
+
+   ;;webview
+   :web-view-error                        "упс, произола ошибка"
+
+   ;;testfairy warning
+   :testfairy-title                       "Осторожно!"
+   :testfairy-message                     "Вы используете nightly build версию. В целях тестирования данная версия приложения производит запись сеанса если используется wifi подключение это значит, что любое ваше взаимодействие с данным приложением (Видео и логи) могут быть использованы командой разработчиков для выявления возможных проблем. Сохраненные видео/логи не содержат паролей. Запись производится только если установлена nightly build версия приложения. Запись не производится если приложение усиановлено из PlayStore или TestFlight."
+
+   ;; wallet
+   :wallet                                "Кошелёк"
+   :wallets                               "Кошельки"
+   :your-wallets                          "Ваши кошельки"
+   :main-wallet                           "Главный Кошелёк"
+   :wallet-error                          "Ошибка загрузки данных"
+   :wallet-send                           "Отправить"
+   :wallet-request                        "Запросить"
+   :wallet-exchange                       "Обменять"
+   :wallet-assets                         "Актив"
+   :wallet-add-asset                      "Доьавить актив"
+   :wallet-total-value                    "Общая стоимость"
+   :wallet-settings                       "Настройки кошелька"
+   :signing-phrase-description            "Подписать транзакцию, посредством ввода вашего пароля. Убедитесь, что введенные выше слова, совпадают с вашей секретной фразой-подписью"
+   :wallet-insufficient-funds             "Недастаточно средств"
+   :request-transaction                   "Запрос транзакции"
+   :send-request                          "Отправить запрос"
+   :share                                 "Поделиться"
+   :eth                                   "ETH"
+   :currency                              "Валюта"
+   :usd-currency                          "USD"
+   :transactions                          "Транзакции"
+   :transaction-details                   "детали транзакции"
+   :transaction-failed                    "Неудачная транзакция"
+   :transactions-sign                     "Подписать"
+   :transactions-sign-all                 "Подписать все"
+   :transactions-sign-transaction         "Подписать транзакции"
+   :transactions-sign-later               "Подписать позже"
+   :transactions-delete                   "Удалить транзакцию"
+   :transactions-delete-content           "Транзакция будет убрана из списка 'Неподписанные' "
+   :transactions-history                  "История"
+   :transactions-unsigned                 "Неподписанные"
+   :transactions-history-empty            "В вашей истории пока нет транзакций"
+   :transactions-unsigned-empty           "У вас нет ниодной неподписанной транзакции"
+   :transactions-filter-title             "Отфильтровать историю"
+   :transactions-filter-tokens            "Токены"
+   :transactions-filter-type              "Тип"
+   :transactions-filter-select-all        "Выбрать все"
+   :view-transaction-details              "Показать детали транзакции"
+   :transaction-description               "Пожалуйста дождитесь хотябы 12 подтверждений, чтобы быть уверенным в том, что ваша транзакция прошла"
+   :transaction-sent                      "Тпанзакция отправлена"
+   :transaction-moved-text                "Транзакция останется в списке 'Неподписанные' в течении 5 минут"
+   :transaction-moved-title               "Транзакция передвинута"
+   :sign-later-title                      "Подписать транзакцию позже?"
+   :sign-later-text                       "Проверьте историю транзакций для подписи данной транзакции"
+   :not-applicable                        "Не применимо к неподписанным транзакциям"
+
+   ;; Wallet Send
+   :wallet-choose-recipient               "Выбрать получателя"
+   :wallet-choose-from-contacts           "Выбрать из контактов"
+   :wallet-address-from-clipboard         "Использовать адрес из буфера"
+   :wallet-invalid-address                "Неверный адрес: \n {{data}}"
+   :wallet-browse-photos                  "Показать фото"
+   :validation-amount-invalid-number      "Указано неверное номерное значение"
+   :validation-amount-is-too-precise      "Слишком маленькое значение. Меньшее значение которое вы можете отправить это 1 Wei (1x10^-18 ETH)"
+
+
+
+   ;; network settings
+   :new-network                           "Новая сеть"
+   :add-network                           "Добавить сеть"
+   :add-new-network                       "Добавить новую сеть"
+   :existing-networks                     "существующие сети"
+   :add-json-file                         "Добавить JSON файл"
+   :paste-json-as-text                    "Вставить JSON как текст"
+   :paste-json                            "Вставить JSON"
+   :specify-rpc-url                       "Задать RPC ссылку"
+   :edit-network-config                   "Изменить настройки сети"
+   :connected                             "Подключено"
+   :process-json                          "Обработка JSON"
+   :error-processing-json                 "Огибка обработки JSON"
+   :rpc-url                               "RPC ссылка"
+   :remove-network                        "Убрать сеть"
+   :network-settings                      "Настройки сети"
+   :edit-network-warning                  "Бкдьте осторожны, изменение данных сети может отключить вас от нее"
+   :connecting-requires-login             "Для подключение к другой сети необходимо авторизироваться"
+   :close-app-title                       "Острожно!"
+   :close-app-content                     "Приложение будет остановленно и закрыто. Когда вы его снова откроете, булкт использована выбранная сеть"
+   :close-app-button                      "Подтвердить"})
