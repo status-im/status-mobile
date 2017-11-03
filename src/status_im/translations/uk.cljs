@@ -18,7 +18,7 @@
    :type-a-command                        "Почніть вводити команду..."
    :error                                 "Помилка"
    :unknown-status-go-error               "Невідома помилка"
-   :node-unavailable                      "Не знайдено ethereum вузла"
+   :node-unavailable                      "Не знайдено ethereum вузол"
    :yes                                   "Так"
    :no                                    "Ні"
 
