@@ -196,7 +196,7 @@
    :your-current-location                 "La tua posizione corrente"
    :places-nearby                         "Posti vicini"
    :search-results                        "Cerca risultati"
-   :dropped-pin                           "Pin posizionati"
+   :dropped-pin                           "Pin posizionato"
    :location                              "Posizione"
    :open-map                              "Apri Mappa"
    :sharing-copy-to-clipboard-address     "Copia l'Indirizzo"
