@@ -19,11 +19,11 @@ If this interests you, **help us make Status a reality** - anyone can contribute
 
 ## How to Contribute?
 
-Go straight to the [wiki](https://wiki.status.im) or [join our Slack](http://slack.status.im) or choose what interests you:
+Go straight to the [wiki](https://wiki.status.im) or [join our Slack](http://slack.status.im) and [Riot](http://chat.status.im) or choose what interests you:
 
 - **Developer**
 Developers are the heart of software and to keep Status beating we need all the help we can get! If you're looking to code in ClojureScript or Golang then Status is the project for you! We use React Native and there is even some Java/Objective-C too!  
-Want to learn more about it? Start by reading our [Developer Introduction](https://wiki.status.im/Developer_Documentation) which guides you through the technology stack and start browsing [beginner issues](https://github.com/status-im/status-react/issues?utf8=%E2%9C%93&q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20). Then you can read how to [Build Status](https://wiki.status.im/Developer_Documentation#Building_Status), which talks about managing project dependencies, coding guidelines and testing procedures.  
+Want to learn more about it? Start by reading our [Developer Introduction](https://wiki.status.im/Developer_Documentation) which guides you through the technology stack and start browsing [beginner issues](https://github.com/status-im/status-react/issues?utf8=%E2%9C%93&q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20). Then you can read how to [Build Status](https://wiki.status.im/Building_Status), which talks about managing project dependencies, coding guidelines and testing procedures.
 
 - **Community Management**  
 Metcalfe's law states that the value of a network is proportional to the square of the number of connected users of the system - without community Status is meaningless. We're looking to create a positive, fun environment to explore new ideas, experiment and grow the Status community. Building a community takes a lot of work but the people you'll meet and long lasting relationships you form will be well worth it, check out our [Community Development Guide](https://wiki.status.im/Main_Page#Our_community)
@@ -54,7 +54,7 @@ View our [developer documentation](https://wiki.status.im/Developer_Documentatio
 
 ## Give me Binaries!
 
-Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://wiki.status.im/Developer_Documentation#Building_Status/).
+Currently the fastest way to get your hands on a binary is to join our Early Access by submitting your email on our [website](https://status.im) or by [building it yourself](https://wiki.status.im/Building_Status).
 
 Alternatively, if you’re on Android you can try one of our nightly APK builds from [here](http://artifacts.status.im:8081/artifactory/nightlies-local/)
 
@@ -67,7 +67,7 @@ Without the dedication of these outstanding individuals, Status would not exist.
 
 ## Contact us
 
-Feel free to email us at [support@status.im](mailto:support@status.im) or better yet, [join our Slack](http://slack.status.im).
+Feel free to email us at [support@status.im](mailto:support@status.im) or better yet, [join our Slack](http://slack.status.im) and [Riot](http://chat.status.im).
 
 Got a feature request or suggestion, download Status and shake your phone, failing that search our [Github Issues](http://github.com/status-im/status-react/issues).
 
