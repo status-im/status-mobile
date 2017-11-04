@@ -85,41 +85,40 @@
     :to           "me"}])
 
 (defn passphrase-messages-events [mnemonic signing-phrase crazy-math-message?]
-  (into [[:received-message
-          {:message-id   chat-const/passphrase-message-id
-           :content      (if crazy-math-message?
-                           (label :t/phew-here-is-your-passphrase)
-                           (label :t/here-is-your-passphrase))
-           :content-type const/text-content-type
-           :outgoing     false
-           :chat-id      const/console-chat-id
-           :from         const/console-chat-id
-           :to           "me"}]
-         [:received-message
-          {:message-id   (random/id)
-           :content      mnemonic
-           :content-type const/text-content-type
-           :outgoing     false
-           :chat-id      const/console-chat-id
-           :from         const/console-chat-id
-           :to           "me"}]
-         [:received-message
-          {:message-id   chat-const/signing-phrase-message-id
-           :content      (label :t/here-is-your-signing-phrase)
-           :content-type const/text-content-type
-           :outgoing     false
-           :chat-id      const/console-chat-id
-           :from         const/console-chat-id
-           :to           "me"}]
-         [:received-message
-          {:message-id   (random/id)
-           :content      signing-phrase
-           :content-type const/text-content-type
-           :outgoing     false
-           :chat-id      const/console-chat-id
-           :from         const/console-chat-id
-           :to           "me"}]]
-        start-signup-events))
+  [[:received-message
+    {:message-id   chat-const/passphrase-message-id
+     :content      (if crazy-math-message?
+                     (label :t/phew-here-is-your-passphrase)
+                     (label :t/here-is-your-passphrase))
+     :content-type const/text-content-type
+     :outgoing     false
+     :chat-id      const/console-chat-id
+     :from         const/console-chat-id
+     :to           "me"}]
+   [:received-message
+    {:message-id   (random/id)
+     :content      mnemonic
+     :content-type const/text-content-type
+     :outgoing     false
+     :chat-id      const/console-chat-id
+     :from         const/console-chat-id
+     :to           "me"}]
+   [:received-message
+    {:message-id   chat-const/signing-phrase-message-id
+     :content      (label :t/here-is-your-signing-phrase)
+     :content-type const/text-content-type
+     :outgoing     false
+     :chat-id      const/console-chat-id
+     :from         const/console-chat-id
+     :to           "me"}]
+   [:received-message
+    {:message-id   (random/id)
+     :content      signing-phrase
+     :content-type const/text-content-type
+     :outgoing     false
+     :chat-id      const/console-chat-id
+     :from         const/console-chat-id
+     :to           "me"}]])
 
 (def intro-status
   {:message-id   chat-const/intro-status-message-id
@@ -162,5 +161,4 @@
    :photo-path        const/console-chat-id
    :dapp?             true
    :unremovable?      true
-   :bot-url           "local://console-bot"
-   :dapp-hash         858845357})
+   :bot-url           "local://console-bot"})

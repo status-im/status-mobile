@@ -38,11 +38,6 @@
    (let [previous-message (first (get-in db [:chats chat-id :messages]))]
      (check-message previous-message message))))
 
-(defn command-valid? [message validator]
-  (if validator
-    (validator message)
-    (pos? (count message))))
-
 (defn command-name [{:keys [bot name scope]}]
   (cond
     (:global? scope)

@@ -1,23 +1,19 @@
 (ns status-im.ui.screens.accounts.events
-  (:require
-   status-im.ui.screens.accounts.login.events
-   status-im.ui.screens.accounts.recover.events
-
-   [status-im.data-store.accounts :as accounts-store]
-   [re-frame.core :as re-frame]
-   [taoensso.timbre :as log]
-   [status-im.protocol.core :as protocol]
-   [status-im.native-module.core :as status]
-   [status-im.utils.types :refer [json->clj]]
-   [status-im.utils.identicon :refer [identicon]]
-   [status-im.utils.random :as random]
-   [clojure.string :as str]
-   [status-im.utils.datetime :as time]
-   [status-im.utils.handlers :as handlers]
-   [status-im.ui.screens.accounts.statuses :as statuses]
-   [status-im.utils.signing-phrase.core :as signing-phrase]
-   [status-im.utils.gfycat.core :refer [generate-gfy]]
-   [status-im.utils.hex :as utils.hex]))
+  (:require [status-im.data-store.accounts :as accounts-store]
+            [re-frame.core :as re-frame]
+            [taoensso.timbre :as log]
+            [status-im.protocol.core :as protocol]
+            [status-im.native-module.core :as status]
+            [status-im.utils.types :refer [json->clj]]
+            [status-im.utils.identicon :refer [identicon]]
+            [status-im.utils.random :as random]
+            [clojure.string :as str]
+            [status-im.utils.datetime :as time]
+            [status-im.utils.handlers :as handlers]
+            [status-im.ui.screens.accounts.statuses :as statuses]
+            [status-im.utils.signing-phrase.core :as signing-phrase]
+            [status-im.utils.gfycat.core :refer [generate-gfy]]
+            [status-im.utils.hex :as utils.hex]))
 
 ;;;; Helper fns
 
@@ -26,6 +22,7 @@
   [db password]
   {:db              (assoc db :accounts/creating-account? true)
    ::create-account password
+   ;; TODO(janherich): get rid of this shitty delayed dispatch once sending commands/msgs is refactored
    :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
 
 ;;;; COFX
@@ -40,6 +37,16 @@
   (fn [coeffects _]
     (assoc coeffects :all-accounts (accounts-store/get-all))))
 
+(re-frame/reg-cofx
+  ::get-signing-phrase
+  (fn [coeffects _]
+    (assoc coeffects :signing-phrase (signing-phrase/generate))))
+
+(re-frame/reg-cofx
+  ::get-status
+  (fn [coeffects _]
+    (assoc coeffects :status (rand-nth statuses/data))))
+
 ;;;; FX
 
 (re-frame/reg-fx
@@ -47,33 +54,12 @@
   (fn [account]
     (accounts-store/save account true)))
 
-(defn account-created [result password]
-  (let [data       (json->clj result)
-        public-key (:pubkey data)
-        address    (:address data)
-        mnemonic   (:mnemonic data)
-        phrase     (signing-phrase/generate)
-        {:keys [public private]} (protocol/new-keypair!)
-        account {:public-key          public-key
-                 :address             address
-                 :name                (generate-gfy public-key)
-                 :status              (rand-nth statuses/data)
-                 :signed-up?          true
-                 :updates-public-key  public
-                 :updates-private-key private
-                 :photo-path          (identicon public-key)
-                 :signing-phrase      phrase}]
-    (log/debug "account-created")
-    (when-not (str/blank? public-key)
-      (re-frame/dispatch [:show-mnemonic mnemonic phrase])
-      (re-frame/dispatch [:add-account account password]))))
-
 (re-frame/reg-fx
   ::create-account
   (fn [password]
     (status/create-account
      password
-     #(account-created % password))))
+     #(re-frame/dispatch [::account-created (json->clj %) password]))))
 
 (re-frame/reg-fx
   ::broadcast-account-update
@@ -104,21 +90,42 @@
                                          :private updates-private-key}}}}))))
 ;;;; Handlers
 
+(defn add-account
+  "Takes db and new account, creates map of effects describing adding account to database and realm"
+  [{:keys [network] :networks/keys [networks] :as db} {:keys [address] :as account}]
+  (let [enriched-account (assoc account
+                                :network network
+                                :networks networks
+                                :address address)]
+    {:db (assoc-in db [:accounts/accounts address] enriched-account)
+     ::save-account enriched-account}))
+
+;; TODO(janherich) we have this handler here only because of the tests, refactor/improve tests ASAP
 (handlers/register-handler-fx
   :add-account
-  (fn [{{:keys          [network]
-         :networks/keys [networks]
-         :as            db} :db} [_ {:keys [address] :as account} password]]
-    (let [address (utils.hex/normalize-hex address)
-          account' (assoc account
-                          :network network
-                          :networks networks
-                          :address address)]
-      (merge
-       {:db            (assoc-in db [:accounts/accounts address] account')
-        ::save-account account'}
-       (when password
-         {:dispatch-later [{:ms 400 :dispatch [:login-account address password true]}]})))))
+  (fn [{:keys [db]} [_ new-account]]
+    (add-account db new-account)))
+
+(handlers/register-handler-fx
+  ::account-created
+  [re-frame/trim-v (re-frame/inject-cofx :get-new-keypair!)
+   (re-frame/inject-cofx ::get-signing-phrase) (re-frame/inject-cofx ::get-status)]
+  (fn [{:keys [keypair signing-phrase status db] :as cofx} [{:keys [pubkey address mnemonic]} password]]
+    (let [normalized-address (utils.hex/normalize-hex address)
+          account            {:public-key          pubkey
+                              :address             normalized-address
+                              :name                (generate-gfy pubkey)
+                              :status              status
+                              :signed-up?          true
+                              :updates-public-key  (:public keypair)
+                              :updates-private-key (:private keypair)
+                              :photo-path          (identicon pubkey)
+                              :signing-phrase      signing-phrase}]
+      (log/debug "account-created")
+      (when-not (str/blank? pubkey)
+        (-> (add-account db account)
+            (assoc :dispatch-n [[:show-mnemonic mnemonic signing-phrase]
+                                [:login-account normalized-address password true]]))))))
 
 (handlers/register-handler-fx
   :create-new-account-handler

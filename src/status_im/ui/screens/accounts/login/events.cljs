@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.accounts.login.events
   (:require
     status-im.ui.screens.accounts.login.navigation
-
+   
     [re-frame.core :refer [dispatch reg-fx]]
     [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
     [taoensso.timbre :as log]
+    [status-im.chat.sign-up :as sign-up]
     [status-im.utils.types :refer [json->clj]]
     [status-im.data-store.core :as data-store]
     [status-im.native-module.core :as status]
@@ -65,7 +66,7 @@
   (let [{:keys [network config]} (get-network-by-address db address)]
     {:initialize-geth-fx config
      :db                 (assoc db :network network
-                                   :node/after-start [::login-account address password])}))
+                                :node/after-start [::login-account address password])}))
 
 (register-handler-fx
   ::start-node
@@ -116,12 +117,15 @@
 (register-handler-fx
   :change-account-handler
   (fn [{db :db} [_ error address new-account?]]
-    (if (nil? error)
-      {:db         (dissoc db :accounts/login)
-       :dispatch-n [[:stop-debugging]
-                    [:initialize-account address]
-                    [:navigate-to-clean :chat-list]
-                    (if new-account?
-                      [:navigate-to-chat console-chat-id]
-                      [:navigate-to :chat-list])]}
-      (log/debug "Error changing acount: " error))))
+    (let [recover-in-progress? (:accounts/recover db)]
+      (if (nil? error)
+        {:db         (dissoc db :accounts/login)
+         :dispatch-n [[:stop-debugging]
+                      [:initialize-account address (when (or new-account?
+                                                             recover-in-progress?)
+                                                     sign-up/start-signup-events)]
+                      [:navigate-to-clean :chat-list]
+                      (if new-account?
+                        [:navigate-to-chat console-chat-id]
+                        [:navigate-to :chat-list])]}
+        (log/debug "Error changing acount: " error)))))

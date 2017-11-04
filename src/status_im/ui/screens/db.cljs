@@ -9,6 +9,7 @@
             status-im.ui.screens.group.db
             status-im.chat.specs
             status-im.chat.new-public-chat.db
+            status-im.commands.specs
             status-im.ui.screens.profile.db
             status-im.ui.screens.discover.db
             status-im.ui.screens.network-settings.db))
@@ -150,27 +151,24 @@
                   :chat/chat-ui-props
                   :chat/chat-list-ui-props
                   :chat/layout-height
-                  :chat/expandable-view-height-to-value
-                  :chat/global-commands
+                  :chat/expandable-view-height-to-value 
                   :chat/loading-allowed
                   :chat/message-data
                   :chat/message-id->transaction-id
                   :chat/message-status
                   :chat/unviewed-messages
                   :chat/selected-participants
-                  :chat/chat-loaded-callbacks
-                  :chat/commands-callbacks
+                  :chat/chat-loaded-callbacks 
                   :chat/command-hash-valid?
                   :chat/public-group-topic
                   :chat/confirmation-code-sms-listener
                   :chat/messages
                   :chat/handler-data
-                  :chat/loaded-chats
-                  :chat/bot-subscriptions
-                  :chat/new-request
+                  :chat/loaded-chats 
                   :chat/raw-unviewed-messages
                   :chat/bot-db
                   :chat/geolocation
+                  :commands/access-scope->commands-responses
                   :discoveries/discoveries
                   :discoveries/discover-search-tags
                   :discoveries/discover-current-dapp

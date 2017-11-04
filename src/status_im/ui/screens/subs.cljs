@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.subs
   (:require [re-frame.core :refer [reg-sub subscribe]]
             status-im.chat.subs
+            status-im.commands.subs
             status-im.ui.screens.accounts.subs
             status-im.ui.screens.chats-list.subs
             status-im.ui.screens.group.chat-settings.subs
@@ -20,21 +21,14 @@
   (fn [db [_ k]]
     (get db k)))
 
-(reg-sub :get-current-account
-  (fn [db]
-    (let [current-account-id (:accounts/current-account-id db)]
-      (get-in db [:accounts/accounts current-account-id]))))
-
 (reg-sub :get-in
   (fn [db [_ path]]
     (get-in db path)))
 
-(reg-sub :signed-up?
-  :<- [:get :accounts/current-account-id]
-  :<- [:get-accounts]
-  (fn [[account-id accounts]]
-    (when (and accounts account-id)
-      (get-in accounts [account-id :signed-up?]))))
+(reg-sub :signed-up? 
+  :<- [:get-current-account]
+  (fn [current-account]
+    (:signed-up? current-account)))
 
 (reg-sub :tabs-hidden?
   :<- [:get-in [:toolbar-search :show]]

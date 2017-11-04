@@ -5,3 +5,10 @@
   :get-accounts
   (fn [db _]
     (get db :accounts/accounts)))
+
+(reg-sub
+  :get-current-account
+  :<- [:get :accounts/current-account-id]
+  :<- [:get-accounts]
+  (fn [[account-id accounts]]
+    (some-> accounts (get account-id))))

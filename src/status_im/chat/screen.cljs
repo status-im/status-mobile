@@ -180,8 +180,7 @@
    show-emoji? [:chat-ui-props :show-emoji?]
    layout-height [:get :layout-height]
    input-text [:chat :input-text]]
-  {:component-did-mount    #(do (dispatch [:check-and-open-dapp!])
-                                (dispatch [:update-suggestions]))
+  {:component-did-mount    #(dispatch [:check-and-open-dapp!])
    :component-will-unmount #(dispatch [:set-chat-ui-props {:show-emoji? false}])}
   [view {:style st/chat-view
          :on-layout (fn [event]

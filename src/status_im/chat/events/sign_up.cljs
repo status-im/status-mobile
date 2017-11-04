@@ -140,8 +140,7 @@
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{:keys [db random-id now] :as cofx} [contacts]]
     (-> {:db db}
-        (accounts-events/account-update {:signed-up?   true
-                                         :last-updated now})
+        (accounts-events/account-update {:signed-up?   true :last-updated now})
         (assoc :dispatch (sign-up/contacts-synchronised-event random-id)))))
 
 (handlers/register-handler-fx

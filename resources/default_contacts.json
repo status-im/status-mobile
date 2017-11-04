@@ -6,21 +6,8 @@
             "en": "Browse"
         },
         "dapp?": true,
-        "bot-url": "local://browse-bot",
-        "global-command": {
-          "description":"Launch the browser",
-          "color": "#ffa500",
-          "name": "global",
-          "params": [{
-            "name": "url",
-            "placeholder":"URL",
-            "type":"text"
-          }],
-          "title":"Browser",
-          "registered-only":true,
-          "has-handler": false,
-          "fullscreen":true
-        },
+        "hide-contact?": true,
+        "bot-url": "local://browse-bot", 
         "unremovable?": true
     },
 
@@ -32,30 +19,19 @@
             "ru": "Печкин"
         },
         "dapp?": true,
-        "mixable?": true,
+        "hide-contact?": true,
         "bot-url": "local://mailman-bot"
     },
 
-    "transactor-group":
+    "transactor":
     {
         "name":
         {
             "en": "Transactor"
         },
         "dapp?": true,
-        "mixable?": true,
-        "bot-url": "local://transactor-group-bot"
-    },
-
-    "transactor-personal":
-    {
-        "name":
-        {
-            "en": "Transactor"
-        },
-        "dapp?": true,
-        "mixable?": true,
-        "bot-url": "local://transactor-personal-bot"
+        "hide-contact?": true,
+        "bot-url": "local://transactor-bot"
     },
 
     "demo-bot":

@@ -1,19 +1,22 @@
 (ns status-im.ui.screens.profile.events
   (:require [clojure.spec.alpha :as spec]
             [clojure.string :as string]
-            [re-frame.core :as re-frame :refer [reg-fx trim-v]]
+            [re-frame.core :as re-frame]
             [status-im.ui.components.react :refer [show-image-picker]]
-            [status-im.constants :refer [console-chat-id]]
+            [status-im.constants :as const]
+            [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.db :as db]
             [status-im.ui.screens.profile.navigation]
             [status-im.ui.screens.accounts.events :as accounts-events]
+            [status-im.chat.events :as chat-events]
+            [status-im.chat.events.input :as input-events]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
-(reg-fx
+(re-frame/reg-fx
   :open-image-picker
   ;; the image picker is only used here for now, this effect can be use in other scenarios as well
   (fn [callback-event]
@@ -29,12 +32,12 @@
 
 (handlers/register-handler-fx
   :profile/send-transaction
-  [trim-v]
-  (fn [{:keys [db]} [chat-id]]
-    (let [send-command (first (get-in db [:contacts/contacts "transactor-personal" :commands :send]))]
-      {:dispatch [:navigate-to :chat chat-id]
-       ;;TODO get rid of timeout
-       :dispatch-later [{:ms 100 :dispatch [:select-chat-input-command send-command]}]})))
+  [re-frame/trim-v (re-frame/inject-cofx :get-stored-messages)]
+  (fn [{{:contacts/keys [contacts] :as db} :db :as cofx} [chat-id]]
+    (let [send-command (get-in contacts chat-const/send-command-ref)]
+      (-> (chat-events/navigate-to-chat cofx chat-id)
+          (as-> fx
+              (merge fx (input-events/select-chat-input-command (:db fx) send-command nil true)))))))
 
 (handlers/register-handler-fx
   :profile/send-message
@@ -46,10 +49,11 @@
   :my-profile/update-phone-number
   ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
   ;; We allow to change phone number only from console because this requires entering SMS verification code.
-  (fn [{:keys [db]} _]
-    (let [phone-command (first (get-in db [:contacts/contacts "console" :responses :phone]))]
-      {:dispatch-n [[:navigate-to-chat console-chat-id]
-                    [:select-chat-input-command phone-command]]})))
+  (fn [{{:contacts/keys [contacts] :as db} :db :as cofx} _]
+    (let [phone-command (get-in contacts chat-const/phone-command-ref)]
+      (-> (chat-events/navigate-to-chat cofx const/console-chat-id)
+          (as-> fx
+              (merge fx (input-events/select-chat-input-command (:db fx) phone-command nil true)))))))
 
 (defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))

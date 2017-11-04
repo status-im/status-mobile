@@ -60,12 +60,8 @@
      (accounts-events/create-account db (:password params)))
 
    "phone"
-   (fn [{:keys [db]} {:keys [params id]}]
-     (-> db
-         (sign-up-events/sign-up (:phone params) id)
-         (as-> fx
-             (assoc fx :dispatch-n [(:dispatch fx)]))
-         (dissoc :dispatch)))
+   (fn [{:keys [db]} {:keys [params id]}] 
+     (sign-up-events/sign-up db (:phone params) id))
 
    "confirmation-code"
    (fn [{:keys [db]} {:keys [params id]}]

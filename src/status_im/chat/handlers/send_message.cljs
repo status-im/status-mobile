@@ -38,7 +38,8 @@
         content' (assoc content :handler-data handler-data
                                 :type (name (:type command))
                                 :content-command (:name command)
-                                :content-command-scope (:scope command)
+                                :content-command-scope-bitmask (:scope-bitmask command)
+                                :content-command-ref (:ref command)
                                 :bot (or (:bot command)
                                          (:owner-id command)))]
     {:message-id   id
@@ -126,7 +127,7 @@
   (u/side-effect!
     (fn [_ [_ {{:keys [to-message]} :command :keys [chat-id]}]]
       (when to-message
-        (dispatch [:request-answered! chat-id to-message])))))
+        (dispatch [:request-answered chat-id to-message])))))
 
 (register-handler ::invoke-command-handlers!
   (u/side-effect!
@@ -138,7 +139,7 @@
                      id]} :command
              :keys        [chat-id address]
              :as          orig-params}]]
-      (let [{:keys [type name scope bot owner-id]} command
+      (let [{:keys [type name scope-bitmask bot owner-id]} command
             handler-type (if (= :command type) :commands :responses)
             to           (get-in contacts [chat-id :address])
             identity     (or owner-id bot chat-id)
@@ -151,19 +152,16 @@
                                                :current-account (get accounts current-account-id)
                                                :message-id      id}
                                         (:async-handler command)
-                                        (assoc :orig-params orig-params))}]
-        (dispatch
-          [:check-and-load-commands!
-           identity
-           #(status/call-jail
-             {:jail-id  identity
-              :path     [handler-type [name (commands-model/scope->bit-mask scope)] :handler]
-              :params   jail-params
-              :callback (if (:async-handler command) ; async handler, we ignore return value
-                          (fn [_]
-                            (log/debug "Async command handler called"))
-                          (fn [res]
-                            (dispatch [:command-handler! chat-id orig-params res])))})])))))
+                                        (assoc :orig-params orig-params))}] 
+        (status/call-jail
+         {:jail-id  identity
+          :path     [handler-type [name scope-bitmask] :handler]
+          :params   jail-params
+          :callback (if (:async-handler command) ; async handler, we ignore return value
+                      (fn [_]
+                        (log/debug "Async command handler called"))
+                      (fn [res]
+                        (dispatch [:command-handler! chat-id orig-params res])))})))))
 
 (register-handler :prepare-message
   (u/side-effect!

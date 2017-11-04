@@ -35,7 +35,7 @@
      (chat-utils/command-name command)]]])
 
 (defview commands-view []
-  [all-commands [:get-suggested-commands]
+  [all-commands-responses [:get-available-commands-responses]
    show-suggestions? [:show-suggestions?]]
   [view style/commands-root
    [view style/command-list-icon-container
@@ -48,7 +48,7 @@
                  :showsHorizontalScrollIndicator false
                  :keyboardShouldPersistTaps      :always}
     [view style/commands
-     (for [[index command] (map-indexed vector all-commands)]
+     (for [[index command] (map-indexed vector all-commands-responses)]
        ^{:key (str "command-" index)}
        [command-view (= index 0) command])]]])
 

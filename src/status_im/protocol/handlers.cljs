@@ -398,8 +398,7 @@
             ios-error?     (re-find (re-pattern "Could not connect to the server.") message)
             android-error? (re-find (re-pattern "Failed to connect") message)]
         (when (or ios-error? android-error?)
-          (when android-error? (status/init-jail))
-          (dispatch [:load-commands!]))))))
+          (when android-error? (status/init-jail)))))))
 
 (register-handler
   :load-processed-messages

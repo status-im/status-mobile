@@ -56,7 +56,7 @@
                                     (str/replace (str/trim command-text) #" +" " ")
                                     command-text)
           splitted                (cond-> (str/split command-text-normalized const/spacing-char)
-                                          space? (drop-last))]
+                                    space? (drop-last))]
       (->> splitted
            (reduce (fn [[list command-started?] arg]
                      (let [quotes-count       (count (filter #(= % const/arg-wrapping-char) arg))
@@ -104,28 +104,35 @@
   For instance, we can add a `:to-message-id` key to this map, and this key will allow us to identity
   the request we're responding to.
   * `:args` contains all arguments provided by user."
-  ([{:keys [current-chat-id] :as db} chat-id input-text]
+  ([{:keys [current-chat-id access-scope->commands-responses]
+     :contacts/keys [contacts]
+     :accounts/keys [accounts current-account-id] :as db} chat-id input-text]
    (let [chat-id             (or chat-id current-chat-id)
-         {:keys [input-metadata
-                 seq-arguments
-                 possible-requests
-                 possible-commands]} (get-in db [:chats chat-id])
+         chat                (get-in db [:chats chat-id])
+         {:keys [input-metadata seq-arguments requests]} chat
          command-args     (split-command-args input-text)
          command-name     (first command-args)]
      (when (starts-as-command? (or command-name ""))
-       (when-let [{{:keys [message-id]} :request :as command}
-                  (->> (into possible-requests possible-commands)
-                       (filter (fn [{:keys [name]}]
-                                 (= name (subs command-name 1))))
-                       (first))]
-         {:command  command
-          :metadata (if (and (nil? (:to-message-id input-metadata)) message-id)
-                      (assoc input-metadata :to-message-id message-id)
-                      input-metadata)
-          :args     (->> (if (empty? seq-arguments)
-                           (rest command-args)
-                           seq-arguments)
-                         (into []))}))))
+       (let [account                      (get accounts current-account-id)
+             available-commands-responses (merge (commands-model/commands-responses :command
+                                                                                    access-scope->commands-responses
+                                                                                    account
+                                                                                    chat
+                                                                                    contacts)
+                                                 (commands-model/requested-responses access-scope->commands-responses
+                                                                                     account
+                                                                                     chat
+                                                                                     contacts
+                                                                                     (vals requests)))]
+         (when-let [{{:keys [message-id]} :request :as command} (get available-commands-responses (subs command-name 1))]
+           {:command  command
+            :metadata (if (and (nil? (:to-message-id input-metadata)) message-id)
+                        (assoc input-metadata :to-message-id message-id)
+                        input-metadata)
+            :args     (->> (if (empty? seq-arguments)
+                             (rest command-args)
+                             seq-arguments)
+                           (into []))})))))
   ([{:keys [current-chat-id] :as db} chat-id]
    (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
 
@@ -226,12 +233,12 @@
         prev-command (get-in db [:chat-ui-props current-chat-id :prev-command])]
     (if command
       (cond-> db
-              ;; clear the bot db
-              (not= prev-command (-> command :command :name))
-              (assoc-in [:bot-db (or (:bot command) current-chat-id)] nil)
-              ;; clear the chat's validation messages
-              true
-              (assoc-in [:chat-ui-props current-chat-id :validation-messages] nil))
+        ;; clear the bot db
+        (not= prev-command (-> command :command :name))
+        (assoc-in [:bot-db (or (:bot command) current-chat-id)] nil)
+        ;; clear the chat's validation messages
+        true
+        (assoc-in [:chat-ui-props current-chat-id :validation-messages] nil))
       (-> db
           ;; clear input metadata
           (assoc-in [:chats current-chat-id :input-metadata] nil)

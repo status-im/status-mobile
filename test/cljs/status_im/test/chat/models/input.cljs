@@ -3,33 +3,41 @@
             [status-im.chat.models.input :as input]))
 
 (def fake-db
-  {:global-commands   {:command1 (list {:name "global-command1"})}
-   :chats             {"test1" {:contacts          [{:identity "0x1"}]
-                                :requests          nil
-                                :seq-arguments     ["arg1" "arg2"]
-                                :possible-commands (list {:name "global-command1"}
-                                                         {:name "command2"})}
-                       "test2" {:contacts          [{:identity "0x1"}
-                                                    {:identity "0x2"}]
-                                :requests          [{:message-id "id1" :type :request1}]
-                                :possible-commands (list {:name "global-command1"}
-                                                         {:name "command2"}
-                                                         {:name "command3"})
-                                :possible-requests (list {:name "request1"})}
-                       "test3" {:contacts [{:identity "0x1"}]
-                                :requests [{:message-id "id1" :type :request1}]}
-                       "test4" {:contacts          [{:identity "0x1"}
-                                                    {:identity "0x2"}]
-                                :requests          [{:message-id "id2" :type :request2}]
-                                :input-metadata    {:meta-k "meta-v"}
-                                :possible-commands (list {:name "global-command1"}
-                                                         {:name "command2"}
-                                                         {:name "command3"})
-                                :possible-requests (list {:name "request1"})}}
-   :contacts/contacts {"0x1" {:commands  {:command2 (list {:name "command2"})}
-                              :responses nil}
-                       "0x2" {:commands  {:command3 (list {:name "command3"})}
-                              :responses {:request1 (list {:name "request1"})}}}})
+  {:access-scope->commands-responses {#{:global :personal-chats :anonymous :dapps} {:command {"global-command1" ["0x1" :command 0 "global-command1"]}}
+                                      #{"0x1" :personal-chats :anonymous :dapps} {:command {"command2" ["0x1" :command 2 "command2"]}}
+                                      #{"0x1" :group-chats :anonymous :dapps} {:command {"command2" ["0x1" :command 4 "command2"]}} 
+                                      #{"0x2" :personal-chats :anonymous :dapps} {:command {"command3" ["0x2" :command 2 "command3"]}}
+                                      #{"0x2" :group-chats :anonymous :dapps} {:response {"response1" ["0x2" :response 4 "response1"]}}}
+   :chats                            {"test1" {:contacts      [{:identity "0x1"}]
+                                               :requests      nil
+                                               :seq-arguments ["arg1" "arg2"]}
+                                      "test2" {:contacts   [{:identity "0x1"}
+                                                            {:identity "0x2"}]
+                                               :group-chat true
+                                               :requests   {"id1" {:message-id "id1"
+                                                                   :response   "response1"}}}
+                                      "test3" {:contacts [{:identity "0x1"}]
+                                               :requests {"id1" {:message-id "id1"
+                                                                 :response   "request1"}}}
+                                      "test4" {:contacts       [{:identity "0x1"}
+                                                                {:identity "0x2"}]
+                                               :group-chat     true
+                                               :requests       {"id2" {:message-id "id2"
+                                                                       :response   "response1"}}
+                                               :input-metadata {:meta-k "meta-v"}}}
+   :contacts/contacts                {"0x1" {:dapp?    true
+                                             :command  {0 {"global-command1" {:name "global-command1"
+                                                                              :ref ["0x1" :command 0 "global-command1"]}}
+                                                        2 {"command2" {:name "command2"
+                                                                       :ref ["0x1" :command 2 "command2"]}}
+                                                        4 {"command2" {:name "command2"
+                                                                       :ref ["0x1" :command 4 "command2"]}}}
+                                             :response {}}
+                                      "0x2" {:dapp?    true
+                                             :command  {2 {"command3" {:name "command3"
+                                                                       :ref ["0x2" :command 2 "command3"]}}}
+                                             :response {4 {"response1" {:name "response1"
+                                                                        :ref ["0x2" :response 4 "response1"]}}}}}})
 
 (deftest text->emoji
   (is (nil? (input/text->emoji nil)))
@@ -58,32 +66,47 @@
 
 (deftest selected-chat-command
   (is (= (input/selected-chat-command fake-db "test1" "/global-command1")
-         {:command {:name "global-command1"} :metadata nil :args ["arg1" "arg2"]}))
-  (is (= (input/selected-chat-command fake-db "test2" "/global-command1")
-         {:command {:name "global-command1"} :metadata nil :args []}))
+         {:command {:name "global-command1"
+                    :ref ["0x1" :command 0 "global-command1"]}
+          :metadata nil
+          :args ["arg1" "arg2"]}))
+  (is (= (input/selected-chat-command fake-db "test2" "/command2")
+         {:command {:name "command2"
+                    :ref ["0x1" :command 4 "command2"]}
+          :metadata nil
+          :args []}))
   (is (nil? (input/selected-chat-command fake-db "test1" "/command3")))
   (is (= (input/selected-chat-command fake-db "test1" "/command2")
-         {:command {:name "command2"} :metadata nil :args ["arg1" "arg2"]}))
-  (is (= (input/selected-chat-command fake-db "test2" "/request1 arg1")
-         {:command {:name "request1"} :metadata nil :args ["arg1"]}))
+         {:command {:name "command2"
+                    :ref ["0x1" :command 2 "command2"]}
+          :metadata nil
+          :args ["arg1" "arg2"]}))
+  (is (= (input/selected-chat-command fake-db "test2" "/response1 arg1")
+         {:command {:name "response1"
+                    :ref ["0x2" :response 4 "response1"]}
+          :metadata nil
+          :args ["arg1"]}))
   (is (= (input/selected-chat-command fake-db "test4" "/command2 arg1")
-         {:command {:name "command2"} :metadata {:meta-k "meta-v"} :args ["arg1"]})))
+         {:command {:name "command2"
+                    :ref ["0x1" :command 4 "command2"]}
+          :metadata {:meta-k "meta-v"}
+          :args ["arg1"]})))
 
 (deftest current-chat-argument-position
   (is (= (input/current-chat-argument-position
-           {:name "command1"} "/command1 arg1 arg2 " 0 nil) -1))
+          {:name "command1"} "/command1 arg1 arg2 " 0 nil) -1))
   (is (= (input/current-chat-argument-position
-           {:name "command1"} "/command1 argument1 arg2 " 9 nil) -1))
+          {:name "command1"} "/command1 argument1 arg2 " 9 nil) -1))
   (is (= (input/current-chat-argument-position
-           {:name "command1"} "/command1 argument1 arg2 " 10 nil) 0))
+          {:name "command1"} "/command1 argument1 arg2 " 10 nil) 0))
   (is (= (input/current-chat-argument-position
-           {:name "command1"} "/command1 argument1 arg2 " 19 nil) 0))
+          {:name "command1"} "/command1 argument1 arg2 " 19 nil) 0))
   (is (= (input/current-chat-argument-position
-           {:name "command1"} "/command1 argument1 arg2 " 20 nil) 1))
+          {:name "command1"} "/command1 argument1 arg2 " 20 nil) 1))
   (is (= (input/current-chat-argument-position
-           {:name "command2"} "/command2 \"a r g u m e n t 1\" argument2" 30 nil) 1))
+          {:name "command2"} "/command2 \"a r g u m e n t 1\" argument2" 30 nil) 1))
   (is (= (input/current-chat-argument-position
-           {:name "command3" :command {:sequential-params true}} "/command3" 0 ["test1" "test2"]) 2)))
+          {:name "command3" :command {:sequential-params true}} "/command3" 0 ["test1" "test2"]) 2)))
 
 (deftest argument-position
   "Doesn't require a separate test because it simply calls `current-chat-argument-position")
