@@ -137,14 +137,14 @@
    :new-public-group-chat                 "Unirse a un grupo público"
    :edit-chats                            "Editar mensajes"
    :search-chats                          "Buscar mensajes"
-   :empty-topic                           "Limpiar tópico"
+   :empty-topic                           "Limpiar tema"
    :topic-format                          "Formato incorrecto [a-z0-9\\-]+"
-   :public-group-topic                    "Tópico"
+   :public-group-topic                    "Tema"
 
    ;;discover
    :discover                              "Descubrir"
    :none                                  "Nada"
-   :search-tags                           "Escribe tus tags a buscar aquí"
+   :search-tags                           "Escribe tus etiquetas a buscar aquí"
    :popular-tags                          "#hashtags Populares"
    :recent                                "Estados Recientes"
    :no-statuses-found                     "Estado no encontrado"
@@ -173,7 +173,7 @@
    :search-contacts                       "Buscar contactos"
    :contacts-group-new-chat               "Iniciar platica nueva"
    :choose-from-contacts                  "Seleccionar de contactos"
-   :no-contacts                           "No hay contactos aun"
+   :no-contacts                           "Aún no hay contactos"
    :show-qr                               "Mostrar código QR"
    :enter-address                         "Introducir dirección"
    :more                                  "más"
@@ -194,7 +194,7 @@
 
    ;;location command
    :your-current-location                 "Ubicación actual"
-   :places-nearby                         "Lugares cerca"
+   :places-nearby                         "Lugares cercanos"
    :search-results                        "Buscar resultados"
    :dropped-pin                           "Marcador puesto"
    :location                              "Ubicación"
@@ -282,7 +282,7 @@
 
    ;;testfairy warning
    :testfairy-title                       "Precaución!"
-   :testfairy-message                     "Estas utilizando una aplicación instalad de una compilación nocturna. Para propósitos de prueba esta compilación incluye sesión de grabación si hay conexión wifi, por lo tanto, todas tus operaciones dentro de la aplicación son gravados (como video) y pueden ser utilizados por nuestro equipo de desarrollo para investigar posibles malfuncionamientos. video/logs guardados no incluyen tu contraseña. Las grabaciones son echas solo si la aplicación fue instalada de una compilación nocturna. Nada es grabado si la aplicación fue instalada de PlayStore o TestFlight."
+   :testfairy-message                     "Estas utilizando una aplicación instalad de una compilación nocturna. Para propósitos de prueba esta compilación incluye sesión de grabación si hay conexión wifi, por lo tanto, todas tus operaciones dentro de la aplicación son grabados (como video) y pueden ser utilizados por nuestro equipo de desarrollo para investigar posibles malfuncionamientos. video/logs guardados no incluyen tu contraseña. Las grabaciones son echas solo si la aplicación fue instalada de una compilación nocturna. Nada es grabado si la aplicación fue instalada de PlayStore o TestFlight."
 
    ;; wallet
    :wallet                                "Cartera"
