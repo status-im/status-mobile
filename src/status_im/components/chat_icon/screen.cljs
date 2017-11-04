@@ -16,14 +16,8 @@
     (first name)]])
 
 (defn chat-icon [photo-path {:keys [size accessibility-label]}]
-  (let [photo (if (s/starts-with? photo-path "contacts://")
-                (->> (s/replace photo-path #"contacts://" "")
-                     (keyword)
-                     (get resources/contacts))
-                {:uri "https://origami.design/public/images/bird-logo.png"})]
-    [image {:source photo
-            :style  (st/image-style size)
-            :accessibility-label (or accessibility-label :chat-icon)}]))
+  [image {:source photo-path
+          :style  {:width size :height size}}])
 
 (defn dapp-badge [{:keys [online-view-wrapper online-view online-dot-left online-dot-right]}]
   [view online-view-wrapper
@@ -143,20 +137,13 @@
                 :default-chat-icon      (st/default-chat-icon-profile color)
                 :default-chat-icon-text st/default-chat-icon-text}]
     [view (:container styles)
-     (when edit?
-        [view (st/profile-icon-mask size)])
-     (when edit?
-        [view (st/profile-icon-edit-text-containter size)
-         [text {:style st/profile-icon-edit-text}
-          "Edit"]])
-     (if (and photo-path (seq photo-path))
        [chat-icon photo-path styles]
-       [default-chat-icon name styles])]))
+       [default-chat-icon name styles]]))
 
 
 
 (defn my-profile-icon [{{:keys [photo-path name]} :account
                         edit?                     :edit?}]
   (let [color default-chat-color
-        size  (if edit? 70 56)]
+        size  (if edit? 80 80)]
     [profile-icon-view photo-path name color edit? size]))

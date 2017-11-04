@@ -26,13 +26,16 @@
    "rgba(25, 53, 76, 0.01)"])
 
 (def separator-wrapper
-  {:background-color color-white})
+  {:background-color "green"
+   :height           20})
 
 (defstyle separator
-  {:android {:height 0}
-   :ios     {:height           1
-             :background-color color-gray5
-             :opacity          0.5}})
+  {:background-color "green"
+   :android {:height 0}
+   :ios     {:height           20
+             :background-color "green"}
+   :ubuntu  {:height           40
+             :background-color "green"}})
 
 (def list-separator
   {:margin-left 72})
@@ -80,7 +83,8 @@
           :color         text4-color}))
 
 (defstyle form-spacer
-  {:ios     {:height 16}
+  {:ubuntu     {:height 25}
+   :ios     {:height 1}
    :android {:height 11}})
 
 (defstyle list-header-footer-spacing

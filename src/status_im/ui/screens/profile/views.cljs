@@ -45,8 +45,9 @@
 
 (defn profile-badge [{:keys [name last-online] :as contact}]
   [react/view styles/profile-badge
-   [my-profile-icon {:account contact
+   [my-profile-icon {:account {:photo-path (js/require "./200px-Anonymous.png") :name name}
                      :edit?   false}]
+                     
    [react/view styles/profile-badge-name-container
     [react/text {:style           styles/profile-name-text
                  :number-of-lines 1}
@@ -120,7 +121,13 @@
     :accessibility-label :profile-public-key}])
 
 (defn info-item-separator []
-  [separator styles/info-item-separator])
+  [react/view
+    [react/view {:style {:height 25}}]
+    [react/view {:style {:background-color "#d9dae1"
+                         :height 5
+                         :margin-left 16
+                         :opacity 0.5}}]
+   [react/view {:style {:height 25}}]])
 
 (defn tag-view [tag]
   [react/text {:style {:color color-blue}
@@ -198,20 +205,22 @@
 (defview profile []
   [react/view styles/profile-form
    [react/scroll-view
-    [react/image {:source {:uri "https://origami.design/public/images/bird-logo.png" :width 64 :height 64}}]
-    [react/image {:source {:uri "/home/max/work/status-react/status-react/200px-Anonymous.png" :width 200 :height 200}}]
     [react/view styles/profile-form
      [profile-badge]
      [profile-status]]
     [form-spacer]
-    [react/view actions-list
-       [action-button {:label "Show QR"}]]
+    [react/view styles/profile-badge
+     [my-profile-icon {:account {:photo-path (js/require "./QR.svg") :name "QR icon"}
+                       :edit?   false}]
+     [action-button {:label "Show QR"}]]
     [form-spacer]
     [react/view styles/profile-info-container
        [my-profile-info {:phone "+44 7911 123456"
-                         :public-key "0X04223458893...303a35c18c29caf"
-                         :address "e6e248c8caac...d48395284bd23a"}]]
-    [react/image {:source {:uri "https://origami.design/public/images/bird-logo.png" :width 64 :height 64}}]]])     ;;  [bottom-shadow]]]])
+                         :public-key "0x04223458893...303a35c18c29caf"
+                         :address "e6e248c8caac...d48395284bd23a"}]]]])
+    
+    ;;[react/image {:source {:uri "https://origami.design/public/images/bird-logo.png" :width 64 :height 64}
+    ;;    :style {:width 64 :height 64}]]]])     ;;  [bottom-shadow]]]])
      
    
    

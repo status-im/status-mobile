@@ -13,5 +13,4 @@
 
 (defview main []
   [view [profile]])
-;;[react/view [react/text "Some text here!!"]])
           
