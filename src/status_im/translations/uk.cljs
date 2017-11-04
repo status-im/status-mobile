@@ -134,7 +134,7 @@
    :chats                                 "Чат"
    :delete-chat                           "Видалити Чат"
    :new-group-chat                        "Створити групу"
-   :new-public-group-chat                 "Приєднатися до публічної групи"
+   :new-public-group-chat                 "Приєднатися до публічного чату"
    :edit-chats                            "Редагувати чат"
    :search-chats                          "Пошук чатів"
    :empty-topic                           "Порожня тема"
@@ -207,8 +207,8 @@
    :reorder-groups                        "Переставити групи"
    :edit-group                            "Редагувати групу"
    :delete-group                          "Видалити групу"
-   :delete-group-confirmation             "Ця група буде видалена зі списку ваших груп. Це не зачепить список ваших контактів"
-   :delete-group-prompt                   "Це не зачепить список ваших контактів"
+   :delete-group-confirmation             "Ця група буде видалена зі списку ваших груп. Це не вплине на список ваших контактів"
+   :delete-group-prompt                   "Це не вплине на список ваших контактів"
    :contact-s                             {:one   "контакт"
                                            :other "контакти"}
 
@@ -338,7 +338,7 @@
    :wallet-address-from-clipboard         "Використовувати скопійовану раніше адресу"
    :wallet-invalid-address                "Невірна адреса: \n {{data}}"
    :wallet-browse-photos                  "Перегляд Фото"
-   :validation-amount-invalid-number      "Сума не є дійсним номером"
+   :validation-amount-invalid-number      "Сума повинна бути числом"
    :validation-amount-is-too-precise      "Сума занадто точна. Найменша одиниця, яку ви можете надіслати, є 1 Wei (1x10^-18 ETH)"
 
    ;; network settings
