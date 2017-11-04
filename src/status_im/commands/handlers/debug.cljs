@@ -1,6 +1,7 @@
 (ns status-im.commands.handlers.debug
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
+            [status-im.commands.events.loading :as loading-events]
             [status-im.data-store.accounts :as accounts]
             [status-im.data-store.messages :as messages]
             [status-im.utils.handlers :as handlers]
@@ -84,8 +85,9 @@
     (when (and (= current-chat-id whisper-identity)
                webview-bridge)
       (.reload webview-bridge))
-    (when (get-in contacts [whisper-identity :bot-url])
-      (re-frame/dispatch [:load-commands! whisper-identity])))
+    (when-let [bot-url (get-in contacts [whisper-identity :bot-url])]
+      (re-frame/dispatch [::load-commands! {:whisper-identity whisper-identity
+                                            :bot-url          bot-url}])))
   (respond {:type :ok
             :text "Command has been executed."}))
 
@@ -172,4 +174,10 @@
  (fn [{:keys [db]} [url post-data]]
    {::process-request-fx [db url post-data]}))
 
+;; TODO(janherich) once `contact-changed` fn is refactored, get rid of this unnecessary event
+(handlers/register-handler-fx
+  ::load-commands
+  [re-frame/trim-v (re-frame/inject-cofx :get-local-storage-data)]
+  (fn [cofx [contact]]
+    (loading-events/load-commands cofx {} contact)))
 

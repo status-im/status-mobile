@@ -7,7 +7,7 @@
             [status-im.protocol.core :as protocol]
             [status-im.utils.utils :refer [http-post]]
             [status-im.utils.phone-number :refer [format-phone-number]]
-            [status-im.utils.random :as random]
+            [status-im.utils.random :as random] 
             [taoensso.timbre :as log]
             [cljs.reader :refer [read-string]]
             [status-im.utils.js-resources :as js-res]
@@ -17,6 +17,8 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.contacts.navigation]
+            [status-im.chat.sign-up :as sign-up]
+            [status-im.commands.events.loading :as loading-events]
             [cljs.spec.alpha :as spec]))
 
 ;;;; COFX
@@ -29,8 +31,9 @@
 (reg-cofx
   ::get-default-contacts-and-groups
   (fn [coeffects _]
-    (assoc coeffects :default-contacts js-res/default-contacts
-                     :default-groups js-res/default-contact-groups)))
+    (assoc coeffects
+           :default-contacts js-res/default-contacts
+           :default-groups js-res/default-contact-groups)))
 
 ;;;; FX
 
@@ -125,8 +128,9 @@
 (defn- add-identity [contacts-by-hash contacts]
   (map (fn [{:keys [phone-number-hash whisper-identity address]}]
          (let [contact (contacts-by-hash phone-number-hash)]
-           (assoc contact :whisper-identity whisper-identity
-                          :address address)))
+           (assoc contact
+                  :whisper-identity whisper-identity
+                  :address address)))
        (js->clj contacts)))
 
 (reg-fx
@@ -213,35 +217,31 @@
 
 ;; NOTE(oskarth): We now overwrite default contacts upon upgrade with default_contacts.json data.
 (defn- prepare-default-contacts-events [contacts default-contacts]
-  [[:add-contacts
-    (for [[id {:keys [name photo-path public-key add-chat? pending? description
-                      dapp? dapp-url dapp-hash bot-url unremovable? mixable?]}] default-contacts
-          :let [id' (clojure.core/name id)]]
-      {:whisper-identity id'
-       :address          (public-key->address id')
-       :name             (:en name)
-       :photo-path       photo-path
-       :public-key       public-key
-       :unremovable?     (boolean unremovable?)
-       :mixable?         (boolean mixable?)
-       :pending?         pending?
-       :dapp?            dapp?
-       :dapp-url         (:en dapp-url)
-       :bot-url          bot-url
-       :description      description
-       :dapp-hash        dapp-hash})]])
+  (let [default-contacts
+        (for [[id {:keys [name photo-path public-key add-chat? pending? description
+                          dapp? dapp-url dapp-hash bot-url unremovable? hide-contact?]}] default-contacts
+              :let [id' (clojure.core/name id)]]
+          {:whisper-identity id'
+           :address          (public-key->address id')
+           :name             (:en name)
+           :photo-path       photo-path
+           :public-key       public-key
+           :unremovable?     (boolean unremovable?)
+           :hide-contact?    (boolean hide-contact?)
+           :pending?         pending?
+           :dapp?            dapp?
+           :dapp-url         (:en dapp-url)
+           :bot-url          bot-url
+           :description      description
+           :dapp-hash        dapp-hash})
+        all-default-contacts (conj default-contacts sign-up/console-contact)] 
+    [[:add-contacts all-default-contacts]]))
 
 (defn- prepare-add-chat-events [contacts default-contacts]
   (for [[id {:keys [name add-chat?]}] default-contacts
         :let [id' (clojure.core/name id)]
         :when (and (not (get contacts id')) add-chat?)]
     [:add-chat id' {:name (:en name)}]))
-
-(defn- prepare-bot-commands-events [contacts default-contacts]
-  (for [[id {:keys [bot-url]}] default-contacts
-        :let [id' (clojure.core/name id)]
-        :when bot-url]
-    [:load-commands! id']))
 
 (defn- prepare-add-contacts-to-groups-events [contacts default-contacts]
   (let [groups (for [[id {:keys [groups]}] default-contacts
@@ -258,14 +258,13 @@
 (register-handler-fx
   :load-default-contacts!
   [(inject-cofx ::get-default-contacts-and-groups)]
-  (fn [{:keys [db default-contacts default-groups]} _]
+  (fn [{:keys [db default-contacts default-groups] :as cofx} _]
     (let [{:contacts/keys [contacts] :group/keys [contact-groups]} db]
       {:dispatch-n (concat
-                     (prepare-default-groups-events contact-groups default-groups)
-                     (prepare-default-contacts-events contacts default-contacts)
-                     (prepare-add-chat-events contacts default-contacts)
-                     (prepare-bot-commands-events contacts default-contacts)
-                     (prepare-add-contacts-to-groups-events contacts default-contacts))})))
+                    (prepare-default-groups-events contact-groups default-groups)
+                    (prepare-default-contacts-events contacts default-contacts)
+                    (prepare-add-chat-events contacts default-contacts)
+                    (prepare-add-contacts-to-groups-events contacts default-contacts))})))
 
 (register-handler-fx
   :load-contacts
@@ -273,7 +272,7 @@
   (fn [{:keys [db all-contacts]} _]
     (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
           contacts (into {} contacts-list)]
-      {:db         (assoc db :contacts/contacts contacts)
+      {:db         (update db :contacts/contacts #(merge contacts %))
        ;; TODO (yenda) this mapv was dispatching useless events, fixed but is it necessary if
        ;; it was dispatching useless events before with nil
        ;;:dispatch-n (mapv (fn [[_ contact]] [:watch-contact contact]) contacts)
@@ -281,16 +280,21 @@
 
 (register-handler-fx
   :add-contacts
-  (fn [{:keys [db]} [_ new-contacts]]
+  [(inject-cofx :get-local-storage-data)]
+  (fn [{:keys [db] :as cofx} [_ new-contacts]]
     (let [{:contacts/keys [contacts]} db
           new-contacts' (->> new-contacts
                              (map #(update-pending-status contacts %))
                              ;; NOTE(oskarth): Overwriting default contacts here
                              ;;(remove #(identities (:whisper-identity %)))
                              (map #(vector (:whisper-identity %) %))
-                             (into {}))]
-      {:db              (update db :contacts/contacts merge new-contacts')
-       ::save-contacts! (vals new-contacts')})))
+                             (into {})) 
+          fx            {:db              (update db :contacts/contacts merge new-contacts')
+                         ::save-contacts! (vals new-contacts')}]
+      (transduce (map second)
+                 (completing (partial loading-events/load-commands (assoc cofx :db (:db fx))))
+                 fx
+                 new-contacts'))))
 
 (register-handler-db
   :remove-contacts-click-handler
@@ -335,8 +339,9 @@
           contact (if-let [contact-info (get-in chats [chat-or-whisper-id :contact-info])]
                     (read-string contact-info)
                     (get contacts chat-or-whisper-id))
-          contact' (assoc contact :address (public-key->address chat-or-whisper-id)
-                                  :pending? false)]
+          contact' (assoc contact
+                          :address (public-key->address chat-or-whisper-id)
+                          :pending? false)]
       {:dispatch-n [[::add-new-contact contact']
                     [:watch-contact contact']
                     [:discoveries-send-portions chat-or-whisper-id]]})))
@@ -392,8 +397,8 @@
   :hide-contact
   (fn [{:keys [db]} [_ {:keys [whisper-identity] :as contact}]]
     {::stop-watching-contact (merge
-                                  (select-keys db [:web3])
-                                  (select-keys contact [:whisper-identity]))
+                               (select-keys db [:web3])
+                               (select-keys contact [:whisper-identity]))
      :dispatch-n [[:update-contact! {:whisper-identity whisper-identity
                                      :pending?         true}]
                   [:account-update-keys]]}))

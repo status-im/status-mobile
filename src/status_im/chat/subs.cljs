@@ -38,13 +38,11 @@
     (:chats db)))
 
 (reg-sub
-  :chat-actions
+  :get-current-chat
   :<- [:chats]
   :<- [:get-current-chat-id]
-  :<- [:chat :input-text]
-  (fn [[chats current-chat-id text] [_ type chat-id]]
-    (->> (get-in chats [(or chat-id current-chat-id) type])
-         (filter #(or (str/includes? (chat-utils/command-name %) (or text "")))))))
+  (fn [[chats id]]
+    (get chats id)))
 
 (reg-sub
   :chat
@@ -53,18 +51,50 @@
   (fn [[chats id] [_ k chat-id]]
     (get-in chats [(or chat-id id) k])))
 
-(defn get-suggested-commands
-  [[commands requests]]
-  (let [vec->map-by-name #(into {} (map vector (map :name %) %))
-        commands-map     (vec->map-by-name commands)
-        requests-map     (vec->map-by-name requests)]
-    (vals (merge commands-map requests-map))))
+(reg-sub
+  :get-commands-for-chat
+  :<- [:get-commands-responses-by-access-scope] 
+  :<- [:get-current-account]
+  :<- [:get-current-chat]
+  :<- [:get-contacts]
+  (fn [[commands-responses account chat contacts]] 
+    (commands-model/commands-responses :command commands-responses account chat contacts)))
 
 (reg-sub
- :get-suggested-commands
- :<- [:chat :possible-commands]
- :<- [:chat :possible-requests]
- get-suggested-commands)
+  :get-responses-for-chat
+  :<- [:get-commands-responses-by-access-scope] 
+  :<- [:get-current-account]
+  :<- [:get-current-chat]
+  :<- [:get-contacts]
+  :<- [:chat :requests]
+  (fn [[commands-responses account chat contacts requests]]
+    (commands-model/requested-responses commands-responses account chat contacts (vals requests))))
+
+(def ^:private map->sorted-seq (comp (partial map second) (partial sort-by first)))
+
+(defn- available-commands-responses [[commands-responses input-text]]
+  (->> commands-responses
+       map->sorted-seq
+       (filter #(str/includes? (chat-utils/command-name %) (or input-text "")))))
+
+(reg-sub
+  :get-available-commands
+  :<- [:get-commands-for-chat]
+  :<- [:chat :input-text]
+  available-commands-responses)
+
+(reg-sub
+  :get-available-responses
+  :<- [:get-responses-for-chat]
+  :<- [:chat :input-text]
+  available-commands-responses)
+
+(reg-sub
+ :get-available-commands-responses
+ :<- [:get-commands-for-chat]
+ :<- [:get-responses-for-chat]
+ (fn [[commands responses]]
+   (map->sorted-seq (merge commands responses))))
 
 (reg-sub
   :get-current-chat-id
@@ -76,10 +106,6 @@
   (fn [_ [_ chat-id]]
     (chats/get-by-id chat-id)))
 
-(reg-sub :get-commands-for-chat
-  (fn [db [_ chat-id]]
-    (commands-model/commands-for-chat db chat-id)))
-
 (reg-sub
   :selected-chat-command
   (fn [db [_ chat-id]]
@@ -89,12 +115,12 @@
 
 (reg-sub
   :current-chat-argument-position
-  (fn [db]
-    (let [command       (subscribe [:selected-chat-command])
-          input-text    (subscribe [:chat :input-text])
-          seq-arguments (subscribe [:chat :seq-arguments])
-          selection     (subscribe [:chat-ui-props :selection])]
-      (input-model/current-chat-argument-position @command @input-text @selection @seq-arguments))))
+  :<- [:selected-chat-command]
+  :<- [:chat :input-text]
+  :<- [:chat :seq-arguments]
+  :<- [:chat-ui-props :selection]
+  (fn [[command input-text seq-arguments selection]] 
+    (input-model/current-chat-argument-position command input-text selection seq-arguments)))
 
 (reg-sub
   :chat-parameter-box
@@ -132,21 +158,14 @@
 (reg-sub
   :show-suggestions?
   (fn [db [_ chat-id]]
-    (let [chat-id           (or chat-id (db :current-chat-id))
-          show-suggestions? (subscribe [:chat-ui-props :show-suggestions? chat-id])
-          input-text        (subscribe [:chat :input-text chat-id])
-          selected-command  (subscribe [:selected-chat-command chat-id])
-          requests          (subscribe [:chat :possible-requests chat-id])
-          commands          (subscribe [:chat :possible-commands chat-id])]
+    (let [chat-id            (or chat-id (db :current-chat-id))
+          show-suggestions?  (subscribe [:chat-ui-props :show-suggestions? chat-id])
+          input-text         (subscribe [:chat :input-text chat-id])
+          selected-command   (subscribe [:selected-chat-command chat-id]) 
+          commands-responses (subscribe [:get-available-commands-responses])]
       (and (or @show-suggestions? (input-model/starts-as-command? (str/trim (or @input-text ""))))
            (not (:command @selected-command))
-           (or (not-empty @requests)
-               (not-empty @commands))))))
-
-(reg-sub :get-current-chat
-  (fn [db]
-    (let [current-chat-id (:current-chat-id db)]
-      (get-in db [:chats current-chat-id]))))
+           (seq @commands-responses)))))
 
 (reg-sub :get-chat
   (fn [db [_ chat-id]]
@@ -160,7 +179,7 @@
 (reg-sub :is-request-answered?
   :<- [:chat :requests]
   (fn [requests [_ message-id]]
-    (not-any? #(= message-id (:message-id %)) requests)))
+    (not= "open" (get-in requests [message-id :status]))))
 
 (reg-sub :unviewed-messages-count
   (fn [db [_ chat-id]]

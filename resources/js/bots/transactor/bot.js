@@ -1,11 +1,23 @@
+// Send command/response
+
 function calculateFee(n, tx) {
     var estimatedGas = 21000;
     if (tx !== null) {
-        estimatedGas = web3.eth.estimateGas(tx);
+        try {
+            estimatedGas = web3.eth.estimateGas(tx);
+        } catch (err) {
+
+        }
     }
 
     var gasMultiplicator = Math.pow(1.4, n).toFixed(3);
-    var weiFee = web3.eth.gasPrice * gasMultiplicator * estimatedGas;
+    var gasPrice = 211000000000;
+    try {
+        gasPrice = web3.eth.gasPrice;
+    } catch (err) {
+
+    }
+    var weiFee = gasPrice * gasMultiplicator * estimatedGas;
     // force fee in eth to be of BigNumber type
     var ethFee = web3.toBigNumber(web3.fromWei(weiFee, "ether"));
     // always display 7 decimal places
@@ -14,7 +26,14 @@ function calculateFee(n, tx) {
 
 function calculateGasPrice(n) {
     var gasMultiplicator = Math.pow(1.4, n).toFixed(3);
-    return web3.eth.gasPrice * gasMultiplicator;
+    var gasPrice = 211000000000;
+    try {
+        gasPrice = web3.eth.gasPrice;
+    } catch (err) {
+
+    }
+
+    return gasPrice * gasMultiplicator;
 }
 
 status.defineSubscription(
@@ -37,17 +56,28 @@ status.defineSubscription(
     }
 );
 
-function amountParameterBox(params, context) {
+function amountParameterBox(groupChat, params, context) {
     if (!params["bot-db"]) {
         params["bot-db"] = {};
     }
 
-    var contactAddress = context.to;
-
+    var contactAddress;
+    if (groupChat) {
+        if (params["bot-db"]["public"] && params["bot-db"]["public"]["recipient"]) {
+            contactAddress = params["bot-db"]["public"]["recipient"]["address"];
+        } else {
+            contactAddress = null;
+        }
+    } else {
+        contactAddress = context.to;
+    }
+    
     var txData;
     var amount;
+    var amountIndex = groupChat ? 1 : 0;
+    
     try {
-        amount = params.args[0];
+        amount = params.args[amountIndex];
         txData = {
             to: contactAddress,
             value: web3.toWei(amount) || 0
@@ -58,7 +88,7 @@ function amountParameterBox(params, context) {
             to: contactAddress,
             value: 0
         };
-    }
+    } 
 
     var sliderValue = params["bot-db"]["sliderValue"] || 0;
 
@@ -253,19 +283,46 @@ function amountParameterBox(params, context) {
     };
 }
 
-var paramsSend = [
-    {
+var recipientSendParam = {
+    name: "recipient",
+    type: status.types.TEXT,
+    suggestions: function (params) {
+        return {
+            title: I18n.t('send_title'),
+            markup: status.components.chooseContact(I18n.t('send_choose_recipient'), "recipient", 0)
+        };
+    }
+};
+
+function amountSendParam(groupChat) {
+    return {
         name: "amount",
         type: status.types.NUMBER,
-        suggestions: amountParameterBox
-    }
-];
+        suggestions: amountParameterBox.bind(this, groupChat)
+    };
+}
 
-function validateSend(params, context) {
+var paramsPersonalSend = [amountSendParam(false)];
+var paramsGroupSend = [recipientSendParam, amountSendParam(true)];
+
+function validateSend(validateRecipient, params, context) {
     if (!params["bot-db"]) {
         params["bot-db"] = {};
     }
 
+    if (validateRecipient) {
+        if (!params["bot-db"]["public"]
+            || !params["bot-db"]["public"]["recipient"]
+            || !params["bot-db"]["public"]["recipient"]["address"]) {
+            return {
+                markup: status.components.validationMessage(
+                    "Wrong address",
+                    "Recipient address must be specified"
+                )
+            };
+        }
+    }
+    
     if (!params["amount"]) {
         return {
             markup: status.components.validationMessage(
@@ -309,7 +366,21 @@ function validateSend(params, context) {
         };
     }
 
-    var balance = web3.eth.getBalance(context.from);
+    try {
+        var balance = web3.eth.getBalance(context.from);
+        if (isNaN(balance)) {
+            throw new Error();
+        }
+    } catch (err) {
+        return {
+            markup: status.components.validationMessage(
+                I18n.t('validation_internal_title'),
+                I18n.t('validation_balance')
+            )
+        };
+    }
+
+    
     var fee = calculateFee(
         params["bot-db"]["sliderValue"],
         {
@@ -330,15 +401,20 @@ function validateSend(params, context) {
     }
 }
 
-function handleSend(params, context) {
+function handleSend(groupChat, params, context) {
     var val = web3.toWei(params["amount"].replace(",", "."), "ether");
 
     var gasPrice = calculateGasPrice(params["bot-db"]["sliderValue"]);
     var data = {
-        from: context.from,
-        to: context.to,
+        from: context.from, 
         value: val
     };
+
+    if (groupChat) {
+        data.to = params["bot-db"]["public"]["recipient"]["address"];
+    } else {
+        data.to = context.to;
+    }
 
     if (gasPrice) {
         data.gasPrice = gasPrice;
@@ -358,7 +434,7 @@ function handleSend(params, context) {
     // async handler, so we don't return anything immediately
 }
 
-function previewSend(params, context) {
+function previewSend(showRecipient, params, context) {
     var amountStyle = {
         fontSize: 36,
         color: "#000000",
@@ -402,7 +478,7 @@ function previewSend(params, context) {
         )]
     );
 
-    var row = status.components.view(
+    var amountRow = status.components.view(
         {
             style: {
                 flexDirection: "row",
@@ -414,6 +490,26 @@ function previewSend(params, context) {
         [amount, currency]
     );
 
+    var markup = [amountRow];
+
+    if (showRecipient
+        && params["bot-db"]
+        && params["bot-db"]["public"]
+        && params["bot-db"]["public"]["recipient"]
+        && context["chat"]["group-chat"] === true) {
+        var recipientRow = status.components.text(
+            {
+                style: {
+                    color: "#9199a0",
+                    fontSize: 14,
+                    lineHeight: 18
+                }
+            },
+            I18n.t('send_sending_to') + " " + params["bot-db"]["public"]["recipient"]["name"]
+        );
+        markup.push(recipientRow);
+    }
+
     return {
         markup: status.components.view(
             {
@@ -421,7 +517,7 @@ function previewSend(params, context) {
                     flexDirection: "column"
                 }
             },
-            [row]
+            markup
         )
     };
 }
@@ -437,126 +533,235 @@ function shortPreviewSend(params, context) {
     };
 }
 
-var send = {
+var personalSend = {
     name: "send",
-    scope: ["personal-chats"],
+    scope: ["global", "personal-chats", "registered", "humans"],
     icon: "money_white",
     color: "#5fc48d",
     title: I18n.t('send_title'),
     description: I18n.t('send_description'),
-    params: paramsSend,
-    validator: validateSend,
-    handler: handleSend,
+    params: paramsPersonalSend,
+    validator: validateSend.bind(this, false),
+    handler: handleSend.bind(this, false),
     asyncHandler: true,
-    preview: previewSend,
+    preview: previewSend.bind(this, false),
     shortPreview: shortPreviewSend
 };
 
-status.command(send);
-status.response(send);
-
-var paramsRequest = [
-    {
-        name: "amount",
-        type: status.types.NUMBER
-    }
-];
-
-status.command({
-    name: "request",
-    scope: ["personal-chats"],
+var groupSend = {
+    name: "send",
+    scope: ["global", "group-chats", "registered", "humans"],
+    icon: "money_white",
     color: "#5fc48d",
-    title: I18n.t('request_title'),
-    description: I18n.t('request_description'),
-    params: paramsRequest,
-    handler: function (params, context) {
-        var val = params["amount"].replace(",", ".");
+    title: I18n.t('send_title'),
+    description: I18n.t('send_description'),
+    params: paramsGroupSend,
+    validator: validateSend.bind(this, true),
+    handler: handleSend.bind(this, true),
+    asyncHandler: true,
+    preview: previewSend.bind(this, true),
+    shortPreview: shortPreviewSend
+};
 
+status.command(personalSend);
+status.response(personalSend);
+
+status.command(groupSend);
+status.response(groupSend);
+
+// Request command
+
+var recipientRequestParam = {
+    name: "recipient",
+    type: status.types.TEXT,
+    suggestions: function (params) {
         return {
-            event: "request",
-            request: {
-                command: "send",
-                params: {
-                    amount: val
-                },
-                prefill: [val]
-            }
+            title: I18n.t('request_title'),
+            markup: status.components.chooseContact(I18n.t('send_choose_recipient'), "recipient", 0)
         };
-    },
-    preview: function (params, context) {
-        var row = status.components.text(
+    }
+};
+
+var amountRequestParam = {
+    name: "amount",
+    type: status.types.NUMBER
+};
+
+var paramsPersonalRequest = [amountRequestParam];
+var paramsGroupRequest = [recipientRequestParam, amountRequestParam];
+
+function handlePersonalRequest(params, context) {
+    var val = params["amount"].replace(",", ".");
+    
+    return {
+        event: "request",
+        request: {
+            command: "send",
+            params: {
+                amount: val
+            },
+            prefill: [val]
+        }
+    };
+}
+
+function handleGroupRequest(params, context) {
+    var val = params["amount"].replace(",", ".");
+    
+    return {
+        event: "request",
+        request: {
+            command: "send",
+            params: {
+                recipient: context["current-account"]["name"],
+                amount: val
+            },
+            prefill: [context["current-account"]["name"], val],
+            prefillBotDb: {
+                public: {
+                    recipient: context["current-account"]
+                }
+            }
+        }
+    };
+}
+
+function previewRequest(showRecipient, params, context) {
+    var amountRow = status.components.text(
+        {},
+        I18n.t('request_requesting') + " "
+        + status.localizeNumber(params.amount, context.delimiter, context.separator)
+        + " ETH"
+    );
+
+    var markup = [amountRow];
+
+    if (showRecipient
+        && params["bot-db"]
+        && params["bot-db"]["public"]
+        && params["bot-db"]["public"]["recipient"]
+        && context["chat"]["group-chat"] === true) {
+
+        var recipientRow = status.components.text(
+            {
+                style: {
+                    color: "#9199a0",
+                    fontSize: 14,
+                    lineHeight: 18
+                }
+            },
+            I18n.t('request_requesting_from') + " " + params["bot-db"]["public"]["recipient"]["name"]
+        );
+        markup.push(recipientRow);
+    } 
+    
+    return {
+        markup: status.components.view(
+            {
+                style: {
+                    flexDirection: "column"
+                }
+            },
+            markup
+        )
+    };
+}
+
+function shortPreviewRequest(params, context) {
+    return {
+        markup: status.components.text(
             {},
             I18n.t('request_requesting') + " "
             + status.localizeNumber(params.amount, context.delimiter, context.separator)
             + " ETH"
-        );
-        return {
-            markup: status.components.view(
-                {
-                    style: {
-                        flexDirection: "column"
-                    }
-                },
-                [row]
-            )
-        };
-    },
-    shortPreview: function (params, context) {
-        return {
-            markup: status.components.text(
-                {},
-                I18n.t('request_requesting') + " "
-                + status.localizeNumber(params.amount, context.delimiter, context.separator)
-                + " ETH"
-            )
-        };
-    },
-    validator: function (params) {
-        if (!params["bot-db"]) {
-            params["bot-db"] = {};
-        }
+        )
+    };
+}
 
-        if (!params["amount"]) {
+function validateRequest(validateRecipient, params) {
+    if (!params["bot-db"]) {
+        params["bot-db"] = {};
+    }
+
+    if (validateRecipient) {
+        if (!params["bot-db"]["public"] || !params["bot-db"]["public"]["recipient"] || !params["bot-db"]["public"]["recipient"]["address"]) {
             return {
                 markup: status.components.validationMessage(
-                    I18n.t('validation_title'),
-                    I18n.t('validation_amount_specified')
-                )
-            };
-        }
-
-        var amount = params.amount.replace(",", ".");
-        var amountSplitted = amount.split(".");
-        if (amountSplitted.length === 2 && amountSplitted[1].length > 18) {
-            return {
-                markup: status.components.validationMessage(
-                    I18n.t('validation_title'),
-                    I18n.t('validation_amount_is_too_small')
-                )
-            };
-        }
-
-        if (isNaN(parseFloat(params.amount.replace(",", ".")))) {
-            return {
-                markup: status.components.validationMessage(
-                    I18n.t('validation_title'),
-                    I18n.t('validation_invalid_number')
-                )
-            };
-        }
-
-        try {
-            var val = web3.toWei(amount, "ether");
-            if (val < 0) {
-                throw new Error();
-            }
-        } catch (err) {
-            return {
-                markup: status.components.validationMessage(
-                    I18n.t('validation_title'),
-                    I18n.t('validation_invalid_number')
+                    "Wrong address",
+                    "Recipient address must be specified"
                 )
             };
         }
     }
+    
+    if (!params["amount"]) {
+        return {
+            markup: status.components.validationMessage(
+                I18n.t('validation_title'),
+                I18n.t('validation_amount_specified')
+            )
+        };
+    }
+
+    var amount = params.amount.replace(",", ".");
+    var amountSplitted = amount.split(".");
+    if (amountSplitted.length === 2 && amountSplitted[1].length > 18) {
+        return {
+            markup: status.components.validationMessage(
+                I18n.t('validation_title'),
+                I18n.t('validation_amount_is_too_small')
+            )
+        };
+    }
+
+    if (isNaN(parseFloat(params.amount.replace(",", ".")))) {
+        return {
+            markup: status.components.validationMessage(
+                I18n.t('validation_title'),
+                I18n.t('validation_invalid_number')
+            )
+        };
+    }
+    
+    try {
+        var val = web3.toWei(amount, "ether");
+        if (val < 0) {
+            throw new Error();
+        }
+    } catch (err) {
+        return {
+            markup: status.components.validationMessage(
+                I18n.t('validation_title'),
+                I18n.t('validation_invalid_number')
+            )
+        };
+    }
+}
+
+status.command({
+    name: "request",
+    scope: ["global", "personal-chats", "registered", "humans"],
+    icon: "money_white",
+    color: "#5fc48d",
+    title: I18n.t('request_title'),
+    description: I18n.t('request_description'),
+    params: paramsPersonalRequest,
+    handler: handlePersonalRequest,
+    preview: previewRequest.bind(null, false),
+    shortPreview: shortPreviewRequest,
+    validator: validateRequest.bind(null, false)
+});
+
+status.command({
+    name: "request",
+    scope: ["global", "group-chats", "registered", "humans"],
+    icon: "money_white",
+    color: "#5fc48d",
+    title: I18n.t('request_title'),
+    description: I18n.t('request_description'),
+    params: paramsGroupRequest,
+    handler: handleGroupRequest,
+    preview: previewRequest.bind(null, true),
+    shortPreview: shortPreviewRequest,
+    validator: validateRequest.bind(null, true)
 });

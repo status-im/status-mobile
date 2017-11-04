@@ -28,17 +28,17 @@
 (spec/def :contact/last-updated (spec/nilable int?))
 (spec/def :contact/last-online (spec/nilable int?))
 (spec/def :contact/pending? boolean?)
-(spec/def :contact/mixable? boolean?)
 (spec/def :contact/unremovable? boolean?)
+(spec/def :contact/hide-contact? boolean?)
 
 (spec/def :contact/dapp? boolean?)
 (spec/def :contact/dapp-url (spec/nilable string?))
 (spec/def :contact/dapp-hash (spec/nilable int?))
-(spec/def :contact/bot-url (spec/nilable string?))
-(spec/def :contact/global-command (spec/nilable map?))
-(spec/def :contact/commands (spec/nilable (spec/map-of keyword? seq?)))
-(spec/def :contact/responses (spec/nilable (spec/map-of keyword? seq?)))
-(spec/def :contact/commands-loaded? (spec/nilable boolean?))
+(spec/def :contact/bot-url (spec/nilable string?)) 
+(spec/def :contact/command (spec/nilable (spec/map-of int? map?)))
+(spec/def :contact/response (spec/nilable (spec/map-of int? map?)))
+(spec/def :contact/jail-loaded? (spec/nilable boolean?))
+(spec/def :contact/jail-loaded-events (spec/nilable seq?))
 (spec/def :contact/subscriptions (spec/nilable map?))
 ;true when contact added using status-dev-cli
 (spec/def :contact/debug? boolean?)
@@ -54,18 +54,17 @@
              :contact/status
              :contact/last-updated
              :contact/last-online
-             :contact/pending?
-             :contact/mixable?
-             :contact/scope
+             :contact/pending? 
+             :contact/hide-contact? 
              :contact/unremovable?
              :contact/dapp?
              :contact/dapp-url
              :contact/dapp-hash
-             :contact/bot-url
-             :contact/global-command
-             :contact/commands-loaded?
-             :contact/commands
-             :contact/responses
+             :contact/bot-url 
+             :contact/jail-loaded?
+             :contact/jail-loaded-events
+             :contact/command
+             :contact/response
              :contact/debug?
              :contact/subscriptions
              :contact/fcm-token

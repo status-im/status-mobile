@@ -46,33 +46,6 @@
 
 ;;;; Helper functions
 
-(defn- extract-command-request-owners [commands requests]
-  [commands requests]
-  (into #{} (keep :owner-id) (concat commands requests)))
-
-(defn update-suggestions
-  "Update suggestions for current chat input, takes db as the only argument
-  and returns new db with up-to date suggestions"
-  [{:keys [chats current-chat-id] :as db}]
-  (let [chat-text       (str/trim (or (get-in chats [current-chat-id :input-text]) ""))
-        requests        (->> (commands-model/get-possible-requests db)
-                             (remove (fn [{:keys [type]}]
-                                       (= type :grant-permissions))))
-        commands        (commands-model/commands-for-chat db current-chat-id)
-        {:keys [dapp?]} (get-in db [:contacts/contacts current-chat-id])
-        ;; TODO(janherich) surely there is a better place to merge in possible commands/request/subscriptions into current chat
-        ;; then in `:update-suggestions` which is called whenever commands for chat are loaded, chat view is opened
-        ;; or new message is received from network - it's unnecessary to call it as a response to last two events
-        new-db          (cond-> (-> db
-                                    (update-in [:chats current-chat-id] merge {:possible-commands commands
-                                                                               :possible-requests requests})
-                                    (bots-events/add-active-bot-subscriptions (extract-command-request-owners
-                                                                               commands requests)))
-                          (and dapp?
-                               (str/blank? chat-text))
-                          (assoc-in [:chats current-chat-id :parameter-boxes :message] nil))]
-    new-db))
-
 (defn set-chat-input-text
   "Set input text for current-chat and updates suggestions relevant to current input.
   Takes db, input text and `:append?` flag as arguments and returns new db.
@@ -141,24 +114,19 @@
                               (input-model/join-command-args command-args)
                               (when (and move-to-next?
                                          (= index (dec (count command-args))))
-                                const/spacing-char))]
-        (-> db
-            (set-chat-input-text input-text)
-            update-suggestions)))))
+                                const/spacing-char))] 
+        (set-chat-input-text db input-text)))))
 
 (defn load-chat-parameter-box
   "Returns fx for loading chat parameter box for active chat"
   [{:keys [current-chat-id bot-db] :accounts/keys [current-account-id] :as db}
-   {:keys [name scope type bot owner-id] :as command}]
+   {:keys [name scope-bitmask type bot owner-id] :as command}]
   (let [parameter-index (input-model/argument-position db)]
     (when (and command (> parameter-index -1))
       (let [data    (get-in db [:local-storage current-chat-id])
             bot-db  (get bot-db owner-id)
             path    [(if (= :command type) :commands :responses)
-                     [name
-                      (if (= :command type)
-                        (commands-model/scope->bit-mask scope)
-                        0)]
+                     [name scope-bitmask]
                      :params
                      parameter-index
                      :suggestions]
@@ -301,11 +269,10 @@
         request-data    {:message-id   message-id
                          :chat-id      chat-id
                          :jail-id      (or owner-id jail-id)
-                         :content      {:command (:name command)
-                                        :scope   (when-not (:to-message-id metadata)
-                                                   (:scope command))
-                                        :params  params
-                                        :type    (:type command)}
+                         :content      {:command       (:name command)
+                                        :scope-bitmask (:scope-bitmask command)
+                                        :params        params
+                                        :type          (:type command)}
                          :on-requested (fn [jail-response]
                                          (event-after-creator command-message jail-response))}]
     (commands-events/request-command-message-data db request-data data-type)))
@@ -395,11 +362,6 @@
     (when-let [cmp-ref (get-in chat-ui-props [current-chat-id ref])]
       {::blur-rn-component cmp-ref})))
 
-(handlers/register-handler-db
-  :update-suggestions
-  (fn [db _]
-    (update-suggestions db)))
-
 (handlers/register-handler-fx
   :load-chat-parameter-box
   [re-frame/trim-v]
@@ -449,8 +411,7 @@
              clear-seq-arguments
              (set-chat-input-metadata nil)
              (set-chat-input-text nil)
-             (model/set-chat-ui-props {:sending-in-progress? false})
-             update-suggestions)
+             (model/set-chat-ui-props {:sending-in-progress? false}))
      ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
      :dispatch [:check-commands-handlers! {:message (get-in db [:chats current-chat-id :input-text])
                                            :command  command-message
@@ -504,8 +465,7 @@
           {:db db}
           {:db (-> db
                    (set-chat-input-metadata nil)
-                   (set-chat-input-text nil)
-                   update-suggestions)
+                   (set-chat-input-text nil))
            ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
            :dispatch [:prepare-message {:message  input-text
                                         :chat-id  current-chat-id
@@ -592,5 +552,4 @@
   (fn [db _]
     (-> db
         (model/toggle-chat-ui-prop :show-suggestions?)
-        (model/set-chat-ui-props {:validation-messages nil})
-        update-suggestions)))
+        (model/set-chat-ui-props {:validation-messages nil}))))

@@ -5,8 +5,7 @@
             [taoensso.timbre :as log]
             [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
-            [status-im.utils.platform :as platform]
-            [status-im.chat.models.commands :as commands-model]))
+            [status-im.utils.platform :as platform]))
 
 ;;;; Helper fns
 
@@ -26,24 +25,18 @@
   [db
    {{command-name :command
      content-command-name :content-command
-     :keys [content-command-scope scope params type bot]} :content
+     :keys [content-command-scope-bitmask scope-bitmask params type bot]} :content
     :keys [chat-id jail-id group-id] :as message}
    data-type]
   (let [{:keys          [chats]
          :accounts/keys [current-account-id]
          :contacts/keys [contacts]} db
         jail-id               (or bot jail-id chat-id)
-        jail-command-name     (or content-command-name command-name)
-        ;; here we're trying to use the default scope if there is no other scope provided
-        default-command-scope (-> (get-in contacts [jail-id :commands (keyword jail-command-name)])
-                                  first
-                                  :scope)]
-    (if (get-in contacts [jail-id :commands-loaded?])
+        jail-command-name     (or content-command-name command-name)]
+    (if (get-in contacts [jail-id :jail-loaded?])
       (let [path        [(if (= :response (keyword type)) :responses :commands)
                          [jail-command-name
-                          (commands-model/scope->bit-mask (or scope
-                                                              content-command-scope
-                                                              default-command-scope))]
+                          (or scope-bitmask content-command-scope-bitmask)]
                          data-type]
             to          (get-in contacts [chat-id :address])
             jail-params {:parameters params
@@ -54,9 +47,8 @@
                      :callback-events-creator (fn [jail-response]
                                                 [[::jail-command-data-response
                                                   jail-response message data-type]])}})
-      {:dispatch-n [[:add-commands-loading-callback jail-id
-                     #(re-frame/dispatch [:request-command-message-data message data-type])]
-                    [:load-commands! jail-id]]})))
+      {:db (update-in db [:contacts/contacts jail-id :jail-loaded-events]
+                      conj [:request-command-message-data message data-type])})))
 
 ;;;; Handlers
 
@@ -76,7 +68,7 @@
 
 (handlers/register-handler-fx
   :request-command-message-data
-  [re-frame/trim-v]
+  [re-frame/trim-v (re-frame/inject-cofx :get-local-storage-data)]
   (fn [{:keys [db]} [message data-type]]
     (request-command-message-data db message data-type)))
 

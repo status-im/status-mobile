@@ -7,13 +7,15 @@ var _status_catalog = {
     status = {};
 
 function scopeToBitMask(scope) {
-    // this function transforms scopes map to a single integer by generating a bit mask
-    // this similar method also exists on clojure side: status-im.chat.models.commands/scope->bit-mask
-    return (scope["global?"] ? 1 : 0) |
-        (scope["registered-only?"] ? 2 : 0) |
-        (scope["personal-chats?"] ? 4 : 0) |
-        (scope["group-chats?"] ? 8 : 0) |
-        (scope["can-use-for-dapps?"] ? 16 : 0);
+    // this function transforms scopes array to a single integer by generating a bit mask 
+    return ((scope != null && scope.indexOf("global") > -1) ? 1 : 0) |
+        ((scope != null && scope.indexOf("personal-chats") > -1) ? 2 : 0) |
+        ((scope != null && scope.indexOf("group-chats") > -1) ? 4 : 0) |
+        ((scope != null && scope.indexOf("anonymous") > -1) ? 8 : 0) |
+        ((scope != null && scope.indexOf("registered") > -1) ? 16 : 0) |
+        ((scope != null && scope.indexOf("dapps") > -1) ? 32 : 0) |
+        ((scope != null && scope.indexOf("humans") > -1) ? 64 : 0) |
+        ((scope != null && scope.indexOf("public-chats") > -1) ? 128 : 0);
 }
 
 function Command() {
@@ -22,7 +24,7 @@ function Response() {
 }
 
 Command.prototype.addToCatalog = function () {
-    _status_catalog.commands[[this.name, this.scope.bitmask]] = this;
+    _status_catalog.commands[[this.name, this["scope-bitmask"]]] = this;
 };
 
 Command.prototype.param = function (parameter) {
@@ -53,13 +55,8 @@ Command.prototype.create = function (com) {
     this["hide-send-button"] = com.hideSendButton;
 
     // scopes
-    this["scope"] = {};
-    this["scope"]["global?"] = com["scope"] != null && com["scope"].indexOf("global") > -1;
-    this["scope"]["registered-only?"] = com["scope"] != null && com["scope"].indexOf("registered-only") > -1;
-    this["scope"]["personal-chats?"] = com["scope"] == null || com["scope"].indexOf("personal-chats") > -1;
-    this["scope"]["group-chats?"] = com["scope"] == null || com["scope"].indexOf("group-chats") > -1;
-    this["scope"]["can-use-for-dapps?"] = com["scope"] == null || com["scope"].indexOf("can-use-for-dapps") > -1;
-    this["scope"]["bitmask"] = scopeToBitMask(this["scope"]);
+    this.scope = com.scope; 
+    this["scope-bitmask"] = scopeToBitMask(this["scope"]);
 
     this.addToCatalog();
 
@@ -69,7 +66,7 @@ Command.prototype.create = function (com) {
 
 Response.prototype = Object.create(Command.prototype);
 Response.prototype.addToCatalog = function () {
-    _status_catalog.responses[[this.name, 0]] = this;
+    _status_catalog.responses[[this.name, this["scope-bitmask"]]] = this;
 };
 Response.prototype.onReceiveResponse = function (handler) {
     this.onReceive = handler;

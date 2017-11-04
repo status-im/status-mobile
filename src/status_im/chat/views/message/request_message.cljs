@@ -3,11 +3,11 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.ui.components.react :refer [view
-                                                animated-view
-                                                text
-                                                image
-                                                icon
-                                                touchable-highlight]]
+                                                   animated-view
+                                                   text
+                                                   image
+                                                   icon
+                                                   touchable-highlight]]
             [status-im.chat.styles.message.message :as st]
             [status-im.chat.models.commands :as commands]
             [status-im.ui.components.animation :as anim]
@@ -25,9 +25,9 @@
 (defn button-animation [val to-value loop? answered?]
   (anim/anim-sequence
     [(anim/anim-delay
-       (if (and @loop? (not @answered?))
-         request-message-icon-scale-delay
-         0))
+      (if (and @loop? (not @answered?))
+        request-message-icon-scale-delay
+        0))
      (anim/spring val {:toValue to-value})]))
 
 (defn request-button-animation-logic
@@ -73,14 +73,12 @@
 
 (defview message-content-command-request
   [{:keys [message-id chat-id content from incoming-group] :as message}]
-  (letsubs [commands            [:get-commands-for-chat chat-id]
-            requests            [:chat-actions :possible-requests]
+  (letsubs [command             [:get-command (:content-command-ref content)] 
             answered?           [:is-request-answered? message-id]
             status-initialized? [:get :status-module-initialized?]
             markup              [:get-message-preview message-id]]
     (let [{:keys        [prefill prefill-bot-db prefillBotDb params]
-           text-content :text} content
-          {:keys [command content]} (commands/replace-name-with-request message commands requests)
+           text-content :text} content 
           command          (if (and params command)
                              (merge command {:prefill        prefill
                                              :prefill-bot-db (or prefill-bot-db prefillBotDb)})
@@ -98,7 +96,7 @@
            [view markup]
            [text {:style st/style-message-text
                   :font  :default}
-            (or text-content markup content)])]]
+            (or text-content markup (:content content))])]]
        (when (:request-text command)
          [view st/command-request-text-view
           [text {:style st/style-sub-text

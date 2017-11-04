@@ -24,8 +24,8 @@
   :<- [:get-contacts]
   (fn [contacts]
     (->> contacts
-         (remove (fn [[_ {:keys [pending? mixable?]}]]
-                   (or pending? mixable?)))
+         (remove (fn [[_ {:keys [pending? hide-contact?]}]]
+                   (or pending? hide-contact?)))
          (sort-contacts))))
 
 (reg-sub :all-added-people-contacts

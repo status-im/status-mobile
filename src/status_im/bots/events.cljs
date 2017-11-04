@@ -14,8 +14,8 @@
           sub-params))
 
 (defn- check-subscriptions-fx
-  [{:keys [bot-db bot-subscriptions] :as app-db} {:keys [bot path]}]
-  (when-let [subscriptions (and bot (get-in bot-subscriptions (concat [bot] [path])))]
+  [{:keys [bot-db] :contacts/keys [contacts] :as app-db} {:keys [bot path]}]
+  (when-let [subscriptions (and bot (get-in contacts (concat [bot :subscriptions] [path])))]
     {:call-jail-function-n
      (for [[sub-name sub-params] subscriptions]
        {:chat-id  bot
@@ -47,7 +47,7 @@
 
 (def ^:private keywordize-vector (partial mapv keyword))
 
-(defn- transform-bot-subscriptions
+(defn transform-bot-subscriptions
   "Transforms bot subscriptions as returned from jail in the following format:
 
   `{:calculatedFee {:subscriptions {:value [\"sliderValue\"]
@@ -77,14 +77,6 @@
                           subscriptions))
              {}
              bot-subscriptions))
-
-(defn add-active-bot-subscriptions
-  "Add subscriptions for selected bot identities into app-db"
-  [app-db bot-identities]
-  (assoc app-db :bot-subscriptions (-> app-db
-                                       :contacts/contacts
-                                       (select-keys bot-identities)
-                                       (utils/map-values (comp transform-bot-subscriptions :subscriptions)))))
 
 (defn calculated-subscription
   [db {:keys                  [bot path]

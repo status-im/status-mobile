@@ -3,8 +3,7 @@
             [status-im.bots.events :as bots-events]))
 
 (def ^:private initial-db
-  {:bot-db {}
-   :bot-subscriptions {}
+  {:bot-db {} 
    :contacts/contacts
    {"bot1" {:subscriptions
             {:feeExplanation
@@ -19,13 +18,13 @@
 
 (deftest add-active-bot-subscriptions-test
   (testing "That active bot subscriptions are correctly transformed and added to db"
-    (let [db (bots-events/add-active-bot-subscriptions initial-db #{"bot1" "bot3"})]
-      (is (= #{"bot1" "bot3"} (-> db :bot-subscriptions keys set)))
+    (let [db (update-in initial-db [:contacts/contacts "bot1" :subscriptions]
+                        bots-events/transform-bot-subscriptions)] 
       (is (= {[:sliderValue] {:feeExplanation {:fee [:sliderValue]
                                                :tx [:transaction]}}
               [:transaction] {:feeExplanation {:fee [:sliderValue]
                                                :tx [:transaction]}}}
-             (-> db :bot-subscriptions (get "bot1")))))))
+             (get-in db [:contacts/contacts "bot1" :subscriptions]))))))
 
 (defn- fake-subscription-call
   [db {:keys [chat-id parameters]}]
@@ -37,7 +36,8 @@
 
 (deftest set-in-bot-db-test
   (let [{:keys [db call-jail-function-n]} (-> initial-db
-                                              (bots-events/add-active-bot-subscriptions #{"bot1" "bot2"})
+                                              (update-in [:contacts/contacts "bot1" :subscriptions]
+                                                         bots-events/transform-bot-subscriptions)
                                               (bots-events/set-in-bot-db {:bot "bot1"
                                                                           :path [:sliderValue]
                                                                           :value 2}))

@@ -18,7 +18,7 @@
                      (assoc :pending? (boolean (if contact-db
                                                  (if (nil? pending?) pending-db? pending?)
                                                  pending?)))
-                     (dissoc :commands :responses :global-command))]
+                     (dissoc :command :response :subscriptions :jail-loaded-events))]
     (data-store/save contact' (boolean contact-db))))
 
 (defn save-all

@@ -121,12 +121,11 @@
 
 (defview message-content-command
   [{:keys [message-id content content-type chat-id to from outgoing] :as message}]
-  (letsubs [commands [:get-commands-for-chat chat-id]
+  (letsubs [command [:get-command (:content-command-ref content)]
             current-chat-id [:get-current-chat-id]
             contact-chat [:get-in [:chats (if outgoing to from)]]
             preview [:get-message-preview message-id]]
-    (let [{:keys [command params]} (commands/replace-name-with-request message commands)
-          {:keys     [name type]
+    (let [{:keys     [name type]
            icon-path :icon} command]
       [view st/content-command-view
        (when (:color command)
@@ -134,13 +133,13 @@
           [view (pill-st/pill command)
            [text {:style pill-st/pill-text
                   :font  :default}
-            (str (if (= :command type) chat-consts/command-char "?") name)]]])
+            (str chat-consts/command-char name)]]])
        (when icon-path
          [view st/command-image-view
           [icon icon-path st/command-image]])
        [command-preview {:command         (:name command)
                          :content-type    content-type
-                         :params          params
+                         :params          (:params content)
                          :outgoing?       outgoing
                          :preview         preview
                          :contact-chat    contact-chat
@@ -285,7 +284,7 @@
 (defview message-delivery-status
   [{:keys [message-id chat-id message-status user-statuses content]}]
   [app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]]
-  (let [delivery-status (get-in user-statuses [chat-id :status]) 
+  (let [delivery-status (get-in user-statuses [chat-id :status])
         status          (cond (and (not (console/commands-with-delivery-status (:command content)))
                                    (cu/console? chat-id))
                               :seen

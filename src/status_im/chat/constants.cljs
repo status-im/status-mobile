@@ -15,3 +15,9 @@
 (def signing-phrase-message-id "signing-phrase-message")
 (def intro-status-message-id "intro-status")
 (def intro-message1-id "intro-message1")
+
+;; TODO(janherich): figure out something better then this
+(def browse-command-ref ["browse" :command 247 "browse"])
+(def send-command-ref ["transactor" :command 83 "send"])
+(def request-command-ref ["transactor" :command 83 "request"])
+(def phone-command-ref ["console" :command 50 "phone"])

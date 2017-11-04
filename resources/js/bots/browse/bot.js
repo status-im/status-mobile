@@ -36,7 +36,7 @@ function browse(params, context) {
 status.command({
     name: "browse",
     title: I18n.t('browse_title'),
-    scope: ["global", "registered-only", "group-chats", "personal-chats", "can-use-for-dapps"],
+    scope: ["global", "personal-chats", "group-chats", "public-chats", "registered", "dapps", "humans"],
     description: I18n.t('browse_description'),
     color: "#ffa500",
     fullscreen: true,

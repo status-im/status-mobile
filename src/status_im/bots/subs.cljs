@@ -3,11 +3,14 @@
             [status-im.chat.models.input :as input-model]))
 
 (re-frame/reg-sub
-  :current-bot-db
+  :bot-db
   (fn [db]
-    (let [current-chat-id (re-frame/subscribe [:get-current-chat-id])
-          command-owner (-> db
-                            (input-model/selected-chat-command @current-chat-id)
-                            :command
-                            :owner-id)]
-      [command-owner (get-in db [:bot-db command-owner])])))
+    (:bot-db db)))
+
+(re-frame/reg-sub
+  :current-bot-db
+  :<- [:bot-db]
+  :<- [:selected-chat-command]
+  (fn [[bot-db command]]
+    (let [command-owner (get-in command [:command :owner-id])]
+      [command-owner (get bot-db command-owner)])))
