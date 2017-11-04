@@ -54,6 +54,8 @@
 (defstyle amount-time
   {:flex-direction  :row
    :justify-content :space-between
+   :padding-right   22
+   :padding-left    17
    :ios             {:padding-top 13}
    :android         {:padding-top 14}})
 
@@ -71,6 +73,8 @@
 
 (def address-row
   {:flex-direction :row
+   :padding-right  22
+   :padding-left   17
    :padding-top    4})
 
 (def address-item
