@@ -3,7 +3,7 @@
 (def translations
   {
    ;;common
-   :members-title                         "회원"
+   :members-title                         "멤버"
    :not-implemented                       "!구현되지 않음"
    :chat-name                             "채팅 이름"
    :notifications-title                   "알림 및 소리"
@@ -33,12 +33,12 @@
    :is-typing                             "이(가) 입력 중입니다"
    :and-you                               "그리고 당신"
    :search-chat                           "채팅 검색"
-   :members                               {:one   "회원 1명"
-                                           :other "회원 {{count}}명"
-                                           :zero  "회원 없음"}
-   :members-active                        {:one   "회원 1명, 활성 1명"
-                                           :other "회원 {{count}}명"
-                                           :zero  "회원 없음"}
+   :members                               {:one   "멤버 1명"
+                                           :other "멤버 {{count}}명"
+                                           :zero  "멤버 없음"}
+   :members-active                        {:one   "멤버 1명"
+                                           :other "멤버 {{count}}명"
+                                           :zero  "멤버 없음"}
    :public-group-status                   "공개"
    :active-online                         "온라인"
    :active-unknown                        "상태 알 수 없음"
@@ -95,7 +95,7 @@
 
    ;;make_photo
    :image-source-title                    "프로필 이미지"
-   :image-source-make-photo               "캡쳐"
+   :image-source-make-photo               "캡처"
    :image-source-gallery                  "갤러리에서 선택하기"
 
    ;;sharing
@@ -116,11 +116,11 @@
    :phew-here-is-your-passphrase          "휴~ 꽤 어려웠어요. 이것이 당신의 암호문입니다. *이걸 적어두신 다음 안전한 곳에 보관하세요!* 계정을 복구할 때 필요합니다."
    :here-is-your-passphrase               "이것이 당신의 암호문입니다. *이걸 적어두신 다음 안전한 곳에 보관하세요!* 계정을 복구할 때 필요합니다."
    :here-is-your-signing-phrase           "이건 당신의 서명 문구입니다. 거래를 승인할 때 필요합니다. *이걸 적어두신 다음 안전한 곳에 보관하세요!*"
-   :phone-number-required                 "여기를 탭하여 전화번호를 검증하시면 친구들을 찾아드리겠습니다"
+   :phone-number-required                 "여기를 눌러 전화번호를 검증하시면 친구들을 찾아드리겠습니다"
    :shake-your-phone                      "버그나 건의사항이 있나요? 폰을 ~흔들어~ 보세요!"
    :intro-status                          "계정을 설정하고 설정을 변경하려면 저와 채팅하세요!"
    :intro-message1                        "Status에 오신 것을 환영합니다!\n이 메시지를 탭하여 비밀번호를 설정하고 시작하세요!"
-   :account-generation-message            "잠시만요, 계정을 만드려면 엄청 복잡한 수학 문제를 풀어야 합니다. 기다려 주세요!"
+   :account-generation-message            "잠시만요, 계정을 만들려면 엄청 복잡한 수학 문제를 풀어야 합니다. 기다려 주세요!"
    :move-to-internal-failure-message      "몇몇 중요한 파일을 외부 저장소에서 내부 저장소로 옮기기 위해 권한이 필요합니다. 추후 버전에서는 외부 저장소를 사용하지 않을 것입니다."
    :debug-enabled                         "디버그 서버가 시작되었습니다! 같은 네트워크 상의 컴퓨터에서 *status-dev-cli scan*를 실행하여 디버그 서버를 확인하세요."
 
@@ -282,7 +282,7 @@
 
    ;;testfairy warning
    :testfairy-title                       "경고!"
-   :testfairy-message                     "나이틀리 빌드에서 설치된 앱을 사용중입니다. 이 빌드는 테스트를 위해 세션 녹화 기능이 포함되어 있으며, Wi-Fi가 연결되어 있을 시 앱과의 모든 상호작용이 (비디오와 로그로) 저장됩니다. 이 데이터는 개발자들이 문제를 확인하기 위해 사용할 수 있습니다. 녹화된 정보에 비밀번호는 포함되어 있지 않습니다. 세션 녹화는 앱이 나이틀리 빌드에서 설치되었을 때만 진행됩니다. Play 스토어 또는 TestFlight를 통해 설치했을 시에는 녹화가 진행되지 않습니다."
+   :testfairy-message                     "나이틀리 빌드에서 설치된 앱을 사용중입니다. 이 빌드에는 테스트를 위해 세션 녹화 기능이 포함되어 있으며, Wi-Fi가 연결되어 있을 시 앱과의 모든 상호작용이 (비디오와 로그로) 저장됩니다. 이 데이터는 개발자들이 문제를 확인하기 위해 사용할 수 있습니다. 녹화된 정보에 비밀번호는 포함되어 있지 않습니다. 세션 녹화는 앱이 나이틀리 빌드에서 설치되었을 때만 진행됩니다. Play 스토어 또는 TestFlight를 통해 설치했을 시에는 녹화가 진행되지 않습니다."
 
    ;; wallet
    :wallet                                "지갑"
