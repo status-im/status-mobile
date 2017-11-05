@@ -5,29 +5,28 @@
    ;;common
    :members-title                         "Участники"
    :not-implemented                       "!не реализовано"
-   :chat-name                             "Имя чата"
+   :chat-name                             "Название чата"
    :notifications-title                   "Уведомления и звуки"
-   :offline                               "Оффлайн"
+   :offline                               "Не в сети"
    :search-for                            "Поиск..."
    :cancel                                "Отмена"
    :next                                  "Продолжить"
    :open                                  "Открыть"
    :description                           "Описание"
    :url                                   "Сслылка"
-   :type-a-message                        "Напечатать сообщение..."
-   :type-a-command                        "Начать ввод команды..."
+   :type-a-message                        "Введите текст сообщения..."
+   :type-a-command                        "Введите текст команды..."
    :error                                 "Ошибка"
-   :unknown-status-go-error               "Неизвестный статус-произошла ошибка"
-   :node-unavailable                      "Нет запущенного ethereum узла"
+   :unknown-status-go-error               "Неизвестный статус - произошла ошибка"
+   :node-unavailable                      "Нет запущенного узла ethereum"
    :yes                                   "Да"
    :no                                    "Нет"
 
-   :camera-access-error                   "Чтобы сделать камеру доступной, пожалуйста зайдите в настройки системы и убедитесь что разрешение Status > Камера выбрано."
-   :photos-access-error                   "Чтобы сделать фото доступными, пожалуйста зайдите в настройки системы и убедитесь что разрешение Status > Фото выбрано."
-
+   :camera-access-error                   "Чтобы сделать камеру доступной, необходимо в настройках системы найти приложение Status и дать разрешение на использование камеры."
+   :photos-access-error                   "Чтобы сделать фото доступными, необходимо в настройках системы найти приложение Status и дать разрешение на использование памяти."
    ;;drawer
    :switch-users                          "Сменить пользователей"
-   :current-network                       "текущая сеть"
+   :current-network                       "Текущая сеть"
 
    ;;chat
    :is-typing                             "печатает"
@@ -35,10 +34,10 @@
    :search-chat                           "Поиск по чату"
    :members                               {:one   "1 участник"
                                            :other "{{count}} участника(ов)"
-                                           :zero  "нет участника(ов)"}
+                                           :zero  "нет участников"}
    :members-active                        {:one   "1  участник"
                                            :other "{{count}} участника(ов)"
-                                           :zero  "нет участника(ов)"}
+                                           :zero  "нет участников"}
    :public-group-status                   "Публичная"
    :active-online                         "В сети"
    :active-unknown                        "Неизвестно"
@@ -51,7 +50,7 @@
 
    ;;sync
    :sync-in-progress                      "Синхронизация..."
-   :sync-synced                           "Синхронизируется"
+   :sync-synced                           "Синхронизовано"
 
    ;;messages
    :status-pending                        "Ожидание"
@@ -59,7 +58,7 @@
    :status-seen-by-everyone               "Виден для всех"
    :status-seen                           "Виден"
    :status-delivered                      "Доставлено"
-   :status-failed                         "Неудачно"
+   :status-failed                         "Неудача"
 
    ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
@@ -82,20 +81,20 @@
    :not-specified                         "Не указано"
    :public-key                            "Публичный ключ"
    :phone-number                          "Номер телефона"
-   :update-status                         "Обновить ваш статус..."
+   :update-status                         "Обновить статус..."
    :add-a-status                          "Добавить статус..."
-   :status-prompt                         "Поставьте ваш статус. Использование #Хэштегов поможет остальным узнать о вас и обсудить то, что вы предлагаете"
+   :status-prompt                         "Поставьте статус статус. Использование #Хэштегов поможет остальным найти вас и обсудить ваши идеи"
    :add-to-contacts                       "Добавить в контакты"
    :in-contacts                           "В контактах"
    :remove-from-contacts                  "Убрать из контактов"
    :start-conversation                    "Начать общение"
    :send-transaction                      "Отправить транзакцию"
-   :testnet-text                          "Вы подключены к тестовой сети {{testnet}}. Не отправляйте ETH или SNT на ваш адрес"
-   :mainnet-text                          "Вы в основной сети. Будет производиться отправка настоящего ETH"
+   :testnet-text                          "Вы подключены к тестовой сети {{testnet}}. Не отправляйте настоящий ETH или SNT на ваш адрес"
+   :mainnet-text                          "Вы подключены к основной сети. Будет производиться отправка настоящего ETH"
 
    ;;make_photo
    :image-source-title                    "Изображение профиля"
-   :image-source-make-photo               "Снять"
+   :image-source-make-photo               "Сфотографировать"
    :image-source-gallery                  "Выбрать из галереи"
 
    ;;sharing
@@ -104,7 +103,7 @@
 
    :browsing-title                        "Обзор"
    :browsing-browse                       "@обзор"
-   :browsing-open-in-web-browser          "Открыть в веб браузере"
+   :browsing-open-in-web-browser          "Открыть в браузере"
    :browsing-cancel                       "Отмена"
 
    ;;sign-up
@@ -114,13 +113,13 @@
    :incorrect-code                        (str "Извините неверный код, пожалуйста попробуйте еще раз")
    :phew-here-is-your-passphrase          "Фух, это было непросто. Это ваша кодовая фраза, *запишите ее и храните в надежном месте!* Она вам потребуется для восстановления аккаунта."
    :here-is-your-passphrase               "Это ваша кодовая фраза,*запишите ее и храните в надежном месте!* Она вам потребуется для восстановления аккаунта."
-   :here-is-your-signing-phrase           "Это ваша подпись. Вы будете её использовать для совершения транзакций. *запишите ее и храните в надежном месте!*"
-   :phone-number-required                 "Нажмите сюда для подтверждения вашего номера телефона и мы начнем поиск ваших друзей"
+   :here-is-your-signing-phrase           "Это ваша подпись. Вы будете ее использовать для совершения транзакций. *запишите ее и храните в надежном месте!*"
+   :phone-number-required                 "Нажмите сюда для подтверждения вашего номера телефона, и мы приступим к поиску ваших друзей"
    :shake-your-phone                      "Нашли ошибку или есть предложение? Просто ~потрясите~ телефон!"
-   :intro-status                          "Пообщайтесь со мной в чате, чтобы настроить ваш аккаунт и изменить свои параметры!"
-   :intro-message1                        "Добро пожаловать в Статус\nНажмите на это сообщение, чтобы установить пароль и начать!"
+   :intro-status                          "Пообщайтесь со мной в чате, чтобы настроить ваш аккаунт!"
+   :intro-message1                        "Добро пожаловать в Статус\nНажмите на это сообщение, чтобы назначить пароль и начать!"
    :account-generation-message            "Секундочку, мне необходимо произвести безумно сложные вычисления для создания вашего аккаунта!"
-   :move-to-internal-failure-message      "Нам необходимо перенести некоторые важные файлы с внешнего накопителя на внутренний. Для этого нам необходимо ваше разрешение. В следующих версиях мы не будем использовать внешний накопитель."
+   :move-to-internal-failure-message      "Нам необходимо перенести некоторые важные файлы с внешнего хранилища на внутреннее. Для этого нам необходимо ваше разрешение. В следующих версиях мы не будем использовать внешнее хранилище."
    :debug-enabled                         "Произведен запуск Debug сервера! Выполнив *status-dev-cli scan* на вашем компьютере, вы найдёте сервер в той-же сети."
 
    ;;phone types
@@ -143,7 +142,7 @@
    ;;discover
    :discover                              "Исследовать"
    :none                                  "Нет"
-   :search-tags                           "Введите теги для поиска сюда"
+   :search-tags                           "Введите сюда теги поиска"
    :popular-tags                          "Популярные #Хэштеги"
    :recent                                "Последние статусы"
    :no-statuses-found                     "Статусы не найдены"
@@ -155,9 +154,9 @@
    :dapps                                 "ÐApps"
    :dapp-profile                          "ÐApp профиль"
    :no-statuses-discovered                "Статусы не обнаружены"
-   :no-statuses-discovered-body           "Когда кто-нибудь опубликует\nстатус вы увидите его здесь."
+   :no-statuses-discovered-body           "Когда кто-нибудь опубликует статус\nвы увидите его здесь."
    :no-hashtags-discovered-title          "#Хэштегов не обнаружено"
-   :no-hashtags-discovered-body           "Когда #Хэштег становится\nпопулярным вы увидите его здесь."
+   :no-hashtags-discovered-body           "Когда #Хэштег станет популярным\nвы увидите его здесь."
 
    ;;settings
    :settings                              "Параметры"
@@ -166,23 +165,23 @@
    :contacts                              "Контакты"
    :new-contact                           "Новый контакт"
    :delete-contact                        "Удалить контакт"
-   :delete-contact-confirmation           "Этот контакт будет удален из вашего списка контактов"
+   :delete-contact-confirmation           "Этот контакт будет удален из ваших контактов"
    :remove-from-group                     "Убрать из группы"
    :edit-contacts                         "Изменить контакты"
    :search-contacts                       "Поиск контактов"
-   :contacts-group-new-chat               "Начать новый чат"
-   :choose-from-contacts                  "Выберите из контактов"
+   :contacts-group-new-chat               "Создать новый чат"
+   :choose-from-contacts                  "Выберать из контактов"
    :no-contacts                           "Контактов пока нет"
-   :show-qr                               "Покажите QR-код"
+   :show-qr                               "Показать QR"
    :enter-address                         "Введите адрес"
-   :more                                  "ещё"
+   :more                                  "еще"
 
    ;;group-settings
    :remove                                "Убрать"
    :save                                  "Сохранить"
    :delete                                "Удалить"
    :clear-history                         "Очистить историю"
-   :mute-notifications                    "Отключить оповещения"
+   :mute-notifications                    "Заглушить оповещения"
    :leave-chat                            "Покинуть чат"
    :chat-settings                         "Настройки чата"
    :edit                                  "Изменить"
@@ -195,7 +194,7 @@
    :your-current-location                 "Ваше текущее местоположение"
    :places-nearby                         "Места рядом"
    :search-results                        "Результаты поиска"
-   :dropped-pin                           "Булавка"
+   :dropped-pin                           "Маркер-булавка"
    :location                              "Место"
    :open-map                              "Открыть карту"
    :sharing-copy-to-clipboard-address     "Копировать адрес"
@@ -206,7 +205,7 @@
    :reorder-groups                        "Упорядочить группы"
    :edit-group                            "Изменить группу"
    :delete-group                          "Удалить группу"
-   :delete-group-confirmation             "Эта группа будет удалена из списка ваших групп. Это не повлияет на ваши контакты"
+   :delete-group-confirmation             "Эта группа будет удалена из ваших групп. Это не повлияет на ваши контакты"
    :delete-group-prompt                   "Это не повлияет на ваши контакты"
    :contact-s                             {:one   "контакт"
                                            :other "контакты"}
@@ -221,9 +220,9 @@
 
    ;;new-contact
    :add-new-contact                       "Добавить новый контакт"
-   :scan-qr                               "Сканировать QR-код"
+   :scan-qr                               "Сканировать QR"
    :name                                  "Имя"
-   :address-explication                   "Ваш публичный ключ используется для создания вашего адреса в сети Ethereum и является набором букв и цифр. Вы можете легко найти его у себя в профиле"
+   :address-explication                   "Ваш публичный ключ используется для создания вашего адреса в сети Ethereum и является последовательностью букв и цифр. Вы можете легко найти его у себя в профиле"
    :enter-valid-public-key                "Пожалуйста введите публичный ключ или отсканируйте QR-код"
    :contact-already-added                 "Этот контакт уже добавлен"
    :can-not-add-yourself                  "Вы не можете добавить самого себя"
@@ -239,8 +238,8 @@
    :enter-password                        "Введите пароль"
 
    ;;recover
-   :passphrase                            "Ключевая фраза"
-   :recover                               "восстановить"
+   :passphrase                            "Кодовая фраза"
+   :recover                               "Восстановить"
    :twelve-words-in-correct-order         "12 слов в верном порядке"
 
    ;;accounts
@@ -252,7 +251,7 @@
 
    ;;validation
    :invalid-phone                         "Неверный номер телефона"
-   :amount                                "Количестро"
+   :amount                                "Количество"
 
    ;;transactions
    :confirm                               "Подтвердить"
@@ -266,13 +265,13 @@
    :got-it                                "Понятно"
    :block                                 "Блок"
    :hash                                  "Хэш"
-   :gas-limit                             "Gas лимит"
-   :gas-price                             "Gas цена"
-   :gas-used                              "Gas использовано"
+   :gas-limit                             "Лимит Gas"
+   :gas-price                             "Цена Gas"
+   :gas-used                              "Использовано Gas"
    :cost-fee                              "Стоимость/Комиссия"
-   :nonce                                 "Данное время"
+   :nonce                                 "Nonce"
    :confirmations                         "Подтверждений"
-   :confirmations-helper-text             "Пожалуйста дождитесь хотя-бы 12 подтверждений, чтобы быть уверенным в том, что ваша транзакция прошла успешно "
+   :confirmations-helper-text             "Пожалуйста дождитесь хотя-бы 12 подтверждений, чтобы убедиться в успехе транзакции"
    :copy-transaction-hash                 "Скопировать хэш транзакции"
    :open-on-etherscan                     "Открыть в Etherscan.io"
 
@@ -281,13 +280,13 @@
 
    ;;testfairy warning
    :testfairy-title                       "Осторожно!"
-   :testfairy-message                     "Вы используете nightly build версию. В целях тестирования данная версия приложения производит запись сеанса если используется wifi подключение это значит, что любое ваше взаимодействие с данным приложением (Видео и логи) могут быть использованы командой разработчиков, для выявления возможных проблем. Сохраненные видео/логи не содержат паролей. Запись производится только если установлена nightly build версия приложения. Запись не производится если приложение уситановлено из PlayStore или TestFlight."
+   :testfairy-message                     "Вы используете nightly build версию приложения. В целях тестирования при использовании Wi-Fi подключения, данная версия приложения производит запись сеанса, а это значит, что любое ваше взаимодействие с данным приложением (Видео и логи) могут быть использованы командой разработчиков, для выявления возможных проблем. Сохраненные видео/логи не содержат паролей. Запись производится только если установлена nightly build версия приложения. Запись не производится если приложение уситановлено из Play Store или TestFlight."
 
    ;; wallet
    :wallet                                "Кошелек"
    :wallets                               "Кошельки"
    :your-wallets                          "Ваши кошельки"
-   :main-wallet                           "Главный Кошелек"
+   :main-wallet                           "Основной Кошелек"
    :wallet-error                          "Ошибка загрузки данных"
    :wallet-send                           "Отправить"
    :wallet-request                        "Запросить"
@@ -296,23 +295,23 @@
    :wallet-add-asset                      "Добавить актив"
    :wallet-total-value                    "Общая стоимость"
    :wallet-settings                       "Настройки кошелька"
-   :signing-phrase-description            "Подписать транзакцию, посредством ввода вашего пароля. Убедитесь, что введенные выше слова, совпадают с вашей секретной фразой-подписью"
+   :signing-phrase-description            "Подпишите транзакцию, посредством ввода вашего пароля. Убедитесь, что введенные выше слова, совпадают с вашей секретной подписью"
    :wallet-insufficient-funds             "Недостаточно средств"
-   :request-transaction                   "Запрос транзакции"
+   :request-transaction                   "Запросить транзакцию"
    :send-request                          "Отправить запрос"
    :share                                 "Поделиться"
    :eth                                   "ETH"
    :currency                              "Валюта"
    :usd-currency                          "USD"
    :transactions                          "Транзакции"
-   :transaction-details                   "детали транзакции"
+   :transaction-details                   "Детали транзакции"
    :transaction-failed                    "Неудачная транзакция"
    :transactions-sign                     "Подписать"
    :transactions-sign-all                 "Подписать все"
-   :transactions-sign-transaction         "Подписать транзакции"
+   :transactions-sign-transaction         "Подписать транзакцию"
    :transactions-sign-later               "Подписать позже"
    :transactions-delete                   "Удалить транзакцию"
-   :transactions-delete-content           "Транзакция будет убрана из списка 'Неподписанные' "
+   :transactions-delete-content           "Транзакция будет убрана из списка 'Неподписанные'"
    :transactions-history                  "История"
    :transactions-unsigned                 "Неподписанные"
    :transactions-history-empty            "В вашей истории пока нет транзакций"
@@ -322,12 +321,12 @@
    :transactions-filter-type              "Тип"
    :transactions-filter-select-all        "Выбрать все"
    :view-transaction-details              "Показать детали транзакции"
-   :transaction-description               "Пожалуйста дождитесь хотя бы 12 подтверждений, чтобы быть уверенным в том, что ваша транзакция прошла"
+   :transaction-description               "Пожалуйста дождитесь хотя-бы 12 подтверждений, чтобы убедиться в успехе транзакции"
    :transaction-sent                      "Транзакция отправлена"
-   :transaction-moved-text                "Транзакция остается в списке 'Неподписанные' в течении 5 минут"
+   :transaction-moved-text                "Транзакция останется в списке 'Неподписанные' в течении 5 минут"
    :transaction-moved-title               "Транзакция передвинута"
    :sign-later-title                      "Подписать транзакцию позже?"
-   :sign-later-text                       "Проверьте историю транзакций для подписи данной транзакции"
+   :sign-later-text                       "Для подписи данной транзакции проверьте историю транзакций"
    :not-applicable                        "Не применимо к неподписанным транзакциям"
 
    ;; Wallet Send
@@ -336,8 +335,8 @@
    :wallet-address-from-clipboard         "Использовать адрес из буфера"
    :wallet-invalid-address                "Неверный адрес: \n {{data}}"
    :wallet-browse-photos                  "Показать фото"
-   :validation-amount-invalid-number      "Указано неверное номерное значение"
-   :validation-amount-is-too-precise      "Слишком маленькое значение. Меньшее значение которое вы можете отправить это 1 Wei (1x10^-18 ETH)"
+   :validation-amount-invalid-number      "Указано неверное числовое значение"
+   :validation-amount-is-too-precise      "Слишком маленькое значение. Самое меньшее значение которое вы можете отправить 1 Wei (1x10^-18 ETH)"
 
 
 
@@ -345,7 +344,7 @@
    :new-network                           "Новая сеть"
    :add-network                           "Добавить сеть"
    :add-new-network                       "Добавить новую сеть"
-   :existing-networks                     "существующие сети"
+   :existing-networks                     "Существующие сети"
    :add-json-file                         "Добавить JSON файл"
    :paste-json-as-text                    "Вставить JSON как текст"
    :paste-json                            "Вставить JSON"
@@ -357,7 +356,7 @@
    :rpc-url                               "RPC ссылка"
    :remove-network                        "Убрать сеть"
    :network-settings                      "Настройки сети"
-   :edit-network-warning                  "Будьте осторожны, изменение данных сети может отключить вас от нее"
+   :edit-network-warning                  "Будьте осторожны, изменение данных сети может отключить данную сеть для вас"
    :connecting-requires-login             "Для подключение к другой сети необходимо авторизоваться"
    :close-app-title                       "Острожно!"
    :close-app-content                     "Приложение будет остановлено и закрыто. Когда вы его снова откроете, будет использована выбранная сеть"
