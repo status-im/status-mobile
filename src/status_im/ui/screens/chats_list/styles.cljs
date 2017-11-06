@@ -16,7 +16,8 @@
   {:flex-direction   :row
    :background-color component.styles/color-white
    :android          {:height 76}
-   :ios              {:height 74}})
+   :ios              {:height 74}
+   :overflow         "hidden"})
 
 (defstyle chat-icon-container
   {:padding-top    18
