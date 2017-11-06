@@ -54,6 +54,7 @@
    :sync-synced                           "In sync"
 
    ;;messages
+   :status-sending                        "Sending..."
    :status-pending                        "Pending"
    :status-sent                           "Sent"
    :status-seen-by-everyone               "Seen by everyone"

@@ -135,13 +135,11 @@
         (let [params' (update params :context assoc
                               :debug js/goog.DEBUG
                               :locale rn-dependencies/i18n.locale)
-              cb      (fn [r]
-                        (let [{:keys [result] :as r'} (types/json->clj r)
-                              {:keys [messages]} result]
-                          (log/debug r')
-                          (doseq [{:keys [type message]} messages]
-                            (log/debug (str "VM console(" type ") - " message)))
-                          (callback r')))]
+              cb      (fn [jail-result]
+                        (let [result (-> jail-result
+                                         types/json->clj
+                                         (assoc :bot-id jail-id))] 
+                          (callback result)))]
           (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 
 ;; We want the mainting (time) windowed queue of all calls to the jail
