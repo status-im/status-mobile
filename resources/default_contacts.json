@@ -23,7 +23,19 @@
         },
         "unremovable?": true
     },
-
+    "BCShop.io": {
+        "name":
+        {
+            "en": "BCShop.io"
+        },
+        "photo-path": "contacts://BCShop.io",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "https://testnet.bcshop.io/"
+        },
+        "groups": ["dapps"]
+    },
     "mailman":
     {
         "name":
