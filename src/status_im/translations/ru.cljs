@@ -196,7 +196,7 @@
    :your-current-location                 "Ваше текущее местоположение"
    :places-nearby                         "Места поблизости"
    :search-results                        "Результаты поиска"
-   :dropped-pin                           "Dropped pin"
+   :dropped-pin                           "Выбранное местоположение"
    :location                              "Местоположение"
    :open-map                              "Открыть Карту"
    :sharing-copy-to-clipboard-address     "Скопировать адрес"
@@ -273,7 +273,7 @@
    :cost-fee                              "Стоимость/Комиссия"
    :nonce                                 "Nonce"
    :confirmations                         "Подтверждения"
-   :confirmations-helper-text             "Пожалуйста, подождите как минимум 12 подтверждений, чтобы убедиться, что транзакция обработана безопасно"
+   :confirmations-helper-text             "Пожалуйста, дождитесь как минимум 12-ти подтверждений, чтобы убедиться, что транзакция обработана безопасно"
    :copy-transaction-hash                 "Копировать транзакционный хеш"
    :open-on-etherscan                     "Открыть ссылку на Etherscan.io"
 
@@ -337,7 +337,7 @@
    :wallet-invalid-address                "Недействительный адрес: \n {{data}}"
    :wallet-browse-photos                  "Просмотреть Фотографии"
    :validation-amount-invalid-number      "Сумма не действительна"
-   :validation-amount-is-too-precise      "Сумма слишком точная. Наименьшая сумма, которую вы можете отправить это 1 Wei (1x10^-18 ETH)"
+   :validation-amount-is-too-precise      "Слишком много чисел после запятой. Наименьшая сумма, которую вы можете отправить это 1 Wei (1x10^-18 ETH)"
 
 
 
