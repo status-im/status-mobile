@@ -321,8 +321,8 @@
    :transactions-filter-tokens            "Токены"
    :transactions-filter-type              "Тип"
    :transactions-filter-select-all        "Выбрать все"
-   :view-transaction-details              "Посмотреть детали транзакций"
-   :transaction-description               "Пожалуйста, подождите как минимум 12 подтверждений, чтобы убедиться, что транзакцию обработана безопасно"
+   :view-transaction-details              "Посмотреть детали транзакции"
+   :transaction-description               "Пожалуйста, подождите как минимум 12 подтверждений, чтобы убедиться, что транзакция обработана безопасно"
    :transaction-sent                      "Транзакция отправлена"
    :transaction-moved-text                "Транзакция будет находится в списке 'Неподписанные' в течение 5 минут"
    :transaction-moved-title               "Транзакция перемещена"
@@ -337,7 +337,7 @@
    :wallet-invalid-address                "Недействительный адрес: \n {{data}}"
    :wallet-browse-photos                  "Просмотреть Фотографии"
    :validation-amount-invalid-number      "Сумма не действительна"
-   :validation-amount-is-too-precise      "Сумма слишком точная. Наименьшая единица вы можете отправить это 1 Wei (1x10^-18 ETH)"
+   :validation-amount-is-too-precise      "Сумма слишком точная. Наименьшая сумма, которую вы можете отправить это 1 Wei (1x10^-18 ETH)"
 
 
 
