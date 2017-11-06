@@ -31,14 +31,14 @@
 ;;;; COFX
 
 (re-frame/reg-cofx
- :get-new-keypair!
- (fn [coeffects _]
-   (assoc coeffects :keypair (protocol/new-keypair!))))
+  :get-new-keypair!
+  (fn [coeffects _]
+    (assoc coeffects :keypair (protocol/new-keypair!))))
 
 (re-frame/reg-cofx
- ::get-all-accounts
- (fn [coeffects _]
-   (assoc coeffects :all-accounts (accounts-store/get-all))))
+  ::get-all-accounts
+  (fn [coeffects _]
+    (assoc coeffects :all-accounts (accounts-store/get-all))))
 
 ;;;; FX
 
@@ -138,9 +138,9 @@
           ;;workaround for realm bug, migrating account v4
           events (mapv #(when (empty? (:networks %)) [:account-update-networks (:address %)]) (vals accounts))]
       (merge
-        {:db (assoc db :accounts/accounts accounts)}
-        (when-not (empty? events)
-          {:dispatch-n events})))))
+       {:db (assoc db :accounts/accounts accounts)}
+       (when-not (empty? events)
+         {:dispatch-n events})))))
 
 (handlers/register-handler-fx
   :account-update-networks
@@ -162,18 +162,16 @@
             {:dispatch [:broadcast-status status hashtags]}))))))
 
 (defn account-update
-  "Takes map of coeffects containing `:db` and `:now` keys + new account fields,
-  returns all effects necessary for account update."
+  "Takes effects (containing :db) + new account fields, adds all effects necessary for account update."
   [{{:accounts/keys [accounts current-account-id] :as db} :db :as fx} new-account-fields]
   (let [current-account (get accounts current-account-id)
         new-account     (merge current-account new-account-fields)]
     (-> fx
         (assoc-in [:db :accounts/accounts current-account-id] new-account)
-        (assoc ::save-account new-account)
-        (assoc ::broadcast-account-update (merge
-                                           (select-keys db [:current-public-key :web3])
-                                           (select-keys new-account [:name :photo-path :status
-                                                                     :updates-public-key :updates-private-key]))))))
+        (assoc ::save-account new-account
+               ::broadcast-account-update (merge (select-keys db [:current-public-key :web3])
+                                                 (select-keys new-account [:name :photo-path :status
+                                                                           :updates-public-key :updates-private-key]))))))
 
 (handlers/register-handler-fx
   :account-update-keys
