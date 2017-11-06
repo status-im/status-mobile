@@ -390,7 +390,10 @@
        :reagent-render
        (fn [{:keys [outgoing group-chat content-type content] :as message}]
          [message-container message
-          [touchable-highlight {:on-press #(when platform/ios? (dismiss-keyboard!))
+          [touchable-highlight {:on-press #(when platform/ios?
+                                             (dispatch [:set-chat-ui-props
+                                                        {:show-emoji? false}])
+                                             (dismiss-keyboard!))
                                 :on-long-press #(cond (= content-type text-content-type)
                                                       (share content (label :t/message))
                                                       (and (= content-type content-type-command) (= "location" (:content-command content)))
