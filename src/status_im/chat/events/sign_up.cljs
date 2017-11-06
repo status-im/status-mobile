@@ -50,22 +50,22 @@
                               :message-status :seen})))
 
 (handlers/register-handler-fx
- :start-listening-confirmation-code-sms
- [re-frame/trim-v]
- (fn [{:keys [db]} [sms-listener]]
-   {:db (if-not (:confirmation-code-sms-listener db)
-          (assoc db :confirmation-code-sms-listener sms-listener)
-          db)}))
+  :start-listening-confirmation-code-sms
+  [re-frame/trim-v]
+  (fn [{:keys [db]} [sms-listener]]
+    {:db (if-not (:confirmation-code-sms-listener db)
+           (assoc db :confirmation-code-sms-listener sms-listener)
+           db)}))
 
 (defn stop-listening-confirmation-code-sms [{:keys [db] :as fx}]
   (-> fx
-      (update db dissoc :confirmation-code-sms-listener)
-      (update ::remove-sms-listener assoc (:confirmation-code-sms-listener db))))
+      (update :db dissoc :confirmation-code-sms-listener)
+      (assoc ::remove-sms-listener (:confirmation-code-sms-listener db))))
 
 (re-frame/reg-fx
- ::remove-sms-listener
- (fn [subscription]
-   (sms-listener/remove-sms-listener subscription)))
+  ::remove-sms-listener
+  (fn [subscription]
+    (sms-listener/remove-sms-listener subscription)))
 
 (defn- sms-receive-handler [{confirmation-code :body}]
   (when-let [matches (re-matches #"(\d{4})" confirmation-code)]
@@ -79,15 +79,15 @@
        (re-frame/dispatch [:start-listening-confirmation-code-sms listener])))])
 
 (handlers/register-handler-fx
- ::sign-up-success
- [re-frame/trim-v (re-frame/inject-cofx :random-id)]
- (fn [{:keys [db random-id]} message-id]
-   (-> {:db         db
-        :dispatch-n [;; create manual way for entering confirmation code
-                     (sign-up/enter-confirmation-code-event random-id)
-                     ;; create automatic way for receiving confirmation code
-                     start-listening-confirmation-code-sms-event]}
-       (message-seen message-id))))
+  ::sign-up-success
+  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
+  (fn [{:keys [db random-id]} [message-id]]
+    (-> {:db         db
+         :dispatch-n [;; create manual way for entering confirmation code
+                      (sign-up/enter-confirmation-code-event random-id)
+                      ;; create automatic way for receiving confirmation code
+                      start-listening-confirmation-code-sms-event]}
+        (message-seen message-id))))
 
 (defn- extract-last-phone-number [chats]
   (let [phone-message (->> (get-in chats ["console" :messages])
@@ -103,18 +103,15 @@
     (sign-up-confirm db confirmation-code message-id)))
 
 (defn- sign-up-confirmed [{:keys [db] :as fx} now]
-  (let [last-phone-number (extract-last-phone-number (:chats db))]
-    (cond->
-      (stop-listening-confirmation-code-sms fx)
-
-      true
-      (update :dispatch-n conj [:request-permissions [:read-contacts]
-                                #(re-frame/dispatch [:sync-contacts (fn [contacts]
-                                                                      [::contacts-synced contacts])])])
-
-      last-phone-number
-      (accounts-events/account-update {:phone        last-phone-number
-                                       :last-updated now}))))
+  (let [last-phone-number (extract-last-phone-number (:chats db))
+        fx                (-> (stop-listening-confirmation-code-sms fx)
+                              (update :dispatch-n conj
+                                      [:request-permissions [:read-contacts]
+                                       #(re-frame/dispatch [:sync-contacts (fn [contacts]
+                                                                             [::contacts-synced contacts])])]))]
+    (cond-> fx
+      last-phone-number (accounts-events/account-update {:phone        last-phone-number
+                                                         :last-updated now}))))
 
 (handlers/register-handler-fx
   ::sign-up-confirm-response
