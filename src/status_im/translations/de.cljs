@@ -18,7 +18,7 @@
    :type-a-command                        "Tippe einen Befehl..."
    :error                                 "Fehler"
    :unknown-status-go-error               "Unbekannter status-go Fehler"
-   :node-unavailable                      "Keine laufende Ethereum Node"
+   :node-unavailable                      "Kein laufender Ethereum-Knoten"
    :yes                                   "Ja"
    :no                                    "Nein"
 
@@ -46,23 +46,24 @@
    :no-messages                           "Keine Nachrichten"
    :suggestions-requests                  "Anfragen"
    :suggestions-commands                  "Befehle"
-   :faucet-success                        "Faucet Anfrage wurde empfangen"
-   :faucet-error                          "Faucet Anfragefehler"
+   :faucet-success                        "Faucet-Anfrage wurde empfangen"
+   :faucet-error                          "Faucet-Anfragefehler"
 
    ;;sync
    :sync-in-progress                      "Synchronisiere..."
    :sync-synced                           "Synchronisiert"
 
    ;;messages
+   :status-sending                        "Sende..."
    :status-pending                        "Ausstehend"
    :status-sent                           "Gesendet"
-   :status-seen-by-everyone               "Gesehen von allen"
+   :status-seen-by-everyone               "Von allen gesehen"
    :status-seen                           "Gesehen"
-   :status-delivered                      "Ausgeliefert"
+   :status-delivered                      "Zugestellt"
    :status-failed                         "Fehlgeschlagen"
 
    ;;datetime
-   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
+   :datetime-ago-format                   "{{ago}} {{number}} {{time-intervals}}"
    :datetime-second                       {:one   "Sekunde"
                                            :other "Sekunden"}
    :datetime-minute                       {:one   "Minute"
@@ -88,10 +89,11 @@
    :add-to-contacts                       "Zu Kontakten hinzufügen"
    :in-contacts                           "In Kontakten"
    :remove-from-contacts                  "Aus Kontakten entfernen"
-   :start-conversation                    "Beginne eine Konversation"
+   :start-conversation                    "Beginne ein Gespräch"
    :send-transaction                      "Sende Transaktion"
-   :testnet-text                          "Du befindest dich auf dem {{testnet}} Testnetzwerk. Sende keine echten ETH oder SNT an deine Adresse"
-   :mainnet-text                          "Du befindest dich auf dem Hauptnetzwerk. Echter ETH wird gesendet"
+   :testnet-text                          "Du befindest dich auf dem {{testnet}} Testnetzwerk
+    . Sende keine echten ETH oder SNT an deine Adresse"
+   :mainnet-text                          "Du befindest dich auf dem Mainnet. Echte ETH werden gesendet"
 
    ;;make_photo
    :image-source-title                    "Profilbild"
@@ -113,16 +115,16 @@
    :confirmation-code                     (str "Danke! Wir haben dir eine Textnachricht mit einem Bestätigungscode "
                                                "gesendet. Bitte gib diesen Code an, um deine Telefonnummer zu verifizieren.")
    :incorrect-code                        (str "Es tut uns leid, der Code war nicht korrekt, bitte gib ihn erneut ein")
-   :phew-here-is-your-passphrase          "Puh, das war anstrengend. Hier ist deine Passphrase, *Notiere sie dir und bewahre sie sicher auf!* Du wirst sie brauchen, um deinen Account wiederherzustellen."
-   :here-is-your-passphrase               "Hier ist deine Passphrase, *Notiere sie dir und bewahre sie sicher auf!* Du wirst sie brauchen, um deinen Account wiederherzustellen."
-   :here-is-your-signing-phrase           "Hier ist deine Signaturphrase. Du wirst sie benutzen, um deine Trtansaktionen zu verifizieren. *Notiere sie dir und bewahre sie sicher auf!*"
-   :phone-number-required                 "Tippe hier, um deine Telefonnummer zu validieren und ich finde deine Freunde."
-   :shake-your-phone                      "Du hast einen Bug gefunden oder hast einen Verbesserungsvorschlag? ~Schütelle~ einfach dein Handy!"
-   :intro-status                          "Chatte mit mir, um deinen Account aufzusetzen und deine Einstellungen zu ändern."
+   :phew-here-is-your-passphrase          "Puh, das war anstrengend. Hier ist deine Passphrase. *Notiere sie dir und bewahre sie sicher auf!* Du wirst sie brauchen, um deinen Account wiederherzustellen."
+   :here-is-your-passphrase               "Hier ist deine Passphrase. *Notiere sie dir und bewahre sie sicher auf!* Du wirst sie brauchen, um deinen Account wiederherzustellen."
+   :here-is-your-signing-phrase           "Hier ist deine Signing Phrase. Du wirst sie benutzen, um deine Trtansaktionen zu verifizieren. *Notiere sie dir und bewahre sie sicher auf!*"
+   :phone-number-required                 "Tippe hier, um deine Telefonnummer zu validieren und ich werde deine Freunde finden."
+   :shake-your-phone                      "Du hast einen Bug gefunden oder hast einen Verbesserungsvorschlag? ~Schüttle~ einfach dein Handy!"
+   :intro-status                          "Chatte mit mir, um deinen Account einzurichten und deine Einstellungen zu ändern."
    :intro-message1                        "Willkommen bei Status!\nKlicke auf diese Nachricht, um dein Passwort festzulegen und loszulegen."
    :account-generation-message            "Gib mir eine Sekunde, ich muss wahnsinnig komplizierte Berechnungen tätigen, um deinen Account zu generieren!"
-   :move-to-internal-failure-message      "Wir müssen ein paar wichtige Dateien vom externen zum internen Speicher verschieben. Dafür brauchen wir deine Erlaubnis. In zukünftigen Versionen werden wir keinen externen Speicher verwenden."
-   :debug-enabled                         "Debug-Server wurde eingeführt! Du kannst jetzt *status-dev-cli scan* ausführen, um den Server von deinem Computer im selben Netzwerk zu finden."
+   :move-to-internal-failure-message      "Wir müssen ein paar wichtige Dateien vom externen zum internen Speicher verschieben. Dafür brauchen wir deine Erlaubnis. In zukünftigen Versionen werden wir keinen externen Speicher mehr verwenden."
+   :debug-enabled                         "Der Debug-Server wurde gestartet! Du kannst jetzt *status-dev-cli scan* ausführen, um den Server von deinem Computer im selben Netzwerk zu finden."
 
    ;;phone types
    :phone-e164                            "International 1"
@@ -134,7 +136,7 @@
    :chats                                 "Chats"
    :delete-chat                           "Chat löschen"
    :new-group-chat                        "Neuer Gruppenchat"
-   :new-public-group-chat                 "Öffentlichem Gruppenchat beitreten"
+   :new-public-group-chat                 "Öffentlichem Chat beitreten"
    :edit-chats                            "Chats bearbeiten"
    :search-chats                          "Chats durchsuchen"
    :empty-topic                           "Leeres Thema"
@@ -147,7 +149,7 @@
    :search-tags                           "Tippe deine Suchbegriffe hier"
    :popular-tags                          "Beliebte #hashtags"
    :recent                                "Kürzliche Status"
-   :no-statuses-found                     "Kein Status gefunden"
+   :no-statuses-found                     "Keine Status gefunden"
    :chat                                  "Chat"
    :all                                   "Alle"
    :public-chats                          "Öffentliche Chats"
@@ -155,7 +157,7 @@
    :public-chat-user-count                "{{count}} Personen"
    :dapps                                 "ÐApps"
    :dapp-profile                          "ÐApp Profil"
-   :no-statuses-discovered                "Kein Status gefunden"
+   :no-statuses-discovered                "Keine Status gefunden"
    :no-statuses-discovered-body           "Wenn jemand einen\n Status erstellt, wirst du es hier sehen."
    :no-hashtags-discovered-title          "Keine #hashtags gefunden"
    :no-hashtags-discovered-body           "Wenn ein #hashtag beliebt\nwird, wirst du es hier sehen."
@@ -185,7 +187,7 @@
    :clear-history                         "Verlauf leeren"
    :mute-notifications                    "Benachrichtigungen stummschalten"
    :leave-chat                            "Chat verlassen"
-   :chat-settings                         "Chat Einstellungen"
+   :chat-settings                         "Chat-Einstellungen"
    :edit                                  "Bearbeiten"
    :add-members                           "Mitglieder hinzufügen"
 
@@ -196,7 +198,7 @@
    :your-current-location                 "Dein aktueller Standort"
    :places-nearby                         "Standorte in der Nähe"
    :search-results                        "Ergebnisse durchsuchen"
-   :dropped-pin                           "Pin abgesetzt"
+   :dropped-pin                           "Pin gesetzt"
    :location                              "Standort"
    :open-map                              "Öffne Karte"
    :sharing-copy-to-clipboard-address     "Adresse kopieren"
@@ -214,7 +216,7 @@
 
    ;;protocol
    :received-invitation                   "Chat-Einladung erhalten"
-   :removed-from-chat                     "hat dich aus den Gruppenchat entfernt"
+   :removed-from-chat                     "hat dich aus dem Gruppenchat entfernt"
    :left                                  "hat die Gruppe verlassen"
    :invited                               "eingeladen"
    :removed                               "entfernt"
@@ -224,7 +226,7 @@
    :add-new-contact                       "Neuen Kontakt hinzufügen"
    :scan-qr                               "Scanne QR-Code"
    :name                                  "Name"
-   :address-explication                   "Dein öffentlicher Schlüssel wird verwendet, um deine Adresse auf Ethereum zu generieren und besteht aus einer Folge von Zahlen und Buchstaben. Du findest ihn einfach in deinem Profil"
+   :address-explication                   "Dein öffentlicher Schlüssel wird verwendet, um deine Adresse auf Ethereum zu generieren und besteht aus einer Folge von Zahlen und Buchstaben. Du findest ihn leicht in deinem Profil"
    :enter-valid-public-key                "Bitte gib einen validen öffentlichen Schlüssen ein oder scanne einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
    :can-not-add-yourself                  "Du kannst dich nicht selbst hinzufügen"
@@ -246,14 +248,14 @@
 
    ;;accounts
    :recover-access                        "Zugriff Wiederherstellen"
-   :create-new-account                    "Neuen Account erstellen"
+   :create-new-account                    "Neues Konto erstellen"
 
    ;;wallet-qr-code
    :done                                  "Erledigt"
 
    ;;validation
    :invalid-phone                         "Ungültige Telefonnummer"
-   :amount                                "Menge"
+   :amount                                "Betrag"
 
    ;;transactions
    :confirm                               "Bestätigen"
@@ -264,7 +266,7 @@
    :to                                    "An"
    :from                                  "Von"
    :data                                  "Daten"
-   :got-it                                "Verstanden"
+   :got-it                                "Erhalten"
    :block                                 "Block"
    :hash                                  "Hash"
    :gas-limit                             "Gaslimit"
@@ -282,7 +284,7 @@
 
    ;;testfairy warning
    :testfairy-title                       "Warnung!"
-   :testfairy-message                     "Du verwendest eine App Version, die aus einem Nightly Build stammt. Zu Testzwecken verwendet diese Version Session-Aufzeichnung, solange eine Wlan-Verbindung genutzt wird. Das bedeutet, dass all deine Interaktionen mit der App gespeichert werden(als Video und Logs) und von unseren Entwicklungsteam verwendet werden könnten, um mögliche Probleme zu untersuchen. Gespeicherte Videos/Logs enthalten keine Passwörter. Aufnahmen werden nur erstellt, wenn die App aus einem Nightly Build installierst wurde. Es wird nichts aufgezeichnet, wenn die App aus dem PlayStore oder TestFlight installiert wurde."
+   :testfairy-message                     "Du verwendest eine App Version, die aus einem Nightly Build stammt. Zu Testzwecken zeichnet diese Versions Sitzungsdaten auf, solange eine Wlan-Verbindung genutzt wird. Das bedeutet, dass all deine Interaktionen mit der App gespeichert werden (als Video und Logs) und von unseren Entwicklungsteam verwendet werden könnten, um mögliche Probleme zu untersuchen. Gespeicherte Videos/Logs enthalten keine Passwörter. Aufnahmen werden nur erstellt, wenn die App aus einem Nightly Build installiert wurde. Es wird nichts aufgezeichnet, wenn die App aus dem PlayStore oder TestFlight installiert wurde."
 
    ;; wallet
    :wallet                                "Wallet"
@@ -296,9 +298,9 @@
    :wallet-assets                         "Assets"
    :wallet-add-asset                      "Asset hinzufügen"
    :wallet-total-value                    "Gesamter Wert"
-   :wallet-settings                       "Wallet Einstellungen"
+   :wallet-settings                       "Wallet-Einstellungen"
    :signing-phrase-description            "Signiere die Transaktion, indem du dein Passwort eingibst. Stelle sicher, dass die Wörter oben deiner geheimen Signaturphrase entsprechen"
-   :wallet-insufficient-funds             "Ungenügende Mittel"
+   :wallet-insufficient-funds             "Unzureichendes Kapital"
    :request-transaction                   "Transaktion anfordern"
    :send-request                          "Anfrage senden"
    :share                                 "Teilen"
@@ -307,7 +309,7 @@
    :usd-currency                          "USD"
    :transactions                          "Transaktionen"
    :transaction-details                   "Transaktionsdetails"
-   :transaction-failed                    "Transaktion fehlgeschlafen"
+   :transaction-failed                    "Transaktion fehlgeschlagen"
    :transactions-sign                     "Signiere"
    :transactions-sign-all                 "Signiere alle"
    :transactions-sign-transaction         "Signiere Transaktion"
@@ -318,7 +320,7 @@
    :transactions-unsigned                 "Unsigniert"
    :transactions-history-empty            "Noch keine Transaktionen in deinem Verlauf"
    :transactions-unsigned-empty           "Du hast keine unsignierten Transaktionen"
-   :transactions-filter-title             "Filter Verlauf"
+   :transactions-filter-title             "Filterverlauf"
    :transactions-filter-tokens            "Tokens"
    :transactions-filter-type              "Typ"
    :transactions-filter-select-all        "Alle auswählen"
@@ -359,7 +361,7 @@
    :remove-network                        "Netzwerk entfernen"
    :network-settings                      "Netzwerkeinstellungen"
    :edit-network-warning                  "Sei vorsichtig, das Bearbeiten der Netzwerkinformationen kann das Netzwerk für dich deaktivieren"
-   :connecting-requires-login             "Das Verbinden mit einem anderen Netzwerk erfordert, eingeloggt zu sein"
+   :connecting-requires-login             "Das Verbinden mit einem anderen Netzwerk erfordert eine Anmeldung"
    :close-app-title                       "Warnung!"
    :close-app-content                     "Die App wird gestoppt und geschlossen. Wenn du sie wieder öffnest, wird das ausgewählte Netzwerk verwendet"
    :close-app-button                      "Bestätigen"})
