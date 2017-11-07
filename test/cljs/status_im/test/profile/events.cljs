@@ -22,8 +22,7 @@
 
 (defn test-fixtures []
   (rf/reg-fx ::events/init-store #())
-  (rf/reg-fx ::account-events/save-account #())
-  (rf/reg-fx :check-status-change #()))
+  (rf/reg-fx ::account-events/save-account #()))
 
 (deftest profile-edit-events
   (run-test-sync
@@ -54,3 +53,17 @@
          (is (= new-status (-> @accounts
                                (get address)
                                :status))))))))
+
+(deftest test-status-change
+  (let [fx {:db {}}]
+    (is (= (profile-events/status-change fx {:old-status "this is old status"
+                                             :status     "this is new and CHANGED status"})
+           {:db         {}
+            :dispatch-n [[:broadcast-status "this is new and CHANGED status"]]}))
+    (is (= (profile-events/status-change fx {:old-status "this is old status"
+                                             :status     "this is new and #changed status"})
+           {:db         {}
+            :dispatch-n [[:broadcast-status "this is new and #changed status"]]}))
+    (is (= (profile-events/status-change fx {:old-status "this is old status"
+                                             :status     "this is old status"})
+           {:db {}}))))
