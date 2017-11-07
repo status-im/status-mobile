@@ -31,7 +31,6 @@
           ;; isAddress works with or without address with leading '0x'
           valid-address? (.isAddress web3 address)]
       (cond-> {:db db}
-        (= :choose-recipient view-id) (assoc :dispatch [:navigate-back])
         valid-address? (update :db #(choose-address-and-name % address name (:value m)))
         (not valid-address?) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))))))
 
