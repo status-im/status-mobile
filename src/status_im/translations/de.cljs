@@ -299,7 +299,7 @@
    :wallet-add-asset                      "Asset hinzufügen"
    :wallet-total-value                    "Gesamter Wert"
    :wallet-settings                       "Wallet-Einstellungen"
-   :signing-phrase-description            "Signiere die Transaktion, indem du dein Passwort eingibst. Stelle sicher, dass die Wörter oben deiner geheimen Signaturphrase entsprechen"
+   :signing-phrase-description            "Signiere die Transaktion, indem du dein Passwort eingibst. Stelle sicher, dass die Wörter oben deiner geheimen Signing Phrase entsprechen"
    :wallet-insufficient-funds             "Unzureichendes Kapital"
    :request-transaction                   "Transaktion anfordern"
    :send-request                          "Anfrage senden"
