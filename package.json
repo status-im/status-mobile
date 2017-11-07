@@ -79,7 +79,7 @@
     "react-native-tcp": "^3.2.1",
     "react-native-udp": "^2.0.0",
     "react-native-vector-icons": "^4.0.1",
-    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#remove-status-go-2",
+    "react-native-webview-bridge": "git+https://github.com/status-im/react-native-webview-bridge.git#vizanto-master",
     "readable-stream": "1.0.33",
     "realm": "^2.0.1",
     "stream-browserify": "^1.0.0",
