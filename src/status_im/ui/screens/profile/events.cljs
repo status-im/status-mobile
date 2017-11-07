@@ -145,22 +145,35 @@
           (accounts-events/account-update {:name         cleaned-name
                                            :last-updated now})))))
 
+(defn status-change
+  "Takes map containing old status and the updated one and if the status has changed
+  returns the effects neccessary for status broadcasting"
+  [fx {:keys [old-status status]}]
+  (if (and status (not= status old-status))
+    (assoc fx :dispatch-n [[:broadcast-status status]])
+    fx))
+
 (handlers/register-handler-fx
   :my-profile.drawer/save-status
   (fn [{:keys [db now]} _]
     (let [status (get-in db [:my-profile/drawer :status])
-          new-fx (clear-profile {:db db})]
+          new-fx (clear-profile {:db db})
+          {:accounts/keys [accounts current-account-id]} db
+          {old-status :status} (get accounts current-account-id)]
       (if (string/blank? status)
         new-fx
         (-> new-fx
             (accounts-events/account-update {:status       status
                                              :last-updated now})
-            (assoc :dispatch-n [[:check-status-change status]]))))))
+            (status-change {:old-status old-status
+                            :status     status}))))))
 
 (handlers/register-handler-fx
   :my-profile/save-profile
   (fn [{:keys [db now]} _]
-    (let [{:keys [status photo-path]} (:my-profile/profile db)
+    (let [{:accounts/keys [accounts current-account-id]} db
+          {old-status :status} (get accounts current-account-id)
+          {:keys [status photo-path]} (:my-profile/profile db)
           cleaned-name (clean-name db :my-profile/profile)
           cleaned-edit {:name         cleaned-name
                         :status       status
@@ -168,5 +181,6 @@
                         :last-updated now}]
       (-> (clear-profile {:db db})
           (accounts-events/account-update cleaned-edit)
-          (assoc :dispatch-n [[:check-status-change status]
-                              [:navigate-back]])))))
+          (status-change {:old-status old-status
+                          :status     status})
+          (update :dispatch-n concat [[:navigate-back]])))))

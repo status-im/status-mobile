@@ -150,17 +150,6 @@
       {:db            (assoc-in db [:accounts/accounts id] new-account)
        ::save-account new-account})))
 
-(handlers/register-handler-fx
-  :check-status-change
-  (fn [{{:accounts/keys [accounts current-account-id]} :db} [_ status]]
-    (let [{old-status :status} (get accounts current-account-id)
-          status-updated? (and (not= status nil)
-                               (not= status old-status))]
-      (when status-updated?
-        (let [hashtags (handlers/get-hashtags status)]
-          (when (seq hashtags)
-            {:dispatch [:broadcast-status status hashtags]}))))))
-
 (defn account-update
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update."
   [{{:accounts/keys [accounts current-account-id] :as db} :db :as fx} new-account-fields]
