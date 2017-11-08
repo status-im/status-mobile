@@ -146,3 +146,9 @@
   (u/side-effect!
     (fn [_ _]
       (discoveries/delete :created-at :asc 1000 200))))
+
+(handlers/register-handler-fx
+  :show-status-author-profile
+  (fn [{db :db} [_ identity]]
+    {:db       (assoc db :contacts/identity identity)
+     :dispatch [:navigate-to :profile]}))
