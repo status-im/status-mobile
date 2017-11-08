@@ -274,7 +274,10 @@
     (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
           contacts (into {} contacts-list)]
       {:db         (assoc db :contacts/contacts contacts)
-       :dispatch-n (mapv (fn [_ contact] [:watch-contact contact]) contacts)})))
+       ;; TODO (yenda) this mapv was dispatching useless events, fixed but is it necessary if
+       ;; it was dispatching useless events before with nil
+       ;;:dispatch-n (mapv (fn [[_ contact]] [:watch-contact contact]) contacts)
+       })))
 
 (register-handler-fx
   :add-contacts

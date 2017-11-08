@@ -31,7 +31,7 @@
          address (:address new-account)]
      (rf/dispatch [:initialize-db])
      (rf/dispatch [:add-account new-account])
-     (rf/dispatch [:set-current-account address])
+     (rf/dispatch [:initialize-account-db address])
 
      (testing "Setting status from edit profile screen"
        (let [new-status "New edit profile status"]

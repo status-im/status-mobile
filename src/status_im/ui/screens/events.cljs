@@ -213,31 +213,43 @@
   :initialize-db
   (fn [{{:keys          [status-module-initialized? status-node-started?
                          network-status network _]
-         :networks/keys [networks]} :db} _]
-    (let [network' (or network (get app-db :network))]
-      {::init-store nil
-       :db          (assoc app-db
-                      :accounts/current-account-id nil
-                      :contacts/contacts {}
-                      :network-status network-status
-                      :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                      :status-node-started? status-node-started?
-                      :network network')})))
+         :networks/keys [networks]
+         :or {network (get app-db :network)}} :db} _]
+    {::init-store nil
+     :db          (assoc app-db
+                         :accounts/current-account-id nil
+                         :contacts/contacts {}
+                         :network-status network-status
+                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                         :status-node-started? status-node-started?
+                         :network network)}))
 
 (register-handler-db
   :initialize-account-db
-  (fn [db _]
-    (-> db
-        (assoc :current-chat-id console-chat-id)
-        (dissoc :transactions
-                :transactions-queue
-                :wallet
-                :contacts/new-identity))))
+  (fn [{:keys [accounts/accounts networks/networks network view-id navigation-stack
+               status-module-initialized? status-node-started?]
+        :or [network (get app-db :network)]
+        :as db} [_ address]]
+    (-> app-db
+        (assoc :current-chat-id console-chat-id
+               :accounts/current-account-id address
+               ;; TODO (yenda) bad, this is derived data and shouldn't be stored in the db
+               ;; the cost of retrieving public key from db with a function taking using
+               ;; current-account-id is negligeable
+               :current-public-key (:public-key (accounts address))
+               :view-id view-id
+               :navigation-stack navigation-stack
+               :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+               :status-node-started? status-node-started?
+               :accounts/accounts accounts
+               :accounts/creating-account? false
+               :networks/networks networks
+               :network network))))
 
 (register-handler-fx
   :initialize-account
   (fn [_ [_ address]]
-    {:dispatch-n [[:initialize-account-db]
+    {:dispatch-n [[:initialize-account-db address]
                   [:load-processed-messages]
                   [:initialize-protocol address]
                   [:initialize-sync-listener]
@@ -250,7 +262,6 @@
                   [:send-account-update-if-needed]
                   [:start-requesting-discoveries]
                   [:remove-old-discoveries!]
-                  [:set :accounts/creating-account? false]
                   [:update-wallet]
                   [:update-transactions]
                   [:get-fcm-token]]}))
@@ -349,8 +360,8 @@
 (register-handler-fx
   :app-state-change
   (fn [_ [_ state]]))
-    ;; TODO(rasom): let's not remove this handler, it will be used for
-    ;; pausing node on entering background on android
+;; TODO(rasom): let's not remove this handler, it will be used for
+;; pausing node on entering background on android
 
 
 (register-handler-fx

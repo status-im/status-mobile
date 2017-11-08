@@ -84,7 +84,6 @@
        [_ address password account-creation?]]
     (let [{account-network :network} (get-network-by-address db address)
           db' (-> db
-                  (dissoc :db)
                   (assoc :accounts/account-creation? account-creation?)
                   (assoc-in [:accounts/login :processing] true))
           wrap-fn (cond (not status-node-started?)
@@ -118,14 +117,11 @@
   :change-account-handler
   (fn [{db :db} [_ error address new-account?]]
     (if (nil? error)
-      {:db         (assoc db :accounts/login {})
-       :dispatch-n (concat
-                     [[:stop-debugging]
-                      [:set-current-account address]
-                      [:initialize-account address]]
-                     (if new-account?
-                       [[:navigate-to-clean :chat-list]
-                        [:navigate-to-chat console-chat-id]]
-                       [[:navigate-to-clean :chat-list]
-                        [:navigate-to :chat-list]]))}
+      {:db         (dissoc db :accounts/login)
+       :dispatch-n [[:stop-debugging]
+                    [:initialize-account address]
+                    [:navigate-to-clean :chat-list]
+                    (if new-account?
+                      [:navigate-to-chat console-chat-id]
+                      [:navigate-to :chat-list])]}
       (log/debug "Error changing acount: " error))))
