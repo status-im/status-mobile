@@ -189,11 +189,3 @@
         ;; TODO(janherich): this is very strange and misleading, need to figure out why it'd necessary to update
         ;; account with network update when last update was more then week ago
         (account-update {:db db} nil)))))
-
-(handlers/register-handler-db
-  :set-current-account
-  (fn [{:accounts/keys [accounts] :as db} [_ address]]
-    (let [key (:public-key (accounts address))]
-      (assoc db
-             :accounts/current-account-id address
-             :current-public-key key))))
