@@ -2,58 +2,67 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Mitglieder"
-   :not-implemented                       "nicht implementiert"
+   :not-implemented                       "!nicht implementiert"
    :chat-name                             "Chatname"
-   :notifications-title                   "Benachrichtigungen und Sounds"
+   :notifications-title                   "Benachrichtigungen und Töne"
    :offline                               "Offline"
    :search-for                            "Suche nach..."
    :cancel                                "Abbrechen"
    :next                                  "Weiter"
-   :type-a-message                        "Schreibe eine Nachricht..."
-   :type-a-command                        "Tippe ein Kommando..."
+   :open                                  "Öffnen"
+   :description                           "Beschreibung"
+   :url                                   "URL"
+   :type-a-message                        "Tippe eine Nachricht..."
+   :type-a-command                        "Tippe einen Befehl..."
    :error                                 "Fehler"
+   :unknown-status-go-error               "Unbekannter status-go Fehler"
+   :node-unavailable                      "Kein laufender Ethereum-Knoten"
+   :yes                                   "Ja"
+   :no                                    "Nein"
 
-   ;drawer
-   :invite-friends                        "Freunde einladen"
-   :faq                                   "FAQ"
+   :camera-access-error                   "Um den benötigten Kamera-Zugriff zu erlauben, gehe bitte in deine Systemeinstellungen und stelle sicher, dass Status > Kamera ausgewählt ist"
+   :photos-access-error                   "Um den benötigten Foto-Zugriff zu erlauben, gehe bitte in deine Systemeinstellungen und stelle sicher, dass Status > Fotos ausgewählt ist"
+
+   ;;drawer
    :switch-users                          "Benutzer wechseln"
-   :feedback                              "Haben Sie Feedback? Schütteln Sie einfach Ihr Mobilgerät."
-   :view-all                              "Alle ansehen"
    :current-network                       "Aktuelles Netzwerk"
 
-   ;chat
-   :is-typing                             "tippt"
+   ;;chat
+   :is-typing                             "schreibt"
    :and-you                               "und du"
    :search-chat                           "Chat durchsuchen"
    :members                               {:one   "1 Mitglied"
                                            :other "{{count}} Mitglieder"
-                                           :zero  "keine Mitglieder"}
-   :members-active                        {:one   "1 Mitglied, 1 aktiv"
-                                           :other "{{count}} Mitglieder, {{count}} aktiv"
-                                           :zero  "keine Mitglieder"}
+                                           :zero  "Keine Mitglieder"}
+   :members-active                        {:one   "1 Mitglied"
+                                           :other "{{count}} Mitglieder"
+                                           :zero  "Keine Mitglieder"}
+   :public-group-status                   "Öffentlich"
    :active-online                         "Online"
    :active-unknown                        "Unbekannt"
    :available                             "Verfügbar"
    :no-messages                           "Keine Nachrichten"
    :suggestions-requests                  "Anfragen"
    :suggestions-commands                  "Befehle"
+   :faucet-success                        "Faucet-Anfrage wurde empfangen"
+   :faucet-error                          "Faucet-Anfragefehler"
 
-   ;sync
-   :sync-in-progress                      "synchronisiere..."
+   ;;sync
+   :sync-in-progress                      "Synchronisiere..."
    :sync-synced                           "Synchronisiert"
 
-   ;messages
-   :status-sending                        "sendet..."
-   :status-pending                        "wird zugestellt"
-   :status-sent                           "Verschickt"
-   :status-seen-by-everyone               "Von Allen gesehen"
+   ;;messages
+   :status-sending                        "Sende..."
+   :status-pending                        "Ausstehend"
+   :status-sent                           "Gesendet"
+   :status-seen-by-everyone               "Von allen gesehen"
    :status-seen                           "Gesehen"
    :status-delivered                      "Zugestellt"
    :status-failed                         "Fehlgeschlagen"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{ago}} {{number}} {{time-intervals}}"
    :datetime-second                       {:one   "Sekunde"
                                            :other "Sekunden"}
@@ -63,33 +72,36 @@
                                            :other "Stunden"}
    :datetime-day                          {:one   "Tag"
                                            :other "Tage"}
-   :datetime-multiple                     "mehrere"
    :datetime-ago                          "vor"
    :datetime-yesterday                    "Gestern"
    :datetime-today                        "Heute"
 
-   ;profile
+   ;;profile
    :profile                               "Profil"
-   :report-user                           "Benutzer melden"
+   :edit-profile                          "Profil bearbeiten"
    :message                               "Nachricht"
-   :username                              "Benutzername"
-   :not-specified                         "Nicht angegeben"
+   :not-specified                         "Nicht spezifiziert"
    :public-key                            "Öffentlicher Schlüssel"
-   :phone-number                          "Telefonnumer"
-   :email                                 "E-Mail"
-   :profile-no-status                     "Kein Status"
+   :phone-number                          "Telefonnummer"
+   :update-status                         "Aktualisiere deinen Status..."
+   :add-a-status                          "Einen Status hinzufügen..."
+   :status-prompt                         "Erstelle deinen Status. Die Verwendung von #hashtags kann anderen helfen, dich zu finden und mit dir über das zu reden, was dir auf dem Herzen liegt"
    :add-to-contacts                       "Zu Kontakten hinzufügen"
-   :error-incorrect-name                  "Bitte wählen Sie einen anderen Namen"
-   :error-incorrect-email                 "Inkorrekte E-Mail"
+   :in-contacts                           "In Kontakten"
+   :remove-from-contacts                  "Aus Kontakten entfernen"
+   :start-conversation                    "Beginne ein Gespräch"
+   :send-transaction                      "Sende Transaktion"
+   :testnet-text                          "Du befindest dich auf dem {{testnet}} Testnetzwerk
+    . Sende keine echten ETH oder SNT an deine Adresse"
+   :mainnet-text                          "Du befindest dich auf dem Mainnet. Echte ETH werden gesendet"
 
    ;;make_photo
-   :image-source-title                    "Profilfoto"
-   :image-source-make-photo               "Foto machen"
-   :image-source-gallery                  "Aus Galerie auswählen"
-   :image-source-cancel                   "Abbrechen"
+   :image-source-title                    "Profilbild"
+   :image-source-make-photo               "Aufnehmen"
+   :image-source-gallery                  "Aus Gallerie auswählen"
 
    ;;sharing
-   :sharing-copy-to-clipboard             "In Zwischenablage kopieren"
+   :sharing-copy-to-clipboard             "In die Zwischenablage kopieren"
    :sharing-share                         "Teilen..."
    :sharing-cancel                        "Abbrechen"
 
@@ -98,219 +110,258 @@
    :browsing-open-in-web-browser          "In Webbrowser öffnen"
    :browsing-cancel                       "Abbrechen"
 
-   ;sign-up
+   ;;sign-up
+   :contacts-syncronized                  "Deine Kontakte wurden synchronisiert"
+   :confirmation-code                     (str "Danke! Wir haben dir eine Textnachricht mit einem Bestätigungscode "
+                                               "gesendet. Bitte gib diesen Code an, um deine Telefonnummer zu verifizieren.")
+   :incorrect-code                        (str "Es tut uns leid, der Code war nicht korrekt, bitte gib ihn erneut ein")
+   :phew-here-is-your-passphrase          "Puh, das war anstrengend. Hier ist deine Passphrase. *Notiere sie dir und bewahre sie sicher auf!* Du wirst sie brauchen, um deinen Account wiederherzustellen."
+   :here-is-your-passphrase               "Hier ist deine Passphrase. *Notiere sie dir und bewahre sie sicher auf!* Du wirst sie brauchen, um deinen Account wiederherzustellen."
+   :here-is-your-signing-phrase           "Hier ist deine Signing Phrase. Du wirst sie benutzen, um deine Trtansaktionen zu verifizieren. *Notiere sie dir und bewahre sie sicher auf!*"
+   :phone-number-required                 "Tippe hier, um deine Telefonnummer zu validieren und ich werde deine Freunde finden."
+   :shake-your-phone                      "Du hast einen Bug gefunden oder hast einen Verbesserungsvorschlag? ~Schüttle~ einfach dein Handy!"
+   :intro-status                          "Chatte mit mir, um deinen Account einzurichten und deine Einstellungen zu ändern."
+   :intro-message1                        "Willkommen bei Status!\nKlicke auf diese Nachricht, um dein Passwort festzulegen und loszulegen."
+   :account-generation-message            "Gib mir eine Sekunde, ich muss wahnsinnig komplizierte Berechnungen tätigen, um deinen Account zu generieren!"
+   :move-to-internal-failure-message      "Wir müssen ein paar wichtige Dateien vom externen zum internen Speicher verschieben. Dafür brauchen wir deine Erlaubnis. In zukünftigen Versionen werden wir keinen externen Speicher mehr verwenden."
+   :debug-enabled                         "Der Debug-Server wurde gestartet! Du kannst jetzt *status-dev-cli scan* ausführen, um den Server von deinem Computer im selben Netzwerk zu finden."
 
-   :contacts-syncronized                  "Ihre Kontakte wurden synchronisiert."
-   :confirmation-code                     (str "Danke! Wir haben Ihnen eine Textnachricht mit einem Bestätigungscode "
-                                               "geschickt. Bitte geben Sie den Code ein, damit wir Ihre Telefonnummer verifizieren können.")
-   :incorrect-code                        (str "Es tut uns leid, der Code war nicht korrekt, bitte erneut eingeben")
-   :generate-passphrase                   (str "Ich werde eine Passphrase für Sie generieren, damit Sie Ihren"
-                                               "Zugriff wiederherstellen oder sich von einem anderen Gerät aus einloggen können")
-   :phew-here-is-your-passphrase          "*Puh* das war schwer, hier ist Ihr Passphrase, *bitte aufschreiben und sicher aufbewahren! *Sie benötigen dies, um Ihren Account wiederherzustellen."
-   :here-is-your-passphrase               "Hier ist Ihr Passphrase, *bitte aufschreiben und sicher verwahren!*Sie benötigen dies, um Ihren Account wiederherzustellen."
-   :written-down                          "Stellen Sie sicher, dass Sie es sicher aufgeschrieben haben"
-   :phone-number-required                 "Tippen Sie hier, um Ihre Telefonnummer einzugeben & ich werde Ihre Freunde finden"
-   :intro-status                          "Chatten Sie mit mir, um Ihren Account einzurichten und Ihre Einstellungen zu ändern!"
-   :intro-message1                        "Willkommen bei Status.\nTippen Sie auf diese Nachricht, um Ihr Passwort einzurichten und loszulegen!"
-   :account-generation-message            "Eine Sekunde, ich muss wahnsinnig schwierige Berechnungen durchführen, um Ihr Konto zu generieren!"
+   ;;phone types
+   :phone-e164                            "International 1"
+   :phone-international                   "International 2"
+   :phone-national                        "National"
+   :phone-significant                     "Signifikant"
 
-   ;chats
+   ;;chats
    :chats                                 "Chats"
-   :new-chat                              "Neuer Chat"
+   :delete-chat                           "Chat löschen"
    :new-group-chat                        "Neuer Gruppenchat"
-   :new-public-group-chat                 "Öffentlichem Gruppenchat beitreten"
+   :new-public-group-chat                 "Öffentlichem Chat beitreten"
    :edit-chats                            "Chats bearbeiten"
    :search-chats                          "Chats durchsuchen"
    :empty-topic                           "Leeres Thema"
-   :topic-format                          "Falsches Format[a-z0-9\\-]+"
+   :topic-format                          "Falsches Format [a-z0-9\\-]+"
    :public-group-topic                    "Thema"
 
-   ;discover
+   ;;discover
    :discover                              "Entdecken"
    :none                                  "Nichts"
-   :search-tags                           "Suchbegriffe"
-   :popular-tags                          "Beliebte Begriffe"
-   :recent                                "Kürzlich"
-   :no-statuses-discovered                "Kein Status gefunden"
+   :search-tags                           "Tippe deine Suchbegriffe hier"
+   :popular-tags                          "Beliebte #hashtags"
+   :recent                                "Kürzliche Status"
+   :no-statuses-found                     "Keine Status gefunden"
+   :chat                                  "Chat"
+   :all                                   "Alle"
+   :public-chats                          "Öffentliche Chats"
+   :soon                                  "Bald"
+   :public-chat-user-count                "{{count}} Personen"
+   :dapps                                 "ÐApps"
+   :dapp-profile                          "ÐApp Profil"
+   :no-statuses-discovered                "Keine Status gefunden"
+   :no-statuses-discovered-body           "Wenn jemand einen\n Status erstellt, wirst du es hier sehen."
+   :no-hashtags-discovered-title          "Keine #hashtags gefunden"
+   :no-hashtags-discovered-body           "Wenn ein #hashtag beliebt\nwird, wirst du es hier sehen."
 
-   ;settings
+   ;;settings
    :settings                              "Einstellungen"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
-
-   :show-all                              "Alle Kontakte anzeigen"
-
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Leute"
+   :delete-contact                        "Kontakt löschen"
+   :delete-contact-confirmation           "Dieser Kontakt wird aus deinen Kontakten gelöscht"
+   :remove-from-group                     "Aus Gruppe entfernen"
+   :edit-contacts                         "Kontakte bearbeiten"
+   :search-contacts                       "Kontakte durchsuchen"
    :contacts-group-new-chat               "Neuen Chat starten"
+   :choose-from-contacts                  "Aus Kontakten wählen"
    :no-contacts                           "Noch keine Kontakte"
    :show-qr                               "QR-Code anzeigen"
+   :enter-address                         "Andresse eingeben"
+   :more                                  "mehr"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "Entfernen"
    :save                                  "Speichern"
-   :change-color                          "Farbe ändern"
-   :clear-history                         "Verlauf löschen"
-   :delete-and-leave                      "Löschen und verlassen"
-   :chat-settings                         "Chateinstellungen"
+   :delete                                "Löschen"
+   :clear-history                         "Verlauf leeren"
+   :mute-notifications                    "Benachrichtigungen stummschalten"
+   :leave-chat                            "Chat verlassen"
+   :chat-settings                         "Chat-Einstellungen"
    :edit                                  "Bearbeiten"
    :add-members                           "Mitglieder hinzufügen"
-   :blue                                  "Blau"
-   :purple                                "Lila"
-   :green                                 "Grün"
-   :red                                   "Rot"
 
-   ;commands
-   :money-command-description             "Geld senden"
-   :location-command-description          "Standort senden"
-   :phone-command-description             "Telefonnummer senden"
-   :phone-request-text                    "Telefonnummer anfragen"
-   :confirmation-code-command-description "Bestätitungscode senden"
-   :confirmation-code-request-text        "Bestätigungscode anfragen"
-   :send-command-description              "Senden"
-   :request-command-description           "Anfrage senden"
-   :keypair-password-command-description  ""
-   :help-command-description              "Hilfe"
-   :request                               "Anfrage"
-   :chat-send-eth                         "{{amount}} ETH senden"
-   :chat-send-eth-to                      "{{amount}} ETH an {{chat-name}} senden"
-   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}} empfangen"
+   ;;commands
+   :chat-send-eth                         "{{amount}} ETH"
 
-   ;new-group
-   :group-chat-name                       "Gruppenname"
-   :empty-group-chat-name                 "Bitte geben Sie einen Namen ein"
-   :illegal-group-chat-name               "Bitte wählen Sie einen anderen Namen"
+   ;;location command
+   :your-current-location                 "Dein aktueller Standort"
+   :places-nearby                         "Standorte in der Nähe"
+   :search-results                        "Ergebnisse durchsuchen"
+   :dropped-pin                           "Pin gesetzt"
+   :location                              "Standort"
+   :open-map                              "Öffne Karte"
+   :sharing-copy-to-clipboard-address     "Adresse kopieren"
+   :sharing-copy-to-clipboard-coordinates "Koordinaten kopieren"
 
-   ;participants
-   :add-participants                      "Teilnehmer hinzufügen"
-   :remove-participants                   "Teilnehmer entfernen"
+   ;;new-group
+   :new-group                             "Neue Gruppe"
+   :reorder-groups                        "Gruppen neu ordnen"
+   :edit-group                            "Gruppe bearbeiten"
+   :delete-group                          "Gruppe löschen"
+   :delete-group-confirmation             "Diese Gruppe wird aus deinen Gruppen gelöscht. Deine Kontakte bleiben hiervon unbeeinflusst"
+   :delete-group-prompt                   "Deine Kontakte bleiben hiervon unbeeinflusst"
+   :contact-s                             {:one   "Kontakt"
+                                           :other "Kontakte"}
 
-   ;protocol
-   :received-invitation                   "Gruppenchateinladung erhalten"
-   :removed-from-chat                     "Aus dem Gruppenchat entfernt"
-   :left                                  "Links"
-   :invited                               "Eingeladen"
-   :removed                               "Entfernt"
+   ;;protocol
+   :received-invitation                   "Chat-Einladung erhalten"
+   :removed-from-chat                     "hat dich aus dem Gruppenchat entfernt"
+   :left                                  "hat die Gruppe verlassen"
+   :invited                               "eingeladen"
+   :removed                               "entfernt"
    :You                                   "Du"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Neuen Kontakt hinzufügen"
-   :import-qr                             "Importeren anhang QR-Code"
-   :scan-qr                               "QR-Code scannen"
+   :scan-qr                               "Scanne QR-Code"
    :name                                  "Name"
-   :whisper-identity                      "Identität flüstern"
-   :address-explication                   "Deine Adresse findest du in deinem Benutzerprofil"
-   :enter-valid-address                   "Bitte geben Sie eine gültige Adresse ein oder scannen Sie einen QR-Code"
+   :address-explication                   "Dein öffentlicher Schlüssel wird verwendet, um deine Adresse auf Ethereum zu generieren und besteht aus einer Folge von Zahlen und Buchstaben. Du findest ihn leicht in deinem Profil"
+   :enter-valid-public-key                "Bitte gib einen validen öffentlichen Schlüssen ein oder scanne einen QR-Code"
    :contact-already-added                 "Dieser Kontakt wurde bereits hinzugefügt"
    :can-not-add-yourself                  "Du kannst dich nicht selbst hinzufügen"
    :unknown-address                       "Unbekannte Adresse"
 
-
-   ;login
+   ;;login
    :connect                               "Verbinden"
    :address                               "Adresse"
    :password                              "Passwort"
-   :login                                 "Login"
+   :sign-in-to-status                     "Bei Status einloggen"
+   :sign-in                               "Einloggen"
    :wrong-password                        "Falsches Passwort"
+   :enter-password                        "Passwort eingeben"
 
-   ;recover
-   :recover-from-passphrase               "Mittels Passphrase wiederherstellen"
-   :recover-explain                       "Bitte gib die Passphrase für deinen Account ein, um den Zugriff wiederherzustellen"
+   ;;recover
    :passphrase                            "Passphrase"
    :recover                               "Wiederherstellen"
-   :enter-valid-passphrase                "Bitte geben Sie eine gültige Passphrase ein"
-   :enter-valid-password                  "Bitte geben Sie ein Passwort ein"
+   :twelve-words-in-correct-order         "12 Wörter in der richtigen Reihenfolge"
 
-   ;accounts
-   :recover-access                        "Zugriff wiederherstellen"
-   :add-account                           "Konto hinzufügen"
+   ;;accounts
+   :recover-access                        "Zugriff Wiederherstellen"
+   :create-new-account                    "Neues Konto erstellen"
 
-   ;wallet-qr-code
-   :done                                  "Fertig"
-   :main-wallet                           "Hauptkonto"
+   ;;wallet-qr-code
+   :done                                  "Erledigt"
 
-   ;validation
+   ;;validation
    :invalid-phone                         "Ungültige Telefonnummer"
    :amount                                "Betrag"
-   :not-enough-eth                        (str "Nicht genug ETH auf dem Konto"
-                                               "({{balance}} ETH)")
-   ;transactions
-   :confirm-transactions                  {:one   "Transaktion bestätigen"
-                                           :other "{{count}} Transaktionen bestätigen"
-                                           :zero  "Keine Transaktionen"}
+
+   ;;transactions
+   :confirm                               "Bestätigen"
+   :transaction                           "Transaktion"
+   :unsigned-transaction-expired          "Unsignierte Transaktion ist ausgelaufen"
    :status                                "Status"
-   :pending-confirmation                  "Bestätigung ausstehend"
    :recipient                             "Empfänger"
+   :to                                    "An"
+   :from                                  "Von"
+   :data                                  "Daten"
+   :got-it                                "Erhalten"
+   :block                                 "Block"
+   :hash                                  "Hash"
+   :gas-limit                             "Gaslimit"
+   :gas-price                             "Gaspreis"
+   :gas-used                              "Gas verbraucht"
+   :cost-fee                              "Kosten/Gebühren"
+   :nonce                                 "Nonce"
+   :confirmations                         "Bestätigungen"
+   :confirmations-helper-text             "Bitte warte mindestens 12 Bestätigungen ab, um sicherzustellen, dass deine Transaktion sicher bearbeitet wurde"
+   :copy-transaction-hash                 "Transaktions-Hash kopieren"
+   :open-on-etherscan                     "Auf Etherscan.io öffnen"
 
-   :one-more-item                         "Noch ein Objekt"
-   :fee                                   "Gebühren"
-
-   :value                                 "Wert"
-
-   ;:webview
+   ;;webview
    :web-view-error                        "Ups, Fehler"
 
-   :confirm                               "Bestätigen"
-   :phone-national                        "National"
-   :transactions-confirmed                {:one   "Transaktion bestätigt"
-                                           :other "{{count}} Transaktionen bestätigt"
-                                           :zero  "Keine Transaktion bestätigt"}
-   :debug-enabled                         "Debug-Server wurde eingeführt! Sie können nun Ihre DApp hinzufügen, indem Sie *status-dev-cli scan* von Ihrem Computer starten"
-   :share-qr                              "QR teilen"
-   :twelve-words-in-correct-order         "12 Wörter in richtiger Reihenfolge"
-   :remove-from-contacts                  "Von Kontakten entfernen"
-   :delete-chat                           "Chat löschen"
-   :sign-in                               "Anmelden"
-   :create-new-account                    "Neues Konto erstellen"
-   :sign-in-to-status                     "Zum Status anmelden"
-   :got-it                                "Verstanden"
-   :move-to-internal-failure-message      "Wir müssen ein paar wichtige Dateien vom externen auf den internen Speicher verschieben. Um dies tun zu können, brauchen wir Ihre Genehmigung. Wir werden in zukünftige Versionen keinen externen Speicher nutzen."
-   :edit-group                            "Gruppe bearbeiten"
-   :delete-group                          "Gruppe löschen"
-   :reorder-groups                        "Gruppen wieder ordnen"
-   :faucet-success                        "Absperranfrage wurde erhalten"
-   :choose-from-contacts                  "Aus Kontakten wählen"
-   :new-group                             "Neue Gruppe"
-   :phone-e164                            "International 1"
-   :remove-from-group                     "Von Gruppe entfernen"
-   :search-contacts                       "Kontakte durchsuchen"
-   :transaction                           "Transaktion"
-   :public-group-status                   "Öffentlich"
-   :leave-chat                            "Chat verlassen"
-   :start-conversation                    "Konversation beginnen"
-   :enter-valid-public-key                "Bitte geben Sie einen gültigen öffentlichen Schlüssel ein oder scannen Sie einen QR-Code"
-   :faucet-error                          "Absperranfrage-Fehler"
-   :phone-significant                     "Signifikant"
-   :phone-international                   "International 2"
-   :enter-address                         "Adresse eingeben"
-   :send-transaction                      "Transaktion senden"
-   :delete-contact                        "Kontakt löschen"
-   :mute-notifications                    "Benachrichtigungen stummschalten"
+   ;;testfairy warning
+   :testfairy-title                       "Warnung!"
+   :testfairy-message                     "Du verwendest eine App Version, die aus einem Nightly Build stammt. Zu Testzwecken zeichnet diese Versions Sitzungsdaten auf, solange eine Wlan-Verbindung genutzt wird. Das bedeutet, dass all deine Interaktionen mit der App gespeichert werden (als Video und Logs) und von unseren Entwicklungsteam verwendet werden könnten, um mögliche Probleme zu untersuchen. Gespeicherte Videos/Logs enthalten keine Passwörter. Aufnahmen werden nur erstellt, wenn die App aus einem Nightly Build installiert wurde. Es wird nichts aufgezeichnet, wenn die App aus dem PlayStore oder TestFlight installiert wurde."
+
+   ;; wallet
+   :wallet                                "Wallet"
+   :wallets                               "Wallets"
+   :your-wallets                          "Deine Wallets"
+   :main-wallet                           "Haupt-Wallet"
+   :wallet-error                          "Fehler beim Laden"
+   :wallet-send                           "Senden"
+   :wallet-request                        "Anfragen"
+   :wallet-exchange                       "Tauschen"
+   :wallet-assets                         "Assets"
+   :wallet-add-asset                      "Asset hinzufügen"
+   :wallet-total-value                    "Gesamter Wert"
+   :wallet-settings                       "Wallet-Einstellungen"
+   :signing-phrase-description            "Signiere die Transaktion, indem du dein Passwort eingibst. Stelle sicher, dass die Wörter oben deiner geheimen Signing Phrase entsprechen"
+   :wallet-insufficient-funds             "Unzureichendes Kapital"
+   :request-transaction                   "Transaktion anfordern"
+   :send-request                          "Anfrage senden"
+   :share                                 "Teilen"
+   :eth                                   "ETH"
+   :currency                              "Währung"
+   :usd-currency                          "USD"
+   :transactions                          "Transaktionen"
+   :transaction-details                   "Transaktionsdetails"
+   :transaction-failed                    "Transaktion fehlgeschlagen"
+   :transactions-sign                     "Signiere"
+   :transactions-sign-all                 "Signiere alle"
+   :transactions-sign-transaction         "Signiere Transaktion"
+   :transactions-sign-later               "Später signieren"
+   :transactions-delete                   "Transaktion löschen"
+   :transactions-delete-content           "Transaktion wird von der 'Unsigniert' Liste entfernt"
+   :transactions-history                  "Verlauf"
+   :transactions-unsigned                 "Unsigniert"
+   :transactions-history-empty            "Noch keine Transaktionen in deinem Verlauf"
+   :transactions-unsigned-empty           "Du hast keine unsignierten Transaktionen"
+   :transactions-filter-title             "Filterverlauf"
+   :transactions-filter-tokens            "Tokens"
+   :transactions-filter-type              "Typ"
+   :transactions-filter-select-all        "Alle auswählen"
+   :view-transaction-details              "Transaktionsdetails anzeigen"
+   :transaction-description               "Bitte warte mindestens 12 Bestätigungen ab, um sicherzustellen, dass deine Transaktion sicher bearbeitet wurde"
+   :transaction-sent                      "Transaktion gesendet"
+   :transaction-moved-text                "Die Transaktion wird für die nächsten 5 Minuten in der 'Unsigniert' Liste bleiben"
+   :transaction-moved-title               "Transaktion verschoben"
+   :sign-later-title                      "Transaktion später signieren?"
+   :sign-later-text                       "Gehe in den Transaktionsverlauf, um diese Transaktion zu signieren."
+   :not-applicable                        "Nicht anwendbar für unsignierte Transaktionen"
+
+   ;; Wallet Send
+   :wallet-choose-recipient               "Empfänger auswählen"
+   :wallet-choose-from-contacts           "Aus Kontakten auswählen"
+   :wallet-address-from-clipboard         "Adresse aus Zwischenablage verwenden"
+   :wallet-invalid-address                "Ungültige Adresse: \n {{data}}"
+   :wallet-browse-photos                  "Fotos durchsuchen"
+   :validation-amount-invalid-number      "Menge ist keine gültige Zahl"
+   :validation-amount-is-too-precise      "Menge ist zu präzise. Die kleinste Einheit, die du senden kannst, ist 1 Wei (1x10^-18 ETH)"
 
 
-   :contact-s                             {:one   "Kontakt"
-                                           :other "Kontakte"}
-   :group-name                            "Gruppenname"
-   :from                                  "Von"
-   :in-contacts                           "In Kontakte"
 
-   :shake-your-phone                      "Haben Sie einen Fehler gefunden oder einen Vorschlag? ~Schütteln~ Sie einfach Ihr Telefon!"
-   :status-prompt                         "Erstellen Sie einen Status, um anderen Menschen zu helfen, über die Dinge zu erfahren, die Sie anbieten. Sie können auch #hashtags nutzen."
-   :add-a-status                          "Einen Status hinzufügen ..."
-   :edit-contacts                         "Kontakte bearbeiten"
-   :more                                  "Mehr"
-   :no-statuses-found                     "Keine Status gefunden"
-   :swow-qr                               "QR anzeigen"
-   :delete-group-prompt                   "Dies wird Kontakte nicht beeinträchtigen"
-   :edit-profile                          "Profil bearbeiten"
-
-
-   :enter-password-transactions           {:one   "Bestätigen Sie die Transaktion durch Eingabe Ihres Passworts"
-                                           :other "Bestätigen Sie die Transaktionen durch Eingabe Ihres Passworts"}
-   :unsigned-transactions                 "Unsignierte Transaktion"
-   :to                                    "An"
-   :group-members                         "Gruppenmitglieder"
-   :estimated-fee                         "Geschätzte Gebühr"
-   :data                                  "Daten"})
+   ;; network settings
+   :new-network                           "Neues Netzwerk"
+   :add-network                           "Netzwerk hinzufügen"
+   :add-new-network                       "Neues Netzwerk hinzufügen"
+   :existing-networks                     "Existierende Netzwerke"
+   :add-json-file                         "JSON Datei hinzufügen"
+   :paste-json-as-text                    "JSON als Text einfügen"
+   :paste-json                            "JSON einfügen"
+   :specify-rpc-url                       "Spezifiziere eine RPC URL"
+   :edit-network-config                   "Netzwerkeinstellungen bearbeiten"
+   :connected                             "Verbunden"
+   :process-json                          "JSON verarbeiten"
+   :error-processing-json                 "Fehler beim Verarbeiten von JSON"
+   :rpc-url                               "RPC URL"
+   :remove-network                        "Netzwerk entfernen"
+   :network-settings                      "Netzwerkeinstellungen"
+   :edit-network-warning                  "Sei vorsichtig, das Bearbeiten der Netzwerkinformationen kann das Netzwerk für dich deaktivieren"
+   :connecting-requires-login             "Das Verbinden mit einem anderen Netzwerk erfordert eine Anmeldung"
+   :close-app-title                       "Warnung!"
+   :close-app-content                     "Die App wird gestoppt und geschlossen. Wenn du sie wieder öffnest, wird das ausgewählte Netzwerk verwendet"
+   :close-app-button                      "Bestätigen"})
