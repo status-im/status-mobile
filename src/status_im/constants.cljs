@@ -18,6 +18,7 @@
 (def content-type-wallet-request "wallet-request")
 (def content-type-status "status")
 
+(def min-password-length 6)
 (def max-chat-name-length 20)
 (def response-suggesstion-resize-duration 100)
 (def default-number-of-messages 20)
