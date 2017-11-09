@@ -3,14 +3,6 @@ from views.base_element import *
 from tests import tests_data
 
 
-class ChatRequestInput(BaseEditBox):
-
-    def __init__(self, driver):
-        super(ChatRequestInput, self).__init__(driver)
-        self.locator = \
-            self.Locator.xpath_selector("//android.widget.EditText[@content-desc!='chat-message-input']")
-
-
 class RequestPasswordIcon(BaseButton):
 
     def __init__(self, driver):
@@ -44,6 +36,5 @@ class HomeView(BaseViewObject):
                 i.click()
             except (NoSuchElementException, TimeoutException):
                 pass
-        self.chat_request_input = ChatRequestInput(self.driver)
         self.request_password_icon = RequestPasswordIcon(self.driver)
         self.recover_button = RecoverButton(self.driver)
