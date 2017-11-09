@@ -146,6 +146,7 @@
     "fcm": "react-native-fcm",
     "tls": false,
     "child_process": false,
-    "buffer": "buffer"
+    "buffer": "buffer",
+    "process": "process"
   }
 }

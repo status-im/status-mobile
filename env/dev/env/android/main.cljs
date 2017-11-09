@@ -1,7 +1,8 @@
 (ns ^:figwheel-no-load env.android.main
   (:require [reagent.core :as r]
+            [re-frame.core :as re-frame]
             [status-im.android.core :as core]
-            [figwheel.client :as fw]
+            [figwheel.client :as figwheel]
             [re-frisk-remote.core :as rr]
             [env.config :as conf]))
 
@@ -17,12 +18,13 @@
 (def root-el (r/as-element [reloader]))
 
 (defn callback []
+  (re-frame/clear-subscription-cache!)
   (swap! cnt inc)
   (status-im.native-module.core/init-jail)
-  (re-frame.core/dispatch [:load-commands!]))
+  (re-frame/dispatch [:load-commands!]))
 
-(fw/watch-and-reload
- :websocket-url "ws://10.0.3.2:3449/figwheel-ws"
+(figwheel/watch-and-reload
+ :websocket-url "ws://localhost:3449/figwheel-ws"
  :heads-up-display false
  :jsload-callback callback)
 
