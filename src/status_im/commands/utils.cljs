@@ -45,31 +45,30 @@
 
 (def events #{:onPress :onValueChange :onSlidingComplete})
 
-(defn wrap-event [[_ event]]
-  (let [data (gensym)]
-    #(dispatch [:suggestions-event! (update event 0 keyword) %])))
+(defn wrap-event [[_ event] bot-id] 
+  #(dispatch [:suggestions-event! bot-id (update event 0 keyword) %]))
 
-(defn check-events [m]
+(defn check-events [m bot-id]
   (let [ks (set (keys m))
         evs (set/intersection ks events)]
-    (reduce #(update %1 %2 wrap-event) m evs)))
+    (reduce #(update %1 %2 wrap-event bot-id) m evs)))
 
 (defn generate-hiccup
   ([markup]
-   (generate-hiccup markup {}))
-  ([markup data]
+   (generate-hiccup markup nil {}))
+  ([markup bot-id bot-db] 
    (w/prewalk
      (fn [el]
        (cond
 
          (and (vector? el) (= "subscribe" (first el)))
          (let [path (mapv keyword (second el))]
-           (get-in data path))
+           (get-in bot-db path))
 
          (and (vector? el) (string? (first el)))
          (-> el
              (update 0 get-element)
-             (update 1 check-events))
+             (update 1 check-events bot-id))
 
          :else el))
      markup)))

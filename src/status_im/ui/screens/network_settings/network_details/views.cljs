@@ -3,7 +3,7 @@
   (:require
     [re-frame.core :as rf]
     [status-im.components.status-bar :as status-bar]
-    [status-im.components.toolbar-new.view :as new-toolbar]
+    [status-im.components.toolbar.view :as toolbar]
     [status-im.components.context-menu :as context-menu]
     [status-im.ui.screens.network-settings.views :as network-settings]
     [status-im.components.react :as react]
@@ -27,7 +27,7 @@
     (let [connected? (= id network)]
       [react/view {:flex 1}
        [status-bar/status-bar]
-       [new-toolbar/toolbar]
+       [toolbar/simple-toolbar]
        [network-settings/network-badge
         {:name       name
          :connected? connected?}]

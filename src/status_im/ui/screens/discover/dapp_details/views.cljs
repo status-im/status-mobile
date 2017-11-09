@@ -5,7 +5,7 @@
             [status-im.components.chat-icon.screen :as chat-icon.screen]
             [status-im.components.common.common :as common]
             [status-im.components.icons.vector-icons :as vector-icons]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.ui.screens.discover.styles :as styles]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]))
@@ -22,7 +22,7 @@
 (defview dapp-details []
   (letsubs [{:keys [photo-path name dapp-url] :as dapp} [:get :discover-current-dapp]]
     [react/view styles/dapp-details-container
-     [toolbar/toolbar2 {}
+     [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/dapp-profile)]]
      [react/view styles/dapp-details-inner-container

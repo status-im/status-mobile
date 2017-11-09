@@ -9,7 +9,7 @@
                                                                       action-separator]]
             [status-im.components.action-button.styles :refer [actions-list]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
+            [status-im.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.ui.screens.contacts.styles :as st]
             [status-im.utils.listview :as lw]

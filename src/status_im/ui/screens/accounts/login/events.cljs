@@ -125,7 +125,7 @@
                       [:initialize-account address]]
                      (if new-account?
                        [[:navigate-to-clean :chat-list]
-                        [:navigate-to :chat console-chat-id]]
+                        [:navigate-to-chat console-chat-id]]
                        [[:navigate-to-clean :chat-list]
                         [:navigate-to :chat-list]]))}
       (log/debug "Error changing acount: " error))))

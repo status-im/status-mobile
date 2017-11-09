@@ -5,7 +5,7 @@
             [status-im.components.renderers.renderers :as renderers]
             [status-im.components.react :refer [view list-view list-item]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
+            [status-im.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.i18n :refer [label]]))

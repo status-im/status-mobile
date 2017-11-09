@@ -1,6 +1,10 @@
 [comment]: # (Please replace ... with your information. Remove < and >)
 [comment]: # (To auto-close issue on merge, please insert the related issue number after # i.e fixes #566)
 
+If you submit PR for issue with bounty then write here Fixes #NN where NN is issue number
+
+*otherwise*
+
 addresses #...
 
 ### Summary:

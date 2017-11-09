@@ -18,9 +18,9 @@ class TestData(object):
         self.name = None
 
 
-basic_user = {'password': "qwerty",
-              'passphrase': "level acquire claim tide company believe duck embody consider dune century mountain",
-              'username': "Silky Heavenly Zethusspinipes"}
+basic_user = {'password': "newuniquepassword12",
+              'passphrase': "tree weekend ceiling awkward universe pyramid glimpse raven pair lounge grant grief",
+              'username': "Splendid Useless Racerunner"}
 
 transaction_users = {
                     'A_USER': {'password': "qwerty",

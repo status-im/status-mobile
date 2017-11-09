@@ -6,8 +6,8 @@
             [status-im.ui.screens.contacts.views :refer [contact-options]]
             [status-im.components.react :refer [view list-view list-item]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar-with-search toolbar]]
-            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.toolbar.view :as toolbar]
+            [status-im.components.toolbar.actions :as act]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.ui.screens.contacts.styles :as st]
             [status-im.utils.listview :as lw]
@@ -23,16 +23,17 @@
                      :extend-options (contact-options row group)}])))
 
 (defview contact-list-toolbar-edit [group]
-  [toolbar {:nav-action     (act/back #(dispatch [:set-in [:contacts/list-ui-props :edit?] false]))
-            :actions        [{:image :blank}]
-            :title          (if-not group
-                              (label :t/contacts)
-                              (or (:name group) (label :t/contacts-group-new-chat)))}])
+  [toolbar/toolbar {}
+   [toolbar/nav-button (act/back #(dispatch [:set-in [:contacts/list-ui-props :edit?] false]))]
+   [toolbar/content-title
+    (if-not group
+      (label :t/contacts)
+      (or (:name group) (label :t/contacts-group-new-chat)))]])
 
 (defview contact-list-toolbar [group]
   (letsubs [show-search [:get-in [:toolbar-search :show]]
             search-text [:get-in [:toolbar-search :text]]]
-    (toolbar-with-search
+    (toolbar/toolbar-with-search
       {:show-search?       (= show-search :contact-list)
        :search-text        search-text
        :search-key         :contact-list

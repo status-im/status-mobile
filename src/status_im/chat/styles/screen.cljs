@@ -1,18 +1,10 @@
 (ns status-im.chat.styles.screen
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :refer [chat-background
-                                                 selected-message-color
-                                                 separator-color
-                                                 text1-color
-                                                 text2-color
-                                                 text4-color
-                                                 color-black
-                                                 color-gray6]]
-            [status-im.components.toolbar.styles :refer [toolbar-background1]]))
+  (:require [status-im.components.styles :as component.styles]))
 
 (def chat-view
   {:flex             1
-   :background-color chat-background})
+   :background-color component.styles/chat-background})
 
 (def toolbar-container
   {})
@@ -25,7 +17,7 @@
 (def toolbar-view
   {:flexDirection   :row
    :height          56
-   :backgroundColor toolbar-background1
+   :backgroundColor component.styles/color-white
    :elevation       2})
 
 (def action
@@ -54,7 +46,7 @@
    :ios             {:align-items :center}})
 
 (def chat-name-text
-  {:color      color-gray6
+  {:color      component.styles/color-gray6
    :fontSize   16})
 
 (def group-icon
@@ -68,19 +60,19 @@
    :height 8})
 
 (defstyle members
-  {:color   text4-color
+  {:color   component.styles/text4-color
    :ios     {:font-size  14
              :margin-top 4}
    :android {:font-size 13}})
 
 (defstyle last-activity-text
-  {:color   text4-color
+  {:color   component.styles/text4-color
    :ios     {:font-size  14
              :margin-top 4}
    :android {:font-size 13}})
 
 (defn actions-wrapper [status-bar-height]
-  {:backgroundColor toolbar-background1
+  {:backgroundColor component.styles/color-white
    :elevation       2
    :position        :absolute
    :top             (+ 55 status-bar-height)
@@ -90,7 +82,7 @@
 (def actions-separator
   {:marginLeft      16
    :height          1.5
-   :backgroundColor separator-color})
+   :backgroundColor component.styles/separator-color})
 
 (def actions-view
   {:marginVertical 10})
@@ -111,12 +103,12 @@
 
 (def action-title
   {:margin-top -2.5
-   :color      text1-color
+   :color      component.styles/text1-color
    :font-size  14})
 
 (def action-subtitle
   {:margin-top 1
-   :color      text2-color
+   :color      component.styles/text2-color
    :font-size  12})
 
 (def actions-overlay
@@ -141,12 +133,12 @@
   {:borderRadius    14
    :padding         12
    :height          38
-   :backgroundColor selected-message-color})
+   :backgroundColor component.styles/selected-message-color})
 
 (def typing-text
   {:marginTop -2
    :fontSize  12
-   :color     text2-color})
+   :color     component.styles/text2-color})
 
 (def overlay-highlight
   {:flex 1})
@@ -163,7 +155,7 @@
    :elevation        8})
 
 (defn bottom-info-container [height]
-  {:backgroundColor toolbar-background1
+  {:backgroundColor component.styles/color-white
    :elevation       2
    :position        :absolute
    :bottom          16

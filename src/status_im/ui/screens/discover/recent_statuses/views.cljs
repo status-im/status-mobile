@@ -3,7 +3,7 @@
   (:require [status-im.components.react :as react]
             [status-im.ui.screens.discover.components.views :as components]
             [status-im.ui.screens.discover.styles :as styles]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]))
 
 (defview discover-all-recent []
@@ -12,7 +12,7 @@
             current-account [:get-current-account]
             contacts        [:get-contacts]]
     [react/view styles/all-recent-container
-     [toolbar/toolbar2 {}
+     [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/recent)]]
      (when (seq discoveries)

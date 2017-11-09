@@ -6,27 +6,21 @@
             [status-im.components.camera :as camera]
             [status-im.components.status-bar :as status-bar]
             [status-im.components.toolbar.view :as toolbar]
-            [status-im.components.toolbar.actions :as action]
-            [status-im.components.toolbar.styles :as toolbar.styles]
             [status-im.ui.screens.qr-scanner.styles :as styles]))
 
 (defview qr-scanner-toolbar [title hide-nav?]
   (letsubs [modal [:get :modal]]
     [react/view
      [status-bar/status-bar]
-     [toolbar/toolbar {:title            title
-                       :background-color toolbar.styles/toolbar-background1
-                       :hide-nav?        hide-nav?
-                       :nav-action       (when modal
-                                           (action/back #(re-frame/dispatch [:navigate-back])))}]]))
+     [toolbar/simple-toolbar title]]))
 
 (defview qr-scanner []
   (letsubs [identifier [:get :current-qr-context]
             camera-initialized? (reagent/atom false)]
+
     [react/view styles/barcode-scanner-container
      [qr-scanner-toolbar (:toolbar-title identifier) (not @camera-initialized?)]
      [camera/camera {:onBarCodeRead #(re-frame/dispatch [:set-qr-code identifier (camera/get-qr-code-data %)])
-                     ;:barCodeTypes  [:qr]
                      :ref           #(reset! camera-initialized? true)
                      :captureAudio  false
                      :style         styles/barcode-scanner}]

@@ -40,6 +40,7 @@ class TestAccess(SingleDeviceTestCase):
         for text in new_status + ' ', new_username:
             chats.find_full_text(text, 5)
 
+    @pytest.mark.recover
     def test_recover_access(self):
         home = HomeView(self.driver)
         set_password_as_new_user(home)
@@ -56,7 +57,10 @@ class TestAccess(SingleDeviceTestCase):
         login.password_input.send_keys(basic_user['password'])
         login.sign_in_button.click()
         home.find_full_text('Chats', 60)
+        if basic_user['password'] in str(home.logcat):
+            pytest.fail('Password in logcat!!!', pytrace=False)
 
+    @pytest.mark.sign_in
     @pytest.mark.parametrize("verification", ["invalid", "valid"])
     def test_sign_in(self, verification):
 
@@ -76,20 +80,30 @@ class TestAccess(SingleDeviceTestCase):
         login.password_input.send_keys(verifications[verification]['input'])
         login.sign_in_button.click()
         home.find_full_text(verifications[verification]["outcome"], 60)
+        if verifications[verification]["input"] in str(home.logcat):
+            pytest.fail('Password in logcat!!!', pytrace=False)
 
-    @pytest.mark.parametrize("verification", ["short", "mismatch"])
+    @pytest.mark.password
+    @pytest.mark.parametrize("verification", ["logcat", "mismatch", "short"])
     def test_password(self, verification):
-        verifications = {"short":
-                             {"input": "qwe1",
-                              "outcome": "Password should be not less then 6 symbols."},
-                         "mismatch":
-                             {"input": "mismatch1234",
-                              "outcome": "Password confirmation doesn\'t match password."}}
+        verifications = {
+                        "short": {"input": "qwe1",
+                                  "outcome": "Password should be not less then 6 symbols."},
+
+                        "mismatch": {"input": "mismatch1234",
+                                     "outcome": "Password confirmation doesn\'t match password."},
+
+                        "logcat": {"input": "new_unique_password",
+                                   "outcome": "Here is your signing phrase. "
+                                              "You will use it to verify your transactions. "
+                                              "Write it down and keep it safe!"}}
         home = HomeView(self.driver)
         home.request_password_icon.click()
         home.chat_request_input.send_keys(verifications[verification]["input"])
         home.confirm()
         if 'short' not in verification:
-            home.chat_request_input.send_keys("qwerty1234")
+            home.chat_request_input.send_keys("new_unique_password")
             home.confirm()
         home.find_full_text(verifications[verification]["outcome"])
+        if verifications[verification]["input"] in str(home.logcat):
+            pytest.fail('Password in logcat!!!', pytrace=False)

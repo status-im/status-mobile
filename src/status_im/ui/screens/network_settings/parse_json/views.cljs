@@ -2,7 +2,7 @@
   (:require
     [re-frame.core :refer [dispatch]]
     [status-im.components.status-bar :refer [status-bar]]
-    [status-im.components.toolbar-new.view :refer [toolbar]]
+    [status-im.components.toolbar.view :as toolbar]
     [status-im.ui.screens.network-settings.views :as network-settings]
     [status-im.components.react :refer [view text text-input]]
     [status-im.components.sticky-button :as sticky-button]
@@ -15,7 +15,8 @@
         error        nil]
     [view {:flex 1}
      [status-bar]
-     [toolbar {:title (i18n/label :t/add-network)}]
+     [toolbar/simple-toolbar
+      (i18n/label :t/add-network)]
      [network-settings/network-badge]
      [view {:margin-top  16
             :margin-left 16

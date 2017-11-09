@@ -9,7 +9,7 @@
             [status-im.components.react :refer [view text list-view list-item]]
             [status-im.components.contact.contact :refer [contact-view]]
             [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar-with-search]]
+            [status-im.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.components.drawer.view :refer [drawer-view]]
             [status-im.chat.new-chat.styles :as styles]
             [status-im.utils.listview :as lw]

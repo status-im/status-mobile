@@ -14,7 +14,7 @@
 
 (defn get-filtered-as-list
   [condition]
-  (realm/realm-collection->list (get-filtered condition)))
+  (realm/js-object->clj (get-filtered condition)))
 
 (defn save
   [processed-message]

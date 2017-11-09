@@ -119,6 +119,7 @@
                                 (update-in [:content :params] #(apply dissoc % hidden-params))
                                 (dissoc :to-message :has-handler :raw-input))
                       preview (assoc :preview (pr-str preview)))]
+        (dispatch [:upsert-chat! {:chat-id chat-id}])
         (messages/save chat-id command)))))
 
 (register-handler ::dispatch-responded-requests!
@@ -201,8 +202,7 @@
            (dispatch [::send-message! params])))
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id message]}]]
-      (dispatch [:upsert-chat! {:chat-id   chat-id
-                                :timestamp (datetime/now-ms)}])
+      (dispatch [:upsert-chat! {:chat-id chat-id}])
       (messages/save chat-id message))))
 
 (register-handler ::send-dapp-message
@@ -218,15 +218,16 @@
 
 (register-handler :received-bot-response
   (u/side-effect!
-    (fn [{:contacts/keys [contacts]} [_ {:keys [chat-id] :as params} {:keys [result] :as data}]]
+    (fn [{:contacts/keys [contacts]} [_ {:keys [chat-id] :as params} {:keys [result bot-id] :as data}]]
       (let [{:keys [returned context]} result
             {:keys [markup text-message err]} returned
             {:keys [log-messages update-db default-db]} context
             content (or err text-message)]
         (when update-db
-          (dispatch [:update-bot-db {:bot chat-id
+          (dispatch [:update-bot-db {:bot bot-id
                                      :db  update-db}]))
         (dispatch [:suggestions-handler (assoc params
+                                          :bot-id bot-id
                                           :result data
                                           :default-db default-db)])
         (doseq [message log-messages]

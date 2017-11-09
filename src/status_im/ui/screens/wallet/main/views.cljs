@@ -7,8 +7,8 @@
             [status-im.components.list.views :as list]
             [status-im.components.react :as react]
             [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.components.toolbar-new.actions :as act]
+            [status-im.components.toolbar.view :as toolbar]
+            [status-im.components.toolbar.actions :as act]
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.utils.config :as config]
@@ -42,7 +42,7 @@
    :handler   #(rf/dispatch [:navigate-to :transactions-history])})
 
 (defn toolbar-view []
-  [toolbar/toolbar2 {:style wallet.styles/toolbar}
+  [toolbar/toolbar {:style wallet.styles/toolbar}
    [toolbar/nav-button (act/hamburger-white drawer/open-drawer!)]
    [toolbar/content-wrapper
     [toolbar-title]]

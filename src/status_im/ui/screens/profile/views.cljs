@@ -13,8 +13,8 @@
             [status-im.components.icons.vector-icons :as vi]
             [status-im.components.status-bar :refer [status-bar]]
             [status-im.components.styles :refer [color-blue]]
-            [status-im.components.toolbar-new.actions :as actions]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.components.toolbar.actions :as actions]
+            [status-im.components.toolbar.view :as toolbar]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
@@ -24,15 +24,22 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
-  [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
-                                              :text  (label :t/edit)}])]}])
+  [toolbar/toolbar {}
+   toolbar/default-nav-back
+   [toolbar/content-title ""]
+   [toolbar/actions
+    [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
+                     :text  (label :t/edit)}])]]])
 
 (defn profile-toolbar [contact]
-  [toolbar/toolbar
-   (when (and (not (:pending? contact))
-              (not (:unremovable? contact)))
-     {:actions [(actions/opts [{:value #(dispatch [:hide-contact contact])
-                                :text  (label :t/remove-from-contacts)}])]})])
+  [toolbar/toolbar {}
+   toolbar/default-nav-back
+   [toolbar/content-title ""]
+   [toolbar/actions
+    (when (and (not (:pending? contact))
+               (not (:unremovable? contact)))
+      [(actions/opts [{:value #(dispatch [:hide-contact contact])
+                       :text  (label :t/remove-from-contacts)}])])]])
 
 (defn online-text [last-online]
   (let [last-online-date (time/to-date last-online)

@@ -1,70 +1,86 @@
 (ns status-im.ui.screens.navigation
-  (:require [re-frame.core :refer [enrich]]
+  (:require [re-frame.core :as re-frame]
             [status-im.utils.handlers :refer [register-handler-db]]
             [status-im.constants :refer [console-chat-id]]))
 
-(defmulti preload-data!
-          (fn [db [_ view-id]] (or view-id (:view-id db))))
+;; private helper fns
 
-(defmethod preload-data! :default [db _] db)
-
-(defn -preload-data! [{:keys [was-modal?] :as db} & args]
-  (if was-modal?
-    (dissoc db :was-modal?) ;;TODO check how it worked with this bug
-    (apply preload-data! db args)))
-
-(register-handler-db
-  :navigate-forget
-  (enrich preload-data!)
-  (fn [db [_ new-view-id]]
-    (assoc db :view-id new-view-id)))
-
-(defn push-view [db view-id]
+(defn- push-view [db view-id]
   (-> db
       (update :navigation-stack conj view-id)
       (assoc :view-id view-id)))
 
-(register-handler-db
-  :navigate-to
-  (enrich preload-data!)
-  (fn [{:keys [view-id] :as db} [_ new-view-id]]
-    (if (= view-id new-view-id)
-      db
-      (push-view db new-view-id))))
-
-(register-handler-db
-  :navigate-to-modal
-  (enrich preload-data!)
-  (fn [db [_ modal-view]]
-    (assoc db :modal modal-view)))
-
-(defn replace-top-element [stack view-id]
+(defn- replace-top-element [stack view-id]
   (let [stack' (if (> 2 (count stack))
                  (list :chat-list)
                  (pop stack))]
     (conj stack' view-id)))
 
-(defn replace-view [db view-id]
+(defn- replace-view [db view-id]
   (-> db
       (update :navigation-stack replace-top-element view-id)
       (assoc :view-id view-id)))
 
-(register-handler-db
-  :navigation-replace
-  (enrich preload-data!)
-  (fn [db [_ view-id]]
-    (replace-view db view-id)))
-
 (defn- can-navigate-back? [db]
   (not (get db :accounts/creating-account?)))
 
+(defn- navigate-to-clean [db view-id]
+  (-> db
+      (assoc :navigation-stack (list))
+      (push-view view-id)))
+
+;; public fns
+
+(defmulti preload-data!
+  (fn [db [_ view-id]] (or view-id (:view-id db))))
+
+(defmethod preload-data! :default [db _] db)
+
+(defn- -preload-data! [{:keys [was-modal?] :as db} & args]
+  (if was-modal?
+    (dissoc db :was-modal?) ;;TODO check how it worked with this bug
+    (apply preload-data! db args)))
+
+(defn navigate-to
+  "Navigates to particular view"
+  [{:keys [view-id] :as db} go-to-view-id]
+  (if (= view-id go-to-view-id)
+    db
+    (push-view db go-to-view-id)))
+
+;; event handlers
+
+(register-handler-db
+  :navigate-forget
+  (re-frame/enrich preload-data!)
+  (fn [db [_ new-view-id]]
+    (assoc db :view-id new-view-id)))
+
+(register-handler-db
+  :navigate-to
+  (re-frame/enrich preload-data!)
+  (fn [db [_ new-view-id]]
+    (navigate-to db new-view-id)))
+
+(register-handler-db
+  :navigate-to-modal
+  (re-frame/enrich preload-data!)
+  (fn [db [_ modal-view]]
+    (assoc db :modal modal-view)))
+
+(register-handler-db
+  :navigation-replace
+  (re-frame/enrich preload-data!)
+  (fn [db [_ view-id]]
+    (replace-view db view-id)))
+
 (register-handler-db
   :navigate-back
-  (enrich -preload-data!)
+  (re-frame/enrich -preload-data!)
   (fn [{:keys [navigation-stack view-id modal] :as db} _]
     (cond
       modal (assoc db :modal nil
-                      :was-modal? true)
+                   :was-modal? true)
       (>= 1 (count navigation-stack)) db
 
       :else
@@ -78,11 +94,6 @@
             (assoc db :view-id first-in-stack)))
         db))))
 
-(defn navigate-to-clean [db view-id]
-  (-> db
-      (assoc :navigation-stack (list))
-      (push-view view-id)))
-
 (register-handler-db
   :navigate-to-clean
   (fn [db [_ view-id]]
@@ -90,7 +101,7 @@
 
 (register-handler-db
   :navigate-to-tab
-  (enrich preload-data!)
+  (re-frame/enrich preload-data!)
   (fn [db [_ view-id]]
     (-> db
         (assoc :prev-tab-view-id (:view-id db))
