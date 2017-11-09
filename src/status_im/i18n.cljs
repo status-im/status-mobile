@@ -115,7 +115,13 @@
                 :zh-wuu  zh-wuu/translations
                 :zh-yue  zh-yue/translations}))
 
-;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed https://github.com/fnando/i18n-js/issues/460
+(def locale (atom nil))
+
+(.then (.getLanguages rn-dependencies/i18n) #(do
+                                               (.log js/console (str "!!!!!!!!!!!!!!!!!!!! " %))
+                                               (reset! locale (first %))))
+
+;;:zh, :zh-hans-xx, :zh-hant-xx have been added until this bug will be fixed https://github.com/fnando/i18n-js/issues/460
 
 (def delimeters
   "This function is a hack: mobile Safari doesn't support toLocaleString(), so we need to pass
@@ -164,11 +170,8 @@
        (keyword)
        (label)))
 
-(def locale
-  (.-locale rn-dependencies/i18n))
-
 (defn get-contact-translated [contact-id key fallback]
   (let [translation #(get-in default-contacts [(keyword contact-id) key (keyword %)])]
-    (or (translation locale)
-        (translation (subs locale 0 2))
+    (or (translation @locale)
+        (translation (subs @locale 0 2))
         fallback)))
