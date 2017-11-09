@@ -1,8 +1,10 @@
 import pytest
 import time
+
+from apis.ropsten_api import verify_balance_is_updated, get_balance
 from tests.basetestcase import SingleDeviceTestCase
 from views.home import HomeView
-from tests.preconditions import set_password_as_new_user, recover_access
+from tests.preconditions import recover_access
 from tests import transaction_users
 from selenium.common.exceptions import TimeoutException
 
@@ -29,7 +31,7 @@ class TestTransactions(SingleDeviceTestCase):
         sender_address = transaction_users[sender]['address']
         recipient_address = transaction_users[recipient]['address']
         recipient_key = transaction_users[recipient]['public_key']
-        initial_balance_recipient = chats.get_balance(recipient_address)
+        initial_balance_recipient = get_balance(recipient_address)
 
         chats.plus_button.click()
         chats.add_new_contact.click()
@@ -75,7 +77,7 @@ class TestTransactions(SingleDeviceTestCase):
                 chats.find_full_text('Delivered', 10)
             if test == 'group_chat':
                 chats.find_full_text('to  ' + transaction_users[recipient]['username'], 60)
-            chats.verify_balance_is_updated(initial_balance_recipient, recipient_address)
+            verify_balance_is_updated(initial_balance_recipient, recipient_address)
 
     @pytest.mark.transaction
     def test_send_transaction_from_daap(self):
@@ -87,7 +89,7 @@ class TestTransactions(SingleDeviceTestCase):
         chats = home.get_chats()
 
         address = transaction_users['B_USER']['address']
-        initial_balance = chats.get_balance(address)
+        initial_balance = get_balance(address)
         contacts = chats.contacts_button.click()
         auction_house = contacts.auction_house_button.click()
 
@@ -104,4 +106,4 @@ class TestTransactions(SingleDeviceTestCase):
         chats.sign_transaction_button.click()
         chats.got_it_button.click()
         auction_house.find_full_text('You are the proud owner of the name: ' + auction_name, 120)
-        chats.verify_balance_is_updated(initial_balance, address)
+        verify_balance_is_updated(initial_balance, address)
