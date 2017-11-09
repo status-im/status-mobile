@@ -1,16 +1,16 @@
+from datetime import datetime
+
 from views.base_view import BaseViewObject
 import time
 from views.base_element import *
 
 
 class ProfileButton(BaseButton):
-
     def __init__(self, driver):
         super(ProfileButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('toolbar-hamburger-menu')
 
     class ProfileIcon(BaseButton):
-
         def __init__(self, driver):
             super(ProfileButton.ProfileIcon, self).__init__(driver)
             self.locator = self.Locator.accessibility_id('drawer-profile-icon')
@@ -20,7 +20,6 @@ class ProfileButton(BaseButton):
             return ProfileViewObject(self.driver)
 
     class SwitchUsersButton(BaseButton):
-
         def __init__(self, driver):
             super(ProfileButton.SwitchUsersButton, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='SWITCH USERS']")
@@ -37,7 +36,6 @@ class ProfileButton(BaseButton):
 
 
 class PlusButton(BaseButton):
-
     def __init__(self, driver):
         super(PlusButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
@@ -45,7 +43,6 @@ class PlusButton(BaseButton):
 
 
 class ConsoleButton(BaseButton):
-
     def __init__(self, driver):
         super(ConsoleButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
@@ -53,7 +50,6 @@ class ConsoleButton(BaseButton):
 
 
 class AddNewContactButton(BaseButton):
-
     def __init__(self, driver):
         super(AddNewContactButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
@@ -61,14 +57,12 @@ class AddNewContactButton(BaseButton):
 
 
 class NewContactButton(BaseButton):
-
     def __init__(self, driver):
         super(NewContactButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='']")
 
 
 class NewGroupChatButton(BaseButton):
-
     def __init__(self, driver):
         super(NewGroupChatButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
@@ -110,7 +104,6 @@ class NewGroupChatButton(BaseButton):
 
 
 class PublicKeyEditBox(BaseEditBox):
-
     def __init__(self, driver):
         super(PublicKeyEditBox, self).__init__(driver)
         self.locator = \
@@ -118,7 +111,6 @@ class PublicKeyEditBox(BaseEditBox):
 
 
 class ConfirmPublicKeyButton(BaseButton):
-
     def __init__(self, driver):
         super(ConfirmPublicKeyButton, self).__init__(driver)
         self.locator = \
@@ -126,14 +118,12 @@ class ConfirmPublicKeyButton(BaseButton):
 
 
 class ChatMessageInput(BaseEditBox):
-
     def __init__(self, driver):
         super(ChatMessageInput, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('chat-message-input')
 
 
 class SendMessageButton(BaseButton):
-
     def __init__(self, driver):
         super(SendMessageButton, self).__init__(driver)
         self.locator = self.Locator.accessibility_id("send-message-button")
@@ -144,14 +134,12 @@ class SendMessageButton(BaseButton):
 
 
 class AddToContacts(BaseButton):
-
     def __init__(self, driver):
         super(AddToContacts, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='Add to contacts']")
 
 
 class UserNameText(BaseText):
-
     def __init__(self, driver):
         super(UserNameText, self).__init__(driver)
         self.locator = \
@@ -159,57 +147,54 @@ class UserNameText(BaseText):
 
 
 class SendFundsButton(BaseButton):
-
     def __init__(self, driver):
         super(SendFundsButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='/send']")
 
     class FirstRecipient(BaseButton):
-
         def __init__(self, driver):
             super(SendFundsButton.FirstRecipient, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='Choose recipient']/.."
                                                        "//android.widget.ImageView[@content-desc='chat-icon']")
 
     class SignTransactionButton(BaseButton):
-
         def __init__(self, driver):
             super(SendFundsButton.SignTransactionButton, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='SIGN TRANSACTION']")
 
     class SignLaterButton(BaseButton):
-
         def __init__(self, driver):
             super(SendFundsButton.SignLaterButton, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='SIGN LATER']")
 
     class PasswordInput(BaseEditBox):
-
         def __init__(self, driver):
             super(SendFundsButton.PasswordInput, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='Password']")
 
     class EnterPasswordInput(BaseEditBox):
-
         def __init__(self, driver):
             super(SendFundsButton.EnterPasswordInput, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//android.widget.EditText[@NAF='true']")
 
     class ConfirmButton(BaseButton):
-
         def __init__(self, driver):
             super(SendFundsButton.ConfirmButton, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='CONFIRM']")
 
     class GotItButton(BaseButton):
-
         def __init__(self, driver):
             super(SendFundsButton.GotItButton, self).__init__(driver)
             self.locator = self.Locator.xpath_selector("//*[@text='GOT IT']")
 
 
-class ChatsViewObject(BaseViewObject):
+class RequestFundsButton(BaseButton):
+    def __init__(self, driver):
+        super(RequestFundsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='/request']")
 
+
+class ChatsViewObject(BaseViewObject):
     def __init__(self, driver):
         super(ChatsViewObject, self).__init__(driver)
         self.driver = driver
@@ -250,6 +235,8 @@ class ChatsViewObject(BaseViewObject):
 
         self.new_contact_button = NewContactButton(self.driver)
 
+        self.request_funds_button = RequestFundsButton(self.driver)
+
     def wait_for_syncing_complete(self):
         logging.info('Waiting for syncing complete:')
         while True:
@@ -258,3 +245,11 @@ class ChatsViewObject(BaseViewObject):
                 logging.info(sync.text)
             except TimeoutException:
                 break
+
+    def verify_amount_is_sent(self, amount):
+        self.driver.find_element(
+            BaseElement.Locator.xpath_selector("//*[@text='/send']/../../*[@text='%s']/../*[@text='ETH']" % amount))
+
+
+def get_unique_amount():
+    return '0.00%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')

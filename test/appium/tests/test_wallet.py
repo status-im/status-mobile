@@ -1,8 +1,10 @@
-from datetime import datetime
-
 import pytest
+
+from apis.ropsten_api import get_balance, verify_balance_is_updated
+from apis.third_party_apis import get_ethereum_price_in_usd
 from tests.basetestcase import SingleDeviceTestCase
-from views.base_view import get_ethereum_price_in_usd, verify_transaction_in_ropsten
+from views.base_view import verify_transaction_in_ropsten
+from views.chats import get_unique_amount
 from views.home import HomeView
 from tests.preconditions import set_password_as_new_user, recover_access
 from tests import transaction_users
@@ -41,7 +43,7 @@ class TestWallet(SingleDeviceTestCase):
 
         recipient_key = transaction_users[recipient]['public_key']
         recipient_address = transaction_users[recipient]['address']
-        initial_balance_recipient = chats.get_balance(recipient_address)
+        initial_balance_recipient = get_balance(recipient_address)
 
         chats.plus_button.click()
         chats.add_new_contact.click()
@@ -54,7 +56,7 @@ class TestWallet(SingleDeviceTestCase):
         wallet = chats.wallet_button.click()
         wallet.send_button.click()
         wallet.amount_edit_box.click()
-        amount = '0,0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S')
+        amount = get_unique_amount()
         wallet.send_as_keyevent(amount)
         wallet.confirm()
         wallet.chose_recipient_button.click()
@@ -75,13 +77,13 @@ class TestWallet(SingleDeviceTestCase):
         chats.enter_password_input.send_keys(transaction_users[sender]['password'])
         chats.sign_transaction_button.click()
         chats.got_it_button.click()
-        chats.verify_balance_is_updated(initial_balance_recipient, recipient_address)
+        verify_balance_is_updated(initial_balance_recipient, recipient_address)
         if test == 'sign_later':
             tr_view.history_tab.click()
         else:
             chats.wallet_button.click()
             tr_view = wallet.transactions_button.click()
-        transaction = tr_view.transactions_table.find_transaction(amount=amount.replace(',', '.'))
+        transaction = tr_view.transactions_table.find_transaction(amount=amount)
         details_view = transaction.click()
         transaction_hash = details_view.get_transaction_hash()
         verify_transaction_in_ropsten(address=transaction_users[sender]['address'], transaction_hash=transaction_hash)
@@ -96,7 +98,7 @@ class TestWallet(SingleDeviceTestCase):
                        username=transaction_users['A_USER']['username'])
         chats = home.get_chats()
         address = transaction_users['A_USER']['address']
-        balance = chats.get_balance(address) / 1000000000000000000
+        balance = get_balance(address) / 1000000000000000000
         eth_rate = get_ethereum_price_in_usd()
         wallet = chats.wallet_button.click()
         wallet_balance = wallet.get_eth_value()

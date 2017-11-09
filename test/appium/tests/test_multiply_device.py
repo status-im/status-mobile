@@ -1,12 +1,17 @@
 import pytest
+from selenium.common.exceptions import NoSuchElementException
+
+from apis.ropsten_api import get_balance, verify_balance_is_updated
 from tests.basetestcase import MultiplyDeviceTestCase
-from tests.preconditions import set_password_as_new_user, change_user_details
+from tests.preconditions import set_password_as_new_user, change_user_details, recover_access
+from tests import transaction_users
+from views.base_view import verify_transaction_in_ropsten
+from views.chats import get_unique_amount
 from views.home import HomeView
 
 
 @pytest.mark.all
 class TestMultiplyDevices(MultiplyDeviceTestCase):
-
     @pytest.mark.discover
     def test_new_profile_name_and_status_on_discover(self):
         device_1, device_2 = HomeView(self.driver_1), HomeView(self.driver_2)
@@ -87,7 +92,7 @@ class TestMultiplyDevices(MultiplyDeviceTestCase):
         one_to_one_chat_d1 = chats_d1.element_by_text(message_1, 'button')
         one_to_one_chat_d1.click()
 
-        one_to_one_chat_d2 = chats_d2.element_by_text(user_d1_name,  'button')
+        one_to_one_chat_d2 = chats_d2.element_by_text(user_d1_name, 'button')
         one_to_one_chat_d2.click()
         chats_d2.chat_message_input.send_keys(message_2)
         chats_d2.send_message_button.click()
@@ -167,3 +172,55 @@ class TestMultiplyDevices(MultiplyDeviceTestCase):
         message_text = chats_d1.element_by_text(message_3, 'text')
         if message_text.is_element_present(20):
             pytest.fail('Message is shown for the user which has been removed from the GroupChat', False)
+
+    @pytest.mark.chat
+    def test_send_funds_via_request_in_one_to_one_chat(self):
+        recipient = transaction_users['A_USER']
+        sender = transaction_users['B_USER']
+
+        device_1, device_2 = HomeView(self.driver_1), HomeView(self.driver_2)
+        recover_access(device_1,
+                       passphrase=recipient['passphrase'],
+                       password=recipient['password'],
+                       username=recipient['username'])
+        chats_d1 = device_1.get_chats()
+
+        recover_access(device_2,
+                       passphrase=sender['passphrase'],
+                       password=sender['password'],
+                       username=sender['username'])
+        chats_d2 = device_2.get_chats()
+
+        try:
+            chats_d1.element_by_text_part(sender['username'][:25], 'button').click()
+        except NoSuchElementException:
+            chats_d1.plus_button.click()
+            chats_d1.add_new_contact.click()
+            chats_d1.public_key_edit_box.send_keys(sender['public_key'])
+            chats_d1.confirm()
+            chats_d1.confirm_public_key_button.click()
+
+        chats_d1.request_funds_button.click()
+        amount = get_unique_amount()
+        chats_d1.chat_message_input.set_value(amount)
+        chats_d1.send_message_button.click()
+
+        initial_balance_recipient = get_balance(recipient['address'])
+
+        chats_d2.element_by_text_part(recipient['username'][:25], 'button').click()
+        chats_d2.element_by_text('Requesting  %s ETH' % amount, 'button').click()
+        chats_d2.send_message_button.click()
+        chats_d2.sign_transaction_button.click()
+        chats_d2.enter_password_input.send_keys(sender['password'])
+        chats_d2.sign_transaction_button.click()
+        chats_d2.got_it_button.click()
+        verify_balance_is_updated(initial_balance_recipient, recipient['address'])
+        chats_d2.verify_amount_is_sent(amount)
+
+        chats_d2.back_button.click()
+        wallet = chats_d2.wallet_button.click()
+        tr_view = wallet.transactions_button.click()
+        transaction = tr_view.transactions_table.find_transaction(amount=amount)
+        details_view = transaction.click()
+        transaction_hash = details_view.get_transaction_hash()
+        verify_transaction_in_ropsten(address=sender['address'], transaction_hash=transaction_hash)

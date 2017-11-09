@@ -44,7 +44,7 @@ class TransactionTable(BaseElement):
     def find_transaction(self, amount: str) -> TransactionElement:
         for i in range(18):
             try:
-                element = self.get_transaction_element(amount=amount)
+                element = self.get_transaction_element(amount=amount.replace(',', '.'))
                 element.find_element()
                 return element
             except NoSuchElementException:
