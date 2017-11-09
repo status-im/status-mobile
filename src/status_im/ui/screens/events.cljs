@@ -19,6 +19,7 @@
             status-im.ui.screens.wallet.send.events
             status-im.ui.screens.wallet.choose-recipient.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
+            [status-im.components.react :as react]
             [status-im.native-module.core :as status]
             [status-im.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
@@ -365,17 +366,17 @@
                 (fn []
                   (let [watch-id (atom nil)]
                     (.getCurrentPosition
-                     navigator.geolocation
+                     react/geolocation
                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
                      #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
                      (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
                     (when platform/android?
                       (reset! watch-id
                               (.watchPosition
-                               navigator.geolocation
+                               react/geolocation
                                #(do
                                   (.clearWatch
-                                   navigator.geolocation
+                                   react/geolocation
                                    @watch-id)
                                   (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
 

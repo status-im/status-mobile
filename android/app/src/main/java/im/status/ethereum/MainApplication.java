@@ -74,7 +74,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new ReactNativeDialogsPackage(),
                     new ImageResizerPackage(),
                     new PickerPackage(),
-                    new WebViewBridgePackage(BuildConfig.DEBUG),
+                    new WebViewBridgePackage(BuildConfig.DEBUG, callRPC),
                     new ReactNativeConfigPackage()
                                                                                     ));
 

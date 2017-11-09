@@ -32,7 +32,8 @@
 (def app-registry (get-react-property "AppRegistry"))
 (def app-state (get-react-property "AppState"))
 (def net-info (get-react-property "NetInfo"))
-(def navigator js/navigator)
+(def geolocation (when (exists? js/window)
+                   js/navigator.geolocation.))
 (def view (get-class "View"))
 
 (def status-bar (get-class "StatusBar"))

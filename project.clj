@@ -23,7 +23,7 @@
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.14"]
-                                   [re-frisk-remote "0.5.0"]
+                                   [re-frisk-remote "0.5.1"]
                                    [re-frisk-sidecar "0.5.2"]
                                    [com.cemerick/piggieback "0.2.2"]
                                    [hawk "0.2.11"]]
