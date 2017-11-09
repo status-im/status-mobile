@@ -15,16 +15,17 @@
       (re-frame/dispatch [:navigate-to :discover-dapp-details])))
 
 (defn render-dapp [{:keys [name photo-path dapp?] :as dapp}]
-  [react/touchable-highlight {:on-press #(navigate-to-dapp dapp)}
+  [react/touchable-highlight {:on-press #(navigate-to-dapp dapp)
+                              :disabled  (empty? name)}
     [react/view {:style styles/all-dapps-flat-list-item}
-      [react/view styles/dapps-list-item-second-row
+
        [react/view styles/dapps-list-item-name-container
         [react/view styles/dapps-list-item-avatar-container
          [react/view [chat-icon/contact-icon-view dapp {:size 80}]]]
         [react/text {:style           styles/dapps-list-item-name
                      :font            :medium
                      :number-of-lines 2}
-         name]]]]])
+         name]]]])
 
 ;; TODO(oskarth): Move this to top level discover ns
 (defn preview [dapps]
@@ -44,15 +45,27 @@
                       :content-container-style           styles/dapp-preview-flat-list}]
      [react/text (i18n/label :t/none)])])
 
+;; todo(goranjovic): this is a hacky fix for the dapp alignment problem in a flatlist based grid
+;; it works fine only if the number of items is evenly divisible with the number of columns
+;; so we make it so by adding up blank dapp items.
+;; the proper solution might be to find a decent component for grid lists
+(defn add-blank-dapps-for-padding [columns dapps]
+  (let [extras (mod (count dapps) columns)]
+    (if (zero? extras)
+      dapps
+      (concat dapps
+              (repeat (- columns extras) {:name ""})))))
+
 (defview main []
   (letsubs [all-dapps    [:get-all-dapps]
             tabs-hidden? [:tabs-hidden?]]
-    (when (seq all-dapps)
-      [react/view styles/all-dapps-container
-       [toolbar/toolbar {}
-        toolbar/default-nav-back
-        [toolbar/content-title (i18n/label :t/dapps)]]
-       [list/flat-list {:data                    (vals all-dapps)
-                        :render-fn               render-dapp
-                        :num-columns             3
-                        :content-container-style styles/all-dapps-flat-list}]])))
+    (let [columns 3]
+      (when (seq all-dapps)
+        [react/view styles/all-dapps-container
+         [toolbar/toolbar {}
+          toolbar/default-nav-back
+          [toolbar/content-title (i18n/label :t/dapps)]]
+         [list/flat-list {:data                    (add-blank-dapps-for-padding columns (vals all-dapps))
+                          :render-fn               render-dapp
+                          :num-columns             columns
+                          :content-container-style styles/all-dapps-flat-list}]]))))
