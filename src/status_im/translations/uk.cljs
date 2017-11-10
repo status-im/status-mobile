@@ -2,306 +2,365 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "Учасники"
    :not-implemented                       "!не реалізовано"
    :chat-name                             "Назва групи"
    :notifications-title                   "Сповіщення та звуки"
    :offline                               "Оффлайн"
+   :search-for                            "Шукати..."
+   :cancel                                "Відмінити"
+   :next                                  "Наступний"
+   :open                                  "Відкрити"
+   :description                           "Опис"
+   :url                                   "URL"
+   :type-a-message                        "Введіть повідомлення..."
+   :type-a-command                        "Почніть вводити команду..."
+   :error                                 "Помилка"
+   :unknown-status-go-error               "Невідома помилка статусу"
+   :node-unavailable                      "Жоден вузол ефіру не процює"
+   :yes                                   "Так"
+   :no                                    "Ні"
 
-   ;drawer
-   :invite-friends                        "Запросити друзів"
-   :faq                                   "Часті питання"
-   :switch-users                          "Зміна користувача"
+   :camera-access-error                   "Щоб надати потрібний дозвіл камери, перейдіть до налаштувань вашої системи та переконайтеся, що статус> Камера активований."
+   :photos-access-error                   "Щоб надати дозвіл на отримання необхідних фотографій, перейдіть до налаштувань вашої системи та переконайтеся, що статус> Фото активований."
 
-   ;chat
+   ;;drawer
+   :switch-users                          "Переключити користувачів"
+   :current-network                       "Поточна мережа"
+
+   ;;chat
    :is-typing                             "друкує"
    :and-you                               "і ви"
-   :search-chat                           "Пошук групи"
+   :search-chat                           "Найти чат"
    :members                               {:one   "1 учасник"
-                                           :other "{{count}} учасників"
+                                           :other "{{count}} учасника/ів"
                                            :zero  "немає учасників"}
-   :members-active                        {:one   "1 учасник, 1 активний"
-                                           :other "{{count}} учасників, {{count}} активних"
+   :members-active                        {:one   "1 учасник"
+                                           :other "{{count}} учасника/ів"
                                            :zero  "немає учасників"}
+   :public-group-status                   "Паблік"
    :active-online                         "Онлайн"
-   :active-unknown                        "Невідомо"
+   :active-unknown                        "Невідомий"
    :available                             "Доступно"
    :no-messages                           "Немає повідомлень"
    :suggestions-requests                  "Запити"
    :suggestions-commands                  "Команди"
+   :faucet-success                        "Успішний запит на кран"
+   :faucet-error                          "Помилка запиту на кран"
 
-   ;sync
+   ;;sync
    :sync-in-progress                      "Синхронізація..."
    :sync-synced                           "Синхронізовано"
 
-   ;messages
-   :status-sending                        "Відправлення"
-   :status-pending                        "Очікує відправлення"
+   ;;messages
+   :status-sending                        "Відправлення..."
+   :status-pending                        "Очікує на розгляд"
    :status-sent                           "Надіслано"
-   :status-seen-by-everyone               "Переглянуто всіма"
-   :status-seen                           "Переглянуто"
+   :status-seen-by-everyone               "Показано кожен"
+   :status-seen                           "Показано"
    :status-delivered                      "Доставлено"
-   :status-failed                         "Помилка"
+   :status-failed                         "Невдалий"
 
-   ;datetime
+   ;;datetime
+   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "секунда"
-                                           :other "секунд"}
+                                           :other "секунд/и"}
    :datetime-minute                       {:one   "хвилина"
-                                           :other "хвилин"}
-   :datetime-hour                         {:one   "година"
-                                           :other "годин"}
+                                           :other "хвилин/и"}
+   :datetime-hour                         {:one   "годин"
+                                           :other "годин/и"}
    :datetime-day                          {:one   "день"
-                                           :other "днів"}
-   :datetime-multiple                     "с"
-   :datetime-ago                          "тому"
+                                           :other "дні/в"}
+   :datetime-ago                          "тому назад"
    :datetime-yesterday                    "вчора"
    :datetime-today                        "сьогодні"
 
-   ;profile
+   ;;profile
    :profile                               "Профіль"
-   :report-user                           "ДОПОВІСТИ ПРО КОРИСТУВАЧА"
+   :edit-profile                          "Редагувати профіль"
    :message                               "Повідомлення"
-   :username                              "Ім'я користувача"
-   :not-specified                         "Не вказано"
-   :public-key                            "Відкритий ключ"
+   :not-specified                         "Не визначено"
+   :public-key                            "Публічний ключ"
    :phone-number                          "Номер телефону"
-   :email                                 "Ел. пошта"
-   :profile-no-status                     "Немає статусу"
-   :add-to-contacts                       "Додати до контактів"
-   :error-incorrect-name                  "Будь ласка, виберіть інше ім'я"
-   :error-incorrect-email                 "Невірна ел. пошта"
+   :update-status                         "Оновіть свій статус..."
+   :add-a-status                          "Додати статус..."
+   :status-prompt                         "Встановіть свій статус. Використання #хештегу допоможе іншим знайти вас і поговорити про те, що у вас на думці"
+   :add-to-contacts                       "Додати контакти"
+   :in-contacts                           "В контактах"
+   :remove-from-contacts                  "Видалити з контактів"
+   :start-conversation                    "Почати бесіду"
+   :send-transaction                      "Відправити транзакцію"
+   :testnet-text                          "Ви знаходитесь на {{testnet}} Testnet. Не надсилайте справжні ETH або SNT на вашу адресу "
+   :mainnet-text                          "Ви знаходитесь на Mainnet. Справжні ETH будуть відправлені"
 
    ;;make_photo
-   :image-source-title                    "Фото профілю"
-   :image-source-make-photo               "Зробити знімок"
+   :image-source-title                    "Зображення профілю"
+   :image-source-make-photo               "Зняти"
    :image-source-gallery                  "Вибрати з галереї"
-   :image-source-cancel                   "Відміна"
 
    ;;sharing
-   :sharing-copy-to-clipboard             "Скопіювати"
-   :sharing-share                         "Поділитися..."
-   :sharing-cancel                        "Відміна"
+   :sharing-copy-to-clipboard             "Копіювати в буфер обміну"
+   :sharing-share                         "Поділитись..."
+   :sharing-cancel                        "Відмінити"
 
-   ;sign-up
-   :contacts-syncronized                  "Ваші контактні дані було синхронізовано"
-   :confirmation-code                     (str "Дякуємо! Ми відправили вам текстове повідомлення з кодом "
-                                               "підтвердження. Будь ласка, надайте цей код, щоб підтвердити свій номер телефону")
-   :incorrect-code                        (str "На жаль, код невірний, будь ласка, введіть ще раз")
-   :generate-passphrase                   (str "Я створю ключову фразу для вас, щоб ви могли відновити ваш "
-                                               "доступ або увійти з іншого пристрою")
-   :phew-here-is-your-passphrase          "*Оце так*, було складно, ось ваша ключова фраза, *запишіть її та надійно зберігайте!* Вона вам знадобиться для відновлення облікового запису."
-   :here-is-your-passphrase               "Ось ваша ключова фраза, *запишіть її та надійно зберігайте!* Вона вам знадобиться для відновлення облікового запису."
-   :written-down                          "Переконайтеся, що ви надійно її записали"
-   :phone-number-required                 "Торкніться тут, щоб ввести ваш номер телефону і я знайду ваших друзів"
-   :intro-status                          "Спілкуйтеся зі мною, щоб налаштувати свій обліковий запис і змінити налаштування!"
-   :intro-message1                        "Вітаємо в Статус\nТоркніться цього повідомлення, щоб встановити пароль і почати!"
-   :account-generation-message            "Почекайте секунду, маю виконати страшенно складні розрахунки, щоб створити ваш обліковий запис!"
+   :browsing-title                        "Перегляньте"
+   :browsing-browse                       "@browse"
+   :browsing-open-in-web-browser          "Відкрити у браузері"
+   :browsing-cancel                       "Відмінити"
 
-   ;chats
-   :chats                                 "Групи"
-   :new-chat                              "Новий чат"
+   ;;sign-up
+   :contacts-syncronized                  "Ваші контакти були синхронізовані"
+   :confirmation-code                     (str "Дякуємо! Ми відправили текстове повідомлення з підтвердженням "
+                                               "код. Будь ласка, введіть цей код, щоб підтвердити свій номер телефону")
+   :incorrect-code                        (str "На жаль, код невірний, будь ласка, введіть його знову")
+   :phew-here-is-your-passphrase          "Хух, це було важко. Ось ваша секретна фраза, * напишіть це і збережіть його в безпеці!* Вам знадобиться це, щоб відновити свій обліковий запис."
+   :here-is-your-passphrase               "Ось ваша секретна фраза, * напишіть це та збережіть це в безпеці! * Вам це потрібно для відновлення акаунту."
+   :here-is-your-signing-phrase           "Ось ваша парольна фраза. Ви будете використовувати її для підтвердження ваших транзакцій. * Запишіть її та тримайте її в безпеці! *"
+   :phone-number-required                 "Торкніться тут, щоб підтвердити свій номер телефону, і я знайду ваших друзів."
+   :shake-your-phone                      "Знайшли помилку або є пропозиція? Просто ~потрясіть~ ваш телефон!"
+   :intro-status                          "Поспілкуйся зі мною, щоб налаштувати свій обліковий запис і змінити свої налаштування."
+   :intro-message1                        "Ласкаво просимо до Status!\nTap це повідомлення встановити пароль і почати роботу."
+   :account-generation-message            "Почекай секунду, я повинен зробити дивовижні математичні кроки, щоб згенерувати твій акаунт!"
+   :move-to-internal-failure-message      "Нам треба перемістити деякі важливі файли з зовнішньої на внутрішню пам'ять. Для цього нам потрібен ваш дозвіл. Ми не будемо використовувати зовнішню пам'ять у майбутніх версіях."
+   :debug-enabled                         "Сервер відлагоджень був запущений! Тепер ви можете виконати *status-dev-cli scan* щоб знайти сервер з вашого комп'ютера в тій самій мережі."
+
+   ;;phone types
+   :phone-e164                            "Міжнародний 1"
+   :phone-international                   "Міжнародний 2"
+   :phone-national                        "Державний"
+   :phone-significant                     "Показовий"
+
+   ;;chats
+   :chats                                 "Чати"
+   :delete-chat                           "Видалити чат"
    :new-group-chat                        "Новий груповий чат"
+   :new-public-group-chat                 "Долучитися до публічного чату"
+   :edit-chats                            "Редагувати чати"
+   :search-chats                          "Шукати чати"
+   :empty-topic                           "Пуста тема"
+   :topic-format                          "Невірний формат [a-z0-9\\-]+"
+   :public-group-topic                    "Тема"
 
-   ;discover
-   :discover                              "Відкриття"
+   ;;discover
+   :discover                              "Знайти"
    :none                                  "Жоден"
-   :search-tags                           "Введіть теги для пошуку тут"
-   :popular-tags                          "Популярні теги"
-   :recent                                "Нещодавні"
-   :no-statuses-discovered                "Статусів не знайдено"
+   :search-tags                           "Введіть свої пошукові теги тут"
+   :popular-tags                          "Популярні #хештеги"
+   :recent                                "Останні статуси"
+   :no-statuses-found                     "Немає знайдених статусів"
+   :chat                                  "Чат"
+   :all                                   "Всі"
+   :public-chats                          "Публічні чати"
+   :soon                                  "Скоро"
+   :public-chat-user-count                "{{count}} учасника/ів"
+   :dapps                                 "ÐApps"
+   :dapp-profile                          "ÐApp профіль"
+   :no-statuses-discovered                "Немає знайдених статусів"
+   :no-statuses-discovered-body           "Коли хтось публікує статус, ви побачите його тут."
+   :no-hashtags-discovered-title          "Немає знайдених #хештегів"
+   :no-hashtags-discovered-body           "Коли #хештег стане популярним, ви побачите його тут."
 
-   ;settings
+   ;;settings
    :settings                              "Налаштування"
 
-   ;contacts
+   ;;contacts
    :contacts                              "Контакти"
    :new-contact                           "Новий контакт"
-   :show-all                              "ПОКАЗАТИ ВСІ"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Люди"
-   :contacts-group-new-chat               "Почати нову розмову"
-   :no-contacts                           "Поки що контактів немає"
-   :show-qr                               "Показати QR"
+   :delete-contact                        "Видалити контакт"
+   :delete-contact-confirmation           "Цей контакт буде видалено з ваших контактів"
+   :remove-from-group                     "Перемістити з групи"
+   :edit-contacts                         "Редагувати контакти"
+   :search-contacts                       "Шукати контакти"
+   :contacts-group-new-chat               "Почати новий чат"
+   :choose-from-contacts                  "Вибрати з контактів"
+   :no-contacts                           "Доки немає котнактів"
+   :show-qr                               "Показати QR код"
+   :enter-address                         "Введіть адресу"
+   :more                                  "більше"
 
-   ;group-settings
-   :remove                                "Видалити"
+   ;;group-settings
+   :remove                                "Перемістити"
    :save                                  "Зберегти"
-   :change-color                          "Змінити колір"
+   :delete                                "Видалити"
    :clear-history                         "Очистити історію"
-   :delete-and-leave                      "Видалити та залишити"
-   :chat-settings                         "Налаштування розмови"
+   :mute-notifications                    "Вимкнути сповіщення"
+   :leave-chat                            "Покинути чат"
+   :chat-settings                         "Настройки чату"
    :edit                                  "Редагувати"
    :add-members                           "Додати учасників"
-   :blue                                  "Голубий"
-   :purple                                "Фіолетовий"
-   :green                                 "Зелений"
-   :red                                   "Червоний"
 
-   ;commands
-   :money-command-description             "Надіслати гроші"
-   :location-command-description          "Надіслати місцезнаходження"
-   :phone-command-description             "Надіслати номер телефону"
-   :phone-request-text                    "Запит номеру телефону"
-   :confirmation-code-command-description "Надіслати код підтвердження"
-   :confirmation-code-request-text        "Запит коду підтвердження"
-   :send-command-description              "Надіслати місцезнаходження"
-   :request-command-description           "Надіслати запит"
-   :keypair-password-command-description  ""
-   :help-command-description              "Допомога"
-   :request                               "Запит"
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH для {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH від {{chat-name}}"
 
-   ;new-group
-   :group-chat-name                       "Назва розмови"
-   :empty-group-chat-name                 "Будь ласка, введіть назву"
-   :illegal-group-chat-name               "Будь ласка, виберіть іншу назву"
+   ;;location command
+   :your-current-location                 "Ваше поточне міце положення"
+   :places-nearby                         "Місця поблизу"
+   :search-results                        "Шукати результати"
+   :dropped-pin                           "Випав пін"
+   :location                              "Місце"
+   :open-map                              "Відкрити карту"
+   :sharing-copy-to-clipboard-address     "Копіювати адресу."
+   :sharing-copy-to-clipboard-coordinates "Копіювати координати."
 
-   ;participants
-   :add-participants                      "Додайте учасників"
-   :remove-participants                   "Видаліть учасників"
+   ;;new-group
+   :new-group                             "Нова група"
+   :reorder-groups                        "Змінити порядок груп"
+   :edit-group                            "Редагувати групу"
+   :delete-group                          "Видалити групу"
+   :delete-group-confirmation             "Ця група буде вилучена з ваших груп. Це не вплине на ваші контакти"
+   :delete-group-prompt                   "Це не вплине на ваші контакти"
+   :contact-s                             {:one   "контакт"
+                                           :other "контакти/ів"}
 
-   ;protocol
-   :received-invitation                   "отримано запрошення до розмови"
-   :removed-from-chat                     "видалив вас з розмови"
-   :left                                  "вийшов"
-   :invited                               "запрошений"
-   :removed                               "видалив"
+   ;;protocol
+   :received-invitation                   "отримав запрошення до чату"
+   :removed-from-chat                     "вилучив вас з групового чату"
+   :left                                  "покинув"
+   :invited                               "запросив"
+   :removed                               "вилучив"
    :You                                   "Ви"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "Додати новий контакт"
-   :import-qr                             "Імпорт"
-   :scan-qr                               "Сканувати QR"
-   :name                                  "Назва"
-   :whisper-identity                      "Прошепотіти справжність"
-   :address-explication                   "Можливо тут повинен бути текст, який пояснює, що таке адреса і де її шукати"
-   :enter-valid-address                   "Будь ласка, введіть дійсну адресу або відскануйте QR-код"
-   :enter-valid-public-key                "Будь ласка, введіть дійсний відкритий ключ або відскануйте QR-код"
+   :scan-qr                               "Сканувати QR-код"
+   :name                                  "Ім'я"
+   :address-explication                   "Ваш відкритий ключ використовується для створення вашої адреси на Ethereum і являє собою серію цифр і букв. Ви можете легко знайти його у своєму профілі"
+   :enter-valid-public-key                "Будь ласка, введіть дійсний відкритий ключ або скануйте QR-код"
    :contact-already-added                 "Контакт вже додано"
    :can-not-add-yourself                  "Ви не можете додати себе"
    :unknown-address                       "Невідома адреса"
 
-
-   ;login
-   :connect                               "Підключитися"
+   ;;login
+   :connect                               "Підключіться"
    :address                               "Адреса"
-   :password                              "Пароль"
-   :login                                 "Логін"
-   :wrong-password                        "Невірний пароль"
+   :password                              "Праоль"
+   :sign-in-to-status                     "Увійдіть у статус"
+   :sign-in                               "Увійдіть"
+   :wrong-password                        "Неправильний пароль"
+   :enter-password                        "Введіть пароль"
 
-   ;recover
-   :recover-from-passphrase               "Відновити з ключовою фразою"
-   :recover-explain                       "Будь ласка, введіть ключову фразу для вашого пароля, щоб відновити доступ"
-   :passphrase                            "Ключова фраза"
+   ;;recover
+   :passphrase                            "Секретна фраза"
    :recover                               "Відновити"
-   :enter-valid-passphrase                "Будь ласка, введіть ключову фразу"
-   :enter-valid-password                  "Будь ласка, введіть пароль"
+   :twelve-words-in-correct-order         "12 слів у правильному порядку"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "Відновити доступ"
-   :add-account                           "Додати обліковий запис"
+   :create-new-account                    "Створити новий акаунт"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "Готово"
-   :main-wallet                           "Основний гаманець"
 
-   ;validation
-   :invalid-phone                         "Невірний номер телефону"
+   ;;validation
+   :invalid-phone                         "Недійсний номер телефону"
    :amount                                "Сума"
-   :not-enough-eth                        (str "Недостатньо ETH на балансі "
-                                               "({{balance}} ETH)")
-   ;transactions
-   :confirm-transactions                  {:one   "Підтвердити транзакцію"
-                                           :other "Підтвердити {{count}} транзакції"
-                                           :zero  "Немає транзакцій"}
-   :status                                "Статус"
-   :pending-confirmation                  "Очікує підтвердження"
-   :recipient                             "Отримувач"
-   :one-more-item                         "Ще один пункт"
-   :fee                                   "Комісія"
-   :value                                 "Значення"
 
-   ;:webview
-   :web-view-error                        "ой, помилка"
-
+   ;;transactions
    :confirm                               "Підтвердити"
-   :phone-national                        "Національне"
-   :transactions-confirmed                {:one   "Транзакцію підтверджено"
-                                           :other "Підтверджено {{count}} транзакцій"
-                                           :zero  "Підтверджені транзакції відсутні"}
-   :public-group-topic                    "Тема"
-   :debug-enabled                         "Debug server запущено! Тепер ви можете додати свій DApp запустивши *status-dev-cli scan* зі свого комп’ютера"
-   :new-public-group-chat                 "Приєднатися до публічного чату"
-   :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
-   :share-qr                              "Поділитись QR"
-   :feedback                              "Маєте відгук?\nСтряхніть свій телефон!"
-   :twelve-words-in-correct-order         "12 слів в правильному порядку"
-   :remove-from-contacts                  "Видалити з контактів"
-   :delete-chat                           "Видалити чат"
-   :edit-chats                            "Редагувати чати"
-   :sign-in                               "Вхід"
-   :create-new-account                    "Створити новий пароль"
-   :sign-in-to-status                     "Увійти в Статус"
-   :got-it                                "Зрозуміло"
-   :move-to-internal-failure-message      "Нам треба перемістити деякі важливі файли із карти пам’яті у внутрішню пам’ять вашого пристрою. Для цього нам треба мати дозвіл. У майбутніх версіях ми не будемо використовувати карти пам’яті."
-   :edit-group                            "Редагувати групу"
-   :delete-group                          "Видалити групу"
-   :browsing-title                        "Перегляд"
-   :reorder-groups                        "Перепланувати групи"
-   :browsing-cancel                       "Відмінити"
-   :faucet-success                        "Розширений запит отримано"
-   :choose-from-contacts                  "Виберіть з контактів"
-   :new-group                             "Нова група"
-   :phone-e164                            "Міжнародне 1"
-   :remove-from-group                     "Видалити з групи"
-   :search-contacts                       "Пошук контактів"
-   :transaction                           "Операція"
-   :public-group-status                   "Публічне"
-   :leave-chat                            "Живий чат"
-   :start-conversation                    "Почати розмову"
-   :topic-format                          "Невірний формат [a-z0-9\\-]+"
-   :faucet-error                          "Збій запиту"
-   :phone-significant                     "Важливий"
-   :search-for                            "Шукати за..."
-   :phone-international                   "Міжнародне 2"
-   :enter-address                         "Ввести адресу"
-   :send-transaction                      "Відправити транзакцію"
-   :delete-contact                        "Видалити контакт"
-   :mute-notifications                    "Вимкнути сповіщення"
-
-   :contact-s
-                                          {:one   "контакт"
-                                           :other "контакти"}
-   :group-name                            "Назва групи"
-   :next                                  "Наступне"
-   :from                                  "З"
-   :search-chats                          "Шукати чати"
-   :in-contacts                           "В контактах"
-
-   :type-a-message                        "Написати повідомлення..."
-   :type-a-command                        "Почніть вводити команду..."
-   :shake-your-phone                      "Знайшли помилку або маєте пропозиції? Просто ~стряхніть~ свій телефон!"
-   :status-prompt                         "Створіть статус, щоб допомогти людям дізнатись про речі, які ви пропонуєте. Можете також використовувати #хештеги."
-   :add-a-status                          "Додати статус..."
-   :error                                 "Збій"
-   :edit-contacts                         "Редагувати контакти"
-   :more                                  "ще"
-   :cancel                                "Відмінити"
-   :no-statuses-found                     "Статуси не знайдено"
-   :swow-qr                               "Показати QR"
-   :browsing-open-in-web-browser          "Відкрити у браузері"
-   :delete-group-prompt                   "Це не вплине на контакти"
-   :edit-profile                          "Редагувати профіль"
-
-   :enter-password-transactions
-                                          {:one   "Підтвердіть операцію, ввівши пароль"
-                                           :other "Підтвердіть операції, ввівши пароль"}
-   :unsigned-transactions                 "Непідписані транзакції"
-   :empty-topic                           "Тема пуста"
+   :transaction                           "Транзакція"
+   :unsigned-transaction-expired          "Непідписана транзакція закінчилась"
+   :status                                "Статус"
+   :recipient                             "Одержувач"
    :to                                    "До"
-   :group-members                         "Члени групи"
-   :estimated-fee                         "Прибл. комісія"
-   :data                                  "Дані"})
+   :from                                  "Від"
+   :data                                  "Дані"
+   :got-it                                "Зрозумів"
+   :block                                 "Блок"
+   :hash                                  "Хеш"
+   :gas-limit                             "Ліміт газу"
+   :gas-price                             "Ціна газу"
+   :gas-used                              "Газу використано"
+   :cost-fee                              "Вартість/Плата"
+   :nonce                                 "Не в порядку"
+   :confirmations                         "Підтвердження"
+   :confirmations-helper-text             "Будь ласка, зачекайте щонайменше 12 підтверджень, щоб переконатися, що транзакція оброблена надійно"
+   :copy-transaction-hash                 "Копіювати хеш транзакції"
+   :open-on-etherscan                     "Відкрити на Etherscan.io"
+
+   ;;webview
+   :web-view-error                        "Ой, помилка"
+
+   ;;testfairy warning
+   :testfairy-title                       "Увага!"
+   :testfairy-message                     "Ви використовуєте програму, встановлену не з офіційного магазину. Для тестування ця побудова включає в себе запис сесії, якщо використовується Wi-Fi-зв'язок, тому всі ваші взаємодії з цим додатком зберігаються (як відео та журнали) і можуть використовуватися нашою командою розробників для вивчення можливих проблем. Збережені відео / журнали не включають ваші паролі. Запис виконується лише в тому випадку, якщо додаток встановлено з неофіційного магазину. Нічого не записується, якщо додаток встановлено з PlayStore або TestFlight."
+
+   ;; wallet
+   :wallet                                "Гаманець"
+   :wallets                               "Гаманці"
+   :your-wallets                          "Ваші гаманці"
+   :main-wallet                           "Основний гаманець"
+   :wallet-error                          "Помилка завантаження даних"
+   :wallet-send                           "Відправити"
+   :wallet-request                        "Запит"
+   :wallet-exchange                       "Обмін"
+   :wallet-assets                         "Активи"
+   :wallet-add-asset                      "Додати актив"
+   :wallet-total-value                    "Загальна вартість"
+   :wallet-settings                       "Налаштування гаманця"
+   :signing-phrase-description            "Підпишіть транзакцію, ввівши свій пароль. Переконайтеся, що наведені вище слова співпадають з вашою таємною фразою"
+   :wallet-insufficient-funds             "Недостатньо коштів"
+   :request-transaction                   "Запит транзакції"
+   :send-request                          "Відправити запит"
+   :share                                 "Поділитися"
+   :eth                                   "ETH"
+   :currency                              "Валюта"
+   :usd-currency                          "USD"
+   :transactions                          "Транзакції"
+   :transaction-details                   "Деталі транзакції"
+   :transaction-failed                    "Транзакція не виконана"
+   :transactions-sign                     "Підписати"
+   :transactions-sign-all                 "Підписати всі"
+   :transactions-sign-transaction         "Підписати транзакцію"
+   :transactions-sign-later               "Підписати пізніше"
+   :transactions-delete                   "Видалити транзакцію"
+   :transactions-delete-content           "Транзакції будуть видалені зі списку 'Непідписані' "
+   :transactions-history                  "Історія"
+   :transactions-unsigned                 "Непідписані"
+   :transactions-history-empty            "Поки що немає жодних транзакцій у вашій історії"
+   :transactions-unsigned-empty           "Ви не маєте жодних непідписаних транзакцій"
+   :transactions-filter-title             "Сортувати історію"
+   :transactions-filter-tokens            "Токени"
+   :transactions-filter-type              "Тип"
+   :transactions-filter-select-all        "Вибрати все"
+   :view-transaction-details              "Показати деталі транзакції"
+   :transaction-description               "Please wait for at least 12 confirmations to make sure your transaction is processed securely"
+   :transaction-sent                      "Транзакція відправлена"
+   :transaction-moved-text                "Не підписані транзакції будуть видалені протягом наступних 5 хвилин"
+   :transaction-moved-title               "Транзакція переміщена"
+   :sign-later-title                      "Підписати транзакцію пізніше?"
+   :sign-later-text                       "Перевірити історію транзакцій для підписання"
+   :not-applicable                        "Не застосовується для непідписаних транзакцій"
+
+   ;; Wallet Send
+   :wallet-choose-recipient               "Виберіть отримувача"
+   :wallet-choose-from-contacts           "Виберіть з контактів"
+   :wallet-address-from-clipboard         "Використати адресу з буферу обміну"
+   :wallet-invalid-address                "Невірна адреса: \n {{data}}"
+   :wallet-browse-photos                  "Перегляньте фотографії"
+   :validation-amount-invalid-number      "Сума не є дійсним числом"
+   :validation-amount-is-too-precise      "Сума занадто точна. Найменша одиниця, яку ви можете надіслати - 1 Вей (1x10^-18 ETH)"
+
+
+
+   ;; network settings
+   :new-network                           "Нова мережа"
+   :add-network                           "Додати мережу"
+   :add-new-network                       "Додати нову мережу"
+   :existing-networks                     "Існуючі мережі"
+   :add-json-file                         "Додати JSON файл"
+   :paste-json-as-text                    "Вставити JSON як текст"
+   :paste-json                            "Вставити JSON"
+   :specify-rpc-url                       "Вкажіть RPC URL"
+   :edit-network-config                   "Редагувати параметри мережы"
+   :connected                             "Підключено"
+   :process-json                          "Обробити JSON"
+   :error-processing-json                 "Помилка обробки JSON"
+   :rpc-url                               "RPC URL"
+   :remove-network                        "Видалити мережу"
+   :network-settings                      "Настройки мережі"
+   :edit-network-warning                  "Будьте обережні, редагуючи дані мережі, вас може відключити від цієї"
+   :connecting-requires-login             "Підключення до іншої мережі потребує логіну"
+   :close-app-title                       "Увага!"
+   :close-app-content                     "Додаток буде зупинений і закртий. Коли ви знову відкриєте його, вибрані мережі будуть застосовані"
+   :close-app-button                      "Підтвердити"})
