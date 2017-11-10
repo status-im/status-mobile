@@ -47,8 +47,8 @@
                         (spec/valid? ::v/password password))]
       [keyboard-avoiding-view {:style st/screen-container}
        [status-bar]
-       [toolbar/simple-toolbar {:modal? modal?}
-        (i18n/label :t/recover-access)]
+       [toolbar/toolbar {:modal? modal?} toolbar/default-nav-back
+        [toolbar/content-title (i18n/label :t/recover-access)]]
        [passphrase-input (or passphrase "")]
        [password-input (or password "")]
        [view {:flex 1}]
