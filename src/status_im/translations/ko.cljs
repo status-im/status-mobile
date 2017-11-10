@@ -207,7 +207,7 @@
    :reorder-groups                        "그룹 재정렬"
    :edit-group                            "그룹 편집"
    :delete-group                          "그룹 삭제"
-   :delete-group-confirmation             "이 그룹이 당신의 그룹에서 삭제될 것입니다. 연락처에는 영향이 없습니다."
+   :delete-group-confirmation             "이 그룹을 그룹 목록에서 삭제합니다. 연락처에는 영향을 미치지 않습니다."
    :delete-group-prompt                   "연락처에는 영향이 없습니다"
    :contact-s                             {:one   "연락처"
                                            :other "연락처"}
@@ -224,9 +224,9 @@
    :add-new-contact                       "새 연락처 추가"
    :scan-qr                               "QR코드 스캔"
    :name                                  "이름"
-   :address-explication                   "공개 키는 이더리움 주소를 생성하기 위해 사용되며 숫자와 알파벳으로 이루어져 있습니다. 당신의 프로필에서 쉽게 찾을 수 있습니다."
+   :address-explication                   "공개 키는 Ethereum 주소를 생성하기 위해 사용되며 숫자와 알파벳으로 이루어져 있습니다. 당신의 프로필에서 쉽게 찾을 수 있습니다."
    :enter-valid-public-key                "올바른 공개 키를 입력하거나 QR 코드를 스캔하세요"
-   :contact-already-added                 "연락처가 이미 추가되었습니다"
+   :contact-already-added                 "이미 추가되어 있는 연락처입니다."
    :can-not-add-yourself                  "자기 자신을 추가할 수 없습니다"
    :unknown-address                       "알 수 없는 주소"
 
