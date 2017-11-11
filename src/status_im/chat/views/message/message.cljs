@@ -377,7 +377,7 @@
          (let [{:keys [bot command] :as content} (get-in message [:content])
                message' (assoc message :jail-id bot)]
            (when (and command (not @preview))
-             (dispatch [:request-command-preview message']))))
+             (dispatch [:chat-commands/get-preview message']))))
 
        :component-did-mount
        (fn []

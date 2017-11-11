@@ -1,6 +1,5 @@
 (ns status-im.chat.handlers
-  (:require-macros [cljs.core.async.macros :as am])
-  (:require [re-frame.core :refer [enrich after debug dispatch reg-fx]]
+  (:require [re-frame.core :as rf :refer [reg-fx]]
             [cljs.core.async :as a]
             [clojure.string :as string]
             [status-im.ui.components.styles :refer [default-chat-color]]
@@ -14,8 +13,9 @@
                                          content-type-command-request
                                          console-chat-id]]
             [status-im.utils.random :as random]
-            [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
+            [status-im.utils.handlers :as handlers]
             status-im.chat.events
+            [status-im.chat.events.input :as input-events]
             status-im.chat.handlers.requests
             status-im.chat.handlers.send-message
             status-im.chat.handlers.webview-bridge))
@@ -24,7 +24,7 @@
   [db [_ chat-id]]
   (update db :chats dissoc chat-id))
 
-(reg-fx
+(rf/reg-fx
   ::delete-messages
   (fn [id]
     (messages/delete-by-chat-id id)))
@@ -45,11 +45,11 @@
   [_ [_ chat-id]]
   (pending-messages/delete-all-by-chat-id chat-id))
 
-(register-handler
+(handlers/register-handler
   :leave-group-chat
   ;; todo order of operations tbd
-  (after (fn [_ _] (dispatch [:navigation-replace :chat-list])))
-  (u/side-effect!
+  (rf/after (fn [_ _] (rf/dispatch [:navigation-replace :chat-list])))
+  (handlers/side-effect!
    (fn [{:keys [web3 current-chat-id chats current-public-key]} _]
      (let [{:keys [public-key private-key public?]} (chats current-chat-id)]
        (protocol/stop-watching-group!
@@ -63,33 +63,19 @@
                       :private private-key}
            :message  {:from       current-public-key
                       :message-id (random/id)}})))
-     (dispatch [:remove-chat current-chat-id]))))
+     (rf/dispatch [:remove-chat current-chat-id]))))
 
-(register-handler
+(handlers/register-handler
   :remove-chat
-  (u/handlers->
+  (handlers/handlers->
    remove-chat
    delete-messages!
    remove-pending-messages!
    delete-chat!))
 
-(register-handler
-  :check-and-open-dapp!
-  (u/side-effect!
-    (fn [{:keys [current-chat-id global-commands]
-          :contacts/keys [contacts]}]
-      (let [dapp-url (get-in contacts [current-chat-id :dapp-url])]
-        (when dapp-url
-          (am/go
-            (dispatch [:select-chat-input-command
-                       (assoc (first (:browse global-commands)) :prefill [dapp-url])
-                       nil
-                       true])
-            (a/<! (a/timeout 100))
-            (dispatch [:send-current-message])))))))
-
-(register-handler :update-group-message
-  (u/side-effect!
+(handlers/register-handler
+  :update-group-message
+  (handlers/side-effect!
    (fn [{:keys [current-public-key web3 chats]}
         [_ {:keys                                [from]
             {:keys [group-id keypair timestamp]} :payload}]]
@@ -102,29 +88,29 @@
          (when (and (= from (get-in chats [group-id :group-admin]))
                     (or (not (chats/exists? group-id))
                         (chats/new-update? timestamp group-id)))
-           (dispatch [:update-chat! chat])
+           (rf/dispatch [:update-chat! chat])
            (when is-active
              (protocol/start-watching-group!
               {:web3     web3
                :group-id group-id
                :identity current-public-key
                :keypair  keypair
-               :callback #(dispatch [:incoming-message %1 %2])}))))))))
+               :callback #(rf/dispatch [:incoming-message %1 %2])}))))))))
 
-(register-handler
+(handlers/register-handler
   :update-message-overhead!
-  (u/side-effect!
+  (handlers/side-effect!
    (fn [_ [_ chat-id network-status]]
      (if (= network-status :offline)
        (chats/inc-message-overhead chat-id)
        (chats/reset-message-overhead chat-id)))))
 
-(reg-fx
+(rf/reg-fx
   ::save-public-chat
   (fn [chat]
     (chats/save chat)))
 
-(reg-fx
+(rf/reg-fx
   ::start-watching-group
   (fn [{:keys [group-id web3 current-public-key keypair]}]
     (protocol/start-watching-group!
@@ -132,9 +118,9 @@
       :group-id group-id
       :identity current-public-key
       :keypair  keypair
-      :callback #(dispatch [:incoming-message %1 %2])})))
+      :callback #(rf/dispatch [:incoming-message %1 %2])})))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :create-new-public-chat
   (fn [{:keys [db]} [_ topic]]
     (let [exists? (boolean (get-in db [:chats topic]))
@@ -154,12 +140,12 @@
        {:dispatch-n [[:navigate-to-clean :chat-list]
                      [:navigate-to-chat topic]]}))))
 
-(reg-fx
+(rf/reg-fx
   ::save-chat
   (fn [new-chat]
     (chats/save new-chat)))
 
-(reg-fx
+(rf/reg-fx
   ::start-listen-group
   (fn [{:keys [new-chat web3 current-public-key]}]
     (let [{:keys [chat-id public-key private-key contacts name]} new-chat
@@ -181,7 +167,7 @@
         :identity current-public-key
         :keypair  {:public  public-key
                    :private private-key}
-        :callback #(dispatch [:incoming-message %1 %2])}))))
+        :callback #(rf/dispatch [:incoming-message %1 %2])}))))
 
 (defn group-name-from-contacts [contacts selected-contacts username]
   (->> (select-keys contacts selected-contacts)
@@ -210,7 +196,7 @@
      :timestamp   (random/timestamp)
      :contacts    selected-contacts'}))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :create-new-group-chat-and-open
   (fn [{:keys [db]} [_ group-name]]
     (let [new-chat (prepare-group-chat (select-keys db [:group/selected-contacts :current-public-key :username
@@ -225,7 +211,7 @@
        :dispatch-n [[:navigate-to-clean :chat-list]
                     [:navigate-to-chat (:chat-id new-chat)]]})))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :group-chat-invite-received
   (fn [{{:keys [current-public-key] :as db} :db}
        [_ {:keys                                                    [from]
@@ -253,8 +239,20 @@
                        [:update-chat! chat]
                        [:add-chat group-id chat])})))))
 
-(register-handler-fx
+(handlers/register-handler-fx
   :show-profile
   (fn [{db :db} [_ identity]]
     {:db (assoc db :contacts/identity identity)
      :dispatch [:navigate-forget :profile]}))
+
+(handlers/register-handler-fx
+  :chat/check-and-open-dapp!
+  [rf/trim-v]
+  (fn [{{:keys [current-chat-id global-commands] :contacts/keys [contacts] :as db} :db :as fx}]
+    (let [dapp-url (get-in contacts [current-chat-id :dapp-url])]
+      (when dapp-url
+        (let [command (assoc (first (:browse global-commands)) :prefill [dapp-url])]
+          ;; TODO(alwx):
+          (-> {:db db}
+              (input-events/select-chat-input-command command nil true)
+              #_(input-events/send-current-message)))))))

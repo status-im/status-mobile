@@ -27,7 +27,7 @@
        (fn []
          (when (and (get-in @message [:content :command])
                     (not @preview))
-           (dispatch [:request-command-message-data @message :short-preview])))
+           (dispatch [:chat-commands/jail-request-data @message :short-preview])))
 
        :reagent-render
        (fn [_]

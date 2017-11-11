@@ -1,17 +1,11 @@
 (ns status-im.chat.screen
-  (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.ui.components.react :refer [view
-                                                   animated-view
-                                                   text
-                                                   modal
-                                                   touchable-highlight
-                                                   list-view
-                                                   list-item]]
+  (:require-macros [status-im.utils.views :as views])
+  (:require [re-frame.core :as rf]
+            [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.status-bar :refer [status-bar]]
             [status-im.ui.components.chat-icon.screen :refer [chat-icon-view-action
-                                                              chat-icon-view-menu-item]]
+                                                           chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
@@ -47,23 +41,23 @@
       (assoc message :text-color text-color
                      :background-color background-color))))
 
-(defview chat-icon []
-  [chat-id [:chat :chat-id]
-   group-chat [:chat :group-chat]
-   name [:chat :name]
-   color [:chat :color]]
-  ;; TODO stub data ('online' property)
-  [chat-icon-view-action chat-id group-chat name color true])
+(views/defview chat-icon []
+  (views/letsubs [chat-id [:chat :chat-id]
+                  group-chat [:chat :group-chat]
+                  name [:chat :name]
+                  color [:chat :color]]
+    ;; TODO stub data ('online' property)
+    [chat-icon-view-action chat-id group-chat name color true]))
 
 (defn typing [member]
-  [view st/typing-view
-   [view st/typing-background
-    [text {:style st/typing-text
+  [react/view st/typing-view
+   [react/view st/typing-background
+    [react/text {:style st/typing-text
            :font  :default}
      (str member " " (label :t/is-typing))]]])
 
 (defn typing-all []
-  [view st/typing-all
+  [react/view st/typing-all
    ;; TODO stub data
    (for [member ["Geoff" "Justas"]]
      ^{:key member} [typing member])])
@@ -72,7 +66,7 @@
 
 (defmethod message-row :datemark
   [{{:keys [value]} :row}]
-  (list-item [chat-datemark value]))
+  (react/list-item [chat-datemark value]))
 
 (defmethod message-row :default
   [{:keys [contact-by-identity group-chat messages-count row index last-outgoing?]}]
@@ -83,44 +77,42 @@
                     (assoc :index index)
                     (assoc :last-message (= (js/parseInt index) (dec messages-count)))
                     (assoc :last-outgoing? last-outgoing?))]
-    (list-item [chat-message message])))
+    (react/list-item [chat-message message])))
 
-(defn toolbar-action []
-  (let [show-actions (subscribe [:chat-ui-props :show-actions?])]
-    (fn []
-      (let [show-actions @show-actions]
-        [touchable-highlight
-         {:on-press            #(dispatch [:set-chat-ui-props {:show-actions? (not show-actions)}])
-          :accessibility-label :chat-menu}
-         [view st/action
-          (if show-actions
-            [vi/icon :icons/dropdown-up]
-            [chat-icon])]]))))
+(views/defview toolbar-action []
+  (views/letsubs [show-actions? [:chat-ui-props :show-actions?]]
+    [react/touchable-highlight
+     {:on-press            #(rf/dispatch [:set-chat-ui-props {:show-actions? (not show-actions?)}])
+      :accessibility-label :chat-menu}
+     [react/view st/action
+      (if show-actions?
+        [vi/icon :icons/dropdown-up]
+        [chat-icon])]]))
 
-(defview add-contact-bar []
-  [chat-id [:get :current-chat-id]
-   pending-contact? [:current-contact :pending?]]
-  (when pending-contact?
-    [touchable-highlight
-     {:on-press #(dispatch [:add-pending-contact chat-id])}
-     [view st/add-contact
-      [text {:style st/add-contact-text}
-       (label :t/add-to-contacts)]]]))
+(views/defview add-contact-bar []
+  (views/letsubs [chat-id [:get :current-chat-id]
+                  pending-contact? [:current-contact :pending?]]
+    (when pending-contact?
+      [react/touchable-highlight
+       {:on-press #(rf/dispatch [:add-pending-contact chat-id])}
+       [react/view st/add-contact
+        [react/text {:style st/add-contact-text}
+         (label :t/add-to-contacts)]]])))
 
-(defview chat-toolbar []
-  [show-actions? [:chat-ui-props :show-actions?]
-   accounts [:get-accounts]
-   creating? [:get :accounts/creating-account?]]
-  [view
-   [status-bar]
-   [toolbar/toolbar {:show-sync-bar? true}
-    (when-not (or show-actions? creating?)
-      (if (empty? accounts)
-        [toolbar/nav-clear-text (label :t/recover) #(dispatch [:navigate-to-modal :recover-modal])]
-        toolbar/default-nav-back))
-    [toolbar-content-view]
-    [toolbar-action]]
-   [add-contact-bar]])
+(views/defview chat-toolbar []
+  (views/letsubs [show-actions? [:chat-ui-props :show-actions?]
+                  accounts [:get-accounts]
+                  creating? [:get :accounts/creating-account?]]
+    [react/view
+     [status-bar]
+     [toolbar/toolbar {:show-sync-bar? true}
+      (when-not (or show-actions? creating?)
+        (if (empty? accounts)
+          [toolbar/nav-clear-text (label :t/recover) #(rf/dispatch [:navigate-to-modal :recover-modal])]
+          toolbar/default-nav-back))
+      [toolbar-content-view]
+      [toolbar-action]]
+     [add-contact-bar]]))
 
 (defn get-intro-status-message [all-messages]
   (let [{:keys [timestamp content-type]} (last all-messages)]
@@ -151,49 +143,50 @@
       (drop-last messages)
       messages)))
 
-(defview messages-view [group-chat]
-  [messages [:chat :messages]
-   contacts [:chat :contacts]
-   message-extras [:get :message-extras]
-   loaded? [:all-messages-loaded?]
-   current-chat-id [:get-current-chat-id]
-   last-outgoing-message [:get-chat-last-outgoing-message @current-chat-id]]
-  (let [contacts' (contacts-by-identity contacts)
-        messages  (messages-with-timemarks messages message-extras)]
-    [list-view {:renderRow                 (fn [row _ index]
-                                             (message-row {:contact-by-identity contacts'
-                                                           :group-chat          group-chat
-                                                           :messages-count      (count messages)
-                                                           :row                 row
-                                                           :index               index
-                                                           :last-outgoing?      (= (:message-id last-outgoing-message) (:message-id row))}))
-                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
-                :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
-                :enableEmptySections       true
-                :keyboardShouldPersistTaps (if platform/android? :always :handled)
-                :dataSource                (to-datasource-inverted messages)}]))
+(views/defview messages-view [group-chat]
+  (views/letsubs [messages [:chat :messages]
+                  contacts [:chat :contacts]
+                  message-extras [:get :message-extras]
+                  loaded? [:all-messages-loaded?]
+                  current-chat-id [:get-current-chat-id]
+                  last-outgoing-message [:get-chat-last-outgoing-message @current-chat-id]]
+    (let [contacts' (contacts-by-identity contacts)
+          messages  (messages-with-timemarks messages message-extras)]
+      [react/list-view
+       {:renderRow                 (fn [row _ index]
+                                     (message-row {:contact-by-identity contacts'
+                                                   :group-chat          group-chat
+                                                   :messages-count      (count messages)
+                                                   :row                 row
+                                                   :index               index
+                                                   :last-outgoing?      (= (:message-id last-outgoing-message) (:message-id row))}))
+        :renderScrollComponent     #(invertible-scroll-view (js->clj %))
+        :onEndReached              (when-not loaded? #(rf/dispatch [:load-more-messages]))
+        :enableEmptySections       true
+        :keyboardShouldPersistTaps (if platform/android? :always :handled)
+        :dataSource                (to-datasource-inverted messages)}])))
 
-(defview chat []
-  [group-chat [:chat :group-chat]
-   show-actions? [:chat-ui-props :show-actions?]
-   show-bottom-info? [:chat-ui-props :show-bottom-info?]
-   show-emoji? [:chat-ui-props :show-emoji?]
-   layout-height [:get :layout-height]
-   input-text [:chat :input-text]]
-  {:component-did-mount    #(do (dispatch [:check-and-open-dapp!])
-                                (dispatch [:update-suggestions]))
-   :component-will-unmount #(dispatch [:set-chat-ui-props {:show-emoji? false}])}
-  [view {:style st/chat-view
-         :on-layout (fn [event]
-                      (let [height (.. event -nativeEvent -layout -height)]
-                        (when (not= height layout-height)
-                          (dispatch [:set-layout-height height]))))}
-   [chat-toolbar]
-   [messages-view group-chat]
-   [input/container {:text-empty? (str/blank? input-text)}]
-   (when show-actions?
-     [actions-view])
-   (when show-bottom-info?
-     [bottom-info-view])
-   [offline-view {:top (get-in platform-specific
-                               [:component-styles :status-bar :default :height])}]])
+(views/defview chat []
+  (views/letsubs [group-chat [:chat :group-chat]
+                  show-actions? [:chat-ui-props :show-actions?]
+                  show-bottom-info? [:chat-ui-props :show-bottom-info?]
+                  show-emoji? [:chat-ui-props :show-emoji?]
+                  layout-height [:get :layout-height]
+                  input-text [:chat :input-text]]
+    {:component-did-mount    #(do (rf/dispatch [:chat/check-and-open-dapp!])
+                                  (rf/dispatch [:update-suggestions]))
+     :component-will-unmount #(rf/dispatch [:set-chat-ui-props {:show-emoji? false}])}
+    [react/view {:style     st/chat-view
+                 :on-layout (fn [event]
+                              (let [height (.. event -nativeEvent -layout -height)]
+                                (when (not= height layout-height)
+                                  (rf/dispatch [:set-layout-height height]))))}
+     [chat-toolbar]
+     [messages-view group-chat]
+     [input/container {:text-empty? (str/blank? input-text)}]
+     (when show-actions?
+       [actions-view])
+     (when show-bottom-info?
+       [bottom-info-view])
+     [offline-view {:top (get-in platform-specific
+                           [:component-styles :status-bar :default :height])}]]))

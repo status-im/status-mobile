@@ -64,11 +64,11 @@
                                                                    (:new? enriched-message))
                                      (unviewed-messages-model/add-unviewed-message chat-identifier message-id)
                                      (assoc-in [:chats chat-identifier :last-message] message)))
-                    (assoc :dispatch-n [[:request-command-message-data enriched-message :short-preview]]
+                    (assoc :dispatch-n [[:chat-commands/jail-request-data enriched-message :short-preview]]
                            :save-message (dissoc enriched-message :new?)))
 
           (get-in enriched-message [:content :command])
-          (update :dispatch-n conj [:request-command-preview enriched-message])
+          (update :dispatch-n conj [:chat-commands/get-preview enriched-message])
 
           (= (:content-type enriched-message) const/content-type-command-request)
           (update :dispatch-n conj [:add-request chat-identifier enriched-message])
