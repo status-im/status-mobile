@@ -106,7 +106,6 @@
    :sharing-cancel                        "Abbrechen"
 
    :browsing-title                        "Browse"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "In Webbrowser öffnen"
    :browsing-cancel                       "Abbrechen"
 

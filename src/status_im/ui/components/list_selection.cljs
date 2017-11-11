@@ -31,7 +31,7 @@
 (defn browse [command link]
   (let [list-selection-fn (:list-selection-fn platform-specific)]
     (list-selection-fn {:title       (label :t/browsing-title)
-                        :options     [{:text (label :t/browsing-browse)}
+                        :options     [{:text "@browse"}
                                       {:text (label :t/browsing-open-in-web-browser)}]
                         :callback    (fn [index]
                                        (case index

@@ -104,7 +104,6 @@
    :sharing-cancel                        "Annulla"
 
    :browsing-title                        "Naviga"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "Apri nel web browser"
    :browsing-cancel                       "Annulla"
 

@@ -109,7 +109,6 @@
    :sharing-cancel                        "Atcelt"
 
    :browsing-title                        "Browse"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "Atvert pārlūkprogrammā"
    :browsing-cancel                       "Atcelt"
 

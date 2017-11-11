@@ -109,7 +109,6 @@
    :sharing-cancel                        "בטל"
 
    :browsing-title                        "דפדף"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "פתח בדפדפן"
    :browsing-cancel                       "בטל"
 
