@@ -4,21 +4,23 @@
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
-node {
+
+node ('macos1'){
   def apkUrl = ''
   def ipaUrl = ''
   def testPassed = true
 
-  sh 'source /etc/profile'
+  load "$HOME/env.groovy"
 
   try {
 
     stage('Git & Dependencies') {
+      slackSend color: 'good', message: 'Nightly build started. ' + env.BUILD_URL
       git([url: 'https://github.com/status-im/status-react.git', branch: 'develop'])
       // Checkout master because used for iOS Plist version information
       sh 'git checkout -- .'
       sh 'git fetch --tags'
-      sh 'git checkout master' 
+      sh 'git checkout master'
       sh 'git checkout ' + 'develop'
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
@@ -42,17 +44,19 @@ node {
 
     stage('Build (iOS)') {
       sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
-      sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist /Users/Xcloud/archive.plist'
+      sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
     }
 
     stage('Deploy (Android)') {
       def artifact_dir = pwd() + '/android/app/build/outputs/apk/'
-      def artifact = new File(artifact_dir + 'app-release.apk')
-      assert artifact.exists()
+      println (artifact_dir + 'app-release.apk')
+      sh ('ls -la ' + artifact_dir)
+      def artifact = (artifact_dir + 'app-release.apk')
       def server = Artifactory.server('artifacts')
       def shortCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(6)
       def filename = 'im.status.ethereum-' + shortCommit + '.apk'
-      artifact.renameTo artifact_dir + filename
+      def newArtifact = (artifact_dir + filename)
+      sh ('mv ' + artifact + ' '  + newArtifact)
       def uploadSpec = '{ "files": [ { "pattern": "*apk/' + filename + '", "target": "nightlies-local" }]}'
       def buildInfo = server.upload(uploadSpec)
       apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
