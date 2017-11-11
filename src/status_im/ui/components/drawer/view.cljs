@@ -9,15 +9,15 @@
             [status-im.ui.components.context-menu :as context-menu]
             [status-im.ui.components.drawer.styles :as st]
             [status-im.ui.components.react :refer [view
-                                                text
-                                                text-input
-                                                list-item
-                                                list-view
-                                                drawer-layout
-                                                touchable-without-feedback
-                                                touchable-highlight
-                                                touchable-opacity
-                                                dismiss-keyboard!]]
+                                                   text
+                                                   text-input
+                                                   list-item
+                                                   list-view
+                                                   drawer-layout
+                                                   touchable-without-feedback
+                                                   touchable-highlight
+                                                   touchable-opacity
+                                                   dismiss-keyboard!]]
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.status-view.view :as status-view]
             [status-im.i18n :as i18n]

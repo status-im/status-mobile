@@ -5,15 +5,15 @@
             [reagent.core :as r]
             [status-im.i18n :refer [message-status-label]]
             [status-im.ui.components.react :refer [view
-                                                text
-                                                image
-                                                icon
-                                                animated-view
-                                                touchable-without-feedback
-                                                touchable-highlight
-                                                autolink
-                                                get-dimensions
-                                                dismiss-keyboard!]]
+                                                   text
+                                                   image
+                                                   icon
+                                                   animated-view
+                                                   touchable-without-feedback
+                                                   touchable-highlight
+                                                   autolink
+                                                   get-dimensions
+                                                   dismiss-keyboard!]]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.list-selection :refer [share share-or-open-map]]
             [status-im.chat.constants :as chat-consts]

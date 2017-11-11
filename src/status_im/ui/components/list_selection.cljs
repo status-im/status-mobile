@@ -1,8 +1,8 @@
 (ns status-im.ui.components.list-selection
   (:require [re-frame.core :refer [dispatch]]
             [status-im.ui.components.react :refer [copy-to-clipboard
-                                                sharing
-                                                linking]]
+                                                   sharing
+                                                   linking]]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [status-im.i18n :refer [label]]))
 

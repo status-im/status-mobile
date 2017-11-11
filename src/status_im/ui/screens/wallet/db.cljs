@@ -29,12 +29,16 @@
   (let [amount-splited (string/split amount #"[.]")]
     (and (= (count amount-splited) 2) (> (count (last amount-splited)) 18))))
 
-(defn get-amount-validation-error [amount]
+(defn parse-amount [amount]
   (when-not (empty-amount? amount)
-    (let [normalized-amount (money/normalize amount)]
+    (let [normalized-amount (money/normalize amount)
+          value (money/bignumber normalized-amount)]
       (cond
-        (not (money/valid? normalized-amount))
-        (i18n/label :t/validation-amount-invalid-number)
+        (not (money/valid? value))
+        {:error (i18n/label :t/validation-amount-invalid-number)}
 
         (too-precise-amount? normalized-amount)
-        (i18n/label :t/validation-amount-is-too-precise)))))
+        {:error (i18n/label :t/validation-amount-is-too-precise)}
+
+        :else
+        {:value value}))))

@@ -7,13 +7,15 @@
             [status-im.ui.components.status-bar :refer [status-bar]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.qr-code.styles :as styles]
-            [status-im.utils.eip.eip67 :as eip67])
+            [status-im.utils.money :as money]
+            [status-im.utils.eip.eip681 :as eip681])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview qr-code-view []
   (letsubs [{:keys [photo-path address name]} [:get-in [:qr-modal :contact]]
             {:keys [qr-source qr-value amount? dimensions]} [:get :qr-modal]
-            {:keys [amount]} [:get :contacts/click-params]]
+            {:keys [amount]} [:get :contacts/click-params]
+            chain-id [:get-network-id]]
     [react/view styles/wallet-qr-code
      [status-bar {:type :modal}]
      [react/view styles/account-toolbar
@@ -35,7 +37,7 @@
                                                                             :height (.-height layout)}]))}
       (when (:width dimensions)
         [react/view {:style (styles/qr-code-container dimensions)}
-         (when-let [value (eip67/generate-uri qr-value (when amount? {:value  amount}))]
+         (when-let [value (eip681/generate-uri qr-value (merge {:chain-id chain-id} (when amount? {:value (money/str->wei amount)})))]
            [qr-code {:value value
                      :size  (- (min (:width dimensions)
                                     (:height dimensions))

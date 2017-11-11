@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.choose-recipient.events
-  (:require [status-im.i18n :as i18n]
-            [status-im.utils.eip.eip67 :as eip67]
+  (:require [status-im.constants :as constants]
+            [status-im.i18n :as i18n]
+            [status-im.utils.eip.eip681 :as eip681]
             [status-im.utils.handlers :as handlers]))
 
 (handlers/register-handler-db
@@ -17,22 +18,25 @@
              amount (assoc :amount amount))))
 
 (defn- extract-details
-  "First try to parse as EIP67 URI, if not assume this is an address directly.
-   Returns a map containing at least the `address` key"
-  [s]
-  (or (eip67/parse-uri s) {:address s}))
+  "First try to parse as EIP681 URI, if not assume this is an address directly.
+   Returns a map containing at least the `address` and `chain-id` keys"
+  [s network]
+  (or (eip681/parse-uri s) {:address s :chain-id network}))
 
 (handlers/register-handler-fx
   :choose-recipient
-  (fn [{{:keys [web3] :as db} :db} [_ data name]]
-    (let [{:keys [view-id]} db
-          m              (extract-details data)
-          address        (:address m)
+  (fn [{{:keys [web3 network] :as db} :db} [_ data name]]
+    (let [{:keys [view-id]}                db
+          current-network-id               (get-in constants/default-networks [network :raw-config :NetworkId])
+          {:keys [address chain-id] :as m} (extract-details data current-network-id)
           ;; isAddress works with or without address with leading '0x'
-          valid-address? (.isAddress web3 address)]
+          valid-address?                   (.isAddress web3 address)
+          valid-network?                   (boolean (= current-network-id chain-id))]
       (cond-> {:db db}
-        valid-address? (update :db #(choose-address-and-name % address name (:value m)))
-        (not valid-address?) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))))))
+        (and valid-address? (= :choose-recipient view-id)) (assoc :dispatch [:navigate-back])
+        (and valid-network? valid-address?) (update :db #(choose-address-and-name % address name (eip681/parse-value m)))
+        (not valid-address?) (assoc :show-error (i18n/label :t/wallet-invalid-address {:data data}))
+        (and valid-address? (not valid-network?)) (assoc :show-error (i18n/label :t/wallet-invalid-chain-id {:data data}))))))
 
 (handlers/register-handler-fx
   :wallet-open-send-transaction

@@ -12,15 +12,9 @@
 
 (deftest valid?
   (is (not (true? (money/valid? nil))))
-  (is (not (true? (money/valid? "a"))))
-  (is (not (true? (money/valid? "-1"))))
-  (is (not (true? (money/valid? "1a"))))
-  (is (not (true? (money/valid? "0,,"))))
-  (is (true? (money/valid? "1")))
-  (is (true? (money/valid? "1.1")))
-  (is (true? (money/valid? "1,1")))
-  (is (true? (money/valid? "0.00000000000000000000001")))
-  (is (true? (money/valid? "0.0000000000000000000000000001"))))
+  (is (true? (money/valid? (money/bignumber 0))))
+  (is (true? (money/valid? (money/bignumber 1))))
+  (is (not (true? (money/valid? (money/bignumber -1))))))
 
 (deftest normalize
   (is (= nil (money/normalize nil)))
