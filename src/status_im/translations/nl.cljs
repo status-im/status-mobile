@@ -106,7 +106,6 @@
    :sharing-cancel                        "Annuleren"
 
    :browsing-title                        "Browse"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "Open in een web browser"
    :browsing-cancel                       "Annuleren"
 

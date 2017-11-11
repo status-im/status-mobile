@@ -104,7 +104,6 @@
    :sharing-cancel                        "Отмена"
 
    :browsing-title                        "Просматривать"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "Открыть в веб-браузере"
    :browsing-cancel                       "Отмена"
 

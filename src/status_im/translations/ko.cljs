@@ -108,7 +108,6 @@
    :sharing-cancel                        "취소"
 
    :browsing-title                        "브라우저"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "웹 브라우저로 열기"
    :browsing-cancel                       "취소"
 
