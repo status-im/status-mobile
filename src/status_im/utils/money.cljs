@@ -22,32 +22,31 @@
 
 (defn normalize
   "A normalized string representation of an amount"
-  [str]
-  {:pre [(or (nil? str) (string? str))]}
-  (when str
-    (string/replace (string/trim str) #"," ".")))
+  [s]
+  {:pre [(or (nil? s) (string? s))]}
+  (when s
+    (string/replace (string/trim s) #"," ".")))
 
 (defn bignumber [n]
-  (when str
+  (when n
     (try
       (dependencies/Web3.prototype.toBigNumber (str n))
       (catch :default err nil))))
 
-(defn valid? [str]
-  (when str
-    (when-let [bn (bignumber (normalize str))]
-      (.greaterThanOrEqualTo bn 0))))
+(defn valid? [bn]
+  (when bn
+    (.greaterThanOrEqualTo bn 0)))
 
-(defn to-wei [str]
-  (when str
+(defn str->wei [s]
+  (when-let [ns (normalize s)]
     (try
-      (dependencies/Web3.prototype.toWei (normalize str) "ether")
+      (dependencies/Web3.prototype.toWei ns "ether")
       (catch :default err nil))))
 
-(defn to-decimal [str]
-  (when str
+(defn to-decimal [s]
+  (when s
     (try
-      (dependencies/Web3.prototype.toDecimal (normalize str))
+      (dependencies/Web3.prototype.toDecimal (normalize s))
       (catch :default err nil))))
 
 (def eth-units
@@ -64,16 +63,22 @@
    :teth   (bignumber "1000000000000000000000000000000")})
 
 (defn wei-> [unit n]
-  (.dividedBy (bignumber n) (eth-units unit)))
+  (when-let [bn (bignumber n)]
+    (.dividedBy bn (eth-units unit))))
 
 (defn to-fixed [bn]
-  (.toFixed bn))
+  (when bn
+    (.toFixed bn)))
 
 (defn wei->str [unit n]
   (str (to-fixed (wei-> unit n)) " " (string/upper-case (name unit))))
 
 (defn wei->ether [n]
   (wei-> :eth n))
+
+(defn ether->wei [bn]
+  (when bn
+    (.times bn (bignumber 1e18))))
 
 (defn fee-value [gas gas-price]
   (.times (bignumber gas) (bignumber gas-price)))
@@ -82,12 +87,17 @@
   (.times (bignumber eth) (bignumber usd-price)))
 
 (defn percent-change [from to]
-  (-> (.dividedBy (bignumber from) (bignumber to))
-      (.minus 1)
-      (.times 100)))
+  (let [bnf (bignumber from)
+        bnt (bignumber to)]
+    (when (and bnf bnt)
+      (-> (.dividedBy bnf bnt)
+          (.minus 1)
+          (.times 100)))))
 
 (defn with-precision [n decimals]
-  (.round (bignumber n) decimals))
+  (when-let [bn (bignumber n)]
+    (.round bn decimals)))
 
-(defn sufficient-funds? [amount-in-eth balance]
-  (.greaterThanOrEqualTo balance (bignumber (to-wei amount-in-eth))))
+(defn sufficient-funds? [amount balance]
+  (when amount
+    (.greaterThanOrEqualTo balance amount)))

@@ -41,7 +41,7 @@
    [react/touchable-highlight {:style    (styles/recipient-touchable true)
                                :on-press #(react/get-from-clipboard
                                             (fn [clipboard]
-                                              (re-frame/dispatch [:choose-recipient (string/trim clipboard) nil])))}
+                                              (re-frame/dispatch [:choose-recipient (string/trim-newline clipboard) nil])))}
     [react/view {:style styles/recipient-button}
      [react/text {:style styles/recipient-button-text}
       (i18n/label :t/wallet-address-from-clipboard)]

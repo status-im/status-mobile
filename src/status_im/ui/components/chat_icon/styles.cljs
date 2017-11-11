@@ -1,6 +1,6 @@
 (ns status-im.ui.components.chat-icon.styles
   (:require [status-im.ui.components.styles :refer [color-white
-                                                 online-color]]
+                                                    online-color]]
             [status-im.utils.platform :as p]))
 
 (defn default-chat-icon [color]

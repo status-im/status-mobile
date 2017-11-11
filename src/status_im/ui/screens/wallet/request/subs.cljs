@@ -8,4 +8,4 @@
   (fn [[amount amount-error]]
     (and
       (nil? amount-error)
-      (not (nil? amount)) (not= amount ""))))
+      (not (nil? amount)))))

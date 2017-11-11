@@ -75,9 +75,8 @@
   (fn [[{:keys [value to] :as transaction} contacts balance]]
     (when transaction
       (let [contact           (contacts (utils.hex/normalize-hex to))
-            amount            (str (.toFixed (money/wei->ether value)))
-            sufficient-funds? (money/sufficient-funds? amount balance)]
+            sufficient-funds? (money/sufficient-funds? value balance)]
         (cond-> (assoc transaction
-                       :amount amount
+                       :amount value
                        :sufficient-funds? sufficient-funds?)
           contact                 (assoc :to-name (:name contact)))))))

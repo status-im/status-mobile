@@ -52,11 +52,11 @@
 ;;;; Handlers
 
 (handlers/register-handler-fx
-  :wallet/set-and-validate-amount
+  :wallet.send/set-and-validate-amount
   (fn [{:keys [db]} [_ amount]]
-    (let [error (wallet.db/get-amount-validation-error amount)]
+    (let [{:keys [value error]} (wallet.db/parse-amount amount)]
       {:db (-> db
-               (assoc-in [:wallet :send-transaction :amount] amount)
+               (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
                (assoc-in [:wallet :send-transaction :amount-error] error))})))
 
 (def ^:private clear-send-properties {:id              nil
@@ -174,7 +174,7 @@
          ::send-transaction {:web3  web3
                              :from  (get-in accounts [current-account-id :address])
                              :to    to-address
-                             :value (money/to-wei (money/normalize amount))}}))))
+                             :value amount}}))))
 
 (handlers/register-handler-fx
   :wallet/sign-transaction-modal

@@ -76,7 +76,7 @@
   (and
    (nil? amount-error)
    (not (nil? to-address)) (not= to-address "")
-   (not (nil? amount)) (not= amount "")))
+   (not (nil? amount))))
 
 ;; "Sign Later" and "Sign Transaction >" buttons
 (defn- sign-buttons [amount-error to-address amount sufficient-funds? sign-later-handler]
@@ -126,8 +126,8 @@
                                 (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
              :input-options {:auto-focus     true
                              :on-focus       (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
-                             :default-value  amount
-                             :on-change-text #(re-frame/dispatch [:wallet/set-and-validate-amount %])}}]
+                             :default-value  (str (money/wei->ether amount))
+                             :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount %])}}]
            [react/view wallet.styles/choose-currency-container
             [components/choose-currency wallet.styles/choose-currency]]]]]
         [components/separator]
@@ -168,7 +168,7 @@
              [components/amount-input
               {:error (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds))
                :disabled? true
-               :input-options {:default-value amount}}]
+               :input-options {:default-value (str (money/wei->ether amount))}}]
              [react/view wallet.styles/choose-currency-container
               [components/choose-currency wallet.styles/choose-currency]]]]]
           [components/separator]
