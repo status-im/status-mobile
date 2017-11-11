@@ -184,7 +184,7 @@
 (reg-handler ::add-commands
   (after (fn [_ [id]]
            (dispatch [:invoke-commands-loading-callbacks id])
-           (dispatch [:update-suggestions])))
+           (dispatch [:chat-input/update-suggestions])))
   add-commands)
 
 (reg-handler ::loading-failed! (u/side-effect! loading-failed!))

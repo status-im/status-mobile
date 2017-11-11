@@ -15,26 +15,28 @@
    :content-type const/text-content-type
    :outgoing     true})
 
-;; -- Send phone number ----------------------------------------
-(defn- confirmation-code-event [correct? message-id]
-  [:received-message
-   {:message-id   message-id
-    :content      {:command "confirmation-code"
-                   :content (if correct?
-                              (label :t/confirmation-code)
-                              (label :t/incorrect-code))}
-    :content-type const/content-type-command-request
-    :outgoing     false
-    :chat-id      const/console-chat-id
-    :from         const/console-chat-id
-    :to           "me"}])
+;;;; Phone number sent
 
-(def enter-confirmation-code-event (partial confirmation-code-event true))
-(def incorrect-confirmation-code-event (partial confirmation-code-event false))
+(defn- confirmation-code-message [correct? message-id]
+  {:message-id   message-id
+   :content      {:command "confirmation-code"
+                  :content (if correct?
+                             (label :t/confirmation-code)
+                             (label :t/incorrect-code))}
+   :content-type const/content-type-command-request
+   :outgoing     false
+   :chat-id      const/console-chat-id
+   :from         const/console-chat-id
+   :to           "me"})
+
+(def enter-confirmation-code-message (partial confirmation-code-message true))
+(def incorrect-confirmation-code-message (partial confirmation-code-message false))
+
+;; TODO(alwx):
 
 ;; -- Send confirmation code and synchronize contacts---------------------------
 (defn contacts-synchronised-event [message-id]
-  [:received-message
+  [:chat-received-message/add
    {:message-id   message-id
     :content      (label :t/contacts-syncronized)
     :content-type const/text-content-type
@@ -44,7 +46,7 @@
     :to           "me"}])
 
 (def start-signup-events
-  [[:received-message
+  [[:chat-received-message/add
     {:message-id   (random/id)
      :content      {:command "phone"
                     :content (label :t/phone-number-required)}
@@ -53,7 +55,7 @@
      :chat-id      const/console-chat-id
      :from         const/console-chat-id
      :to           "me"}]
-   [:received-message
+   [:chat-received-message/add
     {:message-id   (random/id)
      :content      (label :t/shake-your-phone)
      :content-type const/text-content-type
@@ -63,29 +65,27 @@
      :to           "me"}]])
 
 ;; -- Saving password ----------------------------------------
-(def account-generation-event
-  [:received-message
-   {:message-id   chat-const/crazy-math-message-id
-    :content      (label :t/account-generation-message)
-    :content-type const/text-content-type
-    :outgoing     false
-    :chat-id      const/console-chat-id
-    :from         const/console-chat-id
-    :to           "me"}])
+(def account-generation-message
+  {:message-id   chat-const/crazy-math-message-id
+   :content      (label :t/account-generation-message)
+   :content-type const/text-content-type
+   :outgoing     false
+   :chat-id      const/console-chat-id
+   :from         const/console-chat-id
+   :to           "me"})
 
-(def move-to-internal-failure-event
-  [:received-message
-   {:message-id   chat-const/move-to-internal-failure-message-id
-    :content      {:command "grant-permissions"
-                   :content (label :t/move-to-internal-failure-message)}
-    :content-type const/content-type-command-request
-    :outgoing     false
-    :chat-id      const/console-chat-id
-    :from         const/console-chat-id
-    :to           "me"}])
+(def move-to-internal-failure-message
+  {:message-id   chat-const/move-to-internal-failure-message-id
+   :content      {:command "grant-permissions"
+                  :content (label :t/move-to-internal-failure-message)}
+   :content-type const/content-type-command-request
+   :outgoing     false
+   :chat-id      const/console-chat-id
+   :from         const/console-chat-id
+   :to           "me"})
 
 (defn passphrase-messages-events [mnemonic signing-phrase crazy-math-message?]
-  (into [[:received-message
+  (into [[:chat-received-message/add
           {:message-id   chat-const/passphrase-message-id
            :content      (if crazy-math-message?
                            (label :t/phew-here-is-your-passphrase)
@@ -95,7 +95,7 @@
            :chat-id      const/console-chat-id
            :from         const/console-chat-id
            :to           "me"}]
-         [:received-message
+         [:chat-received-message/add
           {:message-id   (random/id)
            :content      mnemonic
            :content-type const/text-content-type
@@ -103,7 +103,7 @@
            :chat-id      const/console-chat-id
            :from         const/console-chat-id
            :to           "me"}]
-         [:received-message
+         [:chat-received-message/add
           {:message-id   chat-const/signing-phrase-message-id
            :content      (label :t/here-is-your-signing-phrase)
            :content-type const/text-content-type
@@ -111,7 +111,7 @@
            :chat-id      const/console-chat-id
            :from         const/console-chat-id
            :to           "me"}]
-         [:received-message
+         [:chat-received-message/add
           {:message-id   (random/id)
            :content      signing-phrase
            :content-type const/text-content-type
@@ -131,8 +131,8 @@
    :to           "me"})
 
 (def intro-events
-  [[:received-message intro-status]
-   [:received-message-when-commands-loaded
+  [[:chat-received-message/add intro-status]
+   [:chat-received-message/add-when-commands-loaded
     const/console-chat-id
     {:chat-id      const/console-chat-id
      :message-id   chat-const/intro-message1-id

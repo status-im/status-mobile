@@ -80,14 +80,15 @@
 
 (reg-fx
   :call-jail
-  (fn [{:keys [callback-events-creator] :as opts}]
-    (status/call-jail
-     (-> opts
-         (dissoc :callback-events-creator)
-         (assoc :callback
-                (fn [jail-response]
-                  (doseq [event (callback-events-creator jail-response)]
-                    (dispatch event))))))))
+  (fn [calls]
+    (doseq [{:keys [callback-events-creator] :as opts} calls]
+      (status/call-jail
+       (-> opts
+           (dissoc :callback-events-creator)
+           (assoc :callback
+                  (fn [jail-response]
+                    (doseq [event (callback-events-creator jail-response)]
+                      (dispatch event)))))))))
 
 (reg-fx
   :call-jail-function
@@ -144,7 +145,7 @@
           (dispatch [:request-permissions
                      [:read-external-storage]
                      #(move-to-internal-storage config)
-                     #(dispatch [:move-to-internal-failure-message])])
+                     #(dispatch [:chat-received-message/move-to-internal-failure])])
           (status/start-node config))))))
 
 (reg-fx
@@ -253,7 +254,7 @@
                   [:load-processed-messages]
                   [:initialize-protocol address]
                   [:initialize-sync-listener]
-                  [:initialize-chats]
+                  [:chat/initialize-chats]
                   [:load-contacts]
                   [:load-contact-groups]
                   [:init-chat]
@@ -277,10 +278,10 @@
                    :view-id view
                    :navigation-stack (list view))}
        (when (or (empty? accounts) open-console?)
-         {:dispatch-n (concat [[:init-console-chat]
+         {:dispatch-n (concat [[:chat/init-console-chat]
                                [:load-commands!]]
-                              (when open-console?
-                                [[:navigate-to :chat console-chat-id]]))})))))
+                        (when open-console?
+                          [[:navigate-to :chat console-chat-id]]))})))))
 
 (register-handler-fx
   :initialize-crypt

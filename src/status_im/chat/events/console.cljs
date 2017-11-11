@@ -12,7 +12,7 @@
 
 ;;;; Helper fns
 
-(defn console-respond-command-events
+(defn console-respond-command-messages
   [command random-id-seq]
   (let [{:keys [command handler-data]} command]
     (when command
@@ -21,31 +21,29 @@
           "js" (let [{:keys [err data messages]} handler-data
                      content                     (or err data)
                      message-events              (mapv (fn [{:keys [message type]} id]
-                                                         [:received-message
-                                                          {:message-id   id
-                                                           :content      (str type ": " message)
-                                                           :content-type const/text-content-type
-                                                           :outgoing     false
-                                                           :chat-id      const/console-chat-id
-                                                           :from         const/console-chat-id
-                                                           :to           "me"}])
+                                                         {:message-id   id
+                                                          :content      (str type ": " message)
+                                                          :content-type const/text-content-type
+                                                          :outgoing     false
+                                                          :chat-id      const/console-chat-id
+                                                          :from         const/console-chat-id
+                                                          :to           "me"})
                                                        messages random-id-seq)]
                  (conj message-events
-                       [:received-message
-                        {:message-id   (first random-id-seq)
-                         :content      (str content)
-                         :content-type const/text-content-type
-                         :outgoing     false
-                         :chat-id      const/console-chat-id
-                         :from         const/console-chat-id
-                         :to           "me"}]))
+                       {:message-id   (first random-id-seq)
+                        :content      (str content)
+                        :content-type const/text-content-type
+                        :outgoing     false
+                        :chat-id      const/console-chat-id
+                        :from         const/console-chat-id
+                        :to           "me"}))
           (log/debug "ignoring command: " name))))))
 
 (defn faucet-base-url->url [url]
   (str url "/donate/0x%s"))
 
 (defn- faucet-response-event [message-id content]
-  [:received-message
+  [:chat-received-message/add
    {:message-id   message-id
     :content      content
     :content-type const/text-content-type
@@ -56,8 +54,8 @@
 
 (def console-commands->fx
   {"password"
-   (fn [{:keys [db]} {:keys [params]}]
-     (accounts-events/create-account db (:password params)))
+   (fn [fx {:keys [params]}]
+     (accounts-events/create-account fx (:password params)))
 
    "phone"
    (fn [{:keys [db]} {:keys [params id]}]
@@ -94,7 +92,7 @@
                                             :last-updated now})
            (assoc :dispatch-n (if debug?
                                 [[:initialize-debugging {:force-start? true}]
-                                 [:received-message
+                                 [:chat-received-message/add
                                   {:message-id   random-id
                                    :content      (i18n/label :t/debug-enabled)
                                    :content-type const/text-content-type
@@ -114,7 +112,7 @@
 ;; TODO(janherich) remove this once send-message events are refactored
 (handlers/register-handler-fx
   :invoke-console-command-handler!
-  [re-frame/trim-v (re-frame/inject-cofx :random-id)]
+  [re-frame/trim-v (re-frame/inject-cofx :random-id) (re-frame/inject-cofx :get-db-message)]
   (fn [cofx [{:keys [chat-id command] :as command-params}]]
     (let [fx-fn (get console-commands->fx (-> command :command :name))]
       (-> cofx
@@ -126,5 +124,5 @@
   :console-respond-command
   [(re-frame/inject-cofx :random-id-seq) re-frame/trim-v]
   (fn [{:keys [random-id-seq]} [command]]
-    (when-let [events (console-respond-command-events command random-id-seq)]
-      {:dispatch-n events})))
+    (when-let [messages (console-respond-command-messages command random-id-seq)]
+      {:chat-received-message/add-bulk messages})))

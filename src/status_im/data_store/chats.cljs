@@ -1,6 +1,7 @@
 (ns status-im.data-store.chats
   (:require [status-im.data-store.realm.chats :as data-store]
-            [re-frame.core :refer [dispatch]])
+            [re-frame.core :refer [dispatch]]
+            [taoensso.timbre :as log])
   (:refer-clojure :exclude [exists?]))
 
 (defn- normalize-contacts
@@ -44,7 +45,7 @@
 (defn add-contacts
   [chat-id identities]
   (data-store/add-contacts chat-id identities)
-  (dispatch [:reload-chats]))
+  (dispatch [:chat/reload-chats]))
 
 (defn remove-contacts
   [chat-id identities]

@@ -34,6 +34,6 @@
                           (if (= type :parameter-box)
                             (let [command-name (get-in @command [:command :name])]
                               (dispatch [:set-in [:chats @chat-id :parameter-boxes command-name @index] nil]))
-                            (dispatch [:set-chat-ui-props {:result-box nil}])))}
+                            (dispatch [:chat/set-chat-ui-props {:result-box nil}])))}
              [view style/header-close-container
               [icon :close_light_gray style/header-icon]]]]])))))

@@ -16,10 +16,11 @@
 (defn header [key container-height custom-header]
   (let [set-container-height (subscribe [:chat-animations key :height])
         max-container-height (subscribe [:get-max-container-area-height])
-        pan-responder        (resp/pan-responder container-height
-                                                 max-container-height
-                                                 :fix-expandable-height
-                                                 key)]
+        pan-responder        (resp/pan-responder
+                               container-height
+                               max-container-height
+                               :chat-animation/fix-expandable-height
+                               key)]
     (fn [_]
       [view (merge (drag/pan-handlers pan-responder)
                    {:style style/header-container})
@@ -67,27 +68,27 @@
                                                        :height            height})]
     (r/create-class
       {:component-did-mount
-       on-update
+                     on-update
        :component-did-update
-       on-update
+                     on-update
        :component-will-unmount
-       (fn []
-         (dispatch [:set-chat-ui-props {:fullscreen? false}])
-         (if height
-           (dispatch [:set-expandable-height key height])
-           (dispatch [:choose-predefined-expandable-height key :default])))
+                     (fn []
+                       (dispatch [:chat/set-chat-ui-props {:fullscreen? false}])
+                       (if height
+                         (dispatch [:chat-animation/set-expandable-height key height])
+                         (dispatch [:chat-animation/choose-predefined-expandable-height key :default])))
        :display-name "expandable-view"
        :reagent-render
-       (fn [{:keys [draggable? custom-header]} & elements]
-         @to-changed-height @changes-counter @max-height
-         (let [bottom (+ @input-height @chat-input-margin)
-               height (if @fullscreen? @max-height anim-value)]
-           [view style/overlap-container
-            (when (and (not hide-overlay?)
-                       (not @fullscreen?))
-              [overlay-view])
-            (into [animated-view {:style (style/expandable-container height bottom)}
-                   (when (and draggable?
-                              (not @fullscreen?))
-                     [header key anim-value custom-header])]
-                  elements)]))})))
+                     (fn [{:keys [draggable? custom-header]} & elements]
+                       @to-changed-height @changes-counter @max-height
+                       (let [bottom (+ @input-height @chat-input-margin)
+                             height (if @fullscreen? @max-height anim-value)]
+                         [view style/overlap-container
+                          (when (and (not hide-overlay?)
+                                  (not @fullscreen?))
+                            [overlay-view])
+                          (into [animated-view {:style (style/expandable-container height bottom)}
+                                 (when (and draggable?
+                                         (not @fullscreen?))
+                                   [header key anim-value custom-header])]
+                            elements)]))})))

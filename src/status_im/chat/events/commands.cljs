@@ -21,9 +21,9 @@
                                          (not (nil? group-id)))}}
          i18n/delimeters))
 
-(defn request-command-message-data
+(defn jail-request-data
   "Requests command message data from jail"
-  [db
+  [{:keys [db call-jail dispatch-n]}
    {{command-name :command
      content-command-name :content-command
      :keys [content-command-scope scope params type bot]} :content
@@ -48,15 +48,30 @@
             to          (get-in contacts [chat-id :address])
             jail-params {:parameters params
                          :context    (generate-context db chat-id to group-id)}]
-        {:call-jail {:jail-id                 jail-id
-                     :path                    path
-                     :params                  jail-params
-                     :callback-events-creator (fn [jail-response]
-                                                [[::jail-command-data-response
-                                                  jail-response message data-type]])}})
-      {:dispatch-n [[:add-commands-loading-callback jail-id
-                     #(re-frame/dispatch [:request-command-message-data message data-type])]
-                    [:load-commands! jail-id]]})))
+        {:call-jail (conj (or call-jail [])
+                          {:jail-id                 jail-id
+                           :path                    path
+                           :params                  jail-params
+                           :callback-events-creator (fn [jail-response]
+                                                      [[::jail-command-data-response
+                                                        jail-response message data-type]])})})
+      {:dispatch-n (into (or dispatch-n [])
+                         [[:add-commands-loading-callback jail-id
+                           #(re-frame/dispatch [:chat-commands/jail-request-data message data-type])]
+                          [:load-commands! jail-id]])})))
+
+(defn get-preview
+  [{:keys [db get-db-message] :as cofx} {:keys [message-id] :as message}]
+  (let [previews (get-in db [:message-data :preview])]
+    (when-not (contains? previews message-id)
+      (let [{serialized-preview :preview} (get-db-message message-id)]
+        ;; if preview is already cached in db, do not request it from jail
+        ;; and write it directly to message-data path
+        (if serialized-preview
+          {:db (assoc-in db
+                 [:message-data :preview message-id]
+                 (reader/read-string serialized-preview))}
+          (jail-request-data cofx message :preview))))))
 
 ;;;; Handlers
 
@@ -75,13 +90,13 @@
       (assoc :dispatch (on-requested returned)))))
 
 (handlers/register-handler-fx
-  :request-command-message-data
+  :chat-commands/jail-request-data
   [re-frame/trim-v]
-  (fn [{:keys [db]} [message data-type]]
-    (request-command-message-data db message data-type)))
+  (fn [cofx [message data-type]]
+    (jail-request-data cofx message data-type)))
 
 (handlers/register-handler-fx
-  :execute-command-immediately
+  :chat-commands/execute-immediately
   [re-frame/trim-v]
   (fn [_ [{command-name :name :as command}]]
     (case (keyword command-name)
@@ -92,16 +107,9 @@
       (log/debug "ignoring command: " command-name))))
 
 (handlers/register-handler-fx
-  :request-command-preview
-  [re-frame/trim-v (re-frame/inject-cofx :get-stored-message)]
-  (fn [{:keys [db get-stored-message]} [{:keys [message-id] :as message}]]
-    (let [previews (get-in db [:message-data :preview])]
-      (when-not (contains? previews message-id)
-        (let [{serialized-preview :preview} (get-stored-message message-id)]
-          ;; if preview is already cached in db, do not request it from jail
-          ;; and write it directly to message-data path
-          (if serialized-preview
-            {:db (assoc-in db
-                           [:message-data :preview message-id]
-                           (reader/read-string serialized-preview))}
-            (request-command-message-data db message :preview)))))))
+  :chat-commands/get-preview
+  [re-frame/trim-v (re-frame/inject-cofx :get-db-message)]
+  (fn [fx [message]]
+    (get-preview fx message)))
+
+

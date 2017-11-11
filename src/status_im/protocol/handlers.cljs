@@ -115,15 +115,15 @@
             (cache/add! processed-message)
             (processed-messages/save processed-message))
           (case type
-            :message               (dispatch [:received-protocol-message! message])
-            :group-message         (dispatch [:received-protocol-message! message])
-            :public-group-message  (dispatch [:received-protocol-message! message])
+            :message               (dispatch [:chat-received-message/add-protocol-message message])
+            :group-message         (dispatch [:chat-received-message/add-protocol-message message])
+            :public-group-message  (dispatch [:chat-received-message/add-protocol-message message])
             :ack                   (if (#{:message :group-message} (:type payload))
                                      (dispatch [:message-delivered message])
                                      (dispatch [:pending-message-remove message]))
             :seen                  (dispatch [:message-seen message])
-            :group-invitation      (dispatch [:group-chat-invite-received message])
-            :update-group          (dispatch [:update-group-message message])
+            :group-invitation      (dispatch [:chat/group-chat-invite-received message])
+            :update-group          (dispatch [:chat/update-group-message message])
             :add-group-identity    (dispatch [:participant-invited-to-group message])
             :remove-group-identity (dispatch [:participant-removed-from-group message])
             :leave-group           (dispatch [:participant-left-group message])
@@ -152,10 +152,11 @@
 
 (defn joined-chat-message [chat-id from message-id]
   (let [contact-name (:name (contacts/get-by-id from))]
-    (messages/save chat-id {:from         "system"
-                            :message-id   (str message-id "_" from)
-                            :content      (str (or contact-name from) " " (label :t/received-invitation))
-                            :content-type text-content-type})))
+    (messages/save {:from         "system"
+                    :chat-id      chat-id
+                    :message-id   (str message-id "_" from)
+                    :content      (str (or contact-name from) " " (label :t/received-invitation))
+                    :content-type text-content-type})))
 
 (defn participant-invited-to-group-message [chat-id current-identity identity from message-id timestamp]
   (let [inviter-name (:name (contacts/get-by-id from))
@@ -186,10 +187,11 @@
 
 (defn participant-left-group-message
   [chat-id from {:keys [message-id timestamp]}]
-  (let [left-name (:name (contacts/get-by-id from))]
-    (->> (str (or left-name from) " " (label :t/left))
-         (system-message message-id timestamp)
-         (messages/save chat-id))))
+  (let [left-name (:name (contacts/get-by-id from))
+        content   (str (or left-name from) " " (label :t/left))]
+    (-> (system-message message-id timestamp content)
+        (assoc :chat-id chat-id)
+        (messages/save))))
 
 (register-handler :group-chat-invite-acked
   (u/side-effect!
@@ -213,7 +215,7 @@
                       (participant-removed-from-group-message identity from payload)
                       :group-id group-id)]
                 (chats/remove-contacts group-id [identity])
-                (dispatch [:received-message message])))))))))
+                (dispatch [:chat-received-message/add message])))))))))
 
 (register-handler ::you-removed-from-group
   (u/side-effect!
@@ -223,7 +225,7 @@
       (when (chats/new-update? timestamp group-id)
         (let [message  (you-removed-from-group-message from payload)
               message' (assoc message :group-id group-id)]
-          (dispatch [:received-message message']))
+          (dispatch [:chat-received-message/add message']))
         (protocol/stop-watching-group! {:web3     web3
                                         :group-id group-id})
         (dispatch [:update-chat! {:chat-id         group-id
@@ -261,7 +263,7 @@
       (let [admin (get-in chats [group-id :group-admin])]
         (when (= from admin)
           (dispatch
-            [:received-message
+            [:chat-received-message/add
              (participant-invited-to-group-message group-id current-public-key identity from message-id timestamp)])
           (when-not (= current-public-key identity)
             (dispatch [:add-contact-to-group! group-id identity])))))))
@@ -348,7 +350,7 @@
       (pending-messages/save pending-message)
       (when (#{:message :group-message} type)
         (messages/update-message {:message-id id
-                          :delivery-status    :pending}))))
+                                  :delivery-status    :pending}))))
   (fn [db [_ {:keys [type id to group-id]}]]
     (if (#{:message :group-message} type)
       (let [chat-id        (or group-id to)

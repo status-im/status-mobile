@@ -37,7 +37,7 @@
                                     get-contact-translated]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]
-            [status-im.chat.events.console :as console]
+            [status-im.chat.events.console :as console-events]
             [taoensso.timbre :as log]))
 
 (def window-width (:width (get-dimensions "window")))
@@ -266,9 +266,9 @@
             status))]]
       [touchable-highlight
        {:on-press (fn []
-                    (dispatch [:show-message-details {:message-status status
-                                                      :user-statuses  user-statuses
-                                                      :participants   participants}]))}
+                    (dispatch [:chat/show-message-details {:message-status status
+                                                           :user-statuses  user-statuses
+                                                           :participants   participants}]))}
        [view st/delivery-view
         (for [[_ {:keys [whisper-identity]}] (take 3 user-statuses)]
           ^{:key whisper-identity}
@@ -286,7 +286,7 @@
   [{:keys [message-id chat-id message-status user-statuses content]}]
   [app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]]
   (let [delivery-status (get-in user-statuses [chat-id :status]) 
-        status          (cond (and (not (console/commands-with-delivery-status (:command content)))
+        status          (cond (and (not (console-events/commands-with-delivery-status (:command content)))
                                    (cu/console? chat-id))
                               :seen
 
@@ -346,7 +346,7 @@
   (if (:new? message)
     (let [layout-height (r/atom 0)
           anim-value    (anim/create-value 1)
-          anim-callback #(dispatch [:set-message-shown message])
+          anim-callback #(dispatch [:chat-messages/set-shown message])
           context       {:to-value layout-height
                          :val      anim-value
                          :callback anim-callback}
@@ -371,29 +371,32 @@
         status      (subscribe [:get-in [:message-data :user-statuses message-id my-identity]])
         preview     (subscribe [:get-message-preview message-id])]
     (r/create-class
-      {:display-name "chat-message"
+      {:display-name
+       "chat-message"
+
        :component-will-mount
        (fn []
          (let [{:keys [bot command] :as content} (get-in message [:content])
                message' (assoc message :jail-id bot)]
            (when (and command (not @preview))
-             (dispatch [:request-command-preview message']))))
+             (dispatch [:chat-commands/get-preview message']))))
 
        :component-did-mount
        (fn []
          (when (and (not outgoing)
-                    (not= :seen (keyword @status))
-                    (not= :seen (keyword (get-in user-statuses [@my-identity :status]))))
-           (dispatch [:send-seen! {:chat-id    chat-id
-                                   :from       from
-                                   :message-id message-id}])))
+                 (not= :seen (keyword @status))
+                 (not= :seen (keyword (get-in user-statuses [@my-identity :status]))))
+           (dispatch [:chat-messages/send-seen!
+                      {:chat-id    chat-id
+                       :from       from
+                       :message-id message-id}])))
        :reagent-render
        (fn [{:keys [outgoing group-chat content-type content] :as message}]
          [message-container message
-          [touchable-highlight {:on-press #(when platform/ios?
-                                             (dispatch [:set-chat-ui-props
-                                                        {:show-emoji? false}])
-                                             (dismiss-keyboard!))
+          [touchable-highlight {:on-press      #(when platform/ios?
+                                                  (dispatch [:chat/set-chat-ui-props
+                                                             {:show-emoji? false}])
+                                                  (dismiss-keyboard!))
                                 :on-long-press #(cond (= content-type text-content-type)
                                                       (share content (label :t/message))
                                                       (and (= content-type content-type-command) (= "location" (:content-command content)))
@@ -403,4 +406,4 @@
            [view
             (let [incoming-group (and group-chat (not outgoing))]
               [message-content message-body (merge message
-                                                   {:incoming-group incoming-group})])]]])})))
+                                              {:incoming-group incoming-group})])]]])})))

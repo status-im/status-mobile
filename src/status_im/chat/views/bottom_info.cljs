@@ -72,17 +72,17 @@
     (r/create-class
       {:display-name "bottom-info-view"
        :reagent-render
-       (fn []
-         (let [{:keys [user-statuses message-status participants]} @bottom-info
-               participants (->> participants
-                                 (map (fn [{:keys [identity]}]
-                                        [identity {:whisper-identity identity
-                                                   :status           message-status}]))
-                                 (into {}))
-               statuses     (vals (merge participants user-statuses))]
-           [overlay {:on-click-outside #(dispatch [:set-chat-ui-props {:show-bottom-info? false}])}
-            [container (* st/item-height (count statuses))
-             [list-view {:dataSource            (lw/to-datasource statuses)
-                         :enableEmptySections   true
-                         :renderRow             (render-row @contacts)
-                         :contentContainerStyle st/bottom-info-list-container}]]]))})))
+                     (fn []
+                       (let [{:keys [user-statuses message-status participants]} @bottom-info
+                             participants (->> participants
+                                            (map (fn [{:keys [identity]}]
+                                                   [identity {:whisper-identity identity
+                                                              :status           message-status}]))
+                                            (into {}))
+                             statuses     (vals (merge participants user-statuses))]
+                         [overlay {:on-click-outside #(dispatch [:chat/set-chat-ui-props {:show-bottom-info? false}])}
+                          [container (* st/item-height (count statuses))
+                           [list-view {:dataSource            (lw/to-datasource statuses)
+                                       :enableEmptySections   true
+                                       :renderRow             (render-row @contacts)
+                                       :contentContainerStyle st/bottom-info-list-container}]]]))})))

@@ -27,7 +27,7 @@
        (fn []
          (when (and (get-in @message [:content :command])
                     (not @preview))
-           (dispatch [:request-command-message-data @message :short-preview])))
+           (dispatch [:chat-commands/jail-request-data @message :short-preview])))
 
        :reagent-render
        (fn [_]
@@ -88,7 +88,7 @@
         unviewed-messages]])))
 
 (defn options-btn [chat-id]
-  (let [options [{:value        #(dispatch [:remove-chat chat-id])
+  (let [options [{:value        #(dispatch [:chat/remove chat-id])
                   :text         (label :t/delete-chat)
                   :destructive? true}]]
     [view st/opts-btn-container

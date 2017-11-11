@@ -17,7 +17,7 @@
   (let [fullscreen? (subscribe [:chat-ui-props :fullscreen?])]
     (fn []
       [touchable-highlight
-       {:on-press #(dispatch [:set-chat-ui-props {:fullscreen? (not @fullscreen?)}])}
+       {:on-press #(dispatch [:chat/set-chat-ui-props {:fullscreen? (not @fullscreen?)}])}
        (if @fullscreen?
          [view (style/action-view true)
           [icon :action_fullscreen_collapse style/action-view-icon]]

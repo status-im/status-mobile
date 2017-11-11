@@ -26,19 +26,19 @@
   [{:keys [db] :as cofx} chat-id]
   (let [new-chat       (create-new-chat cofx chat-id)
         existing-chats (:chats db)]
-    {:db (cond-> (assoc db :new-chat new-chat)
-           (not (contains? existing-chats chat-id))
-           (update :chats assoc chat-id new-chat))
-     :save-chat new-chat}))
+    {:db            (cond-> (assoc db :new-chat new-chat)
+                      (not (contains? existing-chats chat-id))
+                      (update :chats assoc chat-id new-chat))
+     :save-entities [[:chat new-chat]]}))
 
 (defn update-chat
   "Updates chat properties, if chat is not present in db, creates a default new one"
-  [{:keys [db get-stored-chat]} {:keys [chat-id] :as chat}]
+  [{:keys [db save-entities get-stored-chat]} {:keys [chat-id] :as chat}]
   (let [chat (merge (or (get-stored-chat chat-id)
                         (create-new-chat db chat-id))
                     chat)]
-    {:db        (update-in db [:chats chat-id] merge chat)
-     :save-chat chat}))
+    {:db            (update-in db [:chats chat-id] merge chat)
+     :save-entities (conj (or save-entities []) [:chat chat])}))
 
 (defn upsert-chat
   "Just like `update-chat` only implicitely updates timestamp"

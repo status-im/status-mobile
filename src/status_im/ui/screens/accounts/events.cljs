@@ -2,7 +2,6 @@
   (:require
    status-im.ui.screens.accounts.login.events
    status-im.ui.screens.accounts.recover.events
-
    [status-im.data-store.accounts :as accounts-store]
    [re-frame.core :as re-frame]
    [taoensso.timbre :as log]
@@ -17,16 +16,20 @@
    [status-im.ui.screens.accounts.statuses :as statuses]
    [status-im.utils.signing-phrase.core :as signing-phrase]
    [status-im.utils.gfycat.core :refer [generate-gfy]]
-   [status-im.utils.hex :as utils.hex]))
+   [status-im.utils.hex :as utils.hex]
+   [status-im.chat.constants :as chat-const]
+   [status-im.chat.sign-up :as sign-up]))
 
 ;;;; Helper fns
 
 (defn create-account
   "Takes db and password, creates map of effects describing account creation"
-  [db password]
-  {:db              (assoc db :accounts/creating-account? true)
-   ::create-account password
-   :dispatch-later  [{:ms 400 :dispatch [:account-generation-message]}]})
+  [{:keys [db get-db-message]} password]
+  (cond-> {:db              (assoc db :accounts/creating-account? true)
+           ::create-account password}
+
+    (not (get-db-message chat-const/passphrase-message-id))
+    (assoc :dispatch [:chat-received-message/add sign-up/account-generation-message])))
 
 ;;;; COFX
 
@@ -65,7 +68,7 @@
                  :signing-phrase      phrase}]
     (log/debug "account-created")
     (when-not (str/blank? public-key)
-      (re-frame/dispatch [:show-mnemonic mnemonic phrase])
+      (re-frame/dispatch [:chat-messages/show-mnemonic mnemonic phrase])
       (re-frame/dispatch [:add-account account password]))))
 
 (re-frame/reg-fx

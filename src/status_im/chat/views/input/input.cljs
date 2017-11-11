@@ -61,16 +61,16 @@
     (fn [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
       [text-input
        {:ref                    #(when %
-                                   (dispatch [:set-chat-ui-props {:input-ref %}])
+                                   (dispatch [:chat/set-chat-ui-props {:input-ref %}])
                                    (reset! input-ref %))
         :accessibility-label    :chat-message-input
         :multiline              (not single-line-input?)
         :default-value          (or @input-text "")
         :editable               (not @sending-in-progress?)
         :blur-on-submit         false
-        :on-focus               #(dispatch [:set-chat-ui-props {:input-focused? true
-                                                                :show-emoji?    false}])
-        :on-blur                #(dispatch [:set-chat-ui-props {:input-focused? false}])
+        :on-focus               #(dispatch [:chat/set-chat-ui-props {:input-focused? true
+                                                                :show-emoji?         false}])
+        :on-blur                #(dispatch [:chat/set-chat-ui-props {:input-focused? false}])
         :on-submit-editing      (fn [e]
                                   (if single-line-input?
                                     (dispatch [:send-current-message])
@@ -147,17 +147,17 @@
     (fn [{:keys [command-width container-width]}]
       (when (get-in @command [:command :sequential-params])
         (let [{:keys [placeholder hidden type]} (get-in @command [:command :params @arg-pos])]
-          [text-input (merge {:ref                 #(dispatch [:set-chat-ui-props {:seq-input-ref %}])
+          [text-input (merge {:ref                 #(dispatch [:chat/set-chat-ui-props {:seq-input-ref %}])
                               :style               (style/seq-input-text command-width container-width)
                               :default-value       (or @seq-arg-input-text "")
                               :on-change-text      #(do (dispatch [:set-chat-seq-arg-input-text %])
                                                         (dispatch [:load-chat-parameter-box (:command @command)])
-                                                        (dispatch [:set-chat-ui-props {:validation-messages nil}]))
+                                                        (dispatch [:chat/set-chat-ui-props {:validation-messages nil}]))
                               :placeholder         placeholder
                               :accessibility-label :chat-request-input
                               :blur-on-submit      false
                               :editable            (not @sending-in-progress?)
-                              :on-focus            #(dispatch [:set-chat-ui-props {:show-emoji? false}])
+                              :on-focus            #(dispatch [:chat/set-chat-ui-props {:show-emoji? false}])
                               :on-submit-editing   (fn []
                                                      (when-not (or (str/blank? @seq-arg-input-text)
                                                                    (get-in @command [:command :hide-send-button]))
@@ -176,34 +176,34 @@
     (r/create-class
       {:display-name "input-view"
        :reagent-render
-       (fn [{:keys [anim-margin single-line-input?]}]
-         (let [{:keys [width height container-width]} (r/state component)
-               command @command]
-           [animated-view {:style (style/input-root height anim-margin)}
-            [invisible-input {:set-layout-width-fn set-layout-width-fn}]
-            [basic-text-input {:set-layout-height-fn   set-layout-height-fn
-                               :set-container-width-fn set-container-width-fn
-                               :height                 height
-                               :single-line-input?     single-line-input?}]
-            [input-helper {:command command
-                           :width   width}]
-            [seq-input {:command-width   width
-                        :container-width container-width}]
-            (if-not command
-              [touchable-highlight
-               {:on-press #(do (dispatch [:toggle-chat-ui-props :show-emoji?])
-                               (dismiss-keyboard!))}
-               [view
-                [vi/icon :icons/smile {:container-style style/input-emoji-icon}]]]
-              (when-not single-line-input?
-                [touchable-highlight
-                 {:on-press #(do (dispatch [:set-chat-input-text nil])
-                                 (dispatch [:set-chat-input-metadata nil])
-                                 (dispatch [:set-chat-ui-props {:result-box          nil
-                                                                :validation-messages nil}])
-                                 (dispatch [:clear-seq-arguments]))}
-                 [view style/input-clear-container
-                  [vi/icon :icons/close]]]))]))})))
+                     (fn [{:keys [anim-margin single-line-input?]}]
+                       (let [{:keys [width height container-width]} (r/state component)
+                             command @command]
+                         [animated-view {:style (style/input-root height anim-margin)}
+                          [invisible-input {:set-layout-width-fn set-layout-width-fn}]
+                          [basic-text-input {:set-layout-height-fn   set-layout-height-fn
+                                             :set-container-width-fn set-container-width-fn
+                                             :height                 height
+                                             :single-line-input?     single-line-input?}]
+                          [input-helper {:command command
+                                         :width   width}]
+                          [seq-input {:command-width   width
+                                      :container-width container-width}]
+                          (if-not command
+                            [touchable-highlight
+                             {:on-press #(do (dispatch [:chat/toggle-chat-ui-props :show-emoji?])
+                                             (dismiss-keyboard!))}
+                             [view
+                              [vi/icon :icons/smile {:container-style style/input-emoji-icon}]]]
+                            (when-not single-line-input?
+                              [touchable-highlight
+                               {:on-press #(do (dispatch [:set-chat-input-text nil])
+                                               (dispatch [:set-chat-input-metadata nil])
+                                               (dispatch [:chat/set-chat-ui-props {:result-box          nil
+                                                                                   :validation-messages nil}])
+                                               (dispatch [:clear-seq-arguments]))}
+                               [view style/input-clear-container
+                                [vi/icon :icons/close]]]))]))})))
 
 (defview input-container [{:keys [anim-margin]}]
   (letsubs [command-completion [:command-completion]
@@ -277,7 +277,7 @@
                                          (.-layout)
                                          (.-height))]
                                (when (> h 0)
-                                 (dispatch [:set-chat-ui-props {:input-height h}])))}
+                                 (dispatch [:chat/set-chat-ui-props {:input-height h}])))}
            [animated-view {:style (style/container container-anim-margin bottom-anim-margin)}
             (when (str/blank? @input-text)
               [commands-view])

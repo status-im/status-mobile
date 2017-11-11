@@ -51,6 +51,10 @@
   [chat update?]
   (realm/save @realm/account-realm :chat chat update?))
 
+(defn save-all
+  [chats]
+  (realm/save-all @realm/account-realm :chat chats true))
+
 (defn exists?
   [chat-id]
   (realm/exists? @realm/account-realm :chat {:chat-id chat-id}))

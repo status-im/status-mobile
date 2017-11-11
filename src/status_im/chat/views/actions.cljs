@@ -36,7 +36,7 @@
    :icon        :menu_group
    :icon-style  {:width  25
                  :height 19}
-   :handler     #(re-frame/dispatch [:show-profile chat-id])})
+   :handler     #(re-frame/dispatch [:chat/show-profile chat-id])})
 
 (def item-search
   {:title      (i18n/label :t/search-chat)
@@ -92,7 +92,7 @@
                                accessibility-label]
                     :or       {accessibility-label :action}}]
   [react/touchable-highlight {:on-press (fn []
-                                          (re-frame/dispatch [:set-chat-ui-props {:show-actions? false}])
+                                          (re-frame/dispatch [:chat/set-chat-ui-props {:show-actions? false}])
                                           (when handler
                                             (handler)))}
    [react/view {:accessibility-label accessibility-label
@@ -130,5 +130,5 @@
             ^{:key action} [action-view action]))]])))
 
 (defn actions-view []
-  [overlay {:on-click-outside #(re-frame/dispatch [:set-chat-ui-props {:show-actions? false}])}
+  [overlay {:on-click-outside #(re-frame/dispatch [:chat/set-chat-ui-props {:show-actions? false}])}
    [actions-list-view]])
