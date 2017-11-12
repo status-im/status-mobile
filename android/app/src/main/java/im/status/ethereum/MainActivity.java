@@ -6,16 +6,13 @@ import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
-import android.support.multidex.MultiDexApplication;
 import android.os.Looper;
 import android.util.Log;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+
 import com.facebook.react.ReactActivity;
 import com.cboy.rn.splashscreen.SplashScreen;
 import com.testfairy.TestFairy;
@@ -85,7 +82,7 @@ public class MainActivity extends ReactActivity {
             TestFairy.begin(this, "969f6c921cb435cea1d41d1ea3f5b247d6026d55");
         }
 
-        if (!RootUtil.isDeviceRooted()) {
+        if (!shouldShowRootedNotification()) {
             configureStatus();
         } else {
             AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
@@ -93,6 +90,7 @@ public class MainActivity extends ReactActivity {
                     .setPositiveButton(getResources().getString(R.string.root_okay), new OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            rejectRootedNotification();
                             dialog.dismiss();
                             configureStatus();
                         }
@@ -146,5 +144,30 @@ public class MainActivity extends ReactActivity {
         Intent intent = new Intent("onConfigurationChanged");
         intent.putExtra("newConfig", newConfig);
         this.sendBroadcast(intent);
+    }
+
+    private static final String REJECTED_ROOTED_NOTIFICATION = "rejectedRootedNotification";
+    private static final Integer FREQUENCY_OF_REMINDER_IN_PERCENT = 5;
+
+    private boolean shouldShowRootedNotification() {
+        if (RootUtil.isDeviceRooted()) {
+            if (userRejectedRootedNotification()) {
+                return ((Math.random() * 100) < FREQUENCY_OF_REMINDER_IN_PERCENT);
+            } else return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean userRejectedRootedNotification() {
+        SharedPreferences preferences = getPreferences(0);
+        return preferences.getBoolean(REJECTED_ROOTED_NOTIFICATION, false);
+    }
+
+    private void rejectRootedNotification() {
+        SharedPreferences preferences = getPreferences(0);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(REJECTED_ROOTED_NOTIFICATION, true);
+        editor.commit();
     }
 }
