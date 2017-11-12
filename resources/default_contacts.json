@@ -32,7 +32,7 @@
         "dapp?": true,
         "dapp-url":
         {
-            "en": "https://testnet.bcshop.io/"
+            "en": "https://testnet.bcshop.io"
         },
         "groups": ["dapps"]
     },
