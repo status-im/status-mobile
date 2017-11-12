@@ -37,7 +37,7 @@
                                     get-contact-translated]]
             [status-im.chat.utils :as cu]
             [clojure.string :as str]
-            [status-im.chat.events.console :as console]
+            [status-im.chat.events.console :as console-events]
             [taoensso.timbre :as log]))
 
 (def window-width (:width (get-dimensions "window")))
@@ -286,7 +286,7 @@
   [{:keys [message-id chat-id message-status user-statuses content]}]
   [app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]]
   (let [delivery-status (get-in user-statuses [chat-id :status]) 
-        status          (cond (and (not (console/commands-with-delivery-status (:command content)))
+        status          (cond (and (not (console-events/commands-with-delivery-status (:command content)))
                                    (cu/console? chat-id))
                               :seen
 

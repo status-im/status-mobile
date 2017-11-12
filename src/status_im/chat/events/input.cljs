@@ -344,6 +344,41 @@
                                                                  after-validation-events])})]
     (request-command-data db validation-params)))
 
+(defn send-current-message [{db :db message-id :random-id current-time :now}]
+  (let [{:keys [current-chat-id current-public-key]} db
+        input-text   (get-in db [:chats current-chat-id :input-text])
+        chat-command (-> db
+                       (input-model/selected-chat-command current-chat-id input-text)
+                       (as-> selected-command
+                         (if (get-in selected-command [:command :sequential-params])
+                           (assoc selected-command :args
+                                                   (get-in db [:chats current-chat-id :seq-arguments]))
+                           (update selected-command :args (partial remove str/blank?)))))]
+    (if (:command chat-command)
+      ;; current input contains command
+      (if (= :complete (input-model/command-completion chat-command))
+        ;; command is complete, clear sequential arguments and proceed with command processing
+        (-> db
+          clear-seq-arguments
+          (model/set-chat-ui-props {:sending-in-progress? true})
+          (proceed-command chat-command message-id current-time))
+        ;; command is not complete, just add space after command if necessary
+        {:db (cond-> db
+               (not (input-model/text-ends-with-space? input-text))
+               (set-chat-input-text const/spacing-char :append? true))})
+      ;; no command detected, when not empty, proceed by sending text message without command processing
+      (if (str/blank? input-text)
+        {:db db}
+        {:db (-> db
+               (set-chat-input-metadata nil)
+               (set-chat-input-text nil)
+               update-suggestions)
+         ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
+         :dispatch [:prepare-message {:message  input-text
+                                      :chat-id  current-chat-id
+                                      :identity current-public-key
+                                      :address  (:accounts/current-account-id db)}]}))))
+
 ;;;; Handlers
 
 (handlers/register-handler-db
@@ -396,9 +431,8 @@
       {::blur-rn-component cmp-ref})))
 
 (handlers/register-handler-db
-  :update-suggestions
-  (fn [db _]
-    (update-suggestions db)))
+  :chat-input/update-suggestions
+  update-suggestions)
 
 (handlers/register-handler-fx
   :load-chat-parameter-box
@@ -474,41 +508,6 @@
                                       {:data-type           :preview
                                        :event-after-creator (fn [command-message _]
                                                               [::send-command command-message])})))))
-
-(defn send-current-message [{db :db message-id :random-id current-time :now}]
-  (let [{:keys [current-chat-id current-public-key]} db
-        input-text   (get-in db [:chats current-chat-id :input-text])
-        chat-command (-> db
-                       (input-model/selected-chat-command current-chat-id input-text)
-                       (as-> selected-command
-                         (if (get-in selected-command [:command :sequential-params])
-                           (assoc selected-command :args
-                                                   (get-in db [:chats current-chat-id :seq-arguments]))
-                           (update selected-command :args (partial remove str/blank?)))))]
-    (if (:command chat-command)
-      ;; current input contains command
-      (if (= :complete (input-model/command-completion chat-command))
-        ;; command is complete, clear sequential arguments and proceed with command processing
-        (-> db
-          clear-seq-arguments
-          (model/set-chat-ui-props {:sending-in-progress? true})
-          (proceed-command chat-command message-id current-time))
-        ;; command is not complete, just add space after command if necessary
-        {:db (cond-> db
-               (not (input-model/text-ends-with-space? input-text))
-               (set-chat-input-text const/spacing-char :append? true))})
-      ;; no command detected, when not empty, proceed by sending text message without command processing
-      (if (str/blank? input-text)
-        {:db db}
-        {:db (-> db
-               (set-chat-input-metadata nil)
-               (set-chat-input-text nil)
-               update-suggestions)
-         ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
-         :dispatch [:prepare-message {:message  input-text
-                                      :chat-id  current-chat-id
-                                      :identity current-public-key
-                                      :address  (:accounts/current-account-id db)}]}))))
 
 (handlers/register-handler-fx
   :send-current-message

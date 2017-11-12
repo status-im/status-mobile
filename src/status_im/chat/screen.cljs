@@ -1,11 +1,11 @@
 (ns status-im.chat.screen
   (:require-macros [status-im.utils.views :as views])
-  (:require [re-frame.core :as rf]
+  (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.status-bar :refer [status-bar]]
             [status-im.ui.components.chat-icon.screen :refer [chat-icon-view-action
-                                                           chat-icon-view-menu-item]]
+                                                              chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
@@ -82,7 +82,7 @@
 (views/defview toolbar-action []
   (views/letsubs [show-actions? [:chat-ui-props :show-actions?]]
     [react/touchable-highlight
-     {:on-press            #(rf/dispatch [:set-chat-ui-props {:show-actions? (not show-actions?)}])
+     {:on-press            #(re-frame/dispatch [:set-chat-ui-props {:show-actions? (not show-actions?)}])
       :accessibility-label :chat-menu}
      [react/view st/action
       (if show-actions?
@@ -94,7 +94,7 @@
                   pending-contact? [:current-contact :pending?]]
     (when pending-contact?
       [react/touchable-highlight
-       {:on-press #(rf/dispatch [:add-pending-contact chat-id])}
+       {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
        [react/view st/add-contact
         [react/text {:style st/add-contact-text}
          (label :t/add-to-contacts)]]])))
@@ -108,7 +108,7 @@
      [toolbar/toolbar {:show-sync-bar? true}
       (when-not (or show-actions? creating?)
         (if (empty? accounts)
-          [toolbar/nav-clear-text (label :t/recover) #(rf/dispatch [:navigate-to-modal :recover-modal])]
+          [toolbar/nav-clear-text (label :t/recover) #(re-frame/dispatch [:navigate-to-modal :recover-modal])]
           toolbar/default-nav-back))
       [toolbar-content-view]
       [toolbar-action]]
@@ -161,7 +161,7 @@
                                                    :index               index
                                                    :last-outgoing?      (= (:message-id last-outgoing-message) (:message-id row))}))
         :renderScrollComponent     #(invertible-scroll-view (js->clj %))
-        :onEndReached              (when-not loaded? #(rf/dispatch [:load-more-messages]))
+        :onEndReached              (when-not loaded? #(re-frame/dispatch [:load-more-messages]))
         :enableEmptySections       true
         :keyboardShouldPersistTaps (if platform/android? :always :handled)
         :dataSource                (to-datasource-inverted messages)}])))
@@ -173,14 +173,14 @@
                   show-emoji? [:chat-ui-props :show-emoji?]
                   layout-height [:get :layout-height]
                   input-text [:chat :input-text]]
-    {:component-did-mount    #(do (rf/dispatch [:chat/check-and-open-dapp!])
-                                  (rf/dispatch [:update-suggestions]))
-     :component-will-unmount #(rf/dispatch [:set-chat-ui-props {:show-emoji? false}])}
+    {:component-did-mount    #(do (re-frame/dispatch [:chat/check-and-open-dapp!])
+                                  (re-frame/dispatch [:chat-input/update-suggestions]))
+     :component-will-unmount #(re-frame/dispatch [:set-chat-ui-props {:show-emoji? false}])}
     [react/view {:style     st/chat-view
                  :on-layout (fn [event]
                               (let [height (.. event -nativeEvent -layout -height)]
                                 (when (not= height layout-height)
-                                  (rf/dispatch [:set-layout-height height]))))}
+                                  (re-frame/dispatch [:set-layout-height height]))))}
      [chat-toolbar]
      [messages-view group-chat]
      [input/container {:text-empty? (str/blank? input-text)}]

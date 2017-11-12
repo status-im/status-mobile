@@ -1,15 +1,27 @@
-(ns status-im.chat.handlers.webview-bridge
-  (:require [re-frame.core :refer [dispatch]]
+(ns status-im.chat.events.webview-bridge
+  (:require [re-frame.core :as re-frame]
+            [status-im.ui.components.nfc :as nfc]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]
-            [status-im.ui.components.nfc :as nfc]))
+            [taoensso.timbre :as log]))
 
-(handlers/register-handler :set-webview-bridge
-  (fn [db [_ bridge]]
-    (assoc db :webview-bridge bridge)))
+;;;; Effects
 
-(handlers/register-handler :webview-bridge-message
+(re-frame/reg-fx
+  ::send-to-bridge
+  (fn [[webview-bridge data]]
+    (when webview-bridge
+      (.sendToBridge webview-bridge (types/clj->json data)))))
+
+;; TODO(alwx): continue
+
+(handlers/register-handler-db
+  :chat-webview-bridge/set-ref
+  (fn [db [_ ref]]
+    (assoc db :webview-bridge ref)))
+
+(handlers/register-handler
+  :chat-webview-bridge/process-message
   (handlers/side-effect!
     (fn [_ [_ message-string]]
       (let [{:keys [event options] :as message} (types/json->clj message-string)
@@ -17,7 +29,7 @@
             params (:data options)]
         (log/debug (str "message from webview: " message))
         (case event'
-          :nfc (dispatch [:webview-nfc params])
+          :nfc (re-frame/dispatch [:webview-nfc params])
           (log/error (str "Unknown event: " event')))))))
 
 (handlers/register-handler :send-to-webview-bridge
@@ -29,7 +41,7 @@
 (handlers/register-handler :webview-nfc
   (handlers/side-effect!
     (fn [_ [_ {:keys [event params]}]]
-      (let [callback #(dispatch [:send-to-webview-bridge {:params % :event "nfc"}])]
+      (let [callback #(re-frame/dispatch [:send-to-webview-bridge {:params % :event "nfc"}])]
         (case (keyword event)
           :get-card-id (nfc/get-card-id #(callback {:event :get-card-id :card %})
                                         #(callback {:event :get-card-id :error %}))

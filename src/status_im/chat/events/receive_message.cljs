@@ -6,6 +6,9 @@
             [status-im.utils.clocks :as clocks]
             [status-im.constants :as const]
             [status-im.chat.utils :as chat-utils]
+            [status-im.chat.events.commands :as commands-events]
+            [status-im.chat.events.input :as input-events]
+            [status-im.chat.events.requests :as requests-events]
             [status-im.chat.models :as model]
             [status-im.chat.models.unviewed-messages :as unviewed-messages-model]
             [status-im.data-store.chats :as chat-store]
@@ -32,6 +35,7 @@
   [{:accounts/keys [accounts current-account-id]}]
   (get-in accounts [current-account-id :public-key]))
 
+;; TODO(alwx): this method should be tested and maybe even restructured
 (defn add-message
   [{:keys [db message-exists? get-last-stored-message pop-up-chat?
            get-last-clock-value now random-id] :as cofx}
@@ -68,13 +72,16 @@
                            :save-message (dissoc enriched-message :new?)))
 
           (get-in enriched-message [:content :command])
-          (update :dispatch-n conj [:chat-commands/get-preview enriched-message])
+          (as-> fx
+            (merge fx (commands-events/get-preview fx enriched-message)))
 
           (= (:content-type enriched-message) const/content-type-command-request)
-          (update :dispatch-n conj [:add-request chat-identifier enriched-message])
-          ;; TODO(janherich) this shouldn't be dispatch, but plain function call, refactor after adding requests is refactored
+          (as-> fx
+            (merge fx (requests-events/add-request fx chat-identifier enriched-message)))
+
           true
-          (update :dispatch-n conj [:update-suggestions])))
+          (as-> fx
+            (merge fx (input-events/update-suggestions fx)))))
       {:db db})))
 
 (def ^:private receive-interceptors

@@ -1,6 +1,5 @@
 (ns status-im.chat.handlers.send-message
-  (:require [clojure.string :as s]
-            [re-frame.core :refer [after dispatch path]]
+  (:require [re-frame.core :as re-frame]
             [status-im.chat.models.commands :as commands-model]
             [status-im.chat.events.console :as console]
             [status-im.chat.utils :as cu]
@@ -67,14 +66,14 @@
       (let [{:keys [command] :as content} command]
         (cond
           (console-command? chat-id (:name command))
-          (dispatch [:invoke-console-command-handler! params])
+          (re-frame/dispatch [:invoke-console-command-handler! params])
 
           (:has-handler command)
-          (dispatch [::invoke-command-handlers! params])
+          (re-frame/dispatch [::invoke-command-handlers! params])
 
           :else
-          (dispatch [:prepare-command! chat-id params])))
-      (dispatch [:set-chat-ui-props {:sending-in-progress? false}]))))
+          (re-frame/dispatch [:prepare-command! chat-id params])))
+      (re-frame/dispatch [:set-chat-ui-props {:sending-in-progress? false}]))))
 
 (register-handler :prepare-command!
   (u/side-effect!
@@ -91,22 +90,22 @@
                                (map :name))
             command'      (->> (prepare-command current-public-key chat-id clock-value request content)
                                (cu/check-author-direction db chat-id))]
-        (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
-        (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
+        (re-frame/dispatch [:chat/update-message-overhead! chat-id network-status])
+        (re-frame/dispatch [:set-chat-ui-props {:sending-in-progress? false}])
+        (re-frame/dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
         (when (cu/console? chat-id)
-          (dispatch [:console-respond-command params]))))))
+          (re-frame/dispatch [:console-respond-command params]))))))
 
 (register-handler ::send-command!
   (u/side-effect!
     (fn [_ [_ add-to-chat-id params hidden-params]]
-      (dispatch [::add-command add-to-chat-id params])
-      (dispatch [::save-command! add-to-chat-id params hidden-params])
-      (dispatch [::dispatch-responded-requests! params])
-      (dispatch [::send-command-protocol! params]))))
+      (re-frame/dispatch [::add-command add-to-chat-id params])
+      (re-frame/dispatch [::save-command! add-to-chat-id params hidden-params])
+      (re-frame/dispatch [::dispatch-responded-requests! params])
+      (re-frame/dispatch [::send-command-protocol! params]))))
 
 (register-handler ::add-command
-  (after (fn [_ [_ _ {:keys [handler]}]]
+  (re-frame/after (fn [_ [_ _ {:keys [handler]}]]
            (when handler (handler))))
   (fn [db [_ add-to-chat-id {:keys [chat-id command]}]]
     (cu/add-message-to-db db add-to-chat-id chat-id command)))
@@ -119,14 +118,14 @@
                                 (update-in [:content :params] #(apply dissoc % hidden-params))
                                 (dissoc :to-message :has-handler :raw-input))
                       preview (assoc :preview (pr-str preview)))]
-        (dispatch [:upsert-chat! {:chat-id chat-id}])
+        (re-frame/dispatch [:upsert-chat! {:chat-id chat-id}])
         (messages/save chat-id command)))))
 
 (register-handler ::dispatch-responded-requests!
   (u/side-effect!
     (fn [_ [_ {{:keys [to-message]} :command :keys [chat-id]}]]
       (when to-message
-        (dispatch [:request-answered! chat-id to-message])))))
+        (re-frame/dispatch [:chat-requests/mark-as-answered chat-id to-message])))))
 
 (register-handler ::invoke-command-handlers!
   (u/side-effect!
@@ -163,7 +162,7 @@
                           (fn [_]
                             (log/debug "Async command handler called"))
                           (fn [res]
-                            (dispatch [:command-handler! chat-id orig-params res])))})])))))
+                            (re-frame/dispatch [:command-handler! chat-id orig-params res])))})])))))
 
 (register-handler :prepare-message
   (u/side-effect!
@@ -189,20 +188,20 @@
                                 (not group-chat)
                                 (assoc :to chat-id :message-type :user-message))
             params'     (assoc params :message message'')]
-        (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [::add-message params'])
-        (dispatch [::save-message! params'])))))
+        (re-frame/dispatch [:chat/update-message-overhead! chat-id network-status])
+        (re-frame/dispatch [::add-message params'])
+        (re-frame/dispatch [::save-message! params'])))))
 
 (register-handler ::add-message
   (fn [db [_ {:keys [chat-id message]}]]
     (cu/add-message-to-db db chat-id chat-id message)))
 
 (register-handler ::save-message!
-  (after (fn [_ [_ params]]
-           (dispatch [::send-message! params])))
+  (re-frame/after (fn [_ [_ params]]
+           (re-frame/dispatch [::send-message! params])))
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id message]}]]
-      (dispatch [:upsert-chat! {:chat-id chat-id}])
+      (re-frame/dispatch [:upsert-chat! {:chat-id chat-id}])
       (messages/save chat-id message))))
 
 (register-handler ::send-dapp-message
@@ -224,9 +223,9 @@
             {:keys [log-messages update-db default-db]} context
             content (or err text-message)]
         (when update-db
-          (dispatch [:update-bot-db {:bot bot-id
+          (re-frame/dispatch [:update-bot-db {:bot bot-id
                                      :db  update-db}]))
-        (dispatch [:suggestions-handler (assoc params
+        (re-frame/dispatch [:suggestions-handler (assoc params
                                           :bot-id bot-id
                                           :result data
                                           :default-db default-db)])
@@ -235,7 +234,7 @@
             (when (or (not= type "debug")
                       js/goog.DEBUG
                       (get-in contacts [chat-id :debug?]))
-              (dispatch [:received-message
+              (re-frame/dispatch [:received-message
                          {:message-id   (random/id)
                           :content      (str type ": " message)
                           :content-type content-type-log-message
@@ -244,7 +243,7 @@
                           :from         chat-id
                           :to           "me"}]))))
         (when content
-          (dispatch [:received-message
+          (re-frame/dispatch [:received-message
                      {:message-id   (random/id)
                       :content      (str content)
                       :content-type text-content-type
@@ -256,7 +255,7 @@
 (defn handle-message-from-bot [{:keys [message chat-id]}]
   (cond
     (string? message)
-    (dispatch [:received-message
+    (re-frame/dispatch [:received-message
                {:message-id   (random/id)
                 :content      (str message)
                 :content-type text-content-type
@@ -266,9 +265,21 @@
                 :to           "me"}])
 
     (= "request" (:type message))
-    (dispatch [:add-request-message!
+    (re-frame/dispatch [:add-request-message!
                {:content (:content message)
                 :chat-id chat-id}])))
+
+(register-handler :add-request-message!
+  (u/side-effect!
+    (fn [_ [_ {:keys [content chat-id]}]]
+      (re-frame/dispatch [:received-message
+                          {:message-id   (random/id)
+                           :content      (assoc content :bot chat-id)
+                           :content-type content-type-command-request
+                           :outgoing     false
+                           :chat-id      chat-id
+                           :from         chat-id
+                           :to           "me"}]))))
 
 (register-handler :send-message-from-jail
   (u/side-effect!
@@ -282,7 +293,7 @@
     (fn [_ [_ {:keys [chat-id markup]}]]
       (let [markup' (types/json->clj markup)
             result  (assoc-in {} [:result :returned :markup] markup')]
-        (dispatch [:suggestions-handler
+        (re-frame/dispatch [:suggestions-handler
                    {:result  result
                     :chat-id chat-id}])))))
 
@@ -304,7 +315,7 @@
                         chat-id         :chat-id}]]
       (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
         (if dapp?
-          (dispatch [::send-dapp-message chat-id message])
+          (re-frame/dispatch [::send-dapp-message chat-id message])
           (when message
             (let [message' (select-keys message [:from :message-id])
                   payload  (select-keys message [:timestamp :content :content-type
@@ -373,15 +384,3 @@
             :else
             (protocol/send-message! (assoc-in options
                                               [:message :to] chat-id))))))))
-
-(register-handler :add-request-message!
-  (u/side-effect!
-    (fn [_ [_ {:keys [content chat-id]}]]
-      (dispatch [:received-message
-                 {:message-id   (random/id)
-                  :content      (assoc content :bot chat-id)
-                  :content-type content-type-command-request
-                  :outgoing     false
-                  :chat-id      chat-id
-                  :from         chat-id
-                  :to           "me"}]))))

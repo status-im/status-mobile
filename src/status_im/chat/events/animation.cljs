@@ -30,19 +30,19 @@
 ;;;; Handlers
 
 (handlers/register-handler-db
-  :set-expandable-height
+  :chat-animation/set-expandable-height
   [re-frame/trim-v]
   (fn [db [key value]]
     (set-expandable-height db key value)))
 
 (handlers/register-handler-db
-  :choose-predefined-expandable-height
+  :chat-animation/choose-predefined-expandable-height
   [re-frame/trim-v]
   (fn [db [key preset]]
     (choose-predefined-expandable-height db key preset)))
 
 (handlers/register-handler-db
-  :fix-expandable-height
+  :chat-animation/fix-expandable-height
   [re-frame/trim-v]
   (fn [{:keys [current-chat-id chats chat-ui-props layout-height] :as db} [vy current key]]
     (let [input-height      (get-in chat-ui-props [current-chat-id :input-height])

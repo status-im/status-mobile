@@ -124,7 +124,7 @@
     :color "#77DCC6"}])
 
 (defn navigate-to-public-chat [topic]
-  (re-frame/dispatch [:create-new-public-chat topic]))
+  (re-frame/dispatch [:chat/create-new-public-chat topic]))
 
 (defn render-public-chats-item [{:keys [name color topic] :as item}]
   [react/touchable-highlight {:on-press #(navigate-to-public-chat topic)}]

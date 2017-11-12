@@ -58,6 +58,19 @@
                      #(re-frame/dispatch [:chat-commands/jail-request-data message data-type])]
                     [:load-commands! jail-id]]})))
 
+(defn get-preview
+  [{:keys [db get-stored-message]} {:keys [message-id] :as message}]
+  (let [previews (get-in db [:message-data :preview])]
+    (when-not (contains? previews message-id)
+      (let [{serialized-preview :preview} (get-stored-message message-id)]
+        ;; if preview is already cached in db, do not request it from jail
+        ;; and write it directly to message-data path
+        (if serialized-preview
+          {:db (assoc-in db
+                 [:message-data :preview message-id]
+                 (reader/read-string serialized-preview))}
+          (jail-request-data db message :preview))))))
+
 ;;;; Handlers
 
 (handlers/register-handler-fx
@@ -94,16 +107,7 @@
 (handlers/register-handler-fx
   :chat-commands/get-preview
   [re-frame/trim-v (re-frame/inject-cofx :get-stored-message)]
-  (fn [{:keys [db get-stored-message]} [{:keys [message-id] :as message}]]
-    (let [previews (get-in db [:message-data :preview])]
-      (when-not (contains? previews message-id)
-        (let [{serialized-preview :preview} (get-stored-message message-id)]
-          ;; if preview is already cached in db, do not request it from jail
-          ;; and write it directly to message-data path
-          (if serialized-preview
-            {:db (assoc-in db
-                           [:message-data :preview message-id]
-                           (reader/read-string serialized-preview))}
-            (jail-request-data db message :preview)))))))
+  (fn [fx [message]]
+    (get-preview fx message)))
 
 

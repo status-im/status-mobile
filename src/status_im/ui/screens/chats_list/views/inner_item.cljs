@@ -88,7 +88,7 @@
         unviewed-messages]])))
 
 (defn options-btn [chat-id]
-  (let [options [{:value        #(dispatch [:remove-chat chat-id])
+  (let [options [{:value        #(dispatch [:chat/remove chat-id])
                   :text         (label :t/delete-chat)
                   :destructive? true}]]
     [view st/opts-btn-container

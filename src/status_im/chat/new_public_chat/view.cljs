@@ -23,7 +23,7 @@
         [toolbar/actions [{:icon      :icons/ok
                            :icon-opts {:color (if create-btn-enabled? components.styles/color-blue4 components.styles/color-gray11)}
                            :handler   (when create-btn-enabled?
-                                        #(dispatch [:create-new-public-chat topic]))}]]]])))
+                                        #(dispatch [:chat/create-new-public-chat topic]))}]]]])))
 
 (defview chat-name-input []
   (letsubs [topic [:get :public-group-topic]]
