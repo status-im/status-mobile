@@ -9,11 +9,20 @@
   [gen vector]
   (str/capitalize (rnd/seeded-rand-nth gen vector)))
 
+(defn- build-gfy
+  [public-key]
+  (let [gen               (rnd/rand-gen public-key)
+        first-adjective   (pick-random gen adjectives/data)
+        second-adjective  (pick-random gen adjectives/data)
+        animal            (pick-random gen animals/data)]
+    (str first-adjective " " second-adjective " " animal)))
+
+(def unknown-gfy "Unknown")
+
 (defn generate-gfy
   ([public-key]
-  (let [gen (rnd/rand-gen public-key)
-        first-adjective (pick-random gen adjectives/data)
-        second-adjective (pick-random gen adjectives/data)
-        animal (pick-random gen animals/data)]
-    (str first-adjective " " second-adjective " " animal)))
+   (case public-key
+     nil unknown-gfy
+     "0" unknown-gfy
+     (build-gfy public-key)))
   ([] (generate-gfy (now-ms))))
