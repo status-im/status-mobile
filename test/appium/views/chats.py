@@ -122,7 +122,7 @@ class ConfirmPublicKeyButton(BaseButton):
     def __init__(self, driver):
         super(ConfirmPublicKeyButton, self).__init__(driver)
         self.locator = \
-            self.Locator.accessibility_id('toolbar-action')
+            self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[2]')
 
 
 class ChatMessageInput(BaseEditBox):

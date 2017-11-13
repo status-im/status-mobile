@@ -57,9 +57,10 @@ class AbstractTestCase:
     @property
     def capabilities_sauce_lab(self):
         desired_caps = dict()
-        desired_caps['app'] = pytest.config.getoption('apk')
+        desired_caps['app'] = 'sauce-storage:' + test_data.apk_name
+
         desired_caps['build'] = pytest.config.getoption('build')
-        desired_caps['name'] = tests_data.name
+        desired_caps['name'] = test_data.test_name
         desired_caps['platformName'] = 'Android'
         desired_caps['appiumVersion'] = '1.7.1'
         desired_caps['platformVersion'] = '6.0'
