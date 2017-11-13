@@ -7,7 +7,9 @@
             [status-im.data-store.discover :as discoveries]
             [status-im.utils.handlers :as u]
             [status-im.utils.datetime :as time]
-            [status-im.utils.random :as random]))
+            [status-im.utils.random :as random]
+            [taoensso.timbre :as log]
+            [status-im.utils.handlers :as handlers]))
 
 (def request-discoveries-interval-s 600)
 
@@ -27,26 +29,31 @@
                                       [message-id discover]))
                                (into {})))))
 
+;; todo(goranjovic): at the moment we do nothing when a status without hashtags is posted
+;; but we probably should post a special "delete" status that removes any previous
+;; hashtag statuses in that scenario. In any case, that's the reason why this event
+;; gets even the statuses without a hashtag - it may need to do stuff with them as well.
 (register-handler :broadcast-status
   (u/side-effect!
     (fn [{:keys [current-public-key web3]
           :accounts/keys [accounts current-account-id]
           :contacts/keys [contacts]}
-         [_ status hashtags]]
-      (let [{:keys [name photo-path]} (get accounts current-account-id)
-            message-id (random/id)
-            message    {:message-id message-id
-                        :from       current-public-key
-                        :payload    {:message-id message-id
-                                     :status     status
-                                     :hashtags   (vec hashtags)
-                                     :profile    {:name          name
-                                                  :profile-image photo-path}}}]
-        (doseq [id (u/identities contacts)]
-          (protocol/send-status!
-            {:web3    web3
-             :message (assoc message :to id)}))
-        (dispatch [:status-received message])))))
+         [_ status]]
+      (if-let [hashtags (seq (handlers/get-hashtags status))]
+        (let [{:keys [name photo-path]} (get accounts current-account-id)
+              message-id (random/id)
+              message    {:message-id message-id
+                          :from       current-public-key
+                          :payload    {:message-id message-id
+                                       :status     status
+                                       :hashtags   (vec hashtags)
+                                       :profile    {:name          name
+                                                    :profile-image photo-path}}}]
+          (doseq [id (u/identities contacts)]
+            (protocol/send-status!
+              {:web3    web3
+               :message (assoc message :to id)}))
+          (dispatch [:status-received message]))))))
 
 (register-handler :status-received
   (u/side-effect!

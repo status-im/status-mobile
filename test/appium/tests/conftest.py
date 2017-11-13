@@ -1,5 +1,4 @@
-from tests import tests_data
-import time
+from tests import test_data
 import requests
 import re
 from datetime import datetime
@@ -19,26 +18,28 @@ def get_latest_apk():
     dates.sort(key=lambda date: datetime.strptime(date, "%d-%b-%Y %H:%M"), reverse=True)
     return re.findall('>(.*k)</a>\s*%s' % dates[0], raw_data)[0]
 
-latest_apk = get_latest_apk()
+latest_nightly_apk = dict()
+latest_nightly_apk['name'] = get_latest_apk()
+latest_nightly_apk['url'] = storage + latest_nightly_apk['name']
 
 
 def pytest_addoption(parser):
     parser.addoption("--build",
                      action="store",
-                     default='build_' + time.strftime('%Y_%m_%d_%H_%M'),
+                     default='build_' + latest_nightly_apk['name'],
                      help="Specify build name")
     parser.addoption('--apk',
                      action='store',
-                     default='sauce-storage:' + latest_apk,
-                     help='Please provide url or local path to apk')
+                     default=latest_nightly_apk['url'],
+                     help='Url or local path to apk')
     parser.addoption('--env',
                      action='store',
                      default='sauce',
-                     help='Please specify environment: local/sauce')
-
-
-def pytest_runtest_setup(item):
-    tests_data.name = item.name + '_' + latest_apk
+                     help='Specify environment: local/sauce')
+    parser.addoption('--log',
+                     action='store',
+                     default=False,
+                     help='Display each test step in terminal as plain text: True/False')
 
 
 def is_master(config):
@@ -48,21 +49,31 @@ def is_master(config):
 def is_uploaded():
     stored_files = SauceClient(sauce_username, sauce_access_key).storage.get_stored_files()
     for i in range(len(stored_files['files'])):
-        if stored_files['files'][i]['name'] == latest_apk:
+        if stored_files['files'][i]['name'] == test_data.apk_name:
             return True
 
 
 def pytest_configure(config):
-    import logging
-    logging.basicConfig(level=logging.INFO)
+
+    if config.getoption('log'):
+        import logging
+        logging.basicConfig(level=logging.INFO)
+
+    test_data.apk_name = ([i for i in [i for i in config.getoption('apk').split('/')
+                                       if '.apk' in i]])[0]
+
     if is_master(config) and config.getoption('env') == 'sauce':
         if not is_uploaded():
-            response = requests.get(storage + latest_apk, stream=True)
+            response = requests.get(config.getoption('apk'), stream=True)
             response.raise_for_status()
             file = BytesIO(response.content)
             del response
             requests.post('http://saucelabs.com/rest/v1/storage/'
-                          + sauce_username + '/' + latest_apk + '?overwrite=true',
+                          + sauce_username + '/' + test_data.apk_name + '?overwrite=true',
                           auth=(sauce_username, sauce_access_key),
                           data=file,
                           headers={'Content-Type': 'application/octet-stream'})
+
+
+def pytest_runtest_setup(item):
+    test_data.test_name = item.name + '_' + test_data.apk_name

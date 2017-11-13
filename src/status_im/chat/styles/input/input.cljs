@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.input.input
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :as common]
+  (:require [status-im.ui.components.styles :as common]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]))
 

@@ -2,19 +2,19 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch dispatch-sync]]
             [status-im.ui.screens.accounts.styles :as st]
-            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.actions :as act]
-            [status-im.components.common.common :as common]
-            [status-im.components.action-button.action-button :refer [action-button]]
+            [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.actions :as act]
+            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.action-button.action-button :refer [action-button]]
             [status-im.utils.listview :as lw]
             [status-im.constants :refer [console-chat-id]]
-            [status-im.components.react :refer [view
-                                                text
-                                                list-view
-                                                list-item
-                                                image
-                                                touchable-highlight]]
+            [status-im.ui.components.react :refer [view
+                                                   text
+                                                   list-view
+                                                   list-item
+                                                   image
+                                                   touchable-highlight]]
             [status-im.i18n :as i18n]
             [clojure.string :as str]))
 

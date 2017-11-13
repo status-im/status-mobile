@@ -1,11 +1,11 @@
 (ns status-im.chat.views.input.animations.responder
-  (:require [status-im.components.drag-drop :as drag]
-            [status-im.components.animation :as anim]
+  (:require [status-im.ui.components.drag-drop :as drag]
+            [status-im.ui.components.animation :as anim]
             [status-im.chat.views.input.utils :as input-utils]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
             [status-im.utils.platform :as p]
-            [status-im.components.toolbar.styles :as toolbar-st]))
+            [status-im.ui.components.toolbar.styles :as toolbar-st]))
 
 ;; todo bad name. Ideas?
 (defn enough-dy [gesture]

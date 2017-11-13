@@ -54,6 +54,7 @@
    :sync-synced                           "In sync"
 
    ;;messages
+   :status-sending                        "Sending..."
    :status-pending                        "Pending"
    :status-sent                           "Sent"
    :status-seen-by-everyone               "Seen by everyone"
@@ -104,7 +105,6 @@
    :sharing-cancel                        "Cancel"
 
    :browsing-title                        "Browse"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "Open in web browser"
    :browsing-cancel                       "Cancel"
 

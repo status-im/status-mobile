@@ -7,14 +7,14 @@
 
 (defn get-all-as-list
   []
-  (realm/realm-collection->list (get-all)))
+  (realm/js-object->clj (get-all)))
 
 (defn get-open-by-chat-id
   [chat-id]
   (-> (realm/get-by-fields @realm/account-realm :request :and [[:chat-id chat-id]
                                                                [:status "open"]])
       (realm/sorted :added :desc)
-      (realm/realm-collection->list)))
+      realm/js-object->clj))
 
 ;; NOTE(oskarth): phone command in Console can be answered again, so we want to list this
 ;; TODO(oskarth): Refactor this, either by extending and/or query or changing status of message
@@ -24,7 +24,7 @@
                                                                [:type "phone"]
                                                                [:status "answered"]])
       (realm/sorted :added :desc)
-      (realm/realm-collection->list)))
+      realm/js-object->clj))
 
 (defn get-available-by-chat-id
   [chat-id]
@@ -45,7 +45,7 @@
   (-> @realm/account-realm
       (realm/get-by-fields :request :and [[:chat-id chat-id]
                                           [:message-id message-id]])
-      (realm/single)))
+      realm/single))
 
 (defn mark-as-answered
   [chat-id message-id]

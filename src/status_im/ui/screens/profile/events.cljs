@@ -2,7 +2,7 @@
   (:require [clojure.spec.alpha :as spec]
             [clojure.string :as string]
             [re-frame.core :as re-frame :refer [reg-fx trim-v]]
-            [status-im.components.react :refer [show-image-picker]]
+            [status-im.ui.components.react :refer [show-image-picker]]
             [status-im.constants :refer [console-chat-id]]
             [status-im.ui.screens.profile.db :as db]
             [status-im.ui.screens.profile.navigation]
@@ -30,10 +30,11 @@
 (handlers/register-handler-fx
   :profile/send-transaction
   [trim-v]
-  (fn [_ [chat-id]]
-    {:dispatch [:navigate-to :chat chat-id]
-     ;;TODO get rid of timeout
-     :dispatch-later [{:ms 100 :dispatch [:select-chat-input-command {:name "send"}]}]}))
+  (fn [{:keys [db]} [chat-id]]
+    (let [send-command (first (get-in db [:contacts/contacts "transactor-personal" :commands :send]))]
+      {:dispatch [:navigate-to :chat chat-id]
+       ;;TODO get rid of timeout
+       :dispatch-later [{:ms 100 :dispatch [:select-chat-input-command send-command]}]})))
 
 (handlers/register-handler-fx
   :profile/send-message
@@ -45,9 +46,10 @@
   :my-profile/update-phone-number
   ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
   ;; We allow to change phone number only from console because this requires entering SMS verification code.
-  (fn [_ _]
-    {:dispatch-n [[:navigate-to :chat console-chat-id]
-                  [:select-chat-input-command {:name "phone"}]]}))
+  (fn [{:keys [db]} _]
+    (let [phone-command (first (get-in db [:contacts/contacts "console" :responses :phone]))]
+      {:dispatch-n [[:navigate-to-chat console-chat-id]
+                    [:select-chat-input-command phone-command]]})))
 
 (defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))
@@ -143,22 +145,35 @@
           (accounts-events/account-update {:name         cleaned-name
                                            :last-updated now})))))
 
+(defn status-change
+  "Takes map containing old status and the updated one and if the status has changed
+  returns the effects neccessary for status broadcasting"
+  [fx {:keys [old-status status]}]
+  (if (and status (not= status old-status))
+    (assoc fx :dispatch-n [[:broadcast-status status]])
+    fx))
+
 (handlers/register-handler-fx
   :my-profile.drawer/save-status
   (fn [{:keys [db now]} _]
     (let [status (get-in db [:my-profile/drawer :status])
-          new-fx (clear-profile {:db db})]
+          new-fx (clear-profile {:db db})
+          {:accounts/keys [accounts current-account-id]} db
+          {old-status :status} (get accounts current-account-id)]
       (if (string/blank? status)
         new-fx
         (-> new-fx
             (accounts-events/account-update {:status       status
                                              :last-updated now})
-            (assoc :dispatch-n [[:check-status-change status]]))))))
+            (status-change {:old-status old-status
+                            :status     status}))))))
 
 (handlers/register-handler-fx
   :my-profile/save-profile
   (fn [{:keys [db now]} _]
-    (let [{:keys [status photo-path]} (:my-profile/profile db)
+    (let [{:accounts/keys [accounts current-account-id]} db
+          {old-status :status} (get accounts current-account-id)
+          {:keys [status photo-path]} (:my-profile/profile db)
           cleaned-name (clean-name db :my-profile/profile)
           cleaned-edit {:name         cleaned-name
                         :status       status
@@ -166,5 +181,6 @@
                         :last-updated now}]
       (-> (clear-profile {:db db})
           (accounts-events/account-update cleaned-edit)
-          (assoc :dispatch-n [[:check-status-change status]
-                              [:navigate-back]])))))
+          (status-change {:old-status old-status
+                          :status     status})
+          (update :dispatch-n concat [[:navigate-back]])))))

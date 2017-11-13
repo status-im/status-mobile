@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 animated-view
                                                 text
                                                 image
@@ -10,7 +10,7 @@
                                                 touchable-highlight]]
             [status-im.chat.styles.message.message :as st]
             [status-im.chat.models.commands :as commands]
-            [status-im.components.animation :as anim]
+            [status-im.ui.components.animation :as anim]
             [taoensso.timbre :as log]))
 
 (def request-message-icon-scale-delay 600)

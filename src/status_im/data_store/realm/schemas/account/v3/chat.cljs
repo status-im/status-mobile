@@ -1,6 +1,6 @@
 (ns status-im.data-store.realm.schemas.account.v3.chat
   (:require [taoensso.timbre :as log]
-            [status-im.components.styles :refer [default-chat-color]]))
+            [status-im.ui.components.styles :refer [default-chat-color]]))
 
 (def schema {:name       :chat
              :primaryKey :chat-id

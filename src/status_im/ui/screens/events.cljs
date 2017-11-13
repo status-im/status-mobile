@@ -20,7 +20,7 @@
             status-im.ui.screens.wallet.choose-recipient.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
             [status-im.native-module.core :as status]
-            [status-im.components.permissions :as permissions]
+            [status-im.ui.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
             [status-im.data-store.core :as data-store]
             [status-im.i18n :as i18n]

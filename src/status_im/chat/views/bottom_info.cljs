@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 animated-view
                                                 image
                                                 text
@@ -10,10 +10,10 @@
                                                 touchable-highlight
                                                 list-view
                                                 list-item]]
-            [status-im.components.chat-icon.screen :refer [chat-icon-view-menu-item]]
+            [status-im.ui.components.chat-icon.screen :refer [chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.i18n :refer [label label-pluralize message-status-label]]
-            [status-im.components.animation :as anim]
+            [status-im.ui.components.animation :as anim]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.listview :as lw]

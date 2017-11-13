@@ -2,10 +2,10 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
             [status-im.utils.platform :refer [android?]]
-            [status-im.components.react :refer [view modal]]
-            [status-im.components.styles :as common-styles]
+            [status-im.ui.components.react :refer [view modal]]
+            [status-im.ui.components.styles :as common-styles]
             [status-im.ui.screens.main-tabs.views :refer [main-tabs]]
-            [status-im.components.context-menu :refer [menu-context]]
+            [status-im.ui.components.context-menu :refer [menu-context]]
 
             [status-im.ui.screens.accounts.login.views :refer [login]]
             [status-im.ui.screens.accounts.recover.views :refer [recover recover-modal]]
@@ -42,7 +42,7 @@
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
 
-            [status-im.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar :as status-bar]
 
             [status-im.ui.screens.discover.search-results.views :as discover-search]
             [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]

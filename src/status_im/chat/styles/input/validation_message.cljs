@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.input.validation-message
   (:require [status-im.chat.constants :as constants]
-            [status-im.components.styles :as common]))
+            [status-im.ui.components.styles :as common]))
 
 (defn root [bottom]
   {:flex-direction :column

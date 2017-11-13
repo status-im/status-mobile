@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.accounts.login.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as st]))
+  (:require [status-im.ui.components.styles :as st]))
 
 (defstyle login-view
   {:flex              1

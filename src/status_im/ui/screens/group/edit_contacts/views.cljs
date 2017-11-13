@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.group.edit-contacts.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.contact.contact :refer [contact-view]]
-            [status-im.components.renderers.renderers :as renderers]
-            [status-im.components.react :refer [view list-view list-item]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :refer [toolbar-with-search]]
+            [status-im.ui.components.contact.contact :refer [contact-view]]
+            [status-im.ui.components.renderers.renderers :as renderers]
+            [status-im.ui.components.react :refer [view list-view list-item]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.i18n :refer [label]]))

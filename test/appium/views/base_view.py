@@ -110,6 +110,27 @@ class SaveButton(BaseButton):
             "//android.widget.TextView[@text='SAVE']")
 
 
+class ChatRequestInput(BaseEditBox):
+
+    def __init__(self, driver):
+        super(ChatRequestInput, self).__init__(driver)
+        self.locator = \
+            self.Locator.xpath_selector("//android.widget.EditText[@content-desc!='chat-message-input']")
+
+
+class AppsButton(BaseButton):
+    def __init__(self, driver):
+        super(AppsButton, self).__init__(driver)
+        self.locator = self.Locator.accessibility_id("Apps")
+
+
+class StatusAppIcon(BaseButton):
+    def __init__(self, driver):
+        super(StatusAppIcon, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Status']")
+
+
 class BaseViewObject(object):
     def __init__(self, driver):
         self.driver = driver
@@ -118,14 +139,22 @@ class BaseViewObject(object):
         self.no_button = NoButton(self.driver)
         self.back_button = BackButton(self.driver)
         self.deny_button = DenyButton(self.driver)
-        self.continue_button_apk = ContinueButtonAPK(driver)
-        self.ok_button_apk = OkButtonAPK(driver)
+        self.continue_button_apk = ContinueButtonAPK(self.driver)
+        self.ok_button_apk = OkButtonAPK(self.driver)
+        self.apps_button = AppsButton(self.driver)
+        self.status_app_icon = StatusAppIcon(self.driver)
 
         self.contacts_button = ContactsButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
         self.discover_button = DiscoverButton(self.driver)
 
         self.save_button = SaveButton(self.driver)
+
+        self.chat_request_input = ChatRequestInput(self.driver)
+
+    @property
+    def logcat(self):
+        return self.driver.get_log("logcat")
 
     def confirm(self):
         logging.info("Tap 'Confirm' on native keyboard")
@@ -167,6 +196,10 @@ class BaseViewObject(object):
     def get_chats(self):
         from views.chats import ChatsViewObject
         return ChatsViewObject(self.driver)
+
+    def get_login(self):
+        from views.login import LoginView
+        return LoginView(self.driver)
 
     def get_balance(self, address):
         url = 'http://ropsten.etherscan.io/api?module=account&action=balance&address=0x%s&tag=latest' % address

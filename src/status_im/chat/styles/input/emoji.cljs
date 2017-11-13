@@ -1,5 +1,5 @@
 (ns status-im.chat.styles.input.emoji
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def container-height 250)
 

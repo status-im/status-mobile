@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.group.chat-settings.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.contact.contact :refer [contact-view]]
-            [status-im.components.common.common :as common]
-            [status-im.components.react :refer [view scroll-view keyboard-avoiding-view]]
-            [status-im.components.sticky-button :refer [sticky-button]]
+            [status-im.ui.components.contact.contact :refer [contact-view]]
+            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.react :refer [view scroll-view keyboard-avoiding-view]]
+            [status-im.ui.components.sticky-button :refer [sticky-button]]
             [status-im.ui.screens.group.styles :as styles]
             [status-im.ui.screens.group.views :refer [group-toolbar group-chat-settings-btns
                                                       group-name-view add-btn more-btn]]

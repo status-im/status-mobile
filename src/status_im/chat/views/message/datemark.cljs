@@ -1,6 +1,6 @@
 (ns status-im.chat.views.message.datemark
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 text]]
             [clojure.string :as str]
             [status-im.i18n :refer [label]]

@@ -4,7 +4,7 @@ from tests.basetestcase import SingleDeviceTestCase
 from views.home import HomeView
 from tests.preconditions import set_password_as_new_user, recover_access
 from tests import transaction_users
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 
 
 @pytest.mark.all
@@ -68,7 +68,7 @@ class TestTransactions(SingleDeviceTestCase):
             chats.find_full_text('0.1')
             try:
                 chats.find_full_text('Sent', 10)
-            except NoSuchElementException:
+            except TimeoutException:
                 chats.find_full_text('Delivered', 10)
             if test == 'group_chat':
                 chats.find_full_text('to  ' + transaction_users[recipient]['username'], 60)

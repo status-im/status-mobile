@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.discover.dapp-details.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.components.react :as react]
+  (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.discover.components.views :as components]
-            [status-im.components.chat-icon.screen :as chat-icon.screen]
-            [status-im.components.common.common :as common]
-            [status-im.components.icons.vector-icons :as vector-icons]
-            [status-im.components.toolbar.view :as toolbar]
+            [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
+            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.screens.discover.styles :as styles]
             [status-im.i18n :as i18n]
             [re-frame.core :as re-frame]))

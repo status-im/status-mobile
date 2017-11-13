@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.message.message
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :refer [color-white
+  (:require [status-im.ui.components.styles :refer [color-white
                                                  color-black
                                                  color-blue
                                                  color-light-blue

@@ -1,11 +1,11 @@
 (ns status-im.ui.screens.wallet.send.transaction-sent.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [status-im.components.react :as react]
-            [status-im.components.status-bar :as status-bar]
-            [status-im.components.icons.vector-icons :as vi]
+  (:require [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.screens.wallet.send.transaction-sent.styles :as styles]
-            [status-im.components.styles :as components.styles]
+            [status-im.ui.components.styles :as components.styles]
             [re-frame.core :as re-frame]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.i18n :as i18n]

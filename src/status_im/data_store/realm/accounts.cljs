@@ -1,25 +1,19 @@
 (ns status-im.data-store.realm.accounts
   (:require [status-im.data-store.realm.core :as realm]))
 
-(defn- reformat-networks [account]
-  (update account :networks
-          (fn [networks]
-            (into {}
-                  (map (fn [{:keys [id] :as network}]
-                         [id network])
-                       (vals (js->clj networks :keywordize-keys true)))))))
-
 (defn get-all []
   (realm/get-all realm/base-realm :account))
 
 (defn get-all-as-list []
-  (map reformat-networks (realm/realm-collection->list (get-all))))
+  (->> (get-all)
+       realm/js-object->clj
+       (mapv #(realm/fix-map % :networks :id))))
 
 (defn get-by-address [address]
-  (reformat-networks
-    (realm/get-one-by-field-clj realm/base-realm :account :address address)))
+  (realm/fix-map (realm/get-one-by-field-clj realm/base-realm :account :address address)
+                 :networks :id))
 
 (defn save [account update?]
   (realm/write realm/base-realm
-    (let [account' (update account :networks (comp vec vals))]
-      #(realm/create realm/base-realm :account account' update?))))
+               (let [account' (realm/fix-map->vec account :networks)]
+                 #(realm/create realm/base-realm :account account' update?))))

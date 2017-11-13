@@ -1,10 +1,10 @@
 (ns status-im.ui.screens.profile.qr-code.views
   (:require [clojure.string :as string]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.qr-code :refer [qr-code]]
-            [status-im.components.react :as react]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.qr-code :refer [qr-code]]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.status-bar :refer [status-bar]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.qr-code.styles :as styles]
             [status-im.utils.eip.eip67 :as eip67])

@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.request.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def network-container
   {:flex        1

@@ -3,9 +3,9 @@
   (:require [reagent.core :as r]
             [reagent.impl.component :as rc]
             [re-frame.core :refer [dispatch subscribe]]
-            [status-im.components.animation :as anim]
-            [status-im.components.drag-drop :as drag]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.drag-drop :as drag]
+            [status-im.ui.components.react :refer [view
                                                 animated-view]]
             [status-im.chat.views.input.animations.responder :as resp]
             [status-im.chat.views.input.utils :as input-utils]

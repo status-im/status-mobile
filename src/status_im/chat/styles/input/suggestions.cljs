@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.input.suggestions
   (:require-macros [status-im.utils.styles :refer [defnstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def color-item-title-text "rgb(147, 155, 161)")
 (def color-item-suggestion-name "rgb(98, 143, 227)")

@@ -9,9 +9,11 @@
             [status-im.ui.screens.accounts.events :as account-events]
             [status-im.constants :as constants]))
 
+(def account-id "5648abf29215d3817bec65007be83a0f11d13ad6")
+
 (def account-from-realm
   {:last-updated        1502965625859
-   :address             "f8fa50a736618badf21c9d0e9a7605a2b268789b"
+   :address             "c348abf29215d3817bec65007be83a0f11d13ad6"
    :email               nil
    :signed-up?          true
    :phone               nil
@@ -27,7 +29,7 @@
    :public-key          "0x049b3a8c04f2c5bccda91c1f5e6434ae72957e93a31c0301b4563eda1d6ce419f63c503ebaee143115f96c1f04f232a7a22ca0454e9ee3d579ad1f870315b151d0"})
 
 (def new-account
-  {:address             "c296367a939e0957500a25ca89b70bd64b03004e"
+  {:address             account-id
    :signed-up?          true
    :name                "Disloyal Trusting Rainbowfish"
    :updates-private-key "3849071831f581f5e2a4f095a53e0a697144b32ea6de9e92cc08936f2efa40d2f1702bdb131356df0930a3a0d301221f2b5"
@@ -68,6 +70,7 @@
     (test-fixtures)
 
     (rf/dispatch [:initialize-db])
+    (rf/dispatch [:set :accounts/current-account-id account-id])
 
     (let [accounts (rf/subscribe [:get-accounts])]
 

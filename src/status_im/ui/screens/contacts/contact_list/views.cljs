@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.contacts.contact-list.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.renderers.renderers :as renderers]
-            [status-im.components.contact.contact :refer [contact-view]]
+            [status-im.ui.components.renderers.renderers :as renderers]
+            [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.ui.screens.contacts.views :refer [contact-options]]
-            [status-im.components.react :refer [view list-view list-item]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar.view :as toolbar]
-            [status-im.components.toolbar.actions :as act]
-            [status-im.components.drawer.view :refer [drawer-view]]
+            [status-im.ui.components.react :refer [view list-view list-item]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as act]
+            [status-im.ui.components.drawer.view :refer [drawer-view]]
             [status-im.ui.screens.contacts.styles :as st]
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]))

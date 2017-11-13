@@ -4,7 +4,7 @@
             [reagent.core :as r]
             [re-frame.core :refer [subscribe dispatch]]
             [taoensso.timbre :as log]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 text
                                                 icon
                                                 touchable-highlight]]

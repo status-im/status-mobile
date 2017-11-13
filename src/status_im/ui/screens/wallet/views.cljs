@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.views
-  (:require [status-im.components.react :as react]
+  (:require [status-im.ui.components.react :as react]
             [status-im.ui.screens.wallet.styles :as styles]
-            [status-im.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.i18n :as i18n]))
 
 (defn- message-view [icon-container-style label]

@@ -2,20 +2,20 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as re-frame]
-    [status-im.components.react :as react]
-    [status-im.components.qr-code :as components.qr-code]
-    [status-im.components.toolbar.actions :as actions]
-    [status-im.components.toolbar.view :as toolbar]
-    [status-im.components.status-bar :as status-bar]
+    [status-im.ui.components.react :as react]
+    [status-im.ui.components.qr-code :as components.qr-code]
+    [status-im.ui.components.toolbar.actions :as actions]
+    [status-im.ui.components.toolbar.view :as toolbar]
+    [status-im.ui.components.status-bar :as status-bar]
     [status-im.ui.screens.wallet.styles :as wallet.styles]
-    [status-im.components.icons.vector-icons :as vi]
+    [status-im.ui.components.icons.vector-icons :as vi]
     [status-im.ui.screens.wallet.components.views :as components]
     [status-im.ui.screens.wallet.request.styles :as styles]
-    [status-im.components.styles :as components.styles]
+    [status-im.ui.components.styles :as components.styles]
     [status-im.i18n :as i18n]
     [status-im.utils.platform :as platform]
     [status-im.utils.eip.eip67 :as eip67]
-    [status-im.components.common.common :as common]))
+    [status-im.ui.components.common.common :as common]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style wallet.styles/toolbar :hide-border? true}

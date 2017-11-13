@@ -8,8 +8,7 @@
 
 (defn get-all-as-list
   []
-  (->> (get-all)
-       realm/realm-collection->list))
+  (realm/js-object->clj (get-all)))
 
 (defn get-by-message-id
   [message-id]

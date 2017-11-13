@@ -108,7 +108,6 @@
    :sharing-cancel                        "取消"
 
    :browsing-title                        "瀏覽"
-   :browsing-browse                       "@browse"
    :browsing-open-in-web-browser          "在網絡瀏覽器中打開"
    :browsing-cancel                       "取消"
 

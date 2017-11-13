@@ -1,7 +1,7 @@
 (ns status-im.native-module.impl.module
   (:require-macros
    [cljs.core.async.macros :as async :refer [go-loop go]])
-  (:require [status-im.components.react :as r]
+  (:require [status-im.ui.components.react :as r]
             [re-frame.core :refer [dispatch]]
             [taoensso.timbre :as log]
             [cljs.core.async :as async :refer [<! timeout]]
@@ -120,9 +120,9 @@
   (when status
     (call-module #(.discardTransaction status id))))
 
-(defn parse-jail [chat-id file callback]
+(defn parse-jail [bot-id file callback]
   (when status
-    (call-module #(.parseJail status chat-id file callback))))
+    (call-module #(.parseJail status bot-id file callback))))
 
 (defn execute-call [{:keys [jail-id path params callback]}]
   (when status
@@ -135,13 +135,11 @@
         (let [params' (update params :context assoc
                               :debug js/goog.DEBUG
                               :locale rn-dependencies/i18n.locale)
-              cb      (fn [r]
-                        (let [{:keys [result] :as r'} (types/json->clj r)
-                              {:keys [messages]} result]
-                          (log/debug r')
-                          (doseq [{:keys [type message]} messages]
-                            (log/debug (str "VM console(" type ") - " message)))
-                          (callback r')))]
+              cb      (fn [jail-result]
+                        (let [result (-> jail-result
+                                         types/json->clj
+                                         (assoc :bot-id jail-id))]
+                          (callback result)))]
           (.callJail status jail-id (types/clj->json path) (types/clj->json params') cb))))))
 
 ;; We want the mainting (time) windowed queue of all calls to the jail
