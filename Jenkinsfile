@@ -1,21 +1,23 @@
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
-node {
+node ('macos1') {
   def apkUrl = ''
   def ipaUrl = ''
   def testPassed = true
+  def branch;
 
-  sh 'source /etc/profile'
+   load "$HOME/env.groovy"
 
   try {
 
     stage('Git & Dependencies') {
-      git([url: 'https://github.com/status-im/status-react.git', branch: env.BRANCH_NAME])
+      slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
+      git([url: 'https://github.com/status-im/status-react.git', branch: BRANCH_NAME])
       // Checkout master because used for iOS Plist version information
       sh 'git checkout -- .'
-      sh 'git checkout master' 
-      sh 'git checkout ' + env.BRANCH_NAME
+      sh 'git checkout master'
+      sh 'git checkout ' + BRANCH_NAME
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
       sh 'lein deps && npm install && ./re-natal deps'
@@ -58,13 +60,13 @@ node {
 
         stage('Slack Notification Android') {
             def c = (testPassed ? 'good' : 'warning' )
-            slackSend color: c, message: 'Branch: ' + env.BRANCH_NAME + '\nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl
+            slackSend color: c, message: 'Branch: ' + BRANCH_NAME + '\nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl
         }
 
     // iOS
     stage('Build (iOS)') {
           sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
-          sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist /Users/Xcloud/archive.plist'
+          sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
     }
     stage('Deploy (iOS)') {
         withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
@@ -77,11 +79,11 @@ node {
 
     stage('Slack Notification iOS') {
         def c = (testPassed ? 'good' : 'warning' )
-        slackSend color: c, message: 'Branch: ' + env.BRANCH_NAME + '\nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\niOS: ' + ipaUrl
+        slackSend color: c, message: 'Branch: ' + BRANCH_NAME + '\nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\niOS: ' + ipaUrl
     }
 
   } catch (e) {
-    slackSend color: 'bad', message: env.BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+    slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
     throw e
   }
 }
