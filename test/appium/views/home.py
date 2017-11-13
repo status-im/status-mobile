@@ -1,7 +1,5 @@
 from views.base_view import BaseViewObject
 from views.base_element import *
-from tests import tests_data
-
 
 class RequestPasswordIcon(BaseButton):
 

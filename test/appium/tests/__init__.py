@@ -15,7 +15,8 @@ def start_threads(amount, func, *args):
 class TestData(object):
 
     def __init__(self):
-        self.name = None
+        self.test_name = None
+        self.apk_name = None
 
 
 basic_user = {'password': "newuniquepassword12",
@@ -41,4 +42,4 @@ transaction_users = {
                                },
                      }
 
-tests_data = TestData()
+test_data = TestData()
