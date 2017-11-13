@@ -151,7 +151,7 @@
                                                :message-id      id}
                                         (:async-handler command)
                                         (assoc :orig-params orig-params))}]
-        (dispatch
+        (re-frame/dispatch
           [:check-and-load-commands!
            identity
            #(status/call-jail

@@ -72,22 +72,28 @@
                            :save-message (dissoc enriched-message :new?)))
 
           (get-in enriched-message [:content :command])
-          (as-> fx
-            (merge fx (commands-events/get-preview fx enriched-message)))
+          (as-> fx'
+            (merge fx' (commands-events/get-preview (assoc cofx :db (:db fx')) enriched-message)))
 
           (= (:content-type enriched-message) const/content-type-command-request)
-          (as-> fx
-            (merge fx (requests-events/add-request fx chat-identifier enriched-message)))
+          (as-> fx'
+            (merge fx' (requests-events/add-request (assoc cofx :db (:db fx')) chat-identifier enriched-message)))
 
           true
-          (as-> fx
-            (merge fx (input-events/update-suggestions fx)))))
+          (as-> fx'
+            (assoc fx' :db (input-events/update-suggestions (:db fx'))))))
       {:db db})))
 
 (def ^:private receive-interceptors
-  [(re-frame/inject-cofx :message-exists?) (re-frame/inject-cofx :get-last-stored-message)
-   (re-frame/inject-cofx :pop-up-chat?) (re-frame/inject-cofx :get-last-clock-value)
-   (re-frame/inject-cofx :random-id) (re-frame/inject-cofx :get-stored-chat) re-frame/trim-v])
+  [(re-frame/inject-cofx :message-exists?)
+   ;; TODO(alwx): is it the same?
+   (re-frame/inject-cofx :get-last-stored-message)
+   (re-frame/inject-cofx :get-stored-message)
+   (re-frame/inject-cofx :pop-up-chat?)
+   (re-frame/inject-cofx :get-last-clock-value)
+   (re-frame/inject-cofx :random-id)
+   (re-frame/inject-cofx :get-stored-chat)
+   re-frame/trim-v])
 
 (handlers/register-handler-fx
   :received-protocol-message!

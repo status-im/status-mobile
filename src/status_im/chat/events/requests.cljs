@@ -42,12 +42,12 @@
   (fn [fx [_ chat-id request]]
     (add-request fx chat-id request)))
 
-(re-frame/register-handler-db
+(handlers/register-handler-db
   :chat-requests/load
   (fn [{:keys [current-chat-id] :as db} [_ chat-id]]
     (update-db-with-events (or chat-id current-chat-id))))
 
-(re-frame/register-handler-fx
+(handlers/register-handler-fx
   :chat-requests/mark-as-answered
   (fn [_ [_ chat-id message-id]]
     {::mask-as-answered [chat-id message-id]

@@ -43,7 +43,7 @@
                [:chats chat-id :parameter-boxes (:name command) parameter-index]
                (when-not (str/blank? current-input)
                  [:chats chat-id :parameter-boxes :message]))]
-    (dispatch [:choose-predefined-expandable-height :parameter-box (or (keyword height) :default)])
+    (dispatch [:chat-animation/choose-predefined-expandable-height :parameter-box (or (keyword height) :default)])
     (when (and contains-markup? path (not= (get-in db path) markup))
       (dispatch [:set-in path returned])
       (when default-db
