@@ -3,14 +3,11 @@
 
 @protocol TimerJSExport <JSExport>
 
-- (void)setTimeout:(JSValue *)callback
-           inteval:(double)ms;
+- (NSString *)setTimeout:(JSValue *)args;
 
 - (void)clearInterval:(NSString *)id;
 
-
-- (NSString *)setInterval:(JSValue *)callback
-                  inteval:(double)ms;
+- (NSString *)setInterval:(JSValue *)args;
 
 @end
 

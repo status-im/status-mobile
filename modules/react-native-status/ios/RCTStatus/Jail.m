@@ -116,13 +116,28 @@
     
     [self addTimer:context];
     [context evaluateScript:_initialJs];
+    
     JSValue *excep = [context exception];
     NSLog(@"err1 %@", [excep toString]);
+    
     NSString *webJs =
     NSStringMultiline
     (
      var statusSignals = {
      sendSignal: function (s) {statusNativeHandlers.sendSignal(s);}
+     };
+     var setTimeout = function (fn, t) {
+         var args = [fn, t];
+         var getItem = function(idx) {return args[idx];};
+         return jsTimer.setTimeout(getItem);
+     };
+     var setInterval = function (fn, t) {
+         var args = [fn, t];
+         var getItem = function(idx) {return args[idx];};
+         return jsTimer.setInterval(getItem);
+     };
+     var clearInterval = function (id) {
+         jsTimer.clearInterval(id);
      };
      var Web3 = require('web3');
      var provider = {
@@ -159,6 +174,7 @@
      
      );
     
+
     [context evaluateScript:webJs];
     excep = [context exception];
     NSLog(@"err2 %@", [excep toString]);

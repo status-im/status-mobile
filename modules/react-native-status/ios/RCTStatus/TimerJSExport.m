@@ -2,10 +2,11 @@
 
 @implementation TimerJS
 
-- (void)setTimeout:(JSValue *)callback
-           inteval:(double)ms
+- (NSString *)setTimeout:(JSValue *)args
 {
-    [self createTimer:callback inteval:ms repeats:NO];
+    JSValue *callback = [args callWithArguments:@[@0]];
+    double ms = [[args callWithArguments:@[@1]] toDouble];
+    return [self createTimer:callback inteval:ms repeats:NO];
 }
 
 - (void)clearInterval:(NSString *)id
@@ -17,9 +18,10 @@
 }
 
 
-- (NSString *)setInterval:(JSValue *)callback
-                  inteval:(double)ms
+- (NSString *)setInterval:(JSValue *)args
 {
+    JSValue *callback = [args callWithArguments:@[@0]];
+    double ms = [[args callWithArguments:@[@1]] toDouble];
     return [self createTimer:callback inteval:ms repeats:YES];
 }
 
@@ -34,12 +36,11 @@
     double interval = ms/1000.0;
     NSString *uuid = [[NSUUID UUID] UUIDString];
     
-    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async( dispatch_get_main_queue(), ^{
         NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                          repeats:repeats
                                                            block:^(NSTimer * _Nonnull timer) {
-                                                               [callback callWithArguments:nil];
-                                                           }];
+                                                               [callback callWithArguments:nil];                                                           }];
         [_timers setObject:timer forKey:uuid];
     });
     
