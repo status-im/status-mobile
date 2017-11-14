@@ -1,5 +1,6 @@
 (ns status-im.utils.config
-  (:require [status-im.react-native.js-dependencies :as rn-dependencies]))
+  (:require [status-im.react-native.js-dependencies :as rn-dependencies]
+            [clojure.string :as string]))
 
 (def config (js->clj (.-default rn-dependencies/config) :keywordize-keys true))
 
@@ -20,4 +21,8 @@
 (def notifications-wip-enabled? (enabled? (get-config :NOTIFICATIONS_WIP_ENABLED 0)))
 (def stub-status-go? (enabled? (get-config :STUB_STATUS_GO 0)))
 (def mainnet-networks-enabled? (enabled? (get-config :MAINNET_NETWORKS_ENABLED 0)))
+(def log-level
+  (-> (get-config :LOG_LEVEL "error")
+      string/lower-case
+      keyword))
 

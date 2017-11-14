@@ -12,7 +12,8 @@
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
-            [status-im.utils.notifications :as notifications]))
+            [status-im.utils.notifications :as notifications]
+            [status-im.core :as core]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -79,9 +80,6 @@
        :reagent-render views/main})))
 
 (defn init []
-  (error-handler/register-exception-handler!)
-  (status/init-jail)
-  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
   (status/set-soft-input-mode status/adjust-resize)
   (init-back-button-handler!)
-  (dispatch-sync [:initialize-app]))
+  (core/init app-root))
