@@ -2,6 +2,7 @@
 
 (def contacts
   {:auction-house      (js/require "./resources/images/contacts/auction-house.png")
+   :BCShop.io          (js/require "./resources/images/contacts/BCShop.io.png")
    :mkr-market         (js/require "./resources/images/contacts/mkr-market.png")
    :oaken-water-meter  (js/require "./resources/images/contacts/oaken-water-meter.png")
    :flight-delays-suck (js/require "./resources/images/contacts/flight-delays-suck.png")
