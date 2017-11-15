@@ -224,8 +224,22 @@
         },
         "groups": ["dapps"],
         "description": "The future of work is now. Hire people or work yourself in return for ETH."
+    },
+
+    "Ethcro":
+    {
+        "name":
+        {
+            "en": "Ethcro"
+        },
+        "photo-path": "contacts://ethcro",
+        "dapp?": true,
+        "dapp-url":
+        {
+          "en": "https://ethcrodapp.0trust.us"
+        },
+        "groups": ["dapps"],
+        "description": "Smart Contracts for everyone"
     }
-
-
 
 }
