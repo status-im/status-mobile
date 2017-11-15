@@ -14,7 +14,8 @@
    :augur              (js/require "./resources/images/contacts/augur.png")
    :ethlance           (js/require "./resources/images/contacts/ethlance.png")
    :commiteth          (js/require "./resources/images/contacts/commiteth.png")
-   :etherplay          (js/require "./resources/images/contacts/etherplay.png")})
+   :etherplay          (js/require "./resources/images/contacts/etherplay.png")
+   :ethcro             (js/require "./resources/images/contacts/ethcro.png")})
 
 (def assets
   {:ethereum       (js/require "./resources/images/assets/ethereum.png")})
