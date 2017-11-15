@@ -28,7 +28,8 @@ class TestWallet(SingleDeviceTestCase):
     @pytest.mark.wallet
     @pytest.mark.parametrize("test, recipient, sender", [('sign_now', 'A_USER', 'B_USER'),
                                                          ('sign_later', 'B_USER', 'A_USER')],
-                             ids=['sign_now', 'sign_later'])
+                             ids=['sign_now',
+                                  'sign_later'])
     def test_send_transaction_from_wallet(self, test, recipient, sender):
         home = HomeView(self.driver)
         recover_access(home,
@@ -48,7 +49,7 @@ class TestWallet(SingleDeviceTestCase):
         chats.confirm()
         chats.confirm_public_key_button.click()
 
-        for _ in range(2):
+        for _ in range(3):
             chats.back_button.click()
         wallet = chats.wallet_button.click()
         wallet.send_button.click()

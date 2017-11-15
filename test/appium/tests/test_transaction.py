@@ -14,7 +14,9 @@ class TestTransactions(SingleDeviceTestCase):
     @pytest.mark.parametrize("test, recipient, sender", [('group_chat', 'A_USER', 'B_USER'),
                                                          ('one_to_one_chat', 'B_USER', 'A_USER'),
                                                          ('wrong_password', 'A_USER', 'B_USER')],
-                             ids=['group_chat', 'one_to_one_chat', 'wrong_password'])
+                             ids=['group_chat',
+                                  'one_to_one_chat',
+                                  'wrong_password'])
     def test_send_transaction(self, test, recipient, sender):
         home = HomeView(self.driver)
         recover_access(home,
@@ -37,7 +39,8 @@ class TestTransactions(SingleDeviceTestCase):
 
         if test == 'group_chat':
             user_name = chats.user_name_text.text
-            chats.back_button.click()
+            for _ in range(2):
+                chats.back_button.click()
             chats.new_group_chat_button.click()
             user_contact = chats.element_by_text(user_name, 'button')
             user_contact.scroll_to_element()
