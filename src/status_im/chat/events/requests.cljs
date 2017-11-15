@@ -29,7 +29,7 @@
     {:db            (update-in db [:chats chat-id :requests] conj request')
      ::save-request request}))
 
-(defn update-db-with-events [chat-id]
+(defn update-db-with-events [db chat-id]
   (let [;; TODO: maybe limit is needed
         requests (map #(update % :type keyword)
                    (requests/get-available-by-chat-id chat-id))]
@@ -45,10 +45,10 @@
 (handlers/register-handler-db
   :chat-requests/load
   (fn [{:keys [current-chat-id] :as db} [_ chat-id]]
-    (update-db-with-events (or chat-id current-chat-id))))
+    (update-db-with-events db (or chat-id current-chat-id))))
 
 (handlers/register-handler-fx
   :chat-requests/mark-as-answered
-  (fn [_ [_ chat-id message-id]]
+  (fn [{:keys [db]} [_ chat-id message-id]]
     {::mask-as-answered [chat-id message-id]
-     :db                (update-db-with-events chat-id)}))
+     :db                (update-db-with-events db chat-id)}))

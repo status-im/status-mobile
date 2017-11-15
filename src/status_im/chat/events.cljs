@@ -294,7 +294,8 @@
                      (assoc-in [:chats chat-id :was-opened?] true)
                      (model/set-chat-ui-props {:validation-messages nil})
                      (update-in [:chats chat-id] dissoc :chat-loaded-event))
-             :dispatch-n [[:chat-requests/load chat-id]]} (not commands-loaded?)
+             :dispatch-n [[:chat-requests/load chat-id]]}
+      (not commands-loaded?)
       (update :dispatch-n conj [:load-commands! chat-id #(re-frame/dispatch [::jail-init-callback chat-id])])
 
       commands-loaded?
