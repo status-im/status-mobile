@@ -9,15 +9,16 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
             [taoensso.timbre :as log]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.handlers :as handlers]
+            [status-im.react-native.js-dependencies :as rn-dependencies]))
 
-(def request-discoveries-interval-s 600)
+(def request-discoveries-interval-s 1)
 
 (register-handler :init-discoveries
-  (fn [db _]
-    (-> db
-        (assoc :tags [])
-        (assoc :discoveries {}))))
+                  (fn [db _]
+                    (-> db
+                        (assoc :tags [])
+                        (assoc :discoveries {}))))
 
 (defmethod nav/preload-data! :discover
   [db _]
@@ -34,63 +35,65 @@
 ;; hashtag statuses in that scenario. In any case, that's the reason why this event
 ;; gets even the statuses without a hashtag - it may need to do stuff with them as well.
 (register-handler :broadcast-status
-  (u/side-effect!
-    (fn [{:keys [current-public-key web3]
-          :accounts/keys [accounts current-account-id]
-          :contacts/keys [contacts]}
-         [_ status]]
-      (if-let [hashtags (seq (handlers/get-hashtags status))]
-        (let [{:keys [name photo-path]} (get accounts current-account-id)
-              message-id (random/id)
-              message    {:message-id message-id
-                          :from       current-public-key
-                          :payload    {:message-id message-id
-                                       :status     status
-                                       :hashtags   (vec hashtags)
-                                       :profile    {:name          name
-                                                    :profile-image photo-path}}}]
-          (doseq [id (u/identities contacts)]
-            (protocol/send-status!
-              {:web3    web3
-               :message (assoc message :to id)}))
-          (dispatch [:status-received message]))))))
+                  (u/side-effect!
+                   (fn [{:keys [current-public-key web3]
+                         :accounts/keys [accounts current-account-id]
+                         :contacts/keys [contacts]}
+                        [_ status]]
+                     (if-let [hashtags (seq (handlers/get-hashtags status))]
+                       (let [{:keys [name photo-path]} (get accounts current-account-id)
+                             message-id (random/id)
+                             message    {:message-id message-id
+                                         :from       current-public-key
+                                         :payload    {:message-id message-id
+                                                      :status     status
+                                                      :hashtags   (vec hashtags)
+                                                      :profile    {:name          name
+                                                                   :profile-image photo-path}}}]
+                         (doseq [id (u/identities contacts)]
+                           (protocol/send-status!
+                            {:web3    web3
+                             :message (assoc message :to id)}))
+                         (dispatch [:status-received message]))))))
 
 (register-handler :status-received
-  (u/side-effect!
-    (fn [{:keys [discoveries]} [_ {:keys [from payload]}]]
-      (when (and (not (discoveries/exists? (:message-id payload)))
-                 (not (get discoveries (:message-id payload))))
-        (let [{:keys [message-id status hashtags profile]} payload
-              {:keys [name profile-image]} profile
-              discover {:message-id   message-id
-                         :name         name
-                         :photo-path   profile-image
-                         :status       status
-                         :whisper-id   from
-                         :tags         (map #(hash-map :name %) hashtags)
-                         :created-at   (time/now-ms)}]
-          (dispatch [:add-discover discover]))))))
+                  (u/side-effect!
+                   (fn [{:keys [discoveries]} [_ {:keys [from payload]}]]
+                     (when (and (not (discoveries/exists? (:message-id payload)))
+                                (not (get discoveries (:message-id payload))))
+                       (let [{:keys [message-id status hashtags profile]} payload
+                             {:keys [name profile-image]} profile
+                             discover {:message-id   message-id
+                                       :name         name
+                                       :photo-path   profile-image
+                                       :status       status
+                                       :whisper-id   from
+                                       :tags         (map #(hash-map :name %) hashtags)
+                                       :created-at   (time/now-ms)}]
+                         (dispatch [:add-discover discover]))))))
 
 (register-handler :start-requesting-discoveries
-  (fn [{:keys [request-discoveries-timer] :as db}]
-    (when request-discoveries-timer
-      (js/clearInterval request-discoveries-timer))
-    (dispatch [:request-discoveries])
-    (assoc db :request-discoveries-timer
-              (js/setInterval #(dispatch [:request-discoveries])
-                              (* request-discoveries-interval-s 1000)))))
+                  (fn [{:keys [request-discoveries-timer] :as db}]
+                    (when request-discoveries-timer
+                      (.clearInterval rn-dependencies/background-timer request-discoveries-timer))
+                    (dispatch [:request-discoveries])
+                    (assoc db :request-discoveries-timer
+                           (.setInterval rn-dependencies/background-timer
+                                         #(dispatch [:request-discoveries])
+                                         (* request-discoveries-interval-s 1000)))))
 
 (register-handler :request-discoveries
-  (u/side-effect!
-    (fn [{:keys [current-public-key web3]
-          :contacts/keys [contacts]}]
-      (doseq [id (u/identities contacts)]
-        (when-not (protocol/message-pending? web3 :discoveries-request id)
-          (protocol/send-discoveries-request!
-            {:web3    web3
-             :message {:from       current-public-key
-                       :to         id
-                       :message-id (random/id)}}))))))
+                  (u/side-effect!
+                   (fn [{:keys [current-public-key web3]
+                         :contacts/keys [contacts]}]
+                     (.log js/console "~~~~~~~~~~~~~~~~~~~EVENT~~~~~~~~~~~~~~~~~")
+                     (doseq [id (u/identities contacts)]
+                       (when-not (protocol/message-pending? web3 :discoveries-request id)
+                         (protocol/send-discoveries-request!
+                          {:web3    web3
+                           :message {:from       current-public-key
+                                     :to         id
+                                     :message-id (random/id)}}))))))
 
 (register-handler :discoveries-send-portions
   (u/side-effect!

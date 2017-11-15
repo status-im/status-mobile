@@ -187,6 +187,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-background-timer')
     compile project(':react-native-svg')
     compile project(':react-native-mapbox-gl')
     compile 'com.android.support:multidex:1.0.1'

@@ -35,3 +35,4 @@
 (def webview-bridge         (js/require "react-native-webview-bridge"))
 (def svg                    (js/require "react-native-svg"))
 (def react-native-fcm       (js/require "react-native-fcm"))
+(def background-timer       (.-default (js/require "react-native-background-timer")))
