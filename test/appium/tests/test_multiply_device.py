@@ -31,8 +31,8 @@ class TestMultiplyDevices(MultiplyDeviceTestCase):
         new_chat_d2 = chats_d2.element_by_text('test123', 'button')
         new_chat_d2.click()
 
-        chats_d1.back_button.click()
-        chats_d1.back_button.click()
+        for _ in range(3):
+            chats_d1.back_button.click()
         chats_d2.add_to_contacts.click()
         chats_d2.back_button.click()
         chats_d1.profile_button.click()
@@ -116,7 +116,8 @@ class TestMultiplyDevices(MultiplyDeviceTestCase):
         chats_d2.confirm_public_key_button.click()
         user_name_d1 = chats_d2.user_name_text.text
 
-        device_2.back_button.click()
+        for _ in range(2):
+            device_2.back_button.click()
         chats_d2.new_group_chat_button.click()
 
         user_contact = chats_d2.element_by_text(user_name_d1, 'button')

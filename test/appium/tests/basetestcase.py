@@ -79,6 +79,7 @@ class AbstractTestCase:
         desired_caps['appiumVersion'] = '1.7.1'
         desired_caps['platformVersion'] = '6.0'
         desired_caps['newCommandTimeout'] = 600
+        desired_caps['fullReset'] = True
         return desired_caps
 
     @abstractmethod
