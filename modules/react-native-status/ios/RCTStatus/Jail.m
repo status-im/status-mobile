@@ -55,6 +55,9 @@
 
 @end
 
+@implementation Cell
+@end
+
 @implementation Jail
 
 - (void)initJail:(NSString *)js
@@ -65,15 +68,16 @@
 - (NSDictionary *)parseJail:(NSString *)chatId
                    withCode:(NSString *)js
 {
-    JSContext *cell = [self createCell:chatId withCode:js];
+    Cell *cell = [self createCell:chatId withCode:js];
+    JSContext *context = cell.context;
     [_cells setValue:cell forKey:chatId];
     
-    JSValue *catalog = cell[@"catalog"];;
-    JSValue *exception = [cell exception];
+    JSValue *catalog = context[@"catalog"];;
+    JSValue *exception = [context exception];
     NSString *error;
     if(exception != nil) {
         error = [exception toString];
-        [cell setException:nil];
+        [context setException:nil];
     }
     NSDictionary *result = [[NSDictionary alloc] initWithObjectsAndKeys:[catalog toString], @"result", error, @"error", nil];
     
@@ -84,37 +88,40 @@
                   path:(NSString *)path
                 params:(NSString *)params
 {
-    JSContext *cell = [_cells valueForKey:chatId];
+    Cell *cell = [_cells valueForKey:chatId];
+    JSContext *context = cell.context;
     if(cell == nil) {
         //TODO(rasom): handle this properly
         return nil;
     }
-    JSValue *callResult = [cell[@"call"] callWithArguments:@[path, params]];
-    JSValue *exception = [cell exception];
+    JSValue *callResult = [context[@"call"] callWithArguments:@[path, params]];
+    JSValue *exception = [context exception];
     NSString *error;
     if(exception != nil) {
         error = [exception toString];
-        [cell setException:nil];
+        [context setException:nil];
     }
     NSDictionary *result = [[NSDictionary alloc] initWithObjectsAndKeys:[callResult toString], @"result", error, @"error", nil];
     
     return result;
 }
 
-- (JSContext *)createCell:(NSString *)chatId
+- (Cell *)createCell:(NSString *)chatId
                  withCode:(NSString *)js
 {
     if(_cells == nil) {
         _cells = [NSMutableDictionary dictionaryWithCapacity:1];
     }
     
+    Cell * cell = [Cell new];
     JSContext *context = [JSContext new];
+    cell.context = context;
     
     HandlersJs *handlers = [HandlersJs new];
     [handlers setCahtId:chatId];
     [handlers addToContext:context];
     
-    [self addTimer:context];
+    [self addTimer:cell];
     [context evaluateScript:_initialJs];
     
     JSValue *excep = [context exception];
@@ -185,33 +192,44 @@
     excep = [context exception];
     NSLog(@"err4 %@", [excep toString]);
     
-    return context;
+    return cell;
 }
 
 - (NSDictionary *)evalueteScript:(NSString *)js
                           inCell:(NSString *)chatId
 {
-    JSContext *cell = [_cells valueForKey:chatId];
-    JSValue *val = [cell evaluateScript:js];
+    Cell *cell = [_cells valueForKey:chatId];
+    JSContext *context = cell.context;
+    JSValue *val = [context evaluateScript:js];
     
-    JSValue *exception = [cell exception];
+    JSValue *exception = [context exception];
     NSString *error;
     if(exception != nil) {
         error = [exception toString];
-        [cell setException:nil];
+        [context setException:nil];
     }
     NSDictionary *result = [[NSDictionary alloc] initWithObjectsAndKeys:[val toString], @"result", error, @"error", nil];
     
     return result;
 }
 
-- (void)addTimer:(JSContext *)context
+- (void)addTimer:(Cell *)cell
 {
-    if(_timer == nil) {
-        _timer = [TimerJS new];
-    }
+    TimerJS *timer = [TimerJS new];
+    cell.timer = timer;
     
-    [_timer addToContext:context];
+    [timer addToContext:cell.context];
+}
+
+-(void)reset
+{
+    NSArray *keys = [_cells allKeys];
+    for (NSString *key in keys) {
+        Cell *cell = [_cells valueForKey:key];
+        TimerJS *timer = cell.timer;
+        [timer stopTimers];
+        [_cells removeObjectForKey:key];
+    }
 }
 
 @end

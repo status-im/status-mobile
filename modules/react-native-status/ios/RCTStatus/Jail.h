@@ -16,11 +16,17 @@
 - (NSDictionary *)evalueteScript:(NSString *)js
                           inCell:(NSString *)chatId;
 
+- (void)reset;
 
 @property (nonatomic) NSMutableDictionary * cells;
 @property (nonatomic) NSString * initialJs;
 @property (nonatomic) TimerJS * timer;
 
+@end
+
+@interface Cell : NSObject
+@property (nonatomic)JSContext * context;
+@property (nonatomic)TimerJS * timer;
 @end
 
 @protocol HandlersJSExport <JSExport>

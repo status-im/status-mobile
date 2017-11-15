@@ -294,6 +294,9 @@ RCT_EXPORT_METHOD(login:(NSString *)address
 #if DEBUG
     NSLog(@"Login() method called");
 #endif
+    if(_jail != nil) {
+        [_jail reset];
+    }
     char * result = Login((char *) [address UTF8String], (char *) [password UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 }

@@ -52,4 +52,15 @@
     [context setObject:self forKeyedSubscript:@"jsTimer"];
 }
 
+- (void)stopTimers
+{
+    NSArray *keys = [_timers allKeys];
+    for (NSString *key in keys) {
+        NSTimer *timer = [_timers valueForKey:key];
+        [timer invalidate];
+        
+        [_timers removeObjectForKey:key];
+    }
+}
+
 @end

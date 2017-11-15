@@ -13,5 +13,6 @@
 
 @interface TimerJS : NSObject <TimerJSExport>
 - (void)addToContext:(JSContext *)context;
+- (void)stopTimers;
 @property (nonatomic) NSMutableDictionary * timers;
 @end
