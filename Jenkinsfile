@@ -58,11 +58,6 @@ node ('macos1') {
         //   testPassed = false
         // }
 
-        stage('Slack Notification Android') {
-            def c = (testPassed ? 'good' : 'warning' )
-            slackSend color: c, message: 'Branch: ' + BRANCH_NAME + '\nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\nAndroid: ' + apkUrl
-        }
-
     // iOS
     stage('Build (iOS)') {
           sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
@@ -77,9 +72,11 @@ node ('macos1') {
         }
     }
 
-    stage('Slack Notification iOS') {
-        def c = (testPassed ? 'good' : 'warning' )
-        slackSend color: c, message: 'Branch: ' + BRANCH_NAME + '\nTests: ' + (testPassed ? ':+1:' : ':-1:') + ')\niOS: ' + ipaUrl
+    stage('Slack Notification') {
+            def c = (testPassed ? 'good' : 'warning' )
+            slackSend color: c, message: 'Branch: ' + BRANCH_NAME +
+            '\nAndroid: ' + apkUrl +
+            '\niOS: ' + ipaUrl
     }
 
   } catch (e) {
