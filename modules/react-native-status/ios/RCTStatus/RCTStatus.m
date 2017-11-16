@@ -63,6 +63,11 @@ static RCTBridge *bridge;
 
 RCT_EXPORT_MODULE();
 
++ (BOOL)JSCEnabled
+{
+    return @"1" == [ReactNativeConfig envFor:@"JSC_ENABLED"];
+}
+
 ////////////////////////////////////////////////////////////////////
 #pragma mark - Jails functions
 //////////////////////////////////////////////////////////////////// initJail
@@ -71,11 +76,14 @@ RCT_EXPORT_METHOD(initJail: (NSString *) js
 #if DEBUG
     NSLog(@"InitJail() method called");
 #endif
-    //InitJail((char *) [js UTF8String]);
-    if(_jail == nil) {
-        _jail = [Jail new];
+    if([Status JSCEnabled]){
+        if(_jail == nil) {
+            _jail = [Jail new];
+        }
+        [_jail initJail:js];
+    } else {
+        InitJail((char *) [js UTF8String]);
     }
-    [_jail initJail:js];
     callback(@[[NSNull null]]);
 }
 
@@ -86,14 +94,18 @@ RCT_EXPORT_METHOD(parseJail:(NSString *)chatId
 #if DEBUG
     NSLog(@"ParseJail() method called");
 #endif
-    //char * result = Parse((char *) [chatId UTF8String], (char *) [js UTF8String]);
-    //callback(@[[NSString stringWithUTF8String: result]]);
-    
-    if(_jail == nil) {
-        _jail = [Jail new];
+    NSString *stringResult;
+    if([Status JSCEnabled]){
+        if(_jail == nil) {
+            _jail = [Jail new];
+        }
+        NSDictionary *result = [_jail parseJail:chatId withCode:js];
+        stringResult = [result bv_jsonStringWithPrettyPrint:NO];
+    } else {
+        char * result = Parse((char *) [chatId UTF8String], (char *) [js UTF8String]);
+        stringResult = [NSString stringWithUTF8String: result];
     }
-    NSDictionary *result = [_jail parseJail:chatId withCode:js];
-    NSString *stringResult = [result bv_jsonStringWithPrettyPrint:NO];
+    
     callback(@[stringResult]);
 }
 
@@ -105,18 +117,20 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
 #if DEBUG
     NSLog(@"CallJail() method called");
 #endif
-    /*dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-     char * result = Call((char *) [chatId UTF8String], (char *) [path UTF8String], (char *) [params UTF8String]);
-     dispatch_async( dispatch_get_main_queue(), ^{
-     callback(@[[NSString stringWithUTF8String: result]]);
-     });
-     });*/
-    if(_jail == nil) {
-        _jail = [Jail new];
-    }
     dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSDictionary *result = [_jail call:chatId path:path params:params];
-        NSString *stringResult = [result bv_jsonStringWithPrettyPrint:NO];
+        
+        NSString *stringResult;
+        if([Status JSCEnabled]){
+            if(_jail == nil) {
+                _jail = [Jail new];
+            }
+            NSDictionary *result = [_jail call:chatId path:path params:params];
+            stringResult = [result bv_jsonStringWithPrettyPrint:NO];
+        } else {
+            char * result = Call((char *) [chatId UTF8String], (char *) [path UTF8String], (char *) [params UTF8String]);
+            stringResult = [NSString stringWithUTF8String: result];
+        }
+
         dispatch_async( dispatch_get_main_queue(), ^{
             callback(@[stringResult]);
         });
@@ -374,19 +388,6 @@ RCT_EXPORT_METHOD(sendWeb3Request:(NSString *)host
             callback(@[[NSString stringWithUTF8String: result]]);
         });
     });
-}
-static JSContext *context;
-
-RCT_EXPORT_METHOD(evaluateScript:(NSString *)js
-                  inCell:(NSString *)chatId
-                  callback:(RCTResponseSenderBlock)callback) {
-    if(_jail == nil) {
-        _jail = [Jail new];
-    }
-    NSDictionary *result = [_jail evalueteScript:js inCell:chatId];
-    NSString *stringResult = [result bv_jsonStringWithPrettyPrint:NO];
-    
-    callback(@[stringResult]);
 }
 
 RCT_EXPORT_METHOD(closeApplication) {
