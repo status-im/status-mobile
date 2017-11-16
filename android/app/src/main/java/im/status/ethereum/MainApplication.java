@@ -49,7 +49,12 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                 devCluster = true;
             }
 
-            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster);
+            boolean jscEnabled = false;
+            if (BuildConfig.JSC_ENABLED == "1") {
+                jscEnabled = true;
+            }
+
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, jscEnabled);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),

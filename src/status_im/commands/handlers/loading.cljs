@@ -12,7 +12,8 @@
             [status-im.utils.homoglyph :as h]
             [status-im.utils.js-resources :as js-res]
             [status-im.utils.types :as types]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.config :as config]))
 
 
 (defn load-commands!
@@ -82,12 +83,15 @@
     (status/parse-jail
      whisper-identity (str local-storage-js ethereum-id-js file)
      (fn [result]
-       (let [{:keys [error result]} (types/json->clj result)]
-         (log/debug "Parsing commands results: " error result)
+       (let [{:keys [error result]} (types/json->clj result)
+             result' (if config/jsc-enabled?
+                      (types/json->clj result)
+                      result)]
+         (log/debug "Parsing commands results: " error result')
          (if error
            (dispatch [::loading-failed! whisper-identity ::error-in-jail error])
            (do
-             (dispatch [::add-commands whisper-identity file result])
+             (dispatch [::add-commands whisper-identity file result'])
              (when callback (callback)))))))))
 
 (defn validate-hash
