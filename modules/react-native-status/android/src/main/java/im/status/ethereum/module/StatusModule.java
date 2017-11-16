@@ -344,6 +344,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
+
+        jail.reset();
+
         Thread thread = new Thread() {
             @Override
             public void run() {
