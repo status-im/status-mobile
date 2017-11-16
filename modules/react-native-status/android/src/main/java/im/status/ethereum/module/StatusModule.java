@@ -41,7 +41,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private boolean devCluster;
     private Jail jail;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, boolean jscEnabled) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
@@ -49,7 +49,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         this.debug = debug;
         this.devCluster = devCluster;
         reactContext.addLifecycleEventListener(this);
-        jail = new Jail(this);
+        if(jscEnabled) {
+            jail = new JSCJail(this);
+        } else {
+            jail = new OttoJail();
+        }
     }
 
     @Override
@@ -459,7 +463,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         thread.start();
     }
 
-    // Jail
+    // JSCJail
 
     @ReactMethod
     public void initJail(final String js, final Callback callback) {
@@ -472,7 +476,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
             @Override
             public void run() {
-                //Statusgo.InitJail(js);
                 jail.initJail(js);
 
                 callback.invoke(false);
@@ -494,7 +497,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
             @Override
             public void run() {
-                //String res = Statusgo.Parse(chatId, js);
                 String res = jail.parseJail(chatId, js);
                 Log.d(TAG, res);
                 Log.d(TAG, "endParseJail");
@@ -518,7 +520,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 Log.d(TAG, "startCallJail");
-                //String res = Statusgo.Call(chatId, path, params);
                 String res = jail.callJail(chatId, path, params);
                 Log.d(TAG, "endCallJail");
                 callback.invoke(res);
@@ -649,10 +650,5 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void closeApplication() {
         System.exit(0);
-    }
-
-    @ReactMethod
-    public void evaluateScript(final String chatId, final String js, final Callback callback) {
-        callback.invoke(jail.evaluateScript(chatId, js));
     }
 }
