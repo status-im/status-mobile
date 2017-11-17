@@ -88,9 +88,12 @@
      [btn/button {:disabled? true :style (button.styles/button-bar :last) :text-style styles/main-button-text}
       (i18n/label :t/wallet-exchange)]]]])
 
+;; TODO(goranjovic): snt is temporarily given the same logo that eth uses to minimize the changes
+;; while ERC20 is mocked and hidden behind a flag.
 (defn- token->image [id]
   (case id
-    "eth" {:source (:ethereum resources/assets) :style (styles/asset-border components.styles/color-gray-transparent-light)}))
+    "eth" {:source (:ethereum resources/assets) :style (styles/asset-border components.styles/color-gray-transparent-light)}
+    "snt" {:source (:ethereum resources/assets) :style (styles/asset-border components.styles/color-blue)}))
 
 (defn add-asset []
   [list/touchable-item show-not-implemented!
@@ -131,11 +134,18 @@
     [add-asset]))
 
 (defn asset-section [balance prices-loading? balance-loading?]
-  (let [assets [{:id "eth" :currency :eth :amount balance}]]
+  (let [assets (concat [{:id "eth" :currency :eth :amount balance}]
+                       (if config/erc20-enabled?
+                         [{:id "snt" :currency :snt :amount 5000000000000000000000}]))]
     [react/view {:style styles/asset-section}
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/flat-list
-      {:data       (conj assets {}) ;; Extra map triggers rendering for add-asset
+      {:data       (concat assets [{}]) ;; Extra map triggers rendering for add-asset
+                                        ;; TODO(goranjovic): Refactor
+                                        ;; the order where new element is inserted
+                                        ;; with `conj` depends on the underlying collection type.
+                                        ;; whereas `concat` like here guarantees that empty element
+                                        ;; will be inserted in the end.
        :render-fn  render-asset
        :on-refresh #(rf/dispatch [:update-wallet])
        :refreshing (boolean (or prices-loading? balance-loading?))}]]))
