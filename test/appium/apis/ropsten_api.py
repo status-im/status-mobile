@@ -24,7 +24,7 @@ def get_balance(address):
             pass
 
 
-def verify_balance_is_updated(initial_balance, recipient_address, wait_time=120):
+def verify_balance_is_updated(initial_balance, recipient_address, wait_time=240):
     counter = 0
     while True:
         if counter == wait_time:
