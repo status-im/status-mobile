@@ -28,7 +28,7 @@
             incoming-name   [:contact-name-by-identity from]]
     (when-let [name (if outgoing
                       (:name current-account)
-                      (or incoming-name "Unknown contact"))]
+                      (or incoming-name (gfycat/generate-gfy from)))]
       [react/text {:style style/author} name])))
 
 (defview message-content-status []
