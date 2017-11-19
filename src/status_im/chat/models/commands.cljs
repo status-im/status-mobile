@@ -42,3 +42,6 @@
   (let [requested-responses (map :response requests)
         responses-map (commands-responses :response access-scope->commands-responses account chat contacts)]
     (select-keys responses-map requested-responses)))
+
+(defn password? [command]
+  (= "password" (get-in command [:command :name])))

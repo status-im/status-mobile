@@ -512,6 +512,21 @@
     (set-chat-seq-arg-input-text db text)))
 
 (handlers/register-handler-fx
+ :submit-seq-input
+ [re-frame/trim-v]
+ (fn [{{:keys [current-chat-id chats] :as db} :db} _]
+   (let [text              (get-in chats [current-chat-id :seq-argument-input-text])
+         seq-arguments     (get-in chats [current-chat-id :seq-arguments])
+         command           (-> (input-model/selected-chat-command db current-chat-id)
+                               (assoc :args (into [] (conj seq-arguments text))))
+         have-text?        (or (not (str/blank? text))
+                               (commands-model/password? command))
+         hide-send-button? (get-in command [:command :hide-send-button])]
+     (cond-> {:db db}
+       (and have-text? (not hide-send-button?))
+       (assoc :dispatch [:send-seq-argument])))))
+
+(handlers/register-handler-fx
   :update-text-selection
   [re-frame/trim-v]
   (fn [{:keys [db]} [selection]]

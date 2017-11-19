@@ -159,12 +159,10 @@
                               :editable            (not @sending-in-progress?)
                               :on-focus            #(dispatch [:set-chat-ui-props {:show-emoji? false}])
                               :on-submit-editing   (fn []
-                                                     (when-not (or (str/blank? @seq-arg-input-text)
-                                                                   (get-in @command [:command :hide-send-button]))
-                                                       (dispatch [:send-seq-argument]))
+                                                     (dispatch [:submit-seq-input])
                                                      (js/setTimeout
-                                                       #(dispatch [:chat-input-focus :seq-input-ref])
-                                                       100))}
+                                                      #(dispatch [:chat-input-focus :seq-input-ref])
+                                                      100))}
                              (get-options type))])))))
 
 (defn input-view [_]
