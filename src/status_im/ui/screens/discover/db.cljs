@@ -3,8 +3,7 @@
 
 ;; {id (string) descovery (map)}
 (s/def :discoveries/discoveries (s/nilable map?))
-(s/def :discoveries/discover-search-tags (s/nilable sequential?))
+(s/def :discoveries/discover-search-tags (s/nilable set?))
 (s/def :discoveries/tags (s/nilable vector?))
 (s/def :discoveries/current-tag (s/nilable map?))
 (s/def :discoveries/request-discoveries-timer (s/nilable int?))
-(s/def :discoveries/new-discover (s/nilable map?))

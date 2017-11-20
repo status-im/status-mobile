@@ -84,12 +84,11 @@
   {:pre [(valid? :contact-request/message message)]}
   (debug :send-command-request!)
   (d/add-pending-message!
-    web3
-    (assoc message :type :contact-request
-                   :requires-ack? true
-                   :topics [f/status-topic])))
-
-(defonce watched-hashtag-topics (atom nil))
+   web3
+   (assoc message
+          :type :contact-request
+          :requires-ack? true
+          :topics [f/status-topic])))
 
 (s/def :discoveries/hashtags (s/every string? :kind-of set?))
 

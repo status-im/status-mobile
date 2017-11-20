@@ -101,7 +101,7 @@
                           :profile profile
                           :edit-my-profile edit-my-profile
                           :discover-all-recent discover-recent/discover-all-recent
-                          :discover-all-hashtags discover-popular/discover-all-hashtags
+                          :discover-all-popular-hashtags discover-popular/discover-all-popular-hashtags
                           :discover-search-results discover-search/discover-search-results
                           :discover-dapp-details discover-dapp-details/dapp-details
                           :discover-all-dapps discover-all-dapps/main

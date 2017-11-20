@@ -10,7 +10,7 @@
 
 (defn render-tag [tag]
   [react/touchable-highlight
-   {:on-press #(re-frame/dispatch [:show-discovery [tag] :discover-search-results])}
+   {:on-press #(re-frame/dispatch [:discover/search-tag-results-view tag])}
    [react/view styles/tag-view
     [react/text {:style styles/tag-title
                  :font  :default}
@@ -24,16 +24,15 @@
                     :shows-horizontal-scroll-indicator false
                     :default-separator?                false}]])
 
-(defview discover-all-hashtags []
-  (letsubs [current-account [:get-current-account]
-            popular-tags    [:get-popular-tags 10]
-            contacts        [:get-contacts]
-            {:keys [discoveries]} [:get-popular-discoveries 10]] ;uses the tags passed via :discover-search-tags state
+(defview discover-all-popular-hashtags []
+  (letsubs [current-account            [:get-current-account]
+            contacts                   [:get-contacts]
+            {:keys [discoveries tags]} [:discover/all-popular-hashtags]]
     [react/view styles/all-recent-container
      [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/popular-tags)]]
-     [tags-menu (map :name popular-tags)]
+     [tags-menu (map name tags)]
      [react/scroll-view styles/list-container
       [react/view styles/status-list-outer
        [react/view styles/status-list-inner

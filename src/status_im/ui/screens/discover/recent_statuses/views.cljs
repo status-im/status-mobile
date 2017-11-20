@@ -7,7 +7,7 @@
             [status-im.i18n :as i18n]))
 
 (defview discover-all-recent []
-  (letsubs [discoveries     [:get-recent-discoveries]
+  (letsubs [discoveries     [:discover/recent-discoveries]
             tabs-hidden?    [:tabs-hidden?]
             current-account [:get-current-account]
             contacts        [:get-contacts]]
@@ -22,8 +22,8 @@
           (let [discoveries (map-indexed vector discoveries)]
             (for [[i {:keys [message-id] :as message}] discoveries]
               ^{:key (str "message-recent-" message-id)}
-               [components/discover-list-item-full
-                {:message         message
-                 :show-separator? (not= (inc i) (count discoveries))
-                 :contacts        contacts
-                 :current-account current-account}]))]]])]))
+              [components/discover-list-item-full
+               {:message         message
+                :show-separator? (not= (inc i) (count discoveries))
+                :contacts        contacts
+                :current-account current-account}]))]]])]))

@@ -57,7 +57,7 @@
               (repeat (- columns extras) {:name ""})))))
 
 (defview main []
-  (letsubs [all-dapps    [:get-all-dapps]
+  (letsubs [all-dapps    [:discover/all-dapps]
             tabs-hidden? [:tabs-hidden?]]
     (let [columns 3]
       (when (seq all-dapps)

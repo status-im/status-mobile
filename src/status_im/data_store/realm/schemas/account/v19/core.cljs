@@ -110,7 +110,7 @@
                         from       (aget msg "from")
                         msg-status (aget msg "message-status")
                         statuses   (aget msg "user-statuses")]
-                    (when statuses 
+                    (when statuses
                       (.map statuses (fn [status _ _]
                                        (aset status "status-id" (str message-id "-" from))
                                        (aset status "message-id" message-id)

@@ -80,38 +80,38 @@
   ::init-whisper
   (fn [{:keys [web3 public-key groups updates-public-key updates-private-key status contacts pending-messages]}]
     (protocol/init-whisper!
-      {:web3                        web3
-       :identity                    public-key
-       :groups                      groups
-       :callback                    #(re-frame/dispatch [:incoming-message %1 %2])
-       :ack-not-received-s-interval 125
-       :default-ttl                 120
-       :send-online-s-interval      180
-       :ttl-config                  {:public-group-message 2400}
-       :max-attempts-number         3
-       :delivery-loop-ms-interval   500
-       :profile-keypair             {:public  updates-public-key
-                                     :private updates-private-key}
-       :hashtags                    (handlers/get-hashtags status)
-       :pending-messages            pending-messages
-       :contacts                    (keep (fn [{:keys [whisper-identity
-                                                       public-key
-                                                       private-key]}]
-                                            (when (and public-key private-key)
-                                              {:identity whisper-identity
-                                               :keypair  {:public  public-key
-                                                          :private private-key}}))
-                                          contacts)
-       :post-error-callback         #(re-frame/dispatch [::post-error %])})))
+     {:web3                        web3
+      :identity                    public-key
+      :groups                      groups
+      :callback                    #(re-frame/dispatch [:incoming-message %1 %2])
+      :ack-not-received-s-interval 125
+      :default-ttl                 120
+      :send-online-s-interval      180
+      :ttl-config                  {:public-group-message 2400}
+      :max-attempts-number         3
+      :delivery-loop-ms-interval   500
+      :profile-keypair             {:public  updates-public-key
+                                    :private updates-private-key}
+      :hashtags                    (mapv name (handlers/get-hashtags status))
+      :pending-messages            pending-messages
+      :contacts                    (keep (fn [{:keys [whisper-identity
+                                                      public-key
+                                                      private-key]}]
+                                           (when (and public-key private-key)
+                                             {:identity whisper-identity
+                                              :keypair  {:public  public-key
+                                                         :private private-key}}))
+                                         contacts)
+      :post-error-callback         #(re-frame/dispatch [::post-error %])})))
 
 (re-frame/reg-fx
   ::web3-get-syncing
   (fn [web3]
     (when web3
       (.getSyncing
-        (.-eth web3)
-        (fn [error sync]
-          (re-frame/dispatch [:update-sync-state error sync]))))))
+       (.-eth web3)
+       (fn [error sync]
+         (re-frame/dispatch [:update-sync-state error sync]))))))
 
 (re-frame/reg-fx
   ::save-processed-messages

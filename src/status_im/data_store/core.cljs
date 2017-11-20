@@ -1,5 +1,6 @@
 (ns status-im.data-store.core
-  (:require [status-im.data-store.realm.core :as data-source]))
+  (:require [status-im.data-store.realm.core :as data-source]
+            [status-im.utils.handlers :as handlers]))
 
 
 (defn init []

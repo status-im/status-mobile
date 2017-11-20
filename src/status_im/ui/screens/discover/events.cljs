@@ -1,158 +1,186 @@
 (ns status-im.ui.screens.discover.events
-  (:require [re-frame.core :refer [after dispatch enrich]]
-            [status-im.utils.utils :refer [first-index]]
-            [status-im.utils.handlers :refer [register-handler get-hashtags]]
+  (:require [re-frame.core :as re-frame]
             [status-im.protocol.core :as protocol]
-            [status-im.ui.screens.navigation :as nav]
-            [status-im.data-store.discover :as discoveries]
-            [status-im.utils.handlers :as u]
-            [status-im.utils.datetime :as time]
-            [status-im.utils.random :as random]
-            [taoensso.timbre :as log]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.ui.screens.discover.navigation]
+            [status-im.utils.handlers :as handlers]
+            [clojure.string :as string]))
 
 (def request-discoveries-interval-s 600)
+(def maximum-number-of-discoveries 1000)
 
-(register-handler :init-discoveries
-  (fn [db _]
-    (-> db
-        (assoc :tags [])
-        (assoc :discoveries {}))))
+;; EFFECTS
 
-(defmethod nav/preload-data! :discover
-  [db _]
-  (-> db
-      (assoc-in [:toolbar-search :show] nil)
-      (assoc :tags (discoveries/get-all-tags))
-      (assoc :discoveries (->> (discoveries/get-all :desc)
-                               (map (fn [{:keys [message-id] :as discover}]
-                                      [message-id discover]))
-                               (into {})))))
+(re-frame/reg-fx
+  ::send-portions
+  (fn [{:keys [current-public-key web3 contacts to discoveries]}]
+    (protocol/send-discoveries-response!
+     {:web3        web3
+      :discoveries discoveries
+      :message     {:from current-public-key
+                    :to   to}})))
 
-;; todo(goranjovic): at the moment we do nothing when a status without hashtags is posted
-;; but we probably should post a special "delete" status that removes any previous
-;; hashtag statuses in that scenario. In any case, that's the reason why this event
-;; gets even the statuses without a hashtag - it may need to do stuff with them as well.
-(register-handler :broadcast-status
-  (u/side-effect!
-    (fn [{:keys [current-public-key web3]
-          :accounts/keys [accounts current-account-id]
-          :contacts/keys [contacts]}
-         [_ status]]
-      (if-let [hashtags (seq (handlers/get-hashtags status))]
-        (let [{:keys [name photo-path]} (get accounts current-account-id)
-              message-id (random/id)
-              message    {:message-id message-id
-                          :from       current-public-key
-                          :payload    {:message-id message-id
-                                       :status     status
-                                       :hashtags   (vec hashtags)
-                                       :profile    {:name          name
-                                                    :profile-image photo-path}}}]
-          (doseq [id (u/identities contacts)]
-            (protocol/send-status!
-              {:web3    web3
-               :message (assoc message :to id)}))
-          (dispatch [:status-received message]))))))
+(re-frame/reg-fx
+  ::request-discoveries
+  (fn [{:keys [identities web3 current-public-key message-id]}]
+    (doseq [id identities]
+      (when-not (protocol/message-pending? web3 :discoveries-request id)
+        (protocol/send-discoveries-request!
+         {:web3    web3
+          :message {:from       current-public-key
+                    :to         id
+                    :message-id message-id}})))))
 
-(register-handler :status-received
-  (u/side-effect!
-    (fn [{:keys [discoveries]} [_ {:keys [from payload]}]]
-      (when (and (not (discoveries/exists? (:message-id payload)))
-                 (not (get discoveries (:message-id payload))))
-        (let [{:keys [message-id status hashtags profile]} payload
-              {:keys [name profile-image]} profile
-              discover {:message-id   message-id
-                         :name         name
-                         :photo-path   profile-image
-                         :status       status
-                         :whisper-id   from
-                         :tags         (map #(hash-map :name %) hashtags)
-                         :created-at   (time/now-ms)}]
-          (dispatch [:add-discover discover]))))))
+(re-frame/reg-fx
+  ::broadcast-status
+  (fn [{:keys [identities web3 message]}]
+    (doseq [id identities]
+      (protocol/send-status!
+       {:web3    web3
+        :message (assoc message :to id)}))))
 
-(register-handler :start-requesting-discoveries
-  (fn [{:keys [request-discoveries-timer] :as db}]
-    (when request-discoveries-timer
-      (js/clearInterval request-discoveries-timer))
-    (dispatch [:request-discoveries])
-    (assoc db :request-discoveries-timer
-              (js/setInterval #(dispatch [:request-discoveries])
-                              (* request-discoveries-interval-s 1000)))))
+;; HELPER-FN
 
-(register-handler :request-discoveries
-  (u/side-effect!
-    (fn [{:keys [current-public-key web3]
-          :contacts/keys [contacts]}]
-      (doseq [id (u/identities contacts)]
-        (when-not (protocol/message-pending? web3 :discoveries-request id)
-          (protocol/send-discoveries-request!
-            {:web3    web3
-             :message {:from       current-public-key
-                       :to         id
-                       :message-id (random/id)}}))))))
+(defn send-portions-when-contact-exists
+  [{:keys [current-public-key web3 discoveries]
+    :contacts/keys [contacts]}
+   to]
+  (when (get contacts to)
+    {::send-portions {:current-public-key current-public-key
+                      :web3               web3
+                      :contacts           contacts
+                      :to                 to
+                      :discoveries        (mapv #(dissoc % :tags) (vals discoveries))}}))
 
-(register-handler :discoveries-send-portions
-  (u/side-effect!
-    (fn [{:keys [current-public-key web3]
-          :contacts/keys [contacts]} [_ to]]
-      (when (get contacts to)
-        (protocol/send-discoveries-response!
-          {:web3        web3
-           :discoveries (discoveries/get-all :asc)
-           :message     {:from current-public-key
-                         :to   to}})))))
+(defn add-discover [db {:keys [message-id] :as discover}]
+  (assoc-in db [:discoveries message-id] discover))
 
-(register-handler :discoveries-request-received
-  (u/side-effect!
-    (fn [_ [_ {:keys [from]}]]
-      (dispatch [:discoveries-send-portions from]))))
+(defn add-discovers [db discovers]
+  (reduce add-discover db discovers))
 
-(register-handler :discoveries-response-received
-  (u/side-effect!
-    (fn [{:keys [discoveries]
-          :contacts/keys [contacts]} [_ {:keys [payload from]}]]
-      (when (get contacts from)
-        (when-let [data (:data payload)]
-          (doseq [{:keys [message-id] :as discover} data]
-            (when (and (not (discoveries/exists? message-id))
-                       (not (get discoveries message-id)))
-              (let [discover (assoc discover :created-at (time/now-ms))]
-                (dispatch [:add-discover discover])))))))))
+(defn new-discover? [discoveries {:keys [message-id]}]
+  (not (get discoveries message-id)))
 
-(defn add-discover
-  [db [_ discover]]
-  (assoc db :new-discover discover))
 
-(defn save-discover!
-  [{:keys [new-discover]} _]
-  (discoveries/save new-discover))
+;; EVENTS
 
-(defn reload-tags!
-  [db _]
-  (assoc db :tags (discoveries/get-all-tags)
-            :discoveries (->> (discoveries/get-all :desc)
-                              (map (fn [{:keys [message-id] :as discover}]
-                                     [message-id discover]))
-                              (into {}))))
+(defn navigate-to-discover-search-results [db search-tags]
+  {:db       (assoc db :discover-search-tags search-tags)
+   :dispatch [:navigate-to :discover-search-results]})
 
-(register-handler :add-discover
-  (u/handlers->
-    add-discover
-    save-discover!
-    reload-tags!))
+(handlers/register-handler-fx
+  :discover/search-tags-results-view
+  (fn [{:keys [db]} [_ search-text]]
+    (navigate-to-discover-search-results db (reduce (fn [acc tag]
+                                                      (conj acc (-> tag
+                                                                    (string/replace #"#" "")
+                                                                    string/lower-case
+                                                                    keyword)))
+                                                    #{}
+                                                    (re-seq #"[^ !?,;:.]+" search-text)))))
 
-(register-handler :remove-old-discoveries!
-  (u/side-effect!
-    (fn [_ _]
-      (discoveries/delete :created-at :asc 1000 200))))
+(handlers/register-handler-fx
+  :discover/search-tag-results-view
+  (fn [{:keys [db]} [_ tag]]
+    (navigate-to-discover-search-results db #{(keyword tag)})))
 
-(handlers/register-handler-db
- :show-discovery
- (fn [db [_ tags view-id]]
-   (-> db
-       (assoc :discover-search-tags tags)
-       (nav/navigate-to view-id))))
+(handlers/register-handler-fx
+  :discover/popular-tags-view
+  (fn [{:keys [db]} [_ popular-tags]]
+    {:db       (assoc db :discover-search-tags (into #{} popular-tags))
+     :dispatch [:navigate-to :discover-all-hashtags]}))
+
+(handlers/register-handler-fx
+  :broadcast-status
+  [(re-frame/inject-cofx :random-id)]
+  (fn [{{:keys [current-public-key web3]
+         :accounts/keys [accounts current-account-id]
+         :contacts/keys [contacts]} :db
+        random-id :random-id}
+       [_ status]]
+    (when-let [hashtags (seq (handlers/get-hashtags status))]
+      (let [{:keys [name photo-path]} (get accounts current-account-id)
+            message    {:message-id random-id
+                        :from       current-public-key
+                        :payload    {:message-id random-id
+                                     :status     status
+                                     :hashtags   (vec hashtags)
+                                     :profile    {:name          name
+                                                  :profile-image photo-path}}}]
+
+        {::broadcast-status {:web3       web3
+                             :message    message
+                             :identities (handlers/identities contacts)}
+         :dispatch          [:status-received message]}))))
+
+(handlers/register-handler-fx
+  :init-discoveries
+  [(re-frame/inject-cofx :data-store/discoveries)]
+  (fn [{:keys [data-store/discoveries db]} _]
+    {:db       (assoc db :discoveries discoveries)
+     :dispatch [:request-discoveries]}))
+
+(handlers/register-handler-fx
+  :request-discoveries
+  [(re-frame/inject-cofx :random-id)]
+  (fn [{{:keys [current-public-key web3]
+         :contacts/keys [contacts]} :db
+        random-id :random-id} [this-event]]
+    ;; this event calls itself at regular intervals
+    ;; TODO (yenda): this was previously using setInterval explicitly, with
+    ;; dispatch-later it is using it implicitly. setInterval is
+    ;; problematic for such long period of time and will cause a warning
+    ;; for Android in latest versions of react-nativexb
+    {::request-discoveries {:current-public-key current-public-key
+                            :web3               web3
+                            :identities         (handlers/identities contacts)
+                            :message-id         random-id}
+     :dispatch-later       [{:ms       (* request-discoveries-interval-s 1000)
+                             :dispatch [this-event]}]}))
+
+(handlers/register-handler-fx
+  :discoveries-send-portions
+  (fn [{:keys [db]} [_ to]]
+    (send-portions-when-contact-exists db to)))
+
+(handlers/register-handler-fx
+  :discoveries-request-received
+  (fn [{:keys [db]} [_ {:keys [from]}]]
+    (send-portions-when-contact-exists db from)))
+
+(handlers/register-handler-fx
+  :discoveries-response-received
+  [(re-frame/inject-cofx :now)]
+  (fn [{{:keys [discoveries]
+         :contacts/keys [contacts] :as db} :db
+        now :now}
+       [_ {:keys [payload from]}]]
+    (when (get contacts from)
+      (when-let [discovers (some->> (:data payload)
+                                    (filter #(new-discover? discoveries %))
+                                    (map #(assoc %
+                                                 :created-at now
+                                                 :tags (handlers/get-hashtags (:status %)))))]
+        {:db                           (add-discovers db discovers)
+         :data-store.discover/save-all [discovers maximum-number-of-discoveries]}))))
+
+(handlers/register-handler-fx
+  :status-received
+  [(re-frame/inject-cofx :now)]
+  (fn [{{:keys [discoveries] :as db} :db
+        now :now}
+       [_ {{:keys [message-id status profile] :as payload} :payload
+           from :from}]]
+    (when (new-discover? discoveries payload)
+      (let [{:keys [name profile-image]} profile
+            discover {:message-id message-id
+                      :name       name
+                      :photo-path profile-image
+                      :status     status
+                      :tags       (handlers/get-hashtags status)
+                      :whisper-id from
+                      :created-at now}]
+        {:db                           (add-discover db discover)
+         :data-store.discover/save-all [[discover] maximum-number-of-discoveries]}))))
 
 (handlers/register-handler-fx
   :show-status-author-profile
