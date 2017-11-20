@@ -248,6 +248,22 @@
         },
         "groups": ["dapps"],
         "description": "The future of work is now. Hire people or work yourself in return for ETH."
+    },
+
+    "EtherLottery":
+    {
+        "name":
+        {
+            "en": "EtherLottery"
+        },
+        "photo-path": "contacts://etherlottery",
+        "dapp?": true,
+        "dapp-url":
+        {
+          "en": "https://etherlottery.co"
+        },
+        "groups": ["dapps"],
+        "description": "Smart Contract decentraliced Lottery. Fair Gaming. Your ethers secured."
     }
 
 
