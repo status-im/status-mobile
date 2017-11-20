@@ -26,9 +26,7 @@
                     :accounts/current-account-id nil}
           {:keys [db dispatch-n]} (chat-events/init-console-chat fresh-db false)]
       (is (= (:current-chat-id db)
-             (:chat-id sign-up/console-chat)))
-      (is (= (:new-chat db)
-             sign-up/console-chat))
+             (:chat-id sign-up/console-chat))) 
       (is (= (:current-chat-id db)
              const/console-chat-id))
       (is (= dispatch-n
@@ -40,9 +38,7 @@
                     :accounts/current-account-id (:whisper-identity contact)}
           {:keys [db dispatch-n]} (chat-events/init-console-chat fresh-db false)]
       (is (= (:current-chat-id db)
-             (:chat-id sign-up/console-chat)))
-      (is (= (:new-chat db)
-             sign-up/console-chat))
+             (:chat-id sign-up/console-chat))) 
       (is (= (:current-chat-id db)
              const/console-chat-id))
       (is (= dispatch-n [[:add-contacts [sign-up/console-contact]]])))))

@@ -162,8 +162,7 @@
   (if (chats const/console-chat-id)
     {:db db}
     (cond-> {:db (-> db
-                     (assoc :new-chat sign-up/console-chat
-                            :current-chat-id const/console-chat-id)
+                     (assoc :current-chat-id const/console-chat-id)
                      (update :chats assoc const/console-chat-id sign-up/console-chat))
              :dispatch-n [[:add-contacts [sign-up/console-contact]]]
              :save-chat sign-up/console-chat
@@ -324,8 +323,8 @@
 (handlers/register-handler-fx
   :add-chat
   [(re-frame/inject-cofx :gfy-generator) re-frame/trim-v]
-  (fn [cofx [chat-id]]
-    (model/add-chat cofx chat-id)))
+  (fn [cofx [chat-id chat-props]]
+    (model/add-chat cofx chat-id chat-props)))
 
 (defn- navigate-to-chat
   [cofx chat-id navigation-replace?]

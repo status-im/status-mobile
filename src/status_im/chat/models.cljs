@@ -12,30 +12,33 @@
   (update-in db [:chat-ui-props current-chat-id ui-element] not))
 
 (defn- create-new-chat
-  [{:keys [db gfy-generator now]} chat-id]
+  [{:keys [db gfy-generator now]} chat-id chat-props]
   (let [{:keys [name whisper-identity]} (get-in db [:contacts/contacts chat-id])]
-    {:chat-id    chat-id
-     :name       (or name (gfy-generator whisper-identity))
-     :color      styles/default-chat-color
-     :group-chat false
-     :is-active  true
-     :timestamp  now
-     :contacts   [{:identity chat-id}]}))
+    (merge {:chat-id    chat-id
+            :name       (or name (gfy-generator whisper-identity))
+            :color      styles/default-chat-color
+            :group-chat false
+            :is-active  true
+            :timestamp  now
+            :contacts   [{:identity chat-id}]}
+           chat-props)))
 
 (defn add-chat
-  [{:keys [db] :as cofx} chat-id]
-  (let [new-chat       (create-new-chat cofx chat-id)
-        existing-chats (:chats db)]
-    {:db (cond-> (assoc db :new-chat new-chat)
-           (not (contains? existing-chats chat-id))
-           (update :chats assoc chat-id new-chat))
-     :save-chat new-chat}))
+  ([cofx chat-id]
+   (add-chat cofx chat-id {}))
+  ([{:keys [db] :as cofx} chat-id chat-props]
+   (let [new-chat       (create-new-chat cofx chat-id chat-props)
+         existing-chats (:chats db)]
+     {:db (cond-> db
+            (not (contains? existing-chats chat-id))
+            (update :chats assoc chat-id new-chat))
+      :save-chat new-chat})))
 
 (defn update-chat
   "Updates chat properties, if chat is not present in db, creates a default new one"
   [{:keys [db get-stored-chat]} {:keys [chat-id] :as chat}]
   (let [chat (merge (or (get-stored-chat chat-id)
-                        (create-new-chat db chat-id))
+                        (create-new-chat db chat-id {}))
                     chat)]
     {:db        (update-in db [:chats chat-id] merge chat)
      :save-chat chat}))
