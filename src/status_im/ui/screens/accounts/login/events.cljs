@@ -97,22 +97,27 @@
                         wrap-with-stop-node-fx)]
       (wrap-fn db' address password))))
 
+(defn is-new-account?
+  "checks if the account is in the accounts in the db"
+  [{:accounts/keys [accounts]} address]
+  (let [present? (set (keys accounts))]
+    (not (present? address))))
+
 (register-handler-fx
   :login-handler
-  (fn [{db :db} [_ result address]]
-    (let [data    (json->clj result)
+  (fn [{db :db} [_ login-result address]]
+    (let [data    (json->clj login-result)
           error   (:error data)
           success (zero? (count error))
           db'     (assoc-in db [:accounts/login :processing] false)]
-      (log/debug "Logged in account: " result)
+      (log/debug "Logging result: " login-result)
       (merge
-        {:db (if success db' (assoc-in db' [:accounts/login :error] error))}
-        (when success
-          (let [is-login-screen? (= (:view-id db) :login)
-                new-account?     (not is-login-screen?)]
-            (log/debug "Logged in: " (:view-id db) is-login-screen? new-account?)
-            {::clear-web-data nil
-             ::change-account [address new-account?]}))))))
+       {:db (if success db' (assoc-in db' [:accounts/login :error] error))}
+       (when success
+         (let [new-account? (is-new-account? db address)]
+           (log/debug "Logged in" (when new-account? " new account") ":" address)
+           {::clear-web-data nil
+            ::change-account [address new-account?]}))))))
 
 (register-handler-fx
   :change-account-handler
