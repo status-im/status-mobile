@@ -1,12 +1,16 @@
 (ns status-im.test.protocol.core
   (:require [cljs.test :refer-macros [deftest is testing run-tests async]]
             [cljs.nodejs :as nodejs]
+            [status-im.protocol.web3.utils :as web3.utils]
             [status-im.test.protocol.node :as node]
             [status-im.test.protocol.utils :as utils]
             [status-im.protocol.core :as protocol]))
 
+;; NOTE(oskarth): All these tests are evaluated in NodeJS
+
 (nodejs/enable-util-print!)
 
+;; NOTE(oskarth): If status-go has already been built correctly, comment this out
 (node/prepare-env!)
 
 (def rpc-url "http://localhost:8645")
@@ -37,7 +41,10 @@
    :contacts            contacts
    :post-error-callback (post-error-callback id)})
 
-(deftest test-send-message!
+;; NOTE(oskarth): Test assumes callback is always called, otherwise it won't terminate
+;; TODO(oskarth): Add a timeout async function where we fail test if it takes too long to finish
+;; TODO(oskarth): Fix this test, issue with private key not being persisted
+#_(deftest test-send-message!
   (async done
     (node/start!)
     (let [web3          (make-web3)
@@ -63,3 +70,15 @@
                                 :content-type "text/plain"
                                 :content      "123"
                                 :timestamp    1498723691404}}}))))
+
+;; TODO(oskarth): Add fixtures to start node before running tests against node
+(deftest test-whisper-version!
+  (testing "Whisper version supported"
+    (async done
+           (node/start!)
+           (let [web3 (make-web3)
+                 shh  (web3.utils/shh web3)]
+             (.version shh
+                       (fn [& args]
+                         (is (= "5.0" (second args)))
+                         (done)))))))
