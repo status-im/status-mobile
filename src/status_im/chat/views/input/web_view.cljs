@@ -35,14 +35,14 @@
    result-box [:chat-ui-props :result-box]]
   (when url
     [webview-bridge
-     {:ref                                   #(dispatch [:set-webview-bridge %])
-      :on-bridge-message                     #(dispatch [:webview-bridge-message %])
+     {:ref                                   #(dispatch [:chat-webview-bridge/set-ref %])
+      :on-bridge-message                     #(dispatch [:chat-webview-bridge/process-message %])
       :source                                {:uri url}
       :render-error                          web-view-error
       :java-script-enabled                   true
       :injected-on-start-loading-java-script (str js-res/web3
-                                                  js-res/jquery
-                                                  (js-res/web3-init rpc-url))
+                                               js-res/jquery
+                                               (js-res/web3-init rpc-url))
       :injected-java-script                  (str js-res/webview-js extra-js)
       :bounces                               false
       :on-navigation-state-change            #(on-navigation-change % result-box)

@@ -36,7 +36,7 @@
    :icon        :menu_group
    :icon-style  {:width  25
                  :height 19}
-   :handler     #(re-frame/dispatch [:show-profile chat-id])})
+   :handler     #(re-frame/dispatch [:chat/show-profile chat-id])})
 
 (def item-search
   {:title      (i18n/label :t/search-chat)

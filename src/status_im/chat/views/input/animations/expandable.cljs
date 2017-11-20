@@ -16,10 +16,11 @@
 (defn header [key container-height custom-header]
   (let [set-container-height (subscribe [:chat-animations key :height])
         max-container-height (subscribe [:get-max-container-area-height])
-        pan-responder        (resp/pan-responder container-height
-                                                 max-container-height
-                                                 :fix-expandable-height
-                                                 key)]
+        pan-responder        (resp/pan-responder
+                               container-height
+                               max-container-height
+                               :chat-animation/fix-expandable-height
+                               key)]
     (fn [_]
       [view (merge (drag/pan-handlers pan-responder)
                    {:style style/header-container})
@@ -74,8 +75,8 @@
        (fn []
          (dispatch [:set-chat-ui-props {:fullscreen? false}])
          (if height
-           (dispatch [:set-expandable-height key height])
-           (dispatch [:choose-predefined-expandable-height key :default])))
+           (dispatch [:chat-animation/set-expandable-height key height])
+           (dispatch [:chat-animation/choose-predefined-expandable-height key :default])))
        :display-name "expandable-view"
        :reagent-render
        (fn [{:keys [draggable? custom-header]} & elements]

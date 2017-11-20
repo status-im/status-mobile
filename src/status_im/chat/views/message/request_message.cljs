@@ -86,7 +86,7 @@
                                              :prefill-bot-db (or prefill-bot-db prefillBotDb)})
                              command)
           on-press-handler (if (:execute-immediately? command)
-                             #(dispatch [:execute-command-immediately command])
+                             #(dispatch [:chat-commands/execute-immediately command])
                              (when (and (not answered?) status-initialized?)
                                #(set-chat-command message-id command)))]
       [view st/command-request-view

@@ -73,7 +73,7 @@
                    :icon-opts {:color :blue}
                    :on-press  #(dispatch [:clear-history])}]
    [action-separator]
-   [touchable-highlight {:on-press #(dispatch [:leave-group-chat])}
+   [touchable-highlight {:on-press #(dispatch [:chat/leave-group-chat])}
     [view styles/settings-group-item
      [view styles/delete-icon-container
       [vi/icon :icons/arrow-right {:color :red}]]
@@ -166,6 +166,6 @@
             #(do
                (dispatch [:create-new-contact-group group-name])
                (dispatch [:navigate-to-clean :contact-list]))
-            #(dispatch [:create-new-group-chat-and-open group-name]))
+            #(dispatch [:chat/create-new-group-chat-and-open group-name]))
           true])])))
 

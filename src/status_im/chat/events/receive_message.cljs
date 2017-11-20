@@ -6,6 +6,9 @@
             [status-im.utils.clocks :as clocks]
             [status-im.constants :as const]
             [status-im.chat.utils :as chat-utils]
+            [status-im.chat.events.commands :as commands-events]
+            [status-im.chat.events.input :as input-events]
+            [status-im.chat.events.requests :as requests-events]
             [status-im.chat.models :as model]
             [status-im.chat.models.unviewed-messages :as unviewed-messages-model]
             [status-im.data-store.chats :as chat-store]
@@ -32,6 +35,7 @@
   [{:accounts/keys [accounts current-account-id]}]
   (get-in accounts [current-account-id :public-key]))
 
+;; TODO(alwx): this method should be tested and maybe even restructured
 (defn add-message
   [{:keys [db message-exists? get-last-stored-message pop-up-chat?
            get-last-clock-value now random-id] :as cofx}
@@ -64,23 +68,32 @@
                                                                    (:new? enriched-message))
                                      (unviewed-messages-model/add-unviewed-message chat-identifier message-id)
                                      (assoc-in [:chats chat-identifier :last-message] message)))
-                    (assoc :dispatch-n [[:request-command-message-data enriched-message :short-preview]]
+                    (assoc :dispatch-n [[:chat-commands/jail-request-data enriched-message :short-preview]]
                            :save-message (dissoc enriched-message :new?)))
 
           (get-in enriched-message [:content :command])
-          (update :dispatch-n conj [:request-command-preview enriched-message])
+          (as-> fx'
+            (merge fx' (commands-events/get-preview (assoc cofx :db (:db fx')) enriched-message)))
 
           (= (:content-type enriched-message) const/content-type-command-request)
-          (update :dispatch-n conj [:add-request chat-identifier enriched-message])
-          ;; TODO(janherich) this shouldn't be dispatch, but plain function call, refactor after adding requests is refactored
+          (as-> fx'
+            (merge fx' (requests-events/add-request (assoc cofx :db (:db fx')) chat-identifier enriched-message)))
+
           true
-          (update :dispatch-n conj [:update-suggestions])))
+          (as-> fx'
+            (assoc fx' :db (input-events/update-suggestions (:db fx'))))))
       {:db db})))
 
 (def ^:private receive-interceptors
-  [(re-frame/inject-cofx :message-exists?) (re-frame/inject-cofx :get-last-stored-message)
-   (re-frame/inject-cofx :pop-up-chat?) (re-frame/inject-cofx :get-last-clock-value)
-   (re-frame/inject-cofx :random-id) (re-frame/inject-cofx :get-stored-chat) re-frame/trim-v])
+  [(re-frame/inject-cofx :message-exists?)
+   ;; TODO(alwx): is it the same?
+   (re-frame/inject-cofx :get-last-stored-message)
+   (re-frame/inject-cofx :get-stored-message)
+   (re-frame/inject-cofx :pop-up-chat?)
+   (re-frame/inject-cofx :get-last-clock-value)
+   (re-frame/inject-cofx :random-id)
+   (re-frame/inject-cofx :get-stored-chat)
+   re-frame/trim-v])
 
 (handlers/register-handler-fx
   :received-protocol-message!
