@@ -17,7 +17,8 @@ target 'StatusIm' do
 
   # Pods for StatusIm
   pod 'Instabug', '~> 7.0'
-
+  pod 'FirebaseMessaging'
+  
   target 'StatusImTests' do
     inherit! :search_paths
     # Pods for testing
