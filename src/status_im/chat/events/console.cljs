@@ -77,7 +77,8 @@
                                             (faucet-response-event
                                              random-id
                                              (i18n/label :t/faucet-success)))
-                   :failure-event-creator (fn [_]
+                   :failure-event-creator (fn [event]
+                                            (log/error "Faucet error" event)
                                             (faucet-response-event
                                              random-id
                                              (i18n/label :t/faucet-error)))}}))
