@@ -2,7 +2,7 @@
 
 (def translations
   {
-   ;common
+   ;;common
    :members-title                         "成员"
    :not-implemented                       "!未实现"
    :chat-name                             "聊天名称"
@@ -11,55 +11,58 @@
    :search-for                            "搜索..."
    :cancel                                "取消"
    :next                                  "下一个"
+   :open                                  "打开"
+   :description                           "简介"
+   :url                                   "链接"
    :type-a-message                        "输入讯息..."
    :type-a-command                        "开始输入指令..."
    :error                                 "错误"
+   :unknown-status-go-error               "未知的status-go错误"
+   :node-unavailable                      "没有运行的以太坊节点"
+   :yes                                   "是"
+   :no                                    "否"
 
-   :camera-access-error                   "要授予所需的摄像机许可，请转到系统设置，并确定选择了“状态”>“摄像机”。"
-   :photos-access-error                   "要授予所需的照片许可，请转到系统设置，并确保选择“状态“>“照片“。"
+   :camera-access-error                   "要授予所需的摄像机许可，请转到系统设置，并确定选中了“Status”>“摄像机”。"
+   :photos-access-error                   "要授予所需的照片许可，请转到系统设置，并确保选中了“Status”>“照片”。"
 
-   ;drawer
-   :invite-friends                        "邀请朋友"
-   :faq                                   "常问问题解答"
+   ;;drawer
    :switch-users                          "切换用户"
-   :feedback                              "有反馈？\n摇动你的手机！"
-   :view-all                              "查看所有"
    :current-network                       "当前网络"
 
-   ;chat
-   :is-typing                             "正在打字"
+   ;;chat
+   :is-typing                             "正在输入"
    :and-you                               "你"
    :search-chat                           "搜索聊天"
-   :members                               {:one   "1个成员"
-                                           :other "{{count}}个成员"
-                                           :zero  "没有成员"}
-   :members-active                        {:one   "1个成员，1个活跃"
-                                           :other "{{count}}个成员，{{count}}个活跃"
-                                           :zero  "没有成员"}
+   :members                               {:one   "1 成员"
+                                           :other "{{count}} 成员"
+                                           :zero  "无成员"}
+   :members-active                        {:one   "1 成员"
+                                           :other "{{count}} 成员"
+                                           :zero  "无成员"}
    :public-group-status                   "公共"
    :active-online                         "在线"
    :active-unknown                        "未知"
    :available                             "可用"
-   :no-messages                           "没有消息"
+   :no-messages                           "无消息"
    :suggestions-requests                  "请求"
    :suggestions-commands                  "命令"
    :faucet-success                        "水龙头请求已经收到"
    :faucet-error                          "水龙头请求错误"
 
-   ;sync
-   :sync-in-progress                      "正在同步…"
+   ;;sync
+   :sync-in-progress                      "正在同步..."
    :sync-synced                           "已同步"
 
-   ;messages
-   :status-sending                        "正在发送"
+   ;;messages
+   :status-sending                        "正在发送..."
    :status-pending                        "等待中"
    :status-sent                           "已发送"
    :status-seen-by-everyone               "所有人可见"
    :status-seen                           "可见"
-   :status-delivered                      "已交付"
+   :status-delivered                      "已发送"
    :status-failed                         "失败"
 
-   ;datetime
+   ;;datetime
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :datetime-second                       {:one   "秒"
                                            :other "秒"}
@@ -69,38 +72,32 @@
                                            :other "小时"}
    :datetime-day                          {:one   "天"
                                            :other "天"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "前"
    :datetime-yesterday                    "昨天"
    :datetime-today                        "今天"
 
-   ;profile
+   ;;profile
    :profile                               "个人资料"
    :edit-profile                          "编辑个人资料"
-   :report-user                           "举报用户"
    :message                               "信息"
-   :username                              "用户名"
    :not-specified                         "未指定"
    :public-key                            "公钥"
    :phone-number                          "电话号码"
-   :email                                 "电子邮件"
    :update-status                         "更新你的状态..."
    :add-a-status                          "添加状态..."
-   :status-prompt                         "建立一个状态以帮助人们了解您提供的内容。 你也可以使用#hashtags。"
+   :status-prompt                         "设置你的 Status。使用 #hastags 可以帮助其他人了解您，并且谈论您正在想些什么。"
    :add-to-contacts                       "添加到联系人"
-   :in-contacts                           "在联系人"
+   :in-contacts                           "已添加联系人"
    :remove-from-contacts                  "从联系人中删除"
    :start-conversation                    "开始对话"
    :send-transaction                      "发送交易"
-   :share-qr                              "分享QR码"
-   :error-incorrect-name                  "请选择其它名称"
-   :error-incorrect-email                 "电子邮件不正确"
+   :testnet-text                          "您正在使用{{testnet}}测试网络，请不要向你的地址发送真实的ETH或者SNT。"
+   :mainnet-text                          "您正在使用主干网络，可以发送真正的ETH。"
 
    ;;make_photo
    :image-source-title                    "个人资料图片"
    :image-source-make-photo               "拍摄"
    :image-source-gallery                  "从图库中选择"
-   :image-source-cancel                   "取消"
 
    ;;sharing
    :sharing-copy-to-clipboard             "复制到剪贴板"
@@ -111,203 +108,258 @@
    :browsing-open-in-web-browser          "在网络浏览器中打开"
    :browsing-cancel                       "取消"
 
-   ;sign-up
+   ;;sign-up
    :contacts-syncronized                  "已同步你的联系人"
-   :confirmation-code                     (str "谢谢！我们向你发送了一条包含确认信息的短信 "
-                                               "代码。请提供该代码以确认你的电话号码")
+   :confirmation-code                     (str "谢谢！我们已经向你发送了一条包含确认代码的短信，"
+                                               "请提供该代码以确认你的电话号码。")
    :incorrect-code                        (str "抱歉，代码不正确，请重新输入")
-   :generate-passphrase                   (str "我会为你生成一个密码短语，以便你恢复自己的密码 "
-                                               "从另一台设备访问或登录")
-   :phew-here-is-your-passphrase          "*唷* 真不容易，这是你的密码短语，*写下来，好好保管它！*你需要用它来恢复你的帐户。"
-   :here-is-your-passphrase               "这是你的密码短语，*写下来，好好保管它！*你需要用它来恢复你的帐户。"
-   :written-down                          "确保你把它安全地写下来"
+   :phew-here-is-your-passphrase          "嗨，真不容易。这是你的密码，*写下来并好好保管它!* 你需要用它来恢复你的帐户。"
+   :here-is-your-passphrase               "这是你的密码，*写下来并好好保管它!* 你需要用它来恢复你的帐户。"
+   :here-is-your-signing-phrase           "这是你的签名密码，你需要用它来验证你的交易，*写下来并好好保管它!*"
    :phone-number-required                 "点击此处输入你的电话号码，我会找到你的朋友"
-   :shake-your-phone                      "发现错误或有建议？ 只要〜摇一摇〜你的手机！"
+   :shake-your-phone                      "发现错误或有建议？只要 ~摇一摇~ 你的手机！"
    :intro-status                          "跟我聊天，以设置你的帐户并更改你的设置！"
-   :intro-message1                        "欢迎来到Status\n点击该消息，以设置你的密码并开始！"
-   :account-generation-message            "给我一点时间，我得疯狂地计算一下，以生成你的帐户！"
-   :move-to-internal-failure-message      "我们需要将一些重要的文件从外部存储移动到内部存储。 为此，我们需要你的许可。 我们在将来的版本不会使用外部存储。"
-   :debug-enabled                         "调试服务器已经推出！ 现在你可以执行* status-dev-cli scan *在同一网络上的电脑上查找服务器。"
+   :intro-message1                        "欢迎来到Status\n点击该消息来设置你的密码并开始！"
+   :account-generation-message            "给我一点时间，我得疯狂地计算一下，才能生成你的帐户！"
+   :move-to-internal-failure-message      "我们需要将一些重要的文件从外部存储移动到内部存储。为此，我们需要你的许可。在之后的版本中，我们将不会使用外部存储。"
+   :debug-enabled                         "调试服务器已经推出！现在你可以在自己的计算机上执行 *status-dev-cli scan* 来查找在同一网络上的服务器。"
 
-   ;phone types
+   ;;phone types
    :phone-e164                            "国际1"
    :phone-international                   "国际2"
    :phone-national                        "国内"
-   :phone-significant                     "显着"
+   :phone-significant                     "重要"
 
-   ;chats
+   ;;chats
    :chats                                 "聊天"
-   :new-chat                              "新的聊天"
    :delete-chat                           "刪除聊天"
    :new-group-chat                        "新的群聊"
-   :new-public-group-chat                 "加入公开聊天"
+   :new-public-group-chat                 "加入公共聊天"
    :edit-chats                            "编辑对话"
    :search-chats                          "搜索对话"
-   :empty-topic                           "主题空白"
+   :empty-topic                           "清空话题"
    :topic-format                          "格式错误 [a-z0-9\\-]+"
-   :public-group-topic                    "主题"
+   :public-group-topic                    "话题"
 
-   ;discover
+   ;;discover
    :discover                              "发现"
    :none                                  "无"
    :search-tags                           "在此处输入搜索标签"
    :popular-tags                          "热门标签"
    :recent                                "最近"
+   :no-statuses-found                     "未发现状态"
+   :chat                                  "聊天"
+   :all                                   "全部"
+   :public-chats                          "公共聊天"
+   :soon                                  "不久"
+   :public-chat-user-count                "{{count}}人"
+   :dapps                                 "ÐApps"
+   :dapp-profile                          "ÐApp简介"
    :no-statuses-discovered                "未发现状态"
-   :no-statuses-found                     "找不到状态"
+   :no-statuses-discovered-body           "当某个人发布\n一条状态时，你可以在这里看到它。"
+   :no-hashtags-discovered-title          "未发现 #hashtags"
+   :no-hashtags-discovered-body           "当一个 #hashtag 变为流行标签，你可以在这里看到它。"
 
-   ;settings
+   ;;settings
    :settings                              "设置"
 
-   ;contacts
+   ;;contacts
    :contacts                              "联系人"
    :new-contact                           "新的联系人"
-   :delete-contact                        "删除联络人"
-   :delete-contact-confirmation           "此联络人将从你的联络人中删除"
+   :delete-contact                        "删除联系人"
+   :delete-contact-confirmation           "此联系人将从你的联系人中删除"
    :remove-from-group                     "从群组中移除"
-   :edit-contacts                         "编辑联络人"
-   :search-contacts                       "搜寻联络人"
-   :show-all                              "显示所有"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "联系人"
+   :edit-contacts                         "编辑联系人"
+   :search-contacts                       "搜索联系人"
    :contacts-group-new-chat               "开始新的聊天"
-   :choose-from-contacts                  "从联络人中选择"
+   :choose-from-contacts                  "从联系人中选择"
    :no-contacts                           "还没有联系人"
    :show-qr                               "显示二维码"
-   :enter-address                         "輸入地址"
+   :enter-address                         "输入地址"
    :more                                  "更多"
 
-   ;group-settings
+   ;;group-settings
    :remove                                "删除"
    :save                                  "保存"
    :delete                                "刪除"
-   :change-color                          "更改颜色"
-   :clear-history                         "清除历史记录"
-   :delete-and-leave                      "删除并退出"
+   :clear-history                         "清空历史记录"
    :mute-notifications                    "静音通知"
    :leave-chat                            "离开对话"
-   :chat-settings                         "聊天设置"
+   :chat-settings                         "对话设置"
    :edit                                  "编辑"
    :add-members                           "添加成员"
-   :blue                                  "蓝色"
-   :purple                                "紫色"
-   :green                                 "绿色"
-   :red                                   "红色"
 
-   ;commands
-   :money-command-description             "汇款"
-   :location-command-description          "发送位置"
-   :phone-command-description             "发送电话号码"
-   :phone-request-text                    "电话号码请求"
-   :confirmation-code-command-description "发送确认码"
-   :confirmation-code-request-text        "确认码请求"
-   :send-command-description              "发送位置"
-   :request-command-description           "发送请求"
-   :keypair-password-command-description  ""
-   :help-command-description              "帮助"
-   :request                               "请求"
+   ;;commands
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "给{{chat-name}}的{{amount}} ETH"
-   :chat-send-eth-from                    "来自{{chat-name}}的{{amount}} ETH"
 
-   ;new-group
-   :group-chat-name                       "聊天名称"
-   :empty-group-chat-name                 "请输入名称"
-   :illegal-group-chat-name               "请选择其它名称"
-   :new-group                             "新增群組"
-   :reorder-groups                        "重新排序群組"
-   :group-name                            "群組名稱"
-   :edit-group                            "編輯群組"
-   :delete-group                          "刪除群組"
-   :delete-group-confirmation             "此群組將從你的群組中移除。 這不會影響聯絡人"
-   :delete-group-prompt                   "這不會影響聯絡人"
-   :group-members                         "群組成員"
-   :contact-s                             {:one   "contact"
-                                           :other "contacts"}
-   ;participants
-   :add-participants                      "添加参与者"
-   :remove-participants                   "删除参与者"
+   ;;location command
+   :your-current-location                 "你的当前位置"
+   :places-nearby                         "附近的位置"
+   :search-results                        "查询结果"
+   :dropped-pin                           "放置的标记"
+   :location                              "位置"
+   :open-map                              "打开地图"
+   :sharing-copy-to-clipboard-address     "复制地址"
+   :sharing-copy-to-clipboard-coordinates "复制坐标"
 
-   ;protocol
-   :received-invitation                   "收到了聊天邀请"
+   ;;new-group
+   :new-group                             "新增群组"
+   :reorder-groups                        "重新排序群组"
+   :edit-group                            "编辑群组"
+   :delete-group                          "删除群组"
+   :delete-group-confirmation             "此群组将从你的群组中移除，这不会影响你的联系人。"
+   :delete-group-prompt                   "这不会影响你的联系人"
+   :contact-s                             {:one   "联系人"
+                                           :other "联系人"}
+
+   ;;protocol
+   :received-invitation                   "收到的聊天邀请"
    :removed-from-chat                     "已将你从群聊中删除"
    :left                                  "剩余"
    :invited                               "已邀请"
    :removed                               "已删除"
    :You                                   "你"
 
-   ;new-contact
+   ;;new-contact
    :add-new-contact                       "添加新的联系人"
-   :import-qr                             "导入"
    :scan-qr                               "扫描二维码"
-   :swow-qr                               "顯示QR碼"
    :name                                  "名称"
-   :whisper-identity                      "Whisper身份"
-   :address-explication                   "也许这里应该有一些文本来解释什么是地址，以及在哪里查找它"
-   :enter-valid-address                   "请输入有效地址或扫描二维码"
-   :enter-valid-public-key                "请输入有效公钥或扫描QR码"
+   :address-explication                   "你的公钥可以用来生成以太坊地址，由一系列数字和字母组成，可以在个人简介中轻松地找到。"
+   :enter-valid-public-key                "请输入一个有效的公钥或扫描二维码"
    :contact-already-added                 "已添加该联系人"
    :can-not-add-yourself                  "不能添加自己"
    :unknown-address                       "未知地址"
 
-
-   ;login
+   ;;login
    :connect                               "连接"
    :address                               "地址"
    :password                              "密码"
-   :login                                 "登录"
    :sign-in-to-status                     "登录Status"
    :sign-in                               "登录"
    :wrong-password                        "密码错误"
+   :enter-password                        "输入密码"
 
-   ;recover
-   :recover-from-passphrase               "从密码短语恢复"
-   :recover-explain                       "请输入密码短语，以便使密码恢复访问"
-   :passphrase                            "密码短语"
+   ;;recover
+   :passphrase                            "密码"
    :recover                               "恢复"
-   :enter-valid-passphrase                "请输入密码短语"
-   :enter-valid-password                  "请输入密码"
-   :twelve-words-in-correct-order         "正确排序12个字"
+   :twelve-words-in-correct-order         "正确排序的12个单词"
 
-   ;accounts
+   ;;accounts
    :recover-access                        "恢复访问"
-   :add-account                           "添加帐户"
-   :create-new-account                    "建立新帐户"
+   :create-new-account                    "创建新账户"
 
-   ;wallet-qr-code
+   ;;wallet-qr-code
    :done                                  "完成"
-   :main-wallet                           "主钱包"
 
-   ;validation
-   :invalid-phone                         "电话号码无效"
+   ;;validation
+   :invalid-phone                         "无效的电话号码"
    :amount                                "金额"
-   :not-enough-eth                        (str "ETH余额不足"
-                                               "({{balance}} ETH)")
-   ;transactions
+
+   ;;transactions
    :confirm                               "确认"
-   :confirm-transactions                  {:one   "确认交易"
-                                           :other "确认{{count}}笔交易"
-                                           :zero  "无交易"}
-   :transactions-confirmed                {:one   "已确认交易"
-                                           :other "已确认 {{count}} 笔交易"
-                                           :zero  "无确认交易"}
    :transaction                           "交易"
-   :unsigned-transactions                 "未确认交易"
-   :no-unsigned-transactions              "无未确认交易"
-   :enter-password-transactions           {:one   "输入密码以确认交易"
-                                           :other "输入密码以确认交易"}
+   :unsigned-transaction-expired          "未签名的交易过期"
    :status                                "状态"
-   :pending-confirmation                  "待确认"
-   :recipient                             "接受方"
-   :one-more-item                         "另一项"
-   :fee                                   "费用"
-   :estimated-fee                         "预算费用"
-   :value                                 "值"
-   :to                                    "至"
+   :recipient                             "接收方"
+   :to                                    "到"
    :from                                  "从"
    :data                                  "数据"
-   :got-it                                "得到了"
-   :contract-creation                     "创建合同"
+   :got-it                                "知道了"
+   :block                                 "块"
+   :hash                                  "哈希"
+   :gas-limit                             "Gas限制"
+   :gas-price                             "Gas价格"
+   :gas-used                              "使用的Gas"
+   :cost-fee                              "成本/费用"
+   :nonce                                 "随机数"
+   :confirmations                         "确认"
+   :confirmations-helper-text             "请等待达到至少12个确认，来确保交易已被安全地处理。"
+   :copy-transaction-hash                 "复制交易哈希"
+   :open-on-etherscan                     "打开Etherscan.io"
 
-   ;:webview
-   :web-view-error                        "糟糕，出错了"})
+   ;;webview
+   :web-view-error                        "糟糕，出错了"
+
+   ;;testfairy warning
+   :testfairy-title                       "警告！"
+   :testfairy-message                     "你正在使用一个从nightly build上安装的应用。为了测试目的，在使用wifi连接情况下，本构建包含了会话记录，即和本应用交互的所有记录（如视频和日志）将被保存，并且可能被我们的开发团队用于调查可能存在的问题。保存的视频、日志不包含你的密码。只有从nightly build下载安装本应用时，才会进行记录。如果本应用是从PlayStore或者TestFlight上下载安装，则不会记录。"
+
+   ;; wallet
+   :wallet                                "钱包"
+   :wallets                               "钱包"
+   :your-wallets                          "你的钱包"
+   :main-wallet                           "主钱包"
+   :wallet-error                          "加载数据错误"
+   :wallet-send                           "发送"
+   :wallet-request                        "请求"
+   :wallet-exchange                       "交易"
+   :wallet-assets                         "资产"
+   :wallet-add-asset                      "添加资产"
+   :wallet-total-value                    "总值"
+   :wallet-settings                       "钱包设置"
+   :signing-phrase-description            "通过输入密码对交易进行签名，请确保输入的词语和你的签名密码相匹配"
+   :wallet-insufficient-funds             "资金不足"
+   :request-transaction                   "请求交易"
+   :send-request                          "发送请求"
+   :share                                 "分享"
+   :eth                                   "ETH"
+   :currency                              "货币"
+   :usd-currency                          "USD"
+   :transactions                          "交易"
+   :transaction-details                   "交易明细"
+   :transaction-failed                    "交易失败"
+   :transactions-sign                     "签名"
+   :transactions-sign-all                 "签名所有"
+   :transactions-sign-transaction         "签名交易"
+   :transactions-sign-later               "稍后签名"
+   :transactions-delete                   "删除交易"
+   :transactions-delete-content           "交易将从“未签名”列表中移除"
+   :transactions-history                  "历史记录"
+   :transactions-unsigned                 "未签名"
+   :transactions-history-empty            "暂无交易历史记录"
+   :transactions-unsigned-empty           "你没有任何未签名的交易"
+   :transactions-filter-title             "过滤历史记录"
+   :transactions-filter-tokens            "代币"
+   :transactions-filter-type              "类型"
+   :transactions-filter-select-all        "全部选中"
+   :view-transaction-details              "查看交易明细"
+   :transaction-description               "请等待达到至少12个确认，来确保交易已被安全地处理。"
+   :transaction-sent                      "发送的交易"
+   :transaction-moved-text                "本交易将在接下来的5分钟保持在“未签名”列表中"
+   :transaction-moved-title               "移动的交易"
+   :sign-later-title                      "稍后对交易进行签名？"
+   :sign-later-text                       "检查交易历史记录，可以对本次交易进行签名"
+   :not-applicable                        "对未签名交易不可用"
+
+   ;; Wallet Send
+   :wallet-choose-recipient               "选择接收方"
+   :wallet-choose-from-contacts           "从联系人中选择"
+   :wallet-address-from-clipboard         "使用剪贴板中的地址"
+   :wallet-invalid-address                "无效的地址: \n {{data}}"
+   :wallet-browse-photos                  "浏览相册"
+   :validation-amount-invalid-number      "金额不是一个有效的数字"
+   :validation-amount-is-too-precise      "金额过于精确，所能发送的最小单位是1 Wei (1x10^-18 ETH)"
+
+
+
+   ;; network settings
+   :new-network                           "新建网络"
+   :add-network                           "添加网络"
+   :add-new-network                       "添加新网络"
+   :existing-networks                     "已有的网络"
+   :add-json-file                         "添加一个JSON文件"
+   :paste-json-as-text                    "粘贴JSON为文本"
+   :paste-json                            "粘贴JSON"
+   :specify-rpc-url                       "指定一个RPC链接"
+   :edit-network-config                   "编辑网络配置"
+   :connected                             "已连接"
+   :process-json                          "处理JSON"
+   :error-processing-json                 "处理JSON错误"
+   :rpc-url                               "RPC链接"
+   :remove-network                        "移除网络"
+   :network-settings                      "网络设置"
+   :edit-network-warning                  "请小心，编辑网络数据可能导致当前网络不可用"
+   :connecting-requires-login             "连接其它网络需要登录"
+   :close-app-title                       "警告！"
+   :close-app-content                     "应用将会停止并关闭。当你重新打开应用，选中的网络将会被使用"
+   :close-app-button                      "确认"})
