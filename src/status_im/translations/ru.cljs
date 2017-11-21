@@ -335,7 +335,7 @@
    :wallet-address-from-clipboard         "Использовать Адрес Из Буфера Обмена"
    :wallet-invalid-address                "Недействительный адрес: \n {{data}}"
    :wallet-browse-photos                  "Просмотреть Фотографии"
-   :validation-amount-invalid-number      "Сумма не действительна"
+   :validation-amount-invalid-number      "Сумма недействительна"
    :validation-amount-is-too-precise      "Слишком много чисел после запятой. Наименьшая сумма, которую вы можете отправить это 1 Wei (1x10^-18 ETH)"
 
 
