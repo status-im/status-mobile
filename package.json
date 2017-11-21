@@ -67,7 +67,7 @@
     "react-native-os": "1.1.0",
     "react-native-popup-menu": "0.8.3",
     "react-native-qrcode": "0.2.6",
-    "react-native-randombytes": "^2.3.0",
+    "react-native-randombytes": "^3.0.0",
     "react-native-sortable-listview": "0.2.6",
     "react-native-splash-screen": "3.0.1",
     "react-native-svg": "6.0.0",
