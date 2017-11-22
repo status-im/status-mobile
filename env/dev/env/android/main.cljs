@@ -2,7 +2,8 @@
   (:require [reagent.core :as r]
             [re-frisk-remote.core :as rr]
             [status-im.android.core :as core]
-            [figwheel.client :as figwheel :include-macros true]))
+            [figwheel.client :as figwheel :include-macros true]
+            [status-im.utils.handlers :as utils.handlers]))
 
 (enable-console-print!)
 
@@ -19,4 +20,6 @@
   :heads-up-display false
   :jsload-callback callback)
 
-(rr/enable-re-frisk-remote! {:host "localhost:4567" :on-init core/init :pre-send (fn [db] (update db :chats #(into {} %)))})
+(utils.handlers/add-pre-event-callback rr/pre-event-callback)
+
+(rr/enable-re-frisk-remote! {:host "10.0.3.2:4567" :on-init core/init})
