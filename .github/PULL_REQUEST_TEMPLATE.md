@@ -12,13 +12,18 @@ addresses #...
 [comment]: # (Summarise the problem and how the pull request solves it)
 ...
 
+### Review notes (optional):
+<!-- (Specify if something in particular should be looked at, or ignored, during review) -->
+
+### Testing notes (optional):
+<!-- (Specify if something specific has to be tested, for example upgrade paths) -->
+
 ### Steps to test:
 - Open Status
 - ...
 - Step 3, etc.
 
-[comment]: # (PRs will only be accepted if squashed into single commit.)
-
+<!-- (PRs will only be accepted if squashed into single commit.) -->
 
 status: ready
 
