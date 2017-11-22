@@ -117,3 +117,15 @@
   [react/text {:style      styles/button-text
                :font       (if platform/android? :medium :default)
                :uppercase? (get-in platform/platform-specific [:uppercase?])} label])
+
+(defn change-display [change]
+  (let [pos-change? (or (pos? change) (zero? change))]
+    [react/view {:style (if pos-change?
+                          styles/today-variation-container-positive
+                          styles/today-variation-container-negative)}
+     [react/text {:style (if pos-change?
+                           styles/today-variation-positive
+                           styles/today-variation-negative)}
+      (if change
+        (str (when pos-change? "+") change "%")
+        "-%")]]))

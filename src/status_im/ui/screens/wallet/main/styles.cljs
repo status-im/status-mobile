@@ -55,31 +55,6 @@
    :android   {:letter-spacing -0.18}
    :ios       {:letter-spacing -0.2}})
 
-(def today-variation-container
-  {:border-radius      100
-   :margin-left        8
-   :padding-horizontal 8
-   :padding-vertical   4})
-
-(def today-variation-container-positive
-  (merge today-variation-container
-         {:background-color styles/color-green-1}))
-
-(def today-variation-container-negative
-  (merge today-variation-container
-         {:background-color styles/color-red-3}))
-
-(def today-variation
-  {:font-size 12})
-
-(def today-variation-positive
-  (merge today-variation
-         {:color styles/color-green-2}))
-
-(def today-variation-negative
-  (merge today-variation
-         {:color styles/color-red-4}))
-
 (defstyle buttons
   {:margin-top 34
    :android    {:margin-horizontal 21}
