@@ -10,7 +10,8 @@
                  [com.andrewmcveigh/cljs-time "0.5.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]
-                 [com.cognitect/transit-cljs "0.8.243"]]
+                 [com.cognitect/transit-cljs "0.8.243"]
+                 [org.clojure/test.check "0.9.0"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.13"]
             [lein-re-frisk "0.5.2"]]
@@ -18,7 +19,8 @@
   :aliases {"prod-build"       ^{:doc "Recompile code with prod profile."}
                                ["do" "clean"
                                 ["with-profile" "prod" "cljsbuild" "once" "ios"]
-                                ["with-profile" "prod" "cljsbuild" "once" "android"]]
+                                ["with-profile" "prod" "cljsbuild" "once" "android"]
+                                ]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :figwheel {:nrepl-port 7888}
@@ -71,7 +73,7 @@
                                                  :output-dir         "target/ios-prod"
                                                  :static-fns         true
                                                  :optimize-constants true
-                                                 :optimizations      :simple
+                                                 :optimizations      :advanced
                                                  :closure-defines    {"goog.DEBUG" false}
                                                  :parallel-build     false
                                                  :language-in        :ecmascript5}
