@@ -40,7 +40,7 @@
                                                                         access-scope->commands-responses
                                                                         account
                                                                         chat
-                                                                        contacts)] 
+                                                                        contacts)]
     (:ref (get available-commands-responses response-name))))
 
 (defn add-message
@@ -60,10 +60,13 @@
              (not= from (:public-key current-account))
              (pop-up-chat? chat-identifier))
       (let [group-chat?      (not (nil? group-id))
+            chat-exists?     (get-in db [:chats chat-identifier])
+            fx               (if chat-exists?
+                               (model/upsert-chat cofx {:chat-id    chat-identifier
+                                                        :group-chat group-chat?})
+                               (model/add-chat cofx chat-identifier))
             command-request? (= content-type const/content-type-command-request)
             command          (:command content)
-            fx               (model/upsert-chat cofx {:chat-id    chat-identifier
-                                                      :group-chat group-chat?})
             enriched-message (cond-> (assoc (chat-utils/check-author-direction
                                              (get-last-stored-message chat-identifier)
                                              message)
@@ -78,16 +81,17 @@
                                                               current-account
                                                               (get-in fx [:db :chats chat-identifier])
                                                               contacts
-                                                              command)))]
+                                                              command)))
+            update-db-fx       #(-> %
+                                    (chat-utils/add-message-to-db chat-identifier chat-identifier enriched-message
+                                                                  (:new? enriched-message))
+                                    (unviewed-messages-model/add-unviewed-message chat-identifier message-id)
+                                    (assoc-in [:chats chat-identifier :last-message] enriched-message))]
         (cond-> (-> fx
-                    (update :db #(-> %
-                                     (chat-utils/add-message-to-db chat-identifier chat-identifier enriched-message
-                                                                   (:new? enriched-message))
-                                     (unviewed-messages-model/add-unviewed-message chat-identifier message-id)
-                                     (assoc-in [:chats chat-identifier :last-message] enriched-message)))
+                    (update :db update-db-fx)
                     (assoc :save-message (dissoc enriched-message :new?)))
 
-          command 
+          command
           (update :dispatch-n concat [[:request-command-message-data enriched-message :short-preview]
                                       [:request-command-preview enriched-message]])
 

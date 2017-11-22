@@ -60,11 +60,6 @@
   (fn [cofx _]
     (assoc cofx :get-stored-chat chats-store/get-by-id)))
 
-(re-frame/reg-cofx
-  :gfy-generator
-  (fn [cofx _]
-    (assoc cofx :gfy-generator gfycat/generate-gfy)))
-
 ;;;; Effects
 
 (re-frame/reg-fx
@@ -290,7 +285,7 @@
 ;; TODO(janherich): remove this unnecessary event in the future (only model function `add-chat` will stay)
 (handlers/register-handler-fx
   :add-chat
-  [(re-frame/inject-cofx :gfy-generator) re-frame/trim-v]
+  [re-frame/trim-v]
   (fn [cofx [chat-id chat-props]]
     (model/add-chat cofx chat-id chat-props)))
 
@@ -313,8 +308,7 @@
 
 (handlers/register-handler-fx
   :start-chat
-  [(re-frame/inject-cofx :gfy-generator)
-   (re-frame/inject-cofx :get-stored-messages)
+  [(re-frame/inject-cofx :get-stored-messages)
    re-frame/trim-v]
   (fn [{:keys [db] :as cofx} [contact-id {:keys [navigation-replace?]}]]
     (when (not= (:current-public-key db) contact-id) ; don't allow to open chat with yourself
