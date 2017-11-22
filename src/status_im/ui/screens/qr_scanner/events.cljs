@@ -5,7 +5,7 @@
             [status-im.utils.handlers :as u :refer [register-handler]]
             [status-im.utils.utils :as utils]
             [status-im.i18n :as i18n]
-            [status-im.utils.eip.eip681 :as eip681]))
+            [status-im.utils.ethereum.eip681 :as eip681]))
 
 (defmethod nav/preload-data! :qr-scanner
   [db [_ _ identifier]]

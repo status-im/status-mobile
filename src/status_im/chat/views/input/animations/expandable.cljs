@@ -6,7 +6,7 @@
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.drag-drop :as drag]
             [status-im.ui.components.react :refer [view
-                                                animated-view]]
+                                                   animated-view]]
             [status-im.chat.views.input.animations.responder :as resp]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.chat.styles.animations :as style]

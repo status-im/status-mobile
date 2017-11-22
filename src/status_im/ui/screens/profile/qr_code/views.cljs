@@ -8,7 +8,7 @@
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.qr-code.styles :as styles]
             [status-im.utils.money :as money]
-            [status-im.utils.eip.eip681 :as eip681])
+            [status-im.utils.ethereum.eip681 :as eip681])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview qr-code-view []

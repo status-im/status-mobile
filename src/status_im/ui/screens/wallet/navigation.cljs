@@ -1,10 +1,11 @@
 (ns status-im.ui.screens.wallet.navigation
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.main.views :as main]))
 
 (defmethod navigation/preload-data! :wallet
   [db _]
-  (re-frame/dispatch [:update-wallet])
+  (re-frame/dispatch [:update-wallet (map :symbol (main/tokens-for (:network db)))])
   (assoc-in db [:wallet :current-tab] 0))
 
 (defmethod navigation/preload-data! :transactions-history

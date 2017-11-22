@@ -12,6 +12,8 @@
             [status-im.i18n :as i18n]
             [status-im.react-native.resources :as resources]
             [status-im.utils.config :as config]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]
             [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
@@ -77,13 +79,6 @@
      [btn/button {:disabled? true :style (button.styles/button-bar :last) :text-style styles/main-button-text}
       (i18n/label :t/wallet-exchange)]]]])
 
-;; TODO(goranjovic): snt is temporarily given the same logo that eth uses to minimize the changes
-;; while ERC20 is mocked and hidden behind a flag.
-(defn- token->image [id]
-  (case id
-    "eth" {:source (:ethereum resources/assets) :style (styles/asset-border components.styles/color-gray-transparent-light)}
-    "snt" {:source (:ethereum resources/assets) :style (styles/asset-border components.styles/color-blue)}))
-
 (defn add-asset []
   [list/touchable-item show-not-implemented!
    [react/view
@@ -93,54 +88,42 @@
       [react/text {:style styles/add-asset-text}
        (i18n/label :t/wallet-add-asset)]]]]])
 
-(defn render-asset [{:keys [id currency amount]}]
-  ;; TODO(jeluard) Navigate to asset details screen
-  #_
-  [list/touchable-item show-not-implemented!
-   [react/view
-    [list/item
-     [list/item-image {:uri :launch_logo}]
-     [react/view {:style styles/asset-item-value-container}
-      [react/text {:style styles/asset-item-value} (str amount)]
-      [react/text {:style      styles/asset-item-currency
-                   :uppercase? true}
-       id]]
-     [list/item-icon {:icon :icons/forward}]]]]
-  (if id
-    [react/view
-     [list/item
-      (let [{:keys [source style]} (token->image id)]
-        [list/item-image source style])
-      [react/view {:style styles/asset-item-value-container}
-       [react/text {:style           styles/asset-item-value
-                    :number-of-lines 1
-                    :ellipsize-mode  :tail}
-        (money/to-fixed (money/wei-> :eth amount))]
-       [react/text {:style           styles/asset-item-currency
-                    :uppercase?      true
-                    :number-of-lines 1}
-        id]]]]
+(defn render-asset [{:keys [name symbol icon decimals amount]}]
+  (if name ;; If no 'name' then this the dummy value used to render `add-asset`
+    [list/touchable-item #(utils/show-popup "TODO" (str "Details about " symbol " here"))
+     [react/view
+      [list/item
+       (let [{:keys [source style]} icon]
+         [list/item-image source style])
+       [react/view {:style styles/asset-item-value-container}
+        [react/text {:style           styles/asset-item-value
+                     :number-of-lines 1
+                     :ellipsize-mode  :tail}
+         (money/to-fixed (money/token->unit (or amount 0) decimals))]
+        [react/text {:style           styles/asset-item-currency
+                     :uppercase?      true
+                     :number-of-lines 1}
+         symbol]]
+       [list/item-icon {:icon :icons/forward}]]]]
     [add-asset]))
 
-(defn asset-section [balance prices-loading? balance-loading?]
-  (let [assets (concat [{:id "eth" :currency :eth :amount balance}]
-                       (if config/erc20-enabled?
-                         [{:id "snt" :currency :snt :amount 5000000000000000000000}]))]
+(defn tokens-for [network]
+  (get tokens/all (ethereum/network network)))
+
+(defn asset-section [network balance prices-loading? balance-loading?]
+  (let [tokens (tokens-for network)
+        assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] (when config/erc20-enabled? tokens)))]
     [react/view {:style styles/asset-section}
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/flat-list
-      {:data       (concat assets [{}]) ;; Extra map triggers rendering for add-asset
-                                        ;; TODO(goranjovic): Refactor
-                                        ;; the order where new element is inserted
-                                        ;; with `conj` depends on the underlying collection type.
-                                        ;; whereas `concat` like here guarantees that empty element
-                                        ;; will be inserted in the end.
+      {:data       assets ;; TODO(jeluard) Reenable once we `add-an-asset` story is flecthed out ;; (concat assets [{}]) ;; Extra map triggers rendering for add-asset
        :render-fn  render-asset
-       :on-refresh #(rf/dispatch [:update-wallet])
+       :on-refresh #(rf/dispatch [:update-wallet (when config/erc20-enabled? (map :symbol tokens))])
        :refreshing (boolean (or prices-loading? balance-loading?))}]]))
 
 (defview wallet []
-  (letsubs [balance          [:balance]
+  (letsubs [network          [:network]
+            balance          [:balance]
             portfolio-value  [:portfolio-value]
             portfolio-change [:portfolio-change]
             prices-loading?  [:prices-loading?]
@@ -151,4 +134,4 @@
      [toolbar-view]
      [react/view components.styles/flex
       [main-section portfolio-value portfolio-change syncing? error-message]
-      [asset-section balance prices-loading? balance-loading?]]]))
+      [asset-section network balance prices-loading? balance-loading?]]]))

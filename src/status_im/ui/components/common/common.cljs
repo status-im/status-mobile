@@ -3,8 +3,9 @@
   (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.context-menu :refer [context-menu]]
-            [status-im.utils.platform :as platform]
             [status-im.ui.components.common.styles :as styles]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]))
 
 (defn top-shadow []
@@ -62,13 +63,12 @@
    [top-shadow]])
 
 (defview network-info [{:keys [text-color]}]
-  (letsubs [testnet?     [:testnet?]
-            testnet-name [:testnet-name]]
+  (letsubs [network-id [:get-network-id]]
     [react/view
      [react/view styles/network-container
       [react/view styles/network-icon
        [vector-icons/icon :icons/network {:color :white}]]
       [react/text {:style (styles/network-text text-color)}
-       (if testnet?
-         (i18n/label :t/testnet-text {:testnet testnet-name})
+       (if (ethereum/testnet? network-id)
+         (i18n/label :t/testnet-text {:testnet (get-in ethereum/chain-ids [network-id :name] "Unknown")})
          (i18n/label :t/mainnet-text))]]]))

@@ -1,11 +1,11 @@
-(ns status-im.utils.eip.eip681
+(ns status-im.utils.ethereum.eip681
   "Utility function related to [EIP681](https://github.com/ethereum/EIPs/issues/681)
 
    This EIP standardize how ethereum payment request can be represented as URI (say to embed them in a QR code).
 
    e.g. ethereum:0x1234@1/transfer?to=0x5678&value=1e18&gas=5000"
   (:require [clojure.string :as string]
-            [status-im.constants :as constants]
+            [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.money :as money]))
 
 (def scheme "ethereum")
@@ -43,7 +43,7 @@
       (when authority-path
         (let [[_ address chain-id function-name] (re-find authority-path-pattern authority-path)]
           (when-not (or (string/blank? address) function-name) ;; Native token support only TODO(jeluard) Add ERC20 support
-            (merge {:address address :chain-id (if chain-id (js/parseInt chain-id) constants/mainnet-id)}
+            (merge {:address address :chain-id (if chain-id (js/parseInt chain-id) (ethereum/chain-id :mainnet))}
                    (parse-query query))))))))
 
 
@@ -59,7 +59,7 @@
   (when (and address (not function-name)) ;; Native token support only TODO(jeluard) Add ERC20 support
     (let [parameters (dissoc (into {} (filter second m)) :chain-id)] ;; filter nil values
       (str scheme scheme-separator address
-           (when (and chain-id (not= chain-id constants/mainnet-id))
+           (when (and chain-id (not= chain-id (ethereum/chain-id :mainnet)))
              ;; Add chain-id if specified and is not main-net
              (str chain-id-separator chain-id))
            (when-not (empty? parameters)
