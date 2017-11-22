@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.network-settings.subs
-  (:require [re-frame.core :refer [reg-sub subscribe]]
-            [status-im.constants :as constants]))
+  (:require [re-frame.core :refer [reg-sub subscribe]]))
 
 (reg-sub
   :get-current-account-network
@@ -15,15 +14,3 @@
  :<- [:get :network]
  (fn [[networks network]]
    (get-in networks [network :raw-config :NetworkId])))
-
-(reg-sub
- :testnet?
- :<- [:get-network-id]
- (fn [network-id]
-   (contains? #{constants/rinkeby-id constants/ropsten-id} network-id)))
-
-(reg-sub
-  :testnet-name
-  :<- [:get-network-id]
-  (fn [network-id]
-    (constants/get-testnet-name network-id)))

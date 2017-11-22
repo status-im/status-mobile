@@ -49,18 +49,20 @@
       (dependencies/Web3.prototype.toDecimal (normalize s))
       (catch :default err nil))))
 
+(defn from-decimal [n] (str "1" (string/join (repeat n "0"))))
+
 (def eth-units
   {:wei    (bignumber "1")
-   :kwei   (bignumber "1000")
-   :mwei   (bignumber "1000000")
-   :gwei   (bignumber "1000000000")
-   :szabo  (bignumber "1000000000000")
-   :finney (bignumber "1000000000000000")
-   :eth    (bignumber "1000000000000000000")
-   :keth   (bignumber "1000000000000000000000")
-   :meth   (bignumber "1000000000000000000000000")
-   :geth   (bignumber "1000000000000000000000000000")
-   :teth   (bignumber "1000000000000000000000000000000")})
+   :kwei   (bignumber (from-decimal 3))
+   :mwei   (bignumber (from-decimal 6))
+   :gwei   (bignumber (from-decimal 9))
+   :szabo  (bignumber (from-decimal 12))
+   :finney (bignumber (from-decimal 15))
+   :eth    (bignumber (from-decimal 18))
+   :keth   (bignumber (from-decimal 21))
+   :meth   (bignumber (from-decimal 24))
+   :geth   (bignumber (from-decimal 27))
+   :teth   (bignumber (from-decimal 30))})
 
 (defn wei-> [unit n]
   (when-let [bn (bignumber n)]
@@ -80,11 +82,16 @@
   (when bn
     (.times bn (bignumber 1e18))))
 
+(defn token->unit [n decimals]
+  (when-let [bn (bignumber n)]
+    (.dividedBy bn (bignumber (from-decimal decimals)))))
+
 (defn fee-value [gas gas-price]
   (.times (bignumber gas) (bignumber gas-price)))
 
 (defn eth->usd [eth usd-price]
-  (.times (bignumber eth) (bignumber usd-price)))
+  (when-let [bn (bignumber eth)]
+    (.times bn (bignumber usd-price))))
 
 (defn percent-change [from to]
   (let [bnf (bignumber from)
@@ -99,5 +106,5 @@
     (.round bn decimals)))
 
 (defn sufficient-funds? [amount balance]
-  (when amount
+  (when balance
     (.greaterThanOrEqualTo balance amount)))

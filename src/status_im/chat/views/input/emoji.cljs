@@ -2,9 +2,9 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.ui.components.react :refer [view
-                                                text
-                                                icon
-                                                emoji-picker]]
+                                                   text
+                                                   icon
+                                                   emoji-picker]]
             [status-im.chat.styles.input.emoji :as style]
             [status-im.i18n :refer [label]]))
 

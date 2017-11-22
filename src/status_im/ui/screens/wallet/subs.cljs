@@ -30,7 +30,7 @@
   :<- [:price]
   (fn [[balance price]]
     (if (and balance price)
-      (-> (money/wei->ether balance)
+      (-> (money/wei->ether (get balance :ETH)) ;; TODO(jeluard) Modify to consider tokens
           (money/eth->usd price)
           (money/with-precision 2)
           str)
@@ -42,7 +42,7 @@
   :<- [:balance]
   (fn [[price last-day balance]]
     (when (and price last-day)
-      (if (> balance 0)
+      (if (> (get balance :ETH) 0) ;; TODO(jeluard) Modify to consider tokens
         (-> (money/percent-change price last-day)
             (money/with-precision 2)
             .toNumber)

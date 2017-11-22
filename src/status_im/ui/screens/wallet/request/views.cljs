@@ -15,7 +15,7 @@
     [status-im.ui.components.styles :as components.styles]
     [status-im.i18n :as i18n]
     [status-im.utils.platform :as platform]
-    [status-im.utils.eip.eip681 :as eip681]
+    [status-im.utils.ethereum.eip681 :as eip681]
     [status-im.utils.money :as money]))
 
 (defn toolbar-view []

@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.wallet.choose-recipient.events
   (:require [status-im.constants :as constants]
             [status-im.i18n :as i18n]
-            [status-im.utils.eip.eip681 :as eip681]
+            [status-im.utils.ethereum.eip681 :as eip681]
             [status-im.utils.handlers :as handlers]))
 
 (handlers/register-handler-db

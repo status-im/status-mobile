@@ -2,10 +2,10 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [reagent.core :as r]
             [status-im.ui.components.react :refer [view
-                                                text
-                                                animated-view
-                                                linear-gradient
-                                                get-dimensions]]
+                                                   text
+                                                   animated-view
+                                                   linear-gradient
+                                                   get-dimensions]]
             [status-im.ui.components.sync-state.styles :as st]
             [status-im.ui.components.animation :as anim]
             [taoensso.timbre :as log]))

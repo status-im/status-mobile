@@ -4,6 +4,9 @@
             [status-im.native-module.core :as status]
             [status-im.ui.screens.wallet.db :as wallet.db]
             [status-im.ui.screens.wallet.navigation]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.erc20 :as erc20]
+            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.prices :as prices]
             [status-im.utils.transactions :as transactions]
@@ -22,6 +25,18 @@
          (on-error err))))
     (on-error "web3 or account-id not available")))
 
+(defn get-token-balance [{:keys [web3 contract account-id on-success on-error]}]
+  (if (and web3 contract account-id)
+    (erc20/balance-of
+      web3
+      contract
+      (ethereum/normalized-address account-id)
+      (fn [err resp]
+        (if-not err
+          (on-success resp)
+          (on-error err))))
+    (on-error "web3, contract or account-id not available")))
+
 (defn assoc-error-message [db error-type err]
   (assoc-in db [:wallet :errors error-type] (or (when err (str err))
                                                 :unknown-error)))
@@ -38,6 +53,17 @@
                   :account-id     account-id
                   :on-success     #(dispatch [success-event %])
                   :on-error       #(dispatch [error-event %])})))
+
+(reg-fx
+  :get-tokens-balance
+  (fn [{:keys [web3 symbols network account-id success-event error-event]}]
+    (doseq [symbol symbols]
+      (let [contract (:address (tokens/token-for (ethereum/network network) symbol))]
+        (get-token-balance {:web3           web3
+                            :contract       contract
+                            :account-id     account-id
+                            :on-success     #(dispatch [success-event symbol %])
+                            :on-error       #(dispatch [error-event %])})))))
 
 (reg-fx
   :get-transactions
@@ -60,11 +86,17 @@
 
 (handlers/register-handler-fx
   :update-wallet
-  (fn [{{:keys [web3 accounts/current-account-id network] :as db} :db} [_ a]]
+  (fn [{{:keys [web3 accounts/current-account-id network] :as db} :db} [_ symbols]]
     {:get-balance {:web3          web3
                    :account-id    current-account-id
                    :success-event :update-balance-success
                    :error-event   :update-balance-fail}
+     :get-tokens-balance {:web3          web3
+                          :account-id    current-account-id
+                          :symbols       symbols
+                          :network       network
+                          :success-event :update-token-balance-success
+                          :error-event   :update-token-balance-fail}
      :get-prices  {:from          "ETH"
                    :to            "USD"
                    :success-event :update-prices-success
@@ -105,13 +137,28 @@
   :update-balance-success
   (fn [db [_ balance]]
     (-> db
-        (assoc-in [:wallet :balance] balance)
+        (assoc-in [:wallet :balance :ETH] balance)
         (assoc-in [:wallet :balance-loading?] false))))
 
 (handlers/register-handler-db
   :update-balance-fail
   (fn [db [_ err]]
     (log/debug "Unable to get balance: " err)
+    (-> db
+        (assoc-error-message :balance-update err)
+        (assoc-in [:wallet :balance-loading?] false))))
+
+(handlers/register-handler-db
+  :update-token-balance-success
+  (fn [db [_ symbol balance]]
+    (-> db
+        (assoc-in [:wallet :balance symbol] balance)
+        (assoc-in [:wallet :balance-loading?] false))))
+
+(handlers/register-handler-db
+  :update-token-balance-fail
+  (fn [db [_ err]]
+    (log/debug "Unable to get token balance: " err)
     (-> db
         (assoc-error-message :balance-update err)
         (assoc-in [:wallet :balance-loading?] false))))
