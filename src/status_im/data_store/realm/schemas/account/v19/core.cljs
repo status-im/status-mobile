@@ -87,7 +87,7 @@
           (.filtered (str "content-type = \"" content-type "\""))
           (.map (fn [object _ _]
                   (let [content (reader/read-string (aget object "content"))
-                        new-props (get owner-command->new-props (selector content))
+                        new-props (get mapping (selector content))
                         new-content (merge content new-props)]
                     (log/debug "migrating v19 command/request database, updating: " content " with: " new-props)
                     (aset object "content" (pr-str new-content)))))))
@@ -96,5 +96,5 @@
   (log/debug "migrating v19 account database: " old-realm new-realm)
   (remove-contact! new-realm "transactor-personal")
   (remove-contact! new-realm "transactor-group")
-  (update-commands owner-command->new-props (juxt :bot :command) new-realm "command")
-  (update-commands console-requests->new-props (juxt :command) new-realm "command-request"))
+  (update-commands (juxt :bot :command) owner-command->new-props new-realm "command")
+  (update-commands (juxt :command) console-requests->new-props new-realm "command-request"))
