@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [re-frisk-remote.core :as rr]
             [status-im.ios.core :as core]
+            [status-im.utils.handlers :as utils.handlers]
             [figwheel.client :as figwheel :include-macros true]
             [cljs.pprint]))
 
@@ -16,4 +17,6 @@
  :heads-up-display false
  :jsload-callback #(swap! cnt inc))
 
-(rr/enable-re-frisk-remote! {:host "localhost:4567" :on-init core/init :pre-send (fn [db] (update db :chats #(into {} %)))})
+(utils.handlers/add-pre-event-callback rr/pre-event-callback)
+
+(rr/enable-re-frisk-remote! {:host "localhost:4567" :on-init core/init})
