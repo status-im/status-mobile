@@ -18,6 +18,7 @@
             [status-im.ui.screens.wallet.main.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.components.button.styles :as button.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]))
 
@@ -50,18 +51,6 @@
     [(assoc (act/opts [{:text (i18n/label :t/wallet-settings) :value show-not-implemented!}]) :icon-opts {:color :white})
      transaction-history-action]]])
 
-(defn- change-display [change]
-  (let [pos-change? (or (pos? change) (zero? change))]
-    [react/view {:style (if pos-change?
-                          styles/today-variation-container-positive
-                          styles/today-variation-container-negative)}
-     [react/text {:style (if pos-change?
-                           styles/today-variation-positive
-                           styles/today-variation-negative)}
-      (if change
-        (str (when pos-change? "+") change "%")
-        "-%")]]))
-
 (defn main-section [usd-value change syncing? error-message]
   [react/view {:style styles/main-section}
    (if syncing?
@@ -75,7 +64,7 @@
     [react/view {:style styles/value-variation}
      [react/text {:style styles/value-variation-title}
       (i18n/label :t/wallet-total-value)]
-     [change-display change]]
+     [components/change-display change]]
     [react/view {:style (merge button.styles/buttons-container styles/buttons)}
      [btn/button {:disabled? syncing?
                   :on-press #(rf/dispatch [:navigate-to :wallet-send-transaction])

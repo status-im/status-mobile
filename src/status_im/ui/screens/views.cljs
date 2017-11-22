@@ -41,6 +41,7 @@
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
+            [status-im.ui.screens.wallet.assets.views :as wallet-assets]
 
             [status-im.ui.components.status-bar :as status-bar]
 
@@ -77,6 +78,7 @@
                           :wallet-request-transaction request-transaction
                           (:transactions-history :unsigned-transactions) wallet-transactions/transactions
                           :wallet-transaction-details wallet-transactions/transaction-details
+                          (:wallet-my-token :wallet-market-value) wallet-assets/my-token-main
                           :new-chat new-chat
                           :new-group new-group
                           :edit-contact-group edit-contact-group
