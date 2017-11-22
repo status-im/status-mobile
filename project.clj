@@ -19,8 +19,7 @@
   :aliases {"prod-build"       ^{:doc "Recompile code with prod profile."}
                                ["do" "clean"
                                 ["with-profile" "prod" "cljsbuild" "once" "ios"]
-                                ["with-profile" "prod" "cljsbuild" "once" "android"]
-                                ]
+                                ["with-profile" "prod" "cljsbuild" "once" "android"]]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :figwheel {:nrepl-port 7888}
@@ -73,7 +72,7 @@
                                                  :output-dir         "target/ios-prod"
                                                  :static-fns         true
                                                  :optimize-constants true
-                                                 :optimizations      :advanced
+                                                 :optimizations      :simple
                                                  :closure-defines    {"goog.DEBUG" false}
                                                  :parallel-build     false
                                                  :language-in        :ecmascript5}
