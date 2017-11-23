@@ -30,12 +30,12 @@
   ([ms]
    (to-short-str ms #(unparse (formatters :hour-minute) %)))
   ([ms today-format-fn]
-   (let [date        (from-long ms)
-         local       (plus date time-zone-offset)
-         today       (t/today-at-midnight)
-         yesterday   (plus today (days -1))]
+   (let [date      (from-long ms)
+         local     (plus date time-zone-offset)
+         today     (t/today-at-midnight)
+         yesterday (plus today (days -1))]
      (cond
-       (before? date yesterday) (to-locale-str local)
+       (before? date yesterday) (to-locale-str local :short)
        (before? date today) (label :t/datetime-yesterday)
        :else (today-format-fn local)))))
 
