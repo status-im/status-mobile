@@ -111,7 +111,7 @@
    ;;sign-up
    :contacts-syncronized                  "Jūsų kontaktai buvo sinchronizuoti"
    :confirmation-code                     (str "Dėkui! Mes išsiuntėme jums teksto pranešimą su patvirtinimo kodu. "
-						"Prašau nurodyti šį kodą, kad patvirtintumėte savo telefono numerį")
+                                               "Prašau nurodyti šį kodą, kad patvirtintumėte savo telefono numerį")
    :incorrect-code                        (str "Atsiprašome, kodas neteisingas, prašome įvesti jį dar kartą")
    :phew-here-is-your-passphrase          "Vajė, buvo sunkoka, čia yra jūsų slaptažodis, *išsaugokite jį!* jeigu reikės atkurti jūsų paskyrą."
    :here-is-your-passphrase               "Čia yra jūsų slaptafrazė, *išsaugokite ją!* jeigu reikės atkurti jūsų paskyrą."

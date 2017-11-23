@@ -10,8 +10,6 @@
    :offline                               "Offline"
 
    ;drawer
-   :invite-friends                        "Lade Freunde ein"
-   :faq                                   "FAQ"
    :switch-users                          "Benutzer wechseln"
 
    ;chat
@@ -53,41 +51,30 @@
                                            :other "Stunden"}
    :datetime-day                          {:one   "Tag"
                                            :other "Tage"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "vor"
    :datetime-yesterday                    "gestern"
    :datetime-today                        "heute"
 
    ;profile
    :profile                               "Profil"
-   :report-user                           "Benutzer melden"
    :message                               "Nachricht"
-   :username                              "Benutzername"
    :not-specified                         "Nicht spezifiziert"
    :public-key                            "Öffentlicher Schlüssel"
    :phone-number                          "Telefonnummer"
-   :email                                 "Email"
-   :profile-no-status                     "Kein Status"
    :add-to-contacts                       "Zu Kontakten hinzufügen"
-   :error-incorrect-name                  "Bitte wähle einen anderen Namen"
-   :error-incorrect-email                 "Inkorrekte E-mail"
 
    ;;make_photo
    :image-source-title                    "Profilbild"
    :image-source-make-photo               "Erfassen"
    :image-source-gallery                  "Aus der Galerie auswählen"
-   :image-source-cancel                   "Stornieren"
 
    ;sign-up
    :contacts-syncronized                  "Deine Kontakte wurden synchronisiert"
    :confirmation-code                     (str "Vielen Dank! Wir haben Dir eine SMS mit einem Bestätigungcode"
                                                "zugesandt. Bitte gebe diesen Code zur Bestätigung deiner Telefonnummer ein")
    :incorrect-code                        (str "Leider ist der Code nicht korrekt. Bitte versuche es nochmals")
-   :generate-passphrase                   (str "Ich generiere eine Passphrase für dich, so dass du dein Zugriff wiederherstellen kannst "
-                                               "Zugriff und Anmeldung von einem anderen Gerät")
    :phew-here-is-your-passphrase          "*Phew* das war hart, hier ist deine Passphrase, *Schreibe diese auf und bewahre diese sicher auf!* Du benötigst diese, um dein Konto wiederherzustellen."
    :here-is-your-passphrase               "Hier ist deine Passphrase, *Schreibe diese auf und bewahre diese sicher auf!* Du benötigst diese, um dein Konto wiederherzustellen."
-   :written-down                          "Stelle sicher, dass du diese aufgeschrieben hast!"
    :phone-number-required                 "Klicke hier, um deine Telefonnummer einzugeben & Ich finde deine Freunde für dich"
    :intro-status                          "Chat mit mir, damit ich dein Konto einrichten und deine Einstellungen ändern kann!"
    :intro-message1                        "Willkommen zu Status\nTap diese Nachricht um dein Passwort einzurichten & loszulegen!"
@@ -95,7 +82,6 @@
 
    ;chats
    :chats                                 "Chats"
-   :new-chat                              "Neuer Chat"
    :new-group-chat                        "Neuer Gruppenchat"
 
    ;discover
@@ -112,9 +98,6 @@
    ;contacts
    :contacts                              "Kontakte"
    :new-contact                           "Neuer Kontakt"
-   :show-all                              "Alle Kontakte anzeigen"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Leute"
    :contacts-group-new-chat               "Starte neuen Gruppenchat"
    :no-contacts                           "Noch keine Kontakte"
    :show-qr                               "QR-Code anzeigen"
@@ -122,41 +105,17 @@
    ;group-settings
    :remove                                "Entfernen"
    :save                                  "Speichern"
-   :change-color                          "Farbe ändern"
    :clear-history                         "Verlauf löschen"
-   :delete-and-leave                      "Löschen und Verlassen"
    :chat-settings                         "Chat Einstellungen"
    :edit                                  "Bearbeiten"
    :add-members                           "Mitglieder hinzufügen"
-   :blue                                  "Blau"
-   :purple                                "Lila"
-   :green                                 "Grün"
-   :red                                   "Rot"
 
    ;commands
-   :money-command-description             "Geld senden"
-   :location-command-description          "Standort senden"
-   :phone-command-description             "Telefonnummer senden"
-   :phone-request-text                    "Telefonnummer anfordern"
-   :confirmation-code-command-description "Bestätigungscode senden"
-   :confirmation-code-request-text        "Bestätigungscode anfordern"
-   :send-command-description              "Standort senden"
-   :request-command-description           "Anforderung senden"
-   :keypair-password-command-description  ""
-   :help-command-description              "Hilfe"
-   :request                               "Anforderung"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH zu {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH von {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Chat Name"
-   :empty-group-chat-name                 "Bitte gib einen Namen ein"
-   :illegal-group-chat-name               "Bitte wähle einen anderen Namen aus"
 
    ;participants
-   :add-participants                      "Teilnehmer hinzufügen"
-   :remove-participants                   "Teilnehmer entfernen"
 
    ;protocol
    :received-invitation                   "Chat Einladung erhalten"
@@ -168,12 +127,9 @@
 
    ;new-contact
    :add-new-contact                       "Teilnehmer hinzufügen"
-   :import-qr                             "Importieren"
    :scan-qr                               "QR scannen"
    :name                                  "Name"
-   :whisper-identity                      "Identität flüstern" 
    :address-explication                   "Vielleicht sollte hier ein Text stehen der erklärt, was eine Adresse ist und wo man suchen soll"
-   :enter-valid-address                   "Bitte gebe eine gültige Adresse ein oder scanne den QR-Code"
    :contact-already-added                 "Der Kontakt wurde bereits hinzugefügt"
    :can-not-add-yourself                  "Du kannst dich nicht selbst hinzufügen"
    :unknown-address                       "Unbekannte Adresse"
@@ -183,20 +139,14 @@
    :connect                               "Verbinden"
    :address                               "Adresse"
    :password                              "Passwort"
-   :login                                 "Login"
    :wrong-password                        "Falsches Passwort"
 
    ;recover
-   :recover-from-passphrase               "Wiederherstellung von Passphrase"
-   :recover-explain                       "Bitte gebe die Passphrase für dein Passwort ein, um den Zugang wiederherzustellen"
    :passphrase                            "Passphrase"
    :recover                               "Wiederherstellen"
-   :enter-valid-passphrase                "Bitte Passphrase eingeben"
-   :enter-valid-password                  "Bitte Passwort eingeben"
 
    ;accounts
    :recover-access                        "Zugriff wiederherstellen"
-   :add-account                           "Konto hinzufügen"
 
    ;wallet-qr-code
    :done                                  "Erledigt"
@@ -205,18 +155,9 @@
    ;validation
    :invalid-phone                         "Ungültige Telefonnummer"
    :amount                                "Betrag"
-   :not-enough-eth                        (str "Nicht genug ETH zur Verfügung "
-                                               "({{balance}} ETH)")
    ;transactions
-   :confirm-transactions                  {:one   "Transaktion bestätigen"
-                                           :other "Bestätige {{count}} Transaktion"
-                                           :zero  "Keine Transaktion"}
    :status                                "Status"
-   :pending-confirmation                  "Konfirmation ausstehend"
    :recipient                             "Empfänger"
-   :one-more-item                         "Noch ein Element"
-   :fee                                   "Gebühren"
-   :value                                 "Valuta"
 
    ;:webview
    :web-view-error                        "oops, Fehler"})
