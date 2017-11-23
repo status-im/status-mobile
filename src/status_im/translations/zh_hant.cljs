@@ -19,11 +19,7 @@
    :photos-access-error                   "要授予所需的照片許可，請轉到系統設置，並確保選擇“狀態“>“照片“。"
 
    ;drawer
-   :invite-friends                        "邀請好友"
-   :faq                                   "常見問題"
    :switch-users                          "切換使用者"
-   :feedback                              "有反饋？\n搖動你的手機！"
-   :view-all                              "查看所有"
    :current-network                       "當前網絡"
 
    ;chat
@@ -69,7 +65,6 @@
                                            :other "時"}
    :datetime-day                          {:one   "天"
                                            :other "天"}
-   :datetime-multiple                     "秒"
    :datetime-ago                          "以前"
    :datetime-yesterday                    "昨天"
    :datetime-today                        "今天"
@@ -77,13 +72,10 @@
    ;profile
    :profile                               "個人資料"
    :edit-profile                          "編輯個人資料"
-   :report-user                           "檢舉使用者"
    :message                               "訊息"
-   :username                              "使用者名稱"
    :not-specified                         "未指定"
    :public-key                            "公開金鑰"
    :phone-number                          "電話號碼"
-   :email                                 "電子郵件"
    :update-status                         "更新你的狀態..."
    :add-a-status                          "添加狀態..."
    :status-prompt                         "建立一個狀態以幫助人們了解您提供的內容。 你也可以使用#hashtags。"
@@ -92,15 +84,11 @@
    :remove-from-contacts                  "從聯絡資訊中刪除"
    :start-conversation                    "開始對話"
    :send-transaction                      "發送交易"
-   :share-qr                              "分享QR碼"
-   :error-incorrect-name                  "錯誤的名稱"
-   :error-incorrect-email                 "錯誤的電子郵件地址"
 
    ;;make_photo
    :image-source-title                    "個人圖片"
    :image-source-make-photo               "拍攝"
    :image-source-gallery                  "從相簿中選擇"
-   :image-source-cancel                   "取消"
 
    ;;sharing
    :sharing-copy-to-clipboard             "複製到剪貼板"
@@ -116,11 +104,8 @@
    :confirmation-code                     (str "謝謝！我們已向您發送了帶有 "
                                                "確認代碼的訊息。請輸入此代碼以驗證您的手機號碼")
    :incorrect-code                        (str "很抱歉，代碼錯誤，請重新輸入")
-   :generate-passphrase                   (str "我會為您產生一個密碼短語，您可以使用它 "
-                                               "在其他裝置上回復帳號或登入")
    :phew-here-is-your-passphrase          "*啊哈*，這是您的密碼短語，*請寫下來，並好好保管！* 您需要它來回復您的帳號。"
    :here-is-your-passphrase               "這是您的密碼短語，*請寫下來，並好好保管！* 您需要它來回復您的帳號。"
-   :written-down                          "請確認您已將密碼短語寫下，並存放在安全的地點"
    :phone-number-required                 "點選這裡輸入您的手機號碼，我會找到您的好友"
    :shake-your-phone                      "發現錯誤或有建議？ 只要〜搖一搖〜你的手機！"
    :intro-status                          "與我聊天以設定您的帳號並變更設定！"
@@ -137,7 +122,6 @@
 
    ;chats
    :chats                                 "聊天室"
-   :new-chat                              "新對話"
    :delete-chat                           "刪除對話"
    :new-group-chat                        "新群組"
    :new-public-group-chat                 "加入公開聊天"
@@ -167,9 +151,6 @@
    :remove-from-group                     "從群組中移除"
    :edit-contacts                         "編輯聯絡人"
    :search-contacts                       "搜尋聯絡人"
-   :show-all                              "顯示全部"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "成員"
    :contacts-group-new-chat               "開始新對話"
    :choose-from-contacts                  "從聯絡人中選擇"
    :no-contacts                           "尚無聯絡資訊"
@@ -181,52 +162,26 @@
    :remove                                "移除"
    :save                                  "保存"
    :delete                                "刪除"
-   :change-color                          "更改顏色"
    :clear-history                         "清理歷史記錄"
-   :delete-and-leave                      "刪除並離開"
    :mute-notifications                    "靜音通知"
    :leave-chat                            "離開對話"
    :chat-settings                         "聊天設定"
    :edit                                  "編輯"
    :add-members                           "新增成員"
-   :blue                                  "藍色"
-   :purple                                "紫色"
-   :green                                 "綠色"
-   :red                                   "紅色"
 
    ;commands
-   :money-command-description             "匯款"
-   :location-command-description          "傳送位置"
-   :phone-command-description             "傳送手機號碼"
-   :phone-request-text                    "請求手機號碼"
-   :confirmation-code-command-description "傳送確認碼"
-   :confirmation-code-request-text        "請求確認碼"
-   :send-command-description              "傳送位置"
-   :request-command-description           "傳送請求"
-   :keypair-password-command-description  ""
-   :help-command-description              "幫助"
-   :request                               "請求"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH 給 {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH 來自 {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "群組名稱"
-   :empty-group-chat-name                 "請輸入名稱"
-   :illegal-group-chat-name               "請選擇其他名稱"
    :new-group                             "新增群組"
    :reorder-groups                        "重新排序群組"
-   :group-name                            "群組名稱"
    :edit-group                            "編輯群組"
    :delete-group                          "刪除群組"
    :delete-group-confirmation             "此群組將從你的群組中移除。 這不會影響聯絡人"
    :delete-group-prompt                   "這不會影響聯絡人"
-   :group-members                         "群組成員"
    :contact-s                             {:one   "contact"
                                            :other "contacts"}
    ;participants
-   :add-participants                      "新增參與者"
-   :remove-participants                   "移除參與者"
 
    ;protocol
    :received-invitation                   "收到的聊天邀請"
@@ -238,13 +193,9 @@
 
    ;new-contact
    :add-new-contact                       "新增新的聯絡人"
-   :import-qr                             "匯入"
    :scan-qr                               "掃描QR碼"
-   :swow-qr                               "顯示QR碼"
    :name                                  "名稱"
-   :whisper-identity                      "Whisper身份"
    :address-explication                   "也許這裡要有些文字介紹位址是什麼，又能在哪裡找到它"
-   :enter-valid-address                   "請輸入有效位址或掃描QR碼"
    :enter-valid-public-key                "請輸入有效公鑰或掃描QR碼"
    :contact-already-added                 "已新增該聯絡人"
    :can-not-add-yourself                  "您不能新增自己"
@@ -255,23 +206,17 @@
    :connect                               "連線"
    :address                               "地址"
    :password                              "密碼"
-   :login                                 "登入"
    :sign-in-to-status                     "登入Status"
    :sign-in                               "登入"
    :wrong-password                        "密碼錯誤"
 
    ;recover
-   :recover-from-passphrase               "使用密碼短語回復"
-   :recover-explain                       "請輸入此密碼的密碼短語來回復登入權限"
    :passphrase                            "密碼短語"
    :recover                               "回復"
-   :enter-valid-passphrase                "請輸入密碼短語"
-   :enter-valid-password                  "請輸入密碼"
    :twelve-words-in-correct-order         "正確排序12個字"
 
    ;accounts
    :recover-access                        "回復登入權限"
-   :add-account                           "新增帳號"
    :create-new-account                    "建立新帳號"
 
    ;wallet-qr-code
@@ -281,33 +226,15 @@
    ;validation
    :invalid-phone                         "無效的手機號碼"
    :amount                                "金額"
-   :not-enough-eth                        (str "ETH餘額不足 "
-                                               "({{balance}} ETH)")
    ;transactions
    :confirm                               "確認"
-   :confirm-transactions                  {:one   "確認交易"
-                                           :other "確認 {{count}} 筆交易"
-                                           :zero  "無交易"}
-   :transactions-confirmed                {:one   "已確認交易"
-                                           :other "已確認 {{count}} 筆交易"
-                                           :zero  "無確認交易"}
    :transaction                           "交易"
-   :unsigned-transactions                 "未確認交易"
-   :no-unsigned-transactions              "無未確認交易"
-   :enter-password-transactions           {:one   "輸入密碼以確認交易"
-                                           :other "輸入密碼以確認交易"}
    :status                                "狀態"
-   :pending-confirmation                  "等待確認中"
    :recipient                             "接收方"
-   :one-more-item                         "再一項"
-   :fee                                   "費用"
-   :estimated-fee                         "預算費用"
-   :value                                 "價值"
    :to                                    "至"
    :from                                  "從"
    :data                                  "數據"
    :got-it                                "得到了"
-   :contract-creation                     "創建合同"
 
    ;:webview
    :web-view-error                        "哎呀，出錯了"})

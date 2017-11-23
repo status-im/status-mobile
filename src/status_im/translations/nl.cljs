@@ -19,11 +19,7 @@
    :photos-access-error                   "Om fototoegang te geven, ga je naar systeem instellingen en zorg je dat Status > Foto's geselecteerd is."
 
    ;drawer
-   :invite-friends                        "Nodig vrienden uit"
-   :faq                                   "FAQ"
    :switch-users                          "Schakel tussen gebruikers"
-   :feedback                              "Heb je feedback?\nSchud je telefoon!"
-   :view-all                              "Laat alles zien"
    :current-network                       "Huidige netwerk"
 
    ;chat
@@ -67,7 +63,6 @@
                                            :other "uren"}
    :datetime-day                          {:one   "dag"
                                            :other "dagen"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "geleden"
    :datetime-yesterday                    "gisteren"
    :datetime-today                        "vandaag"
@@ -75,13 +70,10 @@
    ;profile
    :profile                               "Profiel"
    :edit-profile                          "Bewerk profiel"
-   :report-user                           "MELD GEBRUIKER"
    :message                               "Bericht"
-   :username                              "Gebruikersnaam"
    :not-specified                         "Niet opgegeven"
    :public-key                            "Openbare sleutel"
    :phone-number                          "Telefoonnummer"
-   :email                                 "E-mailadres"
    :update-status                         "Wijzig je status..."
    :add-a-status                          "Voeg een status toe..."
    :status-prompt                         "Maak een status aan om mensen te laten weten wat je te bieden hebt. Je kan ook #hashtags gebruiken."
@@ -90,15 +82,11 @@
    :remove-from-contacts                  "Remove from contacts"
    :start-conversation                    "Begin een gesprek"
    :send-transaction                      "Verstuur een transactie"
-   :share-qr                              "Deel de QR"
-   :error-incorrect-name                  "Kies een andere naam"
-   :error-incorrect-email                 "Onjuist e-mailadres"
 
    ;;make_photo
    :image-source-title                    "Profielfoto"
    :image-source-make-photo               "Foto nemen"
    :image-source-gallery                  "Kies uit galerij"
-   :image-source-cancel                   "Annuleren"
 
    ;;sharing
    :sharing-copy-to-clipboard             "Kopieer naar klembord"
@@ -114,11 +102,8 @@
    :confirmation-code                     (str "Bedankt! We hebben je een sms gestuurd met een bevestigingscode"
                                                ". Geef die code op om jouw telefoonnummer te bevestigen")
    :incorrect-code                        (str "Sorry, de code was onjuist, voer hem opnieuw in")
-   :generate-passphrase                   (str "Ik zal een wachtzin maken, zodat je jouw"
-                                               "toegang kunt herstellen of vanaf een ander apparaat kunt inloggen")
    :phew-here-is-your-passphrase          "*Foei* dat was moeilijk, hier is jouw wachtzin, *schrijf deze op en bewaar hem goed!* Je zult hem nodig hebben om jouw account te herstellen."
    :here-is-your-passphrase               "Hier is jouw wachtzin, *schrijf deze op en bewaar hem goed!* Je zult hem nodig hebben om jouw account te herstellen."
-   :written-down                          "Zorg ervoor dat je hem veilig hebt opgeschreven"
    :phone-number-required                 "Tik hier om je telefoonnummer in te voeren, dan zoek ik jouw vrienden"
    :shake-your-phone                      "Bug gevonden, of heb je een suggestie? ~Schud~ je telefoon!"
    :intro-status                          "Chat met me om jouw account in te stellen en jouw instellingen te wijzigen!"
@@ -135,7 +120,6 @@
 
    ;chats
    :chats                                 "Chats"
-   :new-chat                              "Nieuwe chat"
    :delete-chat                           "Verwijder chat"
    :new-group-chat                        "Nieuwe groepchat"
    :new-public-group-chat                 "Neem deel in publieke chat"
@@ -165,9 +149,6 @@
    :remove-from-group                     "Remove from group"
    :edit-contacts                         "Edit contacts"
    :search-contacts                       "Search contacts"
-   :show-all                              "TOON ALLES"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Mensen"
    :contacts-group-new-chat               "Start nieuwe chat"
    :choose-from-contacts                  "Choose from contacts"
    :no-contacts                           "Nog geen contactpersonen"
@@ -179,53 +160,27 @@
    :remove                                "Verwijderen"
    :save                                  "Opslaan"
    :delete                                "Delete"
-   :change-color                          "Wijzig kleur"
    :clear-history                         "Wis geschiedenis"
    :mute-notifications                    "Stille notificaties"
    :leave-chat                            "Verlaat chat"
-   :delete-and-leave                      "Verwijderen en verlaten"
    :chat-settings                         "Chatinstellingen"
    :edit                                  "Bewerken"
    :add-members                           "Voeg leden toe"
-   :blue                                  "Blauw"
-   :purple                                "Paars"
-   :green                                 "Groen"
-   :red                                   "Rood"
 
    ;commands
-   :money-command-description             "Stuur geld"
-   :location-command-description          "Stuur locatie"
-   :phone-command-description             "Stuur telefoonnummer"
-   :phone-request-text                    "Telefoonnummer aanvraag"
-   :confirmation-code-command-description "Stuur bevestigingscode"
-   :confirmation-code-request-text        "Bevestigingscode aanvraag"
-   :send-command-description              "Stuur locatie"
-   :request-command-description           "Stuur aanvraag"
-   :keypair-password-command-description  ""
-   :help-command-description              "Help"
-   :request                               "Aanvraag"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH naar {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH van {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Chatnaam"
-   :empty-group-chat-name                 "Voer een naam in"
-   :illegal-group-chat-name               "Kies een andere naam"
    :new-group                             "Nieuwe groep"
    :reorder-groups                        "Hergroepeer groep"
-   :group-name                            "Groepsnaam"
    :edit-group                            "Bewerk groep"
    :delete-group                          "Verwijder groep"
    :delete-group-confirmation             "Deze groep zal worden verwijderd van jouw groepen. Dit heeft geen effect op je contacten."
    :delete-group-prompt                   "This will not affect contacts"
-   :group-members                         "Groepsleden"
    :contact-s                             {:one   "contact"
                                            :other "contacten"}
 
    ;participants
-   :add-participants                      "Voeg deelnemers toe"
-   :remove-participants                   "Verwijder deelnemers"
 
    ;protocol
    :received-invitation                   "ontving chatuitnodiging"
@@ -237,13 +192,9 @@
 
    ;new-contact
    :add-new-contact                       "Voeg nieuwe contactpersoon toe"
-   :import-qr                             "Importeren"
    :scan-qr                               "QR scannen"
-   :swow-qr                               "QR weergeven"
    :name                                  "Naam"
-   :whisper-identity                      "Fluister identiteit"
    :address-explication                   "Misschien zou hier wat tekst moeten staan waarin wordt uitgelegd wat een adres is en waar je deze kunt vinden"
-   :enter-valid-address                   "Voer een geldig adres in of scan een QR-code"
    :enter-valid-public-key                "Voer een geldig publieke sleutel in of scan een QR code"
    :contact-already-added                 "De contactpersoon is al toegevoegd"
    :can-not-add-yourself                  "Je kunt niet zelf toevoegen"
@@ -253,23 +204,17 @@
    :connect                               "Verbinden"
    :address                               "Adres"
    :password                              "Wachtwoord"
-   :login                                 "Inloggen"
    :sign-in-to-status                     "Meld u aan bij Status"
    :sign-in                               "Meld aan"
    :wrong-password                        "Verkeerd wachtwoord"
 
    ;recover
-   :recover-from-passphrase               "Herstellen met wachtzin"
-   :recover-explain                       "Voer de wachtzin in voor jouw wachtwoord om toegang te herstellen"
    :passphrase                            "Wachtzin"
    :recover                               "Herstellen"
-   :enter-valid-passphrase                "Voer een wachtzin in"
-   :enter-valid-password                  "Voer een wachtwoord in"
    :twelve-words-in-correct-order         "12 woorden in goede volgorde"
 
    ;accounts
    :recover-access                        "Toegang herstellen"
-   :add-account                           "Voeg account toe"
    :create-new-account                    "Maake een nieuwe account aan"
 
    ;wallet-qr-code
@@ -279,34 +224,16 @@
    ;validation
    :invalid-phone                         "Ongeldig telefoonnummer"
    :amount                                "Bedrag"
-   :not-enough-eth                        (str "Niet genoeg ETH op saldo"
-                                               "({{balance}} ETH)")
 
    ;transactions
    :confirm                               "Bevestigen"
-   :confirm-transactions                  {:one   "Bevestig transactie"
-                                           :other "Bevestig {{count}} transacties"
-                                           :zero  "Geen transacties"}
-   :transactions-confirmed                {:one   "Transactie bevestigd"
-                                           :other "{{count}} transacties bevestigd"
-                                           :zero  "Geen transacties bevestigd"}
    :transaction                           "Transactie"
-   :unsigned-transactions                 "Ongetekend transacties"
-   :no-unsigned-transactions              "Geen ongetekende transacties"
-   :enter-password-transactions           {:one   "Bevetig de transactie door je wachtwoord in te voeren"
-                                           :other "Bevetig de transacties door je wachtwoord in te voeren"}
    :status                                "Status"
-   :pending-confirmation                  "In afwachting van bevestiging"
    :recipient                             "Ontvanger"
-   :one-more-item                         "Nog één item"
-   :fee                                   "Kosten"
-   :estimated-fee                         "Geschatte kosten"
-   :value                                 "Waarde"
    :to                                    "Naar"
    :from                                  "Van"
    :data                                  "Data"
    :got-it                                "Got it"
-   :contract-creation                     "Contract Aanmaak"
 
    ;:webview
    :web-view-error                        "oeps, fout"

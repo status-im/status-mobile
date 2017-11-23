@@ -10,8 +10,6 @@
    :offline                               "Offline"
 
    ;drawer
-   :invite-friends                        "Bjud in vänner"
-   :faq                                   "FAQ"
    :switch-users                          "Byt användare"
 
    ;chat
@@ -53,41 +51,30 @@
                                            :other "timmar"}
    :datetime-day                          {:one   "dag"
                                            :other "dagar"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "sedan"
    :datetime-yesterday                    "igår"
    :datetime-today                        "idag"
 
    ;profile
    :profile                               "Profil"
-   :report-user                           "RAPPORTERA ANVÄNDARE"
    :message                               "Meddelande"
-   :username                              "Användarnamn"
    :not-specified                         "Inte angivet"
    :public-key                            "Offentlig nyckel"
    :phone-number                          "Telefonnummer"
-   :email                                 "E-post"
-   :profile-no-status                     "Ingen status"
    :add-to-contacts                       "Lägg till i kontakter"
-   :error-incorrect-name                  "Var god välj ett annat namn"
-   :error-incorrect-email                 "Inkorrekt e-post"
 
    ;;make_photo
    :image-source-title                    "Profilbild"
    :image-source-make-photo               "Fånga"
    :image-source-gallery                  "Välj från galleri"
-   :image-source-cancel                   "Avbryt"
 
    ;sign-up
    :contacts-syncronized                  "Dina kontakter har synkroniserats"
    :confirmation-code                     (str "Tack! Vi har skickat dig ett textmeddelande med en bekräftelse "
                                                "kod. Var god ange den koden för att bekräfta ditt telefonnummer")
    :incorrect-code                        (str "Tyvärr var koden felaktig, var god ange den igen")
-   :generate-passphrase                   (str "Jag kommer att generera en lösenordsfras för dig så att du kan återställa din "
-                                               "åtkomst eller logga in från en annan enhet")
    :phew-here-is-your-passphrase          "*Pust* det var svårt, här är din lösenordsfras, *skriv ner det här och förvara det säkert!* Du kommer att behöva det för att återställa ditt konto."
    :here-is-your-passphrase               "Här är din lösenordsfras, *skriv ner det här och förvara det säkert!* Du kommer att behöva det för att återställa ditt konto."
-   :written-down                          "Se till att du hade skrivit ner det säkert"
    :phone-number-required                 "Tryck här för att ange ditt telefonnummer och jag kommer att hitta dina vänner"
    :intro-status                          "Chatta med mig för att konfigurera ditt konto och ändra dina inställningar!"
    :intro-message1                        "Välkommen till Status\nTryck på detta meddelande för att ställa in ditt lösenord och komma igång!"
@@ -95,7 +82,6 @@
 
    ;chats
    :chats                                 "Chattar"
-   :new-chat                              "Ny chatt"
    :new-group-chat                        "Ny gruppchatt"
 
    ;discover
@@ -112,9 +98,6 @@
    ;contacts
    :contacts                              "Kontakter"
    :new-contact                           "Ny kontakt"
-   :show-all                              "VISA ALLA"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Människor"
    :contacts-group-new-chat               "Starta ny chatt"
    :no-contacts                           "Inga kontakter ännu"
    :show-qr                               "Visa QR"
@@ -122,41 +105,17 @@
    ;group-settings
    :remove                                "Ta bort"
    :save                                  "Spara"
-   :change-color                          "Ändra färg"
    :clear-history                         "Rensa historik"
-   :delete-and-leave                      "Radera och lämna"
    :chat-settings                         "Chattinställningar"
    :edit                                  "Redigera"
    :add-members                           "Lägg till medlemmar"
-   :blue                                  "Blå"
-   :purple                                "Lila"
-   :green                                 "Grön"
-   :red                                   "Röd"
 
    ;commands
-   :money-command-description             "Skicka pengar"
-   :location-command-description          "Skicka plats"
-   :phone-command-description             "Skicka telefonnummer"
-   :phone-request-text                    "Telefonnummerbegäran"
-   :confirmation-code-command-description "Skicka bekräftelsekod"
-   :confirmation-code-request-text        "Bekräftelsekodbegäran"
-   :send-command-description              "Skicka plats"
-   :request-command-description           "Skicka begäran"
-   :keypair-password-command-description  ""
-   :help-command-description              "Hjälp"
-   :request                               "Begäran"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH till {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH från {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Chattnamn"
-   :empty-group-chat-name                 "Var god ange ett namn"
-   :illegal-group-chat-name               "Var god välj ett annat namn"
 
    ;participants
-   :add-participants                      "Lägg till Deltagare"
-   :remove-participants                   "Ta bort Deltagare"
 
    ;protocol
    :received-invitation                   "tog emot chattinbjudan"
@@ -168,12 +127,9 @@
 
    ;new-contact
    :add-new-contact                       "Lägg till ny kontakt"
-   :import-qr                             "Importera"
    :scan-qr                               "Skanna QR"
    :name                                  "Namn"
-   :whisper-identity                      "Viskningsidentitet"
    :address-explication                   "Kanske borde det finnas lite text som förklarar vad en adress är och var man hittar den"
-   :enter-valid-address                   "Var god ange en giltig adress eller skanna en QR-kod"
    :contact-already-added                 "Kontakten har redan lagts till"
    :can-not-add-yourself                  "Du kan inte lägga till dig själv"
    :unknown-address                       "Okänd adress"
@@ -183,20 +139,14 @@
    :connect                               "Anslut"
    :address                               "Adress"
    :password                              "Lösenord"
-   :login                                 "Inloggning"
    :wrong-password                        "Fel lösenord"
 
    ;recover
-   :recover-from-passphrase               "Återställ från lösenordsfras"
-   :recover-explain                       "Var god ange lösenordsfrasen för ditt lösenord för att återställa åtkomsten"
    :passphrase                            "Lösenordsfras"
    :recover                               "Återställ"
-   :enter-valid-passphrase                "Var god ange en lösenordsfras"
-   :enter-valid-password                  "Var god ange ett lösenord"
 
    ;accounts
    :recover-access                        "Återställ åtkomst"
-   :add-account                           "Lägg till konto"
 
    ;wallet-qr-code
    :done                                  "Klar"
@@ -205,34 +155,20 @@
    ;validation
    :invalid-phone                         "Ogiltigt telefonnummer"
    :amount                                "Belopp"
-   :not-enough-eth                        (str "'Inte tillräcklig ETH på balansen "
-                                               "({{balance}} ETH)")
    ;transactions
-   :confirm-transactions                  {:one   "Bekräfta transaktion"
-                                           :other "Bekräfta {{count}} transaktioner"
-                                           :zero  "Inga transaktioner"}
    :status                                "Status"
-   :pending-confirmation                  "I väntan på bekräftelse"
    :recipient                             "Mottagare"
-   :one-more-item                         "En artikel till"
-   :fee                                   "Avgift"
-   :value                                 "Värde"
 
    ;:webview
    :web-view-error                        "hoppsan, fel"
 
    :confirm                               "Bekräfta"
    :phone-national                        "Nationell"
-   :transactions-confirmed                {:one   "Transaktion bekräftad"
-                                           :other "{{count}} transaktioner bekräftade"
-                                           :zero  "Inga bekräftade transaktioner"}
    :public-group-topic                    "Ämne"
    :debug-enabled                         "Felsökningsserver startad! Lägg till din DApp genom att ange *status-dev-cli scan* på datorn"
    :new-public-group-chat                 "Gå med i offentlig chatt"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Avbryt"
-   :share-qr                              "Dela QR"
-   :feedback                              "Har du synpunkter?\nSkaka din telefon!"
    :twelve-words-in-correct-order         "12 ord i korrekt följd"
    :remove-from-contacts                  "Ta bort från kontakter"
    :delete-chat                           "Radera chatt"
@@ -272,7 +208,6 @@
 
    :contact-s                             {:one   "kontakt"
                                            :other "kontakter"}
-   :group-name                            "Gruppnamn"
    :next                                  "Nästa"
    :from                                  "Från"
    :search-chats                          "Sök i chattar"
@@ -289,17 +224,11 @@
    :more                                  "mer"
    :cancel                                "Avbryt"
    :no-statuses-found                     "Inga statusar hittades"
-   :swow-qr                               "Visa QR"
    :browsing-open-in-web-browser          "Öppna i webbläsare"
    :delete-group-prompt                   "Detta påverkar inte kontakter"
    :edit-profile                          "Redigera profil"
 
 
-   :enter-password-transactions           {:one   "Bekräfta transaktion genom att ange ditt lösenord"
-                                           :other "Bekräfta transaktioner genom att ange ditt lösenord"}
-   :unsigned-transactions                 "Osignerade transaktioner"
    :empty-topic                           "Tomt ämne"
    :to                                    "Till"
-   :group-members                         "Gruppmedlemmar"
-   :estimated-fee                         "Uppsk. avgift"
    :data                                  "Data"})

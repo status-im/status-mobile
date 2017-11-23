@@ -19,11 +19,7 @@
    :photos-access-error                   "Myöntääksesi vaadittu kuvien käyttölupa, siirry järjestelmäasetuksiin ja varmista, että Status > Kuvat on valittu."
 
    ;drawer
-   :invite-friends                        "Kutsu ystäviä"
-   :faq                                   "UKK"
    :switch-users                          "Vaihda käyttäjää"
-   :feedback                              "Anna palautetta?\nRavista puhelintasi!"
-   :view-all                              "Näytä kaikki"
    :current-network                       "Nykyinen verkko"
 
    ;chat
@@ -69,7 +65,6 @@
                                            :other "tuntia"}
    :datetime-day                          {:one   "päivä"
                                            :other "päivää"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "sitten"
    :datetime-yesterday                    "eilen"
    :datetime-today                        "tänään"
@@ -77,13 +72,10 @@
    ;profile
    :profile                               "Profiili"
    :edit-profile                          "Muokkaa profiilia"
-   :report-user                           "ILMIANNA KÄYTTÄJÄ"
    :message                               "Viesti"
-   :username                              "Käyttäjätunnus"
    :not-specified                         "Ei määritelty"
    :public-key                            "Julkinen avain"
    :phone-number                          "Puhelinnumero"
-   :email                                 "Sähköposti"
    :update-status                         "Päivitä tila..."
    :add-a-status                          "Lisää tila..."
    :status-prompt                         "Luo tila, jonka avulla ihmiset tietävät mitä asioita tarjoat. Voit myös käyttää #hashtag-merkintöjä."
@@ -92,15 +84,11 @@
    :remove-from-contacts                  "Poista kontakteista"
    :start-conversation                    "Aloita keskustelu"
    :send-transaction                      "Lähetä tapahtuma"
-   :share-qr                              "Jaa QR koodi"
-   :error-incorrect-name                  "Ole hyvä ja valitse toinen nimi"
-   :error-incorrect-email                 "Virheellinen sähköposti"
 
    ;;make_photo
    :image-source-title                    "Profiilikuva"
    :image-source-make-photo               "Kuvakaappaus"
    :image-source-gallery                  "Valitse galleriasta"
-   :image-source-cancel                   "Peruuta"
 
    ;;sharing
    :sharing-copy-to-clipboard             "Kopioi leikepöydälle"
@@ -108,7 +96,6 @@
    :sharing-cancel                        "Peruuta"
 
    :browsing-title                        "Selaa"
-   :browsing-browse                       "@selaa"
    :browsing-open-in-web-browser          "Avaa selaimessa"
    :browsing-cancel                       "Peruuta"
 
@@ -117,11 +104,8 @@
    :confirmation-code                     (str "Kiitos! Olemme lähettäneet sinulle tekstiviestin, jossa on vahvistus "
                                                "koodi. Ole hyvä ja anna koodi vahvistaaksesi puhelinnumerosi")
    :incorrect-code                        (str "Virheellinen koodi, ole hyvä ja yritä uudelleen")
-   :generate-passphrase                   (str "Luon sinulle tunnuslauseen, jotta voit palauttaa sinun "
-                                               "pääsysi tai kirjautua toisesta laitteesta")
    :phew-here-is-your-passphrase          "*Phew* se oli vaikeaa, tässä on tunnuslauseesi, *kirjoita tämä ylös ja pidä tallessa!* Tarvitset sitä palauttaaksesi tilisi."
    :here-is-your-passphrase               "Tässä on tunnuslauseesi, *kirjoita tämä ylös ja pidä tallessa!* Tarvitset sitä palauttaaksesi tilisi."
-   :written-down                          "Varmista, että olet tarkasti kirjoittanut sen talteen"
    :phone-number-required                 "Napauta tähän syöttääksesi puhelinnumerosi niin löydän ystäväsi"
    :shake-your-phone                      "Löysitkö vian tai onko sinulla ehdotus? Ravista puhelintasi!"
    :intro-status                          "Keskustele kanssani määrittääksesi tai muuttaaksesi tilisi asetuksia!"
@@ -138,7 +122,6 @@
 
    ;chats
    :chats                                 "Keskustelut"
-   :new-chat                              "Uusi keskustelu"
    :delete-chat                           "Poista keskustelu"
    :new-group-chat                        "Uusi ryhmäkeskustelu"
    :new-public-group-chat                 "Liity julkiseen keskusteluun"
@@ -168,9 +151,6 @@
    :remove-from-group                     "Poista ryhmästä"
    :edit-contacts                         "Muokkaa yhteystietoja"
    :search-contacts                       "Etsi yhteystietoja"
-   :show-all                              "NÄYTÄ KAIKKI"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Ihmiset"
    :contacts-group-new-chat               "Aloita uusi keskustelu"
    :choose-from-contacts                  "Valitse yhteystiedoista"
    :no-contacts                           "No contacts yet"
@@ -182,52 +162,26 @@
    :remove                                "Poista"
    :save                                  "Tallenna"
    :delete                                "Poista"
-   :change-color                          "Muuta väriä"
    :clear-history                         "Tyhjennä historia"
    :mute-notifications                    "Mykistä ilmoitukset"
    :leave-chat                            "Poistu keskustelusta"
-   :delete-and-leave                      "Poista ja poistu"
    :chat-settings                         "Keskustelun asetukset"
    :edit                                  "Muokkaa"
    :add-members                           "Lisää käyttäjiä"
-   :blue                                  "Sininen"
-   :purple                                "Violetti"
-   :green                                 "Vihreä"
-   :red                                   "Punainen"
 
    ;commands
-   :money-command-description             "Lähetä rahaa"
-   :location-command-description          "Lähetä sijainti"
-   :phone-command-description             "Lähetä puhelinnumero"
-   :phone-request-text                    "Puhelinnumero pyyntö"
-   :confirmation-code-command-description "Lähetä vahvistuskoodi"
-   :confirmation-code-request-text        "Vahvistuskoodi pyyntö"
-   :send-command-description              "Lähetä sijainti"
-   :request-command-description           "Lähetä pyyntö"
-   :keypair-password-command-description  ""
-   :help-command-description              "Apua"
-   :request                               "Pyyntö"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH käyttäjälle {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH käyttäjältä {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Keskustelun nimi"
-   :empty-group-chat-name                 "Ole hyvä ja annan nimi"
-   :illegal-group-chat-name               "Ole hyvä ja valitse toinen nimi"
    :new-group                             "Uusi ryhmä"
    :reorder-groups                        "Järjestele ryhmät uudelleen"
-   :group-name                            "Ryhmän nimi"
    :edit-group                            "Muokkaa ryhmää"
    :delete-group                          "Poista ryhmä"
    :delete-group-confirmation             "Tämä ryhmä poistetaan ryhmistäsi. Tämä ei vaikuta yhteystietoihin"
    :delete-group-prompt                   "Tämä ei vaikuta yhteystietoihin"
-   :group-members                         "Ryhmän jäsenet"
    :contact-s                             {:one   "yhteystieto"
                                            :other "yhteystietoa"}
    ;participants
-   :add-participants                      "Lisää Osallistujia"
-   :remove-participants                   "Poista Osallistujia"
 
    ;protocol
    :received-invitation                   "poista keskustelukutsu"
@@ -239,13 +193,9 @@
 
    ;new-contact
    :add-new-contact                       "Lisää uusi yhteystieto"
-   :import-qr                             "Tuo"
    :scan-qr                               "Skannaa QR"
-   :swow-qr                               "Näytä QR"
    :name                                  "Nimi"
-   :whisper-identity                      "Whisper Identiteetti"
    :address-explication                   "Ehkä tässä pitäisi olla jokin teksti, jossa selitetään, mikä osoite on ja mistä etsiä sitä"
-   :enter-valid-address                   "Anna voimassaoleva osoite tai skannaa QR koodi"
    :enter-valid-public-key                "Anna voimassaoleva julkinen osoite tai skannaa QR koodi"
    :contact-already-added                 "Tämä yhteystieto on jo lisätty"
    :can-not-add-yourself                  "Et voi lisätä itseäsi"
@@ -256,23 +206,17 @@
    :connect                               "Yhdistä"
    :address                               "Osoite"
    :password                              "Salasana"
-   :login                                 "Kirjaudu"
    :sign-in-to-status                     "Luo Status -tili"
    :sign-in                               "Luo tili"
    :wrong-password                        "Väärä salasana"
 
    ;recover
-   :recover-from-passphrase               "Palauta tunnuslauseella"
-   :recover-explain                       "Ole hyvä ja anna tunnuslause salasanan palauttamiseksi"
    :passphrase                            "Tunnuslause"
    :recover                               "Palauta"
-   :enter-valid-passphrase                "Ole hyvä ja syötä tunnuslause"
-   :enter-valid-password                  "Ole hyvä ja anna salasana"
    :twelve-words-in-correct-order         "12 sanaa oikeassa järjestyksessä"
 
    ;accounts
    :recover-access                        "Palauta käyttöoikeus"
-   :add-account                           "Lisää tili"
    :create-new-account                    "Luo uusi tili"
 
    ;wallet-qr-code
@@ -282,33 +226,15 @@
    ;validation
    :invalid-phone                         "Virheellinen puhelinnumero"
    :amount                                "Määrä"
-   :not-enough-eth                        (str "Not enough ETH on balance "
-                                               "({{balance}} ETH)")
    ;transactions
    :confirm                               "Vahvista"
-   :confirm-transactions                  {:one   "Vahvista tapahtuma"
-                                           :other "Vahvista {{count}} tapahtumaa"
-                                           :zero  "Ei tapahtumia"}
-   :transactions-confirmed                {:one   "Tapahtuma vahvistettu"
-                                           :other "{{count}} tapahtumaa vahvistettu"
-                                           :zero  "Ei vahvistettuja tapahtumia"}
    :transaction                           "Tapahtuma"
-   :unsigned-transactions                 "Allekirjoittamattomat tapahtumat"
-   :no-unsigned-transactions              "Ei allekirjoitettuja tapahtumia"
-   :enter-password-transactions           {:one   "Vahvista tapahtuma syöttämällä salasana"
-                                           :other "Vahvista tapahtumat syöttämällä salasana"}
    :status                                "Tila"
-   :pending-confirmation                  "Odottaa vahvistusta"
    :recipient                             "Vastaanottaja"
-   :one-more-item                         "One more item"
-   :fee                                   "Kulu"
-   :estimated-fee                         "Arvioitu kulu"
-   :value                                 "Arvo"
    :to                                    "Vastaanottajalle"
    :from                                  "Lähettäjältä"
    :data                                  "Tieto"
    :got-it                                "Vastaanotettu"
-   :contract-creation                     "Sopimusten Luominen"
 
    ;:webview
    :web-view-error                        "oops, virhe"})
