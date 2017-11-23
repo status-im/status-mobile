@@ -339,8 +339,6 @@
    :validation-amount-invalid-number      "La cantidad no es un número válido"
    :validation-amount-is-too-precise      "La cantidad es demasiado precisa. La mínima unidad que puedes enviar es 1 Wei (1x10^-18 ETH)"
 
-
-
    ;; network settings
    :new-network                           "Nueva red"
    :add-network                           "Añadir red"
