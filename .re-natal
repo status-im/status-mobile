@@ -53,7 +53,8 @@
     "emojilib",
     "react-native-mapbox-gl",
     "react-native-config",
-    "react-native-svg"
+    "react-native-svg",
+    "react-native-background-timer"
   ],
   "imageDirs": [
     "resources/images"
