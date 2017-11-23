@@ -4,7 +4,7 @@
             [cljs-time.format :refer [formatters
                                       formatter
                                       unparse]]
-            [status-im.i18n :refer [label label-pluralize locale]]
+            [status-im.i18n :refer [label label-pluralize localize]]
             [goog.string :as gstring]
             goog.string.format))
 
@@ -21,6 +21,11 @@
 
 (def time-zone-offset (hours (- (/ (.getTimezoneOffset (js/Date.)) 60))))
 
+(defn to-locale-str 
+  ([ms] (to-locale-str ms :short))
+  ([ms format]
+    (localize (str "time/formats/" (name format)) (js/Date. ms))))
+
 (defn to-short-str
   ([ms]
    (to-short-str ms #(unparse (formatters :hour-minute) %)))
@@ -28,13 +33,9 @@
    (let [date        (from-long ms)
          local       (plus date time-zone-offset)
          today       (t/today-at-midnight)
-         yesterday   (plus today (days -1))
-         format-opts (clj->js {:day "numeric" 
-                               :month "short" 
-                               :hour "numeric" 
-                               :minute "numeric"})]
+         yesterday   (plus today (days -1))]
      (cond
-       (before? date yesterday) (.toLocaleString (js/Date. local) locale format-opts)
+       (before? date yesterday) (to-locale-str local)
        (before? date today) (label :t/datetime-yesterday)
        :else (today-format-fn local)))))
 
