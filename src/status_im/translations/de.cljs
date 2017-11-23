@@ -79,10 +79,10 @@
    :date                                  {:formats {:default "%d/%m/%Y"
                                                      :short   "%d de %b"
                                                      :long    "%d de %B de %Y"}
-                                           :day-names        ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
-                                           :abbr-day-names   ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
-                                           :month-names      [nil, "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
-                                           :abbr-month-names [nil, "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago",  "Set", "Out", "Nov", "Dez"]}
+                                           :day-names        ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
+                                           :abbr-day-names   ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+                                           :month-names      [nil, "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
+                                           :abbr-month-names [nil, "Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]}
    :time                                  {:formats {:default "%A, %d de %B de %Y, %H:%M"
                                                      :short "%d %b, %H:%M"
                                                      :long "%A, %d de %B de %Y, %H:%M"}
