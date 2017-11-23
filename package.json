@@ -55,7 +55,7 @@
     "react-native-fcm": "10.0.3",
     "react-native-fs": "2.8.1",
     "react-native-http": "github:tradle/react-native-http#834492d",
-    "react-native-http-bridge": "github:yenda/react-native-http-bridge",
+    "react-native-http-bridge": "github:janherich/react-native-http-bridge",
     "react-native-i18n": "2.0.8",
     "react-native-image-crop-picker": "0.18.1",
     "react-native-image-resizer": "1.0.0",
