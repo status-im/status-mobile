@@ -76,16 +76,16 @@
    :datetime-yesterday                    "Gestern"
    :datetime-today                        "Heute"
    
-   :date                                  {:formats {:default "%d/%m/%Y"
-                                                     :short   "%d de %b"
-                                                     :long    "%d de %B de %Y"}
+   :date                                  {:formats {:default "%d.%m.%Y"
+                                                     :short   "%d. %b"
+                                                     :long    "%d. %B %Y"}
                                            :day-names        ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
                                            :abbr-day-names   ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
                                            :month-names      [nil, "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
                                            :abbr-month-names [nil, "Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]}
-   :time                                  {:formats {:default "%A, %d de %B de %Y, %H:%M"
-                                                     :short "%d %b, %H:%M"
-                                                     :long "%A, %d de %B de %Y, %H:%M"}
+   :time                                  {:formats {:default "%A, %d. %B %Y, %H:%M"
+                                                     :short "%d. %b, %H:%M"
+                                                     :long "%A, %d. %B %Y, %H:%M"}
                                            :am ""
                                            :pm ""}
 
