@@ -11,7 +11,7 @@ import android.webkit.WebStorage;
 
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.github.status_im.status_go.cmd.Statusgo;
+import com.github.status_im.status_go.Statusgo;
 
 import java.io.File;
 import java.io.IOException;
