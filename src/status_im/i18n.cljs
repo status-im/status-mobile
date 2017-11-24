@@ -172,14 +172,14 @@
   ([scope value] (localize scope value {}))
   ([scope value options]
    (let [l #(.l rn-dependencies/i18n scope value (clj->js options))]
-      (case scope
-        ("currency" "number" "percentage") (l)
-        (if (lookup scope) ; lookup date/time format in locale, fallback to "en"
-          (l)
-          (.strftime rn-dependencies/i18n value
-                     (get-in en/translations
-                             (map keyword
-                                  (str/split scope (.-defaultSeparator rn-dependencies/i18n))))))))))
+     (case scope
+       ("currency" "number" "percentage") (l)
+       (if (lookup scope) ; lookup date/time format in locale, fallback to "en"
+         (l)
+         (.strftime rn-dependencies/i18n value
+                    (get-in en/translations
+                            (map keyword
+                                 (str/split scope (.-defaultSeparator rn-dependencies/i18n))))))))))
 
 (defn message-status-label [status]
   (->> status
