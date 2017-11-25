@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.main.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [re-frame.core :as rf]
+  (:require [re-frame.core :as rf]
             [status-im.ui.components.button.view :as btn]
             [status-im.ui.components.drawer.view :as drawer]
             [status-im.ui.components.list.views :as list]
@@ -10,12 +9,10 @@
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.i18n :as i18n]
-            [status-im.react-native.resources :as resources]
             [status-im.utils.config :as config]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]
-            [status-im.utils.platform :as platform]
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
@@ -88,9 +85,9 @@
       [react/text {:style styles/add-asset-text}
        (i18n/label :t/wallet-add-asset)]]]]])
 
-(defn render-asset [{:keys [name symbol icon decimals amount]}]
+(defn render-asset [{:keys [name symbol icon decimals amount] :as asset}]
   (if name ;; If no 'name' then this the dummy value used to render `add-asset`
-    [list/touchable-item #(utils/show-popup "TODO" (str "Details about " symbol " here"))
+    [list/touchable-item  #(rf/dispatch [:navigate-to-asset asset])
      [react/view
       [list/item
        (let [{:keys [source style]} icon]
