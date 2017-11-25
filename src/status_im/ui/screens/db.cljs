@@ -35,6 +35,7 @@
              :sync-state                 :done
              :wallet                     {}
              :wallet.transactions        constants/default-wallet-transactions
+             :wallet-selected-asset      {}
              :prices                     {}
              :notifications              {}
              :network                    constants/default-network
@@ -178,6 +179,7 @@
                   :discoveries/new-discover
                   :wallet/wallet
                   :wallet/wallet.transactions
+                  :wallet/wallet-selected-asset
                   :prices/prices
                   :prices/prices-loading?
                   :notifications/notifications]))

@@ -1,9 +1,6 @@
 (ns status-im.ui.screens.wallet.assets.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [clojure.string :as string]
-            [re-frame.core :as re-frame]
-            [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.react :as react]
+  (:require [status-im.ui.components.react :as react]
             [status-im.ui.components.status-bar :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.button.view :as button]
@@ -14,42 +11,49 @@
             [status-im.ui.screens.wallet.assets.styles :as assets.styles]
             [status-im.ui.screens.wallet.main.styles :as main.styles]
             [status-im.ui.components.tabs.views :as tabs]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.styles :as components.styles]))
+            [status-im.ui.components.styles :as components.styles]
+            [status-im.ui.screens.wallet.transactions.views :as transactions]
+            [status-im.utils.utils :as utils]
+            [status-im.ui.components.chat-icon.styles :as chat-icon.styles]
+            [status-im.utils.money :as money]))
 
 
 (defview my-token-tab-title [active?]
-  (letsubs [ {:keys [token-symbol]} [:token-balance]]
+  (letsubs [ {:keys [symbol]} [:token-balance]]
     [react/text {:uppercase? true
                  :style      (assets.styles/tab-title active?)}
-     (i18n/label :t/wallet-my-token {:symbol token-symbol})]))
+     (i18n/label :t/wallet-my-token {:symbol symbol})]))
 
 (defview my-token-tab-content []
   (letsubs [syncing? [:syncing?]
-            {:keys [token-symbol
-                    token-value
+            {:keys [symbol
+                    amount
+                    decimals
                     usd-value]} [:token-balance]]
     [react/view components.styles/flex
      [react/view {:style assets.styles/total-balance-container}
       [react/view {:style assets.styles/total-balance}
-       [react/text {:style assets.styles/total-balance-value} token-value]
-       [react/text {:style assets.styles/total-balance-currency} token-symbol]]
+       [react/text {:style assets.styles/total-balance-value} (money/to-fixed (money/token->unit (or amount 0) decimals))]
+       [react/text {:style assets.styles/total-balance-currency} symbol]]
       [react/view {:style assets.styles/value-variation}
        [react/text {:style assets.styles/value-variation-title}
         (str usd-value " " "USD")]
        [components/change-display 0.05]]
       [react/view {:style (merge button.styles/buttons-container main.styles/buttons)}
-       [button/button {:disabled? syncing?
-                       :on-press  #()
-                       :style     (button.styles/button-bar :first) :text-style assets.styles/main-button-text}
-        (i18n/label :t/wallet-send-token {:symbol token-symbol})]
-       [button/button {:disabled? true
-                       :on-press  #()
-                       :style     (button.styles/button-bar :last) :text-style assets.styles/main-button-text}
+       [button/button {:disabled?  syncing?
+                       :on-press   #(utils/show-popup "TODO" "Not implemented yet!")
+                       :style      (assets.styles/button-bar :first)
+                       :text-style assets.styles/main-button-text}
+        (i18n/label :t/wallet-send-token {:symbol symbol})]
+       [button/button {:disabled?  true
+                       :on-press   #(utils/show-popup "TODO" "Not implemented yet!")
+                       :style      (assets.styles/button-bar :last)
+                       :text-style assets.styles/main-button-text}
         (i18n/label :t/wallet-exchange)]]]
      [react/view
-      [react/text (i18n/label :t/transactions)]
-      [react/text "Transaction list goes here"]]]))
+      [react/text {:style assets.styles/transactions-title} (i18n/label :t/transactions)]
+      [react/view {:flex-direction :row}
+        [transactions/history-list]]]]))
 
 (defn market-value-tab-title [active?]
   [react/text {:uppercase? true
@@ -69,15 +73,22 @@
     :content market-value-tab-title
     :screen  market-value-tab-content}])
 
+(defn token-toolbar [name symbol icon]
+  [react/view assets.styles/token-toolbar
+   [react/image (assoc icon :style (chat-icon.styles/image-style 64))]
+   [react/text {:style assets.styles/token-name-title}
+    name]
+   [react/text {:style assets.styles/token-symbol-title}
+    symbol]])
+
 (defview my-token-main []
-  (letsubs [current-tab [:get :view-id]
-            {:keys [token-symbol token-name]} [:token-balance]]
+  (letsubs [current-tab                [:get :view-id]
+            {:keys [symbol name icon]} [:token-balance]]
     [react/view {:style component.styles/flex}
      [status-bar/status-bar]
-     [toolbar/toolbar {}
+     [toolbar/toolbar {:style assets.styles/token-toolbar-container}
       toolbar/default-nav-back
-      [toolbar/content-title
-       (str token-symbol " - " token-name)]]
+      [token-toolbar name symbol icon]]
      [tabs/swipable-tabs tabs-list current-tab true
       {:navigation-event     :navigation-replace
        :tab-style            assets.styles/tab
