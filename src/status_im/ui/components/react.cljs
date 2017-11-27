@@ -4,11 +4,12 @@
             [status-im.utils.utils :as u]
             [status-im.utils.platform :refer [platform-specific ios?]]
             [status-im.i18n :as i18n]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [oops.core :as o]))
 
 (defn get-react-property [name]
   (if rn-dependencies/react-native
-    (aget rn-dependencies/react-native name)
+    (o/oget rn-dependencies/react-native name)
     #js {}))
 
 (defn adapt-class [class]
@@ -156,16 +157,15 @@
   (.setString (.-Clipboard rn-dependencies/react-native) text))
 
 (defn get-from-clipboard [clbk]
-  (let [clipboard-contents (.getString (.-Clipboard rn-dependencies/react-native))]
-    (.then clipboard-contents #(clbk %))))
-
+  (-> (o/oget rn-dependencies/react-native "Clipboard.getString")
+      (o/ocall "then" #(clbk %))))
 
 ;; Emoji
 
 (def emoji-picker-class rn-dependencies/emoji-picker)
 
 (def emoji-picker
-  (let [emoji-picker (.-default emoji-picker-class)]
+  (let [emoji-picker (o/oget emoji-picker-class "default")]
     (r/adapt-react-class emoji-picker)))
 
 ;; Autolink
