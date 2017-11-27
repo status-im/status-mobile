@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+########################################################################
+# This install script will setup your development dependencies on OS X.
+# Windows/Linux support is welcome!
+#
+# Usage: scripts/setup-osx.sh
+########################################################################
+
+_current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
+source "$_current_dir/lib/setup-osx/path-support.sh"
+
+source_lib "output.sh"
+source_lib "packages.sh"
+source_lib "platform.sh"
+source_lib "installers.sh"
+
+exit_unless_mac
+
+load_nvm_if_available
+load_rvm_if_available
+
+####
+setup_header "Installing requirements..."
+
+install_homebrew_if_needed
+brew_tap "caskroom/cask"
+
+brew_cask_install "caskroom/versions/java8"
+brew_install leiningen
+
+install_node
+brew_install watchman
+install_react_native_cli
+
+brew_cask_install android-sdk
+brew_install maven
+
+install_cocoapods
+
+####
+echo && setup_header "Installing dependencies..."
+
+dependency_setup lein deps
+dependency_setup npm install
+dependency_setup ./re-natal deps
+dependency_setup ./re-natal enable-source-maps
+
+dependency_setup \
+  "mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack"
+
+dependency_setup "cd ios && pod install && cd .."
+
+setup_complete
