@@ -60,6 +60,8 @@ node ('macos1'){
       def uploadSpec = '{ "files": [ { "pattern": "*apk/' + filename + '", "target": "nightlies-local" }]}'
       def buildInfo = server.upload(uploadSpec)
       apkUrl = 'http://artifacts.status.im:8081/artifactory/nightlies-local/' + filename
+
+      sh ('echo ARTIFACT Android: ' + apkUrl)
     }
 
     stage('Deploy (iOS)') {
@@ -68,6 +70,8 @@ node ('macos1'){
         sh 'sleep 10'
         def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()  
         ipaUrl = 'https://i.diawi.com/' + hash
+
+        sh ('echo ARTIFACT iOS: ' + ipaUrl)
       }
     }
   } catch (e) {

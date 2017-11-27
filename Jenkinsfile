@@ -44,6 +44,8 @@ node ('macos1') {
                 sh 'sleep 10'
                 def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
                 apkUrl = 'https://i.diawi.com/' + hash
+
+                sh ('echo ARTIFACT Android: ' + apkUrl)
             }
         }
 
@@ -69,6 +71,9 @@ node ('macos1') {
             sh 'sleep 10'
             def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
             ipaUrl = 'https://i.diawi.com/' + hash
+
+            sh ('echo ARTIFACT iOS: ' + ipaUrl)
+
         }
     }
 
