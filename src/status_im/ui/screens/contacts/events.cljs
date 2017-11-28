@@ -17,7 +17,7 @@
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.contacts.navigation]
-            [status-im.chat.sign-up :as sign-up]
+            [status-im.chat.console :as console-chat]
             [status-im.commands.events.loading :as loading-events]
             [cljs.spec.alpha :as spec]))
 
@@ -234,7 +234,7 @@
            :bot-url          bot-url
            :description      description
            :dapp-hash        dapp-hash})
-        all-default-contacts (conj default-contacts sign-up/console-contact)] 
+        all-default-contacts (conj default-contacts console-chat/contact)] 
     [[:add-contacts all-default-contacts]]))
 
 (defn- prepare-add-chat-events [contacts default-contacts]

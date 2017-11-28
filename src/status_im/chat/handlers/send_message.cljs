@@ -114,14 +114,17 @@
   (fn [db [_ add-to-chat-id {:keys [chat-id command]}]]
     (cu/add-message-to-db db add-to-chat-id chat-id command)))
 
-(register-handler ::save-command!
+(register-handler
+  ::save-command!
   (u/side-effect!
     (fn [db [_ chat-id {:keys [command]} hidden-params]]
-      (let [command (cond-> (-> command
+      (let [
+            command (cond-> (-> command
+                                (assoc :chat-id chat-id)
                                 (update-in [:content :params] #(apply dissoc % hidden-params))
                                 (dissoc :to-message :has-handler :raw-input)))]
         (dispatch [:upsert-chat! {:chat-id chat-id}])
-        (messages/save chat-id command)))))
+        (messages/save command)))))
 
 (register-handler ::dispatch-responded-requests!
   (u/side-effect!
@@ -193,26 +196,29 @@
   (fn [db [_ {:keys [chat-id message]}]]
     (cu/add-message-to-db db chat-id chat-id message)))
 
-(register-handler ::save-message!
+(register-handler
+  ::save-message!
   (after (fn [_ [_ params]]
            (dispatch [::send-message! params])))
   (u/side-effect!
     (fn [_ [_ {:keys [chat-id message]}]]
       (dispatch [:upsert-chat! {:chat-id chat-id}])
-      (messages/save chat-id message))))
+      (messages/save message))))
 
-(register-handler ::send-dapp-message
+(register-handler
+  ::send-dapp-message
   (u/side-effect!
     (fn [{:accounts/keys [current-account-id] :as db} [_ chat-id {:keys [content]}]]
       (let [data (get-in db [:local-storage chat-id])]
         (status/call-function!
-          {:chat-id    chat-id
-           :function   :on-message-send
+          {:chat-id chat-id
+           :function :on-message-send
            :parameters {:message content}
-           :context    {:data data
-                        :from current-account-id}})))))
+           :context {:data data
+                     :from current-account-id}})))))
 
-(register-handler :received-bot-response
+(register-handler
+  :received-bot-response
   (u/side-effect!
     (fn [{:contacts/keys [contacts]} [_ {:keys [chat-id] :as params} {:keys [result bot-id] :as data}]]
       (let [{:keys [returned context]} result
@@ -221,7 +227,7 @@
             content (or err text-message)]
         (when update-db
           (dispatch [:update-bot-db {:bot bot-id
-                                     :db  update-db}]))
+                                     :db update-db}]))
         (dispatch [:suggestions-handler (assoc params
                                           :bot-id bot-id
                                           :result data
@@ -231,35 +237,34 @@
             (when (or (not= type "debug")
                       js/goog.DEBUG
                       (get-in contacts [chat-id :debug?]))
-              (dispatch [:received-message
-                         {:message-id   (random/id)
-                          :content      (str type ": " message)
+              (dispatch [:chat-received-message/add
+                         {:message-id (random/id)
+                          :content (str type ": " message)
                           :content-type content-type-log-message
-                          :outgoing     false
-                          :chat-id      chat-id
-                          :from         chat-id
-                          :to           "me"}]))))
+                          :outgoing false
+                          :chat-id chat-id
+                          :from chat-id
+                          :to "me"}]))))
         (when content
-          (dispatch [:received-message
-                     {:message-id   (random/id)
-                      :content      (str content)
+          (dispatch [:chat-received-message/add
+                     {:message-id (random/id)
+                      :content (str content)
                       :content-type text-content-type
-                      :outgoing     false
-                      :chat-id      chat-id
-                      :from         chat-id
-                      :to           "me"}]))))))
+                      :outgoing false
+                      :chat-id chat-id
+                      :from chat-id
+                      :to "me"}]))))))
 
 (defn handle-message-from-bot [{:keys [message chat-id]}]
   (cond
     (string? message)
-    (dispatch [:received-message
-               {:message-id   (random/id)
-                :content      (str message)
-                :content-type text-content-type
-                :outgoing     false
-                :chat-id      chat-id
-                :from         chat-id
-                :to           "me"}])
+    (dispatch [:chat-received-message/add {:message-id (random/id)
+                                           :content (str message)
+                                           :content-type text-content-type
+                                           :outgoing false
+                                           :chat-id chat-id
+                                           :from chat-id
+                                           :to "me"}])
 
     (= "request" (:type message))
     (dispatch [:add-request-message!
@@ -370,14 +375,15 @@
             (protocol/send-message! (assoc-in options
                                               [:message :to] chat-id))))))))
 
-(register-handler :add-request-message!
-  (u/side-effect!
-    (fn [_ [_ {:keys [content chat-id]}]]
-      (dispatch [:received-message
-                 {:message-id   (random/id)
-                  :content      (assoc content :bot chat-id)
-                  :content-type content-type-command-request
-                  :outgoing     false
-                  :chat-id      chat-id
-                  :from         chat-id
-                  :to           "me"}]))))
+(register-handler
+ :add-request-message!
+ (u/side-effect!
+  (fn [_ [_ {:keys [content chat-id]}]]
+    (dispatch [:chat-received-message/add
+               {:message-id (random/id)
+                :content (assoc content :bot chat-id)
+                :content-type content-type-command-request
+                :outgoing false
+                :chat-id chat-id
+                :from chat-id
+                :to "me"}]))))

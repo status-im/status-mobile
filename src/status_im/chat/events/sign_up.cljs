@@ -1,7 +1,7 @@
 (ns status-im.chat.events.sign-up
   (:require [re-frame.core :as re-frame]
             [status-im.constants :as const]
-            [status-im.chat.sign-up :as sign-up]
+            [status-im.chat.console :as console-chat]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.phone-number :as phone-number-util]
             [status-im.utils.sms-listener :as sms-listener]
@@ -84,7 +84,7 @@
   (fn [{:keys [db random-id]} [message-id]]
     (-> {:db         db
          :dispatch-n [;; create manual way for entering confirmation code
-                      (sign-up/enter-confirmation-code-event random-id)
+                      [:chat-received-message/add console-chat/enter-confirmation-code-message]
                       ;; create automatic way for receiving confirmation code
                       start-listening-confirmation-code-sms-event]}
         (message-seen message-id))))
@@ -105,44 +105,45 @@
 
 (defn- sign-up-confirmed [{:keys [db] :as fx} now]
   (let [last-phone-number (extract-last-phone-number (:chats db))
-        fx                (-> (stop-listening-confirmation-code-sms fx)
-                              (update :dispatch-n conj
-                                      [:request-permissions [:read-contacts]
-                                       #(re-frame/dispatch [:sync-contacts (fn [contacts]
-                                                                             [::contacts-synced contacts])])]))]
+        fx (-> (stop-listening-confirmation-code-sms fx)
+               (update :dispatch-n conj
+                       [:request-permissions [:read-contacts]
+                        #(re-frame/dispatch [:sync-contacts (fn [contacts]
+                                                              [::contacts-synced contacts])])]))]
     (cond-> fx
-      last-phone-number (accounts-events/account-update {:phone        last-phone-number
-                                                         :last-updated now}))))
+            last-phone-number (accounts-events/account-update {:phone        last-phone-number
+                                                               :last-updated now}))))
 
 (handlers/register-handler-fx
   ::sign-up-confirm-response
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{:keys [db random-id now]} [{:keys [message status]} message-id]]
-    (cond-> {:db         db
-             :dispatch-n [[:received-message
-                           {:message-id   random-id
-                            :content      message
-                            :content-type const/text-content-type
-                            :outgoing     false
-                            :chat-id      const/console-chat-id
-                            :from         const/console-chat-id
-                            :to           "me"}]]}
-      message-id
-      (message-seen message-id)
+    (let [messages (cond-> []
 
-      (= "confirmed" status)
-      (sign-up-confirmed now)
+                           true
+                           (conj (console-chat/console-message {:content      message
+                                                                :content-type const/text-content-type}))
 
-      (= "failed" status)
-      (update :dispatch-n conj (sign-up/incorrect-confirmation-code-event random-id)))))
+                           (= "failed" status)
+                           (conj console-chat/incorrect-confirmation-code-message))]
+
+      (cond-> {:db         db
+               :dispatch-n (mapv #(vector :chat-received-message/add %) messages)}
+
+              message-id
+              (message-seen message-id)
+
+              (= "confirmed" status)
+              (sign-up-confirmed now)))))
 
 (handlers/register-handler-fx
   ::contacts-synced
   [re-frame/trim-v (re-frame/inject-cofx :random-id)]
   (fn [{:keys [db random-id now] :as cofx} [contacts]]
     (-> {:db db}
-        (accounts-events/account-update {:signed-up?   true :last-updated now})
-        (assoc :dispatch (sign-up/contacts-synchronised-event random-id)))))
+        (accounts-events/account-update {:signed-up?   true
+                                         :last-updated now})
+        (assoc :dispatch [:chat-received-message/add console-chat/contacts-synchronised-message]))))
 
 (handlers/register-handler-fx
   ::http-request-failure

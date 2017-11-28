@@ -3,7 +3,7 @@
             [re-frame.core :refer [dispatch reg-fx]]
             [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
             [taoensso.timbre :as log]
-            [status-im.chat.sign-up :as sign-up]
+            [status-im.chat.console :as console-chat]
             [status-im.utils.types :refer [json->clj]]
             [status-im.data-store.core :as data-store]
             [status-im.native-module.core :as status]
@@ -126,9 +126,11 @@
       (if (nil? error)
         {:db         (dissoc db :accounts/login)
          :dispatch-n [[:stop-debugging]
-                      [:initialize-account address (when (or new-account?
-                                                             recover-in-progress?)
-                                                     sign-up/start-signup-events)]
+                      [:initialize-account
+                       address
+                       (when (or new-account? recover-in-progress?)
+                         [[:chat-received-message/add console-chat/phone-number-request-message]
+                          [:chat-received-message/add console-chat/shake-your-phone-message]])]
                       [:navigate-to-clean :chat-list]
                       (if new-account?
                         [:navigate-to-chat console-chat-id]

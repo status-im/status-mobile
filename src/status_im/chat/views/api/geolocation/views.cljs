@@ -88,8 +88,8 @@
              [view st/location-container
               [text {:style st/location-container-title}
                    (label :t/your-current-location)]
-                  (let [{:keys [place_name center] :as feature} (get-in @cur-loc-geocoded [:features 0])]
-                    [place-item {:title (:text feature) :address place_name :center center}])])))})))
+              (let [{:keys [place_name center] :as feature} (get-in @cur-loc-geocoded [:features 0])]
+                [place-item {:title (:text feature) :address place_name :center center}])])))})))
 
 (defn places-nearby-view []
   (let [geolocation      (subscribe [:get :geolocation])
