@@ -97,7 +97,7 @@
                                 :network network
                                 :networks networks
                                 :address address)]
-    {:db (assoc-in db [:accounts/accounts address] enriched-account)
+    {:db            (assoc-in db [:accounts/accounts address] enriched-account)
      ::save-account enriched-account}))
 
 ;; TODO(janherich) we have this handler here only because of the tests, refactor/improve tests ASAP
@@ -120,7 +120,8 @@
                               :updates-public-key  (:public keypair)
                               :updates-private-key (:private keypair)
                               :photo-path          (identicon pubkey)
-                              :signing-phrase      signing-phrase}]
+                              :signing-phrase      signing-phrase
+                              :settings            {:wallet {:visible-tokens {:testnet #{:STT} :mainnet #{:SNT}}}}}]
       (log/debug "account-created")
       (when-not (str/blank? pubkey)
         (-> (add-account db account)
@@ -156,6 +157,12 @@
           new-account (assoc current-account :networks networks)]
       {:db            (assoc-in db [:accounts/accounts id] new-account)
        ::save-account new-account})))
+
+(defn update-wallet-settings [{:accounts/keys [current-account-id accounts] :as db} settings]
+  (let [new-account (-> (get accounts current-account-id)
+                        (assoc :settings settings))]
+    {:db            (assoc-in db [:accounts/accounts current-account-id] new-account)
+     ::save-account new-account}))
 
 (defn account-update
   "Takes effects (containing :db) + new account fields, adds all effects necessary for account update."

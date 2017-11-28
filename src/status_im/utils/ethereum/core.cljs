@@ -1,16 +1,17 @@
 (ns status-im.utils.ethereum.core
   (:require [clojure.string :as string]
-            [status-im.js-dependencies :as dependencies]))
+            [status-im.js-dependencies :as dependencies]
+            [status-im.utils.money :as money]))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
 
-(def chain-ids
+(def chains
   {:mainnet {:id 1 :name "Mainnet"}
    :ropsten {:id 3 :name "Ropsten"}
    :rinkeby {:id 4 :name "Rinkeby"}})
 
 (defn chain-id [k]
-  (get-in chain-ids [k :id]))
+  (get-in chains [k :id]))
 
 (defn testnet? [id]
   (contains? #{(chain-id :ropsten) (chain-id :rinkeby)} id))
@@ -23,7 +24,7 @@
       address
       (str hex-prefix address))))
 
-(defn network [network]
+(defn network->chain-id [network]
   (when network
     (keyword (string/replace network "_rpc" ""))))
 
@@ -41,6 +42,9 @@
 
 (defn int->hex [i]
   (.toHex dependencies/Web3.prototype i))
+
+(defn hex->bignumber [s]
+  (money/bignumber (if (= s "0x") 0 s)))
 
 (defn zero-pad-64 [s]
   (str (apply str (drop (count s) (repeat 64 "0"))) s))

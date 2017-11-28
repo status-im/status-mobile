@@ -19,6 +19,7 @@
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.send.events
+            status-im.ui.screens.wallet.settings.events
             status-im.ui.screens.wallet.transactions.events
             status-im.ui.screens.wallet.choose-recipient.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
@@ -228,7 +229,7 @@
 (register-handler-fx
   :initialize-db
   (fn [{{:keys          [status-module-initialized? status-node-started?
-                         network-status network _]
+                         network-status network]
          :networks/keys [networks]
          :or {network (get app-db :network)}} :db} _]
     {::init-store nil

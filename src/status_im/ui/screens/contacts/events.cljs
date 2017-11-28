@@ -272,11 +272,11 @@
   (fn [{:keys [db all-contacts]} _]
     (let [contacts-list (map #(vector (:whisper-identity %) %) all-contacts)
           contacts (into {} contacts-list)]
-      {:db         (update db :contacts/contacts #(merge contacts %))
+      {:db         (update db :contacts/contacts #(merge contacts %))})))
        ;; TODO (yenda) this mapv was dispatching useless events, fixed but is it necessary if
        ;; it was dispatching useless events before with nil
        ;;:dispatch-n (mapv (fn [[_ contact]] [:watch-contact contact]) contacts)
-       })))
+
 
 (register-handler-fx
   :add-contacts

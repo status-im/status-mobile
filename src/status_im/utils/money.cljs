@@ -49,7 +49,7 @@
       (dependencies/Web3.prototype.toDecimal (normalize s))
       (catch :default err nil))))
 
-(defn from-decimal [n] (str "1" (string/join (repeat n "0"))))
+(defn from-decimal [n] (when n (str "1" (string/join (repeat n "0")))))
 
 (def eth-units
   {:wei    (bignumber "1")

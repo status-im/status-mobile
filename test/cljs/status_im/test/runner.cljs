@@ -3,6 +3,7 @@
             [status-im.test.chat.events]
             [status-im.test.contacts.events]
             [status-im.test.accounts.events]
+            [status-im.test.data-store.realm.core]
             [status-im.test.wallet.events]
             [status-im.test.wallet.transactions.subs]
             [status-im.test.wallet.transactions.views]
@@ -36,6 +37,7 @@
  ;;'status-im.test.contacts.events
  'status-im.test.profile.events
  'status-im.test.wallet.events
+ 'status-im.test.data-store.realm.core
  'status-im.test.bots.events
  'status-im.test.wallet.transactions.subs
  'status-im.test.wallet.transactions.views

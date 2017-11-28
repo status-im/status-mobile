@@ -2,13 +2,9 @@
   (:require [clojure.string :as string]
             [clojure.java.io :as io]))
 
-(def tokens-folder "./resources/images/tokens/")
-
-(def default-icon-path (str tokens-folder "default.png"))
-
 (defn icon-path
   [symbol]
-  (let [s (str "./resources/images/tokens/" (string/lower-case (name symbol)) ".png")]
+  (let [s (str "./resources/images/tokens/" (name symbol) ".png")]
     (if (.exists (io/file s))
       `(js/require ~s)
       `(js/require "./resources/images/tokens/default.png"))))

@@ -302,6 +302,7 @@
    :wallet-add-asset                      "Add asset"
    :wallet-total-value                    "Total value"
    :wallet-settings                       "Wallet settings"
+   :wallet-manage-assets                  "Manage Assets"
    :signing-phrase-description            "Sign the transaction by entering your password. Make sure that the words above match your secret signing phrase"
    :wallet-insufficient-funds             "Insufficient funds"
    :wallet-my-token                       "My {{symbol}}"
