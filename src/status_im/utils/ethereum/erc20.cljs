@@ -30,12 +30,12 @@
 (defn total-supply [web3 contract cb]
   (ethereum/call web3
                  (ethereum/call-params contract "totalSupply()")
-                 #(cb %1 (ethereum/hex->int %2))))
+                 #(cb %1 (ethereum/hex->bignumber %2))))
 
 (defn balance-of [web3 contract address cb]
   (ethereum/call web3
                  (ethereum/call-params contract "balanceOf(address)" address)
-                 #(cb %1 (ethereum/hex->int %2))))
+                 #(cb %1 (ethereum/hex->bignumber %2))))
 
 (defn transfer [web3 contract address value cb]
   (ethereum/call web3
@@ -55,4 +55,4 @@
 (defn allowance [web3 contract owner-address spender-address cb]
   (ethereum/call web3
                  (ethereum/call-params contract "allowance(address, address)" owner-address spender-address)
-                 #(cb %1 (ethereum/hex->int %2))))
+                 #(cb %1 (ethereum/hex->bignumber %2))))

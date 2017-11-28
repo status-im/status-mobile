@@ -33,7 +33,6 @@
              :discover-current-dapp      {}
              :tags                       []
              :sync-state                 :done
-             :wallet                     {}
              :wallet.transactions        constants/default-wallet-transactions
              :wallet-selected-asset      {}
              :prices                     {}

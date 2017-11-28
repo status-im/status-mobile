@@ -4,5 +4,5 @@
 ;; TODO(goranjovic) - the USD value is currently hardcoded, will be replaced with actual data
 ;; in a different PR
 (re-frame/reg-sub :token-balance
-  (fn [db]
-    (assoc-in db [:wallet-selected-asset :usd-value] 0.93)))
+  (fn [{:keys [wallet-selected-asset]}]
+    (assoc wallet-selected-asset :usd-value 0.93)))

@@ -70,5 +70,5 @@
        [vector-icons/icon :icons/network {:color :white}]]
       [react/text {:style (styles/network-text text-color)}
        (if (ethereum/testnet? network-id)
-         (i18n/label :t/testnet-text {:testnet (get-in ethereum/chain-ids [network-id :name] "Unknown")})
+         (i18n/label :t/testnet-text {:testnet (get-in ethereum/chains [network-id :name] "Unknown")})
          (i18n/label :t/mainnet-text))]]]))

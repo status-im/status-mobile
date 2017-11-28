@@ -51,11 +51,10 @@
    [vi/icon icon (merge icon-opts {:style lst/item-icon})]])
 
 (defn item-image
-  ([source] (item-image source nil))
-  ([source style]
-   [rn/view {:style style}
-    [rn/image {:source source
-               :style  lst/item-image}]]))
+  [{:keys [source style]}]
+  [rn/view {:style style}
+   [rn/image {:source source
+              :style  lst/item-image}]])
 
 (defn item-primary
   [primary]

@@ -33,7 +33,7 @@
     [react/view components.styles/flex
      [react/view {:style assets.styles/total-balance-container}
       [react/view {:style assets.styles/total-balance}
-       [react/text {:style assets.styles/total-balance-value} (money/to-fixed (money/token->unit (or amount 0) decimals))]
+       [react/text {:style assets.styles/total-balance-value} (money/to-fixed (money/token->unit (or amount (money/bignumber 0)) decimals))]
        [react/text {:style assets.styles/total-balance-currency} symbol]]
       [react/view {:style assets.styles/value-variation}
        [react/text {:style assets.styles/value-variation-title}

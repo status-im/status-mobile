@@ -104,7 +104,7 @@
          [react/text {:style           (merge styles/wallet-value styles/wallet-value-amount)
                       :number-of-lines 1
                       :ellipsize-mode  :tail}
-          (str (money/wei->ether balance))]
+          (str (money/wei->ether (:ETH balance)))] ;; TODO(jeluard) update based on currency selected
          [react/text {:style styles/wallet-value}
           (i18n/label :t/eth)]]
         [react/text {:style styles/wallet-value}
