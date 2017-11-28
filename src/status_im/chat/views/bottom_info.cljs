@@ -67,7 +67,7 @@
       (list-item [message-status-row contact row]))))
 
 (defn bottom-info-view []
-  (let [bottom-info (subscribe [:chat-ui-props :bottom-info])
+  (let [bottom-info (subscribe [:get-current-chat-ui-prop :bottom-info])
         contacts    (subscribe [:get-contacts])]
     (r/create-class
       {:display-name "bottom-info-view"

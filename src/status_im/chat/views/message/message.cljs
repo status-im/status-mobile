@@ -246,7 +246,7 @@
 (defview group-message-delivery-status [{:keys [message-id group-id message-status user-statuses] :as msg}]
   [app-db-message-user-statuses [:get-in [:message-data :user-statuses message-id]]
    app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]
-   chat [:get-chat-by-id group-id]
+   chat [:get-current-chat]
    contacts [:get-contacts]]
   (let [status            (or message-status app-db-message-status-value :sending)
         user-statuses     (merge user-statuses app-db-message-user-statuses)

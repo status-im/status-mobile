@@ -68,7 +68,7 @@
             contacts      [:chat :contacts]
             public?       [:chat :public?]
             public-key    [:chat :public-key]
-            show-actions? [:chat-ui-props :show-actions?]
+            show-actions? [:get-current-chat-ui-prop :show-actions?]
             accounts      [:get-accounts]
             contact       [:get-in [:contacts/contacts @chat-id]]
             sync-state    [:sync-state]

@@ -32,7 +32,7 @@
 (defview bridged-web-view [{:keys [url]}]
   [extra-js [:web-view-extra-js]
    rpc-url [:get :rpc-url]
-   result-box [:chat-ui-props :result-box]]
+   result-box [:get-current-chat-ui-prop :result-box]]
   (when url
     [webview-bridge
      {:ref                                   #(dispatch [:chat-webview-bridge/set-ref %])

@@ -22,7 +22,7 @@
                        ;; in handlers
                        (let [stack      (subscribe [:get :navigation-stack])
                              creating?  (subscribe [:get :accounts/creating-account?])
-                             result-box (subscribe [:chat-ui-props :result-box])
+                             result-box (subscribe [:get-current-chat-ui-prop :result-box])
                              webview    (subscribe [:get :webview-bridge])]
                          (cond
                            @creating? true

@@ -6,7 +6,6 @@
             [status-im.chat.utils :as chat-utils]
             [status-im.chat.models :as model]
             [status-im.chat.models.input :as input-model]
-            [status-im.chat.models.commands :as commands-model]
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.events.animation :as animation-events]
             [status-im.bots.events :as bots-events]
@@ -64,6 +63,9 @@
       (and dapp? (str/blank? chat-text))
       (assoc-in [:chats current-chat-id :parameter-boxes :message] nil))))
 
+;; TODO janherich: this is super fragile and won't work at all for group chats with bots.
+;; The proper way how to do it is to check each chat participant and call `:on-message-input-change`
+;; jail function in each participant's jail
 (defn call-on-message-input-change
   "Calls bot's `on-message-input-change` function"
   [{:keys [current-chat-id current-account-id chats local-storage] :as db}]
@@ -99,7 +101,7 @@
   [{:keys [current-chat-id] :as db} index arg move-to-next?]
   (let [command     (-> (get-in db [:chats current-chat-id :input-text])
                         (input-model/split-command-args))
-        seq-params? (-> (input-model/selected-chat-command db current-chat-id)
+        seq-params? (-> (input-model/selected-chat-command db)
                         (get-in [:command :sequential-params]))]
     (if seq-params?
       (set-chat-seq-arg-input-text db arg)
@@ -114,7 +116,7 @@
                               (input-model/join-command-args command-args)
                               (when (and move-to-next?
                                          (= index (dec (count command-args))))
-                                const/spacing-char))] 
+                                const/spacing-char))]
         (set-chat-input-text db input-text)))))
 
 (defn load-chat-parameter-box
@@ -160,9 +162,8 @@
 
 (defn update-text-selection
   "Updates text selection in active chat input"
-  [{:keys [current-chat-id] :as db} selection]
-  (let [input-text            (get-in db [:chats current-chat-id :input-text])
-        command               (input-model/selected-chat-command db current-chat-id input-text)
+  [db selection]
+  (let [command               (input-model/selected-chat-command db)
         new-db                (model/set-chat-ui-props db {:selection selection})
         chat-parameter-box-fx (when command
                                 (load-chat-parameter-box new-db (:command command)))]
@@ -213,13 +214,10 @@
 
 (defn set-contact-as-command-argument
   "Sets contact as command argument for active chat"
-  [{:keys [current-chat-id] :as db} {:keys [bot-db-key contact arg-index]}]
+  [db {:keys [bot-db-key contact arg-index]}]
   (let [name    (str/replace (:name contact) (re-pattern const/arg-wrapping-char) "")
         contact (select-keys contact [:address :whisper-identity :name :photo-path :dapp?])
-        command-owner (-> db
-                          (input-model/selected-chat-command current-chat-id)
-                          :command
-                          :owner-id)]
+        command-owner (get-in (input-model/selected-chat-command db) [:command :owner-id])]
     (-> db
         (set-command-argument arg-index name true)
         (bots-events/set-in-bot-db {:bot   command-owner
@@ -441,8 +439,7 @@
   [(re-frame/inject-cofx :random-id)]
   (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now} _]
     (let [input-text   (get-in db [:chats current-chat-id :input-text])
-          chat-command (-> db
-                           (input-model/selected-chat-command current-chat-id input-text)
+          chat-command (-> (input-model/selected-chat-command db)
                            (as-> selected-command
                                (if (get-in selected-command [:command :sequential-params])
                                  (assoc selected-command :args
@@ -493,7 +490,7 @@
   (fn [{{:keys [current-chat-id chats] :as db} :db} _]
     (let [text             (get-in chats [current-chat-id :seq-argument-input-text])
           seq-arguments    (get-in chats [current-chat-id :seq-arguments])
-          command          (-> (input-model/selected-chat-command db current-chat-id)
+          command          (-> (input-model/selected-chat-command db)
                                (assoc :args (into [] (conj seq-arguments text))))]
       (request-command-data db {:content             command
                                 :chat-id             current-chat-id
@@ -520,8 +517,7 @@
 (handlers/register-handler-fx
   :select-prev-argument
   (fn [{{:keys [chat-ui-props current-chat-id] :as db} :db} _]
-    (let [input-text (get-in db [:chats current-chat-id :input-text])
-          command    (input-model/selected-chat-command db current-chat-id input-text)]
+    (let [command (input-model/selected-chat-command db)]
       (if (get-in command [:command :sequential-params])
         (-> db
             (set-command-argument 0 "" false)

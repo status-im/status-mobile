@@ -55,8 +55,8 @@
 (defn- basic-text-input [_]
   (let [input-text           (subscribe [:chat :input-text])
         command              (subscribe [:selected-chat-command])
-        sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])
-        input-focused?       (subscribe [:chat-ui-props :input-focused?])
+        sending-in-progress? (subscribe [:get-current-chat-ui-prop :sending-in-progress?])
+        input-focused?       (subscribe [:get-current-chat-ui-prop :input-focused?])
         input-ref            (atom nil)]
     (fn [{:keys [set-layout-height-fn set-container-width-fn height single-line-input?]}]
       [text-input
@@ -143,7 +143,7 @@
   (let [command              (subscribe [:selected-chat-command])
         arg-pos              (subscribe [:current-chat-argument-position])
         seq-arg-input-text   (subscribe [:chat :seq-argument-input-text])
-        sending-in-progress? (subscribe [:chat-ui-props :sending-in-progress?])]
+        sending-in-progress? (subscribe [:get-current-chat-ui-prop :sending-in-progress?])]
     (fn [{:keys [command-width container-width]}]
       (when (get-in @command [:command :sequential-params])
         (let [{:keys [placeholder hidden type]} (get-in @command [:command :params @arg-pos])]
@@ -210,7 +210,7 @@
             selected-command   [:selected-chat-command]
             input-text         [:chat :input-text]
             seq-arg-input-text [:chat :seq-argument-input-text]
-            result-box         [:chat-ui-props :result-box]]
+            result-box         [:get-current-chat-ui-prop :result-box]]
     (let [single-line-input? (:singleLineInput result-box)
           {:keys [hide-send-button sequential-params]} (:command selected-command)]
       [view style/input-container
@@ -236,7 +236,7 @@
 
 (defn container []
   (let [margin                (subscribe [:chat-input-margin])
-        show-emoji?           (subscribe [:chat-ui-props :show-emoji?])
+        show-emoji?           (subscribe [:get-current-chat-ui-prop :show-emoji?])
         input-text            (subscribe [:chat :input-text])
         anim-margin           (anim/create-value 10)
         container-anim-margin (anim/create-value 16)

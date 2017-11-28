@@ -8,7 +8,7 @@
 
 (defmethod action-view :fullscreen
   [_]
-  (let [fullscreen? (re-frame/subscribe [:chat-ui-props :fullscreen?])]
+  (let [fullscreen? (re-frame/subscribe [:get-current-chat-ui-prop :fullscreen?])]
     (fn []
       [react/touchable-highlight
        {:on-press #(re-frame/dispatch [:set-chat-ui-props {:fullscreen? (not @fullscreen?)}])}
@@ -20,7 +20,7 @@
 
 (defmethod action-view :web-view-back
   [_]
-  (let [result-box (re-frame/subscribe [:chat-ui-props :result-box])
+  (let [result-box (re-frame/subscribe [:get-current-chat-ui-prop :result-box])
         webview    (re-frame/subscribe [:get :webview-bridge])]
     (fn []
       [react/touchable-highlight
@@ -33,7 +33,7 @@
 
 (defmethod action-view :web-view-forward
   [_]
-  (let [result-box (re-frame/subscribe [:chat-ui-props :result-box])
+  (let [result-box (re-frame/subscribe [:get-current-chat-ui-prop :result-box])
         webview    (re-frame/subscribe [:get :webview-bridge])]
     (fn []
       [react/touchable-highlight
@@ -54,7 +54,7 @@
     [react/icon (str "action_" image) style/action-view-icon]]])
 
 (defn input-actions-view []
-  (let [result-box (re-frame/subscribe [:chat-ui-props :result-box])]
+  (let [result-box (re-frame/subscribe [:get-current-chat-ui-prop :result-box])]
     (fn []
       (let [{:keys [actions]} @result-box]
         [react/view style/actions-container

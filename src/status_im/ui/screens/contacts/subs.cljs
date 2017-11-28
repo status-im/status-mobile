@@ -154,12 +154,9 @@
     (:name (contacts identity))))
 
 (reg-sub :chat-by-id
-  (fn [db [_ chat-id]]
-    (get-in db [:chats chat-id])))
-
-(reg-sub :current-chat
-  (fn [db _]
-    (get-in db [:chats (:current-chat-id db)])))
+  :<- [:chats]
+  (fn [chats [_ chat-id]]
+    (get chats chat-id)))
 
 (defn chat-contacts [[chat contacts] [_ fn]]
   (when chat
@@ -171,7 +168,7 @@
         (vals contacts)))))
 
 (reg-sub :contacts-current-chat
-  :<- [:current-chat]
+  :<- [:get-current-chat]
   :<- [:get-contacts]
   chat-contacts)
 
@@ -195,7 +192,7 @@
   (fn [[_ chat-id] _]
     [(if chat-id
        (subscribe [:chat-by-id chat-id])
-       (subscribe [:current-chat]))
+       (subscribe [:get-current-chat]))
      (subscribe [:contacts-by-chat filter chat-id])])
   (fn [[chat contacts] [_ chat-id]]
     (when (and chat (not (:group-chat chat)))
