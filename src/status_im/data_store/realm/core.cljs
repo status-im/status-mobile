@@ -73,7 +73,7 @@
         (reset! account-realm (open-migrated-realm address account/schemas))
         (handler nil)))))
 
-; realm functions
+;; realm functions
 
 (defn and-query [queries]
   (str/join " and " queries))
@@ -128,17 +128,19 @@
 
 (def reader (transit/reader :json))
 
+(defn- internal-convert [js-object]
+  (->> js-object
+       (.stringify js/JSON)
+       (transit/read reader)
+       walk/keywordize-keys))
+
 (defn js-object->clj
   "Converts any js type/object into a map recursively
   Performs 5 times better than iterating over the object keys
   and that would require special care for collections"
   [js-object]
-  (let [o (->> js-object
-               (.stringify js/JSON)
-               (transit/read reader))]
-    (walk/keywordize-keys (if (map? o)
-                            (map->vec o)
-                            o))))
+  (let [o (internal-convert js-object)]
+    (if (map? o) (map->vec o) o)))
 
 (defn fix-map->vec
   "Takes a map m and a keyword k
@@ -161,8 +163,8 @@
 (defn single [result]
   (aget result 0))
 
-(def single-clj
-  (comp first js-object->clj))
+(defn single-clj [results]
+  (some-> results single internal-convert))
 
 (defn- get-schema-by-name [opts]
   (->> opts
