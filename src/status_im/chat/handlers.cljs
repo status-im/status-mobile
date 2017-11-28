@@ -16,8 +16,7 @@
             [status-im.utils.random :as random]
             [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
             status-im.chat.events 
-            status-im.chat.handlers.send-message
-            status-im.chat.handlers.webview-bridge))
+            status-im.chat.handlers.send-message))
 
 (defn remove-chat
   [db [_ chat-id]]
