@@ -162,9 +162,11 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     NSString *config = [NSString stringWithUTF8String: configChars];
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *resultingConfigJson = [NSJSONSerialization JSONObjectWithData:configData options:NSJSONReadingMutableContainers error:nil];
+    NSURL *networkDirUrl = [NSURL fileURLWithPath:networkDir];
+    NSURL *logUrl = [networkDirUrl URLByAppendingPathComponent:@"geth.log"];
     [resultingConfigJson setValue:newKeystoreUrl.path forKey:@"KeyStoreDir"];
     [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKey:@"LogEnabled"];
-    [resultingConfigJson setValue:@"geth.log" forKey:@"LogFile"];
+    [resultingConfigJson setValue:logUrl.path forKey:@"LogFile"];
     [resultingConfigJson setValue:@"DEBUG" forKey:@"LogLevel"];
 
     if(upstreamURL != nil) {
@@ -173,8 +175,6 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     }
     NSString *resultingConfig = [resultingConfigJson bv_jsonStringWithPrettyPrint:NO];
     NSLog(@"node config %@", resultingConfig);
-    NSURL *networkDirUrl = [NSURL fileURLWithPath:networkDir];
-    NSURL *logUrl = [networkDirUrl URLByAppendingPathComponent:@"geth.log"];
     if([fileManager fileExistsAtPath:logUrl.path]) {
         [fileManager removeItemAtPath:logUrl.path error:nil];
     }
