@@ -54,9 +54,9 @@
 
 (defn expandable-view [{:keys [key height hide-overlay?]} & _]
   (let [anim-value         (anim/create-value 0)
-        input-height       (subscribe [:chat-ui-props :input-height])
+        input-height       (subscribe [:get-current-chat-ui-prop :input-height])
         max-height         (subscribe [:get-max-container-area-height])
-        fullscreen?        (subscribe [:chat-ui-props :fullscreen?])
+        fullscreen?        (subscribe [:get-current-chat-ui-prop :fullscreen?])
         chat-input-margin  (subscribe [:chat-input-margin])
         to-changed-height  (subscribe [:chat-animations key :height])
         changes-counter    (subscribe [:chat-animations key :changes-counter])

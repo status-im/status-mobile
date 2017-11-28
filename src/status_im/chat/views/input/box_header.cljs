@@ -11,7 +11,7 @@
 (defn get-header [type]
   (fn []
     (let [parameter-box (subscribe [:chat-parameter-box])
-          result-box    (subscribe [:chat-ui-props :result-box])
+          result-box    (subscribe [:get-current-chat-ui-prop :result-box])
           chat-id       (subscribe [:get-current-chat-id])
           command       (subscribe [:selected-chat-command])
           index         (subscribe [:current-chat-argument-position])]

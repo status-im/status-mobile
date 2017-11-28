@@ -65,28 +65,40 @@
   (is (= "/send 1.0 \"John Doe\"" (input/join-command-args ["/send" "1.0" "John Doe"]))))
 
 (deftest selected-chat-command
-  (is (= (input/selected-chat-command fake-db "test1" "/global-command1")
+  (is (= (input/selected-chat-command (-> fake-db
+                                          (assoc :current-chat-id "test1")
+                                          (assoc-in [:chats "test1" :input-text] "/global-command1")))
          {:command {:name "global-command1"
                     :ref ["0x1" :command 0 "global-command1"]}
           :metadata nil
           :args ["arg1" "arg2"]}))
-  (is (= (input/selected-chat-command fake-db "test2" "/command2")
+  (is (= (input/selected-chat-command (-> fake-db
+                                          (assoc :current-chat-id "test2")
+                                          (assoc-in [:chats "test2" :input-text] "/command2")))
          {:command {:name "command2"
                     :ref ["0x1" :command 4 "command2"]}
           :metadata nil
           :args []}))
-  (is (nil? (input/selected-chat-command fake-db "test1" "/command3")))
-  (is (= (input/selected-chat-command fake-db "test1" "/command2")
+  (is (nil? (input/selected-chat-command (-> fake-db
+                                             (assoc :current-chat-id "test1")
+                                             (assoc-in [:chats "test1" :input-text] "/command3")))))
+  (is (= (input/selected-chat-command (-> fake-db
+                                          (assoc :current-chat-id "test1")
+                                          (assoc-in [:chats "test1" :input-text] "/command2")))
          {:command {:name "command2"
                     :ref ["0x1" :command 2 "command2"]}
           :metadata nil
           :args ["arg1" "arg2"]}))
-  (is (= (input/selected-chat-command fake-db "test2" "/response1 arg1")
+  (is (= (input/selected-chat-command (-> fake-db
+                                          (assoc :current-chat-id "test2")
+                                          (assoc-in [:chats "test2" :input-text] "/response1 arg1")))
          {:command {:name "response1"
                     :ref ["0x2" :response 4 "response1"]}
           :metadata nil
           :args ["arg1"]}))
-  (is (= (input/selected-chat-command fake-db "test4" "/command2 arg1")
+  (is (= (input/selected-chat-command (-> fake-db
+                                          (assoc :current-chat-id "test4")
+                                          (assoc-in [:chats "test4" :input-text] "/command2 arg1")))
          {:command {:name "command2"
                     :ref ["0x1" :command 4 "command2"]}
           :metadata {:meta-k "meta-v"}

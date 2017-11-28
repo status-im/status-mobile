@@ -19,8 +19,8 @@
 
 (defview validation-messages-view []
   (letsubs [chat-input-margin [:chat-input-margin]
-            input-height [:chat-ui-props :input-height]
-            messages [:chat-ui-props :validation-messages]]
+            input-height [:get-current-chat-ui-prop :input-height]
+            messages [:validation-messages]]
     (when messages
       [c/view (style/root (+ input-height chat-input-margin))
        (if (string? messages)

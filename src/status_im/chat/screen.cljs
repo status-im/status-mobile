@@ -86,7 +86,7 @@
     (list-item [chat-message message])))
 
 (defn toolbar-action []
-  (let [show-actions (subscribe [:chat-ui-props :show-actions?])]
+  (let [show-actions (subscribe [:get-current-chat-ui-prop :show-actions?])]
     (fn []
       (let [show-actions @show-actions]
         [touchable-highlight
@@ -108,7 +108,7 @@
        (label :t/add-to-contacts)]]]))
 
 (defview chat-toolbar []
-  [show-actions? [:chat-ui-props :show-actions?]
+  [show-actions? [:get-current-chat-ui-prop :show-actions?]
    accounts [:get-accounts]
    creating? [:get :accounts/creating-account?]]
   [view
@@ -175,9 +175,9 @@
 
 (defview chat []
   [group-chat [:chat :group-chat]
-   show-actions? [:chat-ui-props :show-actions?]
-   show-bottom-info? [:chat-ui-props :show-bottom-info?]
-   show-emoji? [:chat-ui-props :show-emoji?]
+   show-actions? [:get-current-chat-ui-prop :show-actions?]
+   show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
+   show-emoji? [:get-current-chat-ui-prop :show-emoji?]
    layout-height [:get :layout-height]
    input-text [:chat :input-text]]
   {:component-did-mount    #(dispatch [:check-and-open-dapp!])

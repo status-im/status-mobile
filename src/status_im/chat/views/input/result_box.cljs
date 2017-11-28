@@ -2,10 +2,10 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
             [status-im.ui.components.react :refer [view
-                                                scroll-view
-                                                touchable-highlight
-                                                text
-                                                icon]]
+                                                   scroll-view
+                                                   touchable-highlight
+                                                   text
+                                                   icon]]
             [status-im.chat.views.input.animations.expandable :refer [expandable-view]]
             [status-im.chat.views.input.box-header :as box-header]
             [status-im.ui.components.sync-state.offline :refer [offline-view]]))
@@ -15,8 +15,8 @@
    markup])
 
 (defview result-box-view []
-  [{:keys [markup] :as result-box} [:chat-ui-props :result-box]]
-  (when result-box
+  [markup [:result-box-markup]]
+  (when markup
     [expandable-view {:key           :result-box
                       :draggable?    true
                       :custom-header (box-header/get-header :result-box)}
