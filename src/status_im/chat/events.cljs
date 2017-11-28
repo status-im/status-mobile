@@ -5,11 +5,14 @@
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.chat.models :as model]
             [status-im.chat.models.unviewed-messages :as unviewed-messages-model]
-            [status-im.chat.sign-up :as sign-up]
+            [status-im.chat.console :as console-chat]
             [status-im.chat.constants :as chat-const]
             [status-im.data-store.messages :as msg-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.chats :as chats-store]
+            [status-im.data-store.contacts :as contacts-store]
+            [status-im.data-store.requests :as requests-store]
+            [status-im.data-store.messages :as messages-store]
             [status-im.ui.screens.navigation :as navigation]
             [status-im.protocol.core :as protocol]
             [status-im.constants :as const]
@@ -28,17 +31,17 @@
 (re-frame/reg-cofx
   :stored-unviewed-messages
   (fn [cofx _]
-    (assoc cofx :stored-unviewed-messages (msg-store/get-unviewed))))
+    (assoc cofx :stored-unviewed-messages (messages-store/get-unviewed))))
 
 (re-frame/reg-cofx
   :get-stored-message
   (fn [cofx _]
-    (assoc cofx :get-stored-message msg-store/get-by-id)))
+    (assoc cofx :get-stored-message messages-store/get-by-id)))
 
 (re-frame/reg-cofx
   :get-stored-messages
   (fn [cofx _]
-    (assoc cofx :get-stored-messages msg-store/get-by-chat-id)))
+    (assoc cofx :get-stored-messages messages-store/get-by-chat-id)))
 
 (re-frame/reg-cofx
   :all-stored-chats
@@ -50,17 +53,18 @@
   (fn [cofx _]
     (assoc cofx :get-stored-chat chats-store/get-by-id)))
 
+
 ;;;; Effects
 
 (re-frame/reg-fx
   :update-message
   (fn [message]
-    (msg-store/update-message message)))
+    (messages-store/update-message message)))
 
 (re-frame/reg-fx
   :save-message
-  (fn [{:keys [chat-id] :as message}]
-    (msg-store/save chat-id message)))
+  (fn [message]
+    (messages-store/save message)))
 
 (re-frame/reg-fx
   :save-chat
@@ -107,8 +111,8 @@
   [re-frame/trim-v]
   (fn [db [details]]
     (model/set-chat-ui-props db {:show-bottom-info? true
-                                 :show-emoji?       false
-                                 :bottom-info       details})))
+                                 :show-emoji? false
+                                 :bottom-info details})))
 
 (def index-messages (partial into {} (map (juxt :message-id identity))))
 
@@ -136,13 +140,14 @@
     {:db db}
     (cond-> {:db (-> db
                      (assoc :current-chat-id const/console-chat-id)
-                     (update :chats assoc const/console-chat-id sign-up/console-chat))
-             :dispatch-n [[:add-contacts [sign-up/console-contact]]]
-             :save-chat sign-up/console-chat
-             :save-all-contacts [sign-up/console-contact]}
+                     (update :chats assoc const/console-chat-id console-chat/chat))
+             :dispatch-n [[:add-contacts [console-chat/contact]]]
+             :save-chat console-chat/chat
+             :save-all-contacts [console-chat/contact]}
 
       (not current-account-id)
-      (update :dispatch-n conj sign-up/intro-event))))
+      (update :dispatch-n concat [[:chat-received-message/add-when-commands-loaded console-chat/intro-message1]]))))
+
 
 (handlers/register-handler-fx
   :init-console-chat
@@ -171,11 +176,10 @@
                                                 {}
                                                 stored-unanswered-requests)
               chats (reduce (fn [acc {:keys [chat-id] :as chat}]
-                              (assoc acc chat-id
-                                     (assoc chat
-                                            :unviewed-messages (get chat->unviewed-messages chat-id)
-                                            :requests (get chat->message-id->request chat-id)
-                                            :messages (index-messages (get-stored-messages chat-id)))))
+                              (assoc acc chat-id (assoc chat
+                                                   :unviewed-messages (get chat->unviewed-messages chat-id)
+                                                   :requests (get chat->message-id->request chat-id)
+                                                   :messages (index-messages (get-stored-messages chat-id)))))
                             {}
                             all-stored-chats)]
           (-> db
@@ -208,24 +212,24 @@
   :show-mnemonic
   [(re-frame/inject-cofx :get-stored-message) re-frame/trim-v]
   (fn [{:keys [get-stored-message]} [mnemonic signing-phrase]]
-    (let [crazy-math-message? (get-stored-message chat-const/crazy-math-message-id)]
-      {:dispatch-n (sign-up/passphrase-messages-events mnemonic
-                                                       signing-phrase
-                                                       crazy-math-message?)})))
+    (let [crazy-math-message? (get-stored-message chat-const/crazy-math-message-id)
+          messages-events     (->> (console-chat/passphrase-messages mnemonic signing-phrase crazy-math-message?)
+                                   (mapv #(vector :chat-received-message/add %)))]
+      {:dispatch-n messages-events})))
 
 (handlers/register-handler-fx
   :account-generation-message
   [(re-frame/inject-cofx :get-stored-message)]
   (fn [{:keys [get-stored-message]} _]
     (when-not (get-stored-message chat-const/passphrase-message-id)
-      {:dispatch sign-up/account-generation-event})))
+      {:dispatch [:chat-received-message/add console-chat/account-generation-message]})))
 
 (handlers/register-handler-fx
   :move-to-internal-failure-message
   [(re-frame/inject-cofx :get-stored-message)]
   (fn [{:keys [get-stored-message]} _]
     (when-not (get-stored-message chat-const/move-to-internal-failure-message-id)
-      {:dispatch sign-up/move-to-internal-failure-event})))
+      {:dispatch [:chat-received-message/add console-chat/move-to-internal-failure-message]})))
 
 (handlers/register-handler-fx
   :browse-link-from-message

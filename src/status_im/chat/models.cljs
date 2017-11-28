@@ -30,9 +30,9 @@
   ([{:keys [db] :as cofx} chat-id chat-props]
    (let [new-chat       (create-new-chat cofx chat-id chat-props)
          existing-chats (:chats db)]
-     {:db (cond-> db
-            (not (contains? existing-chats chat-id))
-            (update :chats assoc chat-id new-chat))
+     {:db        (cond-> db
+                         (not (contains? existing-chats chat-id))
+                         (update :chats assoc chat-id new-chat))
       :save-chat new-chat})))
 
 ;; TODO (yenda): there should be an option to update the timestamp
@@ -44,8 +44,8 @@
   (let [chat (merge (or (get-stored-chat chat-id)
                         (create-new-chat cofx chat-id {}))
                     chat)]
-    {:db        (update-in db [:chats chat-id] merge chat)
-     :save-chat chat}))
+    {:db            (update-in db [:chats chat-id] merge chat)
+     :save-chat     chat}))
 
 ;; TODO (yenda): an upsert is suppose to add the entry if it doesn't
 ;; exist and update it if it does

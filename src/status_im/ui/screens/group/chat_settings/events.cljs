@@ -35,10 +35,11 @@
    :content-type text-content-type})
 
 (defn removed-participant-message [chat-id identity]
-  (let [contact-name (:name (contacts/get-by-id identity))]
-    (->> (str "You've removed " (or contact-name identity))
-         (system-message (random/id))
-         (messages/save chat-id))))
+  (let [contact-name (:name (contacts/get-by-id identity))
+        message-text (str "You've removed " (or contact-name identity))]
+    (-> (system-message (random/id) message-text)
+        (assoc :chat-id chat-id)
+        (messages/save))))
 
 (reg-fx
   ::create-removing-messages

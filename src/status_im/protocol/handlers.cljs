@@ -137,7 +137,7 @@
                        (string/join " ")
                        (system-message message-id timestamp))
           message' (assoc message :group-id group-id)]
-      (re-frame/dispatch [:received-message message']))))
+      (re-frame/dispatch [:chat-received-message/add message']))))
 
 (re-frame/reg-fx
   ::chats-add-contact
@@ -164,7 +164,7 @@
                         (string/join " ")
                         (system-message message-id timestamp))
           message' (assoc message :group-id group-id)]
-      (re-frame/dispatch [:received-message message']))))
+      (re-frame/dispatch [:chat-received-message/add message']))))
 
 (re-frame/reg-fx
   ::stop-watching-group!
@@ -174,10 +174,11 @@
 (re-frame/reg-fx
   ::participant-left-group-message
   (fn [{:keys [chat-id from message-id timestamp]}]
-    (let [left-name (:name (contacts/get-by-id from))]
-      (->> (str (or left-name from) " " (i18n/label :t/left))
-           (system-message message-id timestamp)
-           (messages/save chat-id)))))
+    (let [left-name (:name (contacts/get-by-id from))
+          message-text (str (or left-name from) " " (i18n/label :t/left))]
+      (-> (system-message message-id timestamp message-text)
+          (assoc :chat-id chat-id)
+          (messages/save)))))
 
 (re-frame/reg-fx
   ::participant-invited-to-group-message
@@ -187,12 +188,12 @@
                          (i18n/label :t/You)
                          (:name (contacts/get-by-id identity)))]
       (re-frame/dispatch
-        [:received-message
-         {:from         "system"
-          :group-id     chat-id
-          :timestamp    timestamp
-          :message-id   message-id
-          :content      (str (or inviter-name from) " " (i18n/label :t/invited) " " (or invitee-name identity))
+        [:chat-received-message/add
+         {:from "system"
+          :group-id chat-id
+          :timestamp timestamp
+          :message-id message-id
+          :content (str (or inviter-name from) " " (i18n/label :t/invited) " " (or invitee-name identity))
           :content-type constants/text-content-type}]))))
 
 (re-frame/reg-fx
@@ -201,16 +202,16 @@
     (let [message-id' (or ack-of-message message-id)]
       (when-let [{:keys [message-status] :as message} (messages/get-by-id message-id')]
         (when-not (= (keyword message-status) :seen)
-          (let [group?   (boolean group-id)
+          (let [group? (boolean group-id)
                 message' (-> (if (and group? (not= status :sent))
                                (update-in message
                                           [:user-statuses from]
                                           (fn [{old-status :status}]
-                                            {:id               (random/id)
+                                            {:id (random/id)
                                              :whisper-identity from
-                                             :status           (if (= (keyword old-status) :seen)
-                                                                 old-status
-                                                                 status)}))
+                                             :status (if (= (keyword old-status) :seen)
+                                                       old-status
+                                                       status)}))
                                (assoc message :message-status status))
                              ;; we need to dissoc preview because it has been saved before
                              (dissoc :preview))]
@@ -227,7 +228,7 @@
     (pending-messages/save pending-message)
     (when (#{:message :group-message} type)
       (messages/update-message {:message-id id
-                                :delivery-status    :pending}))))
+                                :delivery-status :pending}))))
 
 (re-frame/reg-fx
   ::status-init-jail
@@ -326,7 +327,7 @@
               route-event (case type
                             (:message
                              :group-message
-                             :public-group-message) [:received-message (transform-protocol-message message)] 
+                             :public-group-message) [:chat-received-message/add (transform-protocol-message message)]
                             :ack                    (if (#{:message :group-message} (:type payload))
                                                       [:update-message-status message :delivered]
                                                       [:pending-message-remove message])
@@ -357,7 +358,7 @@
             (when route-event {:dispatch route-event})))))))
 
 (defn update-message-status [db {:keys [message-id ack-of-message group-id from status]}]
-  (let [message-id'          (or ack-of-message message-id) 
+  (let [message-id'          (or ack-of-message message-id)
         update-group-status? (and group-id (not= status :sent))
         message-path         [:chats (or group-id from) :messages message-id']
         current-status       (if update-group-status?
