@@ -158,6 +158,13 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     if([devCluster isEqualToString:@"1"]){
         dev = 1;
     }
+
+    // TODO(oskarth): Move this to Clojurescript side
+    // So you call (add-env "foo" "bar") where all other
+    // Then have a vector status-go vars which picks up vars from .env file in CI
+    char * res = AddEnv((char *) [@"FEATURE_SYNC_DELAY" UTF8String], (char *) [@"100" UTF8String]);
+
+    // Don't get diff format
     char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId, dev);
     NSString *config = [NSString stringWithUTF8String: configChars];
     configData = [config dataUsingEncoding:NSUTF8StringEncoding];
@@ -254,6 +261,18 @@ RCT_EXPORT_METHOD(notify:(NSString *)token
 #endif
 }
 
+////////////////////////////////////////////////////////////////////
+#pragma mark - AddEnv method
+//////////////////////////////////////////////////////////////////// addEnv
+RCT_EXPORT_METHOD(addEnv:(NSString *)key
+                  value:(NSString *)value
+                  callback:(RCTResponseSenderBlock)callback) {
+  char * result = AddEnv((char *) [key UTF8String], (char *) [value UTF8String]);
+  callback(@[[NSString stringWithUTF8String: result]]);
+#if DEBUG
+  NSLog(@"AddEnv() method called");
+#endif
+}
 
 //////////////////////////////////////////////////////////////////// recoverAccount
 RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase
