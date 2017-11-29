@@ -81,7 +81,7 @@
             transaction {:id         id
                          :from       from
                          :to         to
-                         :value      (money/bignumber value)
+                         :value      (money/bignumber (or value 0))
                          :data       data
                          :gas        (money/to-decimal gas)
                          :gas-price  (money/to-decimal gasPrice)
@@ -93,7 +93,7 @@
                         :from-chat? sending-from-chat?}]
         (if sending-from-chat?
           ;;SENDING FROM CHAT
-          {:db       (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completly reset sending state here
+          {:db       (assoc-in new-db [:wallet :send-transaction] sending-db) ; we need to completely reset sending state here
            :dispatch [:navigate-to-modal :wallet-send-transaction-modal]}
           ;;SEND SCREEN WAITING SIGNAL
           (let [{:keys [later? password]} (get-in db [:wallet :send-transaction])

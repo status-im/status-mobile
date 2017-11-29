@@ -22,23 +22,20 @@
 ;; TODO(oskarth): spec for balance as BigNumber
 ;; TODO(oskarth): Spec for prices as as: {:from ETH, :to USD, :price 290.11, :last-day 304.17}
 
-(defn- empty-amount? [amount]
-  (or (nil? amount) (= amount "") (= amount "0") (re-matches #"0[,.]0*$" amount)))
-
 (defn- too-precise-amount? [amount]
   (let [amount-splited (string/split amount #"[.]")]
     (and (= (count amount-splited) 2) (> (count (last amount-splited)) 18))))
 
 (defn parse-amount [amount]
-  (when-not (empty-amount? amount)
+  (when-not (empty? amount)
     (let [normalized-amount (money/normalize amount)
           value (money/bignumber normalized-amount)]
       (cond
         (not (money/valid? value))
-        {:error (i18n/label :t/validation-amount-invalid-number)}
+        {:error (i18n/label :t/validation-amount-invalid-number) :value value}
 
         (too-precise-amount? normalized-amount)
-        {:error (i18n/label :t/validation-amount-is-too-precise)}
+        {:error (i18n/label :t/validation-amount-is-too-precise) :value value}
 
         :else
         {:value value}))))
