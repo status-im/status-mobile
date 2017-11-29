@@ -163,8 +163,7 @@
                   :chat/command-hash-valid?
                   :chat/public-group-topic
                   :chat/confirmation-code-sms-listener
-                  :chat/messages
-                  :chat/handler-data
+                  :chat/messages 
                   :chat/loaded-chats 
                   :chat/raw-unviewed-messages
                   :chat/bot-db
