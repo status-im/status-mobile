@@ -162,7 +162,8 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     // TODO(oskarth): Move this to Clojurescript side
     // So you call (add-env "foo" "bar") where all other
     // Then have a vector status-go vars which picks up vars from .env file in CI
-    char * res = AddEnv((char *) [@"FEATURE_SYNC_DELAY" UTF8String], (char *) [@"100" UTF8String]);
+    // TODO(oskarth): Connect this all the way to env, right now hardcoded
+    char * res = AddEnv((char *) [@"FEATURE_SYNC_DELAY" UTF8String], (char *) [@"1000" UTF8String]);
 
     // Don't get diff format
     char *configChars = GenerateConfig((char *)[networkDir UTF8String], networkId, dev);
