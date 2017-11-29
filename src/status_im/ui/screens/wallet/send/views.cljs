@@ -126,7 +126,7 @@
                                 (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
              :input-options {:auto-focus     true
                              :on-focus       (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
-                             :default-value  (str (money/wei->ether amount))
+                             :default-value  (str (money/to-fixed (money/wei->ether amount)))
                              :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount %])}}]
            [react/view wallet.styles/choose-currency-container
             [components/choose-currency wallet.styles/choose-currency]]]]]
