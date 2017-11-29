@@ -66,7 +66,8 @@
   :<- [:balance]
   (fn [[{:keys [amount to] :as transaction} balance]]
     (assoc transaction :sufficient-funds? (or (nil? amount)
-                                              (money/sufficient-funds? amount balance)))))
+                                              ;; TODO(jeluard) Modify to consider tokens
+                                              (money/sufficient-funds? amount (get balance :ETH))))))
 
 (re-frame/reg-sub :wallet.send/unsigned-transaction
   :<- [::unsigned-transaction]
@@ -75,7 +76,8 @@
   (fn [[{:keys [value to] :as transaction} contacts balance]]
     (when transaction
       (let [contact           (contacts (utils.hex/normalize-hex to))
-            sufficient-funds? (money/sufficient-funds? value balance)]
+            ;; TODO(jeluard) Modify to consider tokens
+            sufficient-funds? (money/sufficient-funds? value (get balance :ETH))]
         (cond-> (assoc transaction
                        :amount value
                        :sufficient-funds? sufficient-funds?)
