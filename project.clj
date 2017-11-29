@@ -55,6 +55,7 @@
                                                  :output-to     "target/test/test.js"
                                                  :output-dir    "target/test"
                                                  :optimizations :none
+                                                 :preamble      ["js/hook-require.js"]
                                                  :target        :nodejs}}
                                  {:id           "protocol"
                                   :source-paths ["src" "test/cljs"]
