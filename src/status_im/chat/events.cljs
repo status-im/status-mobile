@@ -6,8 +6,7 @@
             [status-im.chat.models :as model]
             [status-im.chat.models.unviewed-messages :as unviewed-messages-model]
             [status-im.chat.sign-up :as sign-up]
-            [status-im.chat.constants :as chat-const]
-            [status-im.data-store.handler-data :as handler-data]
+            [status-im.chat.constants :as chat-const] 
             [status-im.data-store.messages :as msg-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.chats :as chats-store]
@@ -202,8 +201,7 @@
                                                 :requests (get chat->message-id->request chat-id))]))
                          (into {}))]
           (-> new-db
-              (assoc-in [:message-data :preview] message-previews)
-              (assoc :handler-data (handler-data/get-all))
+              (assoc-in [:message-data :preview] message-previews) 
               (assoc :chats chats)
               init-console-chat
               (update :dispatch-n conj event)))))))
