@@ -85,7 +85,7 @@ node ('macos1') {
     //         sh ('echo ARTIFACT iOS: ' + ipaUrl)
 
     //     }
-    }
+    // }
 
     stage('Slack Notification') {
             def c = (testPassed ? 'good' : 'warning' )
