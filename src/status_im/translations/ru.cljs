@@ -54,6 +54,7 @@
    :sync-synced                           "Синхронизируется"
 
    ;;messages
+   :status-sending                        "Отправляется..."
    :status-pending                        "В ожидании"
    :status-sent                           "Отправлено"
    :status-seen-by-everyone               "Просмотрено всеми"
@@ -199,7 +200,7 @@
    :location                              "Местоположение"
    :open-map                              "Открыть Карту"
    :sharing-copy-to-clipboard-address     "Скопировать адрес"
-   :sharing-copy-to-clipboard-coordinates "Копировать координаты"
+   :sharing-copy-to-clipboard-coordinates "Скопировать координаты"
 
    ;;new-group
    :new-group                             "Новая группа"
@@ -327,7 +328,7 @@
    :transaction-moved-title               "Транзакция перемещена"
    :sign-later-title                      "Подписать транзакцию позже?"
    :sign-later-text                       "Откройте историю транзакций, чтобы подписать эту транзакцию"
-   :not-applicable                        "Не применимо для неподписанных транзакций"
+   :not-applicable                        "Неприменимо для неподписанных транзакций"
 
    ;; Wallet Send
    :wallet-choose-recipient               "Выберите Получателя"
