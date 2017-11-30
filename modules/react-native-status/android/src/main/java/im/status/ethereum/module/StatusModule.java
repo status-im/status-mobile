@@ -402,7 +402,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void addEnv(final String key, final String value, final Callback callback) {
-        Log.d(TAG, "addEnv: " + key + ": " value);
+        Log.d(TAG, "addEnv: " + key + ": " + value);
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
