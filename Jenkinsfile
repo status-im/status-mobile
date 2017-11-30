@@ -11,6 +11,10 @@ node ('macos1') {
 
   try {
 
+    stage('Slack Integration test') {
+      slackSend color: 'good', message: 'Hello, Jenkins. I've been expecting you.'
+    }
+
     stage('Git & Dependencies') {
       slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
       git([url: 'https://github.com/status-im/status-react.git', branch: BRANCH_NAME])
