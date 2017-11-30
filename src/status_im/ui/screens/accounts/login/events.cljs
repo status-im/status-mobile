@@ -1,15 +1,13 @@
 (ns status-im.ui.screens.accounts.login.events
-  (:require
-    status-im.ui.screens.accounts.login.navigation
-   
-    [re-frame.core :refer [dispatch reg-fx]]
-    [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
-    [taoensso.timbre :as log]
-    [status-im.chat.sign-up :as sign-up]
-    [status-im.utils.types :refer [json->clj]]
-    [status-im.data-store.core :as data-store]
-    [status-im.native-module.core :as status]
-    [status-im.constants :refer [console-chat-id]]))
+  (:require status-im.ui.screens.accounts.login.navigation
+            [re-frame.core :refer [dispatch reg-fx]]
+            [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
+            [taoensso.timbre :as log]
+            [status-im.chat.sign-up :as sign-up]
+            [status-im.utils.types :refer [json->clj]]
+            [status-im.data-store.core :as data-store]
+            [status-im.native-module.core :as status]
+            [status-im.constants :refer [console-chat-id]]))
 
 ;;;; FX
 
@@ -97,15 +95,9 @@
                         wrap-with-stop-node-fx)]
       (wrap-fn db' address password))))
 
-(defn is-new-account?
-  "checks if the account is in the accounts in the db"
-  [{:accounts/keys [accounts]} address]
-  (let [present? (set (keys accounts))]
-    (not (present? address))))
-
 (register-handler-fx
   :login-handler
-  (fn [{db :db} [_ login-result address]]
+  (fn [{{:accounts/keys [account-creation?] :as db} :db} [_ login-result address]]
     (let [data    (json->clj login-result)
           error   (:error data)
           success (zero? (count error))
@@ -114,10 +106,9 @@
       (merge
        {:db (if success db' (assoc-in db' [:accounts/login :error] error))}
        (when success
-         (let [new-account? (is-new-account? db address)]
-           (log/debug "Logged in" (when new-account? " new account") ":" address)
-           {::clear-web-data nil
-            ::change-account [address new-account?]}))))))
+         (log/debug "Logged in" (when account-creation? " new account") ":" address)
+         {::clear-web-data nil
+          ::change-account [address account-creation?]})))))
 
 (register-handler-fx
   :change-account-handler
