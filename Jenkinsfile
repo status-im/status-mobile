@@ -14,9 +14,10 @@ node ('macos1') {
     stage('Slack Integration test') {
       slackSend color: 'good', message: 'Hello, Jenkins. I\'ve been expecting you.'
 
-      withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-          slackSend color: 'good', message: 'Feeling frisky with credentials ' + token
-      }
+      // Confirmed token is in scope:
+      // withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+      //     slackSend color: 'good', message: 'Feeling frisky with credentials ' + token
+      // }
     }
 
     stage('Git & Dependencies') {
@@ -70,27 +71,27 @@ node ('macos1') {
         // }
 
     // iOS
-    stage('Build (iOS)') {
-          sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
-          sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
-    }
-    stage('Deploy (iOS)') {
-        withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
-            def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
-            sh 'sleep 10'
-            def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
-            ipaUrl = 'https://i.diawi.com/' + hash
+    // stage('Build (iOS)') {
+    //       sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
+    //       sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
+    // }
+    // stage('Deploy (iOS)') {
+    //     withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+    //         def job = sh(returnStdout: true, script: 'curl https://upload.diawi.com/ -F token='+token+' -F file=@status/StatusIm.ipa -F find_by_udid=0 -F wall_of_apps=0 | jq -r ".job"').trim()
+    //         sh 'sleep 10'
+    //         def hash = sh(returnStdout: true, script: "curl -vvv 'https://upload.diawi.com/status?token="+token+"&job="+job+"'|jq -r '.hash'").trim()
+    //         ipaUrl = 'https://i.diawi.com/' + hash
 
-            sh ('echo ARTIFACT iOS: ' + ipaUrl)
+    //         sh ('echo ARTIFACT iOS: ' + ipaUrl)
 
-        }
+    //     }
     }
 
     stage('Slack Notification') {
             def c = (testPassed ? 'good' : 'warning' )
             slackSend color: c, message: 'Branch: ' + BRANCH_NAME +
-            '\nAndroid: ' + apkUrl +
-            '\niOS: ' + ipaUrl
+            '\nAndroid: ' + apkUrl // +
+//            '\niOS: ' + ipaUrl
     }
 
   } catch (e) {
