@@ -45,7 +45,7 @@
     "re-natal": "^0.3.7",
     "react": "^16.0.0-alpha.8",
     "react-dom": "16.0.0-alpha.8",
-    "react-native": "git+https://github.com/MaxRis/react-native-desktop#feature/run-status-im",
+    "react-native": "git+https://github.com/status-im/react-native-desktop#feature/run-status-im",
     "react-native-action-button": "^2.0.13",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-autolink": "^0.10.0",
