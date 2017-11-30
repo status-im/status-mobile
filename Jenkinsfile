@@ -13,6 +13,10 @@ node ('macos1') {
 
     stage('Slack Integration test') {
       slackSend color: 'good', message: 'Hello, Jenkins. I\'ve been expecting you.'
+
+      withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+          slackSend color: 'good', message: 'Feeling frisky with credentials ' + token
+      }
     }
 
     stage('Git & Dependencies') {
