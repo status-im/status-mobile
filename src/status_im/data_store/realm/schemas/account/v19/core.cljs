@@ -73,6 +73,12 @@
    ["phone"] {:content-command-ref ["console" :response 50 "phone"]}
    ["confirmation-code"] {:content-command-ref ["console" :response 50 "confirmation-code"]}})
 
+(def transactor-requests->new-props
+  {;; former transactor-personal request
+   ["send" 1] {:content-command-ref ["transactor" :response 83 "send"]}
+   ;; former transactor-group request
+   ["send" 2] {:content-command-ref ["transactor" :response 85 "send"]}})
+
 (defn update-commands [selector mapping new-realm content-type]
   (some-> new-realm
           (.objects "message")
@@ -89,4 +95,5 @@
   (remove-contact! new-realm "transactor-personal")
   (remove-contact! new-realm "transactor-group")
   (update-commands (juxt :bot :command) owner-command->new-props new-realm "command")
-  (update-commands (juxt :command) console-requests->new-props new-realm "command-request"))
+  (update-commands (juxt :command) console-requests->new-props new-realm "command-request")
+  (update-commands (juxt :command (comp count :prefill)) transactor-requests->new-props new-realm "command-request"))
