@@ -12,7 +12,7 @@ node ('macos1') {
   try {
 
     stage('Slack Integration test') {
-      slackSend color: 'good', message: 'Hello, Jenkins. I've been expecting you.'
+      slackSend color: 'good', message: 'Hello, Jenkins. I\'ve been expecting you.'
     }
 
     stage('Git & Dependencies') {
