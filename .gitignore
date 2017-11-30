@@ -36,6 +36,7 @@ local.properties
 #
 node_modules/
 npm-debug.log
+.nvmrc
 
 # BUCK
 buck-out/
@@ -80,6 +81,7 @@ status-dev-cli
 #ios
 ios/Pods
 ios/StatusIm.xcworkspace
+.ruby-version
 
 #python
 *.pyc
