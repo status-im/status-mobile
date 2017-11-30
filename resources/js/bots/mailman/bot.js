@@ -1,5 +1,5 @@
 function locationsSuggestions (params) {
-    var result = {title: "Send location"};
+    var result = {title: I18n.t("location_suggestions_title")};
     var seqArg = params["seq-arg"] ? params["seq-arg"] : "";
 
     if (seqArg === "Dropped pin")

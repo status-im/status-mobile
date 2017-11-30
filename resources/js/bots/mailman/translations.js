@@ -7,6 +7,7 @@ I18n.translations = {
     },
     ru: {
         location_title: 'Местоположение',
+        location_suggestions_title: 'Отправить местоположение',
         location_description: 'Поделитесь своим местоположением',
         location_address: 'Адрес'
     },
