@@ -180,6 +180,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
             // TODO(oskarth): Same as RCTStatus.m, call this appropriately
             //AddEnv((char *) [@"FEATURE_SYNC_DELAY" UTF8String], (char *) [@"1000" UTF8String]);
+            // TODO Add callback, part of sig
             addEnv("FEATURE_SYNC_DELAY", "1000");
 
             try {
@@ -401,10 +402,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void addEnv(final String key, final String value, final Callback callback) {
+    //public void addEnv(final String key, final String value, final Callback callback) {
+    public void addEnv(final String key, final String value) {
         Log.d(TAG, "addEnv: " + key + ": " + value);
         if (!checkAvailability()) {
-            callback.invoke(false);
+            //callback.invoke(false);
             return;
         }
 
@@ -413,7 +415,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
                 public void run() {
                     String res = Statusgo.AddEnv(key, value);
 
-                    callback.invoke(res);
+                    //callback.invoke(res);
                 }
             };
 
