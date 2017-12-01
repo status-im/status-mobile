@@ -1,7 +1,8 @@
 env.LANG="en_US.UTF-8"
 env.LANGUAGE="en_US.UTF-8"
 env.LC_ALL="en_US.UTF-8"
-node ('macos1') {
+
+node ('linux1') {
   def apkUrl = ''
   def ipaUrl = ''
   def testPassed = true
@@ -10,6 +11,15 @@ node ('macos1') {
    load "$HOME/env.groovy"
 
   try {
+
+    stage('Slack Integration test') {
+      slackSend color: 'good', message: 'Hello, Jenkins. I\'ve been expecting you (linux1).'
+
+      // Confirmed token is in scope:
+      // withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+      //     slackSend color: 'good', message: 'Feeling frisky with credentials ' + token
+      // }
+    }
 
     stage('Git & Dependencies') {
       slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
@@ -60,7 +70,62 @@ node ('macos1') {
         //   testPassed = false
         // }
 
-    // iOS
+    stage('Slack Notification') {
+            def c = (testPassed ? 'good' : 'warning' )
+            slackSend color: c, message: 'Branch: ' + BRANCH_NAME +
+            '\nAndroid: ' + apkUrl
+    }
+
+  } catch (e) {
+    slackSend color: 'bad', message: BRANCH_NAME + ' failed to build. ' + env.BUILD_URL
+    throw e
+  }
+}
+
+node ('macos1') {
+  def apkUrl = ''
+  def ipaUrl = ''
+  def testPassed = true
+  def branch;
+
+   load "$HOME/env.groovy"
+
+  try {
+
+    stage('Slack Integration test') {
+      slackSend color: 'good', message: 'Hello, Jenkins. I\'ve been expecting you (macos1).'
+
+      // Confirmed token is in scope:
+      // withCredentials([string(credentialsId: 'diawi-token', variable: 'token')]) {
+      //     slackSend color: 'good', message: 'Feeling frisky with credentials ' + token
+      // }
+    }
+
+    stage('Git & Dependencies') {
+      slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
+      git([url: 'https://github.com/status-im/status-react.git', branch: BRANCH_NAME])
+      // Checkout master because used for iOS Plist version information
+      sh 'git checkout -- .'
+      sh 'git checkout master'
+      sh 'git checkout ' + BRANCH_NAME
+      sh 'rm -rf node_modules'
+      sh 'cp .env.jenkins .env'
+      sh 'lein deps && npm install && ./re-natal deps'
+      sh 'sed -i "" "s/301000/1201000/g" node_modules/react-native/packager/src/JSTransformer/index.js'
+      sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
+      sh 'cd ios && pod install && cd ..'
+    }
+
+    stage('Tests') {
+      sh 'lein test-cljs'
+    }
+
+    stage('Build') {
+      sh 'lein prod-build'
+    }
+
+
+    iOS
     stage('Build (iOS)') {
           sh 'export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/StatusIm.xcworkspace -scheme StatusIm -configuration release -archivePath status clean archive'
           sh 'xcodebuild -exportArchive -exportPath status -archivePath status.xcarchive -exportOptionsPlist ~/archive.plist'
@@ -80,7 +145,6 @@ node ('macos1') {
     stage('Slack Notification') {
             def c = (testPassed ? 'good' : 'warning' )
             slackSend color: c, message: 'Branch: ' + BRANCH_NAME +
-            '\nAndroid: ' + apkUrl +
             '\niOS: ' + ipaUrl
     }
 
@@ -89,3 +153,4 @@ node ('macos1') {
     throw e
   }
 }
+
