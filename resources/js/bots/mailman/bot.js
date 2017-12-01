@@ -90,7 +90,7 @@ status.command({
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 I18n.t('location_title') + ": " + params.address
             )

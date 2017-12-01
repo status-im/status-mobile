@@ -524,7 +524,7 @@ function previewSend(showRecipient, params, context) {
 
 function shortPreviewSend(params, context) {
     return {
-        markup: status.components.text(
+        markup: status.components.chatPreviewText(
             {},
             I18n.t('send_title') + ": "
             + status.localizeNumber(params.amount, context.delimiter, context.separator)
@@ -669,7 +669,7 @@ function previewRequest(showRecipient, params, context) {
 
 function shortPreviewRequest(params, context) {
     return {
-        markup: status.components.text(
+        markup: status.components.chatPreviewText(
             {},
             I18n.t('request_requesting') + " "
             + status.localizeNumber(params.amount, context.delimiter, context.separator)
