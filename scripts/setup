@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
 ########################################################################
-# This install script will setup your development dependencies on OS X.
-# Windows/Linux support is welcome!
+# This install script will setup your development dependencies on OS X
+# or Ubuntu. Ubuntu 16.04 is the only tested version.
 #
-# Usage: scripts/setup-osx.sh
+# Usage: scripts/setup
 ########################################################################
 
 _current_dir=$(cd "${BASH_SOURCE%/*}" && pwd)
-source "$_current_dir/lib/setup-osx/path-support.sh"
+source "$_current_dir/lib/setup/path-support.sh"
 
 source_lib "output.sh"
 source_lib "packages.sh"
 source_lib "platform.sh"
 source_lib "installers.sh"
 
-exit_unless_mac
+exit_unless_os_supported
 
 load_nvm_if_available
 load_rvm_if_available
@@ -23,19 +23,14 @@ load_rvm_if_available
 ####
 setup_header "Installing requirements..."
 
-install_homebrew_if_needed
-brew_tap "caskroom/cask"
-
-brew_cask_install "caskroom/versions/java8"
-brew_install leiningen
-
+install_and_setup_package_manager
+install_java8
+install_leiningen
 install_node
-brew_install watchman
+install_watchman
 install_react_native_cli
-
-brew_cask_install android-sdk
-brew_install maven
-
+install_android_sdk
+install_maven
 install_cocoapods
 
 ####
@@ -43,12 +38,19 @@ echo && setup_header "Installing dependencies..."
 
 dependency_setup lein deps
 dependency_setup npm install
+
+mapbox_path="$(repo_path)/node_modules/react-native-mapbox-gl/ios/Mapbox.framework"
+dependency_setup "ln -sf '$mapbox_path' '$(repo_path)/ios'"
+
+dependency_setup \
+  "ln -sf '$(repo_path)/node_modules/re-natal/index.js' '$(repo_path)/re-natal'"
+
 dependency_setup ./re-natal deps
 dependency_setup ./re-natal enable-source-maps
 
 dependency_setup \
   "mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack"
 
-dependency_setup "cd ios && pod install && cd .."
+using_cocoapods && dependency_setup "cd ios && pod install && cd .."
 
 setup_complete
