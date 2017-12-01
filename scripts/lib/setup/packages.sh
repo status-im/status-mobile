@@ -13,26 +13,11 @@ function program_exists() {
 # Homebrew
 ########
 
-function install_homebrew_if_needed() {
-  ! is_macos && return 0
-
-  if test ! $(which brew); then
-    cecho "@b@blue[[+ Installing homebrew]]"
-
-    ruby -e "$(curl -fsSL \
-      https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-    brew update
-  else
-    already_installed "Homebrew"
-  fi
-}
-
 function brew_install() {
   local package=$1
 
   if ! is_macos; then
-    return 0
+    return 1
   fi
 
   if brew list "$package" > /dev/null 2>&1; then
@@ -46,7 +31,7 @@ function brew_cask_install() {
   local package=$1
 
   if ! is_macos; then
-    return 0
+    return 1
   fi
 
   if brew cask list | grep -q "$package"; then
@@ -60,11 +45,42 @@ function brew_tap() {
   local cask=$1
 
   if ! is_macos; then
-    return 0
+    return 1
   fi
 
   if ! brew tap | grep -q "$cask"; then
     brew tap "$cask"
+  fi
+}
+
+
+###############
+# Aptitude
+###############
+
+function apt_update() {
+  ! is_linux && return 1
+
+  sudo apt update
+}
+
+function apt_is_installed() {
+  ! is_linux && return 1
+
+  local package=$1
+
+  dpkg -s "$package" >/dev/null 2>&1
+}
+
+function apt_install() {
+  ! is_linux && return 1
+
+  local package=$1
+
+  if apt_is_installed "$package"; then
+    cecho "+ $package already installed... skipping."
+  else
+    sudo apt install -y "$package"
   fi
 }
 
