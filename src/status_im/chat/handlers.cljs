@@ -17,7 +17,11 @@
             [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
             status-im.chat.events 
             status-im.chat.handlers.send-message
-            status-im.chat.handlers.webview-bridge))
+            status-im.chat.handlers.webview-bridge
+            [cljs.spec.alpha :as s]
+            status-im.model
+            status-im.ui.screens.db
+            [clojure.test.check.generators :as gen]))
 
 (defn remove-chat
   [db [_ chat-id]]
@@ -94,6 +98,11 @@
                :identity current-public-key
                :keypair  keypair
                :callback #(dispatch [:incoming-message %1 %2])}))))))))
+
+(s/def ::update-message-overhead!-event (s/tuple (s/with-gen (s/spec #(= % :update-message-overhead!))
+                                                             #(gen/return :update-message-overhead!))
+                                                 :status-im.model/id
+                                                 :status-im.ui.screens.db/network-status))
 
 (register-handler
   :update-message-overhead!

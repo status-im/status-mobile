@@ -1,5 +1,7 @@
 (ns status-im.test.runner
   (:require [doo.runner :refer-macros [doo-tests]]
+            ; so that tests for test.check work, since they use `quick-check`
+            [clojure.test.check :as tc :include-macros true]
             [status-im.test.chat.events]
             [status-im.test.contacts.events]
             [status-im.test.accounts.events]
@@ -19,7 +21,8 @@
             [status-im.test.utils.gfycat.core]
             [status-im.test.utils.signing-phrase.core]
             [status-im.test.utils.transducers]
-            [status-im.test.utils.async]))
+            [status-im.test.utils.async]
+            [status-im.test.events]))
 
 (enable-console-print!)
 
@@ -49,4 +52,5 @@
  'status-im.test.utils.random
  'status-im.test.utils.gfycat.core
  'status-im.test.utils.signing-phrase.core
- 'status-im.test.utils.transducers)
+ 'status-im.test.utils.transducers
+ 'status-im.test.events)
