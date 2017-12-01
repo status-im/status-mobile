@@ -28,3 +28,6 @@
       string/lower-case
       keyword))
 
+;; NOTE(oskarth): status-go perf test delay, not used in status-react:
+;; FEATURE_SYNC_DELAY=1000 (in microseconds)
+

@@ -170,12 +170,19 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         try {
             JSONObject customConfig = new JSONObject(defaultConfig);
             JSONObject jsonConfig = new JSONObject(config);
+            // TODO(oskarth): Check if this logs properly
             String gethLogFileName = "geth.log";
             jsonConfig.put("LogEnabled", false);
             jsonConfig.put("LogFile", gethLogFileName);
             jsonConfig.put("LogLevel", "DEBUG");
             jsonConfig.put("DataDir", root + customConfig.get("DataDir"));
             jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
+
+            // TODO(oskarth): Same as RCTStatus.m, call this appropriately
+            //AddEnv((char *) [@"FEATURE_SYNC_DELAY" UTF8String], (char *) [@"1000" UTF8String]);
+            // TODO Add callback, part of sig
+            addEnv("FEATURE_SYNC_DELAY", "1000");
+
             try {
                 Object upstreamConfig = customConfig.get("UpstreamConfig");
                 if (upstreamConfig != null) {
@@ -393,6 +400,28 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         thread.start();
     }
+
+    @ReactMethod
+    //public void addEnv(final String key, final String value, final Callback callback) {
+    public void addEnv(final String key, final String value) {
+        Log.d(TAG, "addEnv: " + key + ": " + value);
+        if (!checkAvailability()) {
+            //callback.invoke(false);
+            return;
+        }
+
+        Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    String res = Statusgo.AddEnv(key, value);
+
+                    //callback.invoke(res);
+                }
+            };
+
+        thread.start();
+    }
+
 
     @ReactMethod
     public void recoverAccount(final String passphrase, final String password, final Callback callback) {
