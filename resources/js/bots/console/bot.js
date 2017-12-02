@@ -360,7 +360,7 @@ function jsHandler(params, context) {
     };
     messages = [];
     try {
-        result["text-message"] = JSON.stringify(eval(params.code));
+        result["text-message"] = String(JSON.stringify(eval(params.code)));
         localStorage.setItem("previousMessage", params.code);
     } catch (e) {
         result.err = e;
