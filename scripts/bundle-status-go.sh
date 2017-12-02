@@ -28,7 +28,7 @@ cd ..
 # Instead we are going to manually overwrite it.
 
 # For Xcode to pick up the new version, remove the whole framework first:
-rm -r status-react/modules/react-native-status/ios/RCTStatus/Statusgo.framework/
+rm -r status-react/modules/react-native-status/ios/RCTStatus/Statusgo.framework/ || true
 
 # Then copy over framework:
 cp -R status-go/build/bin/statusgo-ios-9.3-framework/Statusgo.framework status-react/modules/react-native-status/ios/RCTStatus/Statusgo.framework
