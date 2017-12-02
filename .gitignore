@@ -83,3 +83,10 @@ ios/StatusIm.xcworkspace
 #python
 *.pyc
 *.cache
+
+#qt
+*.qmlc
+
+#npm
+package-lock.json
+run-ios.sh
