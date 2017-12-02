@@ -102,6 +102,18 @@ RCT_EXPORT_METHOD(callJail:(NSString *)chatId
     });
 }
 
+//////////////////////////////////////////////////////////////////// executeJS
+RCT_EXPORT_METHOD(executeJS:(NSString *)chatId
+                  js:(NSString *)js
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"ExecuteJS() method called");
+#endif
+    char * result = ExecuteJS((char *) [chatId UTF8String], (char *) [js UTF8String]);
+    callback(@[[NSString stringWithUTF8String: result]]);
+}
+
+
 ////////////////////////////////////////////////////////////////////
 #pragma mark - startNode
 //////////////////////////////////////////////////////////////////// startNode

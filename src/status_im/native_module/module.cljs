@@ -11,6 +11,7 @@
   (-complete-transactions [this hashes password callback])
   (-discard-transaction [this id])
   (-parse-jail [this chat-id file callback])
+  (-execute-js [this bot-id js-code callback])
   (-call-jail [this params])
   (-call-function! [this params])
   (-set-soft-input-mode [this mode])

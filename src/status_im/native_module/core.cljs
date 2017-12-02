@@ -60,6 +60,10 @@
   (module-interface/-parse-jail rns-module chat-id file callback))
 
 
+(defn execute-js [chat-id js-code callback]
+  (module-interface/-execute-js rns-module chat-id js-code callback))
+
+
 (defn call-jail [params]
   (module-interface/-call-jail rns-module params))
 

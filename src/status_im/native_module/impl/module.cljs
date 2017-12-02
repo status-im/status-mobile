@@ -120,9 +120,22 @@
   (when status
     (call-module #(.discardTransaction status id))))
 
+(defn execute-js [bot-id js-code callback]
+  (when status
+    (call-module #(.executeJS status bot-id js-code callback))))
+
+(defn- jail-get-catalog [bot-id callback]
+  (execute-js bot-id "getCatalogJSON()" callback))
+
 (defn parse-jail [bot-id file callback]
   (when status
-    (call-module #(.parseJail status bot-id file callback))))
+    (call-module #(.parseJail status bot-id file (fn [jail-response]
+        (if (contains? (types/json->clj jail-response) :error)
+            ;; On error - shortcut and return error response immediately
+            (callback jail-response)
+            ;; Otherwise keep backward compatibility of the interface and return `jail-get-catalog` results here
+            (jail-get-catalog bot-id callback)))))))
+
 
 (defn execute-call [{:keys [jail-id path params callback]}]
   (when status
