@@ -26,12 +26,12 @@
   [{:text (i18n/label :t/edit) :value #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] true])}])
 
 (defn android-toolbar-actions []
-  [(act/search #(re-frame/dispatch [:set-in [:toolbar-search :show] true]))
+  [(act/search #(re-frame/dispatch [:set-in [:toolbar-search :show] :chat-list]))
    (act/opts android-toolbar-popup-options)])
 
 (def ios-toolbar-popup-options
   [{:text (i18n/label :t/edit-chats) :value #(re-frame/dispatch [:set-in [:chat-list-ui-props :edit?] true])}
-   {:text (i18n/label :t/search-chats) :value #(re-frame/dispatch [:set-in [:toolbar-search :show] true])}])
+   {:text (i18n/label :t/search-chats) :value #(re-frame/dispatch [:set-in [:toolbar-search :show] :chat-list])}])
 
 (defn ios-toolbar-actions []
   [(act/opts ios-toolbar-popup-options)
@@ -77,13 +77,13 @@
 (defview chats-list []
   (letsubs [chats        [:filtered-chats]
             edit?        [:get-in [:chat-list-ui-props :edit?]]
-            search?      [:get-in [:toolbar-search :show]]
+            show-search  [:get-in [:toolbar-search :show]]
             tabs-hidden? [:tabs-hidden?]]
     [react/view st/chats-container
      (cond
-       edit?   [toolbar-edit]
-       search? [toolbar-search]
-       :else   [toolbar-view])
+       edit?                      [toolbar-edit]
+       (= show-search :chat-list) [toolbar-search]
+       :else                      [toolbar-view])
      [react/list-view {:dataSource      (to-datasource chats)
                        :renderRow       (fn [[id :as row] _ _]
                                           (react/list-item ^{:key id} [chat-list-item row edit?]))
@@ -95,7 +95,7 @@
                        :renderSeparator renderers/list-separator-renderer
                        :style           st/list-container}]
      (when (and (not edit?)
-                (not search?)
+                (not= show-search :chat-list) 
                 (get-in platform-specific [:chats :action-button?]))
        [chats-action-button])
      [offline-view]]))

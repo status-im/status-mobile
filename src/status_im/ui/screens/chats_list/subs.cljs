@@ -11,8 +11,9 @@
 (reg-sub :filtered-chats
   :<- [:get :chats]
   :<- [:get-in [:toolbar-search :text]]
-  (fn [[chats search-text]]
-    (let [unordered-chats (if search-text
+  :<- [:get-in [:toolbar-search :show]]
+  (fn [[chats search-text show-search]]
+    (let [unordered-chats (if (and (= show-search :chat-list) search-text)
                             (filter #(search-filter search-text (second %))
                                     chats)
                             chats)]
