@@ -9,6 +9,7 @@
 
 (def android? (= platform "android"))
 (def ios? (= platform "ios"))
+(def desktop? (= platform "desktop"))
 
 (def platform-specific
   (cond

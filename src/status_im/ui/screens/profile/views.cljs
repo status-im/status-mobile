@@ -210,8 +210,7 @@
      [profile-status]]
     [form-spacer]
     [react/view styles/profile-badge
-     [my-profile-icon {:account {:photo-path (js/require "./QR.svg") :name "QR icon"}
-                       :edit?   false}]
+     (vi/icon :icons/qr)
      [action-button {:label "Show QR"}]]
     [form-spacer]
     [react/view styles/profile-info-container
