@@ -15,10 +15,10 @@
 (def adjust-pan 32)
 
 #_(defn- wrap-and-print-callback [name callback]
-  (fn [& args]
-    (println :callback name (str args))
-    (log/debug :callback name args)
-    (apply callback args)))
+   (fn [& args]
+     (println :callback name (str args))
+     (log/debug :callback name args)
+     (apply callback args)))
 
 (defn init-jail []
   (module-interface/-init-jail rns-module))
@@ -75,8 +75,8 @@
 (defn clear-web-data []
   (module-interface/-clear-web-data rns-module))
 
-(defn call-web3 [host payload callback]
-  (module-interface/-call-web3 rns-module host payload callback))
+(defn call-web3 [payload callback]
+  (module-interface/-call-web3 rns-module payload callback))
 
 (defn module-initialized! []
   (module-interface/-module-initialized! rns-module))

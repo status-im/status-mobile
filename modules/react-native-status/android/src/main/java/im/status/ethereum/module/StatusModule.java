@@ -624,7 +624,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void sendWeb3Request(final String host, final String payload, final Callback callback) {
+    public void sendWeb3Request(final String payload, final Callback callback) {
         Thread thread = new Thread() {
             @Override
             public void run() {

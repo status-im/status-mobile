@@ -45,7 +45,7 @@
                                               "●●●●●●●●●●"]}}})
       :else (callback {:result nil})))
   (-call-function! [this params])
-  (-call-web3 [this host payload callback])
+  (-call-web3 [this payload callback])
 
   ;; other calls
   (-move-to-internal-storage [this callback]
