@@ -35,8 +35,8 @@
    result-box [:chat-ui-props :result-box]]
   (when url
     [webview-bridge
-     {:ref                                   #(dispatch [:set-webview-bridge %])
-      :on-bridge-message                     #(dispatch [:webview-bridge-message %])
+     {:ref                                   #(dispatch [:chat-webview-bridge/set-ref %])
+      :on-bridge-message                     #(dispatch [:chat-webview-bridge/process-message %])
       :source                                {:uri url}
       :render-error                          web-view-error
       :java-script-enabled                   true

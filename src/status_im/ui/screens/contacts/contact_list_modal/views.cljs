@@ -33,7 +33,7 @@
      :icon      :icons/address
      :icon-opts {:color :blue}
      :on-press  #(do
-                   (dispatch [:send-to-webview-bridge
+                   (dispatch [:chat-webview-bridge/send-to-bridge
                               {:event (name :webview-send-transaction)}])
                    (dispatch [:navigate-back]))}]
    [action-separator]
