@@ -127,22 +127,21 @@
   (re-frame/dispatch [:create-new-public-chat topic]))
 
 (defn render-public-chats-item [{:keys [name color topic] :as item}]
-  [react/touchable-highlight {:on-press #(navigate-to-public-chat topic)}]
-
-  [react/view styles/public-chats-item-container
-   [react/view styles/public-chats-icon-container
-    [react/view (styles/public-chats-icon color)
-     [react/text {:style styles/public-chats-icon-text}
-      (-> name first str)]]]
-   [react/view styles/public-chats-item-inner
-    [react/view styles/public-chats-item-name-container
-     [vector-icons/icon :icons/public-chat]
-     [react/text {:font  :medium
-                  :style styles/public-chats-item-name-text}
-      name]]
-    [react/view {}
-     [react/text {:style {:color :lightgray}}
-      (str "#" topic)]]]])
+  [react/touchable-highlight {:on-press #(navigate-to-public-chat topic)}
+   [react/view styles/public-chats-item-container
+    [react/view styles/public-chats-icon-container
+     [react/view (styles/public-chats-icon color)
+      [react/text {:style styles/public-chats-icon-text}
+       (-> name first str)]]]
+    [react/view styles/public-chats-item-inner
+     [react/view styles/public-chats-item-name-container
+      [vector-icons/icon :icons/public-chat]
+      [react/text {:font  :medium
+                   :style styles/public-chats-item-name-text}
+       name]]
+     [react/view {}
+      [react/text {:style {:color :lightgray}}
+       (str "#" topic)]]]]])
 
 (defn public-chats-teaser []
   [react/view styles/public-chats-container
