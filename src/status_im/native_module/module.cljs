@@ -15,7 +15,7 @@
   (-call-function! [this params])
   (-set-soft-input-mode [this mode])
   (-clear-web-data [this])
-  (-call-web3 [this host payload callback])
+  (-call-web3 [this payload callback])
   (-module-initialized! [this])
   (-should-move-to-internal-storage? [this callback])
   (-notify [this token callback])

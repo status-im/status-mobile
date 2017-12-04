@@ -205,9 +205,9 @@
     (call-module #(.clearCookies status))
     (call-module #(.clearStorageAPIs status))))
 
-(defn call-web3 [host payload callback]
+(defn call-web3 [payload callback]
   (when status
-    (call-module #(.sendWeb3Request status host payload callback))))
+    (call-module #(.sendWeb3Request status payload callback))))
 
 (defn close-application []
   (.closeApplication status))
@@ -237,8 +237,8 @@
     (call-jail params))
   (-call-function! [this params]
     (call-function! params))
-  (-call-web3 [this host payload callback]
-    (call-web3 host payload callback))
+  (-call-web3 [this payload callback]
+    (call-web3 payload callback))
   (-notify [this token callback]
     (notify token callback))
 
