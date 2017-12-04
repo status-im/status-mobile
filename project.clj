@@ -13,7 +13,7 @@
                  [com.cognitect/transit-cljs "0.8.243"]]
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.13"]
-            [lein-re-frisk "0.5.4"]]
+            [lein-re-frisk "0.5.5"]]
   :clean-targets ["target/" "index.ios.js" "index.android.js"]
   :aliases {"prod-build"       ^{:doc "Recompile code with prod profile."}
                                ["do" "clean"
@@ -23,8 +23,8 @@
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.11"]
-                                   [re-frisk-remote "0.5.2"]
-                                   [re-frisk-sidecar "0.5.3"]
+                                   [re-frisk-remote "0.5.3"]
+                                   [re-frisk-sidecar "0.5.4"]
                                    [com.cemerick/piggieback "0.2.2"]
                                    [hawk "0.2.11"]]
                     :source-paths ["src" "env/dev"]
