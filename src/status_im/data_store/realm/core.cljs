@@ -84,11 +84,33 @@
 (defn write [realm f]
   (.write realm f))
 
+
+(def transit-special-chars #{"~" "^" "`"})  
+(def transit-escape-char "~")
+
+(defn to-be-escaped?
+  "Check if element is a string that begins 
+   with a character recognized as special by Transit"
+  [e]
+  (and (string? e)
+       (contains? transit-special-chars (first e))))
+
+(defn prepare-for-transit 
+  "Following Transit documentation, escape leading special characters
+  in strings by prepending a ~. This prepares for subsequent 
+  fetching from Realm where Transit is used for JSON parsing" 
+  [message]
+  (let [walk-fn (fn [e]
+                  (cond->> e
+                           (to-be-escaped? e) 
+                           (str transit-escape-char)))]
+    (walk/postwalk walk-fn message)))
+
 (defn create
   ([realm schema-name obj]
    (create realm schema-name obj false))
   ([realm schema-name obj update?]
-   (.create realm (to-string schema-name) (clj->js obj) update?)))
+   (.create realm (to-string schema-name) (clj->js (prepare-for-transit obj)) update?)))
 
 (defn save
   ([realm schema-name obj]
