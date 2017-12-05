@@ -59,4 +59,5 @@
   (-should-move-to-internal-storage? [this callback]
     (impl/should-move-to-internal-storage? callback))
   (-notify [this token callback])
+  (-add-peer [this enode callback])
   (-close-application [this]))

@@ -87,5 +87,8 @@
 (defn notify [token callback]
   (module-interface/-notify rns-module token callback))
 
+(defn add-peer [enode callback]
+  (module-interface/-add-peer rns-module enode callback))
+
 (defn close-application []
   (module-interface/-close-application rns-module))

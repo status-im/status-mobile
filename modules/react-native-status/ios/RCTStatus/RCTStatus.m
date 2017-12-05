@@ -289,6 +289,15 @@ RCT_EXPORT_METHOD(notify:(NSString *)token
 #endif
 }
 
+//////////////////////////////////////////////////////////////////// addPeer
+RCT_EXPORT_METHOD(addPeer:(NSString *)enode
+                  callback:(RCTResponseSenderBlock)callback) {
+  char * result = AddPeer((char *) [enode UTF8String]);
+  callback(@[[NSString stringWithUTF8String: result]]);
+#if DEBUG
+  NSLog(@"AddPeer() method called");
+#endif
+}
 
 //////////////////////////////////////////////////////////////////// recoverAccount
 RCT_EXPORT_METHOD(recoverAccount:(NSString *)passphrase

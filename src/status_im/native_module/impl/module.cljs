@@ -108,6 +108,10 @@
   (when status
     (call-module #(.notify status token on-result))))
 
+(defn add-peer [enode on-result]
+  (when status
+    (call-module #(.addPeer status enode on-result))))
+
 (defn recover-account [passphrase password on-result]
   (when status
     (call-module #(.recoverAccount status passphrase password on-result))))
@@ -252,6 +256,8 @@
     (call-web3 payload callback))
   (-notify [this token callback]
     (notify token callback))
+  (-add-peer [this enode callback]
+    (add-peer enode callback))
 
   ;; other calls
   (-move-to-internal-storage [this callback]

@@ -404,6 +404,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void addPeer(final String enode, final Callback callback) {
+        Log.d(TAG, "addPeer");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    String res = Statusgo.Notify(enode);
+
+                    callback.invoke(res);
+                }
+            };
+
+        thread.start();
+    }
+
+
+    @ReactMethod
     public void recoverAccount(final String passphrase, final String password, final Callback callback) {
         Log.d(TAG, "recoverAccount");
         if (!checkAvailability()) {
