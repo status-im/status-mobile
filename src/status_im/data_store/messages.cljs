@@ -9,15 +9,12 @@
 (defn- command-type?
   [type]
   (contains?
-   #{constants/content-type-command constants/content-type-command-request
-     constants/content-type-wallet-request constants/content-type-wallet-command}
+   #{constants/content-type-command constants/content-type-command-request}
    type))
 
 (def default-values
   {:outgoing       false
    :to             nil
-   :same-author    false
-   :same-direction false
    :preview        nil})
 
 (defn exists? [message-id]
@@ -31,10 +28,6 @@
   (when-let [{:keys [content-type content] :as message} (get-by-id message-id)]
     (when (command-type? content-type)
       (reader/read-string content))))
-
-(defn get-count-by-chat-id
-  [chat-id]
-  (data-store/get-count-by-chat-id chat-id))
 
 (defn get-by-chat-id
   ([chat-id]
@@ -53,13 +46,6 @@
        (filter #(= (:content-type %) constants/content-type-log-message))
        (map #(select-keys % [:content :timestamp]))))
 
-(defn get-last-message
-  [chat-id]
-  (if-let [{:keys [content-type] :as message} (data-store/get-last-message chat-id)]
-    (if (command-type? content-type)
-      (update message :content reader/read-string)
-      message)))
-
 (defn get-last-outgoing
   [chat-id number-of-messages]
   (data-store/get-by-fields {:chat-id  chat-id
@@ -77,25 +63,19 @@
   []
   (data-store/get-unviewed))
 
-(defn get-previews
-  []
-  (->> (data-store/get-all-as-list)
-       (filter :preview)
-       (reduce (fn [acc {:keys [message-id preview]}]
-                 (assoc acc message-id (reader/read-string preview)))
-               {})))
-
 (defn- prepare-content [content]
-  (pr-str
-   (update content :params dissoc :password :password-confirmation)))
+  (if (string? content)
+    content
+    (pr-str
+     ;; TODO janherich: this is ugly and not systematic, define something like `:not-persisent`
+     ;; option for command params instead 
+     (update content :params dissoc :password :password-confirmation))))
 
 (defn save
   ;; todo remove chat-id parameter
   [chat-id {:keys [message-id content] :as message}]
   (when-not (data-store/exists? message-id)
-    (let [content' (if (string? content)
-                     content
-                     (prepare-content content))
+    (let [content' (prepare-content content)
           message' (merge default-values
                           message
                           {:chat-id   chat-id
@@ -106,7 +86,9 @@
 (defn update-message
   [{:keys [message-id] :as message}]
   (when (data-store/exists? message-id)
-    (let [message (utils/update-if-present message :user-statuses vals)]
+    (let [message  (-> message
+                       (utils/update-if-present :user-statuses vals)
+                       (utils/update-if-present :content prepare-content))]
       (data-store/save message))))
 
 (defn delete-by-chat-id [chat-id]

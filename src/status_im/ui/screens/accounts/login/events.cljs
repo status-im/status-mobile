@@ -28,13 +28,16 @@
 (reg-fx
   ::change-account
   (fn [[address new-account?]]
-    (js/setTimeout
-     (fn []
-       (data-store/change-account address new-account?
-                                  #(dispatch [:change-account-handler % address new-account?])))
-     ;; if we don't add delay when running app without status-go
-     ;; "null is not an object (evaluating 'realm.schema')" error appears
-     (if config/stub-status-go? 300 0))))
+    ;; if we don't add delay when running app without status-go
+    ;; "null is not an object (evaluating 'realm.schema')" error appears
+    (if config/stub-status-go?
+      (js/setTimeout 
+        (fn []
+          (data-store/change-account address new-account?
+                                     #(dispatch [:change-account-handler % address new-account?])))
+        300)
+      (data-store/change-account address new-account?
+                                 #(dispatch [:change-account-handler % address new-account?])))))
 
 ;;;; Handlers
 

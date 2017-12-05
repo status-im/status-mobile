@@ -25,8 +25,7 @@
              :group/contact-groups       {}
              :group/selected-contacts    #{}
              :chats                      {}
-             :current-chat-id            constants/console-chat-id
-             :loading-allowed            true
+             :current-chat-id            constants/console-chat-id 
              :selected-participants      #{}
              :discoveries                {}
              :discover-search-tags       '()
@@ -153,19 +152,15 @@
                   :chat/chat-list-ui-props
                   :chat/layout-height
                   :chat/expandable-view-height-to-value 
-                  :chat/loading-allowed
                   :chat/message-data
-                  :chat/message-id->transaction-id
-                  :chat/message-status
-                  :chat/unviewed-messages
+                  :chat/message-status 
                   :chat/selected-participants
-                  :chat/chat-loaded-callbacks 
+                  :chat/chat-loaded-callbacks
                   :chat/command-hash-valid?
                   :chat/public-group-topic
                   :chat/confirmation-code-sms-listener
-                  :chat/messages 
-                  :chat/loaded-chats 
-                  :chat/raw-unviewed-messages
+                  :chat/messages
+                  :chat/loaded-chats
                   :chat/bot-db
                   :chat/geolocation
                   :commands/access-scope->commands-responses

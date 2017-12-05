@@ -46,10 +46,10 @@
   (is (= "word1 \uD83D\uDC4D word2" (input/text->emoji "word1 :+1: word2"))))
 
 (deftest starts-as-command?
-  (is (false? (input/starts-as-command? nil)))
-  (is (false? (input/text-ends-with-space? "")))
-  (is (false? (input/text-ends-with-space? "word1 word2 word3")))
-  (is (true? (input/text-ends-with-space? "word1 word2 "))))
+  (is (not (input/starts-as-command? nil)))
+  (is (not (input/text-ends-with-space? "")))
+  (is (not (input/text-ends-with-space? "word1 word2 word3")))
+  (is (input/text-ends-with-space? "word1 word2 ")))
 
 (deftest split-command-args
   (is (nil? (input/split-command-args nil)))

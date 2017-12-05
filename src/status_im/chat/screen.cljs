@@ -1,198 +1,110 @@
 (ns status-im.chat.screen
-  (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.ui.components.react :refer [view
-                                                   animated-view
-                                                   text
-                                                   modal
-                                                   touchable-highlight
-                                                   list-view
-                                                   list-item]]
-            [status-im.ui.components.icons.vector-icons :as vi]
-            [status-im.ui.components.status-bar :refer [status-bar]]
-            [status-im.ui.components.chat-icon.screen :refer [chat-icon-view-action
-                                                              chat-icon-view-menu-item]]
-            [status-im.chat.styles.screen :as st]
-            [status-im.utils.listview :refer [to-datasource-inverted]]
-            [status-im.utils.utils :refer [truncate-str]]
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
+  (:require [re-frame.core :as re-frame]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
+            [status-im.chat.styles.screen :as style]
+            [status-im.utils.listview :as listview]
             [status-im.utils.datetime :as time]
-            [status-im.utils.platform :as platform :refer [platform-specific]]
-            [status-im.ui.components.invertible-scroll-view :refer [invertible-scroll-view]]
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.invertible-scroll-view :as scroll-view]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
-            [status-im.chat.views.message.message :refer [chat-message]]
-            [status-im.chat.views.message.datemark :refer [chat-datemark]]
+            [status-im.chat.views.toolbar-content :as toolbar-content]
+            [status-im.chat.views.message.message :as message]
+            [status-im.chat.views.message.datemark :as message-datemark]
             [status-im.chat.views.input.input :as input]
-            [status-im.chat.views.actions :refer [actions-view]]
-            [status-im.chat.views.bottom-info :refer [bottom-info-view]]
-            [status-im.chat.constants :as chat-const]
-            [status-im.i18n :refer [label label-pluralize]]
+            [status-im.chat.views.actions :as actions]
+            [status-im.chat.views.bottom-info :as bottom-info] 
+            [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as anim]
-            [status-im.ui.components.sync-state.offline :refer [offline-view]]
-            [status-im.constants :refer [content-type-status]]
-            [taoensso.timbre :as log]
-            [clojure.string :as str]))
-
-(defn contacts-by-identity [contacts]
-  (->> contacts
-       (map (fn [{:keys [identity] :as contact}]
-              [identity contact]))
-       (into {})))
-
-(defn add-message-color [{:keys [from] :as message} contact-by-identity]
-  (if (= "system" from)
-    (assoc message :text-color :#4A5258
-                   :background-color :#D3EEEF)
-    (let [{:keys [text-color background-color]} (get contact-by-identity from)]
-      (assoc message :text-color text-color
-                     :background-color background-color))))
+            [status-im.ui.components.sync-state.offline :as offline]
+            [clojure.string :as string]))
 
 (defview chat-icon []
-  [chat-id [:chat :chat-id]
-   group-chat [:chat :group-chat]
-   name [:chat :name]
-   color [:chat :color]]
-  ;; TODO stub data ('online' property)
-  [chat-icon-view-action chat-id group-chat name color true])
+  (letsubs [{:keys [chat-id group-chat name color]} [:get-current-chat]]
+    [chat-icon-screen/chat-icon-view-action chat-id group-chat name color true]))
 
-(defn typing [member]
-  [view st/typing-view
-   [view st/typing-background
-    [text {:style st/typing-text
-           :font  :default}
-     (str member " " (label :t/is-typing))]]])
+(defn- toolbar-action [show-actions?]
+  [react/touchable-highlight
+   {:on-press            #(re-frame/dispatch [:set-chat-ui-props {:show-actions? (not show-actions?)}])
+    :accessibility-label :chat-menu}
+   [react/view style/action
+    (if show-actions?
+      [vector-icons/icon :icons/dropdown-up]
+      [chat-icon])]])
 
-(defn typing-all []
-  [view st/typing-all
-   ;; TODO stub data
-   (for [member ["Geoff" "Justas"]]
-     ^{:key member} [typing member])])
+(defview add-contact-bar []
+  (letsubs [chat-id          [:get-current-chat-id]
+            pending-contact? [:current-contact :pending?]]
+    (when pending-contact?
+      [react/touchable-highlight
+       {:on-press #(re-frame/dispatch [:add-pending-contact chat-id])}
+       [react/view style/add-contact
+        [react/text {:style style/add-contact-text}
+         (i18n/label :t/add-to-contacts)]]])))
+
+(defview chat-toolbar []
+  (letsubs [show-actions? [:get-current-chat-ui-prop :show-actions?]
+            accounts      [:get-accounts]
+            creating?     [:get :accounts/creating-account?]]
+    [react/view
+     [status-bar/status-bar]
+     [toolbar/toolbar {:show-sync-bar? true}
+      (when-not (or show-actions? creating?)
+        (if (empty? accounts)
+          [toolbar/nav-clear-text (i18n/label :t/recover)
+           #(re-frame/dispatch [:navigate-to-modal :recover-modal])]
+          toolbar/default-nav-back))
+      [toolbar-content/toolbar-content-view]
+      [toolbar-action show-actions?]]
+     [add-contact-bar]]))
 
 (defmulti message-row (fn [{{:keys [type]} :row}] type))
 
 (defmethod message-row :datemark
   [{{:keys [value]} :row}]
-  (list-item [chat-datemark value]))
+  (react/list-item [message-datemark/chat-datemark value]))
 
 (defmethod message-row :default
-  [{:keys [contact-by-identity group-chat messages-count row index last-outgoing?]}]
-  (let [message (-> row
-                    (add-message-color contact-by-identity)
-                    (assoc :group-chat group-chat)
-                    (assoc :messages-count messages-count)
-                    (assoc :index index)
-                    (assoc :last-message (= (js/parseInt index) (dec messages-count)))
-                    (assoc :last-outgoing? last-outgoing?))]
-    (list-item [chat-message message])))
-
-(defn toolbar-action []
-  (let [show-actions (subscribe [:get-current-chat-ui-prop :show-actions?])]
-    (fn []
-      (let [show-actions @show-actions]
-        [touchable-highlight
-         {:on-press            #(dispatch [:set-chat-ui-props {:show-actions? (not show-actions)}])
-          :accessibility-label :chat-menu}
-         [view st/action
-          (if show-actions
-            [vi/icon :icons/dropdown-up]
-            [chat-icon])]]))))
-
-(defview add-contact-bar []
-  [chat-id [:get :current-chat-id]
-   pending-contact? [:current-contact :pending?]]
-  (when pending-contact?
-    [touchable-highlight
-     {:on-press #(dispatch [:add-pending-contact chat-id])}
-     [view st/add-contact
-      [text {:style st/add-contact-text}
-       (label :t/add-to-contacts)]]]))
-
-(defview chat-toolbar []
-  [show-actions? [:get-current-chat-ui-prop :show-actions?]
-   accounts [:get-accounts]
-   creating? [:get :accounts/creating-account?]]
-  [view
-   [status-bar]
-   [toolbar/toolbar {:show-sync-bar? true}
-    (when-not (or show-actions? creating?)
-      (if (empty? accounts)
-        [toolbar/nav-clear-text (label :t/recover) #(dispatch [:navigate-to-modal :recover-modal])]
-        toolbar/default-nav-back))
-    [toolbar-content-view]
-    [toolbar-action]]
-   [add-contact-bar]])
-
-(defn get-intro-status-message [all-messages]
-  (let [{:keys [timestamp content-type]} (last all-messages)]
-    (when (not= content-type content-type-status)
-      {:message-id   chat-const/intro-status-message-id
-       :content-type content-type-status
-       :timestamp    (or timestamp (time/now-ms))})))
-
-(defn messages-with-timemarks [all-messages extras]
-  (let [status-message (get-intro-status-message all-messages)
-        all-messages   (if status-message
-                         (concat all-messages [status-message])
-                         all-messages)
-        messages       (->> all-messages
-                            (map #(merge % (get extras (:message-id %))))
-                            (remove #(false? (:show? %)))
-                            (sort-by :clock-value >)
-                            (map #(assoc % :datemark (time/day-relative (:timestamp %))))
-                            (group-by :datemark)
-                            (vals)
-                            (sort-by (comp :clock-value first) >)
-                            (map (fn [v] [v {:type :datemark :value (:datemark (first v))}]))
-                            (flatten))
-        remove-last?   (some (fn [{:keys [content-type]}]
-                               (= content-type content-type-status))
-                             messages)]
-    (if remove-last?
-      (drop-last messages)
-      messages)))
+  [{:keys [group-chat current-public-key row]}]
+  (react/list-item [message/chat-message (assoc row
+                                                :group-chat group-chat
+                                                :current-public-key current-public-key)]))
 
 (defview messages-view [group-chat]
-  [messages [:chat :messages]
-   contacts [:chat :contacts]
-   message-extras [:get :message-extras]
-   loaded? [:all-messages-loaded?]
-   current-chat-id [:get-current-chat-id]
-   last-outgoing-message [:get-chat-last-outgoing-message @current-chat-id]]
-  (let [contacts' (contacts-by-identity contacts)
-        messages  (messages-with-timemarks messages message-extras)]
-    [list-view {:renderRow                 (fn [row _ index]
-                                             (message-row {:contact-by-identity contacts'
-                                                           :group-chat          group-chat
-                                                           :messages-count      (count messages)
-                                                           :row                 row
-                                                           :index               index
-                                                           :last-outgoing?      (= (:message-id last-outgoing-message) (:message-id row))}))
-                :renderScrollComponent     #(invertible-scroll-view (js->clj %))
-                :onEndReached              (when-not loaded? #(dispatch [:load-more-messages]))
-                :enableEmptySections       true
-                :keyboardShouldPersistTaps (if platform/android? :always :handled)
-                :dataSource                (to-datasource-inverted messages)}]))
+  (letsubs [messages           [:get-current-chat-messages]
+            current-public-key [:get-current-public-key]]
+    [react/list-view {:renderRow                 (fn [row _ index]
+                                                   (message-row {:group-chat         group-chat
+                                                                 :current-public-key current-public-key
+                                                                 :row                row}))
+                      :renderScrollComponent     #(scroll-view/invertible-scroll-view (js->clj %))
+                      :onEndReached              #(re-frame/dispatch [:load-more-messages])
+                      :enableEmptySections       true
+                      :keyboardShouldPersistTaps (if platform/android? :always :handled)
+                      :dataSource                (listview/to-datasource-inverted messages)}]))
 
 (defview chat []
-  [group-chat [:chat :group-chat]
-   show-actions? [:get-current-chat-ui-prop :show-actions?]
-   show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
-   show-emoji? [:get-current-chat-ui-prop :show-emoji?]
-   layout-height [:get :layout-height]
-   input-text [:chat :input-text]]
-  {:component-did-mount    #(dispatch [:check-and-open-dapp!])
-   :component-will-unmount #(dispatch [:set-chat-ui-props {:show-emoji? false}])}
-  [view {:style st/chat-view
-         :on-layout (fn [event]
-                      (let [height (.. event -nativeEvent -layout -height)]
-                        (when (not= height layout-height)
-                          (dispatch [:set-layout-height height]))))}
-   [chat-toolbar]
-   [messages-view group-chat]
-   [input/container {:text-empty? (str/blank? input-text)}]
-   (when show-actions?
-     [actions-view])
-   (when show-bottom-info?
-     [bottom-info-view])
-   [offline-view {:top (get-in platform-specific
-                               [:component-styles :status-bar :default :height])}]])
+  (letsubs [{:keys [group-chat input-text]} [:get-current-chat]
+            show-actions?                   [:get-current-chat-ui-prop :show-actions?]
+            show-bottom-info?               [:get-current-chat-ui-prop :show-bottom-info?]
+            show-emoji?                     [:get-current-chat-ui-prop :show-emoji?]
+            layout-height                   [:get :layout-height]]
+    {:component-did-mount    #(re-frame/dispatch [:check-and-open-dapp!])
+     :component-will-unmount #(re-frame/dispatch [:set-chat-ui-props {:show-emoji? false}])}
+    [react/view {:style style/chat-view
+                 :on-layout (fn [event]
+                              (let [height (.. event -nativeEvent -layout -height)]
+                                (when (not= height layout-height)
+                                  (re-frame/dispatch [:set-layout-height height]))))}
+     [chat-toolbar]
+     [messages-view group-chat]
+     [input/container {:text-empty? (string/blank? input-text)}]
+     (when show-actions?
+       [actions/actions-view])
+     (when show-bottom-info?
+       [bottom-info/bottom-info-view])
+     [offline/offline-view {:top (get-in platform/platform-specific
+                                         [:component-styles :status-bar :default :height])}]]))

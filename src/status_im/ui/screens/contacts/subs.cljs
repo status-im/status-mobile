@@ -153,11 +153,6 @@
   (fn [contacts [_ identity]]
     (:name (contacts identity))))
 
-(reg-sub :chat-by-id
-  :<- [:chats]
-  (fn [chats [_ chat-id]]
-    (get chats chat-id)))
-
 (defn chat-contacts [[chat contacts] [_ fn]]
   (when chat
     (let [current-participants (->> chat
@@ -184,15 +179,13 @@
 
 (reg-sub :contacts-by-chat
   (fn [[_ fn chat-id] _]
-    [(subscribe [:chat-by-id chat-id])
+    [(subscribe [:get-chat chat-id])
      (subscribe [:get-contacts])])
   chat-contacts)
 
-(reg-sub :chat-photo
+(reg-sub :get-chat-photo
   (fn [[_ chat-id] _]
-    [(if chat-id
-       (subscribe [:chat-by-id chat-id])
-       (subscribe [:get-current-chat]))
+    [(subscribe [:get-chat chat-id])
      (subscribe [:contacts-by-chat filter chat-id])])
   (fn [[chat contacts] [_ chat-id]]
     (when (and chat (not (:group-chat chat)))

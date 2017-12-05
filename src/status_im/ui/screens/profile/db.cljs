@@ -13,8 +13,7 @@
     (every? false?
             [(string/blank? username)
              (homoglyph/matches username constants/console-chat-id)
-             (string/includes? username chat.constants/command-char)
-             (string/includes? username chat.constants/bot-char)])))
+             (string/includes? username chat.constants/command-char)])))
 
 (defn correct-email? [email]
   (let [pattern #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"]

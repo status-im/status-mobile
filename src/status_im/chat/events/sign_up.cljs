@@ -45,7 +45,7 @@
 
 (defn- message-seen [{:keys [db] :as fx} message-id]
   (-> fx
-      (assoc-in [:db :message-data :statuses message-id :status] :seen)
+      (assoc-in [:db :chats const/console-chat-id :messages message-id :message-status] :seen)
       (assoc :update-message {:message-id     message-id
                               :message-status :seen})))
 
@@ -90,7 +90,8 @@
         (message-seen message-id))))
 
 (defn- extract-last-phone-number [chats]
-  (let [phone-message (->> (get-in chats ["console" :messages])
+  (let [phone-message (->> (get-in chats [const/console-chat-id :messages])
+                           (map second)
                            (some (fn [{:keys [type content] :as message}]
                                    (when (and (= type :response)
                                               (= (:command content) "phone"))

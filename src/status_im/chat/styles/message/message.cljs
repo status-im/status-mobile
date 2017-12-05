@@ -1,46 +1,37 @@
 (ns status-im.chat.styles.message.message
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :refer [color-white
-                                                 color-black
-                                                 color-blue
-                                                 color-light-blue
-                                                 selected-message-color
-                                                 text1-color
-                                                 text2-color
-                                                 color-gray
-                                                 color-gray4]]
-            [status-im.constants :refer [text-content-type
-                                         content-type-command]]))
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.constants :as constants]))
 
 (defstyle style-message-text
   {:fontSize 15
-   :color    text1-color
+   :color    styles/text1-color
    :android  {:line-height 22}
    :ios      {:line-height 23}})
 
 (def style-sub-text
   {:top        -2
    :fontSize   12
-   :color      text2-color
+   :color      styles/text2-color
    :lineHeight 14
    :height     16})
 
 (defn message-padding-top
-  [{:keys [first-in-date? same-author same-direction]}]
+  [{:keys [first-in-date? same-author? same-direction?]}]
   (cond
-    first-in-date? 20
-    same-author    8
-    same-direction 16
-    :else          24))
+    first-in-date?  20
+    same-author?    8
+    same-direction? 16
+    :else           24))
 
 (defn last-message-padding
-  [{:keys [last-message typing]}]
-  (when (and last-message (not typing))
+  [{:keys [last? typing]}]
+  (when (and last? (not typing))
     {:paddingBottom 16}))
 
 (def message-datemark
-  {:margin-top    10
-   :height        34})
+  {:margin-top 10
+   :height     34})
 
 (def message-empty-spacing
   {:height 16})
@@ -65,7 +56,7 @@
   {:marginTop  18
    :marginLeft 40
    :fontSize   12
-   :color      text2-color})
+   :color      styles/text2-color})
 
 (def group-message-wrapper
   {:flexDirection :column})
@@ -94,7 +85,7 @@
    :opacity       0.5})
 
 (defstyle delivery-text
-  {:color      color-gray4
+  {:color      styles/color-gray4
    :marginLeft 5
    :android    {:font-size 13}
    :ios        {:font-size 14}})
@@ -107,15 +98,15 @@
 (defnstyle message-view
   [{:keys [content-type outgoing group-chat selected]}]
   (merge {:padding         12
-          :backgroundColor color-white
+          :backgroundColor styles/color-white
           :android         {:border-radius 4}
           :ios             {:border-radius 8}}
-         (when (= content-type content-type-command)
+         (when (= content-type constants/content-type-command)
            {:paddingTop    10
             :paddingBottom 14})))
 
 (defstyle author
-  {:color         color-gray4
+  {:color         styles/color-gray4
    :margin-bottom 5
    :android       {:font-size 13}
    :ios           {:font-size 14}})
@@ -127,7 +118,7 @@
   {:borderRadius     14
    :padding-vertical 10
    :paddingRight     28
-   :backgroundColor  color-white})
+   :backgroundColor  styles/color-white})
 
 (def command-request-from-text
   (merge style-sub-text {:marginBottom 2}))
@@ -245,14 +236,14 @@
 (def status-from
   {:marginTop 20
    :fontSize  18
-   :color     text1-color})
+   :color     styles/text1-color})
 
 (def status-text
   {:marginTop  10
    :fontSize   14
    :lineHeight 20
    :textAlign  :center
-   :color      text2-color})
+   :color      styles/text2-color})
 
 (defn message-animated-container [height]
   {:height height})
@@ -262,6 +253,6 @@
    :width    window-width})
 
 (defn new-message-container [margin on-top?]
-  {:background-color color-white
+  {:background-color styles/color-white
    :margin-bottom    margin
    :elevation        (if on-top? 6 5)})

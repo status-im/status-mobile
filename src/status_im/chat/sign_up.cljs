@@ -120,27 +120,16 @@
      :from         const/console-chat-id
      :to           "me"}]])
 
-(def intro-status
-  {:message-id   chat-const/intro-status-message-id
-   :content      (label :t/intro-status)
-   :from         const/console-chat-id
-   :chat-id      const/console-chat-id
-   :content-type const/content-type-status
-   :outgoing     false
-   :to           "me"})
-
-(def intro-events
-  [[:received-message intro-status]
-   [:received-message-when-commands-loaded
-    const/console-chat-id
-    {:chat-id      const/console-chat-id
-     :message-id   chat-const/intro-message1-id
-     :content      {:command "password"
-                    :content (label :t/intro-message1)}
-     :content-type const/content-type-command-request
-     :outgoing     false
-     :from         const/console-chat-id
-     :to           "me"}]])
+(def intro-event
+  [:received-message-when-commands-loaded 
+   {:chat-id      const/console-chat-id
+    :message-id   chat-const/intro-message1-id
+    :content      {:command "password"
+                   :content (label :t/intro-message1)}
+    :content-type const/content-type-command-request
+    :outgoing     false
+    :from         const/console-chat-id
+    :to           "me"}])
 
 (def console-chat
   {:chat-id      const/console-chat-id
@@ -161,4 +150,5 @@
    :photo-path        const/console-chat-id
    :dapp?             true
    :unremovable?      true
-   :bot-url           "local://console-bot"})
+   :bot-url           "local://console-bot"
+   :status            (label :t/intro-status)})

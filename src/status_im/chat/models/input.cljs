@@ -24,16 +24,13 @@
                      original)))))
 
 (defn text-ends-with-space? [text]
-  (and (not (nil? text))
-       (str/ends-with? text const/spacing-char)))
+  (and text (str/ends-with? text const/spacing-char)))
 
 (defn starts-as-command?
   "Returns true if `text` may be treated as a command.
   To make sure that text is command we need to use `possible-chat-actions` function."
   [text]
-  (and (not (nil? text))
-       (or (str/starts-with? text const/bot-char)
-           (str/starts-with? text const/command-char))))
+  (and text (str/starts-with? text const/command-char)))
 
 (defn split-command-args
   "Returns a list of command's arguments including the command's name.

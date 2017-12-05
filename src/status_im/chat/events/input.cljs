@@ -270,10 +270,11 @@
                          :content      {:command       (:name command)
                                         :scope-bitmask (:scope-bitmask command)
                                         :params        params
-                                        :type          (:type command)}
-                         :on-requested (fn [jail-response]
-                                         (event-after-creator command-message jail-response))}]
-    (commands-events/request-command-message-data db request-data data-type)))
+                                        :type          (:type command)}}]
+    (commands-events/request-command-message-data db request-data
+                                                  {:data-type             data-type
+                                                   :proceed-event-creator (partial event-after-creator
+                                                                                   command-message)})))
 
 (defn proceed-command
   "Proceed with command processing by setting up execution chain of events:
@@ -429,10 +430,13 @@
                (animation-events/choose-predefined-expandable-height :result-box :max))
        ::dismiss-keyboard nil}
       ;; regular command message, we need to fetch preview before sending the command message
-      (request-command-data db (merge params-template
-                                      {:data-type           :preview
-                                       :event-after-creator (fn [command-message _]
-                                                              [::send-command command-message])})))))
+      (request-command-data
+       db
+       (merge params-template
+              {:data-type           :preview
+               :event-after-creator (fn [command-message returned]
+                                      [::send-command (assoc-in command-message
+                                                                [:command :preview] returned)])})))))
 
 (handlers/register-handler-fx
   :send-current-message

@@ -6,7 +6,7 @@
             [status-im.chat.models :as model]
             [status-im.chat.models.unviewed-messages :as unviewed-messages-model]
             [status-im.chat.sign-up :as sign-up]
-            [status-im.chat.constants :as chat-const] 
+            [status-im.chat.constants :as chat-const]
             [status-im.data-store.messages :as msg-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.chats :as chats-store]
@@ -39,16 +39,6 @@
   :get-stored-messages
   (fn [cofx _]
     (assoc cofx :get-stored-messages msg-store/get-by-chat-id)))
-
-(re-frame/reg-cofx
-  :get-last-stored-message
-  (fn [cofx _]
-    (assoc cofx :get-last-stored-message msg-store/get-last-message)))
-
-(re-frame/reg-cofx
-  :get-message-previews
-  (fn [cofx _]
-    (assoc cofx :message-previews (msg-store/get-previews))))
 
 (re-frame/reg-cofx
   :all-stored-chats
@@ -120,38 +110,25 @@
                                  :show-emoji?       false
                                  :bottom-info       details})))
 
+(def index-messages (partial into {} (map (juxt :message-id identity))))
+
 (handlers/register-handler-fx
   :load-more-messages
   [(re-frame/inject-cofx :get-stored-messages)]
-  (fn [{{:keys [current-chat-id loading-allowed] :as db} :db
-        get-stored-messages :get-stored-messages} _]
-    (let [all-loaded? (get-in db [:chats current-chat-id :all-loaded?])]
-      (if (and loading-allowed (not all-loaded?))
-        (let [messages-path [:chats current-chat-id :messages]
-              messages      (get-in db messages-path)
-              chat-messages (filter #(= current-chat-id (:chat-id %)) messages)
-              new-messages  (get-stored-messages current-chat-id (count chat-messages))
-              all-loaded?   (> const/default-number-of-messages (count new-messages))]
-          {:db (-> db
-                   (assoc :loading-allowed false)
-                   (update-in messages-path concat new-messages)
-                   (assoc-in [:chats current-chat-id :all-loaded?] all-loaded?))
-           ;; we permit loading more messages again after 400ms
-           :dispatch-later [{:ms 400 :dispatch [:set :loading-allowed true]}]})
-        {:db db}))))
+  (fn [{{:keys [current-chat-id] :as db} :db get-stored-messages :get-stored-messages} _]
+    (when-not (get-in db [:chats current-chat-id :all-loaded?])
+      (let [loaded-count (count (get-in db [:chats current-chat-id :messages]))
+            new-messages (get-stored-messages current-chat-id loaded-count)]
+        {:db (-> db
+                 (update-in [:chats current-chat-id :messages] merge (index-messages new-messages))
+                 (assoc-in [:chats current-chat-id :all-loaded?]
+                           (> const/default-number-of-messages (count new-messages))))}))))
 
 (handlers/register-handler-db
   :set-message-shown
   [re-frame/trim-v]
   (fn [db [{:keys [chat-id message-id]}]]
-    (update-in db
-               [:chats chat-id :messages]
-               (fn [messages]
-                 (map (fn [message]
-                        (if (= message-id (:message-id message))
-                          (assoc message :new? false)
-                          message))
-                      messages)))))
+    (update-in db [:chats chat-id :messages message-id] assoc :new? false)))
 
 (defn init-console-chat
   [{:keys [chats] :accounts/keys [current-account-id] :as db}]
@@ -165,7 +142,7 @@
              :save-all-contacts [sign-up/console-contact]}
 
       (not current-account-id)
-      (update :dispatch-n concat sign-up/intro-events))))
+      (update :dispatch-n conj sign-up/intro-event))))
 
 (handlers/register-handler-fx
   :init-console-chat
@@ -175,37 +152,36 @@
 (handlers/register-handler-fx
   :initialize-chats
   [(re-frame/inject-cofx :all-stored-chats)
+   (re-frame/inject-cofx :get-stored-messages)
    (re-frame/inject-cofx :stored-unviewed-messages)
-   (re-frame/inject-cofx :get-stored-unanswered-requests)
-   (re-frame/inject-cofx :get-last-stored-message)
-   (re-frame/inject-cofx :get-message-previews)]
+   (re-frame/inject-cofx :get-stored-unanswered-requests)]
   (fn [{:keys [db
                all-stored-chats
                stored-unanswered-requests
-               stored-unviewed-messages
-               get-last-stored-message
-               message-previews]} _]
-    (let [{:accounts/keys [account-creation?] :contacts/keys [contacts]} db
-          new-db (unviewed-messages-model/load-unviewed-messages db stored-unviewed-messages)
-          event  [:load-default-contacts!]]
+               get-stored-messages
+               stored-unviewed-messages]} _]
+    (let [{:accounts/keys [account-creation?]} db
+          load-default-contacts-event [:load-default-contacts!]]
       (if account-creation?
-        {:db new-db
-         :dispatch event}
-        (let [chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
+        {:db db
+         :dispatch load-default-contacts-event}
+        (let [chat->unviewed-messages (unviewed-messages-model/index-unviewed-messages stored-unviewed-messages)
+              chat->message-id->request (reduce (fn [acc {:keys [chat-id message-id] :as request}]
                                                   (assoc-in acc [chat-id message-id] request))
                                                 {}
                                                 stored-unanswered-requests)
-              chats (->> all-stored-chats
-                         (map (fn [{:keys [chat-id] :as chat}]
-                                [chat-id (assoc chat
-                                                :last-message (get-last-stored-message chat-id)
-                                                :requests (get chat->message-id->request chat-id))]))
-                         (into {}))]
-          (-> new-db
-              (assoc-in [:message-data :preview] message-previews) 
+              chats (reduce (fn [acc {:keys [chat-id] :as chat}]
+                              (assoc acc chat-id
+                                     (assoc chat
+                                            :unviewed-messages (get chat->unviewed-messages chat-id)
+                                            :requests (get chat->message-id->request chat-id)
+                                            :messages (index-messages (get-stored-messages chat-id)))))
+                            {}
+                            all-stored-chats)]
+          (-> db
               (assoc :chats chats)
               init-console-chat
-              (update :dispatch-n conj event)))))))
+              (update :dispatch-n conj load-default-contacts-event)))))))
 
 (handlers/register-handler-fx
   :send-seen!
@@ -214,7 +190,9 @@
     (let [{:keys [web3 current-public-key chats]
            :contacts/keys [contacts]} db
           {:keys [group-chat public?]} (get chats chat-id)]
-      (cond-> {:db (unviewed-messages-model/remove-unviewed-messages db chat-id)
+      (cond-> {:db (-> db
+                       (unviewed-messages-model/remove-unviewed-message chat-id message-id)
+                       (assoc-in [:chats chat-id :messages message-id :message-status] :seen))
                :update-message {:message-id     message-id
                                 :message-status :seen}}
         (and (not (get-in contacts [chat-id] :dapp?))
@@ -256,7 +234,7 @@
 
 (defn preload-chat-data
   "Takes coeffects map and chat-id, returns effects necessary when navigating to chat"
-  [{:keys [db get-stored-messages]} chat-id]
+  [{:keys [db]} chat-id]
   (let [messages (get-in db [:chats chat-id :messages])
         chat-loaded-event (get-in db [:chats chat-id :chat-loaded-event])
         jail-loaded? (get-in db [:contacts/contacts chat-id :jail-loaded?])]
@@ -265,9 +243,6 @@
                      (assoc-in [:chats chat-id :was-opened?] true)
                      (model/set-chat-ui-props {:validation-messages nil})
                      (update-in [:chats chat-id] dissoc :chat-loaded-event))}
-
-      (empty? messages)
-      (assoc-in [:db :chats chat-id :messages] (get-stored-messages chat-id))
 
       chat-loaded-event
       (assoc :dispatch chat-loaded-event))))
@@ -301,14 +276,13 @@
 
 (handlers/register-handler-fx
   :navigate-to-chat
-  [(re-frame/inject-cofx :get-stored-messages) re-frame/trim-v]
+  [re-frame/trim-v]
   (fn [cofx [chat-id {:keys [navigation-replace?]}]]
     (navigate-to-chat cofx chat-id navigation-replace?)))
 
 (handlers/register-handler-fx
   :start-chat
-  [(re-frame/inject-cofx :get-stored-messages)
-   re-frame/trim-v]
+  [re-frame/trim-v]
   (fn [{:keys [db] :as cofx} [contact-id {:keys [navigation-replace?]}]]
     (when (not= (:current-public-key db) contact-id) ; don't allow to open chat with yourself
       (if (get (:chats db) contact-id)

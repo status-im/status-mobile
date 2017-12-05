@@ -33,7 +33,7 @@
     (cond
       (= path [:responses "password" :preview])
       (callback {:result {:context  {},
-                          :messages [],
+                          :messages {},
                           :returned {:markup ["text"
                                               {:style
                                                {:color            "black",

@@ -40,6 +40,8 @@
                                 :content-command (:name command)
                                 :content-command-scope-bitmask (:scope-bitmask command)
                                 :content-command-ref (:ref command)
+                                :preview (:preview command)
+                                :short-preview (:short-preview command)
                                 :bot (or (:bot command)
                                          (:owner-id command)))]
     {:message-id   id
@@ -90,12 +92,11 @@
             hidden-params (->> (:params command)
                                (filter :hidden)
                                (map :name))
-            command'      (->> (prepare-command current-public-key chat-id clock-value request content)
-                               (cu/check-author-direction db chat-id))]
+            command'      (prepare-command current-public-key chat-id clock-value request content)]
         (dispatch [:update-message-overhead! chat-id network-status])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])
-        (when (cu/console? chat-id)
+        (when (= console-chat-id chat-id)
           (dispatch [:console-respond-command params]))))))
 
 (register-handler ::send-command!
@@ -104,7 +105,8 @@
       (dispatch [::add-command add-to-chat-id params])
       (dispatch [::save-command! add-to-chat-id params hidden-params])
       (dispatch [::dispatch-responded-requests! params])
-      (dispatch [::send-command-protocol! params]))))
+      (dispatch [::send-command-protocol! (update-in params [:command :content]
+                                                     dissoc :preview :short-preview)]))))
 
 (register-handler ::add-command
   (after (fn [_ [_ _ {:keys [handler]}]]
@@ -115,11 +117,9 @@
 (register-handler ::save-command!
   (u/side-effect!
     (fn [db [_ chat-id {:keys [command]} hidden-params]]
-      (let [preview (get-in db [:message-data :preview (:message-id command)])
-            command (cond-> (-> command
+      (let [command (cond-> (-> command
                                 (update-in [:content :params] #(apply dissoc % hidden-params))
-                                (dissoc :to-message :has-handler :raw-input))
-                      preview (assoc :preview (pr-str preview)))]
+                                (dissoc :to-message :has-handler :raw-input)))]
         (dispatch [:upsert-chat! {:chat-id chat-id}])
         (messages/save chat-id command)))))
 
@@ -168,17 +168,15 @@
     (fn [{:keys [network-status] :as db} [_ {:keys [chat-id identity message] :as params}]]
       (let [{:keys [group-chat public?]} (get-in db [:chats chat-id])
             clock-value (messages/get-last-clock-value chat-id)
-            message'    (cu/check-author-direction
-                          db chat-id
-                          {:message-id   (random/id)
-                           :chat-id      chat-id
-                           :content      message
-                           :from         identity
-                           :content-type text-content-type
-                           :outgoing     true
-                           :timestamp    (datetime/now-ms)
-                           :clock-value  (clocks/send clock-value)
-                           :show?        true})
+            message'    {:message-id   (random/id)
+                         :chat-id      chat-id
+                         :content      message
+                         :from         identity
+                         :content-type text-content-type
+                         :outgoing     true
+                         :timestamp    (datetime/now-ms)
+                         :clock-value  (clocks/send clock-value)
+                         :show?        true}
             message''   (cond-> message'
                                 (and group-chat public?)
                                 (assoc :group-id chat-id :message-type :public-group-user-message)

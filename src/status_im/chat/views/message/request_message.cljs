@@ -10,6 +10,7 @@
                                                    touchable-highlight]]
             [status-im.chat.styles.message.message :as st]
             [status-im.chat.models.commands :as commands]
+            [status-im.commands.utils :as commands-utils]
             [status-im.ui.components.animation :as anim]
             [taoensso.timbre :as log]))
 
@@ -72,12 +73,15 @@
                [icon command-icon st/command-request-image])]]))})))
 
 (defview message-content-command-request
-  [{:keys [message-id chat-id content from incoming-group] :as message}]
+  [{:keys [message-id content] :as message}]
   (letsubs [command             [:get-command (:content-command-ref content)] 
             answered?           [:is-request-answered? message-id]
-            status-initialized? [:get :status-module-initialized?]
-            markup              [:get-message-preview message-id]]
-    (let [{:keys        [prefill prefill-bot-db prefillBotDb params]
+            status-initialized? [:get :status-module-initialized?]]
+    {:component-will-mount #(when-not (:preview content)
+                              (dispatch [:request-command-message-data
+                                         message {:data-type   :preview
+                                                  :cache-data? true}]))}
+    (let [{:keys        [prefill prefill-bot-db prefillBotDb params preview]
            text-content :text} content 
           command          (if (and params command)
                              (merge command {:prefill        prefill
@@ -91,12 +95,11 @@
        [touchable-highlight
         {:on-press on-press-handler}
         [view st/command-request-message-view
-         (if (and markup
-                  (not (string? markup)))
-           [view markup]
+         (if (:markup preview) 
+           [view (commands-utils/generate-hiccup (:markup preview))]
            [text {:style st/style-message-text
                   :font  :default}
-            (or text-content markup (:content content))])]]
+            (or preview text-content (:content content))])]]
        (when (:request-text command)
          [view st/command-request-text-view
           [text {:style st/style-sub-text

@@ -121,7 +121,7 @@
         (let [input (str/trim (or @input-text ""))
               real-args (remove str/blank? (:args command))]
           (when-let [placeholder (cond
-                                   (#{const/command-char const/bot-char} input)
+                                   (= const/command-char input)
                                    (i18n/label :t/type-a-command)
 
                                    (and command (empty? real-args))

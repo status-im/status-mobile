@@ -41,7 +41,7 @@
       [view pending-inner-circle]]]))
 
 (defview chat-icon-view [chat-id group-chat name online styles & [hide-dapp?]]
-  [photo-path [:chat-photo chat-id]
+  [photo-path [:get-chat-photo chat-id]
    dapp? [:get-in [:contacts/contacts chat-id :dapp?]]]
   [view (:container styles)
    (if-not (s/blank? photo-path)

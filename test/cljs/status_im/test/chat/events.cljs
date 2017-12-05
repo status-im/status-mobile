@@ -30,8 +30,8 @@
       (is (= (:current-chat-id db)
              const/console-chat-id))
       (is (= dispatch-n
-             (concat [[:add-contacts [sign-up/console-contact]]]
-                     sign-up/intro-events)))))
+             [[:add-contacts [sign-up/console-contact]]
+              sign-up/intro-event]))))
 
   (testing "initialising console with existing account and console chat not initialisated"
     (let [fresh-db {:chats {}

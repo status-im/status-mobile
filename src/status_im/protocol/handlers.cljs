@@ -309,6 +309,11 @@
 
 ;;; MESSAGES
 
+(defn- transform-protocol-message [{:keys [from to payload]}]
+  (merge payload {:from    from
+                  :to      to
+                  :chat-id from}))
+
 (handlers/register-handler-fx
   :incoming-message
   (fn [_ [_ type {:keys [payload ttl id] :as message}]]
@@ -320,31 +325,31 @@
                                  :type       type
                                  :ttl        (+ (datetime/now-ms) ttl-s)}
               route-event (case type
-                            :message               [:received-protocol-message! message]
-                            :group-message         [:received-protocol-message! message]
-                            :public-group-message  [:received-protocol-message! message]
-                            :ack                   (if (#{:message :group-message} (:type payload))
-                                                     [:update-message-status message :delivered]
-                                                     [:pending-message-remove message])
-                            :seen                  [:update-message-status message :seen]
-                            :group-invitation      [:group-chat-invite-received message]
-                            :update-group          [:update-group-message message]
-                            :add-group-identity    [:participant-invited-to-group message]
-                            :remove-group-identity [:participant-removed-from-group message]
-                            :leave-group           [:participant-left-group message]
-                            :contact-request       [:contact-request-received message]
-                            :discover              [:status-received message]
-                            :discoveries-request   [:discoveries-request-received message]
-                            :discoveries-response  [:discoveries-response-received message]
-                            :profile               [:contact-update-received message]
-                            :update-keys           [:update-keys-received message]
-                            :online                [:contact-online-received message]
-                            :pending               [:pending-message-upsert message]
-                            :sent                  (let [{:keys [to id group-id]} message
-                                                         message' {:from    to
-                                                                   :payload {:message-id id
-                                                                             :group-id   group-id}}]
-                                                     [:update-message-status message' :sent])
+                            (:message
+                             :group-message
+                             :public-group-message) [:received-message (transform-protocol-message message)] 
+                            :ack                    (if (#{:message :group-message} (:type payload))
+                                                      [:update-message-status message :delivered]
+                                                      [:pending-message-remove message])
+                            :seen                   [:update-message-status message :seen]
+                            :group-invitation       [:group-chat-invite-received message]
+                            :update-group           [:update-group-message message]
+                            :add-group-identity     [:participant-invited-to-group message]
+                            :remove-group-identity  [:participant-removed-from-group message]
+                            :leave-group            [:participant-left-group message]
+                            :contact-request        [:contact-request-received message]
+                            :discover               [:status-received message]
+                            :discoveries-request    [:discoveries-request-received message]
+                            :discoveries-response   [:discoveries-response-received message]
+                            :profile                [:contact-update-received message]
+                            :update-keys            [:update-keys-received message]
+                            :online                 [:contact-online-received message]
+                            :pending                [:pending-message-upsert message]
+                            :sent                   (let [{:keys [to id group-id]} message
+                                                          message' {:from    to
+                                                                    :payload {:message-id id
+                                                                              :group-id   group-id}}]
+                                                      [:update-message-status message' :sent])
                             nil)]
           (when (nil? route-event) (debug "Unknown message type" type))
           (cache/add! processed-message)
@@ -353,15 +358,20 @@
             (when route-event {:dispatch route-event})))))))
 
 (defn update-message-status [db {:keys [message-id ack-of-message group-id from status]}]
-  (let [message-id' (or ack-of-message message-id)
-        group?      (boolean group-id)
-        status-path (if (and group? (not= status :sent))
-                      [:message-data :user-statuses message-id' from]
-                      [:message-data :statuses message-id'])
-        {current-status :status} (get-in db status-path)]
-    (if-not (= :seen current-status)
-      (assoc-in db status-path {:whisper-identity from
-                                :status           status})
+  (let [message-id'          (or ack-of-message message-id) 
+        update-group-status? (and group-id (not= status :sent))
+        message-path         [:chats (or group-id from) :messages message-id']
+        current-status       (if update-group-status?
+                               (get-in db (into message-path [:user-statuses from :status]))
+                               (get-in db (into message-path [:message-status])))]
+    ;; for some strange reason, we sometimes receive status update for message we don't have,
+    ;; that's why the first condition in if
+    (if (and (get-in db message-path)
+             (not= :seen current-status))
+      (if update-group-status?
+        (assoc-in db (into message-path [:user-statuses from]) {:whisper-identity from
+                                                                :status           status})
+        (assoc-in db (into message-path [:message-status]) status))
       db)))
 
 (handlers/register-handler-fx
