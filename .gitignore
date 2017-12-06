@@ -37,6 +37,7 @@ local.properties
 node_modules/
 npm-debug.log
 .nvmrc
+package-lock.json
 
 # BUCK
 buck-out/
