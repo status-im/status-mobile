@@ -16,10 +16,7 @@
   (when-let [message (realm/get-one-by-field-clj @realm/account-realm :message :message-id message-id)]
     (realm/fix-map message :user-statuses :whisper-identity)))
 
-(defn get-by-chat-id
-  "arity-1 returns realm object for queries"
-  ([chat-id]
-   (realm/get-by-field @realm/account-realm :message :chat-id chat-id))
+(defn get-by-chat-id 
   ([chat-id number-of-messages]
    (get-by-chat-id chat-id 0 number-of-messages))
   ([chat-id from number-of-messages]
@@ -28,10 +25,6 @@
                       (realm/page from (+ from number-of-messages))
                       realm/js-object->clj)]
      (mapv #(realm/fix-map % :user-statuses :whisper-identity) messages))))
-
-(defn get-count-by-chat-id
-  [chat-id]
-  (realm/get-count (get-by-chat-id chat-id)))
 
 (defn get-by-fields
   [fields from number-of-messages]
@@ -64,5 +57,6 @@
 
 (defn delete-by-chat-id
   [chat-id]
-  (realm/delete @realm/account-realm
-                (get-by-chat-id chat-id)))
+  (let [current-realm @realm/account-realm]
+    (realm/delete current-realm
+                  (realm/get-by-field current-realm :message :chat-id chat-id))))

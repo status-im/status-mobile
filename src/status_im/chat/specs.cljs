@@ -9,8 +9,7 @@
 (s/def :chat/chat-ui-props (s/nilable map?))                                ;;{id (string) props (map)}
 (s/def :chat/chat-list-ui-props (s/nilable map?))
 (s/def :chat/layout-height (s/nilable number?))                             ;;height of chat's view layout
-(s/def :chat/expandable-view-height-to-value (s/nilable number?))
-(s/def :chat/loading-allowed (s/nilable boolean?))                          ;;allow to load more messages 
+(s/def :chat/expandable-view-height-to-value (s/nilable number?)) 
 (s/def :chat/message-data (s/nilable map?))
 (s/def :chat/message-id->transaction-id (s/nilable map?))
 (s/def :chat/message-status (s/nilable map?))

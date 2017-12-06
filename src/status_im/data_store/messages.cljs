@@ -32,10 +32,6 @@
     (when (command-type? content-type)
       (reader/read-string content))))
 
-(defn get-count-by-chat-id
-  [chat-id]
-  (data-store/get-count-by-chat-id chat-id))
-
 (defn get-by-chat-id
   ([chat-id]
    (get-by-chat-id chat-id 0))
