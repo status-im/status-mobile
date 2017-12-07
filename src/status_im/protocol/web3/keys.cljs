@@ -11,7 +11,9 @@
       -shh
       (generateSymKeyFromPassword password callback)))
 
-(defn get-sym-key [web3 password callback]
+(defn get-sym-key
+  "Memoizes expensive calls by password."
+  [web3 password callback]
   (if-let [key-id (get @password->keys password)]
     (callback key-id)
     (add-sym-key-from-password

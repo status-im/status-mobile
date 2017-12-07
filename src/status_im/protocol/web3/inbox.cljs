@@ -16,6 +16,8 @@
 
 ;; TODO(oskarth): Rewrite callback-heavy code with CSP and/or coeffects
 ;; NOTE(oskarth): Exact params still being determined
+;; TODO(oskarth): Memoize addPeer and markTrusted, similar to keys/get-sym-key
+;; TODO(oskarth): Actually deal with errors, all in same cb - outside scope of this
 (defn request-messages! [web3 {:keys [enode topic password]
                                :or {enode    default-enode
                                     password inbox-password
@@ -24,21 +26,33 @@
    enode
    (fn [res]
      (log/info "offline inbox: add peer" enode res)
-     (keys/get-sym-key web3 password
-                       (fn [sym-key-id]
-                         (log/info "offline inbox: sym-key-id" sym-key-id)
-                         (let [args {:jsonrpc "2.0"
-                                     :id      1
-                                     :method  "shh_requestMessages"
-                                     :params  [{:enode     enode
-                                                :topic     topic
-                                                :symKeyID  sym-key-id
-                                                :from      0
-                                                :to        1612505820}]}
-                               payload (.stringify js/JSON (clj->js args))]
-                           (log/info "offline inbox: request-messages request")
-                           (status/call-web3 payload callback)))))))
+     (let [args {:jsonrpc "2.0"
+                 :id      1
+                 :method  "shh_markTrustedPeer"
+                 :params  [enode]}
+           payload (.stringify js/JSON (clj->js args))]
+       (log/info "offline inbox: mark-trusted-peer request")
+       (status/call-web3
+        payload
+        (fn [res2]
+          (log/info "offline inbox: mark-trusted-peer response" enode res2)
+          (keys/get-sym-key web3 password
+                            (fn [sym-key-id]
+                              (log/info "offline inbox: sym-key-id" sym-key-id)
+                              (let [args {:jsonrpc "2.0"
+                                          :id      2
+                                          :method  "shh_requestMessages"
+                                          :params  [{:enode     enode
+                                                     :topic     topic
+                                                     :symKeyID  sym-key-id
+                                                     :from      0
+                                                     :to        1612505820}]}
+                                    payload (.stringify js/JSON (clj->js args))]
+                                (log/info "offline inbox: request-messages request")
+                                (status/call-web3 payload callback))))))))))
 
+;; TODO(oskarth): Use web3 binding to do (.markTrustedPeer web3 enode cb)
+;;
 ;; TODO(oskarth): Use web3 binding instead of raw RPC above, pending binding and deps:
 ;; (.requestMessages (utils/shh web3)
 ;;                   (clj->js opts)
