@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
-            [status-im.utils.handlers :as handlers] 
+            [status-im.utils.handlers :as handlers]
             [status-im.i18n :as i18n]
             [status-im.utils.platform :as platform]))
 
