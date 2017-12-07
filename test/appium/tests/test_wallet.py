@@ -7,7 +7,7 @@ from views.base_view import verify_transaction_in_ropsten
 from views.chats import get_unique_amount
 from views.home import HomeView
 from tests.preconditions import set_password_as_new_user, recover_access
-from tests import transaction_users
+from tests import transaction_users_wallet
 
 
 @pytest.mark.all
@@ -35,14 +35,14 @@ class TestWallet(SingleDeviceTestCase):
     def test_send_transaction_from_wallet(self, test, recipient, sender):
         home = HomeView(self.driver)
         recover_access(home,
-                       transaction_users[sender]['passphrase'],
-                       transaction_users[sender]['password'],
-                       transaction_users[sender]['username'])
+                       transaction_users_wallet[sender]['passphrase'],
+                       transaction_users_wallet[sender]['password'],
+                       transaction_users_wallet[sender]['username'])
         chats = home.get_chats()
         chats.wait_for_syncing_complete()
 
-        recipient_key = transaction_users[recipient]['public_key']
-        recipient_address = transaction_users[recipient]['address']
+        recipient_key = transaction_users_wallet[recipient]['public_key']
+        recipient_address = transaction_users_wallet[recipient]['address']
         initial_balance_recipient = get_balance(recipient_address)
 
         chats.plus_button.click()
@@ -62,7 +62,7 @@ class TestWallet(SingleDeviceTestCase):
         wallet.chose_recipient_button.click()
         wallet.deny_button.click()
         wallet.chose_from_contacts_button.click()
-        user_contact = chats.element_by_text(transaction_users[recipient]['username'], 'button')
+        user_contact = chats.element_by_text(transaction_users_wallet[recipient]['username'], 'button')
         user_contact.click()
 
         if test == 'sign_later':
@@ -74,7 +74,7 @@ class TestWallet(SingleDeviceTestCase):
             tr_view.sign_button.click()
 
         chats.sign_transaction_button.click()
-        chats.enter_password_input.send_keys(transaction_users[sender]['password'])
+        chats.enter_password_input.send_keys(transaction_users_wallet[sender]['password'])
         chats.sign_transaction_button.click()
         chats.got_it_button.click()
         verify_balance_is_updated(initial_balance_recipient, recipient_address)
@@ -86,18 +86,18 @@ class TestWallet(SingleDeviceTestCase):
         transaction = tr_view.transactions_table.find_transaction(amount=amount)
         details_view = transaction.click()
         transaction_hash = details_view.get_transaction_hash()
-        verify_transaction_in_ropsten(address=transaction_users[sender]['address'], transaction_hash=transaction_hash)
+        verify_transaction_in_ropsten(address=transaction_users_wallet[sender]['address'], transaction_hash=transaction_hash)
 
     @pytest.mark.wallet
     def test_balance_and_eth_rate(self):
         errors = list()
         home = HomeView(self.driver)
         recover_access(home,
-                       passphrase=transaction_users['A_USER']['passphrase'],
-                       password=transaction_users['A_USER']['password'],
-                       username=transaction_users['A_USER']['username'])
+                       passphrase=transaction_users_wallet['A_USER']['passphrase'],
+                       password=transaction_users_wallet['A_USER']['password'],
+                       username=transaction_users_wallet['A_USER']['username'])
         chats = home.get_chats()
-        address = transaction_users['A_USER']['address']
+        address = transaction_users_wallet['A_USER']['address']
         balance = get_balance(address) / 1000000000000000000
         eth_rate = get_ethereum_price_in_usd()
         wallet = chats.wallet_button.click()

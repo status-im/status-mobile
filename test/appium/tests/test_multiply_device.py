@@ -12,6 +12,7 @@ from views.home import HomeView
 
 @pytest.mark.all
 class TestMultiplyDevices(MultiplyDeviceTestCase):
+
     @pytest.mark.discover
     def test_new_profile_name_and_status_on_discover(self):
         device_1, device_2 = HomeView(self.driver_1), HomeView(self.driver_2)
@@ -173,24 +174,23 @@ class TestMultiplyDevices(MultiplyDeviceTestCase):
         if message_text.is_element_present(20):
             pytest.fail('Message is shown for the user which has been removed from the GroupChat', False)
 
-    @pytest.mark.chat
-    def test_send_funds_via_request_in_one_to_one_chat(self):
-        recipient = transaction_users['A_USER']
-        sender = transaction_users['B_USER']
-
+    @pytest.mark.transaction
+    @pytest.mark.parametrize("test, recipient, sender", [('group_chat', transaction_users['A_USER'],
+                                                          transaction_users['B_USER']),
+                                                         ('one_to_one_chat', transaction_users['B_USER'],
+                                                          transaction_users['A_USER'])])
+    def test_send_funds_via_request(self, test, recipient, sender):
         device_1, device_2 = HomeView(self.driver_1), HomeView(self.driver_2)
         recover_access(device_1,
                        passphrase=recipient['passphrase'],
                        password=recipient['password'],
                        username=recipient['username'])
         chats_d1 = device_1.get_chats()
-
         recover_access(device_2,
                        passphrase=sender['passphrase'],
                        password=sender['password'],
                        username=sender['username'])
         chats_d2 = device_2.get_chats()
-
         try:
             chats_d1.element_by_text_part(sender['username'][:25], 'button').click()
         except NoSuchElementException:
@@ -199,24 +199,39 @@ class TestMultiplyDevices(MultiplyDeviceTestCase):
             chats_d1.public_key_edit_box.send_keys(sender['public_key'])
             chats_d1.confirm()
             chats_d1.confirm_public_key_button.click()
-
+        if test == 'group_chat':
+            for _ in range(2):
+                chats_d1.back_button.click()
+            chats_d1.new_group_chat_button.click()
+            sender_username = chats_d1.element_by_text(sender['username'], 'button')
+            sender_username.scroll_to_element()
+            sender_username.click()
+            chats_d1.next_button.click()
+            chat_name = 'transaction_group_chat'
+            chats_d1.name_edit_box.send_keys(chat_name)
+            chats_d1.save_button.click()
+            group_chat_d2 = chats_d2.element_by_text(chat_name, 'button')
+            group_chat_d2.click()
         chats_d1.request_funds_button.click()
         amount = get_unique_amount()
-        chats_d1.chat_message_input.set_value(amount)
+        if test == 'group_chat':
+            chats_d1.first_recipient_button.click()
+            chats_d1.send_as_keyevent(amount)
+        else:
+            chats_d1.chat_message_input.set_value(amount)
         chats_d1.send_message_button.click()
-
         initial_balance_recipient = get_balance(recipient['address'])
-
+        if test == 'group_chat':
+            chats_d1.find_full_text('from  ' + sender['username'], 60)
+            chats_d2.find_full_text('from  ' + sender['username'], 60)
         chats_d2.element_by_text_part(recipient['username'][:25], 'button').click()
-        chats_d2.element_by_text('Requesting  %s ETH' % amount, 'button').click()
+        chats_d2.element_by_text_part('Requesting  %s ETH' % amount, 'button').click()
         chats_d2.send_message_button.click()
         chats_d2.sign_transaction_button.click()
         chats_d2.enter_password_input.send_keys(sender['password'])
         chats_d2.sign_transaction_button.click()
         chats_d2.got_it_button.click()
         verify_balance_is_updated(initial_balance_recipient, recipient['address'])
-        chats_d2.verify_amount_is_sent(amount)
-
         chats_d2.back_button.click()
         wallet = chats_d2.wallet_button.click()
         tr_view = wallet.transactions_button.click()
