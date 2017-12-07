@@ -246,10 +246,6 @@ class ChatsViewObject(BaseViewObject):
             except TimeoutException:
                 break
 
-    def verify_amount_is_sent(self, amount):
-        self.driver.find_element(
-            BaseElement.Locator.xpath_selector("//*[@text='/send']/../../*[@text='%s']/../*[@text='ETH']" % amount))
-
 
 def get_unique_amount():
-    return '0.00%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
+    return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')
