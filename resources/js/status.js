@@ -6,6 +6,10 @@ var _status_catalog = {
     },
     status = {};
 
+function getCatalogJSON() {
+    return JSON.stringify({ result: _status_catalog });
+}
+
 function scopeToBitMask(scope) {
     // this function transforms scopes array to a single integer by generating a bit mask 
     return ((scope != null && scope.indexOf("global") > -1) ? 1 : 0) |

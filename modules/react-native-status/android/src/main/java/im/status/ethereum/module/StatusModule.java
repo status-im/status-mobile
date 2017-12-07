@@ -549,6 +549,26 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void executeJS(final String chatId, final String js, final Callback callback) {
+        Log.d(TAG, "executeJS");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.ExecuteJS(chatId, js);
+                Log.d(TAG, "endExecuteJS");
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
+    }
+
+    @ReactMethod
     public void setAdjustResize() {
         Log.d(TAG, "setAdjustResize");
         final Activity activity = getCurrentActivity();
