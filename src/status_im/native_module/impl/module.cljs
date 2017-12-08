@@ -132,9 +132,15 @@
   (when status
     (call-module #(.discardTransaction status id))))
 
+(defn- append-catalog-init [js]
+    (str js "\n" "var catalog = JSON.stringify(_status_catalog); catalog;"))
+
 (defn parse-jail [bot-id file callback]
   (when status
-    (call-module #(.parseJail status bot-id file callback))))
+    (call-module #(.parseJail status
+                              bot-id
+                              (append-catalog-init file)
+                              callback))))
 
 (defn execute-call [{:keys [jail-id path params callback]}]
   (when status
