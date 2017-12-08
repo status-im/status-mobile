@@ -122,7 +122,7 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file(STATUS_RELEASE_STORE_FILE)
+            storeFile file(STATUS_RELEASE_STORE_FILE.replaceAll("~", System.properties['user.home']))
             storePassword STATUS_RELEASE_STORE_PASSWORD
             keyAlias STATUS_RELEASE_KEY_ALIAS
             keyPassword STATUS_RELEASE_KEY_PASSWORD
