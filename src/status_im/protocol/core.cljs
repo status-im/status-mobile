@@ -102,7 +102,7 @@
             (l/message-listener listener-options))
           (inbox/request-messages!
            web3
-           {}
+           {:enode inbox/cluster-enode}
            #(log/info "offline inbox: request-messages response" %)))
       (f/add-filter!
         web3

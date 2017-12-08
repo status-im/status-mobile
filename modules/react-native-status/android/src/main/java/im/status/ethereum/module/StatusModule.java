@@ -414,7 +414,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
                 @Override
                 public void run() {
-                    String res = Statusgo.Notify(enode);
+                    String res = Statusgo.AddPeer(enode);
 
                     callback.invoke(res);
                 }
