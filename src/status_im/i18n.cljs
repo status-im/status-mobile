@@ -279,6 +279,7 @@
                                                 :lt
                                                 :zh-hans-mo
                                                 :zh-hans-hk
+                                                :zh-wuu
                                                 :sr-RS_#Latn
                                                 :sr}))
 

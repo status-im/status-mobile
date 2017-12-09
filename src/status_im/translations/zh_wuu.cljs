@@ -282,7 +282,7 @@
    :postponed                             "延迟交易"
 
    ;;webview
-   :web-view-error                        "要系，错特了"})
+   :web-view-error                        "要系，错特了"
 
    ;;testfairy warning
    :testfairy-title                       "出事体了!"
