@@ -20,7 +20,7 @@ node ('macos1') {
       sh 'git checkout ' + BRANCH_NAME
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
-      sh 'lein deps && npm install && ./re-natal deps'
+      sh 'lein deps && npm install && ./node_modules/re-natal/index.js deps'
       sh 'sed -i "" "s/301000/1201000/g" node_modules/react-native/packager/src/JSTransformer/index.js'
       sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
       sh 'cd ios && pod install && cd ..'
