@@ -179,7 +179,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             String gethLogFileName = "geth.log";
             jsonConfig.put("LogEnabled", false);
             jsonConfig.put("LogFile", gethLogFileName);
-            jsonConfig.put("LogLevel", "DEBUG");
+            jsonConfig.put("LogLevel", "INFO");
             jsonConfig.put("DataDir", root + customConfig.get("DataDir"));
             jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
             try {
@@ -509,23 +509,16 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void parseJail(final String chatId, final String js, final Callback callback) {
         Log.d(TAG, "parseJail chatId:" + chatId);
-        Log.d(TAG, js);
+        //Log.d(TAG, js);
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                String res = jail.parseJail(chatId, js);
-                Log.d(TAG, res);
-                Log.d(TAG, "endParseJail");
-                callback.invoke(res);
-            }
-        };
-
-        thread.start();
+        String res = jail.parseJail(chatId, js);
+        Log.d(TAG, res);
+        Log.d(TAG, "endParseJail");
+        callback.invoke(res);
     }
 
     @ReactMethod
