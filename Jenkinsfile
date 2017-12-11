@@ -17,6 +17,8 @@ node ('macos1') {
 
       git([url: 'https://github.com/status-im/status-react.git', branch: BRANCH_NAME])
 
+      sh 'git checkout -- .'
+      sh 'git checkout develop'
       sh 'git checkout ' + BRANCH_NAME
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
