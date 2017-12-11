@@ -105,6 +105,15 @@
                                (set-layout-width-fn w))}
      (or @input-text "")]))
 
+(defn- invisible-input-height [{:keys [set-layout-height-fn container-width]}]
+  (let [input-text    (subscribe [:chat :input-text])]
+    [react/text {:style     (style/invisible-input-text-height container-width)
+                 :on-layout #(let [h (-> (.-nativeEvent %)
+                                         (.-layout)
+                                         (.-height))]
+                               (set-layout-height-fn h))}
+     (or @input-text "")]))
+
 (defn- input-helper [_]
   (let [input-text (subscribe [:chat :input-text])]
     (fn [{:keys [command width]}]
@@ -174,6 +183,8 @@
                command @command]
            [react/animated-view {:style (style/input-root height anim-margin)}
             [invisible-input {:set-layout-width-fn set-layout-width-fn}]
+            [invisible-input-height {:set-layout-height-fn set-layout-height-fn
+                                     :container-width container-width}]
             [basic-text-input {:set-layout-height-fn   set-layout-height-fn
                                :set-container-width-fn set-container-width-fn
                                :height                 height
