@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -eou pipefail
+set -euf pipefail
 
 # TODO Clean up with require STATUS_GO_HOME and STATUS_REACT_HOME
 
