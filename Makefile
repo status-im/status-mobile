@@ -1,10 +1,6 @@
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
-ifndef GOPATH
-$(error GOPATH not set. Please set GOPATH and make sure status-go is located at $$GOPATH/src/github.com/status-im/status-go. For more information about the GOPATH environment variable, see https://golang.org/doc/code.html#GOPATH)
-endif
-
 # This is a code for automatic help generator.
 # It supports ANSI colors and categories.
 # To add new item into help output, simply add comments
