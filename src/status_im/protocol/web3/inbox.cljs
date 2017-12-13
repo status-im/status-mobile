@@ -47,8 +47,7 @@
                                           :params  [{:peer      enode
                                                      :topic     topic
                                                      :symKeyID  sym-key-id
-                                                     :from      0
-                                                     :to        1612505820}]}
+                                                     :from      0}]}
                                     payload (.stringify js/JSON (clj->js args))]
                                 (log/info "offline inbox: request-messages request")
                                 (log/info "offline inbox: request-messages args" (pr-str args))
