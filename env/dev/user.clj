@@ -18,7 +18,7 @@
           (fn [paths] (let [paths-set (set paths)]
                         (-> paths-set
                             (disj "env/dev")
-                            (conj "env/test" "test/cljs")
+                            (conj "test/cljs")
                             vec)))))
 
 (def cljs-builds
