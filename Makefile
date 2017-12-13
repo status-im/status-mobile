@@ -1,6 +1,3 @@
-.PHONY: statusgo all test xgo clean help
-.PHONY: statusgo-android statusgo-ios
-
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
