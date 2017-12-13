@@ -2,6 +2,7 @@
   (:require
     [status-im.protocol.web3.delivery :as d]
     [status-im.protocol.web3.utils :as u]
+    [status-im.utils.config :as config]
     [cljs.spec.alpha :as s]
     [taoensso.timbre :refer-macros [debug]]
     [status-im.protocol.validation :refer-macros [valid?]]
@@ -136,9 +137,14 @@
     (fn [key-id]
       (f/add-filter!
         web3
-        {:topics [f/status-topic]
-         :key    key-id
-         :type   :sym}
+        (if config/offline-inbox-enabled?
+          {:topics   [f/status-topic]
+           :key      key-id
+           :allowP2P true
+           :type     :sym}
+          {:topics   [f/status-topic]
+           :key      key-id
+           :type     :sym})
         (l/message-listener {:web3     web3
                              :identity identity
                              :callback callback
