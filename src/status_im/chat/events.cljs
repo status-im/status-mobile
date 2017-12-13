@@ -6,7 +6,7 @@
             [status-im.chat.models :as model]
             [status-im.chat.models.unviewed-messages :as unviewed-messages-model]
             [status-im.chat.sign-up :as sign-up]
-            [status-im.chat.constants :as chat-const] 
+            [status-im.chat.constants :as chat-const]
             [status-im.data-store.messages :as msg-store]
             [status-im.data-store.contacts :as contacts-store]
             [status-im.data-store.chats :as chats-store]
@@ -123,22 +123,16 @@
 (handlers/register-handler-fx
   :load-more-messages
   [(re-frame/inject-cofx :get-stored-messages)]
-  (fn [{{:keys [current-chat-id loading-allowed] :as db} :db
+  (fn [{{:keys [current-chat-id] :as db} :db
         get-stored-messages :get-stored-messages} _]
     (let [all-loaded? (get-in db [:chats current-chat-id :all-loaded?])]
-      (if (and loading-allowed (not all-loaded?))
-        (let [messages-path [:chats current-chat-id :messages]
-              messages      (get-in db messages-path)
-              chat-messages (filter #(= current-chat-id (:chat-id %)) messages)
-              new-messages  (get-stored-messages current-chat-id (count chat-messages))
+      (when-not all-loaded?
+        (let [loaded-count  (count (get-in db [:chats current-chat-id :messages]))
+              new-messages  (get-stored-messages current-chat-id loaded-count)
               all-loaded?   (> const/default-number-of-messages (count new-messages))]
-          {:db (-> db
-                   (assoc :loading-allowed false)
-                   (update-in messages-path concat new-messages)
-                   (assoc-in [:chats current-chat-id :all-loaded?] all-loaded?))
-           ;; we permit loading more messages again after 400ms
-           :dispatch-later [{:ms 400 :dispatch [:set :loading-allowed true]}]})
-        {:db db}))))
+          {:db (-> db 
+                   (update-in [:chats current-chat-id :messages] concat new-messages)
+                   (assoc-in [:chats current-chat-id :all-loaded?] all-loaded?))})))))
 
 (handlers/register-handler-db
   :set-message-shown
@@ -202,7 +196,7 @@
                                                 :requests (get chat->message-id->request chat-id))]))
                          (into {}))]
           (-> new-db
-              (assoc-in [:message-data :preview] message-previews) 
+              (assoc-in [:message-data :preview] message-previews)
               (assoc :chats chats)
               init-console-chat
               (update :dispatch-n conj event)))))))
