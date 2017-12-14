@@ -11,8 +11,8 @@
 (def color-command "#70777d")
 (def color-send "rgb(98, 143, 227)")
 
-(def max-input-height 66)
 (def min-input-height 38)
+(def max-input-height (* 4 min-input-height))
 
 (defnstyle root [margin-bottom]
   {:flex-direction   :column
@@ -65,6 +65,18 @@
 
 (def invisible-input-text
   {:font-size        14
+   :position         :absolute
+   :left             0
+   :background-color :transparent
+   :color            :transparent})
+
+(defnstyle invisible-input-text-height [container-width]
+  {:width            container-width
+   :flex             1
+   :font-size        14
+   :padding-top      5
+   :padding-bottom   5
+   :android          {:padding-top 3}
    :position         :absolute
    :left             0
    :background-color :transparent
