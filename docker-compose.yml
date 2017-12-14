@@ -1,0 +1,14 @@
+version: '3'
+services:
+  status-im:
+    build: .
+    image: status-im:latest
+    volumes:
+      - ./src:/home/developer/status/src
+
+  test:
+    image: status-im
+    volumes:
+      - ./test:/home/developer/status/test
+      - ./src:/home/developer/status/src
+    command: bash -c "./re-natal use-figwheel && lein test-cljs && lein prod-build"
