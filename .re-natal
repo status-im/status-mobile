@@ -1,53 +1,24 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "androidHost": "localhost",
-  "modules": [
-    "react-native-contacts",
-    "react-native-invertible-scroll-view",
-    "awesome-phonenumber",
-    "realm",
-    "react-native-i18n",
-    "realm/react-native",
-    "react-native-action-button",
-    "react-native-vector-icons/Ionicons",
-    "react-native-vector-icons/Octicons",
-    "react-native-randombytes",
-    "dismissKeyboard",
-    "react-native-linear-gradient",
-    "react-native-android-sms-listener",
-    "react-native-status",
-    "react-native-qrcode",
-    "react-native-orientation",
-    "identicon.js",
-    "react-native-fs",
-    "react-native-dialogs",
-    "react-native-popup-menu",
-    "react-native-sortable-listview",
-    "react-native-image-resizer",
-    "react-native-image-crop-picker",
-    "react-native-webview-bridge",
-    "react-native-drawer-layout",
-    "react-native-fcm",
-    "homoglyph-finder",
-    "web3",
-    "eccjs",
-    "chance",
-    "react-native-swiper",
-    "react-native-emoji-picker",
-    "react-native-autolink",
-    "instabug-reactnative",
-    "nfc-react-native",
-    "react-native-http-bridge",
-    "emojilib",
-    "react-native-mapbox-gl",
-    "react-native-config",
-    "react-native-svg"
-  ],
+  "modules": [],
   "imageDirs": [
     "resources/images"
   ],
-  "iosHost": "localhost",
+  "platforms": {
+    "ios": {
+      "host": "localhost",
+      "modules": []
+    },
+    "android": {
+      "host": "localhost",
+      "modules": []
+    },
+    "desktop": {
+      "host": "localhost",
+      "modules": []
+    }
+  },
   "envRoots": {
     "dev": "env/dev",
     "prod": "env/prod"

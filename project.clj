@@ -11,19 +11,16 @@
                  [com.taoensso/timbre "4.10.0"]
                  [hickory "0.7.1"]]
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-figwheel "0.5.13"]
-            [lein-re-frisk "0.5.1"]]
-  :clean-targets ["target/" "index.ios.js" "index.android.js"]
+            [lein-figwheel "0.5.14"]]
+  :clean-targets ["index.ios.js" "index.desktop.js"]
   :aliases {"prod-build"       ^{:doc "Recompile code with prod profile."}
                                ["do" "clean"
                                 ["with-profile" "prod" "cljsbuild" "once" "ios"]
-                                ["with-profile" "prod" "cljsbuild" "once" "android"]]
+                                ["with-profile" "prod" "cljsbuild" "once" "desktop"]]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.11"]
-                                   [re-frisk-remote "0.5.0"]
-                                   [re-frisk-sidecar "0.5.1"]
                                    [com.cemerick/piggieback "0.2.2"]
                                    [hawk "0.2.11"]]
                     :source-paths ["src" "env/dev"]
@@ -35,12 +32,12 @@
                                                     :main          "env.ios.main"
                                                     :output-dir    "target/ios"
                                                     :optimizations :none}}
-                                    :android
+                                    :desktop
                                     {:source-paths ["react-native/src" "src" "env/dev"]
                                      :figwheel     true
-                                     :compiler     {:output-to     "target/android/app.js"
-                                                    :main          "env.android.main"
-                                                    :output-dir    "target/android"
+                                     :compiler     {:output-to     "target/desktop/app.js"
+                                                    :main          "env.desktop.main"
+                                                    :output-dir    "target/desktop"
                                                     :optimizations :none}
                                      :warning-handlers [status-im.utils.build/warning-handler]}}}
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
@@ -75,11 +72,11 @@
                                                  :parallel-build     false
                                                  :language-in        :ecmascript5}
                                   :warning-handlers [status-im.utils.build/warning-handler]}
-                                 :android
+                                 :desktop
                                  {:source-paths ["react-native/src" "src" "env/prod"]
-                                  :compiler     {:output-to          "index.android.js"
-                                                 :main               "env.android.main"
-                                                 :output-dir         "target/android-prod"
+                                  :compiler     {:output-to          "index.desktop.js"
+                                                 :main               "env.desktop.main"
+                                                 :output-dir         "target/desktop-prod"
                                                  :static-fns         true
                                                  :optimize-constants true
                                                  :optimizations      :simple

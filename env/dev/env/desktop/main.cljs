@@ -1,6 +1,6 @@
-(ns ^:figwheel-no-load env.android.main
+(ns ^:figwheel-no-load env.desktop.main
   (:require [reagent.core :as r]
-            [status-im.android.core :as core]
+            [status-im.desktop.core :as core]
             [figwheel.client :as fw]
             [env.config :as conf]))
 
@@ -16,7 +16,7 @@
 (def root-el (r/as-element [reloader]))
 
 (fw/start {
-           :websocket-url    (:android conf/figwheel-urls)
+           :websocket-url    (:desktop conf/figwheel-urls)
            :heads-up-display false
            :jsload-callback  #(swap! cnt inc)})
 

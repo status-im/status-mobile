@@ -45,7 +45,7 @@
 
 (defn profile-badge [{:keys [name last-online] :as contact}]
   [react/view styles/profile-badge
-   [my-profile-icon {:account {:photo-path (js/require "./200px-Anonymous.png") :name name}
+   [my-profile-icon {:account {:photo-path "" :name name}
                      :edit?   false}]
                      
    [react/view styles/profile-badge-name-container
@@ -209,9 +209,6 @@
      [profile-badge]
      [profile-status]]
     [form-spacer]
-    [react/view styles/profile-badge
-     (vi/icon :icons/qr)
-     [action-button {:label "Show QR"}]]
     [form-spacer]
     [react/view styles/profile-info-container
        [my-profile-info {:phone "+44 7911 123456"

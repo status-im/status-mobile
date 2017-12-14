@@ -176,9 +176,9 @@
 
 
 ;; Emoji
-
 ;; (def emoji-picker-class rn-dependencies/emoji-picker)
 
+(def emoji-picker (get-class "View"))
 ;;(def emoji-picker
 ;;  (let [emoji-picker (.-default emoji-picker-class)]
 ;;    (r/adapt-react-class emoji-picker)))
@@ -189,6 +189,7 @@
 
 ;;(def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))
 
+(def autolink (get-class "View"))
 ;;(defn autolink [opts]
 ;;  (r/as-element
 ;;   [autolink-class (add-font-style :style opts)]))
@@ -197,12 +198,16 @@
 
 ;; HTTP Bridge
 
+(def http-bridge (get-class "View"))
 ;;(def http-bridge rn-dependencies/http-bridge)
 
 (print "----react.cljs 9")
 
+(def splash-screen (get-class "View"))
+
 ;; KeyboardAvoidingView
 
+(def keyboard-avoiding-view (get-class "View"))
 ;; (defn keyboard-avoiding-view [props & children]
 ;;   (let [view-element (if ios?
 ;;                        [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
