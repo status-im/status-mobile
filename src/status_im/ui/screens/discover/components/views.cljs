@@ -68,8 +68,8 @@
       [view/status-view {:id     message-id
                          :style  styles/discover-item-status-text
                          :status status}]
-      [react/view styles/discover-list-item-second-row
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-status-author-profile whisper-id])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-status-author-profile whisper-id])}
+       [react/view styles/discover-list-item-second-row
         [react/view styles/discover-list-item-name-container
          [react/view styles/discover-list-item-avatar-container
           [chat-icon/chat-icon
@@ -79,12 +79,12 @@
           [react/text {:style           styles/discover-list-item-name
                        :font            :medium
                        :number-of-lines 1}
-           (display-name me? account-name contact-name name whisper-id)]]]]
+           (display-name me? account-name contact-name name whisper-id)]]]
 
-       (when-not me?
-         (chat-button whisper-id))]
-      (when show-separator?
-        [react/view styles/separator])]]))
+        (when-not me?
+          (chat-button whisper-id))]]
+       (when show-separator?
+         [react/view styles/separator])]]))
 
 ;; NOTE(oskarth): Should possibly be merged with discover-list-item-full, but
 ;; there are too many differences between preview item (main screen) and full
@@ -102,8 +102,8 @@
       [view/status-view {:id     message-id
                          :style  styles/discover-item-status-text
                          :status status}]
-      [react/view styles/discover-list-item-second-row
-       [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-status-author-profile whisper-id])}
+      [react/touchable-highlight {:on-press #(re-frame/dispatch [:show-status-author-profile whisper-id])}
+       [react/view styles/discover-list-item-second-row
         [react/view styles/discover-list-item-name-container
          [react/view styles/discover-list-item-avatar-container
           [chat-icon/chat-icon
@@ -113,9 +113,9 @@
           [react/text {:style           styles/discover-list-item-name
                        :font            :medium
                        :number-of-lines 1}
-           (display-name me? account-name contact-name name whisper-id)]]]]
+           (display-name me? account-name contact-name name whisper-id)]]]
 
-       (when-not me?
-         (chat-button whisper-id))]]
+        (when-not me?
+          (chat-button whisper-id))]]]
      (when show-separator?
        [react/view styles/separator])]))

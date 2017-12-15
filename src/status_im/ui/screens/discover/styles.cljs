@@ -47,7 +47,7 @@
              :font-size   16}})
 
 (def discover-list-item-name-container
-  {:flex            0.3
+  {:flex            1
    :padding-right   30
    :flex-direction  :row
    :justify-content :flex-start
