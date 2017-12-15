@@ -97,6 +97,7 @@ run-ios: ##@run Run iOS build
 #--------------
 # Other
 #--------------
+.PHONY: react-native
 react-native: ##@other Start react native packager
 	react-native start
 
