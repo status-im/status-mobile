@@ -121,13 +121,12 @@
   (fn [processed-message]
     (processed-messages/save processed-message)))
 
-(defn system-message
-  ([message-id timestamp content]
-   {:from         "system"
-    :message-id   message-id
-    :timestamp    timestamp
-    :content      content
-    :content-type constants/text-content-type}))
+(defn system-message [message-id timestamp content]
+  {:from         "system"
+   :message-id   message-id
+   :timestamp    timestamp
+   :content      content
+   :content-type constants/text-content-type})
 
 (re-frame/reg-fx
   ::participant-removed-from-group-message
@@ -499,8 +498,10 @@
          {:keys [group-id timestamp message-id]} :payload}]]
     (when (and (not= current-public-key from)
                chats-is-active-and-timestamp)
-      {::participant-left-group-message {:group-id group-id :from from :message-id message-id
-                                         :timestamp timestamp}
+      {::participant-left-group-message {:chat-id    group-id
+                                         :from       from
+                                         :message-id message-id
+                                         :timestamp  timestamp}
        ::chats-remove-contact [group-id from]
        :db (update-in db [:chats group-id :contacts]
                       #(remove (fn [{:keys [identity]}]
