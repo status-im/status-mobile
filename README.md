@@ -1,5 +1,3 @@
-![Status - A Browser, Messenger, and gateway to the decentralized world of Ethereum](https://status.im/img/status-github-banner@2x.png?v=1.1 "Status - A Browser, Messenger, and gateway to the decentralised world of Ethereum")
-[![Build Status](https://saucelabs.com/buildstatus/jarrad-status)](https://saucelabs.com/beta/builds/50ccf11ec1a44d88b6eb989929e5789f)
 
 # Status - a Mobile Ethereum Operating System
 
@@ -41,7 +39,7 @@ It's bug hunting season! Status is currently in Alpha and there is sure to be a 
 Status is a visual interface to make permanent changes on the Blockchain, it handles crypto-tokens that have real value and allows 3rd party code execution. Security is paramount to its success. You are given permission to break Status as hard as you can, as long as you share your findings with the community!
 
 - **Evangelism**  
-Help us spread the word! Tell a friend *right now*, in fact tell **everyone** - yell from a mountain if you have to, every person counts! If you've got a great story to tell or have some interesting way you've spread the word about Status let us know about it in our [Riot]!(https://chat.status.im/#/register)
+Help us spread the word! Tell a friend *right now*, in fact tell **everyone** - yell from a mountain if you have to, every person counts! If you've got a great story to tell or have some interesting way you've spread the word about Status let us know about it in our [Riot](https://chat.status.im/#/register)
 
 ## Status API 
 View our [API Docs](https://wiki.status.im/Status_API) and learn how to integrate your DApp into Status or build a decentralized chatbot. You can read more about how to add your DApp or Chatbot to Status [here](https://wiki.status.im/Adding_your_DApp_to_Status)
