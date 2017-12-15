@@ -1,6 +1,6 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
-set -euf pipefail
+set -eof pipefail
 
 BRANCH=$1
 if [[ $# -eq 0 ]] ; then
