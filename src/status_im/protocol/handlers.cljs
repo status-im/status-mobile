@@ -88,10 +88,12 @@
        :groups                      groups
        :callback                    #(re-frame/dispatch [:incoming-message %1 %2])
        :ack-not-received-s-interval 125
-       :default-ttl                 120
+       ;; XXX(oskarth): For offline inbox MVP QA only, normally 120
+       :default-ttl                 60
        :send-online-s-interval      180
        :ttl-config                  {:public-group-message 2400}
-       :max-attempts-number         3
+       ;; XXX(oskarth): For offline inbox MVP QA only, normally 3
+       :max-attempts-number         1
        :delivery-loop-ms-interval   500
        :profile-keypair             {:public  updates-public-key
                                      :private updates-private-key}
