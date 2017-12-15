@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node_modules/react-native/packager/packager.sh",
+    "start": "node node_modules/react-native/local-cli/cli.js start",
     "postinstall": "./postinstall.sh"
   },
   "devDependencies": {
@@ -17,9 +17,6 @@
     "babel-generator": "6.24.1",
     "babel-helper-builder-react-jsx": "6.18.0",
     "babel-plugin-transform-es2015-block-scoping": "6.15.0",
-    "babel-plugin-transform-es2015-parameters": "6.18.0",
-    "babel-plugin-transform-flow-strip-types": "6.18.0",
-    "babel-plugin-transform-regenerator": "6.20.0",
     "babel-preset-react-native": "4.0.0",
     "babel-register": "6.18.0",
     "bignumber.js": "github:status-im/bignumber.js#master",
