@@ -1,5 +1,0 @@
---- node_modules/react-native-http-bridge/ios/RCTHttpServer.h.bak	2017-11-23 00:47:07.000000000 +0100
-+++ node_modules/react-native-http-bridge/ios/RCTHttpServer.h	2017-11-23 00:48:02.000000000 +0100
-@@ -1 +1 @@
--#import "RCTBridgeModule.h"
-+#import <React/RCTBridgeModule.h>
