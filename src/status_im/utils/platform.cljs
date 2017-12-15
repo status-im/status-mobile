@@ -1,6 +1,7 @@
 (ns status-im.utils.platform
   (:require [status-im.android.platform :as android]
             [status-im.ios.platform :as ios]
+            [status-im.desktop.platform :as desktop]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
 
 (def platform
@@ -15,4 +16,5 @@
   (cond
     android? android/platform-specific
     ios? ios/platform-specific
+    desktop? desktop/platform-specific
     :else {}))

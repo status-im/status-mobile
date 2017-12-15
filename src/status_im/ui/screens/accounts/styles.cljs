@@ -18,7 +18,8 @@
   {:justify-content :center
    :align-items     :center
    :ios             {:height 56}
-   :android         {:height 55}})
+   :android         {:height 55}
+   :desktop         {:height 55}})
 
 (defstyle account-title-text
   {:color     :white
@@ -31,7 +32,9 @@
    :ios               {:margin-top    10
                        :margin-bottom 10}
    :android           {:margin-top    16
-                       :margin-bottom 16}})
+                       :margin-bottom 16}
+   :desktop           {:margin-top    10
+                       :margin-bottom 10}})
 
 (def accounts-action-button
   {:label-style  {:color :white}
@@ -50,7 +53,8 @@
    :justify-content  :center
    :height           64
    :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :android          {:border-radius 4}
+   :desktop          {:border-radius 8}})
 
 (def account-badge
   {:flex-direction     :row
@@ -65,4 +69,6 @@
   {:ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 16
+             :color     common/color-black}
+   :desktop {:font-size 16
              :color     common/color-black}})

@@ -8,6 +8,8 @@
                        :margin-bottom 10}
    :android           {:margin-top    16
                        :margin-bottom 16}
+   :desktop           {:margin-top    10
+                       :margin-bottom 10}
    :margin-horizontal 16})
 
 (defstyle login-badge-container
@@ -17,13 +19,17 @@
                       :height        150}
    :android          {:border-radius 4
                       :padding-top   12
-                      :height        144}})
+                      :height        144}
+   :desktop          {:border-radius 8
+                      :padding-top   16
+                      :height        150}})
 
 (defstyle sign-it-text
   {:color   :white
    :ios     {:font-size 17
              :letter-spacing -0.2}
-   :android {:font-size 16}})
+   :android {:font-size 16}
+   :desktop {:font-size 16}})
 
 (def sign-it-disabled-text
   (merge sign-it-text
@@ -35,7 +41,8 @@
    :justify-content  :center
    :height           52
    :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :android          {:border-radius 4}
+   :desktop          {:border-radius 8}})
 
 (def processing-view
   {:position         :absolute

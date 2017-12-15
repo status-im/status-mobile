@@ -16,12 +16,18 @@
                   :margin-top     24
                   :margin-bottom  6
                   :font-size      17
+                  :letter-spacing -0.2}
+   :desktop      {:height         (or content-height 26)
+                  :margin-top     24
+                  :margin-bottom  6
+                  :font-size      17
                   :letter-spacing -0.2}})
 
 (defstyle component-container
   {:margin-left  16
    :android      {:min-height 76}
-   :ios          {:min-height 78}})
+   :ios          {:min-height 78}
+   :desktop      {:min-height 78}})
 
 (defnstyle label-animated-text [{:keys [label-top label-font-size]}]
   {:position  :absolute
@@ -36,6 +42,9 @@
               :font-size      12}
     :ios     {:margin-top     4
               :font-size      14
+              :letter-spacing -0.2}
+    :desktop {:margin-top     4
+              :font-size      14
               :letter-spacing -0.2}})
 
 (defstyle error-text
@@ -43,6 +52,9 @@
     :android {:margin-top     6
               :font-size      12}
     :ios     {:margin-top     4
+              :font-size      14
+              :letter-spacing -0.2}
+    :desktop {:margin-top     4
               :font-size      14
               :letter-spacing -0.2}})
 

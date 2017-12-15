@@ -66,14 +66,14 @@
   (let [props (get-init-props options)]
     (fn [{:keys [label description error hide-underline?] :as options}]
       [view st/component-container
-       [animated-text {:style (st/label-animated-text props)} label]
+       [text label]
        [text-input (merge (st/text-input @(:content-height* props))
                           (dissoc options :label :description :error :hide-underline?)
                           (text-input-handlers options props))]
        (when-not hide-underline?
          [view {:style (st/underline-blured error)
                 :on-layout #(reset! (:underline-max-width* props) (get-width %))}
-          [animated-view {:style (st/underline-focused
+          [view {:style (st/underline-focused
                                    (:underline-width props)
                                    (:underline-height props)
                                    error)}]])

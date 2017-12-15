@@ -42,11 +42,13 @@
 (defview login []
   (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]]
     [react/view ast/accounts-container
-     [status-bar {:type :transparent}]
-     [login-toolbar]
+     ;;[status-bar {:type :transparent}]
+     ;;[login-toolbar]
      [react/view st/login-view
       [react/view st/login-badge-container
-       [account-badge address photo-path name]
+       [account-badge "Address Text" "test" "Name Text"]
+       [react/text
+        "Some text"]
        [react/view {:height 8}]
        [text-input-with-label {:ref               #(reset! password-text-input %)
                                :label             (i18n/label :t/password)
@@ -55,15 +57,17 @@
                                :on-change-text    #(do
                                                      (dispatch [:set-in [:accounts/login :password] %])
                                                      (dispatch [:set-in [:accounts/login :error] ""]))
-                               :on-submit-editing #(login-account password-text-input address password)
+                               ;;:on-submit-editing #(login-account password-text-input address password)
                                :auto-focus        true
-                               :secure-text-entry true
-                               :error             (when (pos? (count error)) (i18n/label (error-key error)))}]]
-      (let [enabled? (pos? (count password))]
-        [react/view {:margin-top 16}
-         [react/touchable-highlight (if enabled? {:on-press #(login-account password-text-input address password)})
-          [react/view st/sign-in-button
-           [react/text {:style (if enabled? st/sign-it-text st/sign-it-disabled-text)} (i18n/label :t/sign-in)]]]])]
-     (when processing
-       [react/view st/processing-view
-        [components/activity-indicator {:animating true}]])]))
+                               :secure-text-entry true}]]
+                               ;;:error             (when (pos? (count error)) (i18n/label (error-key error)))
+
+
+      (comment (let [enabled? (pos? (count password))]
+                [react/view {:margin-top 16}
+                 [react/touchable-highlight (if enabled? {:on-press #(login-account password-text-input address password)})
+                  [react/view st/sign-in-button
+                   [react/text {:style (if enabled? st/sign-it-text st/sign-it-disabled-text)} (i18n/label :t/sign-in)]]]]))]
+     (comment (when processing
+               [react/view st/processing-view
+                [components/activity-indicator {:animating true}]]))]))
