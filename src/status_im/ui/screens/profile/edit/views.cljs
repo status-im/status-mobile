@@ -7,7 +7,7 @@
             [status-im.ui.components.chat-icon.screen :refer [my-profile-icon]]
             [status-im.ui.components.context-menu :refer [context-menu]]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.sticky-button :refer [sticky-button]]
             [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
             [status-im.ui.components.toolbar.view :as toolbar]

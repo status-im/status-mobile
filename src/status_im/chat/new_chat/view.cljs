@@ -8,7 +8,7 @@
             [status-im.ui.components.action-button.styles :refer [actions-list]]
             [status-im.ui.components.react :refer [view text list-view list-item]]
             [status-im.ui.components.contact.contact :refer [contact-view]]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.ui.components.drawer.view :refer [drawer-view]]
             [status-im.chat.new-chat.styles :as styles]

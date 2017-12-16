@@ -4,7 +4,7 @@
             [status-im.ui.components.camera :as camera]
             [status-im.ui.components.icons.custom-icons :as custom-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.profile.photo-capture.styles :as styles]

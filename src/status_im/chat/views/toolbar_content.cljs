@@ -52,8 +52,7 @@
     [last-activity {:sync-state sync-state}]
     (if public?
       [view {:flex-direction :row}
-       [text {:style (get-in platform-specific [:component-styles :toolbar-last-activity])}
-        (label :t/public-group-status)]]
+       [text (label :t/public-group-status)]]
       [view {:flex-direction :row}
        [text {:style st/members}
         (if public?

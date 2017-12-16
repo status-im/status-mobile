@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as rf]
-    [status-im.ui.components.status-bar :as status-bar]
+    [status-im.ui.components.status-bar.view :as status-bar]
     [status-im.ui.components.toolbar.view :as toolbar]
     [status-im.ui.components.context-menu :as context-menu]
     [status-im.ui.screens.network-settings.views :as network-settings]

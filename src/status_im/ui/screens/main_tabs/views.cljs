@@ -2,7 +2,7 @@
   (:require [status-im.ui.components.drawer.view :refer [drawer-view]]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.styles :as styles]
             [status-im.ui.components.tabs.styles :as tabs.styles]
             [status-im.ui.components.tabs.views :as tabs]

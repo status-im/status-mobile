@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.network-settings.parse-json.views
   (:require
     [re-frame.core :refer [dispatch]]
-    [status-im.ui.components.status-bar :refer [status-bar]]
+    [status-im.ui.components.status-bar.view :refer [status-bar]]
     [status-im.ui.components.toolbar.view :as toolbar]
     [status-im.ui.screens.network-settings.views :as network-settings]
     [status-im.ui.components.react :refer [view text text-input]]

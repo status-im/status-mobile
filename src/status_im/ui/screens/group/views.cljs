@@ -8,9 +8,9 @@
                                                    keyboard-avoiding-view list-view list-item]]
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
-            [status-im.utils.platform :refer [platform-specific]]
+            [status-im.utils.platform :refer [platform-specific ios?]]
             [status-im.ui.components.sticky-button :refer [sticky-button]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.components.renderers.renderers :as renderers]
@@ -89,7 +89,7 @@
      [view
       [text {:style cstyles/show-all-text
              :uppercase? (get-in platform-specific [:uppercase?])
-             :font (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
+             :font (if ios? :default :medium)}
        (str (- contacts-count contacts-limit) " " (label :t/more))]]]]])
 
 (def ^:const contacts-limit 3)
@@ -168,4 +168,3 @@
                (dispatch [:navigate-to-clean :contact-list]))
             #(dispatch [:create-new-group-chat-and-open group-name]))
           true])])))
-

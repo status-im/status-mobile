@@ -5,7 +5,7 @@
             [cljs.spec.alpha :as s]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.text-field.view :as text-field]
-            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.styles :as components.styles :refer [icon-ok button-input-container button-input color-blue]]
             [status-im.ui.components.image-button.view :as scan-button]
@@ -67,7 +67,7 @@
             account [:get-current-account]]
     [react/view st/contact-form-container
      [status-bar/status-bar]
-     [toolbar/toolbar {:style (get-in platform/platform-specific [:component-styles :toolbar])}
+     [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/add-new-contact)]
       [toolbar/actions (toolbar-actions new-contact-identity account error)]]
