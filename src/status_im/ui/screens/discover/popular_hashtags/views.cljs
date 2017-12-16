@@ -9,8 +9,8 @@
             [status-im.ui.components.toolbar.view :as toolbar]))
 
 (defn render-tag [tag]
-  [react/touchable-highlight {:on-press #(do (re-frame/dispatch [:set :discover-search-tags [tag]])
-                                             (re-frame/dispatch [:navigate-to :discover-search-results]))}
+  [react/touchable-highlight
+   {:on-press #(re-frame/dispatch [:show-discovery [tag] :discover-search-results])}
    [react/view styles/tag-view
     [react/text {:style styles/tag-title
                  :font  :default}
