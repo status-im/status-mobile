@@ -41,20 +41,16 @@
     :nav-action         (actions/hamburger drawer/open-drawer!)
     :on-search-submit   (fn [text]
                           (when-not (string/blank? text)
-                            (let [hashtags (get-hashtags text)]
-                              ;; TODO (goranjovic) - refactor double dispatch to a single call
-                              (re-frame/dispatch [:set :discover-search-tags hashtags])
-                              (re-frame/dispatch [:navigate-to :discover-search-results]))))}])
-
+                            (let [tags (get-hashtags text)]
+                              (re-frame/dispatch [:show-discovery tags :discover-search-results]))))}])
 
 (defn top-status-for-popular-hashtag [{:keys [tag item current-account contacts]}]
   (let [{:keys [discovery total]} item]
     [react/view styles/popular-list-container
      [react/view styles/row
       [react/view {}
-       ;; TODO (goranjovic) - refactor double dispatch to a single call
-       [react/touchable-highlight {:on-press #(do (re-frame/dispatch [:set :discover-search-tags [tag]])
-                                                  (re-frame/dispatch [:navigate-to :discover-search-results]))}
+       [react/touchable-highlight
+        {:on-press #(re-frame/dispatch [:show-discovery [tag] :discover-search-results])}
         [react/view {}
          [react/text {:style styles/tag-name
                       :font  :medium}
@@ -69,11 +65,10 @@
                                      :contacts        contacts}]]))
 
 (defn popular-hashtags-preview [{:keys [popular-discoveries popular-tags contacts current-account]}]
-  (let [has-content? (seq popular-tags)]
+  (let [has-content? (seq popular-tags)
+        tags (map :name popular-tags)]
     [react/view styles/popular-container
-     ;; TODO (goranjovic) - refactor double dispatch to a single call
-     [components/title :t/popular-tags :t/all #(do (re-frame/dispatch [:set :discover-search-tags (map :name popular-tags)])
-                                                   (re-frame/dispatch [:navigate-to :discover-all-hashtags])) has-content?]
+     [components/title :t/popular-tags :t/all #(re-frame/dispatch [:show-discovery tags :discover-all-hashtags]) has-content?]
      (if has-content?
        [carousel/carousel {:pageStyle styles/carousel-page-style
                            :gap       8
@@ -165,9 +160,9 @@
       [recent-statuses-preview {:contacts        contacts
                                   :current-account current-account
                                   :discoveries     discoveries}]
-      [popular-hashtags-preview {:popular-tags        popular-tags
-                                   :popular-discoveries popular-discoveries
-                                   :contacts            contacts
+      [popular-hashtags-preview {:popular-tags     popular-tags
+                                 :popular-discoveries popular-discoveries
+                                 :contacts            contacts
                                  :current-account     current-account}]
       [all-dapps/preview all-dapps]
       [public-chats-teaser]]]))

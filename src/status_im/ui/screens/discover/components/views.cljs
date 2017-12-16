@@ -48,7 +48,7 @@
     :else (identicon/identicon whisper-id)))
 
 (defn chat-button [whisper-id]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:start-chat whisper-id])}
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:start-chat whisper-id {:navigation-replace? true}])}
    [react/view styles/chat-button-container
     [react/view styles/chat-button-inner
       [vector-icons/icon :icons/chats {:color :active}]
