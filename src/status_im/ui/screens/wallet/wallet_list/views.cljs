@@ -4,7 +4,7 @@
             [re-frame.core :as re-frame]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.i18n :as i18n]

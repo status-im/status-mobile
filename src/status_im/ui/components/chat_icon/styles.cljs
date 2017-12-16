@@ -1,7 +1,6 @@
 (ns status-im.ui.components.chat-icon.styles
   (:require [status-im.ui.components.styles :refer [color-white
-                                                    online-color]]
-            [status-im.utils.platform :as p]))
+                                                    online-color]]))
 
 (defn default-chat-icon [color]
   {:margin          0
@@ -257,7 +256,5 @@
    :justify-content :center})
 
 (def profile-icon-edit-text
-  (merge (get-in p/platform-specific [:component-styles :profile :profile-icon-edit-text])
-         {:color            :white
-          :background-color :transparent}))
-
+  {:color            :white
+   :background-color :transparent})

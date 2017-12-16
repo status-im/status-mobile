@@ -92,7 +92,7 @@
           [view
            [text {:style      st/show-all-text
                   :uppercase? (get-in platform-specific [:uppercase?])
-                  :font       (get-in platform-specific [:component-styles :contacts :show-all-text-font])}
+                  :font       (if ios? :default :medium)}
             (str (- contacts-count contacts-limit) " " (label :t/more))]]]]])
      [common/bottom-shadow]]))
 

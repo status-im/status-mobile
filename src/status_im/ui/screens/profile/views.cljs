@@ -11,7 +11,7 @@
             [status-im.ui.components.list-selection :refer [share-options]]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vi]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.styles :refer [color-blue]]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]

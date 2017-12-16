@@ -3,7 +3,7 @@
   (:require
     [status-im.utils.listview :as lw]
     [re-frame.core :as rf]
-    [status-im.ui.components.status-bar :as status-bar]
+    [status-im.ui.components.status-bar.view :as status-bar]
     [status-im.ui.components.toolbar.view :as toolbar]
     [status-im.ui.components.action-button.action-button :as action-button]
     [status-im.ui.components.action-button.styles :as action-button-styles]

@@ -1,6 +1,5 @@
 (ns status-im.ui.components.text-field.styles
-  (:require [status-im.utils.platform :refer [platform-specific]]))
-
+  (:require-macros [status-im.utils.styles :refer [defnstyle]]))
 
 (def text-field-container
   {:position       :relative
@@ -15,14 +14,14 @@
    :padding-bottom      5
    :text-align-vertical :top})
 
-(defn label [top font-size color]
-  (let [input-label-style (get-in platform-specific [:component-styles :input-label])]
-    (merge input-label-style
-           {:position         :absolute
-            :top              top
-            :color            color
-            :font-size        font-size
-            :background-color :transparent})))
+(defnstyle label [top font-size color]
+  {:position         :absolute
+   :top              top
+   :color            color
+   :font-size        font-size
+   :background-color :transparent
+   :ios              {:left 0}
+   :android          {:left 4}})
 
 (def label-float
   {})
@@ -36,10 +35,10 @@
    :height           height
    :width            width})
 
-(defn error-text [color]
-  (let [input-error-text-style (get-in platform-specific [:component-styles :input-error-text])]
-    (merge input-error-text-style
-           {:color            color
-            :background-color :transparent
-            :font-size        12
-            :line-height      20})))
+(defnstyle error-text [color]
+  {:color            color
+   :background-color :transparent
+   :font-size        12
+   :line-height      20
+   :ios              {:margin-left 0}
+   :android          {:margin-left 4}})

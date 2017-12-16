@@ -3,7 +3,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
-            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.chat-icon.screen :as chat-icon-screen]
             [status-im.chat.styles.screen :as style]
             [status-im.utils.listview :as listview]
@@ -16,7 +16,7 @@
             [status-im.chat.views.message.datemark :as message-datemark]
             [status-im.chat.views.input.input :as input]
             [status-im.chat.views.actions :as actions]
-            [status-im.chat.views.bottom-info :as bottom-info] 
+            [status-im.chat.views.bottom-info :as bottom-info]
             [status-im.i18n :as i18n]
             [status-im.ui.components.animation :as anim]
             [status-im.ui.components.sync-state.offline :as offline]
@@ -106,5 +106,4 @@
        [actions/actions-view])
      (when show-bottom-info?
        [bottom-info/bottom-info-view])
-     [offline/offline-view {:top (get-in platform/platform-specific
-                                         [:component-styles :status-bar :default :height])}]]))
+     [offline/offline-view {:top (get platform/platform-specific :status-bar-default-height)}]]))

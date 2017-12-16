@@ -1,7 +1,7 @@
 (ns status-im.ui.screens.network-settings.add-rpc.views
   (:require
     [re-frame.core :refer [dispatch]]
-    [status-im.ui.components.status-bar :as status-bar]
+    [status-im.ui.components.status-bar.view :as status-bar]
     [status-im.ui.components.toolbar.view :as toolbar]
     [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
     [status-im.ui.screens.network-settings.views :as network-settings]

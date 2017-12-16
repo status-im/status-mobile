@@ -1,7 +1,6 @@
 (ns status-im.ui.components.toolbar.styles
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.utils.platform :as p]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def toolbar-background1 styles/color-white)
 
@@ -41,11 +40,13 @@
    :font-size      17
    :ios            {:text-align "center"}})
 
-(def toolbar-border-container
-  (get-in p/platform-specific [:component-styles :toolbar-border-container]))
+(defstyle toolbar-border-container
+  {:ios {:background-color styles/color-white}})
 
-(def toolbar-border
-  (get-in p/platform-specific [:component-styles :toolbar-border]))
+(defstyle toolbar-border
+  {:ios {:height           1
+         :background-color styles/color-gray5
+         :opacity          0.5}})
 
 (def toolbar-actions
   {:flex           0

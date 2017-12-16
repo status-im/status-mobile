@@ -5,7 +5,7 @@
             [status-im.ui.screens.accounts.styles :as ast]
             [status-im.ui.screens.accounts.views :refer [account-badge]]
             [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.screens.accounts.login.styles :as st]

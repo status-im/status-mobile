@@ -4,7 +4,7 @@
             [status-im.ui.components.checkbox.view :as checkbox]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as styles]
             [status-im.ui.components.tabs.views :as tabs]
             [status-im.ui.components.toolbar.actions :as actions]
@@ -93,7 +93,7 @@
          [react/text {:style transactions.styles/address-hash
                       :ellipsize-mode "middle"
                       :number-of-lines 1}
-          address]] 
+          address]]
         (when (unsigned? type)
           [action-buttons transaction])]
        [list/item-icon {:icon :icons/forward

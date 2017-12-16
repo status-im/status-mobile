@@ -5,7 +5,7 @@
             [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.ui.screens.contacts.views :refer [contact-options]]
             [status-im.ui.components.react :refer [view list-view list-item]]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.drawer.view :refer [drawer-view]]
@@ -66,4 +66,3 @@
          [contact-list-toolbar-edit group]
          [contact-list-toolbar group])]
       [contacts-list-view group edit?]]]))
-

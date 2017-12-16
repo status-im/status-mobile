@@ -116,13 +116,13 @@
             chat-id           [:chat :chat-id]
             public?           [:chat :public?]
             members           [:current-chat-contacts]
-            status-bar-height (get-in platform/platform-specific [:component-styles :status-bar :default :height])]
+            status-bar-height (get platform/platform-specific :status-bar-default-height)]
     (when-let [actions (if group-chat
                          (group-chat-items members public?)
                          (user-chat-items chat-id))]
       [react/view (merge
                    (styles/actions-wrapper status-bar-height)
-                   (get-in platform/platform-specific [:component-styles :actions-list-view]))
+                   styles/actions-list-view)
        [react/view styles/actions-separator]
        [react/view styles/actions-view
         (for [action actions]

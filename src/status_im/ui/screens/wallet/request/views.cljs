@@ -6,7 +6,7 @@
     [status-im.ui.components.qr-code :as components.qr-code]
     [status-im.ui.components.toolbar.actions :as actions]
     [status-im.ui.components.toolbar.view :as toolbar]
-    [status-im.ui.components.status-bar :as status-bar]
+    [status-im.ui.components.status-bar.view :as status-bar]
     [status-im.ui.screens.wallet.styles :as wallet.styles]
     [status-im.ui.components.common.common :as common]
     [status-im.ui.components.icons.vector-icons :as vi]

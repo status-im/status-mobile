@@ -5,7 +5,7 @@
             [status-im.ui.components.react :as react :refer [text]]
             [status-im.ui.components.text-field.view :refer [text-field]]
             [status-im.ui.components.styles :as components.styles]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.chat.new-public-chat.styles :as styles]
             [status-im.chat.new-public-chat.db :as v]

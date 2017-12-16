@@ -12,7 +12,7 @@
   (> (Math/abs (.-dy gesture)) 10))
 
 (defn on-move [response-height layout-height]
-  (let [margin-top (+ (get-in p/platform-specific [:component-styles :status-bar :main :height])
+  (let [margin-top (+ (get p/platform-specific :status-bar-default-height)
                       (/ (:height toolbar-st/toolbar) 2))]
     (fn [_ gesture]
       (when (enough-dy gesture)

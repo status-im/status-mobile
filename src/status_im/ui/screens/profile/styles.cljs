@@ -150,9 +150,6 @@
 (def profile-focus-line-color
   color-light-blue)
 
-(def profile-focus-line-height
-  (get-in platform/platform-specific [:component-styles :text-field-focus-line-height]))
-
 (defstyle profile-name-input
   {:color   text1-color
    :ios     {:font-size      17

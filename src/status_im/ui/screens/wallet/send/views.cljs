@@ -5,7 +5,7 @@
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.toolbar.view :as toolbar]

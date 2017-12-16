@@ -7,7 +7,7 @@
             [status-im.ui.components.native-action-button :refer [native-action-button]]
             [status-im.ui.components.drawer.view :as drawer]
             [status-im.ui.components.styles :refer [color-blue]]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.toolbar.styles :as tst]

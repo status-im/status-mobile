@@ -5,7 +5,7 @@
             [status-im.ui.components.react :refer [view text list-item]]
             [status-im.ui.components.icons.vector-icons :as vi]
             [status-im.ui.components.sticky-button :refer [sticky-button]]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.ui.components.sortable-list-view :refer [sortable-list-view sortable-item]]
             [status-im.ui.components.common.common :as common]

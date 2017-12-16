@@ -4,7 +4,7 @@
             [status-im.ui.components.renderers.renderers :as renderers]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.sticky-button :refer [sticky-button]]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.view :refer [toolbar-with-search]]
             [status-im.utils.listview :refer [to-datasource]]
             [status-im.ui.screens.group.styles :as styles]

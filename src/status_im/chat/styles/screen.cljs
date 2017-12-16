@@ -200,3 +200,7 @@
   {:text-align          :center
    :text-align-vertical :center
    :color               :#7099e6})
+
+(defstyle actions-list-view
+  {:ios {:border-bottom-color component.styles/color-gray3
+         :border-bottom-width 0.5}})

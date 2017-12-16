@@ -4,7 +4,7 @@
             [status-im.ui.components.qr-code :refer [qr-code]]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.icons.vector-icons :as vi]
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.qr-code.styles :as styles]
             [status-im.utils.money :as money]

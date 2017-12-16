@@ -44,7 +44,7 @@
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
             [status-im.ui.screens.wallet.assets.views :as wallet-assets]
 
-            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.status-bar.view :as status-bar]
 
             [status-im.ui.screens.discover.search-results.views :as discover-search]
             [status-im.ui.screens.discover.recent-statuses.views :as discover-recent]

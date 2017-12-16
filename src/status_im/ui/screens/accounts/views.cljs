@@ -1,8 +1,8 @@
 (ns status-im.ui.screens.accounts.views
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch dispatch-sync]]
-            [status-im.ui.screens.accounts.styles :as st] 
-            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.screens.accounts.styles :as st]
+            [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.common.common :as common]
             [status-im.ui.components.action-button.action-button :refer [action-button]]
