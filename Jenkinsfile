@@ -26,7 +26,7 @@ node ('macos1') {
       sh '[ -f node_modules/react-native/packager/src/JSTransformer/index.js ] && sed -i "" "s/301000/1201000/g" node_modules/react-native/packager/src/JSTransformer/index.js || echo "New packager"'
 
       // Fix silly RN upgrade weird env issue
-      cp 'findSymlinkedModules.js.patch' 'node_modules/react-native/local-cli/util/findSymlinkedModules.js'
+      sh 'cp findSymlinkedModules.js.patch node_modules/react-native/local-cli/util/findSymlinkedModules.js'
 
       sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
       sh 'cd ios && pod install && cd ..'
