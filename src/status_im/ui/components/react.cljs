@@ -55,7 +55,10 @@
 (def activity-indicator (get-class "ActivityIndicator"))
 
 (def modal (get-class "Modal"))
-(def picker (get-class "Picker"))
+(def picker-class (get-class "Picker"))
+(def picker-item-class
+  (when-let [picker (get-react-property "Picker")]
+    (adapt-class (.-Item picker))))
 
 (def pan-responder (.-PanResponder rn-dependencies/react-native))
 (def animated (.-Animated rn-dependencies/react-native))
@@ -116,10 +119,6 @@
    (merge {:underlay-color :transparent} props)
    content])
 
-(def picker-item
-  (when-let [picker (get-react-property "Picker")]
-    (adapt-class (.-Item picker))))
-
 (defn get-dimensions [name]
   (js->clj (.get dimensions name) :keywordize-keys true))
 
@@ -130,6 +129,14 @@
 
 (defn list-item [component]
   (r/as-element component))
+
+(defn picker
+  ([{:keys [style item-style selected on-change]} items]
+   [picker-class {:selectedValue selected :style style :itemStyle item-style :onValueChange on-change}
+    (for [{:keys [label value]} items]
+      ^{:key (str value)}
+      [picker-item-class
+       {:label (or label value) :value value}])]))
 
 ;; Image picker
 

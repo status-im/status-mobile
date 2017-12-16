@@ -3,12 +3,15 @@
             [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.native-module.core :as status]
-            [status-im.utils.handlers :as handlers]
             [status-im.ui.screens.wallet.db :as wallet.db]
-            [status-im.utils.types :as types]
-            [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils]
+            [status-im.utils.ethereum.core :as ethereum]
+            [status-im.utils.ethereum.erc20 :as erc20]
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.handlers :as handlers]
             [status-im.utils.hex :as utils.hex]
+            [status-im.utils.money :as money]
+            [status-im.utils.types :as types]
+            [status-im.utils.utils :as utils]
             [status-im.constants :as constants]))
 
 ;;;; FX
@@ -18,13 +21,21 @@
   (fn [{:keys [password id on-completed]}]
     (status/complete-transactions (list id) password on-completed)))
 
+(defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
+  (.sendTransaction (.-eth web3)
+                    (clj->js {:from from :to to :value value :gas gas :gasPrice gas-price})
+                    #()))
+
+(defn- send-tokens [{:keys [web3 from to value gas gas-price symbol network]}]
+  (let [contract (:address (tokens/symbol->token (ethereum/network->chain-keyword network) symbol))]
+    (erc20/transfer web3 contract from to value {:gas gas :gasPrice gas-price} #())))
+
 (re-frame/reg-fx
   ::send-transaction
-  (fn [{:keys [web3] :as params}]
-    (when web3
-      (.sendTransaction (.-eth web3)
-                        (clj->js (select-keys params [:from :to :value]))
-                        #()))))
+  (fn [{:keys [symbol] :as params}]
+    (case symbol
+      :ETH (send-ethers params)
+      (send-tokens params))))
 
 (re-frame/reg-fx
   ::show-transaction-moved
@@ -59,6 +70,23 @@
                (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
                (assoc-in [:wallet :send-transaction :amount-error] error))})))
 
+(defn- estimated-gas [symbol]
+  (if (tokens/ethereum? symbol)
+    ethereum/default-transaction-gas
+    ;; TODO(jeluard) Rely on estimateGas call
+    (.times ethereum/default-transaction-gas 5)))
+
+(handlers/register-handler-fx
+  :wallet.send/set-symbol
+  (fn [{:keys [db]} [_ symbol]]
+    {:db (-> (assoc-in db [:wallet :send-transaction :symbol] symbol)
+             (assoc-in [:wallet :send-transaction :gas] (estimated-gas symbol)))}))
+
+(handlers/register-handler-fx
+  :wallet.send/toggle-advanced
+  (fn [{:keys [db]} [_ advanced?]]
+    {:db (assoc-in db [:wallet :send-transaction :advanced?] advanced?)}))
+
 (def ^:private clear-send-properties {:id              nil
                                       :signing?        false
                                       :wrong-password? false
@@ -76,11 +104,12 @@
   [(re-frame/inject-cofx :now)]
   (fn [{:keys [db now]} [_ {:keys [id message_id args] :as transaction}]]
     (if (transaction-valid? transaction)
-      (let [{:keys [from to value data gas gasPrice]} args
+      (let [{:keys [from to value symbol data gas gasPrice]} args
             ;;TODO (andrey) revisit this map later (this map from old transactions, idk if we need all these fields)
             transaction {:id         id
                          :from       from
                          :to         to
+                         :symbol     symbol
                          :value      (money/bignumber (or value 0))
                          :data       data
                          :gas        (money/to-decimal gas)
@@ -160,8 +189,9 @@
   :wallet/sign-transaction
   (fn [{{:keys          [web3]
          :accounts/keys [accounts current-account-id] :as db} :db} [_ later?]]
-    (let [db' (assoc-in db [:wallet :send-transaction :wrong-password?] false)
-          {:keys [amount id password to-address]} (get-in db [:wallet :send-transaction])]
+    (let [db'     (assoc-in db [:wallet :send-transaction :wrong-password?] false)
+          network (:network db)
+          {:keys [amount id password to symbol gas gas-price] :as m} (get-in db [:wallet :send-transaction])]
       (if id
         {::accept-transaction {:id           id
                                :password     password
@@ -171,10 +201,14 @@
                                        :waiting-signal? true
                                        :later? later?
                                        :in-progress? true)
-         ::send-transaction {:web3  web3
-                             :from  (get-in accounts [current-account-id :address])
-                             :to    to-address
-                             :value amount}}))))
+         ::send-transaction {:web3      web3
+                             :from      (get-in accounts [current-account-id :address])
+                             :to        to
+                             :value     amount
+                             :gas       gas
+                             :gas-price gas-price
+                             :symbol    symbol
+                             :network   network}}))))
 
 (handlers/register-handler-fx
   :wallet/sign-transaction-modal
@@ -226,3 +260,13 @@
   :wallet.send/set-signing?
   (fn [{:keys [db]} [_ signing?]]
     {:db (assoc-in db [:wallet :send-transaction :signing?] signing?)}))
+
+(handlers/register-handler-fx
+  :wallet.send/set-gas
+  (fn [{:keys [db]} [_ gas]]
+    {:db (assoc-in db [:wallet :send-transaction :gas] (money/bignumber gas))}))
+
+(handlers/register-handler-fx
+  :wallet.send/set-gas-price
+  (fn [{:keys [db]} [_ gas-price]]
+    {:db (assoc-in db [:wallet :send-transaction :gas-price] (money/bignumber gas-price))}))

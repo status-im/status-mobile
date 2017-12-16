@@ -346,6 +346,10 @@
    :wallet-invalid-address                "Invalid address: \n {{data}}"
    :wallet-invalid-chain-id               "Network does not match: \n {{data}}"
    :wallet-browse-photos                  "Browse Photos"
+   :wallet-advanced                       "Advanced"
+   :wallet-transaction-fee                "Transaction Fee"
+   :wallet-transaction-fee-details        "Gas limit is the amount of gas to send with your transaction. Increasing this number will not get your transaction processed faster"
+   :wallet-transaction-total-fee          "Total Fee"
    :validation-amount-invalid-number      "Amount is not a valid number"
    :validation-amount-is-too-precise      "Amount is too precise. The smallest unit you can send is 1 Wei (1x10^-18 ETH)"
 

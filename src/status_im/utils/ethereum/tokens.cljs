@@ -12,6 +12,11 @@
                :icon     {:source (js/require "./resources/images/assets/ethereum.png")
                           :style  (asset-border styles/color-light-blue-transparent)}})
 
+(defn ethereum? [k]
+  (= k (:symbol ethereum)))
+
+;; symbol are used as global identifier (per network) so they must be unique
+
 (def all
   {:mainnet
    (resolve-icons
@@ -374,8 +379,16 @@
        :decimals 18
        :address  "0xc55cf4b03948d7ebc8b9e8bad92643703811d162"}])})
 
-(defn tokens-for [chain-id]
-  (get all chain-id))
+(defn tokens-for [chain]
+  (get all chain))
 
-(defn token-for [chain-id symbol]
-  (some #(if (= symbol (:symbol %)) %) (tokens-for chain-id)))
+(defn symbol->token [chain symbol]
+  (some #(when (= symbol (:symbol %)) %) (tokens-for chain)))
+
+(defn address->token [chain address]
+  (some #(when (= address (:address %)) %) (tokens-for chain)))
+
+(defn asset-for [chain symbol]
+  (if (= (:symbol ethereum) symbol)
+    ethereum
+    (symbol->token chain symbol)))

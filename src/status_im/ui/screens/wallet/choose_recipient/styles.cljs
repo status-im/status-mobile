@@ -65,9 +65,9 @@
   {:flex           1})
 
 (def preview
-  {:flex            1
-   :justify-content :flex-end
-   :align-items     :center})
+  {:flex           1
+   :justifyContent :flex-end
+   :alignItems     :center})
 
 (def corner-dimensions
   {:position :absolute
