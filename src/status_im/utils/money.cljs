@@ -68,6 +68,10 @@
   (when-let [bn (bignumber n)]
     (.dividedBy bn (eth-units unit))))
 
+(defn ->wei [unit n]
+  (when-let [bn (bignumber n)]
+    (.times bn (eth-units unit))))
+
 (defn to-fixed [bn]
   (when bn
     (.toFixed bn)))

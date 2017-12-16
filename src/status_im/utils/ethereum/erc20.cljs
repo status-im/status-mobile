@@ -34,25 +34,27 @@
 
 (defn balance-of [web3 contract address cb]
   (ethereum/call web3
-                 (ethereum/call-params contract "balanceOf(address)" address)
+                 (ethereum/call-params contract "balanceOf(address)" (ethereum/normalized-address address))
                  #(cb %1 (ethereum/hex->bignumber %2))))
 
-(defn transfer [web3 contract address value cb]
-  (ethereum/call web3
-                 (ethereum/call-params contract "transfer(address, uint256)" address (ethereum/int->hex value))
+(defn transfer [web3 contract from address value params cb]
+  (ethereum/send-transaction web3
+                 (merge (ethereum/call-params contract "transfer(address,uint256)" (ethereum/normalized-address address) (ethereum/int->hex value))
+                   {:from from}
+                   params)
                  #(cb %1 (ethereum/hex->boolean %2))))
 
 (defn transfer-from [web3 contract from-address to-address value cb]
   (ethereum/call web3
-                 (ethereum/call-params contract "transferFrom(address, address, uint256)" from-address to-address (ethereum/int->hex value))
+                 (ethereum/call-params contract "transferFrom(address,address,uint256)" (ethereum/normalized-address from-address) (ethereum/normalized-address to-address) (ethereum/int->hex value))
                  #(cb %1 (ethereum/hex->boolean %2))))
 
 (defn approve [web3 contract address value cb]
   (ethereum/call web3
-                 (ethereum/call-params contract "approve(address, uint256)" address (ethereum/int->hex value))
+                 (ethereum/call-params contract "approve(address,uint256)" (ethereum/normalized-address address)  (ethereum/int->hex value))
                  #(cb %1 (ethereum/hex->boolean %2))))
 
 (defn allowance [web3 contract owner-address spender-address cb]
   (ethereum/call web3
-                 (ethereum/call-params contract "allowance(address, address)" owner-address spender-address)
+                 (ethereum/call-params contract "allowance(address,address)" (ethereum/normalized-address owner-address) (ethereum/normalized-address spender-address))
                  #(cb %1 (ethereum/hex->bignumber %2))))

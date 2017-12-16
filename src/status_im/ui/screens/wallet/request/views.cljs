@@ -15,6 +15,7 @@
     [status-im.ui.components.styles :as components.styles]
     [status-im.i18n :as i18n]
     [status-im.utils.platform :as platform]
+    [status-im.utils.ethereum.core :as ethereum]
     [status-im.utils.ethereum.eip681 :as eip681]
     [status-im.utils.money :as money]))
 
@@ -34,7 +35,7 @@
   (views/letsubs [account [:get-current-account]
                   chain-id [:get-network-id]]
     [components.qr-code/qr-code
-     {:value   (eip681/generate-uri (:address account) (merge {:chain-id chain-id} (when amount {:value amount})))
+     {:value   (eip681/generate-uri (ethereum/normalized-address (:address account)) (merge {:chain-id chain-id} (when amount {:value amount})))
       :size    256}]))
 
 (views/defview request-transaction []

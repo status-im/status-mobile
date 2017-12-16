@@ -48,6 +48,7 @@
 
 (defn item-icon
   [{:keys [icon style icon-opts]}]
+  {:pre [(not (nil? icon))]}
   [react/view {:style style}
    [vector-icons/icon icon (merge icon-opts {:style styles/item-icon})]])
 

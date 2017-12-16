@@ -39,6 +39,7 @@
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction]]
             [status-im.ui.screens.wallet.wallet-list.views :refer [wallet-list-screen]]
+            [status-im.ui.screens.wallet.send.views :as wallet.send]
             [status-im.ui.screens.wallet.settings.views :as wallet-settings]
             [status-im.ui.screens.wallet.transactions.views :as wallet-transactions]
             [status-im.ui.screens.wallet.send.transaction-sent.views :refer [transaction-sent transaction-sent-modal]]
@@ -131,5 +132,6 @@
                                   :wallet-settings-assets wallet-settings/manage-assets
                                   :wallet-send-transaction-modal send-transaction-modal
                                   :wallet-transaction-sent-modal transaction-sent-modal
+                                  :wallet-transaction-fee wallet.send/transaction-fee
                                   (throw (str "Unknown modal view: " modal-view)))]
                   [component])]])]])))))

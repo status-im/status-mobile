@@ -47,11 +47,10 @@
   (fn [transactions]
     (group-by :type (vals transactions))))
 
-(defn format-unsigned-transaction [{:keys [id] :as transaction}]
+(defn- format-unsigned-transaction [{:keys [id] :as transaction}]
   (assoc transaction
          :type           :unsigned
          :confirmations  0
-         :symbol         "ETH"
          ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
          :hash           id))
 
