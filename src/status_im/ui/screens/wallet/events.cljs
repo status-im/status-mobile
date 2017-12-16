@@ -56,9 +56,9 @@
 
 (reg-fx
   :get-tokens-balance
-  (fn [{:keys [web3 symbols chain-id account-id success-event error-event]}]
+  (fn [{:keys [web3 symbols chain account-id success-event error-event]}]
     (doseq [symbol symbols]
-      (let [contract (:address (tokens/token-for chain-id symbol))]
+      (let [contract (:address (tokens/symbol->token chain symbol))]
         (get-token-balance {:web3           web3
                             :contract       contract
                             :account-id     account-id
@@ -94,7 +94,7 @@
      :get-tokens-balance {:web3          web3
                           :account-id    current-account-id
                           :symbols       symbols
-                          :chain-id      (ethereum/network->chain-id network)
+                          :chain         (ethereum/network->chain-keyword network)
                           :success-event :update-token-balance-success
                           :error-event   :update-token-balance-fail}
      :get-prices  {:from          "ETH"

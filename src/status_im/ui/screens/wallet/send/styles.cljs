@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.send.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.ui.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.ui.screens.wallet.components.styles :as wallet.components.styles]))
 
 (def toolbar
   {:background-color styles/color-blue5
@@ -76,3 +77,70 @@
   {:text-align        :center
    :margin-top        22
    :margin-horizontal 92})
+
+(def advanced-button
+  {:flex-direction   :row
+   :background-color styles/color-blue6
+   :border-radius    50
+   :padding          8})
+
+(def advanced-button-wrapper
+  {:align-items :center})
+
+(def advanced-wrapper
+  {:margin-horizontal 15})
+
+(def advanced-options-wrapper
+  {:height           52
+   :background-color styles/color-white-transparent-4
+   :border-radius    4
+   :margin-top       16
+   :margin-bottom    16
+   :align-items      :center
+   :flex-direction   :row})
+
+(def advanced-options-text-wrapper
+  {:flex              1
+   :flex-direction    :row
+   :justify-content   :space-between
+   :margin-horizontal 15})
+
+(def advanced-label
+  {:text-align-vertical :center
+   :margin-left         4})
+
+(def advanced-fees-text
+  {:color styles/color-white})
+
+(def advanced-fees-details-text
+  {:color styles/color-white-transparent})
+
+(def transaction-fee-block-wrapper
+  {:flex-direction :row
+   :margin-top     15})
+
+(def transaction-fee-column-wrapper
+  {:flex              0.5
+   :margin-horizontal 15})
+
+(def transaction-fee-bubble
+  (merge advanced-options-wrapper
+         {:flex-direction     :row
+          :justify-content    :space-between
+          :padding-horizontal 15}))
+
+(def transaction-fee-bubble-read-only
+  (merge transaction-fee-bubble
+         {:background-color styles/color-blue6}))
+
+(def transaction-fee-info
+  {:margin 15})
+
+(def transaction-fee-input
+  {:flex 1
+   :keyboard-type          :numeric
+   :auto-capitalize        "none"
+   :placeholder            "0.000"
+   :placeholder-text-color styles/color-white-transparent
+   :selection-color        :white
+   :style                  wallet.components.styles/text-input})

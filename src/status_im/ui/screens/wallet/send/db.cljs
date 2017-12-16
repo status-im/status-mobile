@@ -4,7 +4,7 @@
             [status-im.utils.money :as money]))
 
 (spec/def ::amount (spec/nilable money/valid?))
-(spec/def ::to-address (spec/nilable string?))
+(spec/def ::to (spec/nilable string?))
 (spec/def ::to-name (spec/nilable string?))
 (spec/def ::amount-error (spec/nilable string?))
 (spec/def ::password (spec/nilable string?))
@@ -20,9 +20,14 @@
 (spec/def ::camera-permitted? boolean?)
 (spec/def ::in-progress? boolean?)
 (spec/def ::from-chat? (spec/nilable boolean?))
+(spec/def ::symbol (spec/nilable keyword?))
+(spec/def ::gas (spec/nilable money/valid?))
+(spec/def ::gas-price (spec/nilable money/valid?))
+(spec/def ::advanced? boolean?)
 
 (spec/def :wallet/send-transaction (allowed-keys
-                                     :opt-un [::amount ::to-address ::to-name ::amount-error ::password
+                                     :opt-un [::amount ::to ::to-name ::amount-error ::password
                                               ::waiting-signal? ::signing? ::id ::later?
                                               ::camera-dimensions ::camera-flashlight ::in-progress?
-                                              ::wrong-password? ::camera-permitted? ::from-chat?]))
+                                              ::wrong-password? ::camera-permitted? ::from-chat? ::symbol ::advanced?
+                                              ::gas ::gas-price]))

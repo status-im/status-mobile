@@ -7,14 +7,12 @@
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.qr-code.styles :as styles]
-            [status-im.utils.money :as money]
-            [status-im.utils.ethereum.eip681 :as eip681])
+            [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview qr-code-view []
   (letsubs [{:keys [photo-path address name]} [:get-in [:qr-modal :contact]]
-            {:keys [qr-source qr-value amount? dimensions]} [:get :qr-modal]
-            {:keys [amount]} [:get :contacts/click-params]
+            {:keys [qr-source qr-value dimensions]} [:get :qr-modal]
             chain-id [:get-network-id]]
     [react/view styles/wallet-qr-code
      [status-bar {:type :modal}]
@@ -37,11 +35,10 @@
                                                                             :height (.-height layout)}]))}
       (when (:width dimensions)
         [react/view {:style (styles/qr-code-container dimensions)}
-         (when-let [value (eip681/generate-uri qr-value (merge {:chain-id chain-id} (when amount? {:value (money/str->wei amount)})))]
-           [qr-code {:value value
-                     :size  (- (min (:width dimensions)
-                                    (:height dimensions))
-                               80)}])])]
+         [qr-code {:value qr-value
+                   :size  (- (min (:width dimensions)
+                                  (:height dimensions))
+                             80)}]])]
      [react/view styles/footer
       (if (= :address qr-source)
         [react/view styles/wallet-info

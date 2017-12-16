@@ -16,6 +16,16 @@
   (fn [wallet]
     (:send-transaction wallet)))
 
+(re-frame/reg-sub :wallet.send/symbol
+  :<- [::send-transaction]
+  (fn [send-transaction]
+    (:symbol send-transaction)))
+
+(re-frame/reg-sub :wallet.send/advanced?
+  :<- [::send-transaction]
+  (fn [send-transaction]
+    (:advanced? send-transaction)))
+
 (re-frame/reg-sub :wallet.send/camera-dimensions
   :<- [::send-transaction]
   (fn [send-transaction]
@@ -55,29 +65,27 @@
       (merge send-transaction
              unsigned-transaction))))
 
-(defn sign-enabled? [amount-error to-address amount]
+(defn sign-enabled? [amount-error to amount]
   (and
    (nil? amount-error)
-   (not (nil? to-address)) (not= to-address "")
+   (not (nil? to)) (not= to "")
    (not (nil? amount)) (not= amount "")))
 
 (re-frame/reg-sub :wallet.send/transaction
   :<- [::send-transaction]
   :<- [:balance]
-  (fn [[{:keys [amount to] :as transaction} balance]]
+  (fn [[{:keys [amount to symbol] :as transaction} balance]]
     (assoc transaction :sufficient-funds? (or (nil? amount)
-                                              ;; TODO(jeluard) Modify to consider tokens
-                                              (money/sufficient-funds? amount (get balance :ETH))))))
+                                              (money/sufficient-funds? amount (get balance symbol))))))
 
 (re-frame/reg-sub :wallet.send/unsigned-transaction
   :<- [::unsigned-transaction]
   :<- [:contacts/by-address]
   :<- [:balance]
-  (fn [[{:keys [value to] :as transaction} contacts balance]]
+  (fn [[{:keys [value to symbol] :as transaction} contacts balance]]
     (when transaction
       (let [contact           (contacts (utils.hex/normalize-hex to))
-            ;; TODO(jeluard) Modify to consider tokens
-            sufficient-funds? (money/sufficient-funds? value (get balance :ETH))]
+            sufficient-funds? (money/sufficient-funds? value (get balance symbol))]
         (cond-> (assoc transaction
                        :amount value
                        :sufficient-funds? sufficient-funds?)

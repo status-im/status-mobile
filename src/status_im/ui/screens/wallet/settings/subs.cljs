@@ -7,5 +7,5 @@
   :<- [:network]
   :<- [:get-current-account]
   (fn [[network current-account]]
-    (let [chain-id (ethereum/network->chain-id network)]
-      (get-in current-account [:settings :wallet :visible-tokens chain-id]))))
+    (let [chain (ethereum/network->chain-keyword network)]
+      (get-in current-account [:settings :wallet :visible-tokens chain]))))
