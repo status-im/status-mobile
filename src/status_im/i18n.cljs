@@ -49,6 +49,9 @@
     [status-im.translations.vi :as vi]
     [status-im.translations.zh-hans :as zh-hans]
     [status-im.translations.zh-hant :as zh-hant]
+    [status-im.translations.zh-hant-tw :as zh-hant-tw]
+    [status-im.translations.zh-hant-sg :as zh-hant-sg]
+    [status-im.translations.zh-hant-hk :as zh-hant-hk]
     [status-im.translations.zh-wuu :as zh-wuu]
     [status-im.translations.zh-yue :as zh-yue]
     [status-im.utils.js-resources :refer [default-contacts]]
@@ -109,15 +112,12 @@
                              :vi          vi/translations
                              :zh          zh-hans/translations
                              :zh-hans     zh-hans/translations
-                             :zh-hans-tw  zh-hans/translations
-                             :zh-hans-sg  zh-hans/translations
-                             :zh-hans-hk  zh-hans/translations
                              :zh-hans-cn  zh-hans/translations
                              :zh-hans-mo  zh-hans/translations
                              :zh-hant     zh-hant/translations
-                             :zh-hant-tw  zh-hant/translations
-                             :zh-hant-sg  zh-hant/translations
-                             :zh-hant-hk  zh-hant/translations
+                             :zh-hant-tw  zh-hant-tw/translations
+                             :zh-hant-sg  zh-hant-sg/translations
+                             :zh-hant-hk  zh-hant-hk/translations
                              :zh-hant-cn  zh-hant/translations
                              :zh-hant-mo  zh-hant/translations
                              :zh-wuu      zh-wuu/translations
@@ -268,17 +268,20 @@
 
 ;; NOTE: Add new locale keywords here to indicate support for them.
 (def supported-locales (spec/assert ::locales #{:fr
-                                                :zh-hans-cn
-                                                :zh-hans-sg
-                                                :sr-RS_#Cyrl
-                                                :zh-hans-tw
-                                                :en
                                                 :zh
-                                                :de
                                                 :zh-hans
-                                                :lt
+                                                :zh-hans-cn
                                                 :zh-hans-mo
-                                                :zh-hans-hk
+                                                :zh-hant
+                                                :zh-hant-sg
+                                                :zh-hant-hk
+                                                :zh-hant-tw
+                                                :zh-hant-mo
+                                                :zh-hant-cn
+                                                :sr-RS_#Cyrl
+                                                :en
+                                                :de
+                                                :lt
                                                 :sr-RS_#Latn
                                                 :sr}))
 

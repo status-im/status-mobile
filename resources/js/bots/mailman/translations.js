@@ -23,7 +23,22 @@ I18n.translations = {
     },
     'zh-hant': {
         location_title: '位置',
-        location_description: '分享您的位置',
+        location_description: '分享你的位置',
+        location_address: '地址'
+    },
+    'zh-hant-tw': {
+        location_title: '位置',
+        location_description: '分享你的位置',
+        location_address: '地址'
+    },
+    'zh-hant-sg': {
+        location_title: '位置',
+        location_description: '分享你的位置',
+        location_address: '地址'
+    },
+    'zh-hant-hk': {
+        location_title: '位置',
+        location_description: '分享你的位置',
         location_address: '地址'
     },
     'zh-hans': {
@@ -38,7 +53,7 @@ I18n.translations = {
     },
     'zh-wuu': {
         location_title: '位置',
-        location_description: '分享您的位置',
+        location_description: '分享你的位置',
         location_address: '地址'
     },
     nl: {

@@ -74,55 +74,94 @@ I18n.translations = {
     },
     'zh-hant': {
         send_title: '發送 ETH',
-        send_description: '發送一筆付款',
+        send_description: '付款',
 
         request_title: '請求 ETH',
-        request_description: '請求一筆付款',
+        request_description: '要求付款',
         request_requesting: '正在請求 ',
 
         validation_title: '金額',
-        validation_amount_specified: 'ي未指定金額',
-        validation_invalid_number: '金額數字無效',
-        validation_insufficient_amount: '餘額中 ETH 不足 ('
+        validation_amount_specified: '必須指定金額',
+        validation_invalid_number: '金額不是有效數字',
+        validation_insufficient_amount: 'ETH 餘額不足 ('
     },
-    'zh-hans': {
-        send_title: '发送ETH',
+    'zh-hant-tw': {
+        send_title: '傳送 ETH',
         send_description: '付款',
 
-        request_title: '请求ETH',
+        request_title: '請求 ETH',
+        request_description: '要求付款',
+        request_requesting: '正在請求 ',
+
+        validation_title: '金額',
+        validation_amount_specified: '必須指定金額',
+        validation_invalid_number: '金額不是有效數字',
+        validation_insufficient_amount: 'ETH 餘額不足 ('
+    },
+    'zh-hant-sg': {
+        send_title: '傳送 ETH',
+        send_description: '付款',
+
+        request_title: '請求 ETH',
+        request_description: '要求付款',
+        request_requesting: '正在請求 ',
+
+        validation_title: '金額',
+        validation_amount_specified: '必須指定金額',
+        validation_invalid_number: '金額不是有效數字',
+        validation_insufficient_amount: 'ETH 餘額不足 ('
+    },
+    'zh-hant-hk': {
+        send_title: '發送 ETH',
+        send_description: '付款',
+
+        request_title: '請求 ETH',
+        request_description: '要求付款',
+        request_requesting: '正在請求 ',
+
+        validation_title: '金額',
+        validation_amount_specified: '必須指定金額',
+        validation_invalid_number: '金額不是有效數字',
+        validation_insufficient_amount: 'ETH 餘額不足 ('
+    },
+    'zh-hans': {
+        send_title: '发送 ETH',
+        send_description: '付款',
+
+        request_title: '请求 ETH',
         request_description: '要求付款',
         request_requesting: '正在请求 ',
 
-        validation_title: '金額',
+        validation_title: '金额',
         validation_amount_specified: '必须指定金额',
         validation_invalid_number: '金额不是有效数字',
-        validation_insufficient_amount: 'ETH余额不足 ('
+        validation_insufficient_amount: 'ETH 余额不足 ('
     },
     'zh-yue': {
-        send_title: '發送ETH',
+        send_title: '發送 ETH',
         send_description: '發送付款',
 
-        request_title: '徵求ETH',
-        request_description: '徵求付款',
-        request_requesting: '徵求中 ',
+        request_title: '請求 ETH',
+        request_description: '請求付款',
+        request_requesting: '請求中 ',
 
         validation_title: '金額',
         validation_amount_specified: '必須指定金額',
         validation_invalid_number: '指定金額並非有效數字',
-        validation_insufficient_amount: '沒有足夠ETH餘額 ('
+        validation_insufficient_amount: '沒有足夠 ETH 餘額 ('
     },
     'zh-wuu': {
-        send_title: '发送ETH',
+        send_title: '发送 ETH',
         send_description: '发送付款',
 
-        request_title: '请求ETH',
+        request_title: '请求 ETH',
         request_description: '请求付款',
         request_requesting: '请求中 ',
 
         validation_title: '金额',
         validation_amount_specified: '金额必须明确',
         validation_invalid_number: '金额不是一个有效数字',
-        validation_insufficient_amount: 'ETH余额不足 ('
+        validation_insufficient_amount: 'ETH 余额不足 ('
     },
     nl: {
         send_title: 'Stuur ETH',

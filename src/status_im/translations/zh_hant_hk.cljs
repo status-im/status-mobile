@@ -1,4 +1,4 @@
-(ns status-im.translations.zh-hant)
+(ns status-im.translations.zh-hant-hk)
 
 (def translations
   {

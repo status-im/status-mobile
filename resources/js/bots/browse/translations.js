@@ -16,8 +16,20 @@ I18n.translations = {
         browse_description: 'تشغيل المتصفح'
     },
     'zh-hant': {
-        browse_title: '流覽器',
-        browse_description: '啟動流覽器'
+        browse_title: '瀏覽器',
+        browse_description: '啟動瀏覽器'
+    },
+    'zh-hant-tw': {
+        browse_title: '瀏覽器',
+        browse_description: '啟動瀏覽器'
+    },
+    'zh-hant-sg': {
+        browse_title: '瀏覽器',
+        browse_description: '啟動瀏覽器'
+    },
+    'zh-hant-hk': {
+        browse_title: '瀏覽器',
+        browse_description: '啟動瀏覽器'
     },
     'zh-hans': {
         browse_title: '浏览器',
