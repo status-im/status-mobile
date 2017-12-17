@@ -19,6 +19,7 @@
             ["do" "clean"
              ["with-profile" "prod" "cljsbuild" "once" "ios"]
              ["with-profile" "prod" "cljsbuild" "once" "android"]]
+            "figwheel-repl"    ["run" "-m" "clojure.main" "env/dev/figwheel_api.clj"]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
             "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
   :figwheel {:nrepl-port 7888}
@@ -30,14 +31,14 @@
                     :source-paths ["src" "env/dev"]
                     :cljsbuild    {:builds
                                    {:ios
-                                    {:source-paths ["react-native/src" "src" "env/dev"]
+                                    {:source-paths ["react-native/src"]
                                      :figwheel     true
                                      :compiler     {:output-to     "target/ios/app.js"
                                                     :main          "env.ios.main"
                                                     :output-dir    "target/ios"
                                                     :optimizations :none}}
                                     :android
-                                    {:source-paths ["react-native/src" "src" "env/dev"]
+                                    {:source-paths ["react-native/src"]
                                      :figwheel     true
                                      :compiler     {:output-to     "target/android/app.js"
                                                     :main          "env.android.main"

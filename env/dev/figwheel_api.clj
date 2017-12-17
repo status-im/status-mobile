@@ -1,17 +1,8 @@
-(ns user
+(ns figwheel-api
   (:use [figwheel-sidecar.repl-api :as ra])
   (:require [hawk.core :as hawk]
             [re-frisk-sidecar.core :as rfs]
             [clojure.string :as s]))
-;; This namespace is loaded automatically by nREPL
-
-;; read project.clj to get build configs
-(def profiles (->> "project.clj"
-                   slurp
-                   read-string
-                   (drop-while #(not= % :profiles))
-                   (apply hash-map)
-                   :profiles))
 
 (defn get-test-build [build]
   (update build :source-paths
@@ -21,9 +12,6 @@
                             (conj "env/test" "test/cljs")
                             vec)))))
 
-(def cljs-builds
-  (get-in profiles [:dev :cljsbuild :builds]))
-
 (defn start-figwheel
   "Start figwheel for one or more builds"
   [build-ids cljs-builds]
@@ -32,20 +20,10 @@
      :build-ids        build-ids
      :all-builds       cljs-builds}))
 
-(def start-cljs-repl ra/cljs-repl)
-
 (defn stop-figwheel
   "Stops figwheel"
   []
   (ra/stop-figwheel!))
-
-(hawk/watch! [{:paths   ["resources"]
-               :handler (fn [ctx e]
-                          (let [path         "src/status_im/utils/js_resources.cljs"
-                                js-resourced (slurp path)]
-                            (spit path (str js-resourced " ;;"))
-                            (spit path js-resourced))
-                          ctx)}])
 
 (defn test-id? [id]
   (s/includes? (name id) "-test"))
@@ -67,10 +45,28 @@
         :id id))
     ids))
 
-(let [env-build-ids (System/getenv "BUILD_IDS")
-      build-ids     (if env-build-ids
-                      (map keyword (s/split env-build-ids #","))
-                      [:android])
-      builds        (get-builds build-ids cljs-builds)]
-  (start-figwheel build-ids builds)
-  (rfs/-main))
+(defn start-cljs-repl []
+  (hawk/watch! [{:paths   ["resources"]
+                 :handler (fn [ctx e]
+                            (let [path "src/status_im/utils/js_resources.cljs"
+                                  js-resourced (slurp path)]
+                              (spit path (str js-resourced " ;;"))
+                              (spit path js-resourced))
+                            ctx)}])
+  (let [build-ids (if *command-line-args*
+                    (map keyword *command-line-args*)
+                    [:android])
+        ;; read project.clj to get build configs
+        profiles (->> "project.clj"
+                      slurp
+                      read-string
+                      (drop-while #(not= % :profiles))
+                      (apply hash-map)
+                      :profiles)
+        cljs-builds (get-in profiles [:dev :cljsbuild :builds])
+        builds (get-builds build-ids cljs-builds)]
+    (start-figwheel build-ids builds)
+    (rfs/-main))
+  (ra/cljs-repl))
+
+(start-cljs-repl)

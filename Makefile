@@ -79,13 +79,13 @@ prod-build:
 # -------------
 
 repl: ##@repl Start REPL for iOS and Android
-	BUILD_IDS="ios,android" lein repl
+	lein figwheel-repl ios android
 
 repl-ios: ##@repl Start REPL for iOS
-	BUILD_IDS="ios" lein repl
+	lein figwheel-repl ios
 
 repl-android: ##@repl Start REPL for Android
-	BUILD_IDS="android" lein repl
+	lein figwheel-repl android
 
 #--------------
 # Run
