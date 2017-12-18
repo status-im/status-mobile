@@ -1,8 +1,7 @@
 (ns status-im.ui.screens.accounts.views
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch dispatch-sync]]
-            [status-im.ui.screens.accounts.styles :as st]
-            [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
+            [status-im.ui.screens.accounts.styles :as st] 
             [status-im.ui.components.status-bar :refer [status-bar]]
             [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.components.common.common :as common]

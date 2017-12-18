@@ -3,20 +3,22 @@
   (:require [status-im.utils.platform :refer [ios?]]
             [status-im.ui.components.styles :as common]))
 
-(defnstyle text-input [content-height]
+(defstyle text-input
   {:placeholder  ""
-   :android      {:height         (or content-height 24)
-                  :padding-top    0
+   :android      {:padding-top    0
                   :padding-bottom 0
                   :padding-left   0
                   :margin-top     26
                   :margin-bottom  4
                   :font-size      16}
-   :ios          {:height         (or content-height 26)
-                  :margin-top     24
+   :ios          {:margin-top     24
                   :margin-bottom  6
                   :font-size      17
                   :letter-spacing -0.2}})
+
+(defstyle content-height
+  {:android {:height 24}
+   :ios     {:height 26}})
 
 (defstyle component-container
   {:margin-left  16
@@ -31,29 +33,29 @@
    :ios       {:letter-spacing -0.2}})
 
 (defstyle description-text
-   {:color   common/color-gray4
-    :android {:margin-top     6
-              :font-size      12}
-    :ios     {:margin-top     4
-              :font-size      14
-              :letter-spacing -0.2}})
+  {:color   common/color-gray4
+   :android {:margin-top     6
+             :font-size      12}
+   :ios     {:margin-top     4
+             :font-size      14
+             :letter-spacing -0.2}})
 
 (defstyle error-text
-   {:color   common/color-red-2
-    :android {:margin-top     6
-              :font-size      12}
-    :ios     {:margin-top     4
-              :font-size      14
-              :letter-spacing -0.2}})
+  {:color   common/color-red-2
+   :android {:margin-top     6
+             :font-size      12}
+   :ios     {:margin-top     4
+             :font-size      14
+             :letter-spacing -0.2}})
 
 (defn underline-blured [error]
   {:background-color (if error common/color-red-2 common/color-light-gray2)
    :align-items      :center})
 
 (defn underline-focused [underline-width underline-height error]
-   {:height           underline-height
-    :width            underline-width
-    :background-color (if error common/color-red-2 common/color-light-blue)})
+  {:height           underline-height
+   :width            underline-width
+   :background-color (if error common/color-red-2 common/color-light-blue)})
 
 (def label-top-top (if ios? 6 6))
 
