@@ -1,0 +1,41 @@
+version: '3'
+services:
+  status-im:
+    build: .
+    image: status-im:latest
+    volumes:
+      - ./src:/home/developer/status/src
+
+  test:
+    image: status-im
+    volumes:
+      - ./test:/home/developer/status/test
+      - ./src:/home/developer/status/src
+    command: bash -c "./re-natal use-figwheel && lein test-cljs && lein prod-build"
+
+  local-install:
+    image: status-im
+    volumes:
+      - .:/home/developer/status
+    command: "./scripts/setup"
+
+  repl:
+    image: status-im
+    volumes:
+      - ./src:/home/developer/status/src
+    network_mode: host
+    command: make repl-android
+
+  react-native:
+    image: status-im:latest
+    network_mode: host
+    volumes:
+      - ./src:/home/developer/status/src
+    command: make dev-android-avd react-native
+
+  android:
+    image: status-im
+    network_mode: host
+    volumes:
+      - ./src:/home/developer/status/src
+    command: make android-ports run-android
