@@ -1,10 +1,17 @@
 (ns status-im.utils.handlers
   (:require [cljs.spec.alpha :as spec]
             [clojure.string :as string]
+            [expound.alpha :as expound]
             [re-frame.core :refer [reg-event-db reg-event-fx] :as re-frame]
             [re-frame.interceptor :refer [->interceptor get-coeffect get-effect]]
             [taoensso.timbre :as log])
   (:require-macros status-im.utils.handlers))
+
+(defn spec-value-str [_spec-name form path value]
+  (str "In path: " (pr-str path) "\n\n"
+       "Invalid value: " (pr-str value)))
+
+(set! spec/*explain-out* (expound/custom-printer {:value-str-fn spec-value-str}))
 
 (def pre-event-callback (atom nil))
 
