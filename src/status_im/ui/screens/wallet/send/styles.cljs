@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.send.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def toolbar
   {:background-color styles/color-blue5
@@ -61,3 +61,18 @@
    :font-size      15
    :letter-spacing -0.2
    :height         20})
+
+(def processing-view
+  {:position         :absolute
+   :top              0
+   :bottom           0
+   :right            0
+   :left             0
+   :align-items      :center
+   :justify-content  :center
+   :background-color (str styles/color-black "1A")})
+
+(def empty-text
+  {:text-align        :center
+   :margin-top        22
+   :margin-horizontal 92})

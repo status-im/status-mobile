@@ -13,18 +13,18 @@
   (let [dir  (s/join "/" [build-dir "status-go"])
         opts #js {:cwd dir}]
     (if-not (utils/exist? dir)
-      (utils/exec-sync "git clone https://github.com/status-im/status-go.git -b bug/whisper-on-geth1.6.1" #js {:cwd build-dir})
-      (utils/exec-sync "git pull origin bug/whisper-on-geth1.6.1" opts))
+      (utils/exec-sync "git clone https://github.com/status-im/status-go.git -b develop" #js {:cwd build-dir})
+      (utils/exec-sync "git pull origin develop" opts))
     (println "Compile statusgo...")
     (utils/exec-sync "make statusgo" opts)
     (println "Done.")))
 
 (defn start! []
   (when-not @node-process
-    (println "Start wnode...")
+    (println "Start statusd...")
     (let [dir (s/join "/" [build-dir "status-go" "build" "bin"])]
       (let [proc (utils/spawn "./statusd"
-                              ["wnode" "--http" "--httpport" "8645"]
+                              ["--http" "--httpport" "8645" "-shh" "-logfile" "statusd.log"]
                               {:cwd dir})]
         (reset! node-process proc)
         (utils/sleep 5)
@@ -32,7 +32,7 @@
 
 
 (defn stop! []
-  (println "Stop wnode...")
+  (println "Stop statusd...")
   (.kill @node-process)
   (println "Done.")
   (reset! node-process nil))

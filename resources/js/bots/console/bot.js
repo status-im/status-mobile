@@ -360,7 +360,7 @@ function jsHandler(params, context) {
     };
     messages = [];
     try {
-        result["text-message"] = JSON.stringify(eval(params.code));
+        result["text-message"] = String(JSON.stringify(eval(params.code)));
         localStorage.setItem("previousMessage", params.code);
     } catch (e) {
         result.err = e;
@@ -428,9 +428,7 @@ function phoneSuggestions(params, context) {
     }
 
     suggestions = ph.map(function (phone) {
-        return status.components.touchable(
-            {onPress: status.components.dispatch([status.events.SET_VALUE, phone.number])},
-            status.components.view(suggestionContainerStyle,
+        return status.components.view(suggestionContainerStyle,
                 [status.components.view(suggestionSubContainerStyle,
                     [
                         status.components.text(
@@ -441,8 +439,7 @@ function phoneSuggestions(params, context) {
                             {style: descriptionStyle},
                             phone.description
                         )
-                    ])])
-        );
+                    ])]);
     });
 
     var view = status.components.scrollView(
@@ -455,10 +452,10 @@ function phoneSuggestions(params, context) {
 
 var phoneConfig = {
     name: "phone",
-    registeredOnly: true,
     icon: "phone_white",
     color: "#5bb2a2",
     title: I18n.t('phone_title'),
+    scope: ["personal-chats", "registered", "dapps"],
     description: I18n.t('phone_description'),
     sequentialParams: true,
     validator: function (params) {
@@ -474,35 +471,57 @@ var phoneConfig = {
         placeholder: I18n.t('phone_placeholder')
     }],
     preview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                params.phone
-            )
-        };
+        if (params) {
+            return {
+                markup: status.components.text(
+                    {},
+                    params.phone
+                )
+            };
+        }
     },
     shortPreview: function (params) {
-        return {
-            markup: status.components.text(
-                {},
-                params.phone
-            )
-        };
+        if (params) {
+            return {
+                markup: status.components.chatPreviewText(
+                    {},
+                    params.phone
+                )
+            };
+        }
     }
 };
-status.response(phoneConfig);
 status.command(phoneConfig);
+status.response(phoneConfig);
 
-var faucets = [
-    /*{
-     name: "Ethereum Ropsten Faucet",
-     url: "http://faucet.ropsten.be:3001"
-     },*/
+var ropstenNetworkId = 3;
+var rinkebyNetworkId = 4;
+
+var ropstenFaucets = [
     {
         name: "Status Testnet Faucet",
-        url: "http://46.101.129.137:3001",
+        url: "http://51.15.45.169:3001",
     }
 ];
+
+var rinkebyFaucets = [
+    {
+        name: "Status Rinkeby Faucet",
+        url: "http://51.15.60.23:3001",
+    }
+];
+
+function getFaucets(networkId) {
+    if (networkId == ropstenNetworkId) {
+        return ropstenFaucets;
+    } else if (networkId == rinkebyNetworkId) {
+        return rinkebyFaucets;
+    } else {
+        return [];
+    }
+}
+
+var faucets = getFaucets(status.ethereumNetworkId);
 
 function faucetSuggestions(params) {
     var suggestions = faucets.map(function (entry) {
@@ -535,12 +554,12 @@ function faucetSuggestions(params) {
     return {markup: view};
 }
 
-status.command({
+var faucetCommandConfig ={
     name: "faucet",
     title: I18n.t('faucet_title'),
     description: I18n.t('faucet_description'),
     color: "#7099e6",
-    registeredOnly: true,
+    scope: ["personal-chats", "registered", "dapps"],
     params: [{
         name: "url",
         type: status.types.TEXT,
@@ -557,7 +576,7 @@ status.command({
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 I18n.t('faucet_title') + ": " + params.url
             )
@@ -568,16 +587,21 @@ status.command({
             return entry.url;
         });
 
-        if (f.indexOf(params.url) == -1) {
-            var error = status.components.validationMessage(
-                I18n.t('faucet_incorrect_title'),
-                I18n.t('faucet_incorrect_description')
-            );
+            if (f.indexOf(params.url) == -1) {
+                var error = status.components.validationMessage(
+                    I18n.t('faucet_incorrect_title'),
+                    I18n.t('faucet_incorrect_description')
+                );
 
-            return {markup: error};
+                return {markup: error};
+            }
         }
     }
-});
+;
+
+if (faucets.length > 0) {
+    status.command(faucetCommandConfig);
+}
 
 function debugSuggestions(params) {
     var suggestions = ["On", "Off"].map(function (entry) {
@@ -611,7 +635,7 @@ status.command({
     title: I18n.t('debug_mode_title'),
     description: I18n.t('debug_mode_description'),
     color: "#7099e6",
-    registeredOnly: true,
+    scope: ["personal-chats", "registered", "dapps"],
     params: [{
         name: "mode",
         suggestions: debugSuggestions,
@@ -627,7 +651,7 @@ status.command({
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 I18n.t('debug_mode_title') + ": " + params.mode
             )
@@ -635,21 +659,10 @@ status.command({
     }
 });
 
-
-// status.command({
-//     name: "help",
-//     title: "Help",
-//     description: "Request help from Console",
-//     color: "#7099e6",
-//     params: [{
-//         name: "query",
-//         type: status.types.TEXT
-//     }]
-// });
-
 status.response({
     name: "confirmation-code",
     color: "#7099e6",
+    scope: ["personal-chats", "registered", "dapps"],
     description: I18n.t('confirm_description'),
     sequentialParams: true,
     params: [{
@@ -676,7 +689,7 @@ status.response({
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 params.code
             )
@@ -687,6 +700,7 @@ status.response({
 status.response({
     name: "password",
     color: "#7099e6",
+    scope: ["personal-chats", "anonymous", "dapps"],
     description: I18n.t('password_description'),
     icon: "lock_white",
     sequentialParams: true,
@@ -745,6 +759,7 @@ status.response({
 
 status.response({
     name: "grant-permissions",
+    scope: ["personal-chats", "anonymous", "registered", "dapps"],
     color: "#7099e6",
     description: "Grant permissions",
     icon: "lock_white",

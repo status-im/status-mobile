@@ -7,12 +7,13 @@
             status-im.ui.screens.subs
             status-im.data-store.core
             [status-im.ui.screens.views :as views]
-            [status-im.components.react :as react]
+            [status-im.ui.components.react :as react]
             [status-im.native-module.core :as status]
             [status-im.utils.error-handler :as error-handler]
             [status-im.utils.utils :as utils]
             [status-im.utils.config :as config]
-            [status-im.utils.notifications :as notifications]))
+            [status-im.utils.notifications :as notifications]
+            [status-im.core :as core]))
 
 (defn init-back-button-handler! []
   (let [new-listener (fn []
@@ -21,7 +22,7 @@
                        ;; in handlers
                        (let [stack      (subscribe [:get :navigation-stack])
                              creating?  (subscribe [:get :accounts/creating-account?])
-                             result-box (subscribe [:chat-ui-props :result-box])
+                             result-box (subscribe [:get-current-chat-ui-prop :result-box])
                              webview    (subscribe [:get :webview-bridge])]
                          (cond
                            @creating? true
@@ -33,7 +34,7 @@
                            (do (dispatch [:navigate-back]) true)
 
                            :else false)))]
-    (.addEventListener react/back-android "hardwareBackPress" new-listener)))
+    (.addEventListener react/back-handler "hardwareBackPress" new-listener)))
 
 (defn orientation->keyword [o]
   (keyword (.toLowerCase o)))
@@ -79,9 +80,6 @@
        :reagent-render views/main})))
 
 (defn init []
-  (error-handler/register-exception-handler!)
-  (status/init-jail)
-  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
   (status/set-soft-input-mode status/adjust-resize)
   (init-back-button-handler!)
-  (dispatch-sync [:initialize-app]))
+  (core/init app-root))

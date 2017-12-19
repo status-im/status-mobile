@@ -34,9 +34,9 @@
            title
            content
            (clj->js
-             (vector (merge {:text (i18n/label :t/no)}
-                            (when on-cancel {:onPress on-cancel}))
-                     {:text (i18n/label :t/yes) :onPress on-accept})))))
+            (vector (merge {:text (i18n/label :t/no)}
+                           (when on-cancel {:onPress on-cancel}))
+                    {:text (i18n/label :t/yes) :onPress on-accept})))))
 
 (defn http-post
   ([action data on-success]
@@ -125,3 +125,18 @@
   (if (contains? m k)
     (apply update m k f args)
     m))
+
+(defn map-values
+  "Efficiently apply function to all map values"
+  [m f]
+  (into {}
+        (map (fn [[k v]]
+               [k (f v)]))
+        m))
+
+(defn deep-merge
+  "Recursively merge maps"
+  [& maps]
+  (if (every? map? maps)
+    (apply merge-with deep-merge maps)
+    (last maps)))

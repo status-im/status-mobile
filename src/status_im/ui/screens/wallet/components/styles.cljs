@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.components.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def text-input
   {:color          :white
@@ -17,8 +17,7 @@
    :ios     {:font-size      14
              :line-height    16
              :letter-spacing -0.2}
-   :android {:font-size   12
-             :line-height 12}})
+   :android {:font-size   12}})
 
 (def amount-text-input-container
   {:margin-top 8})
@@ -106,17 +105,23 @@
    :font-size      15
    :letter-spacing -0.2})
 
+(def wallet-value-container
+  {:flex           1
+   :flex-direction :row})
+
 (def wallet-value
   {:padding-left   6
    :color          styles/color-white-transparent-5
    :font-size      15
    :letter-spacing -0.2})
 
+(def wallet-value-amount
+  {:flex -1})
+
 (def separator
   {:height            1
    :margin-horizontal 15
-   :background-color  styles/color-white-transparent-1
-   :margin-top        16})
+   :background-color  styles/color-white-transparent-1})
 
 (def button-text
   {:color          :white
@@ -155,3 +160,28 @@
 
 (def recipient-name-container
   {:padding-right 6})
+
+(def today-variation-container
+  {:border-radius      100
+   :margin-left        8
+   :padding-horizontal 8
+   :padding-vertical   4})
+
+(def today-variation-container-positive
+  (merge today-variation-container
+         {:background-color styles/color-green-1}))
+
+(def today-variation-container-negative
+  (merge today-variation-container
+         {:background-color styles/color-red-3}))
+
+(def today-variation
+  {:font-size 12})
+
+(def today-variation-positive
+  (merge today-variation
+         {:color styles/color-green-2}))
+
+(def today-variation-negative
+  (merge today-variation
+         {:color styles/color-red-4}))

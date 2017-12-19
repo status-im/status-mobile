@@ -1,6 +1,6 @@
 (ns status-im.network.net-info
   (:require [taoensso.timbre :as log]
-            [status-im.components.react :as react-components]))
+            [status-im.ui.components.react :as react-components]))
 
 (defn init [callback]
   (when react-components/net-info
@@ -11,4 +11,4 @@
 
 (defn add-listener [listener]
   (when react-components/net-info
-    (.addEventListener (.-isConnected react-components/net-info) "change" listener)))
+    (.addEventListener (.-isConnected react-components/net-info) "connectionChange" listener)))

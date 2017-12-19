@@ -10,3 +10,14 @@
     (is (= (str (money/wei->ether "111122223333441239"))
            "0.111122223333441239"))))
 
+(deftest valid?
+  (is (not (true? (money/valid? nil))))
+  (is (true? (money/valid? (money/bignumber 0))))
+  (is (true? (money/valid? (money/bignumber 1))))
+  (is (not (true? (money/valid? (money/bignumber -1))))))
+
+(deftest normalize
+  (is (= nil (money/normalize nil)))
+  (is (= "1" (money/normalize "  1 ")))
+  (is (= "1.1" (money/normalize "1.1")))
+  (is (= "1.1" (money/normalize "1,1"))))

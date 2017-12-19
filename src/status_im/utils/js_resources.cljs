@@ -11,7 +11,7 @@
 (def default-contacts (json->clj (slurp "resources/default_contacts.json")))
 (def default-contact-groups (json->clj (slurp "resources/default_contact_groups.json")))
 
-(def wallet-js (slurp-bot :wallet))
+(def transactor-js (slurp-bot :transactor))
 
 (def console-js (slurp-bot :console "web3_metadata.js"))
 
@@ -22,11 +22,11 @@
 (def demo-bot-js (slurp-bot :demo_bot))
 
 (def resources
-  {:wallet-bot  wallet-js
-   :console-bot console-js
-   :browse-bot  browse-js
-   :mailman-bot mailman-js
-   :demo-bot    demo-bot-js})
+  {:transactor-bot transactor-js
+   :console-bot    console-js
+   :browse-bot     browse-js
+   :mailman-bot    mailman-js
+   :demo-bot       demo-bot-js})
 
 (defn get-resource [url]
   (let [resource-name (keyword (subs url (count local-protocol)))]
@@ -49,3 +49,6 @@
 
 (defn local-storage-data [data]
   (str "var localStorageData = " (or data "{}") ";"))
+
+(defn network-id [id]
+  (str "status.ethereumNetworkId = " (or id "null") "; "))

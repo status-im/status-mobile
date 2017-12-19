@@ -1,6 +1,6 @@
 (ns status-im.utils.money
-  (:require [status-im.js-dependencies :as dependencies]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [status-im.js-dependencies :as dependencies]))
 
 ;; The BigNumber version included in web3 sometimes hangs when dividing large
 ;; numbers Hence we want to use these functions instead of fromWei etc, which
@@ -20,47 +20,91 @@
 ;; matters:
 ;; (str 111122223333441239) => "111122223333441230"
 
+(defn normalize
+  "A normalized string representation of an amount"
+  [s]
+  {:pre [(or (nil? s) (string? s))]}
+  (when s
+    (string/replace (string/trim s) #"," ".")))
+
 (defn bignumber [n]
-  (dependencies/Web3.prototype.toBigNumber (str n)))
+  (when n
+    (try
+      (dependencies/Web3.prototype.toBigNumber (str n))
+      (catch :default err nil))))
 
-(defn to-wei [str]
-  (dependencies/Web3.prototype.toWei str "ether"))
+(defn valid? [bn]
+  (when bn
+    (.greaterThanOrEqualTo bn 0)))
 
-(defn to-decimal [value]
-  (dependencies/Web3.prototype.toDecimal value))
+(defn str->wei [s]
+  (when-let [ns (normalize s)]
+    (try
+      (dependencies/Web3.prototype.toWei ns "ether")
+      (catch :default err nil))))
+
+(defn to-decimal [s]
+  (when s
+    (try
+      (dependencies/Web3.prototype.toDecimal (normalize s))
+      (catch :default err nil))))
+
+(defn from-decimal [n] (when n (str "1" (string/join (repeat n "0")))))
 
 (def eth-units
   {:wei    (bignumber "1")
-   :kwei   (bignumber "1000")
-   :mwei   (bignumber "1000000")
-   :gwei   (bignumber "1000000000")
-   :szabo  (bignumber "1000000000000")
-   :finney (bignumber "1000000000000000")
-   :eth    (bignumber "1000000000000000000")
-   :keth   (bignumber "1000000000000000000000")
-   :meth   (bignumber "1000000000000000000000000")
-   :geth   (bignumber "1000000000000000000000000000")
-   :teth   (bignumber "1000000000000000000000000000000")})
+   :kwei   (bignumber (from-decimal 3))
+   :mwei   (bignumber (from-decimal 6))
+   :gwei   (bignumber (from-decimal 9))
+   :szabo  (bignumber (from-decimal 12))
+   :finney (bignumber (from-decimal 15))
+   :eth    (bignumber (from-decimal 18))
+   :keth   (bignumber (from-decimal 21))
+   :meth   (bignumber (from-decimal 24))
+   :geth   (bignumber (from-decimal 27))
+   :teth   (bignumber (from-decimal 30))})
 
 (defn wei-> [unit n]
-  (.dividedBy (bignumber n) (eth-units unit)))
+  (when-let [bn (bignumber n)]
+    (.dividedBy bn (eth-units unit))))
+
+(defn to-fixed [bn]
+  (when bn
+    (.toFixed bn)))
 
 (defn wei->str [unit n]
-  (str (.toFixed (wei-> unit n)) " " (string/upper-case (name unit))))
+  (str (to-fixed (wei-> unit n)) " " (string/upper-case (name unit))))
 
 (defn wei->ether [n]
   (wei-> :eth n))
+
+(defn ether->wei [bn]
+  (when bn
+    (.times bn (bignumber 1e18))))
+
+(defn token->unit [n decimals]
+  (when-let [bn (bignumber n)]
+    (.dividedBy bn (bignumber (from-decimal decimals)))))
 
 (defn fee-value [gas gas-price]
   (.times (bignumber gas) (bignumber gas-price)))
 
 (defn eth->usd [eth usd-price]
-  (.times (bignumber eth) (bignumber usd-price)))
+  (when-let [bn (bignumber eth)]
+    (.times bn (bignumber usd-price))))
 
 (defn percent-change [from to]
-  (-> (.dividedBy (bignumber from) (bignumber to))
-      (.minus 1)
-      (.times 100)))
+  (let [bnf (bignumber from)
+        bnt (bignumber to)]
+    (when (and bnf bnt)
+      (-> (.dividedBy bnf bnt)
+          (.minus 1)
+          (.times 100)))))
 
 (defn with-precision [n decimals]
-  (.round (bignumber n) decimals))
+  (when-let [bn (bignumber n)]
+    (.round bn decimals)))
+
+(defn sufficient-funds? [amount balance]
+  (when balance
+    (.greaterThanOrEqualTo balance amount)))

@@ -3,7 +3,7 @@
   (:require [re-frame.core :refer [subscribe dispatch]]
             [clojure.string :as str]
             [cljs-time.core :as t]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 text
                                                 icon]]
             [status-im.i18n :refer [get-contact-translated
@@ -13,11 +13,11 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :refer [platform-specific]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
-            [status-im.constants :refer [console-chat-id wallet-chat-id]]))
+            [status-im.constants :refer [console-chat-id]]))
 
 (defn online-text [contact chat-id]
   (cond
-    (#{console-chat-id wallet-chat-id} chat-id) (label :t/available)
+    (= console-chat-id chat-id) (label :t/available)
     contact (let [last-online      (get contact :last-online)
                   last-online-date (time/to-date last-online)
                   now-date         (t/now)]
@@ -68,7 +68,7 @@
             contacts      [:chat :contacts]
             public?       [:chat :public?]
             public-key    [:chat :public-key]
-            show-actions? [:chat-ui-props :show-actions?]
+            show-actions? [:get-current-chat-ui-prop :show-actions?]
             accounts      [:get-accounts]
             contact       [:get-in [:contacts/contacts @chat-id]]
             sync-state    [:sync-state]

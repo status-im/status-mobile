@@ -2,11 +2,13 @@
   (:require status-im.bots.events
             status-im.chat.handlers
             status-im.commands.handlers.jail
-            status-im.commands.handlers.loading
-            status-im.debug.handlers
+            status-im.commands.events.loading
+            status-im.commands.handlers.debug
             status-im.network.handlers
             status-im.protocol.handlers
             status-im.ui.screens.accounts.events
+            status-im.ui.screens.accounts.login.events
+            status-im.ui.screens.accounts.recover.events
             status-im.ui.screens.contacts.events
             status-im.ui.screens.discover.events
             status-im.ui.screens.group.chat-settings.events
@@ -17,17 +19,18 @@
             status-im.ui.screens.qr-scanner.events
             status-im.ui.screens.wallet.events
             status-im.ui.screens.wallet.send.events
-            status-im.ui.screens.wallet.choose-recipient.events
+            status-im.ui.screens.wallet.settings.events
             status-im.ui.screens.wallet.transactions.events
+            status-im.ui.screens.wallet.choose-recipient.events
             [re-frame.core :refer [dispatch reg-fx reg-cofx] :as re-frame]
             [status-im.native-module.core :as status]
-            [status-im.components.permissions :as permissions]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.permissions :as permissions]
             [status-im.constants :refer [console-chat-id]]
             [status-im.data-store.core :as data-store]
             [status-im.i18n :as i18n]
             [status-im.js-dependencies :as dependencies]
             [status-im.ui.screens.db :refer [app-db]]
-            [status-im.utils.sms-listener :as sms-listener-util]
             [status-im.utils.datetime :as time]
             [status-im.utils.random :as random]
             [status-im.utils.config :as config]
@@ -62,21 +65,21 @@
 ;;;; COFX
 
 (reg-cofx
- :now
- (fn [coeffects _]
-   (assoc coeffects :now (time/now-ms))))
+  :now
+  (fn [coeffects _]
+    (assoc coeffects :now (time/now-ms))))
 
 (reg-cofx
- :random-id
- (fn [coeffects _]
-   (assoc coeffects :random-id (random/id))))
+  :random-id
+  (fn [coeffects _]
+    (assoc coeffects :random-id (random/id))))
 
 (reg-cofx
- :random-id-seq
- (fn [coeffects _]
-   (assoc coeffects :random-id-seq
-          ((fn rand-id-seq []
-             (cons (random/id) (lazy-seq (rand-id-seq))))))))
+  :random-id-seq
+  (fn [coeffects _]
+    (assoc coeffects :random-id-seq
+           ((fn rand-id-seq []
+              (cons (random/id) (lazy-seq (rand-id-seq))))))))
 
 ;;;; FX
 
@@ -109,17 +112,25 @@
                      #(dispatch (success-event-creator %))
                      #(dispatch (failure-event-creator %)))))
 
-(reg-fx
-  :http-get
-  (fn [{:keys [url success-event-creator failure-event-creator]}]
+(defn- http-get [{:keys [url response-validator success-event-creator failure-event-creator]}]
+  (if response-validator
+    (utils/http-get url
+                    response-validator
+                    #(dispatch (success-event-creator %))
+                    #(dispatch (failure-event-creator %)))
     (utils/http-get url
                     #(dispatch (success-event-creator %))
                     #(dispatch (failure-event-creator %)))))
 
 (reg-fx
-  :remove-sms-listener
-  (fn [subscription]
-    (sms-listener-util/remove-sms-listener subscription)))
+  :http-get
+  http-get)
+
+(reg-fx
+  :http-get-n
+  (fn [calls]
+    (doseq [call calls]
+      (http-get call))))
 
 (reg-fx
   ::init-store
@@ -130,29 +141,29 @@
   ::initialize-crypt-fx
   (fn []
     (crypt/gen-random-bytes
-      1024
-      (fn [{:keys [error buffer]}]
-        (if error
-          (log/error "Failed to generate random bytes to initialize sjcl crypto")
-          (->> (.toString buffer "hex")
-               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-               (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
+     1024
+     (fn [{:keys [error buffer]}]
+       (if error
+         (log/error "Failed to generate random bytes to initialize sjcl crypto")
+         (->> (.toString buffer "hex")
+              (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
+              (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
 
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
-    #(status/start-node config)))
+   #(status/start-node config)))
 
 (reg-fx
   :initialize-geth-fx
   (fn [config]
     (status/should-move-to-internal-storage?
-      (fn [should-move?]
-        (if should-move?
-          (dispatch [:request-permissions
-                     [:read-external-storage]
-                     #(move-to-internal-storage config)
-                     #(dispatch [:move-to-internal-failure-message])])
-          (status/start-node config))))))
+     (fn [should-move?]
+       (if should-move?
+         (dispatch [:request-permissions
+                    [:read-external-storage]
+                    #(move-to-internal-storage config)
+                    #(dispatch [:move-to-internal-failure-message])])
+         (status/start-node config))))))
 
 (reg-fx
   ::status-module-initialized-fx
@@ -169,8 +180,8 @@
   (fn []
     (when config/testfairy-enabled?
       (utils/show-popup
-        (i18n/label :testfairy-title)
-        (i18n/label :testfairy-message)))))
+       (i18n/label :testfairy-title)
+       (i18n/label :testfairy-message)))))
 
 (reg-fx
   ::get-fcm-token-fx
@@ -219,47 +230,66 @@
 (register-handler-fx
   :initialize-db
   (fn [{{:keys          [status-module-initialized? status-node-started?
-                         network-status network _]
-         :networks/keys [networks]} :db} _]
-    (let [network' (or network (get app-db :network))]
-      {::init-store nil
-       :db          (assoc app-db
-                      :accounts/current-account-id nil
-                      :contacts/contacts {}
-                      :network-status network-status
-                      :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
-                      :status-node-started? status-node-started?
-                      :network network')})))
+                         network-status network]
+         :networks/keys [networks]
+         :or {network (get app-db :network)}} :db} _]
+    {::init-store nil
+     :db          (assoc app-db
+                         :accounts/current-account-id nil
+                         :contacts/contacts {}
+                         :network-status network-status
+                         :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                         :status-node-started? status-node-started?
+                         :network network)}))
 
 (register-handler-db
   :initialize-account-db
-  (fn [db _]
-    (-> db
-        (assoc :current-chat-id console-chat-id)
-        (dissoc :transactions
-                :transactions-queue
-                :contacts/new-identity))))
+  (fn [{:keys [accounts/accounts contacts/contacts networks/networks
+               network view-id navigation-stack chats
+               access-scope->commands-responses layout-height
+               status-module-initialized? status-node-started?]
+        :or [network (get app-db :network)]
+        :as db} [_ address]]
+    (let [console-contact (get contacts console-chat-id)]
+      (cond-> (assoc app-db 
+                     :access-scope->commands-responses access-scope->commands-responses
+                     :accounts/current-account-id address
+                     :layout-height layout-height
+                     ;; TODO (yenda) bad, this is derived data and shouldn't be stored in the db
+                     ;; the cost of retrieving public key from db with a function taking using
+                     ;; current-account-id is negligeable
+                     :current-public-key (:public-key (accounts address))
+                     :view-id view-id
+                     :navigation-stack navigation-stack
+                     :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
+                     :status-node-started? status-node-started?
+                     :accounts/accounts accounts
+                     :accounts/creating-account? false
+                     :networks/networks networks
+                     :network network)
+        console-contact
+        (assoc :contacts/contacts {console-chat-id console-contact})))))
 
 (register-handler-fx
   :initialize-account
-  (fn [_ [_ address]]
-    {:dispatch-n [[:initialize-account-db]
-                  [:load-processed-messages]
-                  [:initialize-protocol address]
-                  [:initialize-sync-listener]
-                  [:initialize-chats]
-                  [:load-contacts]
-                  [:load-contact-groups]
-                  [:init-chat]
-                  [:init-discoveries]
-                  [:init-debug-mode address]
-                  [:send-account-update-if-needed]
-                  [:start-requesting-discoveries]
-                  [:remove-old-discoveries!]
-                  [:set :accounts/creating-account? false]
-                  [:update-wallet]
-                  [:update-transactions]
-                  [:get-fcm-token]]}))
+  (fn [_ [_ address events-after]]
+    {:dispatch-n (cond-> [[:initialize-account-db address]
+                          [:load-processed-messages]
+                          [:initialize-protocol address]
+                          [:initialize-sync-listener]
+                          [:initialize-chats]
+                          [:load-contacts]
+                          [:load-contact-groups] 
+                          [:init-discoveries]
+                          [:initialize-debugging {:address address}]
+                          [:send-account-update-if-needed]
+                          [:start-requesting-discoveries]
+                          [:remove-old-discoveries!]
+                          [:update-wallet]
+                          [:update-transactions]
+                          [:get-fcm-token]]
+                   (seq events-after)
+                   (into events-after))}))
 
 (register-handler-fx
   :check-console-chat
@@ -268,14 +298,13 @@
                  :chat
                  :accounts)]
       (merge
-        {:db (assoc db :view-id view
-                       :navigation-stack (list view))}
-        (when (or (empty? accounts) open-console?)
-          {:dispatch-n (concat
-                         [[:init-console-chat]
-                          [:load-commands!]]
-                         (when open-console?
-                           [[:navigate-to :chat console-chat-id]]))})))))
+       {:db (assoc db
+                   :view-id view
+                   :navigation-stack (list view))}
+       (when (or (empty? accounts) open-console?)
+         {:dispatch-n (concat [[:init-console-chat]]
+                              (when open-console?
+                                [[:navigate-to-chat console-chat-id]]))})))))
 
 (register-handler-fx
   :initialize-crypt
@@ -303,6 +332,15 @@
   (fn [_ _]
     {::get-fcm-token-fx nil}))
 
+;; Because we send command to jail in params and command `:ref` is a lookup vector with
+;; keyword in it (for example `["transactor" :command 51 "send"]`), we lose that keyword
+;; information in the process of converting to/from JSON, and we need to restore it
+(defn- restore-command-ref-keyword
+  [orig-params]
+  (if [(get-in orig-params [:command :command :ref])]
+    (update-in orig-params [:command :command :ref 1] keyword)
+    orig-params))
+
 (defn handle-jail-signal [{:keys [chat_id data]}]
   (let [{:keys [event data]} (types/json->clj data)]
     (case event
@@ -314,8 +352,9 @@
                                                          :message data}])
       "handler-result" (let [orig-params (:origParams data)]
                          ;; TODO(janherich): figure out and fix chat_id from event
-                         (dispatch [:command-handler! (:chat-id orig-params) orig-params
-                                    {:result {:returned (dissoc data :origParams)}}])) 
+                         (dispatch [:command-handler! (:chat-id orig-params)
+                                    (restore-command-ref-keyword orig-params)
+                                    {:result {:returned (dissoc data :origParams)}}]))
       (log/debug "Unknown jail signal " event))))
 
 (register-handler-fx
@@ -355,8 +394,8 @@
 (register-handler-fx
   :app-state-change
   (fn [_ [_ state]]))
-    ;; TODO(rasom): let's not remove this handler, it will be used for
-    ;; pausing node on entering background on android
+;; TODO(rasom): let's not remove this handler, it will be used for
+;; pausing node on entering background on android
 
 
 (register-handler-fx
@@ -371,17 +410,17 @@
                 (fn []
                   (let [watch-id (atom nil)]
                     (.getCurrentPosition
-                      navigator.geolocation
+                      react/geolocation
                       #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
                       #(dispatch [:update-geolocation (js->clj % :keywordize-keys true)])
                       (clj->js {:enableHighAccuracy true :timeout 20000 :maximumAge 1000}))
                     (when platform/android?
                       (reset! watch-id
                               (.watchPosition
-                                navigator.geolocation
+                                react/geolocation
                                 #(do
                                    (.clearWatch
-                                     navigator.geolocation
+                                     react/geolocation
                                      @watch-id)
                                    (dispatch [:update-geolocation (js->clj % :keywordize-keys true)])))))))]}))
 

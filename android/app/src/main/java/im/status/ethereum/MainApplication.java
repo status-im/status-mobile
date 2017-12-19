@@ -4,7 +4,7 @@ import android.support.multidex.MultiDexApplication;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.bitgo.randombytes.RandomBytesPackage;
-import com.cboy.rn.splashscreen.SplashScreenReactPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.centaurwarchief.smslistener.SmsListenerPackage;
 import com.facebook.react.ReactApplication;
 import com.horcrux.svg.SvgPackage;
@@ -14,9 +14,10 @@ import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.soloader.SoLoader;
 import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
 import com.github.yamill.orientation.OrientationPackage;
-import com.i18n.reactnativei18n.ReactNativeI18n;
+import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -44,7 +45,17 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
         @Override
         protected List<ReactPackage> getPackages() {
-            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG);
+            boolean devCluster = false;
+            if (BuildConfig.ETHEREUM_DEV_CLUSTER == "1") {
+                devCluster = true;
+            }
+
+            boolean jscEnabled = false;
+            if (BuildConfig.JSC_ENABLED == "1") {
+                jscEnabled = true;
+            }
+
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, jscEnabled);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),
@@ -58,7 +69,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                     new RealmReactPackage(),
                     new VectorIconsPackage(),
                     new ReactNativeContacts(),
-                    new ReactNativeI18n(),
+                    new RNI18nPackage(),
                     new RandomBytesPackage(),
                     new LinearGradientPackage(),
                     new RCTCameraPackage(),
@@ -78,6 +89,11 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
             return packages;
         }
+
+        @Override
+        protected String getJSMainModuleName() {
+            return "index.android";
+        }
     };
 
     @Override
@@ -85,4 +101,9 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         return mReactNativeHost;
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
+    }
 }

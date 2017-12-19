@@ -1,13 +1,14 @@
 (ns status-im.chat.models.input
   (:require [clojure.string :as str]
-            [status-im.components.react :as rc]
+            [status-im.bots.constants :as bots-constants]
+            [status-im.ui.components.react :as rc]
             [status-im.native-module.core :as status]
             [status-im.chat.constants :as const]
+            [status-im.chat.models.commands :as commands-model]
             [status-im.chat.views.input.validation-messages :refer [validation-message]]
+            [status-im.chat.utils :as chat-utils]
             [status-im.i18n :as i18n]
             [status-im.utils.phone-number :as phone-number]
-            [status-im.chat.utils :as chat-utils]
-            [status-im.bots.constants :as bots-constants]
             [status-im.js-dependencies :as dependencies]
             [taoensso.timbre :as log]))
 
@@ -33,29 +34,6 @@
   (and (not (nil? text))
        (or (str/starts-with? text const/bot-char)
            (str/starts-with? text const/command-char))))
-
-(defn possible-chat-actions
-  "Returns a map of possible chat actions (commands and response) for a specified `chat-id`.
-  Every map's key is a command's name, value is a pair of [`command` `message-id`]. In the case
-  of commands `message-id` is `:any`, for responses value contains the actual id.
-
-  Example of output:
-  {:browse  [{:description \"Launch the browser\" :name \"browse\" ...} :any]
-   :request [{:description \"Request a payment\" :name \"request\" ...} \"message-id\"]}"
-  [{:keys [global-commands current-chat-id] :as db} chat-id]
-  (let [chat-id (or chat-id current-chat-id)
-        {:keys [contacts requests]} (get-in db [:chats chat-id])]
-    (->> contacts
-         (map (fn [{:keys [identity]}]
-                (let [{:keys [commands responses]} (get-in db [:contacts/contacts identity])]
-                  (let [commands'  (mapv (fn [[k v]] [k [v :any]]) (merge global-commands commands))
-                        responses' (mapv (fn [{:keys [message-id type]}]
-                                           (when-let [response (get responses type)]
-                                             [type [response message-id]]))
-                                         requests)]
-                    (into commands' responses')))))
-         (reduce (fn [m cur] (into (or m {}) cur)))
-         (into {}))))
 
 (defn split-command-args
   "Returns a list of command's arguments including the command's name.
@@ -118,37 +96,44 @@
          (str/join const/spacing-char))))
 
 (defn selected-chat-command
-  "Returns a map containing `:command`, `:metadata` and `:args` keys.
-  Can also return `nil` if there is no selected command.
+  "Takes whole db, or current chat and available commands/responses and returns a map
+  containing `:command`, `:metadata` and `:args` keys. Can also return `nil` if there is no selected command.
 
   * `:command` key contains a map with all information about command.
   * `:metadata` is also a map which contains some additional information, usually not visible by user.
   For instance, we can add a `:to-message-id` key to this map, and this key will allow us to identity
   the request we're responding to.
   * `:args` contains all arguments provided by user."
-  ([{:keys [current-chat-id] :as db} chat-id input-text]
-   (let [chat-id          (or chat-id current-chat-id)
-         input-metadata   (get-in db [:chats chat-id :input-metadata])
-         seq-arguments    (get-in db [:chats chat-id :seq-arguments])
-         possible-actions (possible-chat-actions db chat-id)
-         command-args     (split-command-args input-text)
-         command-name     (first command-args)]
-     (when (starts-as-command? (or command-name ""))
-       (when-let [[command to-message-id]
-                  (-> (filter (fn [[{:keys [name bot]} message-id]]
-                                (= (or (when-not (bots-constants/mailman-bot? bot) bot) name)
-                                   (subs command-name 1)))
-                              (vals possible-actions))
-                      (first))]
-         {:command   command
-          :metadata  (if (and (nil? (:to-message-id input-metadata)) (not= :any to-message-id))
-                       (assoc input-metadata :to-message-id to-message-id)
-                       input-metadata)
-          :args      (if (empty? seq-arguments)
-                       (rest command-args)
-                       seq-arguments)}))))
-  ([{:keys [current-chat-id] :as db} chat-id]
-   (selected-chat-command db chat-id (get-in db [:chats chat-id :input-text]))))
+  ([{:keys [input-text input-metadata seq-arguments] :as current-chat} commands responses]
+   (let [[command-name :as command-args] (split-command-args input-text)]
+     (when-let [{{:keys [message-id]} :request :as command} (and command-name
+                                                                 (starts-as-command? command-name)
+                                                                 (get (merge commands
+                                                                             responses)
+                                                                      (subs command-name 1)))]
+       {:command  command
+        :metadata (if (and message-id (not (:to-message-id input-metadata)))
+                    (assoc input-metadata :to-message-id message-id)
+                    input-metadata)
+        :args     (into [] (if (empty? seq-arguments)
+                             (rest command-args)
+                             seq-arguments))})))
+  ([{:keys [chats current-chat-id access-scope->commands-responses]
+     :contacts/keys [contacts]
+     :accounts/keys [accounts current-account-id] :as db}]
+   (let [chat (get chats current-chat-id)
+         account (get accounts current-account-id)]
+     (selected-chat-command chat
+                            (commands-model/commands-responses :command
+                                                               access-scope->commands-responses
+                                                               account
+                                                               chat
+                                                               contacts)
+                            (commands-model/requested-responses access-scope->commands-responses
+                                                                account
+                                                                chat
+                                                                contacts
+                                                                (vals (:requests chat)))))))
 
 (def *no-argument-error* -1)
 
@@ -183,7 +168,7 @@
   (let [input-text    (get-in db [:chats current-chat-id :input-text])
         seq-arguments (get-in db [:chats current-chat-id :seq-arguments])
         selection     (get-in db [:chat-ui-props current-chat-id :selection])
-        chat-command  (selected-chat-command db current-chat-id)] 
+        chat-command  (selected-chat-command db)]
     (current-chat-argument-position chat-command input-text selection seq-arguments)))
 
 (defn command-completion
@@ -192,30 +177,25 @@
    * `:less-than-needed` means that the command is not complete and additional arguments should be provided;
    * `:more-than-needed` means that the command is more than complete and contains redundant arguments;
    * `:no-command` means that there is no selected command."
-  ([{:keys [current-chat-id] :as db} chat-id]
-   (let [chat-id      (or chat-id current-chat-id)
-         input-text   (get-in db [:chats chat-id :input-text])
-         chat-command (selected-chat-command db chat-id)]
-     (command-completion chat-command)))
-  ([{:keys [args] :as chat-command}]
-   (let [args            (remove str/blank? args)
-         params          (get-in chat-command [:command :params])
-         required-params (remove :optional params)]
-     (if chat-command
-       (cond
-         (or (= (count args) (count params))
-             (= (count args) (count required-params)))
-         :complete
+  [{:keys [args] :as chat-command}]
+  (let [args            (remove str/blank? args)
+        params          (get-in chat-command [:command :params])
+        required-params (remove :optional params)]
+    (if chat-command
+      (cond
+        (or (= (count args) (count params))
+            (= (count args) (count required-params)))
+        :complete
 
-         (< (count args) (count required-params))
-         :less-than-needed
+        (< (count args) (count required-params))
+        :less-than-needed
 
-         (> (count args) (count params))
-         :more-than-needed
+        (> (count args) (count params))
+        :more-than-needed
 
-         :default
-         :no-command)
-       :no-command))))
+        :default
+        :no-command)
+      :no-command)))
 
 (defn args->params
   "Uses `args` (which is a list or vector like ['Jarrad' '1.0']) and command's `params`
@@ -242,8 +222,7 @@
 (defn modified-db-after-change
   "Returns the new db object that should be used after any input change."
   [{:keys [current-chat-id] :as db}]
-  (let [input-text   (get-in db [:chats current-chat-id :input-text])
-        command      (selected-chat-command db current-chat-id input-text)
+  (let [command      (selected-chat-command db)
         prev-command (get-in db [:chat-ui-props current-chat-id :prev-command])]
     (if command
       (cond-> db

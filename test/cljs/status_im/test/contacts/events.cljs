@@ -109,8 +109,7 @@
    :name "ÐApps"
    :order 1
    :timestamp 0
-   :contacts [{:identity "wallet"}
-              {:identity "oaken-water-meter"}
+   :contacts [{:identity "oaken-water-meter"}
               {:identity "melonport"}
               {:identity "bchat"}
               {:identity "Dentacoin"}
@@ -123,13 +122,13 @@
   {:address nil
    :name "Wallet"
    :global-command nil
-   :dapp-url "https://status.im/dapps/wallet/"
    :dapp-hash nil
    :photo-path "icon_wallet_avatar"
+   :dapp-url nil
    :bot-url nil
-   :pending? false
    :whisper-identity "wallet"
    :dapp? true
+   :pending? true
    :unremovable? true
    :public-key nil})
 

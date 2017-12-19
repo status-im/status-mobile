@@ -2,7 +2,11 @@
   (:require [reagent.core :as reagent]
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [status-im.ui.screens.views :as views]
-            [status-im.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.core :as core]))
+
+(defn orientation->keyword [o]
+  (keyword (.toLowerCase o)))
 
 (defn app-root []
 
@@ -13,5 +17,4 @@
      :reagent-render views/main}))
 
 (defn init []
-  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
-  (dispatch-sync [:initialize-app]))
+  (core/init app-root))

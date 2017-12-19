@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.accounts.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def accounts-container
   {:flex             1

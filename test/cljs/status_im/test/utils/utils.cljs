@@ -36,3 +36,14 @@
   (is (= {:a 1} (u/update-if-present {:a 0} :a inc)))
   (is (= {:a 2} (u/update-if-present {:a 0} :a + 2)))
   (is (= {:a 0} (u/update-if-present {:a 0} :b inc))))
+
+(deftest map-values-test
+  (is (= {} (u/map-values {} inc)))
+  (is (= {:a 1} (u/map-values {:a 0} inc)))
+  (is (= {:a 1 :b 2} (u/map-values {:a 0 :b 1} inc))))
+
+(deftest deep-merge-test
+  (is (= {} (u/deep-merge {} {})))
+  (is (= {:a 1 :b 2} (u/deep-merge {:a 1} {:b 2})))
+  (is (= {:a {:b 1 :c 2}} (u/deep-merge {:a {:b 1 :c 1}} {:a {:c 2}})))
+  (is (= {:a {:b {:c 2}} :d 1} (u/deep-merge {:a {:b {:c 1}} :d 1} {:a {:b {:c 2}}}))))

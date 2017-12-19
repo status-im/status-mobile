@@ -3,14 +3,14 @@
             [clojure.string :as string]
             [re-frame.core :refer [dispatch]]
             [reagent.core :as reagent]
-            [status-im.components.camera :as camera]
-            [status-im.components.chat-icon.screen :refer [my-profile-icon]]
-            [status-im.components.context-menu :refer [context-menu]]
-            [status-im.components.react :as react]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.sticky-button :refer [sticky-button]]
-            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.components.toolbar-new.view :refer [toolbar]]
+            [status-im.ui.components.camera :as camera]
+            [status-im.ui.components.chat-icon.screen :refer [my-profile-icon]]
+            [status-im.ui.components.context-menu :refer [context-menu]]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.sticky-button :refer [sticky-button]]
+            [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.db :as db]
             [status-im.ui.screens.profile.events :as profile.events]
@@ -20,8 +20,9 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn edit-my-profile-toolbar []
-  [toolbar {:title   (label :t/edit-profile)
-            :actions [{:image :blank}]}])
+  [toolbar/toolbar {}
+   toolbar/default-nav-back
+   [toolbar/content-title (label :t/edit-profile)]])
 
 (defview profile-name-input []
   (letsubs [profile-name [:my-profile/get :name]

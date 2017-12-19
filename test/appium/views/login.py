@@ -45,7 +45,6 @@ class ConfirmRecoverAccess(BaseButton):
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='RECOVER ACCESS']")
 
 
-
 class LoginView(BaseViewObject):
 
     def __init__(self, driver):

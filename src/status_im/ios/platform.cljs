@@ -1,8 +1,14 @@
 (ns status-im.ios.platform
-  (:require [status-im.components.styles :as styles]
+  (:require [status-im.ui.components.styles :as styles]
             [status-im.i18n :refer [label]]
             [status-im.utils.utils :as utils]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
+
+;; DEPRECATION NOTICE
+;;
+;; NOTE(oskarth): These component-styles are legacy and should be removed,
+;; please don't add or modify these styles. Instead, use defstyle macro to
+;; inline platform-specific styles in the appropriate namespace
 
 (def component-styles
   {:status-bar            {:default     {:height    20
@@ -24,6 +30,9 @@
                            :transaction {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-transparent}
+                           :modal-wallet {:height    20
+                                          :bar-style "light-content"
+                                          :color     styles/color-blue4}
                            :wallet      {:height    20
                                          :bar-style "light-content"
                                          :color     styles/color-blue4}}

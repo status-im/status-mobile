@@ -17,10 +17,19 @@ target 'StatusIm' do
 
   # Pods for StatusIm
   pod 'Instabug', '~> 7.0'
-
+  pod 'FirebaseMessaging'
+  
   target 'StatusImTests' do
     inherit! :search_paths
     # Pods for testing
   end
 
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
 end

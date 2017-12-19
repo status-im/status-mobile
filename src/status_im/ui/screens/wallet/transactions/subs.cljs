@@ -21,10 +21,26 @@
   (fn [wallet]
     (get wallet :current-tab 0)))
 
+(defn enrich-transaction [{:keys [type to from timestamp] :as transaction} contacts]
+  ;; TODO (yenda) proper wallet logic when wallet switching is implemented
+  (let [[contact-address key-contact key-wallet] (if (= type :inbound)
+                                                   [from :from-contact :to-wallet]
+                                                   [to :to-contact :from-wallet])
+        wallet                                   (i18n/label :main-wallet)
+        contact                                  (get contacts (utils.hex/normalize-hex contact-address))]
+    (cond-> transaction
+      contact (assoc key-contact (:name contact))
+      :always (assoc key-wallet wallet
+                     :time-formatted (datetime/timestamp->time timestamp)))))
+
 (reg-sub :wallet.transactions/transactions
   :<- [:wallet]
-  (fn [wallet]
-    (:transactions wallet)))
+  :<- [:contacts/by-address]
+  (fn [[wallet contacts]]
+    (reduce (fn [acc [hash transaction]]
+              (assoc acc hash (enrich-transaction transaction contacts)))
+            {}
+            (:transactions wallet))))
 
 (reg-sub :wallet.transactions/grouped-transactions
   :<- [:wallet.transactions/transactions]
@@ -33,15 +49,17 @@
 
 (defn format-unsigned-transaction [{:keys [id] :as transaction}]
   (assoc transaction
-    :type           :unsigned
-    :confirmations  0
-    :symbol         "ETH"
-    ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
-    :hash           id))
+         :type           :unsigned
+         :confirmations  0
+         :symbol         "ETH"
+         ;; TODO (andrey) revisit this, we shouldn't set not hash value to the hash field
+         :hash           id))
 
 (reg-sub :wallet/unsigned-transactions
-  (fn [db]
-    (vals (get-in db [:wallet :transactions-unsigned]))))
+  :<- [:wallet]
+  :<- [:contacts/by-address]
+  (fn [[wallet contacts]]
+    (map #(enrich-transaction % contacts) (vals (:transactions-unsigned wallet)))))
 
 (reg-sub :wallet.transactions/unsigned-transactions
   :<- [:wallet/unsigned-transactions]
@@ -115,22 +133,20 @@
   (fn [[unsigned-transactions transactions current-transaction network]]
     (let [transactions (merge transactions unsigned-transactions)
           {:keys [gas-used gas-price hash timestamp type] :as transaction} (get transactions current-transaction)]
-      (merge transaction
-             {:gas-price-eth  (money/wei->str :eth gas-price)
-              :gas-price-gwei (money/wei->str :gwei gas-price)
-              :date           (datetime/timestamp->long-date timestamp)}
-             (if (= type :unsigned)
-               {:block     (i18n/label :not-applicable)
-                :cost      (i18n/label :not-applicable)
-                :gas-limit (i18n/label :not-applicable)
-                :gas-used  (i18n/label :not-applicable)
-                :nonce     (i18n/label :not-applicable)}
-               {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
-                :url  (transactions/get-transaction-details-url network hash)})
-             ;; TODO (yenda) proper wallet logic when wallet switching is implemented
-             (if (= type :inbound)
-               {:to-wallet "Main wallet"}
-               {:from-wallet "Main wallet"})))))
+      (when transaction
+        (merge transaction
+               {:gas-price-eth  (money/wei->str :eth gas-price)
+                :gas-price-gwei (money/wei->str :gwei gas-price)
+                :date           (datetime/timestamp->long-date timestamp)}
+               (if (= type :unsigned)
+                 {:block     (i18n/label :not-applicable)
+                  :cost      (i18n/label :not-applicable)
+                  :gas-limit (i18n/label :not-applicable)
+                  :gas-used  (i18n/label :not-applicable)
+                  :nonce     (i18n/label :not-applicable)
+                  :hash      (i18n/label :not-applicable)}
+                 {:cost (money/wei->str :eth (money/fee-value gas-used gas-price))
+                  :url  (transactions/get-transaction-details-url network hash)}))))))
 
 (reg-sub :wallet.transactions.details/confirmations
   :<- [:wallet.transactions/transaction-details]
@@ -146,18 +162,6 @@
         100
         (* 100 (/ confirmations max-confirmations))))))
 
-(reg-sub
-  :contacts-by-address
+(reg-sub :wallet.transactions/filters
   (fn [db]
-    (into {} (map (fn [[_ {:keys [address] :as contact}]]
-                    (when address
-                      [address contact]))
-                  (:contacts/contacts db)))))
-
-(reg-sub
-  :contact-by-address
-  :<- [:contacts-by-address]
-  (fn [contacts [_ address]]
-    (let [address' (when address
-                     (utils.hex/normalize-hex address))]
-      (contacts address'))))
+    (get-in db [:wallet.transactions :filters])))

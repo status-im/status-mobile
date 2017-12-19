@@ -1,7 +1,7 @@
 (ns status-im.chat.views.input.validation-messages
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
-            [status-im.components.react :as c]
+            [status-im.ui.components.react :as c]
             [status-im.chat.styles.input.validation-message :as style]
             [status-im.utils.listview :as lw]
             [status-im.i18n :as i18n]))
@@ -19,8 +19,8 @@
 
 (defview validation-messages-view []
   (letsubs [chat-input-margin [:chat-input-margin]
-            input-height [:chat-ui-props :input-height]
-            messages [:chat-ui-props :validation-messages]]
+            input-height [:get-current-chat-ui-prop :input-height]
+            messages [:validation-messages]]
     (when messages
       [c/view (style/root (+ input-height chat-input-margin))
        (if (string? messages)

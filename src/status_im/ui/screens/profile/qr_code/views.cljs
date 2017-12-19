@@ -1,18 +1,21 @@
 (ns status-im.ui.screens.profile.qr-code.views
   (:require [clojure.string :as string]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.qr-code :refer [qr-code]]
-            [status-im.components.react :as react]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.qr-code :refer [qr-code]]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.status-bar :refer [status-bar]]
             [status-im.i18n :refer [label]]
-            [status-im.ui.screens.profile.qr-code.styles :as styles])
+            [status-im.ui.screens.profile.qr-code.styles :as styles]
+            [status-im.utils.money :as money]
+            [status-im.utils.ethereum.eip681 :as eip681])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview qr-code-view []
-  (letsubs [{:keys [photo-path address name] :as contact} [:get-in [:qr-modal :contact]]
-            {:keys [qr-source amount? dimensions]} [:get :qr-modal]
-            {:keys [amount]} [:get :contacts/click-params]]
+  (letsubs [{:keys [photo-path address name]} [:get-in [:qr-modal :contact]]
+            {:keys [qr-source qr-value amount? dimensions]} [:get :qr-modal]
+            {:keys [amount]} [:get :contacts/click-params]
+            chain-id [:get-network-id]]
     [react/view styles/wallet-qr-code
      [status-bar {:type :modal}]
      [react/view styles/account-toolbar
@@ -34,18 +37,18 @@
                                                                             :height (.-height layout)}]))}
       (when (:width dimensions)
         [react/view {:style (styles/qr-code-container dimensions)}
-         [qr-code {:value (if amount?
-                            (prn-str {:address (get contact qr-source)
-                                      :amount  amount})
-                            (str "ethereum:" (get contact qr-source)))
-                   :size  (- (min (:width dimensions)
-                                  (:height dimensions))
-                             80)}]])]
+         (when-let [value (eip681/generate-uri qr-value (merge {:chain-id chain-id} (when amount? {:value (money/str->wei amount)})))]
+           [qr-code {:value value
+                     :size  (- (min (:width dimensions)
+                                    (:height dimensions))
+                               80)}])])]
      [react/view styles/footer
-      [react/view styles/wallet-info
-       [react/text {:style styles/wallet-name-text} (label :t/main-wallet)]
-       [react/text {:style styles/wallet-address-text} address]]
-
+      (if (= :address qr-source)
+        [react/view styles/wallet-info
+         [react/text {:style styles/wallet-name-text} (label :t/main-wallet)]
+         [react/text {:style styles/wallet-address-text} address]]
+        [react/view styles/wallet-info
+         [react/text {:style styles/wallet-name-text} (label :t/public-key)]])
       [react/touchable-highlight {:onPress #(dispatch [:navigate-back])}
        [react/view styles/done-button
         [react/text {:style styles/done-button-text} (label :t/done)]]]]]))

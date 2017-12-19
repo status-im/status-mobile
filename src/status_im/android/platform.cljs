@@ -1,6 +1,12 @@
 (ns status-im.android.platform
-  (:require [status-im.components.styles :as styles]
+  (:require [status-im.ui.components.styles :as styles]
             [status-im.react-native.js-dependencies :as rn-dependencies]))
+
+;; DEPRECATION NOTICE
+;;
+;; NOTE(oskarth): These component-styles are legacy and should be removed,
+;; please don't add or modify these styles. Instead, use defstyle macro to
+;; inline platform-specific styles in the appropriate namespace
 
 (def component-styles
   {:status-bar            {:default     {:height       25
@@ -24,6 +30,10 @@
                            :modal-white {:height       0
                                          :bar-style    "light-content"
                                          :color        styles/color-black}
+                           ;;TODO because this bug in RN https://github.com/facebook/react-native/issues/7474
+                           :modal-wallet {:height       0
+                                          :bar-style    "light-content"
+                                          :color        styles/color-black}
                            :transaction {:height       0
                                          :bar-style    "light-content"
                                          :color        styles/color-dark-blue-2}

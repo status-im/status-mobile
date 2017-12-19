@@ -9,7 +9,7 @@
 
 (defn get-all-as-list
   []
-  (realm/realm-collection->list (get-all)))
+  (realm/js-object->clj (get-all)))
 
 (defn save
   [network update?]

@@ -6,42 +6,8 @@
             "en": "Browse"
         },
         "dapp?": true,
-        "bot-url": "local://browse-bot",
-        "global-command": {
-          "description":"Launch the browser",
-          "color": "#ffa500",
-          "name": "global",
-          "params": [{
-            "name": "url",
-            "placeholder":"URL",
-            "type":"text"
-          }],
-          "title":"Browser",
-          "registered-only":true,
-          "has-handler": false,
-          "fullscreen":true
-        },
-        "unremovable?": true
-    },
-    "wallet":
-    {
-        "name":
-        {
-            "en": "Wallet",
-            "es": "Monedero",
-            "es-ar": "Monedero",
-            "ru": "Кошелек"
-        },
-        "photo-path": "icon_wallet_avatar",
-        "add-chat?": true,
-        "dapp?": true,
-        "groups": ["dapps"],
-        "has-global-command?": true,
-        "dapp-url":
-        {
-          "en": "https://status.im/dapps/wallet/"
-        },
-        "bot-url": "local://wallet-bot",
+        "hide-contact?": true,
+        "bot-url": "local://browse-bot", 
         "unremovable?": true
     },
 
@@ -53,8 +19,19 @@
             "ru": "Печкин"
         },
         "dapp?": true,
-        "has-global-command?": true,
+        "hide-contact?": true,
         "bot-url": "local://mailman-bot"
+    },
+
+    "transactor":
+    {
+        "name":
+        {
+            "en": "Transactor"
+        },
+        "dapp?": true,
+        "hide-contact?": true,
+        "bot-url": "local://transactor-bot"
     },
 
     "demo-bot":
@@ -137,23 +114,8 @@
         },
         "groups": ["state-of-dapps"]
     },
-
-    "oaken-water-meter":
-    {
-        "name":
-        {
-            "en": "Oaken Water Meter"
-        },
-        "photo-path": "contacts://oaken-water-meter",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "http://waterflowdapp.projectoaken.com"
-        },
-        "groups": ["dapps"]
-    },
-
-    "gnosis":
+    
+   "gnosis":
     {
         "name":
         {
@@ -180,7 +142,24 @@
         {
             "en": "https://portal.melonport.com/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "Melonport is a system of tools you can use to set up, manage and invest in digital assets and create management strategies using customisable, predefined ruleset."
+    },
+    
+    "oaken-water-meter":
+    {
+        "name":
+        {
+            "en": "Oaken Water Meter"
+        },
+        "photo-path": "contacts://oaken-water-meter",
+        "dapp?": true,
+        "dapp-url":
+        {
+            "en": "http://waterflowdapp.projectoaken.com"
+        },
+        "groups": ["dapps"],
+        "description": "Project Oaken is a secure, autonomous, machine to machine IOT platform built to provide the underlying infrastructure needed to power smart cities."
     },
 
     "bchat":
@@ -195,7 +174,8 @@
         {
             "en": "http://swarm-gateways.net/bzz:/go-bchat.eth/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "bchat (block chat) is a web forum built using a suite of smart contracts known as the Smart Ethereum Bulletin Board (sebb)."
     },
     
     "Dentacoin":
@@ -210,7 +190,8 @@
         {
             "en": "http://dentacoin.com/testnet/"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "The blockchain solution for the global dental industry, aimed at improving dental care worldwide and making it affordable through crowd power."
     },
 
     "Augur":
@@ -225,7 +206,8 @@
         {
           "en": "https://app.augur.net"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "Augur combines the magic of prediction markets with the power of a decentralized network to create a stunningly accurate forecasting tool - and the chance for real money trading profits."
     },
 
     "Ethlance":
@@ -240,36 +222,24 @@
         {
           "en": "https://district0x.github.io/ethlance/resources/public/"
         },
-        "groups": ["dapps"]
-    },
-    
-    "Commiteth":
-    {
-        "name":
-        {
-            "en": "Commiteth"
-        },
-        "photo-path": "contacts://commiteth",
-        "dapp?": true,
-        "dapp-url":
-        {
-            "en": "https://commiteth.com"
-        },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "The future of work is now. Hire people or work yourself in return for ETH."
     },
 
-    "Etherplay":
+    "Ethcro":
     {
         "name":
         {
-            "en": "Etherplay"
+            "en": "Ethcro"
         },
-        "photo-path": "contacts://etherplay",
+        "photo-path": "contacts://ethcro",
         "dapp?": true,
         "dapp-url":
         {
-            "en": "http://test.etherplay.io"
+          "en": "https://ethcrodapp.0trust.us"
         },
-        "groups": ["dapps"]
+        "groups": ["dapps"],
+        "description": "Smart Contracts for everyone"
     }
+
 }

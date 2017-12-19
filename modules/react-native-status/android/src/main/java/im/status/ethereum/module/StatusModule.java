@@ -11,7 +11,7 @@ import android.webkit.WebStorage;
 
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.github.status_im.status_go.cmd.Statusgo;
+import com.github.status_im.status_go.Statusgo;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,14 +38,22 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ServiceConnector status = null;
     private ExecutorService executor = null;
     private boolean debug;
+    private boolean devCluster;
+    private Jail jail;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, boolean jscEnabled) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
         }
         this.debug = debug;
+        this.devCluster = devCluster;
         reactContext.addLifecycleEventListener(this);
+        if(jscEnabled) {
+            jail = new JSCJail(this);
+        } else {
+            jail = new OttoJail();
+        }
     }
 
     @Override
@@ -95,8 +103,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         return true;
     }
 
-    // Geth
-    private void signalEvent(String jsonEvent) {
+
+    void signalEvent(String jsonEvent) {
         Log.d(TAG, "Signal event: " + jsonEvent);
         WritableMap params = Arguments.createMap();
         params.putString("jsonEvent", jsonEvent);
@@ -160,7 +168,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         }
 
         int dev = 0;
-        if (this.debug) {
+        if (this.devCluster) {
             dev = 1;
         }
 
@@ -171,7 +179,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             String gethLogFileName = "geth.log";
             jsonConfig.put("LogEnabled", false);
             jsonConfig.put("LogFile", gethLogFileName);
-            jsonConfig.put("LogLevel", "DEBUG");
+            jsonConfig.put("LogLevel", "INFO");
             jsonConfig.put("DataDir", root + customConfig.get("DataDir"));
             jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
             try {
@@ -340,6 +348,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
+
+        jail.reset();
+
         Thread thread = new Thread() {
             @Override
             public void run() {
@@ -391,6 +402,27 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         thread.start();
     }
+
+    @ReactMethod
+    public void addPeer(final String enode, final Callback callback) {
+        Log.d(TAG, "addPeer");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    String res = Statusgo.AddPeer(enode);
+
+                    callback.invoke(res);
+                }
+            };
+
+        thread.start();
+    }
+
 
     @ReactMethod
     public void recoverAccount(final String passphrase, final String password, final Callback callback) {
@@ -465,7 +497,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
             @Override
             public void run() {
-                Statusgo.InitJail(js);
+                jail.initJail(js);
 
                 callback.invoke(false);
             }
@@ -476,22 +508,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @ReactMethod
     public void parseJail(final String chatId, final String js, final Callback callback) {
-        Log.d(TAG, "parseJail");
+        Log.d(TAG, "parseJail chatId:" + chatId);
+        //Log.d(TAG, js);
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                String res = Statusgo.Parse(chatId, js);
-                Log.d(TAG, "endParseJail");
-                callback.invoke(res);
-            }
-        };
-
-        thread.start();
+        String res = jail.parseJail(chatId, js);
+        Log.d(TAG, res);
+        Log.d(TAG, "endParseJail");
+        callback.invoke(res);
     }
 
     @ReactMethod
@@ -507,7 +534,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 Log.d(TAG, "startCallJail");
-                String res = Statusgo.Call(chatId, path, params);
+                String res = jail.callJail(chatId, path, params);
                 Log.d(TAG, "endCallJail");
                 callback.invoke(res);
             }
@@ -622,7 +649,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void sendWeb3Request(final String host, final String payload, final Callback callback) {
+    public void sendWeb3Request(final String payload, final Callback callback) {
         Thread thread = new Thread() {
             @Override
             public void run() {

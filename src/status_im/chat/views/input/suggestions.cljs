@@ -1,11 +1,11 @@
 (ns status-im.chat.views.input.suggestions
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.components.react :refer [view
-                                                scroll-view
-                                                touchable-highlight
-                                                text
-                                                icon]]
+            [status-im.ui.components.react :refer [view
+                                                   scroll-view
+                                                   touchable-highlight
+                                                   text
+                                                   icon]]
             [status-im.data-store.messages :as messages]
             [status-im.chat.styles.input.suggestions :as style]
             [status-im.chat.constants :as const]
@@ -25,14 +25,14 @@
            :number-of-lines 2}
      description]]])
 
-(defview request-item [{:keys [type message-id]} last?]
-  [{:keys [name description] :as response} [:get-response type]
-   {:keys [chat-id]} [:get-current-chat]]
+(defview response-item [{:keys [name description]
+                         {:keys [type message-id]} :request :as command} last?]
+  [{:keys [chat-id]} [:get-current-chat]]
   [suggestion-item
    {:on-press    #(let [{:keys [params]} (messages/get-message-content-by-id message-id)
                         metadata (assoc params :to-message-id message-id)]
-                    (dispatch [:select-chat-input-command response metadata]))
-    :name        name
+                    (dispatch [:select-chat-input-command command metadata]))
+    :name        (chat-utils/command-name command)
     :description description
     :last?       last?}])
 
@@ -50,25 +50,23 @@
 
 (defview suggestions-view []
   [show-suggestions? [:show-suggestions?]
-   requests [:chat :request-suggestions]
-   commands [:chat :command-suggestions]]
+   responses [:get-available-responses]
+   commands [:get-available-commands]]
   (when show-suggestions?
     [expandable-view {:key        :suggestions
                       :draggable? false
                       :height     212}
      [view {:flex 1}
       [scroll-view {:keyboardShouldPersistTaps :always}
-       (when (seq requests)
+       (when (seq responses)
          [view
           [item-title false (label :t/suggestions-requests)]
-          (for [[i {:keys [chat-id message-id] :as request}] (map-indexed vector requests)]
-            ^{:key [chat-id message-id]}
-            [request-item request (= i (dec (count requests)))])])
+          (for [[i response] (map-indexed vector responses)]
+            ^{:key i}
+            [response-item response (= i (dec (count responses)))])])
        (when (seq commands)
          [view
-          [item-title (seq requests) (label :t/suggestions-commands)]
-          (for [[i [_ command]] (->> commands
-                                     (remove #(nil? (:title (second %))))
-                                     (map-indexed vector))]
+          [item-title (seq responses) (label :t/suggestions-commands)]
+          (for [[i command] (map-indexed vector commands)]
             ^{:key i}
             [command-item command (= i (dec (count commands)))])])]]]))

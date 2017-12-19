@@ -1,32 +1,23 @@
 (ns status-im.ui.screens.wallet.transactions.views
   (:require [re-frame.core :as re-frame]
-            [status-im.components.button.view :as button]
-            [status-im.components.checkbox.view :as checkbox]
-            [status-im.components.list.views :as list]
-            [status-im.components.react :as react]
-            [status-im.components.status-bar :as status-bar]
-            [status-im.components.styles :as styles]
-            [status-im.components.toolbar-new.actions :as actions]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.ui.components.button.view :as button]
+            [status-im.ui.components.checkbox.view :as checkbox]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.styles :as styles]
+            [status-im.ui.components.tabs.views :as tabs]
+            [status-im.ui.components.toolbar.actions :as actions]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :as i18n]
             [status-im.ui.screens.wallet.transactions.styles :as transactions.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]
-            [status-im.utils.money :as money]
-            [status-im.utils.utils :as utils])
+            [status-im.utils.money :as money])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-
-(defn- show-not-implemented! []
-  (utils/show-popup "TODO" "Not implemented yet!"))
-
-(defn on-sign-transaction
-  [password]
-  ;; TODO(yenda) implement
-  (re-frame/dispatch [:accept-transactions password]))
 
 (defn on-delete-transaction
   [{:keys [id]}]
-  ;; TODO(andrey) implement alert
-  (re-frame/dispatch [:wallet/discard-unsigned-transaction id]))
+  (re-frame/dispatch [:wallet/discard-unsigned-transaction-with-confirmation id]))
 
 ;; TODO (andrey) implement
 (defn unsigned-action [unsigned-transactions-count]
@@ -34,28 +25,29 @@
                         :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])}
    (i18n/label :t/transactions-sign-all)])
 
-(def history-action
-  {:icon      :icons/filter
-   :handler   #(utils/show-popup "TODO" "Not implemented") #_(re-frame/dispatch [:navigate-to-modal :wallet-transactions-sign-all])})
+(defn history-action [filter?]
+  (merge
+    {:icon    :icons/filter
+     :handler #(re-frame/dispatch [:navigate-to-modal :wallet-transactions-filter])}
+    (when filter? {:icon-opts {:overlay-style transactions.styles/corner-dot}})))
 
-(defn toolbar-view [current-tab unsigned-transactions-count]
-  [toolbar/toolbar2 {:flat? true}
+(defn- all-checked? [filter-data]
+  (and (every? :checked? (:type filter-data))
+       (every? :checked? (:tokens filter-data))))
+
+(defn- toolbar-view [current-tab unsigned-transactions-count filter-data]
+  [toolbar/toolbar {:flat? true}
    toolbar/default-nav-back
    [toolbar/content-title (i18n/label :t/transactions)]
    (case current-tab
-     0 [toolbar/actions [history-action]]
-     1 nil ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
-     )])
+     :transactions-history  [toolbar/actions [(history-action (not (all-checked? filter-data)))]]
+     :unsigned-transactions nil)]) ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
+
 
 (defn action-buttons [{:keys [id to value] :as transaction}]
   [react/view {:style transactions.styles/action-buttons}
    [button/primary-button {:style    {:margin-right 12}
-                           :on-press #(re-frame/dispatch [:navigate-to-modal
-                                                          :wallet-send-transaction-modal
-                                                          {:amount         (str (money/wei->ether value))
-                                                           :transaction-id id
-                                                           :to-address     to
-                                                           :to-name        to}])}
+                           :on-press #(re-frame/dispatch [:wallet/show-sign-transaction id])}
     (i18n/label :t/transactions-sign)]
    [button/secondary-button {:on-press #(on-delete-transaction transaction)}
     (i18n/label :t/delete)]])
@@ -76,33 +68,57 @@
     (:postponed :pending)   (transaction-icon :icons/arrow-right styles/color-gray4-transparent styles/color-gray7)
     (throw (str "Unknown transaction type: " k))))
 
-(defn render-transaction [{:keys [hash to from type value symbol] :as transaction}]
-  [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
-   [react/view
-    [list/item
-     [list/item-icon (transaction-type->icon (keyword type))]
-     [list/item-content
-      (money/wei->str :eth value)
-      (if (inbound? type)
-        (str (i18n/label :t/from) " " from)
-        (str (i18n/label :t/to) " " to))
-      (when (unsigned? type)
-        [action-buttons transaction])]
-     [list/item-icon {:icon :icons/forward
-                      :style {:margin-top 10}
-                      :icon-opts transactions.styles/forward}]]]])
+(defn render-transaction [{:keys [hash from-contact to-contact to from type value symbol time-formatted] :as transaction}]
+  (let [[label contact address] (if (inbound? type)
+                                  [(i18n/label :t/from) from-contact from]
+                                  [(i18n/label :t/to) to-contact to])]
+    [list/touchable-item #(re-frame/dispatch [:show-transaction-details hash])
+     [react/view
+      [list/item
+       [list/item-icon (transaction-type->icon (keyword type))]
+       [list/item-content
+        [react/view {:style transactions.styles/amount-time}
+         [react/text {:style transactions.styles/tx-amount
+                      :ellipsize-mode "tail"
+                      :number-of-lines 1}
+          (money/wei->str :eth value)]
+         [react/text {:style transactions.styles/tx-time}
+          time-formatted]]
+        [react/view {:style transactions.styles/address-row}
+         [react/text {:style transactions.styles/address-label}
+          label]
+         (when contact
+           [react/text {:style transactions.styles/address-contact}
+            contact])
+         [react/text {:style transactions.styles/address-hash
+                      :ellipsize-mode "middle"
+                      :number-of-lines 1}
+          address]] 
+        (when (unsigned? type)
+          [action-buttons transaction])]
+       [list/item-icon {:icon :icons/forward
+                        :style {:margin-top 10}
+                        :icon-opts transactions.styles/forward}]]]]))
 
 ;; TODO(yenda) hook with re-frame
 (defn- empty-text [s] [react/text {:style transactions.styles/empty-text} s])
 
+(defn filtered-transaction? [transaction filter-data]
+  ;; TODO(jeluard) extend to token when available
+  (:checked? (some #(when (= (:type transaction) (:id %)) %) (:type filter-data))))
+
+(defn update-transactions [m filter-data]
+  (update m :data (fn [v] (filter #(filtered-transaction? % filter-data) v))))
+
 (defview history-list []
   (letsubs [transactions-history-list [:wallet.transactions/transactions-history-list]
             transactions-loading?     [:wallet.transactions/transactions-loading?]
-            error-message             [:wallet.transactions/error-message?]]
-    [react/view {:style styles/flex}
+            error-message             [:wallet.transactions/error-message?]
+            filter-data               [:wallet.transactions/filters]]
+    [react/view styles/flex
      (when error-message
        [wallet.views/error-message-view transactions.styles/error-container transactions.styles/error-message])
-     [list/section-list {:sections        transactions-history-list
+     [list/section-list {:sections        (map #(update-transactions % filter-data) transactions-history-list)
                          :render-fn       render-transaction
                          :empty-component (empty-text (i18n/label :t/transactions-history-empty))
                          :on-refresh      #(re-frame/dispatch [:update-transactions])
@@ -117,51 +133,50 @@
 
 ;; Filter history
 
-(defn- item-tokens [{:keys [symbol label checked?]}]
+(defn- item-filter [{:keys [icon checked? path]} content]
   [list/item
-   [list/item-icon (transaction-type->icon :pending)] ;; TODO(jeluard) add proper token data
-   [list/item-content label symbol]
-   [checkbox/checkbox {:checked? true #_checked?}]])
+   [list/item-icon icon]
+   content
+   [list/item-checkbox {:checked? checked? :on-value-change #(re-frame/dispatch [:wallet.transactions/filter path %])}]])
 
-(defn- item-type [{:keys [id label checked?]}]
-  [list/item
-   [list/item-icon (transaction-type->icon (keyword id))]
-   [list/item-content label]
-   [checkbox/checkbox checked?]])
+#_ ;; TODO(jeluard) Will be used for ERC20 tokens
+(defn- item-filter-tokens [{:keys [symbol label checked?]}]
+  [item-filter {:icon (transaction-type->icon :pending) :checked? checked?} ;; TODO(jeluard) add proper token icon
+   [list/item-content
+    [list/item-primary label]
+    [list/item-secondary symbol]]])
 
-(def filter-data
-  [{:title (i18n/label :t/transactions-filter-tokens)
-    :key :tokens
-    :renderItem (list/wrap-render-fn item-tokens)
-    :data [{:symbol "GNO" :label "Gnosis"}
-           {:symbol "SNT" :label "Status Network Token"}
-           {:symbol "SGT" :label "Status Genesis Token"}
-           {:symbol "GOL" :label "Golem"}]}
-   {:title (i18n/label :t/transactions-filter-type)
-    :key :type
-    :renderItem (list/wrap-render-fn item-type)
-    :data [{:id :incoming  :label "Incoming"}
-           {:id :outgoing  :label "Outgoing"}
-           {:id :pending   :label "Pending"}
-           {:id :postponed :label "Postponed"}]}])
+(defn- item-filter-type [{:keys [id label checked?]}]
+  (let [kid (keyword id)]
+    [item-filter {:icon (transaction-type->icon kid) :checked? checked? :path {:type kid}}
+     [list/item-content
+      [list/item-primary-only label]]]))
+
+(defn- wrap-filter-data [m]
+  ;; TODO(jeluard) Restore tokens filtering once token support is added
+  [{:title      (i18n/label :t/transactions-filter-type)
+    :key        :type
+    :renderItem (list/wrap-render-fn item-filter-type)
+    :data       (:type m)}])
 
 (defview filter-history []
-  []
-  [react/view
-   [toolbar/toolbar2 {}
-    [toolbar/nav-clear-text (i18n/label :t/done)]
-    [toolbar/content-title (i18n/label :t/transactions-filter-title)]
-    [toolbar/text-action {:handler #(utils/show-popup "TODO" "Select All")}
-     (i18n/label :t/transactions-filter-select-all)]]
-   [react/view {:style styles/flex}
-    [list/section-list {:sections filter-data}]]])
+  (letsubs [filter-data [:wallet.transactions/filters]]
+    [react/view styles/flex
+     [toolbar/toolbar {}
+      [toolbar/nav-clear-text (i18n/label :t/done)]
+      [toolbar/content-title (i18n/label :t/transactions-filter-title)]
+      [toolbar/text-action {:handler #(re-frame/dispatch [:wallet.transactions/filter-all])
+                            :disabled? (all-checked? filter-data)}
+       (i18n/label :t/transactions-filter-select-all)]]
+     [react/view {:style styles/flex}
+      [list/section-list {:sections (wrap-filter-data filter-data)}]]]))
 
-(defn transactions-history-tab [{:keys [active?]}]
+(defn history-tab [active?]
   [react/text {:uppercase? true
                :style      (transactions.styles/tab-title active?)}
    (i18n/label :t/transactions-history)])
 
-(defview unsigned-transactions-tab [{:keys [active?]}]
+(defview unsigned-tab [active?]
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]]
     [react/view {:flex-direction :row}
      [react/text {:style      (transactions.styles/tab-title active?)
@@ -171,38 +186,25 @@
        [react/text {:style transactions.styles/tab-unsigned-transactions-count}
         (str " " unsigned-transactions-count)])]))
 
-(defview tab [scroll-to index content]
-  (letsubs [current-tab [:wallet.transactions/current-tab]]
-    (let [active? (= index current-tab)]
-      [react/view (transactions.styles/tab active?)
-       [react/touchable-highlight {:on-press #(scroll-to index)}
-        [react/view
-         [content {:active? active?}]]]])))
-
-(defn swipable-tabs [current-tab]
-  (let [swiper (atom nil)]
-    (fn [current-tab]
-      (let [scroll-to (fn [index]
-                        (.scrollBy @swiper (- index current-tab)))]
-        [react/view transactions.styles/main-section
-         [react/view transactions.styles/tabs-container
-          [tab scroll-to 0 transactions-history-tab]
-          [tab scroll-to 1 unsigned-transactions-tab]]
-         [react/swiper {:loop             false
-                        :shows-pagination false
-                        :index            current-tab
-                        :ref              #(reset! swiper %)
-                        :on-index-changed #(re-frame/dispatch [:change-tab %])}
-          [history-list]
-          [unsigned-list]]]))))
+(def tabs-list
+  [{:view-id :transactions-history
+    :content history-tab
+    :screen history-list}
+   {:view-id :unsigned-transactions
+    :content unsigned-tab
+    :screen unsigned-list}])
 
 (defview transactions []
   (letsubs [unsigned-transactions-count [:wallet.transactions/unsigned-transactions-count]
-            current-tab                 [:wallet.transactions/current-tab]]
+            current-tab                 [:get :view-id]
+            filter-data                 [:wallet.transactions/filters]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
-     [toolbar-view current-tab unsigned-transactions-count]
-     [swipable-tabs current-tab]]))
+     [toolbar-view current-tab unsigned-transactions-count filter-data]
+     [tabs/swipable-tabs tabs-list current-tab true
+      {:navigation-event     :navigation-replace
+       :tab-style            transactions.styles/tab
+       :tabs-container-style transactions.styles/tabs-container}]]))
 
 (defn- pretty-print-asset [symbol amount]
   (case symbol
@@ -239,12 +241,19 @@
      [react/text {:style transactions.styles/details-item-value} (str value)]
      [react/text {:style transactions.styles/details-item-extra-value} (str extra-value)]]]))
 
-(defn details-list [{:keys [block hash from from-wallet to to-wallet gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
+(defn details-list [{:keys [block hash
+                            from from-wallet from-contact
+                            to to-wallet to-contact
+                            gas-limit gas-price-gwei gas-price-eth gas-used cost nonce data]}]
   [react/view {:style transactions.styles/details-block}
    [details-list-row :t/block block]
    [details-list-row :t/hash hash]
-   [details-list-row :t/from (or from-wallet from) (when from-wallet from)]
-   [details-list-row :t/to (or to-wallet to) (when to-wallet to)]
+   [details-list-row :t/from
+    (or from-wallet from-contact from)
+    (when (or from-wallet from-contact) from)]
+   [details-list-row :t/to
+    (or to-wallet to-contact to)
+    (when (or to-wallet to-contact) to)]
    [details-list-row :t/gas-limit gas-limit]
    [details-list-row :t/gas-price gas-price-gwei gas-price-eth]
    [details-list-row :t/gas-used gas-used]
@@ -257,17 +266,19 @@
                   {:text (i18n/label :t/open-on-etherscan) :value #(.openURL react/linking url)}])])
 
 (defview transaction-details []
-  (letsubs [{:keys [hash url type] :as transactions} [:wallet.transactions/transaction-details]
+  (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
             confirmations                            [:wallet.transactions.details/confirmations]
             confirmations-progress                   [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
-     [toolbar/toolbar2 {}
+     [toolbar/toolbar {}
       toolbar/default-nav-back
       [toolbar/content-title (i18n/label :t/transaction-details)]
-      [toolbar/actions (details-action hash url)]]
-     [react/scroll-view {:style transactions.styles/main-section}
-      [details-header transactions]
-      [details-confirmations confirmations confirmations-progress]
-      [react/view {:style transactions.styles/details-separator}]
-      [details-list transactions]]]))
+      (when transaction [toolbar/actions (details-action hash url)])]
+     (if transaction
+       [react/scroll-view {:style styles/main-container}
+        [details-header transaction]
+        [details-confirmations confirmations confirmations-progress]
+        [react/view {:style transactions.styles/details-separator}]
+        [details-list transaction]]
+       [empty-text (i18n/label :t/unsigned-transaction-expired)])]))

@@ -2,8 +2,8 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.webview-bridge :refer [webview-bridge]]
-            [status-im.components.react :refer [view text] :as components]
+            [status-im.ui.components.webview-bridge :refer [webview-bridge]]
+            [status-im.ui.components.react :refer [view text] :as components]
             [status-im.native-module.core :as status]
             [status-im.i18n :refer [label]]
             [status-im.utils.js-resources :as js-res]
@@ -32,11 +32,11 @@
 (defview bridged-web-view [{:keys [url]}]
   [extra-js [:web-view-extra-js]
    rpc-url [:get :rpc-url]
-   result-box [:chat-ui-props :result-box]]
+   result-box [:get-current-chat-ui-prop :result-box]]
   (when url
     [webview-bridge
-     {:ref                                   #(dispatch [:set-webview-bridge %])
-      :on-bridge-message                     #(dispatch [:webview-bridge-message %])
+     {:ref                                   #(dispatch [:chat-webview-bridge/set-ref %])
+      :on-bridge-message                     #(dispatch [:chat-webview-bridge/process-message %])
       :source                                {:uri url}
       :render-error                          web-view-error
       :java-script-enabled                   true

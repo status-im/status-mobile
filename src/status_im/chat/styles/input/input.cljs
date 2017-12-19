@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.input.input
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :as common]
+  (:require [status-im.ui.components.styles :as common]
             [status-im.utils.platform :as platform]
             [taoensso.timbre :as log]))
 
@@ -11,8 +11,8 @@
 (def color-command "#70777d")
 (def color-send "rgb(98, 143, 227)")
 
-(def max-input-height 66)
 (def min-input-height 38)
+(def max-input-height (* 4 min-input-height))
 
 (defnstyle root [margin-bottom]
   {:flex-direction   :column
@@ -56,7 +56,7 @@
 (defnstyle input-view [content-height single-line-input?]
   {:flex           1
    :font-size      14
-   :padding-top    5
+   :padding-top    9
    :padding-bottom 5
    :height         (if single-line-input?
                      min-input-height
@@ -65,6 +65,18 @@
 
 (def invisible-input-text
   {:font-size        14
+   :position         :absolute
+   :left             0
+   :background-color :transparent
+   :color            :transparent})
+
+(defnstyle invisible-input-text-height [container-width]
+  {:width            container-width
+   :flex             1
+   :font-size        14
+   :padding-top      5
+   :padding-bottom   5
+   :android          {:padding-top 3}
    :position         :absolute
    :left             0
    :background-color :transparent

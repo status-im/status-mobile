@@ -1,5 +1,5 @@
 (ns status-im.chat.styles.message.datemark
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def datemark-wrapper
   {:flex        1

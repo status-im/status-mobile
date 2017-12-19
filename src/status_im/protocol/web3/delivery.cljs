@@ -19,30 +19,32 @@
    callback]
   (let [{:keys [public]} keypair
 
-        content  (:content payload)
-        content' (if (and (not to) public content)
-                   (e/encrypt public (prn-str content))
-                   content)
+        content          (:content payload)
+        content'         (if (and (not to) public content)
+                           (e/encrypt public (prn-str content))
+                           content)
 
-        payload' (-> message
-                     (select-keys [:message-id :requires-ack? :type :clock-value])
-                     (merge payload)
-                     (assoc :content content')
-                     prn-str
-                     u/from-utf8)]
+        payload'         (-> message
+                             (select-keys [:message-id :requires-ack? :type :clock-value])
+                             (merge payload)
+                             (assoc :content content')
+                             prn-str
+                             u/from-utf8)
+        sym-key-password (or key-password shh-keys/status-key-password)]
     (shh-keys/get-sym-key
-      web3
-      (or key-password shh-keys/status-key-password)
-      (fn [status-key-id]
-        (callback
-          (merge
-            (select-keys message [:ttl])
-            (let [type (if to :asym :sym)]
-              (cond-> {:sig     from
-                       :topic   (first topics)
-                       :payload payload'}
-                      to (assoc :pubKey to)
-                      (not to) (assoc :symKeyID status-key-id)))))))))
+     web3
+     sym-key-password
+     (fn [status-key-id]
+       (callback
+        (merge
+         (select-keys message [:ttl])
+         (let [type (if to :asym :sym)]
+           (cond-> {:sig     from
+                    :topic   (first topics)
+                    :payload payload'}
+                   to (assoc :pubKey to)
+                   (not to) (assoc :symKeyID status-key-id
+                                   :sym-key-password sym-key-password)))))))))
 
 (s/def :shh/pending-message
   (s/keys :req-un [:message/sig :shh/payload :message/topic]
@@ -85,22 +87,32 @@
 (s/def :delivery/pending-message
   (s/keys :req-un [:message/sig :message/to :shh/payload :payload/ack? ::id
                    :message/requires-ack? :message/topic ::attempts ::was-sent?]
-          :opt-un [:message/pubKey :message/symKeyID]))
+          :opt-un [:message/pub-key :message/sym-key-password]))
 
-(defn add-prepared-pending-message!
-  [web3 {:keys [message-id to sym-key-id pub-key] :as pending-message}]
-  {:pre [(valid? :delivery/pending-message pending-message)]}
-  (debug :add-prepared-pending-message!)
-  (let [message          (assoc
-                           (select-keys pending-message [:sig :topic :payload])
-                           :symKeyID sym-key-id
-                           :pubKey pub-key)
-        pending-message' (assoc pending-message :message message
+(defn- do-add-pending-message!
+  [web3 {:keys [message-id to pub-key sym-key-id] :as pending-message}]
+  (let [message          (select-keys pending-message [:sig :topic :payload])
+        message'         (if sym-key-id
+                           (assoc message :symKeyId sym-key-id)
+                           (assoc message :pubKey pub-key))
+        pending-message' (assoc pending-message :message message'
                                                 :id message-id)]
     (swap! messages assoc-in [web3 message-id to] pending-message')
     (when to
       (swap! recipient->pending-message
              update to set/union #{[web3 message-id to]}))))
+
+(defn add-prepared-pending-message!
+  [web3 {:keys [sym-key-password] :as pending-message}]
+  {:pre [(valid? :delivery/pending-message pending-message)]}
+  (debug :add-prepared-pending-message!)
+  (if sym-key-password
+   (shh-keys/get-sym-key
+    web3
+    sym-key-password
+    (fn [sym-key-id]
+      (do-add-pending-message! web3 (assoc pending-message :sym-key-id sym-key-id))))
+   (do-add-pending-message! web3 pending-message)))
 
 (defn remove-pending-message! [web3 id to]
   (swap! messages update web3

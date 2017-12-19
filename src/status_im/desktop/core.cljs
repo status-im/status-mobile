@@ -4,10 +4,11 @@
             status-im.utils.db
             ;;status-im.ui.screens.db
             ;;status-im.ui.screens.events
-            status-im.ui.screens.subs
+            ;status-im.ui.screens.subs
             ;;status-im.data-store.core
             [status-im.ui.screens.views :as views]
-            [status-im.components.react :as react]))
+            [status-im.ui.components.react :as react]
+            [status-im.core :as core]))
 
 (defn app-root []
 
@@ -18,5 +19,4 @@
      :reagent-render views/main}))
 
 (defn init []
-  (.registerComponent react/app-registry "StatusIm" #(reagent/reactify-component app-root))
-  (dispatch-sync [:initialize-app]))
+  (core/init app-root))

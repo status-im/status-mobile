@@ -10,7 +10,7 @@
 
 (defn get-all-as-list
   []
-  (realm/realm-collection->list (get-all)))
+  (realm/js-object->clj (get-all)))
 
 (defn get-by-id
   [whisper-identity]
@@ -18,8 +18,7 @@
 
 (defn get-by-id-cljs
   [whisper-identity]
-  (some-> (get-by-id whisper-identity)
-          (js->clj :keywordize-keys true)))
+  (realm/get-one-by-field-clj @realm/account-realm :contact :whisper-identity whisper-identity))
 
 (defn save
   [contact update?]

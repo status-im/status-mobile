@@ -1,5 +1,5 @@
 (ns status-im.chat.styles.animations
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def color-root-border "rgba(192, 198, 202, 0.28)")
 (def header-draggable-icon "rgba(73, 84, 93, 0.23)")

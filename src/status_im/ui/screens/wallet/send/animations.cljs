@@ -1,5 +1,5 @@
 (ns status-im.ui.screens.wallet.send.animations
-  (:require [status-im.components.animation :as animation]))
+  (:require [status-im.ui.components.animation :as animation]))
 
 (defn animate-sign-panel [opacity-value bottom-value]
   (animation/start
