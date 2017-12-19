@@ -3,7 +3,8 @@
   "interface": "reagent",
   "modules": [],
   "imageDirs": [
-    "resources/images"
+    "resources/images",
+    "resources/icons"
   ],
   "platforms": {
     "ios": {

@@ -91,3 +91,6 @@ ios/StatusIm.xcworkspace
 #npm
 package-lock.json
 run-ios.sh
+
+#desktop
+desktop/
