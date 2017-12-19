@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [clojure.walk :refer [keywordize-keys]]
             [status-im.utils.platform :as platform]
+            [taoensso.timbre :as log]
             [status-im.react-native.js-dependencies :as rn-dependecies]))
 
 (def default-camera (.-default rn-dependecies/camera))
@@ -25,8 +26,25 @@
           (.then #(callback %))
           (.catch #(callback false)))))
 
+(defn try-capture [{:keys [metadata]
+                    :or {metadata {}}}]
+  (fn [event]
+    (try
+      (.capture default-camera {:metadata metadata})
+      (catch :default e
+        (log/error "Error handling touch event on camera")))))
+
+(defn wrap-touch-handler [m]
+  (if platform/android?
+    (assoc m :on-press (try-capture m))
+    m))
+
 (defn camera [props]
-  (r/create-element default-camera (clj->js (merge {:inverted true} props))))
+    (->> {:inverted true}
+         wrap-touch-handler
+         (merge props)
+         clj->js
+         (r/create-element default-camera)))
 
 (defn get-qr-code-data [code]
   (.-data code))
