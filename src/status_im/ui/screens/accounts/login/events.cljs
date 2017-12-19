@@ -7,7 +7,8 @@
             [status-im.utils.types :refer [json->clj]]
             [status-im.data-store.core :as data-store]
             [status-im.native-module.core :as status]
-            [status-im.constants :refer [console-chat-id]]))
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.utils.config :as config]))
 
 ;;;; FX
 
@@ -27,8 +28,13 @@
 (reg-fx
   ::change-account
   (fn [[address new-account?]]
-    (data-store/change-account address new-account?
-                               #(dispatch [:change-account-handler % address new-account?]))))
+    (js/setTimeout
+     (fn []
+       (data-store/change-account address new-account?
+                                  #(dispatch [:change-account-handler % address new-account?])))
+     ;; if we don't add delay when running app without status-go
+     ;; "null is not an object (evaluating 'realm.schema')" error appears
+     (if config/stub-status-go? 300 0))))
 
 ;;;; Handlers
 

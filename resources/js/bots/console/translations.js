@@ -78,7 +78,7 @@ I18n.translations = {
     },
     'zh-hant': {
         phone_title: '發送手機號碼',
-        phone_description: '使用您的號碼發現好友',
+        phone_description: '使用你的號碼發現好友',
         phone_placeholder: '手機號碼',
 
         confirm_description: '確認碼',
@@ -86,10 +86,91 @@ I18n.translations = {
         confirm_validation_description: '格式錯誤',
 
         password_description: '密碼',
-        password_placeholder: '鍵入您的密碼',
-        password_placeholder2: '重新鍵入您的密碼',
-        password_error: '密碼不得短於6個字元。',
+        password_placeholder: '鍵入你的密碼',
+        password_placeholder2: '重新鍵入你的密碼',
+        password_error: '密碼不得短於6個字符。',
         password_error1: '確認密碼與鍵入的密碼不一致。',
+        password_validation_title: '密碼',
+
+        faucet_incorrect_title: '不正確的水龍頭',
+        faucet_incorrect_description: '請從列表中選擇一個',
+
+        debug_mode_title: '調試模式',
+        debug_mode_description: '開始/停止調試模式',
+
+        faucet_title: '水龍頭',
+        faucet_description: '獲取一些以太幣',
+        faucet_placeholder: '水龍頭網址'
+
+    },
+    'zh-hant-tw': {
+        phone_title: '傳送電話號碼',
+        phone_description: '用你的號碼來查詢朋友',
+        phone_placeholder: '電話號碼',
+
+        confirm_description: '確認碼',
+        confirm_validation_title: '確認碼',
+        confirm_validation_description: '格式錯誤',
+
+        password_description: '密碼',
+        password_placeholder: '輸入密碼',
+        password_placeholder2: '請重新輸入密碼以確認',
+        password_error: '密碼應不少於6個字符。',
+        password_error1: '密碼確認資訊與密碼不匹配。',
+        password_validation_title: '密碼',
+
+        faucet_incorrect_title: '不正確的水龍頭',
+        faucet_incorrect_description: '請從列表中選擇一個',
+
+        debug_mode_title: '除錯模式',
+        debug_mode_description: '開始/停止除錯模式',
+
+        faucet_title: '水龍頭',
+        faucet_description: '獲取一些以太幣',
+        faucet_placeholder: '水龍頭網址'
+
+    },
+    'zh-hant-sg': {
+        phone_title: '傳送電話號碼',
+        phone_description: '用你的號碼來查詢朋友',
+        phone_placeholder: '電話號碼',
+
+        confirm_description: '確認碼',
+        confirm_validation_title: '確認碼',
+        confirm_validation_description: '格式錯誤',
+
+        password_description: '密碼',
+        password_placeholder: '輸入密碼',
+        password_placeholder2: '請重新輸入密碼以確認',
+        password_error: '密碼應不少於6個字符。',
+        password_error1: '密碼確認資訊與密碼不匹配。',
+        password_validation_title: '密碼',
+
+        faucet_incorrect_title: '不正確的水龍頭',
+        faucet_incorrect_description: '請從列表中選擇一個',
+
+        debug_mode_title: '除錯模式',
+        debug_mode_description: '開始/停止除錯模式',
+
+        faucet_title: '水龍頭',
+        faucet_description: '獲取一些以太幣',
+        faucet_placeholder: '水龍頭網址'
+
+    },
+    'zh-hant-hk': {
+        phone_title: '發送電話號碼',
+        phone_description: '用你的號碼來查找朋友',
+        phone_placeholder: '電話號碼',
+
+        confirm_description: '確認碼',
+        confirm_validation_title: '確認碼',
+        confirm_validation_description: '格式錯誤',
+
+        password_description: '密碼',
+        password_placeholder: '輸入密碼',
+        password_placeholder2: '請重新輸入密碼以確認',
+        password_error: '密碼應不少於6個字符。',
+        password_error1: '密碼確認信息與密碼不匹配。',
         password_validation_title: '密碼',
 
         faucet_incorrect_title: '不正確的水龍頭',
@@ -159,7 +240,7 @@ I18n.translations = {
     },
     'zh-wuu': {
         phone_title: '发送电话号码',
-        phone_description: '用您的号码查找朋友',
+        phone_description: '用你的号码查找朋友',
         phone_placeholder: '电话号码',
 
         confirm_description: '确认码',

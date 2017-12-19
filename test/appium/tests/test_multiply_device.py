@@ -175,10 +175,12 @@ class TestMultiplyDevices(MultiplyDeviceTestCase):
             pytest.fail('Message is shown for the user which has been removed from the GroupChat', False)
 
     @pytest.mark.transaction
-    @pytest.mark.parametrize("test, recipient, sender", [('group_chat', transaction_users['A_USER'],
-                                                          transaction_users['B_USER']),
-                                                         ('one_to_one_chat', transaction_users['B_USER'],
-                                                          transaction_users['A_USER'])])
+    @pytest.mark.parametrize("test, recipient, sender", [('group_chat',
+                                                          transaction_users['A_USER'], transaction_users['B_USER']),
+                                                         ('one_to_one_chat',
+                                                          transaction_users['B_USER'], transaction_users['A_USER'])],
+                             ids=['group_chat',
+                                  'one_to_one_chat'])
     def test_send_funds_via_request(self, test, recipient, sender):
         device_1, device_2 = HomeView(self.driver_1), HomeView(self.driver_2)
         recover_access(device_1,

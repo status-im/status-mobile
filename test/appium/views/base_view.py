@@ -133,6 +133,13 @@ class StatusAppIcon(BaseButton):
             "//*[@text='Status']")
 
 
+class ChatsButton(BaseButton):
+    def __init__(self, driver):
+        super(ChatsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//*[@text='Chats']")
+
+
 class BaseViewObject(object):
     def __init__(self, driver):
         self.driver = driver
@@ -150,6 +157,7 @@ class BaseViewObject(object):
         self.contacts_button = ContactsButton(self.driver)
         self.wallet_button = WalletButton(self.driver)
         self.discover_button = DiscoverButton(self.driver)
+        self.chats_button = ChatsButton(self.driver)
 
         self.save_button = SaveButton(self.driver)
 

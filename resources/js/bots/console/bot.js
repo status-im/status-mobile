@@ -360,7 +360,7 @@ function jsHandler(params, context) {
     };
     messages = [];
     try {
-        result["text-message"] = JSON.stringify(eval(params.code));
+        result["text-message"] = String(JSON.stringify(eval(params.code)));
         localStorage.setItem("previousMessage", params.code);
     } catch (e) {
         result.err = e;
@@ -483,7 +483,7 @@ var phoneConfig = {
     shortPreview: function (params) {
         if (params) {
             return {
-                markup: status.components.text(
+                markup: status.components.chatPreviewText(
                     {},
                     params.phone
                 )
@@ -576,7 +576,7 @@ var faucetCommandConfig ={
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 I18n.t('faucet_title') + ": " + params.url
             )
@@ -651,7 +651,7 @@ status.command({
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 I18n.t('debug_mode_title') + ": " + params.mode
             )
@@ -689,7 +689,7 @@ status.response({
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 params.code
             )

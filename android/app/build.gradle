@@ -35,6 +35,13 @@ import com.android.build.OutputFile
  *   // bundleInPaidRelease: true,
  *   // bundleInBeta: true,
  *
+ *   // whether to disable dev mode in custom build variants (by default only disabled in release)
+ *   // for example: to disable dev mode in the staging build type (if configured)
+ *   devDisabledInStaging: true,
+ *   // The configuration property can be in the following formats
+ *   //         'devDisabledIn${productFlavor}${buildType}'
+ *   //         'devDisabledIn${buildType}'
+ *
  *   // the root of your project, i.e. where "package.json" lives
  *   root: "../../",
  *
@@ -57,11 +64,18 @@ import com.android.build.OutputFile
  *   // date; if you have any other folders that you want to ignore for performance reasons (gradle
  *   // indexes the entire tree), add them here. Alternatively, if you have JS files in android/
  *   // for example, you might want to remove it from here.
- *   inputExcludes: ["android/**", "ios/**"]
+ *   inputExcludes: ["android/**", "ios/**"],
+ *
+ *   // override which node gets called and with what additional arguments
+ *   nodeExecutableAndArgs: ["node"],
+ *
+ *   // supply additional arguments to the packager
+ *   extraPackagerArgs: []
  * ]
  */
 project.ext.react = [
-        nodeExecutableAndArgs: ["node", "--max-old-space-size=4096"]
+        nodeExecutableAndArgs: ["node", "--max-old-space-size=4096"],
+        entryFile: "index.android.js"
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -115,6 +129,15 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
+    }
+    /**
+    * Fix for: (https://github.com/ReactiveX/RxJava/issues/4445)
+    * Execution failed for task ':app:transformResourcesWithMergeJavaResForDebug'.
+    * > com.android.build.api.transform.TransformException: com.android.builder.packaging.DuplicateFileException:
+    *   Duplicate files copied in APK META-INF/rxjava.properties
+    */
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
     }
     dexOptions {
         jumboMode true

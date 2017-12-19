@@ -130,6 +130,10 @@ function text(options, s) {
     return ['text', options].concat(s);
 }
 
+function chatPreviewText(options, s) {
+    return ['chat-preview-text', options, s];
+}
+
 function textInput(options) {
     return ['text-input', options];
 }
@@ -273,6 +277,7 @@ var status = {
     components: {
         view: view,
         text: text,
+        chatPreviewText: chatPreviewText,
         textInput: textInput,
         slider: slider,
         image: image,

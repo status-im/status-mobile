@@ -11,6 +11,20 @@ class SendButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='SEND']")
 
 
+class RequestButton(BaseButton):
+
+    def __init__(self, driver):
+        super(RequestButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='REQUEST']")
+
+
+class SendRequestButton(BaseButton):
+
+    def __init__(self, driver):
+        super(SendRequestButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='SEND REQUEST']")
+
+
 class AmountEditBox(BaseEditBox, BaseButton):
 
     def __init__(self, driver):
@@ -66,6 +80,8 @@ class WalletViewObject(BaseViewObject):
         self.transactions_button = TransactionsButton(self.driver)
         self.eth_asset = EthAssetText(self.driver)
         self.usd_total_value = UsdTotalValueText(self.driver)
+        self.request_button = RequestButton(self.driver)
+        self.send_request_button = SendRequestButton(self.driver)
 
     def get_usd_total_value(self):
         return float(self.usd_total_value.text)

@@ -17,5 +17,5 @@ dependencies {
     compile 'com.instabug.library:instabug:3+'
     compile 'com.github.ericwlange:AndroidJSCore:3.0.1'
     compile 'status-im:function:0.0.1'
-    compile(group: 'status-im', name: 'status-go', version: 'develop-g5446a090', ext: 'aar')
+    compile(group: 'status-im', name: 'status-go', version: 'develop-gba6c9653', ext: 'aar')
 }
