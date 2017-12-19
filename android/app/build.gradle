@@ -234,7 +234,7 @@ task hemroidBuild(type: Exec) {
     def rootDir = project.rootDir
     def localProperties = new File(rootDir, "local.properties")
 
-    def ndkDir = "/Users/cappuccino/Library/Android/sdk/ndk-bundle"
+    def ndkDir = "$System.env.ANDROID_NDK_HOME"
     if (localProperties.exists()) {
         Properties properties = new Properties()
         localProperties.withInputStream { instr ->
