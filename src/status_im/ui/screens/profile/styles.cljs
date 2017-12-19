@@ -138,7 +138,19 @@
    :android            {:height 72}
    :ios                {:height 64}})
 
+(defstyle offline-messaging-settings
+  {:padding-horizontal 16
+   :flex-direction     :row
+   :align-items        :center
+   :background-color   color-white
+   :android            {:height 72}
+   :ios                {:height 64}})
+
 (def network-settings-text
+  (merge {:flex 1}
+         profile-setting-text))
+
+(def offline-messaging-settings-text
   (merge {:flex 1}
          profile-setting-text))
 

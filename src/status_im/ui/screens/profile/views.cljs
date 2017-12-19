@@ -10,7 +10,7 @@
             [status-im.ui.components.context-menu :refer [context-menu]]
             [status-im.ui.components.list-selection :refer [share-options]]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.components.status-bar.view :refer [status-bar]]
             [status-im.ui.components.styles :refer [color-blue]]
             [status-im.ui.components.toolbar.actions :as actions]
@@ -19,8 +19,7 @@
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]]
-            [status-im.utils.config :as config]
-            [status-im.ui.components.icons.vector-icons :as vector-icons])
+            [status-im.utils.config :as config])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn my-profile-toolbar []
@@ -98,7 +97,7 @@
      value]]
    (when options
      [context-menu
-      [vi/icon :icons/options]
+      [vector-icons/icon :icons/options]
       options
       nil
       styles/profile-info-item-button])])
@@ -164,7 +163,15 @@
    [react/view styles/network-settings
     [react/text {:style styles/network-settings-text}
      (label :t/network-settings)]
-    [vi/icon :icons/forward {:color :gray}]]])
+    [vector-icons/icon :icons/forward {:color :gray}]]])
+
+(defn offline-messaging-settings []
+  [react/touchable-highlight
+   {:on-press #(dispatch [:navigate-to :offline-messaging-settings])}
+   [react/view styles/offline-messaging-settings
+    [react/text {:style styles/offline-messaging-settings-text}
+     (label :t/offline-messaging-settings)]
+    [vector-icons/icon :icons/forward {:color :gray}]]])
 
 (defn profile-info [{:keys [whisper-identity status phone] :as contact}]
   [react/view
@@ -185,7 +192,11 @@
     [{:value #(dispatch [:my-profile/update-phone-number])
       :text  (label :t/edit)}]]
    [info-item-separator]
-   [network-settings]])
+   [network-settings]
+   (when config/offline-inbox-enabled?
+     [info-item-separator])
+   (when config/offline-inbox-enabled?
+     [offline-messaging-settings])])
 
 (defn profile-status [status & [edit?]]
   [react/view styles/profile-status-container

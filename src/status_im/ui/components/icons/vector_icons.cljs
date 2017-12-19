@@ -70,7 +70,8 @@
             :icons/share               (slurp-svg "./resources/icons/share.svg")
             :icons/tooltip-triangle    (slurp-svg "./resources/icons/tooltip-triangle.svg")
             :icons/open                (slurp-svg "./resources/icons/open.svg")
-            :icons/network             (slurp-svg "./resources/icons/network.svg")})
+            :icons/network             (slurp-svg "./resources/icons/network.svg")
+            :icons/wnode               (slurp-svg "./resources/icons/wnode.svg")})
 
 (defn normalize-property-name [n]
   (if (= n :icons/options)

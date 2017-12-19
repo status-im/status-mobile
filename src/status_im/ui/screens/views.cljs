@@ -53,6 +53,7 @@
             [status-im.ui.screens.discover.dapp-details.views :as discover-dapp-details]
 
             [status-im.ui.screens.network-settings.views :refer [network-settings]]
+            [status-im.ui.screens.offline-messaging-settings.views :refer [offline-messaging-settings]]
             [status-im.ui.screens.network-settings.add-rpc.views :refer [add-rpc-url]]
             [status-im.ui.screens.network-settings.network-details.views :refer [network-details]]
             [status-im.ui.screens.network-settings.parse-json.views :refer [paste-json-text]]))
@@ -108,6 +109,7 @@
                           :login login
                           :recover recover
                           :network-settings network-settings
+                          :offline-messaging-settings offline-messaging-settings
                           :paste-json-text paste-json-text
                           :add-rpc-url add-rpc-url
                           :network-details network-details

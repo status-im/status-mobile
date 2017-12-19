@@ -1,5 +1,6 @@
 (ns status-im.protocol.web3.inbox
-  (:require [status-im.protocol.web3.utils :as utils]
+  (:require [status-im.constants :as constants]
+            [status-im.protocol.web3.utils :as utils]
             [status-im.native-module.core :as status]
             [status-im.protocol.web3.keys :as keys]
             [taoensso.timbre :as log]))
@@ -15,7 +16,7 @@
 (def default-enode "enode://0f51d75c9469de0852571c4618fe151265d4930ea35f968eb1a12e69c12f7cbabed856a12b31268a825ca2c9bafa47ef665b1b17be1ab71de83338c4b7439b24@127.0.0.1:30303")
 
 ;; adamb's status-cluster enode
-(def cluster-enode "enode://08d8eb6177b187049f6c97ed3f6c74fbbefb94c7ad10bafcaf4b65ce89c314dcfee0a8bc4e7a5b824dfa08b45b360cc78f34f0aff981f8386caa07652d2e601b@163.172.177.138:40404")
+(def cluster-enode (:address constants/default-wnode))
 
 ;; TODO(oskarth): Rewrite callback-heavy code with CSP and/or coeffects
 ;; TODO(oskarth): Memoize addPeer and markTrusted, similar to keys/get-sym-key
