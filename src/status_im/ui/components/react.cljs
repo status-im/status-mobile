@@ -1,4 +1,5 @@
 (ns status-im.ui.components.react
+  (:require-macros [status-im.utils.views :as views])
   (:require [reagent.core :as r]
             [status-im.ui.components.styles :as st]
             [status-im.utils.utils :as u]
@@ -188,3 +189,18 @@
                        [keyboard-avoiding-view-class (merge {:behavior :padding} props)]
                        [view props])]
     (vec (concat view-element children))))
+
+(views/defview with-activity-indicator [{:keys [timeout style enabled?]} comp]
+  (views/letsubs
+    [loading (r/atom true)]
+    {:component-did-mount (fn []
+                            (if (or (nil? timeout)
+                                    (> 100 timeout))
+                              (reset! loading false)
+                              (js/setTimeout (fn []
+                                               (reset! loading false))
+                                             timeout)))}
+    (if (and (not enabled?) @loading)
+      [view {:style style}
+       [activity-indicator {:animating true}]]
+      comp)))

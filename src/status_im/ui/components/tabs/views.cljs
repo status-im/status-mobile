@@ -48,7 +48,10 @@
                         :ref              #(reset! swiper %)
                         :on-index-changed #(re-frame/dispatch [navigation-event (index->tab %)])}
           (for [[index {:keys [screen view-id]}] indexed-tabs]
-            ^{:key index} [screen (is-current-tab? view-id)])]
+            ^{:key index}
+            [react/with-activity-indicator
+             {:enabled? (= current-tab view-id)}
+             [screen (is-current-tab? view-id)]])]
          (when (and bottom-tabs?
                     show-tabs?)
            [tabs tabs-container-style indexed-tabs tab-style on-press is-current-tab?])]))))
