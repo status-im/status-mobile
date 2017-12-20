@@ -29,6 +29,40 @@
              (log/debug "Handling re-frame event: " (first (get-coeffect context :event)))
              context)))
 
+(defn- check-spec-msg-path-problem [problem]
+  (let [pred (:pred problem)]
+    (str "Spec: " (-> problem :via last) "\n"
+         "Predicate: " (subs (str (:pred problem)) 0 50))))
+
+(defn- check-spec-msg-path-problems [path path-problems]
+  (str "Key path: " path "\n"
+       "Val: " (pr-str (-> path-problems first :val)) "\n\n"
+       "Number of problems: " (count path-problems) "\n\n"
+       (->> path-problems
+            (map check-spec-msg-path-problem)
+            (interpose "\n\n")
+            (apply str))))
+
+(defn- check-spec-msg [event-id db]
+  (let [explain-data (spec/explain-data :status-im.ui.screens.db/db db)
+        problems     (::spec/problems explain-data)
+        db-root-keys (->> problems (map (comp first :in)) set)
+        heading      #(str "\n\n------\n" % "\n------\n\n")
+        msg          (str "re-frame db spec check failed."
+                          (heading "SUMMARY")
+                          "After event id: " event-id "\n"
+                          "Number of problems: " (count problems) "\n\n"
+                          "Failing root db keys:\n"
+                          (->> db-root-keys (interpose "\n") (apply str))
+                          (heading "PROBLEMS")
+                          (->> problems
+                               (group-by :in)
+                               (map (fn [[path path-problems]]
+                                      (check-spec-msg-path-problems path path-problems)))
+                               (interpose "\n\n-----\n\n")
+                               (apply str)))]
+    msg))
+
 (def check-spec
   "throw an exception if db doesn't match the spec"
   (->interceptor
@@ -36,11 +70,12 @@
    :after
    (fn check-handler
      [context]
-     (let [new-db (get-effect context :db)
-           v (get-coeffect context :event)]
+     (let [new-db   (get-effect context :db)
+           event-id (-> (get-coeffect context :event) first)]
        (when (and new-db (not (spec/valid? :status-im.ui.screens.db/db new-db)))
-         (throw (ex-info (str "spec check failed on: " (first v) "\n " (spec/explain-str :status-im.ui.screens.db/db new-db)) {})))
+         (throw (ex-info (check-spec-msg event-id new-db) {})))
        context))))
+
 
 (defn register-handler
   ([name handler] (register-handler name nil handler))
