@@ -1,6 +1,7 @@
 (ns status-im.ui.screens.wallet.transactions.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as styles]
+  (:require [status-im.ui.components.styles :as styles]
+            [status-im.ui.components.tabs.styles :as tabs.styles]
             [status-im.utils.platform :as platform]))
 
 (def error-container
@@ -17,24 +18,18 @@
    :padding-right 10
    :font-size     13})
 
-(def main-section
-  {:flex             1
-   :background-color styles/color-white})
-
-(def tab-height (if platform/ios? 51 55))
-
-(def tabs-container
-  {:flexDirection :row})
-
 (defnstyle tab [active?]
   {:flex                1
-   :height              tab-height
+   :height              tabs.styles/tab-height
    :justify-content     :center
    :align-items         :center
    :border-bottom-width (if active? 2 1)
    :border-bottom-color (if active?
                           styles/color-blue4
                           styles/color-gray10-transparent)})
+
+(def tabs-container
+  {:flexDirection :row})
 
 (defnstyle tab-title [active?]
   {:ios        {:font-size 15}
@@ -55,6 +50,49 @@
   {:text-align        :center
    :margin-top        22
    :margin-horizontal 92})
+
+(defstyle amount-time
+  {:flex-direction  :row
+   :justify-content :space-between
+   :padding-right   22
+   :padding-left    17
+   :ios             {:padding-top 13}
+   :android         {:padding-top 14}})
+
+(def tx-amount
+  {:flex-grow    1
+   :flex-shrink  1
+   :margin-right 10
+   :font-size    17})
+
+(def tx-time
+  {:flex-grow   1 
+   :font-size   14
+   :text-align  :right
+   :color       styles/color-gray4})
+
+(def address-row
+  {:flex-direction :row
+   :padding-right  22
+   :padding-left   17
+   :padding-top    4})
+
+(def address-item
+  {:font-size 16
+   :color     styles/color-gray4})
+
+(def address-label
+  (merge address-item
+         {:margin-right 5}))
+
+(def address-contact
+  (merge address-item
+         {:color        styles/color-black
+          :margin-right 5}))
+
+(def address-hash
+  (merge address-item
+         {:flex-shrink 1}))
 
 (def action-buttons
   {:flex             1
@@ -187,3 +225,12 @@
   {:background-color styles/color-light-gray3
    :height           1
    :margin-vertical  10})
+
+(def corner-dot
+  {:position         :absolute
+   :top              0
+   :right            0
+   :width            4
+   :height           4
+   :border-radius    2
+   :background-color styles/color-cyan})

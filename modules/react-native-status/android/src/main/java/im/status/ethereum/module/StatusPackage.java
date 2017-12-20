@@ -5,7 +5,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.github.status_im.status_go.cmd.Statusgo;
+import com.github.status_im.status_go.Statusgo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,9 +15,13 @@ import im.status.ethereum.function.Function;
 public class StatusPackage implements ReactPackage {
 
     private boolean debug;
+    private boolean devCluster;
+    private boolean jscEnabled;
 
-    public StatusPackage (boolean debug) {
+    public StatusPackage (boolean debug, boolean devCluster, boolean jscEnabled) {
         this.debug = debug;
+        this.devCluster = devCluster;
+        this.jscEnabled = jscEnabled;
     }
 
     @Override
@@ -25,12 +29,11 @@ public class StatusPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         System.loadLibrary("statusgoraw");
         System.loadLibrary("statusgo");
-        modules.add(new StatusModule(reactContext, this.debug));
+        modules.add(new StatusModule(reactContext, this.debug, this.devCluster, this.jscEnabled));
 
         return modules;
     }
 
-    @Override
     public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();
     }

@@ -40,18 +40,21 @@ class BaseElement(object):
         logging.info('Looking for %s' % self.name)
         return self.driver.find_element(self.locator.by, self.locator.value)
 
+    def find_elements(self):
+        logging.info('Looking for %s' % self.name)
+        return self.driver.find_elements(self.locator.by, self.locator.value)
+
     def wait_for_element(self, seconds=10):
         return WebDriverWait(self.driver, seconds)\
             .until(expected_conditions.presence_of_element_located((self.locator.by, self.locator.value)))
 
     def scroll_to_element(self):
+        action = TouchAction(self.driver)
         for _ in range(5):
             try:
-                self.find_element()
-                break
+                return self.find_element()
             except NoSuchElementException:
                 logging.info('Scrolling to %s' % self.name)
-                action = TouchAction(self.driver)
                 action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
 
     def is_element_present(self, sec=5):
@@ -74,6 +77,14 @@ class BaseEditBox(BaseElement):
     def send_keys(self, value):
         self.find_element().send_keys(value)
         logging.info('Type %s to %s' % (value, self.name))
+
+    def set_value(self, value):
+        self.find_element().set_value(value)
+        logging.info('Set %s to %s' % (value, self.name))
+
+    def clear(self):
+        self.find_element().clear()
+        logging.info('Clear text in %s' % self.name)
 
 
 class BaseText(BaseElement):

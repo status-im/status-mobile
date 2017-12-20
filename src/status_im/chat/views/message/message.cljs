@@ -4,34 +4,32 @@
             [clojure.walk :as walk]
             [reagent.core :as r]
             [status-im.i18n :refer [message-status-label]]
-            [status-im.components.react :refer [view
-                                                text
-                                                image
-                                                icon
-                                                animated-view
-                                                touchable-without-feedback
-                                                touchable-highlight
-                                                autolink
-                                                get-dimensions
-                                                dismiss-keyboard!]]
-            [status-im.components.animation :as anim]
+            [status-im.ui.components.react :refer [view
+                                                   text
+                                                   image
+                                                   icon
+                                                   animated-view
+                                                   touchable-without-feedback
+                                                   touchable-highlight
+                                                   autolink
+                                                   get-dimensions
+                                                   dismiss-keyboard!]]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.list-selection :refer [share share-or-open-map]]
             [status-im.chat.constants :as chat-consts]
-            [status-im.components.list-selection :refer [share browse share-or-open-map]]
-            [status-im.chat.views.message.request-message :refer [message-content-command-request]]
+            [status-im.chat.models.commands :as commands]
             [status-im.chat.styles.message.message :as st]
             [status-im.chat.styles.message.command-pill :as pill-st]
+            [status-im.chat.views.message.request-message :refer [message-content-command-request]]
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
-            [status-im.models.commands :refer [parse-command-message-content
-                                               parse-command-request]]
             [status-im.react-native.resources :as res]
             [status-im.constants :refer [console-chat-id
-                                         wallet-chat-id
                                          text-content-type
                                          content-type-log-message
                                          content-type-status
                                          content-type-command
                                          content-type-command-request] :as c]
-            [status-im.components.chat-icon.screen :refer [chat-icon-message-status]]
+            [status-im.ui.components.chat-icon.screen :refer [chat-icon-message-status]]
             [status-im.utils.identicon :refer [identicon]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             [status-im.utils.platform :as platform]
@@ -101,11 +99,7 @@
   (let [{:keys [recipient amount]} (walk/keywordize-keys params)]
     [text {:style st/command-text
            :font  :default}
-     (if (= current-chat-id wallet-chat-id)
-       (let [label-val (if outgoing? :t/chat-send-eth-to :t/chat-send-eth-from)]
-         (label label-val {:amount    amount
-                           :chat-name (or name contact-address recipient)}))
-       (label :t/chat-send-eth {:amount amount}))]))
+     (label :t/chat-send-eth {:amount amount})]))
 
 (defn wallet-command? [content-type]
   (#{c/content-type-wallet-command c/content-type-wallet-request} content-type))
@@ -125,41 +119,32 @@
        (first (vals params))
        (str params))]))
 
-(defn commands-subscription [{:keys [type]}]
-  (if (= type "response")
-    :get-responses
-    :get-commands))
-
 (defview message-content-command
   [{:keys [message-id content content-type chat-id to from outgoing] :as message}]
-  [commands [:get-commands-and-responses chat-id]
-   from-commands [:get-commands-and-responses from]
-   global-commands [:get :global-commands]
-   current-chat-id [:get-current-chat-id]
-   contact-chat [:get-in [:chats (if outgoing to from)]]
-   preview [:get-message-preview message-id]]
-  (let [commands (merge commands from-commands)
-        {:keys [command params]} (parse-command-message-content commands global-commands content)
-        {:keys     [name type]
-         icon-path :icon} command]
-    [view st/content-command-view
-     (when (:color command)
-       [view st/command-container
-        [view (pill-st/pill command)
-         [text {:style pill-st/pill-text
-                :font  :default}
-          (str (if (= :command type) chat-consts/command-char "?") name)]]])
-     (when icon-path
-       [view st/command-image-view
-        [icon icon-path st/command-image]])
-     [command-preview {:command         (:name command)
-                       :content-type    content-type
-                       :params          params
-                       :outgoing?       outgoing
-                       :preview         preview
-                       :contact-chat    contact-chat
-                       :contact-address (if outgoing to from)
-                       :current-chat-id current-chat-id}]]))
+  (letsubs [command [:get-command (:content-command-ref content)]
+            current-chat-id [:get-current-chat-id]
+            contact-chat [:get-in [:chats (if outgoing to from)]]
+            preview [:get-message-preview message-id]]
+    (let [{:keys     [name type]
+           icon-path :icon} command]
+      [view st/content-command-view
+       (when (:color command)
+         [view st/command-container
+          [view (pill-st/pill command)
+           [text {:style pill-st/pill-text
+                  :font  :default}
+            (str chat-consts/command-char name)]]])
+       (when icon-path
+         [view st/command-image-view
+          [icon icon-path st/command-image]])
+       [command-preview {:command         (:name command)
+                         :content-type    content-type
+                         :params          (:params content)
+                         :outgoing?       outgoing
+                         :preview         preview
+                         :contact-chat    contact-chat
+                         :contact-address (if outgoing to from)
+                         :current-chat-id current-chat-id}]])))
 
 (defn message-view
   [{:keys [same-author index group-chat] :as message} content]
@@ -214,7 +199,7 @@
      (if simple-text?
        [autolink {:style   (st/text-message message)
                   :text    (apply str parsed-text)
-                  :onPress #(browse %)}]
+                  :onPress #(dispatch [:browse-link-from-message %])}]
        [text {:style (st/text-message message)} parsed-text]))])
 
 (defmulti message-content (fn [_ message _] (message :content-type)))
@@ -261,7 +246,7 @@
 (defview group-message-delivery-status [{:keys [message-id group-id message-status user-statuses] :as msg}]
   [app-db-message-user-statuses [:get-in [:message-data :user-statuses message-id]]
    app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]
-   chat [:get-chat-by-id group-id]
+   chat [:get-current-chat]
    contacts [:get-contacts]]
   (let [status            (or message-status app-db-message-status-value :sending)
         user-statuses     (merge user-statuses app-db-message-user-statuses)
@@ -299,13 +284,10 @@
 (defview message-delivery-status
   [{:keys [message-id chat-id message-status user-statuses content]}]
   [app-db-message-status-value [:get-in [:message-data :statuses message-id :status]]]
-  (let [delivery-status (get-in user-statuses [chat-id :status]) 
+  (let [delivery-status (get-in user-statuses [chat-id :status])
         status          (cond (and (not (console/commands-with-delivery-status (:command content)))
                                    (cu/console? chat-id))
                               :seen
-
-                              (cu/wallet? chat-id)
-                              :sent
 
                               :else
                               (or delivery-status message-status app-db-message-status-value :sending))]
@@ -407,7 +389,10 @@
        :reagent-render
        (fn [{:keys [outgoing group-chat content-type content] :as message}]
          [message-container message
-          [touchable-highlight {:on-press #(when platform/ios? (dismiss-keyboard!))
+          [touchable-highlight {:on-press #(when platform/ios?
+                                             (dispatch [:set-chat-ui-props
+                                                        {:show-emoji? false}])
+                                             (dismiss-keyboard!))
                                 :on-long-press #(cond (= content-type text-content-type)
                                                       (share content (label :t/message))
                                                       (and (= content-type content-type-command) (= "location" (:content-command content)))

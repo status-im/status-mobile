@@ -1,18 +1,39 @@
 (ns status-im.test.protocol.core
-  (:require [cljs.test :refer-macros [deftest is testing run-tests async]]
+  (:require-macros [cljs.core.async.macros :as async])
+  (:require [cljs.test :refer-macros [deftest is testing run-tests
+                                      async use-fixtures]]
             [cljs.nodejs :as nodejs]
+            [cljs.core.async :as async]
+            [status-im.protocol.web3.utils :as web3.utils]
             [status-im.test.protocol.node :as node]
             [status-im.test.protocol.utils :as utils]
             [status-im.protocol.core :as protocol]))
 
-(nodejs/enable-util-print!)
+;; NOTE(oskarth): All these tests are evaluated in NodeJS
 
-(node/prepare-env!)
+(nodejs/enable-util-print!)
 
 (def rpc-url "http://localhost:8645")
 (def Web3 (js/require "web3"))
 (defn make-web3 []
   (Web3. (Web3.providers.HttpProvider. rpc-url)))
+
+(defn setup []
+  (println "Setup...")
+
+  ;; NOTE(oskarth): If status-go has already been built correctly, comment this out
+  (println "Preparing environment...")
+  (node/prepare-env!)
+
+  (println "Start node...")
+  (node/start!)
+
+  (println "Setup done"))
+
+(defn teardown []
+  (println "Teardown done"))
+
+(use-fixtures :once {:before setup :after teardown})
 
 (defn make-callback [identity done]
   (fn [& args]
@@ -37,10 +58,17 @@
    :contacts            contacts
    :post-error-callback (post-error-callback id)})
 
+(defn ensure-test-terminates! [timeout done]
+  (async/go (async/<! (async/timeout (* timeout 1000)))
+            (println "ERROR: Timeout of" timeout  "seconds reached - failing test.")
+            (is (= :terminate :indeterminate))
+            (done)))
+
+;; TODO(oskarth): Fix this test, issue with private key not being persisted
 (deftest test-send-message!
   (async done
-    (node/start!)
-    (let [web3          (make-web3)
+    (let [timeout       30
+          web3          (make-web3)
           id1-keypair   (protocol/new-keypair!)
           common-config {:web3                        web3
                          :groups                      []
@@ -53,6 +81,7 @@
                          :hashtags                    []
                          :pending-messages            []}
           id1-config    (id-specific-config node/identity-1 id1-keypair [] done)]
+      (ensure-test-terminates! timeout done)
       (protocol/init-whisper! (merge common-config id1-config))
       (protocol/send-message!
         {:web3    web3
@@ -63,3 +92,14 @@
                                 :content-type "text/plain"
                                 :content      "123"
                                 :timestamp    1498723691404}}}))))
+
+(deftest test-whisper-version!
+  (testing "Whisper version supported"
+    (async done
+           (node/start!)
+           (let [web3 (make-web3)
+                 shh  (web3.utils/shh web3)]
+             (.version shh
+                       (fn [& args]
+                         (is (= "5.0" (second args)))
+                         (done)))))))

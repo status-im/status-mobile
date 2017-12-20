@@ -6,6 +6,11 @@
             [taoensso.timbre :as log])
   (:require-macros status-im.utils.handlers))
 
+(def pre-event-callback (atom nil))
+
+(defn add-pre-event-callback [callback]
+  (reset! pre-event-callback callback))
+
 (defn side-effect!
   "Middleware for handlers that will not affect db."
   [handler]
@@ -19,6 +24,8 @@
    :id     :debug-handlers-names
    :before (fn debug-handlers-names-before
              [context]
+             (when @pre-event-callback
+               (@pre-event-callback (get-coeffect context :event)))
              (log/debug "Handling re-frame event: " (first (get-coeffect context :event)))
              context)))
 

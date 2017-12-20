@@ -1,10 +1,11 @@
 (ns status-im.utils.hex
-  (:require [clojure.string :as s]))
+  (:require [clojure.string :as string]))
 
 (defn normalize-hex [hex]
-  (if (and hex (s/starts-with? hex "0x"))
-    (subs hex 2)
-    hex))
+  (when hex
+    (string/lower-case (if (string/starts-with? hex "0x")
+                         (subs hex 2)
+                         hex))))
 
 (defn valid-hex? [hex]
   (let [hex (normalize-hex hex)]

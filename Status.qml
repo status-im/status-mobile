@@ -9,6 +9,6 @@ Rectangle {
     anchors.fill: parent
 
     moduleName: "StatusIm"
-    codeLocation: "http://localhost:8081/index.ios.bundle?platform=desktop&dev=true"
+    codeLocation: "http://localhost:8081/index.bundle?platform=desktop&dev=true"
   }
 }

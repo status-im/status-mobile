@@ -1,5 +1,5 @@
 (ns status-im.chat.new-chat.styles
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (def contacts-list-container
   {:flex          1

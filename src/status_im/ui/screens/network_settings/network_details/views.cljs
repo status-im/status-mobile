@@ -2,11 +2,11 @@
   (:require-macros [status-im.utils.views :as views])
   (:require
     [re-frame.core :as rf]
-    [status-im.components.status-bar :as status-bar]
-    [status-im.components.toolbar-new.view :as new-toolbar]
-    [status-im.components.context-menu :as context-menu]
+    [status-im.ui.components.status-bar :as status-bar]
+    [status-im.ui.components.toolbar.view :as toolbar]
+    [status-im.ui.components.context-menu :as context-menu]
     [status-im.ui.screens.network-settings.views :as network-settings]
-    [status-im.components.react :as react]
+    [status-im.ui.components.react :as react]
     [status-im.utils.platform :as platform]
     [status-im.i18n :as i18n]
     [status-im.ui.screens.network-settings.styles :as st]))
@@ -27,7 +27,10 @@
     (let [connected? (= id network)]
       [react/view {:flex 1}
        [status-bar/status-bar]
-       [new-toolbar/toolbar]
+       [toolbar/simple-toolbar]
+       [network-settings/network-badge
+        {:name       name
+         :connected? connected?}]
        (when-not connected?
          [react/touchable-highlight {:on-press #(rf/dispatch [:connect-network id])}
           [react/view st/connect-button-container
@@ -40,15 +43,17 @@
        [react/view st/network-config-container
         [react/text {:style st/network-config-text}
          config]]
-       [react/view {:opacity 0.4}
-        [react/view st/edit-button-container
-         [react/view st/edit-button
-          [react/text {:style      st/edit-button-label
-                       :uppercase? (get-in platform/platform-specific [:uppercase?])}
-           (i18n/label :t/edit-network-config)]]
-         #_[context-menu                                      ; TODO should be implemented later
-            [view st/edit-button
-             [text {:style st/edit-button-label} (i18n/label :t/edit-network-config)]]
-            options]
-         [react/text {:style st/edit-button-description}
-          (i18n/label :t/edit-network-warning)]]]])))
+       ;; TODO(rasom): uncomment edit-button when it will be functional,
+       ;; https://github.com/status-im/status-react/issues/2104
+       #_[react/view {:opacity 0.4}
+          [react/view st/edit-button-container
+           [react/view st/edit-button
+            [react/text {:style      st/edit-button-label
+                         :uppercase? (get-in platform/platform-specific [:uppercase?])}
+             (i18n/label :t/edit-network-config)]]
+           #_[context-menu                                      ; TODO should be implemented later
+              [view st/edit-button
+               [text {:style st/edit-button-label} (i18n/label :t/edit-network-config)]]
+              options]
+           [react/text {:style st/edit-button-description}
+            (i18n/label :t/edit-network-warning)]]]])))

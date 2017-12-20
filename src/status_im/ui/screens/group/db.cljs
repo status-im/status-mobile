@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.db :refer [allowed-keys]])
   (:require [cljs.spec.alpha :as spec]
             status-im.utils.db
-            [status-im.constants :refer [console-chat-id wallet-chat-id]]
+            [status-im.constants :refer [console-chat-id]]
             [clojure.string :as string]
             [status-im.utils.homoglyph :as utils]))
 

@@ -1,5 +1,5 @@
 function locationsSuggestions (params) {
-    var result = {title: "Send location"};
+    var result = {title: I18n.t("location_suggestions_title")};
     var seqArg = params["seq-arg"] ? params["seq-arg"] : "";
 
     if (seqArg === "Dropped pin")
@@ -32,6 +32,7 @@ function locationsSuggestions (params) {
 status.command({
     name: "location",
     title: I18n.t('location_title'),
+    scope: ["global", "personal-chats", "group-chats", "public-chats", "registered", "humans"],
     description: I18n.t('location_description'),
     sequentialParams: true,
     hideSendButton: true,
@@ -62,8 +63,8 @@ status.command({
             {
                 source: {uri: uri},
                 style: {
-                    borderRadius: 5
-                    marginTop: 12
+                    borderRadius: 5,
+                    marginTop: 12,
                     height:    58
                 }
             }
@@ -89,7 +90,7 @@ status.command({
     },
     shortPreview: function (params) {
         return {
-            markup: status.components.text(
+            markup: status.components.chatPreviewText(
                 {},
                 I18n.t('location_title') + ": " + params.address
             )

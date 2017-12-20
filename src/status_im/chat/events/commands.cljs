@@ -23,32 +23,32 @@
 (defn request-command-message-data
   "Requests command message data from jail"
   [db
-   {{:keys [command content-command params type]} :content
-    :keys [chat-id jail-id group-id message-id] :as message}
+   {{command-name :command
+     content-command-name :content-command
+     :keys [content-command-scope-bitmask scope-bitmask params type bot]} :content
+    :keys [chat-id jail-id group-id] :as message}
    data-type]
-  (let [{:keys [chats]
+  (let [{:keys          [chats]
          :accounts/keys [current-account-id]
          :contacts/keys [contacts]} db
-        jail-id (or jail-id chat-id)
-        jail-id (if (get-in chats [jail-id :group-chat])
-                  (get-in chats [jail-id :command-suggestions (keyword command) :owner-id])
-                  jail-id)]
-    (if (get-in contacts [jail-id :commands-loaded?])
-      (let [path          [(if (= :response (keyword type)) :responses :commands)
-                           (or content-command command)
-                           data-type]
-            to            (get-in contacts [chat-id :address])
-            jail-params   {:parameters params
-                           :context (generate-context db chat-id to group-id)}]
-        {:call-jail {:jail-id jail-id
-                     :path path
-                     :params jail-params
+        jail-id               (or bot jail-id chat-id)
+        jail-command-name     (or content-command-name command-name)]
+    (if (get-in contacts [jail-id :jail-loaded?])
+      (let [path        [(if (= :response (keyword type)) :responses :commands)
+                         [jail-command-name
+                          (or scope-bitmask content-command-scope-bitmask)]
+                         data-type]
+            to          (get-in contacts [chat-id :address])
+            jail-params {:parameters params
+                         :context    (generate-context db chat-id to group-id)}]
+        {:call-jail {:jail-id                 jail-id
+                     :path                    path
+                     :params                  jail-params
                      :callback-events-creator (fn [jail-response]
                                                 [[::jail-command-data-response
                                                   jail-response message data-type]])}})
-      {:dispatch-n [[:add-commands-loading-callback jail-id
-                     #(re-frame/dispatch [:request-command-message-data message data-type])]
-                    [:load-commands! jail-id]]})))
+      {:db (update-in db [:contacts/contacts jail-id :jail-loaded-events]
+                      conj [:request-command-message-data message data-type])})))
 
 ;;;; Handlers
 
@@ -68,7 +68,7 @@
 
 (handlers/register-handler-fx
   :request-command-message-data
-  [re-frame/trim-v]
+  [re-frame/trim-v (re-frame/inject-cofx :get-local-storage-data)]
   (fn [{:keys [db]} [message data-type]]
     (request-command-message-data db message data-type)))
 
@@ -81,7 +81,7 @@
       {:dispatch [:request-permissions
                   [:read-external-storage]
                   #(re-frame/dispatch [:initialize-geth])]}
-      (log/debug "ignoring command: " command))))
+      (log/debug "ignoring command: " command-name))))
 
 (handlers/register-handler-fx
   :request-command-preview

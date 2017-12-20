@@ -5,7 +5,6 @@
 (def autolink               #js {:default #js {}})
 (def config                 #js {:default #js {}})
 (def camera                 #js {:constants #js {}})
-(def circle-checkbox        #js {})
 (def contacts               #js {})
 (def dialogs                #js {})
 (def dismiss-keyboard       #js {})
@@ -38,5 +37,6 @@
 (def vector-icons           #js {:default #js {}})
 (def webview-bridge         #js {:default #js {}})
 (def svg                    #js {:default #js {}})
+(def react-native-fcm       #js {:default #js {}})
 
 

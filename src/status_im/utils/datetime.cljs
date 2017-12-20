@@ -39,6 +39,11 @@
                                     from-long
                                     (plus time-zone-offset))))
 
+(defn timestamp->time [ms]
+  (unparse (formatter "HH:mm") (-> ms
+                                   from-long
+                                   (plus time-zone-offset))))
+
 (defn timestamp->date-key [ms]
   (keyword (unparse (formatter "YYYYMMDD") (-> ms
                                                from-long

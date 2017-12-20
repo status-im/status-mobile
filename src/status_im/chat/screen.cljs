@@ -1,34 +1,34 @@
 (ns status-im.chat.screen
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [subscribe dispatch]]
-            [status-im.components.react :refer [view
-                                                animated-view
-                                                text
-                                                modal
-                                                touchable-highlight
-                                                list-view
-                                                list-item]]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.chat-icon.screen :refer [chat-icon-view-action
-                                                           chat-icon-view-menu-item]]
+            [status-im.ui.components.react :refer [view
+                                                   animated-view
+                                                   text
+                                                   modal
+                                                   touchable-highlight
+                                                   list-view
+                                                   list-item]]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.chat-icon.screen :refer [chat-icon-view-action
+                                                              chat-icon-view-menu-item]]
             [status-im.chat.styles.screen :as st]
             [status-im.utils.listview :refer [to-datasource-inverted]]
             [status-im.utils.utils :refer [truncate-str]]
             [status-im.utils.datetime :as time]
             [status-im.utils.platform :as platform :refer [platform-specific]]
-            [status-im.components.invertible-scroll-view :refer [invertible-scroll-view]]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.ui.components.invertible-scroll-view :refer [invertible-scroll-view]]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.chat.views.toolbar-content :refer [toolbar-content-view]]
             [status-im.chat.views.message.message :refer [chat-message]]
             [status-im.chat.views.message.datemark :refer [chat-datemark]]
             [status-im.chat.views.input.input :as input]
             [status-im.chat.views.actions :refer [actions-view]]
             [status-im.chat.views.bottom-info :refer [bottom-info-view]]
-            [status-im.chat.constants :as const]
+            [status-im.chat.constants :as chat-const]
             [status-im.i18n :refer [label label-pluralize]]
-            [status-im.components.animation :as anim]
-            [status-im.components.sync-state.offline :refer [offline-view]]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.sync-state.offline :refer [offline-view]]
             [status-im.constants :refer [content-type-status]]
             [taoensso.timbre :as log]
             [clojure.string :as str]))
@@ -86,7 +86,7 @@
     (list-item [chat-message message])))
 
 (defn toolbar-action []
-  (let [show-actions (subscribe [:chat-ui-props :show-actions?])]
+  (let [show-actions (subscribe [:get-current-chat-ui-prop :show-actions?])]
     (fn []
       (let [show-actions @show-actions]
         [touchable-highlight
@@ -108,22 +108,24 @@
        (label :t/add-to-contacts)]]]))
 
 (defview chat-toolbar []
-  [show-actions? [:chat-ui-props :show-actions?]
+  [show-actions? [:get-current-chat-ui-prop :show-actions?]
    accounts [:get-accounts]
    creating? [:get :accounts/creating-account?]]
   [view
    [status-bar]
-   (let [hide-nav? (or (empty? accounts) show-actions? creating?)]
-     [toolbar/toolbar2 {:show-sync-bar? true}
-      (when-not hide-nav? toolbar/default-nav-back)
-      [toolbar-content-view]
-      [toolbar-action]])
+   [toolbar/toolbar {:show-sync-bar? true}
+    (when-not (or show-actions? creating?)
+      (if (empty? accounts)
+        [toolbar/nav-clear-text (label :t/recover) #(dispatch [:navigate-to-modal :recover-modal])]
+        toolbar/default-nav-back))
+    [toolbar-content-view]
+    [toolbar-action]]
    [add-contact-bar]])
 
 (defn get-intro-status-message [all-messages]
   (let [{:keys [timestamp content-type]} (last all-messages)]
     (when (not= content-type content-type-status)
-      {:message-id   const/intro-status-message-id
+      {:message-id   chat-const/intro-status-message-id
        :content-type content-type-status
        :timestamp    (or timestamp (time/now-ms))})))
 
@@ -173,13 +175,12 @@
 
 (defview chat []
   [group-chat [:chat :group-chat]
-   show-actions? [:chat-ui-props :show-actions?]
-   show-bottom-info? [:chat-ui-props :show-bottom-info?]
-   show-emoji? [:chat-ui-props :show-emoji?]
+   show-actions? [:get-current-chat-ui-prop :show-actions?]
+   show-bottom-info? [:get-current-chat-ui-prop :show-bottom-info?]
+   show-emoji? [:get-current-chat-ui-prop :show-emoji?]
    layout-height [:get :layout-height]
    input-text [:chat :input-text]]
-  {:component-did-mount    #(do (dispatch [:check-and-open-dapp!])
-                                (dispatch [:update-suggestions]))
+  {:component-did-mount    #(dispatch [:check-and-open-dapp!])
    :component-will-unmount #(dispatch [:set-chat-ui-props {:show-emoji? false}])}
   [view {:style st/chat-view
          :on-layout (fn [event]

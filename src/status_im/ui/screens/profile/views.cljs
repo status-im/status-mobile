@@ -1,29 +1,25 @@
 (ns status-im.ui.screens.profile.views
   (:require [clojure.string :as string]
             [re-frame.core :refer [dispatch]]
-            [status-im.components.action-button.action-button
+            [status-im.ui.components.action-button.action-button
              :refer
              [action-button action-button-disabled action-separator]]
-            [status-im.components.action-button.styles :refer [actions-list]]
-            [status-im.components.chat-icon.screen :refer [my-profile-icon]]
-            [status-im.components.common.common
-             :refer
-             [bottom-shadow form-spacer separator]]
-            [status-im.components.context-menu :refer [context-menu]]
-            [status-im.components.list-selection :refer [share-options]]
-            [status-im.components.react :as react]
-            [status-im.components.icons.vector-icons :as vi]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.styles :refer [color-blue]]
-            [status-im.components.toolbar-new.actions :as actions]
-            [status-im.components.toolbar-new.view :as toolbar]
+            [status-im.ui.components.action-button.styles :refer [actions-list]]
+            [status-im.ui.components.chat-icon.screen :refer [my-profile-icon]]
+            [status-im.ui.components.common.common :as common]
+            [status-im.ui.components.list-selection :refer [share-options]]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vi]
+            [status-im.ui.components.styles :refer [color-blue]]
+            [status-im.ui.components.toolbar.actions :as actions]
+            [status-im.ui.components.toolbar.view :as toolbar]
             [status-im.i18n :refer [label]]
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]]
-            [status-im.utils.config :as config])
+            [status-im.ui.components.icons.vector-icons :as vector-icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-  
+
 (defn my-profile-toolbar []
   [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
                                               :text  "Edit"}])]}])
@@ -57,7 +53,7 @@
        [react/text {:style styles/profile-activity-status-text}
         "Online"]])]])
 
-(defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
+(comment (defn profile-actions [{:keys [pending? whisper-identity dapp?]} chat-id]
   [react/view actions-list
    (if pending?
      [action-button {:label     (label "Add")
@@ -76,7 +72,7 @@
       [action-button {:label     (label "Send transaction")
                       :icon      :icons/arrow-right
                       :icon-opts {:color :blue}
-                      :on-press  #(dispatch [:profile/send-transaction chat-id whisper-identity])}]])])
+                      :on-press  #(dispatch [:profile/send-transaction chat-id whisper-identity])}]])]))
 
 (defn profile-info-item [{:keys [label value options text-mode empty-value? accessibility-label]}]
   [react/view styles/profile-setting-item
@@ -91,7 +87,7 @@
                  :ellipsizeMode       text-mode
                  :accessibility-label accessibility-label}
      value]]])
-   
+
 
 (defn show-qr [contact qr-source]
   #(dispatch [:navigate-to-modal :qr-code-view {:contact   contact
@@ -154,12 +150,12 @@
                         :accessibility-label :profile-phone-number}]))
 
 (defn network-settings []
-  [react/touchable-highlight
-   {:on-press #(dispatch [:navigate-to :network-settings])}
-   [react/view styles/network-settings
-    [react/text {:style styles/network-settings-text}
-     (label "Network settings")]
-    [vi/icon :icons/forward {:color :gray}]]])
+    [react/touchable-highlight
+          {:on-press #(dispatch [:navigate-to :network-settings])}
+          [react/view styles/network-settings
+                 [react/text {:style styles/network-settings-text}
+                         (label "Network settings")]
+                 [vi/icon :icons/forward {:color :gray}]]])
 
 (defn profile-info [{:keys [whisper-identity status phone] :as contact}]
   [react/view
@@ -194,25 +190,17 @@
          (colorize-status-hashtags status)]]])])
 
 
-(defn testnet-only []
-  [react/view styles/testnet-only-container
-   [react/view styles/testnet-icon
-    [react/text {:style styles/testnet-icon-text}
-     (label "testnet")]]
-   [react/text {:style styles/testnet-only-text}
-    (label "testnet")]])
-
 (defview profile []
   [react/view styles/profile-form
    [react/scroll-view
     [react/view styles/profile-form
      [profile-badge]
      [profile-status]]
-    [form-spacer]
+    [common/form-spacer]
     [react/view styles/profile-badge
           (vi/icon :icons/qr)
     [action-button {:label "Show QR"}]]
-    [form-spacer]
+    [common/form-spacer]
     [react/view styles/profile-info-container
        [my-profile-info {:phone "+44 7911 123456"
                          :public-key "0x04223458893...303a35c18c29caf"

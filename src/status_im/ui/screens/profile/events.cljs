@@ -1,18 +1,22 @@
 (ns status-im.ui.screens.profile.events
   (:require [clojure.spec.alpha :as spec]
             [clojure.string :as string]
-            [re-frame.core :as re-frame :refer [reg-fx trim-v]]
-            [status-im.components.react :refer [show-image-picker]]
-            [status-im.constants :refer [console-chat-id]]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.react :refer [show-image-picker]]
+            [status-im.constants :as const]
+            [status-im.chat.constants :as chat-const]
             [status-im.ui.screens.profile.db :as db]
             [status-im.ui.screens.profile.navigation]
+            [status-im.ui.screens.accounts.events :as accounts-events]
+            [status-im.chat.events :as chat-events]
+            [status-im.chat.events.input :as input-events]
             [status-im.utils.gfycat.core :as gfycat]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.image-processing :refer [img->base64]]
             [status-im.utils.utils :as utils]
             [taoensso.timbre :as log]))
 
-(reg-fx
+(re-frame/reg-fx
   :open-image-picker
   ;; the image picker is only used here for now, this effect can be use in other scenarios as well
   (fn [callback-event]
@@ -28,13 +32,12 @@
 
 (handlers/register-handler-fx
   :profile/send-transaction
-  [trim-v]
-  (fn [{:keys [db]} [chat-id contact-id]]
-    {:dispatch-n [[:navigate-to :chat chat-id]
-                  [:select-chat-input-command {:name "send"}]
-                  [:set-contact-as-command-argument {:arg-index 0
-                                                     :bot-db-key "recipient"
-                                                     :contact (get-in db [:contacts/contacts contact-id])}]]}))
+  [re-frame/trim-v (re-frame/inject-cofx :get-stored-messages)]
+  (fn [{{:contacts/keys [contacts] :as db} :db :as cofx} [chat-id]]
+    (let [send-command (get-in contacts chat-const/send-command-ref)]
+      (-> (chat-events/navigate-to-chat cofx chat-id)
+          (as-> fx
+              (merge fx (input-events/select-chat-input-command (:db fx) send-command nil true)))))))
 
 (handlers/register-handler-fx
   :profile/send-message
@@ -46,9 +49,11 @@
   :my-profile/update-phone-number
   ;; Switch user to the console issuing the !phone command automatically to let him change his phone number.
   ;; We allow to change phone number only from console because this requires entering SMS verification code.
-  (fn [_ _]
-    {:dispatch-n [[:navigate-to :chat console-chat-id]
-                  [:select-chat-input-command {:name "phone"}]]}))
+  (fn [{{:contacts/keys [contacts] :as db} :db :as cofx} _]
+    (let [phone-command (get-in contacts chat-const/phone-command-ref)]
+      (-> (chat-events/navigate-to-chat cofx const/console-chat-id)
+          (as-> fx
+              (merge fx (input-events/select-chat-input-command (:db fx) phone-command nil true)))))))
 
 (defn get-current-account [{:keys [:accounts/current-account-id] :as db}]
   (get-in db [:accounts/accounts current-account-id]))
@@ -133,36 +138,53 @@
       name
       (get-in db [:accounts/accounts current-account-id :name]))))
 
-(defn clear-profile [db]
-  (dissoc db :my-profile/profile :my-profile/drawer :my-profile/default-name))
+(defn clear-profile [fx]
+  (update fx :db dissoc :my-profile/profile :my-profile/drawer :my-profile/default-name))
 
 (handlers/register-handler-fx
   :my-profile.drawer/save-name
-  (fn [{:keys [db]} _]
+  (fn [{:keys [db now]} _]
     (let [cleaned-name (clean-name db :my-profile/drawer)]
-      {:db (clear-profile db)
-       :dispatch [:account-update {:name cleaned-name}]})))
+      (-> (clear-profile {:db db})
+          (accounts-events/account-update {:name         cleaned-name
+                                           :last-updated now})))))
+
+(defn status-change
+  "Takes map containing old status and the updated one and if the status has changed
+  returns the effects neccessary for status broadcasting"
+  [fx {:keys [old-status status]}]
+  (if (and status (not= status old-status))
+    (assoc fx :dispatch-n [[:broadcast-status status]])
+    fx))
 
 (handlers/register-handler-fx
   :my-profile.drawer/save-status
-  (fn [{:keys [db]} _]
+  (fn [{:keys [db now]} _]
     (let [status (get-in db [:my-profile/drawer :status])
-          new-db (clear-profile db)]
+          new-fx (clear-profile {:db db})
+          {:accounts/keys [accounts current-account-id]} db
+          {old-status :status} (get accounts current-account-id)]
       (if (string/blank? status)
-        {:db new-db}
-        {:db new-db
-         :dispatch-n [[:check-status-change status]
-                      [:account-update {:status status}]]}))))
+        new-fx
+        (-> new-fx
+            (accounts-events/account-update {:status       status
+                                             :last-updated now})
+            (status-change {:old-status old-status
+                            :status     status}))))))
 
 (handlers/register-handler-fx
   :my-profile/save-profile
-  (fn [{:keys [db]} _]
-    (let [{:keys [status photo-path]} (:my-profile/profile db)
-          cleaned-name                (clean-name db :my-profile/profile)
-          cleaned-edit                {:name cleaned-name
-                                       :status status
-                                       :photo-path photo-path}]
-      {:db (clear-profile db)
-       :dispatch-n [[:check-status-change status]
-                    [:account-update cleaned-edit]
-                    [:navigate-back]]})))
+  (fn [{:keys [db now]} _]
+    (let [{:accounts/keys [accounts current-account-id]} db
+          {old-status :status} (get accounts current-account-id)
+          {:keys [status photo-path]} (:my-profile/profile db)
+          cleaned-name (clean-name db :my-profile/profile)
+          cleaned-edit {:name         cleaned-name
+                        :status       status
+                        :photo-path   photo-path
+                        :last-updated now}]
+      (-> (clear-profile {:db db})
+          (accounts-events/account-update cleaned-edit)
+          (status-change {:old-status old-status
+                          :status     status})
+          (update :dispatch-n concat [[:navigate-back]])))))

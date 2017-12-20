@@ -18,6 +18,7 @@
 (spec/def :account/status (spec/nilable string?))
 (spec/def :account/network (spec/nilable string?))
 (spec/def :account/networks (spec/nilable :networks/networks))
+(spec/def :account/settings (spec/nilable (spec/map-of keyword? any?)))
 (spec/def :account/phone (spec/nilable string?))
 (spec/def :account/signing-phrase :global/not-empty-string)
 
@@ -27,7 +28,7 @@
                               :opt-un [:account/debug? :account/status :account/last-updated
                                        :account/updates-private-key :account/updates-public-key
                                        :account/email :account/signed-up? :account/network
-                                       :account/phone :account/networks]))
+                                       :account/phone :account/networks :account/settings]))
 
 (spec/def :accounts/accounts (spec/nilable (spec/map-of :account/address :accounts/account)))
 

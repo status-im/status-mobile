@@ -10,8 +10,6 @@
    :offline                               "Offline"
 
    ;drawer
-   :invite-friends                        "Invita amici"
-   :faq                                   "FAQ"
    :switch-users                          "Cambia utenti"
 
    ;chat
@@ -53,41 +51,30 @@
                                            :other "ore"}
    :datetime-day                          {:one   "giorno"
                                            :other "giorni"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "fa"
    :datetime-yesterday                    "ieri"
    :datetime-today                        "oggi"
 
    ;profile
    :profile                               "Profilo"
-   :report-user                           "SEGNALA UTENTE"
    :message                               "Messaggio"
-   :username                              "Nome utente"
    :not-specified                         "Non specificato"
    :public-key                            "Chiave pubblica"
    :phone-number                          "Numero di telefono"
-   :email                                 "Email"
-   :profile-no-status                     "Nessuno stato"
    :add-to-contacts                       "Aggiungi ai contatti"
-   :error-incorrect-name                  "Seleziona un altro nome"
-   :error-incorrect-email                 "Email errata"
 
    ;;make_photo
    :image-source-title                    "Immagine profilo"
    :image-source-make-photo               "Scatta"
    :image-source-gallery                  "Seleziona dalla galleria immagini"
-   :image-source-cancel                   "Annulla"
 
    ;sign-up
    :contacts-syncronized                  "I tuoi contatti sono stati sincronizzati"
    :confirmation-code                     (str "Grazie! Ti abbiamo inviato un messaggio con un codice di "
                                                "conferma. Utilizza tale codice per confermare il tuo numero di telefono")
    :incorrect-code                        (str "Il codice inserito è errato, riprova")
-   :generate-passphrase                   (str "Provvederò a generare una passphrase così potrai ripristinare il tuo "
-                                               "accesso o effettuare il login da un altro dispositivo")
    :phew-here-is-your-passphrase          "*Wow* È stato difficile, ecco qui la tua passphrase, *prendi nota e conservala in un luogo sicuro!* Ti servirà per ripristinare il tuo conto."
    :here-is-your-passphrase               "Ecco qui la tua passphrase, *prendi nota e conservala in un luogo sicuro!* Ti servirà per ripristinare il tuo conto."
-   :written-down                          "Assicurati di averla scritta correttamente"
    :phone-number-required                 "Clicca qui per inserire il tuo numero di telefono e trovare i tuoi amici"
    :intro-status                          "Avvia una conversazione con me per impostare il tuo conto e modificare le tue impostazioni!"
    :intro-message1                        "Benvenuto su Status\nTocca questo messaggio per impostare la tua password e iniziare!"
@@ -95,7 +82,6 @@
 
    ;chats
    :chats                                 "Conversazioni"
-   :new-chat                              "Nuova conversazione"
    :new-group-chat                        "Nuova conversazione di gruppo"
 
    ;discover
@@ -112,9 +98,6 @@
    ;contacts
    :contacts                              "Contatti"
    :new-contact                           "Nuovo contatto"
-   :show-all                              "MOSTRA TUTTI"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "Persone"
    :contacts-group-new-chat               "Inizia una nuova conversazione"
    :no-contacts                           "Nessun contatto registrato"
    :show-qr                               "Mostra QR"
@@ -122,41 +105,17 @@
    ;group-settings
    :remove                                "Rimuovi"
    :save                                  "Salva"
-   :change-color                          "Cambia colore"
    :clear-history                         "Cancella cronologia"
-   :delete-and-leave                      "Elimina ed esci"
    :chat-settings                         "Impostazioni conversazioni"
    :edit                                  "Modifica"
    :add-members                           "Aggiungi membri"
-   :blue                                  "Blu"
-   :purple                                "Viola"
-   :green                                 "Verde"
-   :red                                   "Rosso"
 
    ;commands
-   :money-command-description             "Invia denaro"
-   :location-command-description          "Invia posizione"
-   :phone-command-description             "Invia numero di telefono"
-   :phone-request-text                    "Richiesta numero di telefono"
-   :confirmation-code-command-description "Invia codice di conferma"
-   :confirmation-code-request-text        "Richiesta codice di conferma"
-   :send-command-description              "Invia posizione"
-   :request-command-description           "Invia richiesta"
-   :keypair-password-command-description  ""
-   :help-command-description              "Aiuto"
-   :request                               "Richiedi"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH a {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH da {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "Nome conversazione"
-   :empty-group-chat-name                 "Inserire un nome"
-   :illegal-group-chat-name               "Selezionare un altro nome"
 
    ;participants
-   :add-participants                      "Aggiungi partecipanti"
-   :remove-participants                   "Rimuovi partecipanti"
 
    ;protocol
    :received-invitation                   "ha ricevuto un invito di conversazione"
@@ -168,12 +127,9 @@
 
    ;new-contact
    :add-new-contact                       "Aggiungi nuovo contatto"
-   :import-qr                             "Importa"
    :scan-qr                               "Scansiona QR"
    :name                                  "Nome"
-   :whisper-identity                      "Whisper Identity"
    :address-explication                   "Forse qui dovremmo spiegare cos'è un indirizzo e dove cercarlo"
-   :enter-valid-address                   "Inserire un indirizzo valido oppure effettuare la scansione del codice QR"
    :contact-already-added                 "Il contatto è già stato aggiunto"
    :can-not-add-yourself                  "Non puoi aggiungere te stesso"
    :unknown-address                       "Indirizzo sconosciuto"
@@ -183,20 +139,14 @@
    :connect                               "Effettua connessione"
    :address                               "Indirizzo"
    :password                              "Password"
-   :login                                 "Login"
    :wrong-password                        "Password errata"
 
    ;recover
-   :recover-from-passphrase               "Ripristina tramite passphrase"
-   :recover-explain                       "Inserire la passphrase per ripristinare la password di accesso"
    :passphrase                            "Passphrase"
    :recover                               "Ripristina"
-   :enter-valid-passphrase                "Inserire una passphrase"
-   :enter-valid-password                  "Inserire una password"
 
    ;accounts
    :recover-access                        "Ripristina l'accesso"
-   :add-account                           "Aggiungi conto"
 
    ;wallet-qr-code
    :done                                  "OK"
@@ -205,34 +155,20 @@
    ;validation
    :invalid-phone                         "Numero di telefono non valido"
    :amount                                "Saldo"
-   :not-enough-eth                        (str "Saldo ETH non sufficiente "
-                                               "({{balance}} ETH)")
    ;transactions
-   :confirm-transactions                  {:one   "Conferma transazione"
-                                           :other "Conferma {{count}} transazioni"
-                                           :zero  "Nessuna transazione"}
    :status                                "Stato"
-   :pending-confirmation                  "Conferma pendente"
    :recipient                             "Beneficiario"
-   :one-more-item                         "Ancora un elemento"
-   :fee                                   "Commissione"
-   :value                                 "Valore"
 
    ;:webview
    :web-view-error                        "Ops, si è verificato un errore"
 
    :confirm                               "Conferma"
    :phone-national                        "Nazionale"
-   :transactions-confirmed                {:one   "Transazione confermata"
-                                           :other "{{count}} transazioni confermata"
-                                           :zero  "Nessuna transazione confermata"}
    :public-group-topic                    "Argomento"
    :debug-enabled                         "Il server di debug è stato avviato! Ora puoi aggiungere la tua DApp eseguendo *status-dev-cli scan* dal tuo computer"
    :new-public-group-chat                 "Entra in chat pubblica"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "Annulla"
-   :share-qr                              "Condividi QR"
-   :feedback                              "Hai ricevuto un feedback?\nScuoti il tuo telefono!"
    :twelve-words-in-correct-order         "12 parole in ordine corretto"
    :remove-from-contacts                  "Rimuovi dai contatti"
    :delete-chat                           "Elimina chat"
@@ -272,7 +208,6 @@
 
    :contact-s                             {:one   "contatto"
                                            :other "contatti"}
-   :group-name                            "Nome del gruppo"
    :next                                  "Avanti"
    :from                                  "Da"
    :search-chats                          "Cerca nelle chat"
@@ -289,17 +224,11 @@
    :more                                  "altro"
    :cancel                                "Annulla"
    :no-statuses-found                     "Nessuno stato trovato"
-   :swow-qr                               "Mostra QR"
    :browsing-open-in-web-browser          "Apri nel browser"
    :delete-group-prompt                   "Questo non intaccherà i contatti"
    :edit-profile                          "Modifica profilo"
 
 
-   :enter-password-transactions           {:one   "Conferma la transazione inserendo la tua password"
-                                           :other "Conferma le transazioni inserendo la tua password"}
-   :unsigned-transactions                 "Transazioni non firmate"
    :empty-topic                           "Argomento non definito"
    :to                                    "A"
-   :group-members                         "Membri del gruppo"
-   :estimated-fee                         "Commissione stimata"
    :data                                  "Dati"})

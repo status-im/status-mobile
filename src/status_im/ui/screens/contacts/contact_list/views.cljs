@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.contacts.contact-list.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :refer [dispatch]]
-            [status-im.components.renderers.renderers :as renderers]
-            [status-im.components.contact.contact :refer [contact-view]]
+            [status-im.ui.components.renderers.renderers :as renderers]
+            [status-im.ui.components.contact.contact :refer [contact-view]]
             [status-im.ui.screens.contacts.views :refer [contact-options]]
-            [status-im.components.react :refer [view list-view list-item]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :refer [toolbar-with-search toolbar]]
-            [status-im.components.toolbar-new.actions :as act]
-            [status-im.components.drawer.view :refer [drawer-view]]
+            [status-im.ui.components.react :refer [view list-view list-item]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as act]
+            [status-im.ui.components.drawer.view :refer [drawer-view]]
             [status-im.ui.screens.contacts.styles :as st]
             [status-im.utils.listview :as lw]
             [status-im.i18n :refer [label]]))
@@ -23,16 +23,17 @@
                      :extend-options (contact-options row group)}])))
 
 (defview contact-list-toolbar-edit [group]
-  [toolbar {:nav-action     (act/back #(dispatch [:set-in [:contacts/list-ui-props :edit?] false]))
-            :actions        [{:image :blank}]
-            :title          (if-not group
-                              (label :t/contacts)
-                              (or (:name group) (label :t/contacts-group-new-chat)))}])
+  [toolbar/toolbar {}
+   [toolbar/nav-button (act/back #(dispatch [:set-in [:contacts/list-ui-props :edit?] false]))]
+   [toolbar/content-title
+    (if-not group
+      (label :t/contacts)
+      (or (:name group) (label :t/contacts-group-new-chat)))]])
 
 (defview contact-list-toolbar [group]
   (letsubs [show-search [:get-in [:toolbar-search :show]]
             search-text [:get-in [:toolbar-search :text]]]
-    (toolbar-with-search
+    (toolbar/toolbar-with-search
       {:show-search?       (= show-search :contact-list)
        :search-text        search-text
        :search-key         :contact-list

@@ -1,26 +1,42 @@
 (ns status-im.ui.screens.wallet.styles
-  (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
+  (:require [status-im.ui.components.styles :as styles]))
 
 ;; errors
 
 (defstyle error-container
-  {:flex-direction :row
-   :align-items    :center
-   :ios            {:padding-top    8
-                    :padding-bottom 8}
-   :android        {:padding-top    10
-                    :padding-bottom 10}})
+  {:align-self       :center
+   :justify-content  :center
+   :ios              {:border-radius 20
+                      :margin-top    6}
+   :android          {:border-radius 4
+                      :margin-top    18}
+   :background-color styles/color-blue5})
 
-(def error-exclamation
-  {:background-color styles/color-red-2
+(defstyle error-message-container
+  {:flex-direction     :row
+   :align-items        :center
+   :padding-horizontal 15
+   :ios                {:padding-vertical 8}
+   :android            {:padding-vertical 10}})
+
+
+(defnstyle exclamation [color]
+  {:background-color color
    :border-radius    100
    :width            16
    :height           16
-   :margin-left      12
-   :margin-right     6
-   :margin-top       2})
+   :margin-right     6})
 
+(def error-message
+  {:color         styles/color-white
+   :font-size     13})
+
+(def error-exclamation
+  (exclamation styles/color-red-2))
+
+(def warning-exclamation
+  (exclamation :gold))
 
 ;; wallet
 
@@ -33,20 +49,21 @@
              :elevation        0}})
 
 (def buttons-container
-  {:margin-vertical    15
-   :padding-horizontal 12
-   :flex-direction     :row
-   :align-items        :center})
+  {:flex-direction :row
+   :align-items    :center})
+
+(def button
+  {:padding-vertical   15
+   :padding-horizontal 12})
 
 (def forward-icon-container
   {:margin-left 8})
 
 (defn button-container [enabled?]
-  (merge
-    {:flex-direction :row
-     :align-items    :center}
-    (when-not enabled?
-      {:opacity 0.4})))
+  (merge {:flex-direction :row
+          :align-items    :center}
+         (when-not enabled?
+           {:opacity 0.4})))
 
 (def wallet-modal-container
   {:flex             1
@@ -62,6 +79,7 @@
 
 (def amount-container
   {:margin-top        16
+   :margin-bottom     16
    :margin-horizontal 15
    :flex-direction    :row})
 

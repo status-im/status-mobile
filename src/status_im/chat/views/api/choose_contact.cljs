@@ -2,12 +2,12 @@
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [reagent.core :as r]
             [re-frame.core :refer [dispatch subscribe]]
-            [status-im.components.react :refer [view
+            [status-im.ui.components.react :refer [view
                                                 text
                                                 list-view
                                                 list-item]]
-            [status-im.components.contact.contact :refer [contact-view]]
-            [status-im.components.renderers.renderers :as renderers]
+            [status-im.ui.components.contact.contact :refer [contact-view]]
+            [status-im.ui.components.renderers.renderers :as renderers]
             [status-im.utils.listview :as lw]))
 
 (defn render-row [arg-index bot-db-key]

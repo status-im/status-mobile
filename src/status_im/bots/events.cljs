@@ -1,63 +1,89 @@
 (ns status-im.bots.events
   (:require [re-frame.core :as re-frame]
-            [status-im.utils.handlers :as handlers]))
+            [status-im.utils.utils :as utils]
+            [status-im.utils.handlers :as handlers]
+            [status-im.chat.models.input :as input-model]
+            [taoensso.timbre :as log]))
 
 ;;;; Helper fns
 
-(defn- chats-with-bot [chats bot]
-  (reduce (fn [acc [_ {:keys [chat-id contacts]}]]
-            (let [contacts (map :identity contacts)]
-              (if (some #{bot} contacts)
-                (conj acc chat-id)
-                acc)))
-          []
-          chats))
-
-(defn- subscription-values [subscriptions current-bot-db]
-  (reduce (fn [sub-values [sub-name sub-path]]
-            (assoc sub-values sub-name (get-in current-bot-db sub-path)))
+(defn- subscription-values [sub-params current-bot-db]
+  (reduce (fn [sub-values [sub-key sub-path]]
+            (assoc sub-values sub-key (get-in current-bot-db sub-path)))
           {}
-          subscriptions))
+          sub-params))
 
-;; TODO(janherich): optimze this, for sure we don't need to re-calculate all bot subscriptions every time something in bot db changes
 (defn- check-subscriptions-fx
-  [db {:keys [bot path value]}]
-  (let [{:keys [bot-db chats]} db
-        subscriptions          (get-in db [:bot-subscriptions path])]
+  [{:keys [bot-db] :contacts/keys [contacts] :as app-db} {:keys [bot path]}]
+  (when-let [subscriptions (and bot (get-in contacts (concat [bot :subscriptions] [path])))]
     {:call-jail-function-n
-     (for [{:keys [bot subscriptions name]} subscriptions
-           :let [subs-values (subscription-values subscriptions (get bot-db bot))]]
-       {:chat-id                 bot
-        :function                :subscription
-        :parameters              {:name          name
-                                  :subscriptions subs-values}
+     (for [[sub-name sub-params] subscriptions]
+       {:chat-id  bot
+        :function :subscription
+        :parameters {:name          sub-name
+                     :subscriptions (subscription-values sub-params (get bot-db bot))}
         :callback-events-creator (fn [jail-response]
-                                   (into [[::calculated-subscription
-                                           {:bot    bot
-                                            :path   [name]
-                                            :result jail-response}]]
-                                         (map (fn [chat-id]
-                                                [::calculated-subscription
-                                                 {:bot    chat-id
-                                                  :path   [name]
-                                                  :result jail-response}])
-                                              (chats-with-bot chats bot))))})}))
+                                   [[::calculated-subscription
+                                     {:bot    bot
+                                      :path   [sub-name]
+                                      :result jail-response}]])})}))
 
 (defn set-in-bot-db
-  [{:keys [current-chat-id] :as app-db} {:keys [bot path value] :as params}]
-  (let [bot    (or bot current-chat-id)
-        new-db (assoc-in app-db (concat [:bot-db bot] path) value)]
+  "Associates value at specified path in bot-db and checks if there are any subscriptions
+  dependent on that path, if yes, adds effects for calling jail-functions to recalculate
+  relevant subscriptions."
+  [app-db {:keys [bot path value] :as params}]
+  (let [new-db (assoc-in app-db (concat [:bot-db bot] path) value)]
     (merge {:db new-db}
            (check-subscriptions-fx new-db params))))
 
 (defn update-bot-db
-  [{:keys [current-chat-id] :as app-db} {:keys [bot db]}]
-  (let [bot (or bot current-chat-id)]
-    (update-in app-db [:bot-db bot] merge db)))
+  [app-db {:keys [bot db]}]
+  (update-in app-db [:bot-db bot] merge db))
 
 (defn clear-bot-db
-  [{:keys [current-chat-id] :as app-db}]
-  (assoc-in app-db [:bot-db current-chat-id] nil))
+  [app-db bot-id]
+  (assoc-in app-db [:bot-db bot-id] nil))
+
+(def ^:private keywordize-vector (partial mapv keyword))
+
+(defn transform-bot-subscriptions
+  "Transforms bot subscriptions as returned from jail in the following format:
+
+  `{:calculatedFee {:subscriptions {:value [\"sliderValue\"]
+                                    :tx [\"transaction\"]}}
+    :feeExplanation {:subscriptions {:value [\"sliderValue\"]}}}`
+
+  into data-structure better suited for subscription lookups based on changes
+  in `:bot-db`:
+
+  `{[:sliderValue] {:calculatedFee {:value [:sliderValue]
+                                    :tx [:transaction]}
+                    :feeExplanation {:value [:sliderValue]}}
+    [:transaction] {:calculatedFee {:value [:sliderValue]
+                                    :tx [:transaction]}}}`
+
+  In the resulting data-structure, the top level keys are the (keywordized) paths
+  in the `:bot-db` data structure, so it's quick and easy to look-up all the
+  subscriptions which must be recalculated when something in their path changes."
+  [bot-subscriptions]
+  (reduce-kv (fn [acc sub-key {:keys [subscriptions]}]
+               (reduce-kv (fn [acc sub-param-key sub-param-path]
+                            (update acc
+                                    (keywordize-vector sub-param-path)
+                                    assoc sub-key
+                                    (utils/map-values subscriptions keywordize-vector)))
+                          acc
+                          subscriptions))
+             {}
+             bot-subscriptions))
+
+(defn calculated-subscription
+  [db {:keys                  [bot path]
+       {:keys [error result]} :result}]
+  (if error
+    db
+    (assoc-in db (concat [:bot-db bot] path) (:returned result))))
 
 ;;;; Handlers
 
@@ -74,25 +100,7 @@
     (update-bot-db db params)))
 
 (handlers/register-handler-db
-  :register-bot-subscription
-  [re-frame/trim-v]
-  (fn [db [{:keys [bot subscriptions] :as opts}]]
-    (reduce
-     (fn [db [sub-name sub-path]]
-       (let [keywordized-sub-path (mapv keyword
-                                        (if (coll? sub-path)
-                                          sub-path
-                                          [sub-path]))]
-         (update-in db [:bot-subscriptions keywordized-sub-path] conj
-                    (assoc-in opts [:subscriptions sub-name] keywordized-sub-path))))
-     db
-     subscriptions)))
-
-(handlers/register-handler-db
   ::calculated-subscription
   [re-frame/trim-v]
-  (fn [db [{:keys                  [bot path]
-            {:keys [error result]} :result}]]
-    (if error
-      db
-      (assoc-in db (concat [:bot-db bot] path) (:returned result)))))
+  (fn [db [params]]
+    (calculated-subscription db params)))

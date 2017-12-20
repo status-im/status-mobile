@@ -1,24 +1,34 @@
 (ns status-im.ui.screens.discover.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require
-    [re-frame.core :as re-frame]
-    [clojure.string :as str]
-    [status-im.components.react :as react]
-    [status-im.components.icons.vector-icons :as vi]
-    [status-im.components.toolbar-new.view :as toolbar]
-    [status-im.components.toolbar-new.actions :as act]
-    [status-im.components.drawer.view :as drawer]
-    [status-im.components.carousel.carousel :as carousel]
-    [status-im.ui.screens.discover.components.views :as components]
-    [status-im.ui.screens.discover.all-dapps.views :as all-dapps]
-    [status-im.utils.platform :as platform]
-    [status-im.i18n :as i18n]
-    [status-im.ui.screens.discover.styles :as styles]
-    [status-im.ui.screens.contacts.styles :as contacts-st]
-    [status-im.components.list.views :as components.list]))
+  (:require [re-frame.core :as re-frame]
+            [clojure.string :as string]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as actions]
+            [status-im.ui.components.drawer.view :as drawer]
+            [status-im.ui.components.carousel.carousel :as carousel]
+            [status-im.ui.screens.discover.components.views :as components]
+            [status-im.ui.screens.discover.all-dapps.views :as all-dapps]
+            [status-im.i18n :as i18n]
+            [status-im.ui.screens.discover.styles :as styles]
+            [status-im.ui.screens.contacts.styles :as contacts-st]
+            [status-im.ui.components.list.views :as list]
+            [status-im.react-native.resources :as resources]))
+
+(defn empty-section [image-kw title-kw body-kw]
+  [react/view styles/empty-section-container
+   [react/image {:source (image-kw resources/ui)
+                 :style  styles/empty-section-image}]
+   [react/view styles/empty-section-description
+    [react/text {:font  :medium
+                 :style styles/empty-section-title-text}
+     (i18n/label title-kw)]
+    [react/text {:style styles/empty-section-body-text}
+     (i18n/label body-kw)]]])
 
 (defn get-hashtags [status]
-  (let [hashtags (map #(str/lower-case (str/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
+  (let [hashtags (map #(string/lower-case (string/replace % #"#" "")) (re-seq #"[^ !?,;:.]+" status))]
     (or hashtags [])))
 
 (defn toolbar-view [show-search? search-text]
@@ -28,19 +38,18 @@
     :search-key         :discover
     :title              (i18n/label :t/discover)
     :search-placeholder (i18n/label :t/search-tags)
-    :nav-action         (act/hamburger drawer/open-drawer!)
+    :nav-action         (actions/hamburger drawer/open-drawer!)
     :on-search-submit   (fn [text]
-                          (when-not (str/blank? text)
+                          (when-not (string/blank? text)
                             (let [hashtags (get-hashtags text)]
                               ;; TODO (goranjovic) - refactor double dispatch to a single call
                               (re-frame/dispatch [:set :discover-search-tags hashtags])
                               (re-frame/dispatch [:navigate-to :discover-search-results]))))}])
 
 
-(defview top-status-for-popular-hashtag [{:keys [tag current-account]}]
-  (letsubs [discoveries [:get-popular-discoveries 1 [tag]]]
-    [react/view (merge styles/popular-list-container
-                       (get-in platform/platform-specific [:component-styles :discover :popular]))
+(defn top-status-for-popular-hashtag [{:keys [tag item current-account contacts]}]
+  (let [{:keys [discovery total]} item]
+    [react/view styles/popular-list-container
      [react/view styles/row
       [react/view {}
        ;; TODO (goranjovic) - refactor double dispatch to a single call
@@ -53,101 +62,112 @@
       [react/view styles/tag-count-container
        [react/text {:style styles/tag-count
                     :font  :default}
-        (:total discoveries)]]]
-     [components/discover-list-item {:message         (first (:discoveries discoveries))
+        (str total)]]]
+     [components/discover-list-item {:message         discovery
                                      :show-separator? false
-                                     :current-account current-account}]]))
+                                     :current-account current-account
+                                     :contacts        contacts}]]))
 
-(defview popular-hashtags-preview [{:keys [contacts current-account]}]
-  (letsubs [popular-tags [:get-popular-tags 10]]
+(defn popular-hashtags-preview [{:keys [popular-discoveries popular-tags contacts current-account]}]
+  (let [has-content? (seq popular-tags)]
     [react/view styles/popular-container
      ;; TODO (goranjovic) - refactor double dispatch to a single call
      [components/title :t/popular-tags :t/all #(do (re-frame/dispatch [:set :discover-search-tags (map :name popular-tags)])
-                                                   (re-frame/dispatch [:navigate-to :discover-all-hashtags])) true]
-     (if (seq popular-tags)
+                                                   (re-frame/dispatch [:navigate-to :discover-all-hashtags])) has-content?]
+     (if has-content?
        [carousel/carousel {:pageStyle styles/carousel-page-style
                            :gap       8
                            :sneak     16
                            :count     (count popular-tags)}
-        (for [{:keys [name]} popular-tags]
-          [top-status-for-popular-hashtag {:tag             name
+        (for [[tag item] popular-discoveries]
+          [top-status-for-popular-hashtag {:tag             tag
+                                           :item            item
                                            :contacts        contacts
                                            :current-account current-account}])]
-       [react/text (i18n/label :t/none)])]))
+       [empty-section :empty-hashtags :t/no-hashtags-discovered-title :t/no-hashtags-discovered-body])]))
 
+(defn recent-statuses-preview [{:keys [current-account contacts discoveries]}]
+  (let [has-content? (seq discoveries)]
+    [react/view styles/recent-statuses-preview-container
+     [components/title :t/recent :t/all #(re-frame/dispatch [:navigate-to :discover-all-recent]) has-content?]
+     (if has-content?
+       [carousel/carousel {:pageStyle styles/carousel-page-style
+                           :gap       8
+                           :sneak     16
+                           :count     (count discoveries)}
+        (for [discovery discoveries]
+          [react/view styles/recent-statuses-preview-content
+           [components/discover-list-item {:message         discovery
+                                           :show-separator? false
+                                           :current-account current-account
+                                           :contacts        contacts}]])]
+       [empty-section :empty-recent :t/no-statuses-discovered :t/no-statuses-discovered-body])]))
 
-(defn empty-discoveries []
-  [react/view contacts-st/empty-contact-groups
-   ;; todo change the icon
-   [vi/icon :icons/group-big {:style contacts-st/empty-contacts-icon}]
-   [react/text {:style contacts-st/empty-contacts-text}
-    (i18n/label :t/no-statuses-discovered)]])
-
-(defn recent-statuses-preview [current-account discoveries]
-  [react/view styles/recent-statuses-preview-container
-   [components/title :t/recent :t/all #(re-frame/dispatch [:navigate-to :discover-all-recent]) true]
-   (if (seq discoveries)
-     [carousel/carousel {:pageStyle styles/carousel-page-style
-                         :gap       8
-                         :sneak     16
-                         :count     (count discoveries)}
-      (for [discovery discoveries]
-        [react/view styles/recent-statuses-preview-content
-         [components/discover-list-item {:message         discovery
-                                         :show-separator? false
-                                         :current-account current-account}]])]
-     [react/text (i18n/label :t/none)])])
-
+;; TODO(oskarth): Figure out chat count how to get from public chat list subscription
+;; TODO(oskarth): Move colors into common namespace
 (def public-chats-mock-data
-  [{:name  "Status team"
+  [{:name  "Status"
+    :topic "status"
     :count 25
-    :color "#B2F3E3"}
+    :color "#77DCC6"}
    {:name  "ETH news"
+    :topic "ethnews"
     :count 12
-    :color "#F7A7E8"}
+    :color "#DC77CE"}
    {:name  "All about Ethereum"
+    :topic "ethereum"
     :count 32
-    :color "#C1B8F0"}])
+    :color "#778CDC"}
+   {:name  "Devcon"
+    :topic "devcon"
+    :count 47
+    :color "#77DCC6"}])
 
-(defn render-public-chats-item [item]
-  [react/view styles/public-chats-item-container
-   [react/view styles/public-chats-icon-container
-    [react/view (styles/public-chats-icon (:color item))
-     [react/text {:style styles/public-chats-icon-text}
-                 (-> item :name first str)]]]
-   [react/view styles/public-chats-item-inner
-    [react/view styles/public-chats-item-name-container
-     ;; TODO(goranjovic) lightgray intentionally hardcoded while only a teaser
-     ;; will be removed and properly styled when enabled
-     [vi/icon :icons/public {:color "lightgray"}]
-     [react/text {:font  :medium
-                  :style styles/public-chats-item-name-text}
-                 (:name item)]]
-    [react/view {}
-     [react/text {:style {:color :lightgray}}
-      (i18n/label :t/public-chat-user-count {:count (:count item)})]]]])
+(defn navigate-to-public-chat [topic]
+  (re-frame/dispatch [:create-new-public-chat topic]))
+
+(defn render-public-chats-item [{:keys [name color topic] :as item}]
+  [react/touchable-highlight {:on-press #(navigate-to-public-chat topic)}
+   [react/view styles/public-chats-item-container
+    [react/view styles/public-chats-icon-container
+     [react/view (styles/public-chats-icon color)
+      [react/text {:style styles/public-chats-icon-text}
+       (-> name first str)]]]
+    [react/view styles/public-chats-item-inner
+     [react/view styles/public-chats-item-name-container
+      [vector-icons/icon :icons/public-chat]
+      [react/text {:font  :medium
+                   :style styles/public-chats-item-name-text}
+       name]]
+     [react/view {}
+      [react/text {:style {:color :lightgray}}
+       (str "#" topic)]]]]])
 
 (defn public-chats-teaser []
-  [react/view {}
-   [components/title :t/public-chats :t/soon #() false]
-   [components.list/flat-list {:data      public-chats-mock-data
-                               :render-fn render-public-chats-item}]])
+  [react/view styles/public-chats-container
+   [components/title-no-action :t/public-chats]
+   [list/flat-list {:data      public-chats-mock-data
+                    :render-fn render-public-chats-item}]])
 
 (defview discover [current-view?]
-  (letsubs [show-search     [:get-in [:toolbar-search :show]]
-            search-text     [:get-in [:toolbar-search :text]]
-            contacts        [:get-contacts]
-            current-account [:get-current-account]
-            discoveries     [:get-recent-discoveries]
-            all-dapps       [:get-all-dapps]]
+  (letsubs [show-search         [:get-in [:toolbar-search :show]]
+            search-text         [:get-in [:toolbar-search :text]]
+            contacts            [:get-contacts]
+            current-account     [:get-current-account]
+            discoveries         [:get-recent-discoveries]
+            all-dapps           [:get-all-dapps]
+            popular-tags        [:get-popular-tags 10]
+            popular-discoveries [:get-top-discovery-per-tag 10]]
     [react/view styles/discover-container
      [toolbar-view (and current-view?
                         (= show-search :discover)) search-text]
-     (if discoveries
-       [react/scroll-view styles/list-container
-        [recent-statuses-preview current-account discoveries]
-        [popular-hashtags-preview {:contacts        contacts
-                                   :current-account current-account}]
-        [all-dapps/preview all-dapps]
-        [public-chats-teaser]]
-       [empty-discoveries])]))
+     [react/scroll-view styles/list-container
+      [recent-statuses-preview {:contacts        contacts
+                                  :current-account current-account
+                                  :discoveries     discoveries}]
+      [popular-hashtags-preview {:popular-tags        popular-tags
+                                   :popular-discoveries popular-discoveries
+                                   :contacts            contacts
+                                 :current-account     current-account}]
+      [all-dapps/preview all-dapps]
+      [public-chats-teaser]]]))

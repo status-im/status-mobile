@@ -7,3 +7,10 @@
   :<- [:get :networks/networks]
   (fn [[current-account networks]]
     (get networks (:network current-account))))
+
+(reg-sub
+ :get-network-id
+ :<- [:get :networks/networks]
+ :<- [:get :network]
+ (fn [[networks network]]
+   (get-in networks [network :raw-config :NetworkId])))

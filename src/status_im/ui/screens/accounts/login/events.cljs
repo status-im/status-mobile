@@ -1,14 +1,14 @@
 (ns status-im.ui.screens.accounts.login.events
-  (:require
-    status-im.ui.screens.accounts.login.navigation
-
-    [re-frame.core :refer [dispatch reg-fx]]
-    [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
-    [taoensso.timbre :as log]
-    [status-im.utils.types :refer [json->clj]]
-    [status-im.data-store.core :as data-store]
-    [status-im.native-module.core :as status]
-    [status-im.constants :refer [console-chat-id]]))
+  (:require status-im.ui.screens.accounts.login.navigation
+            [re-frame.core :refer [dispatch reg-fx]]
+            [status-im.utils.handlers :refer [register-handler-db register-handler-fx]]
+            [taoensso.timbre :as log]
+            [status-im.chat.sign-up :as sign-up]
+            [status-im.utils.types :refer [json->clj]]
+            [status-im.data-store.core :as data-store]
+            [status-im.native-module.core :as status]
+            [status-im.constants :refer [console-chat-id]]
+            [status-im.utils.config :as config]))
 
 ;;;; FX
 
@@ -28,8 +28,13 @@
 (reg-fx
   ::change-account
   (fn [[address new-account?]]
-    (data-store/change-account address new-account?
-                               #(dispatch [:change-account-handler % address new-account?]))))
+    (js/setTimeout
+     (fn []
+       (data-store/change-account address new-account?
+                                  #(dispatch [:change-account-handler % address new-account?])))
+     ;; if we don't add delay when running app without status-go
+     ;; "null is not an object (evaluating 'realm.schema')" error appears
+     (if config/stub-status-go? 300 0))))
 
 ;;;; Handlers
 
@@ -65,7 +70,7 @@
   (let [{:keys [network config]} (get-network-by-address db address)]
     {:initialize-geth-fx config
      :db                 (assoc db :network network
-                                   :node/after-start [::login-account address password])}))
+                                :node/after-start [::login-account address password])}))
 
 (register-handler-fx
   ::start-node
@@ -84,7 +89,6 @@
        [_ address password account-creation?]]
     (let [{account-network :network} (get-network-by-address db address)
           db' (-> db
-                  (dissoc :db)
                   (assoc :accounts/account-creation? account-creation?)
                   (assoc-in [:accounts/login :processing] true))
           wrap-fn (cond (not status-node-started?)
@@ -99,33 +103,31 @@
 
 (register-handler-fx
   :login-handler
-  (fn [{db :db} [_ result address]]
-    (let [data    (json->clj result)
+  (fn [{{:accounts/keys [account-creation?] :as db} :db} [_ login-result address]]
+    (let [data    (json->clj login-result)
           error   (:error data)
           success (zero? (count error))
           db'     (assoc-in db [:accounts/login :processing] false)]
-      (log/debug "Logged in account: " result)
+      (log/debug "Logging result: " login-result)
       (merge
-        {:db (if success db' (assoc-in db' [:accounts/login :error] error))}
-        (when success
-          (let [is-login-screen? (= (:view-id db) :login)
-                new-account?     (not is-login-screen?)]
-            (log/debug "Logged in: " (:view-id db) is-login-screen? new-account?)
-            {::clear-web-data nil
-             ::change-account [address new-account?]}))))))
+       {:db (if success db' (assoc-in db' [:accounts/login :error] error))}
+       (when success
+         (log/debug "Logged in" (when account-creation? " new account") ":" address)
+         {::clear-web-data nil
+          ::change-account [address account-creation?]})))))
 
 (register-handler-fx
   :change-account-handler
   (fn [{db :db} [_ error address new-account?]]
-    (if (nil? error)
-      {:db         (assoc db :accounts/login {})
-       :dispatch-n (concat
-                     [[:debug-server-stop]
-                      [:set-current-account address]
-                      [:initialize-account address]]
-                     (if new-account?
-                       [[:navigate-to-clean :chat-list]
-                        [:navigate-to :chat console-chat-id]]
-                       [[:navigate-to-clean :chat-list]
-                        [:navigate-to :chat-list]]))}
-      (log/debug "Error changing acount: " error))))
+    (let [recover-in-progress? (:accounts/recover db)]
+      (if (nil? error)
+        {:db         (dissoc db :accounts/login)
+         :dispatch-n [[:stop-debugging]
+                      [:initialize-account address (when (or new-account?
+                                                             recover-in-progress?)
+                                                     sign-up/start-signup-events)]
+                      [:navigate-to-clean :chat-list]
+                      (if new-account?
+                        [:navigate-to-chat console-chat-id]
+                        [:navigate-to :chat-list])]}
+        (log/debug "Error changing acount: " error)))))

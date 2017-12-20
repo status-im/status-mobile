@@ -1,6 +1,6 @@
 (ns status-im.ui.screens.wallet.choose-recipient.styles
   (:require-macros [status-im.utils.styles :refer [defnstyle defstyle]])
-  (:require [status-im.components.styles :as styles]))
+  (:require [status-im.ui.components.styles :as styles]))
 
 (def wallet-container
   {:flex             1
@@ -62,7 +62,7 @@
    :border-color               "rgba(255, 255, 255, 0.3)"})
 
 (def qr-container
-  {:flex              1})
+  {:flex           1})
 
 (def preview
   {:flex            1

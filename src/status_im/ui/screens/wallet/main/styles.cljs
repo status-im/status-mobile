@@ -1,35 +1,17 @@
 (ns status-im.ui.screens.wallet.main.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
-  (:require [status-im.components.styles :as styles]
+  (:require [status-im.ui.components.styles :as styles]
             [status-im.utils.platform :as platform]))
-
-;; Errors
-
-(defstyle error-container
-  {:align-self       :center
-   :justify-content  :center
-   :ios              {:border-radius 20
-                      :margin-top    6}
-   :android          {:border-radius    4
-                      :margin-top       18}
-   :background-color styles/color-blue5})
-
-(def error-message
-  {:color         styles/color-white
-   :padding-right 10
-   :font-size     13})
-
 
 ;; Toolbar
 
 (def toolbar-title-container
-  {:flex-direction :row
-   :padding-left   24})
+  {:flex-direction :row})
 
 (def toolbar-title-text
-  {:color        styles/color-white
-   :font-size    17
-   :margin-right 4})
+  {:flex      -1
+   :color     styles/color-white
+   :font-size 17})
 
 (def toolbar-icon
   {:width  24
@@ -37,7 +19,6 @@
 
 (def toolbar-title-icon
   (merge toolbar-icon {:opacity 0.4}))
-
 
 ;; Main section
 
@@ -74,40 +55,18 @@
    :android   {:letter-spacing -0.18}
    :ios       {:letter-spacing -0.2}})
 
-(def today-variation-container
-  {:border-radius      100
-   :margin-left        8
-   :padding-horizontal 8
-   :padding-vertical   4})
-
-(def today-variation-container-positive
-  (merge today-variation-container
-         {:background-color styles/color-green-1}))
-
-(def today-variation-container-negative
-  (merge today-variation-container
-         {:background-color styles/color-red-3}))
-
-(def today-variation
-  {:font-size 12})
-
-(def today-variation-positive
-  (merge today-variation
-         {:color styles/color-green-2}))
-
-(def today-variation-negative
-  (merge today-variation
-         {:color styles/color-red-4}))
-
 (defstyle buttons
   {:margin-top 34
    :android    {:margin-horizontal 21}
-   :ios        {:margin-horizontal 29}})
+   :ios        {:margin-horizontal 30}})
 
 (defstyle main-button-text
   {:padding-vertical   13
    :padding-horizontal nil
-   :android            {:letter-spacing 0.46}})
+   :android            {:font-size      13
+                        :letter-spacing 0.46}
+   :ios                {:font-size      15
+                        :letter-spacing -0.2}})
 
 ;; Assets section
 
@@ -127,7 +86,8 @@
    :align-items    :center})
 
 (def asset-item-value
-  {:font-size 16
+  {:flex      -1
+   :font-size 16
    :color     styles/color-black})
 
 (defstyle add-asset-icon
@@ -149,9 +109,6 @@
    :color       styles/color-gray4
    :margin-left 6})
 
-(defn asset-border [color]
-  {:border-color color :border-width 1 :border-radius 32})
-
 (def corner-dot
   {:position         :absolute
    :top              12
@@ -160,3 +117,6 @@
    :height           4
    :border-radius    2
    :background-color styles/color-cyan})
+
+(defn asset-border [color]
+  {:border-color color :border-width 1 :border-radius 32})

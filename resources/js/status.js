@@ -6,13 +6,25 @@ var _status_catalog = {
     },
     status = {};
 
+function scopeToBitMask(scope) {
+    // this function transforms scopes array to a single integer by generating a bit mask 
+    return ((scope != null && scope.indexOf("global") > -1) ? 1 : 0) |
+        ((scope != null && scope.indexOf("personal-chats") > -1) ? 2 : 0) |
+        ((scope != null && scope.indexOf("group-chats") > -1) ? 4 : 0) |
+        ((scope != null && scope.indexOf("anonymous") > -1) ? 8 : 0) |
+        ((scope != null && scope.indexOf("registered") > -1) ? 16 : 0) |
+        ((scope != null && scope.indexOf("dapps") > -1) ? 32 : 0) |
+        ((scope != null && scope.indexOf("humans") > -1) ? 64 : 0) |
+        ((scope != null && scope.indexOf("public-chats") > -1) ? 128 : 0);
+}
+
 function Command() {
 }
 function Response() {
 }
 
 Command.prototype.addToCatalog = function () {
-    _status_catalog.commands[this.name] = this;
+    _status_catalog.commands[[this.name, this["scope-bitmask"]]] = this;
 };
 
 Command.prototype.param = function (parameter) {
@@ -26,9 +38,8 @@ Command.prototype.create = function (com) {
     this.title = com.title;
     this.description = com.description;
     this.handler = com.handler;
-    this["has-handler"] = com.handler != null;
-    this["async-handler"] = (com.handler != null) && com.asyncHandler
-    this["registered-only"] = com.registeredOnly;
+    this["has-handler"] = com.handler !== null;
+    this["async-handler"] = (com.handler != null) && com.asyncHandler;
     this.validator = com.validator;
     this.color = com.color;
     this.icon = com.icon;
@@ -42,7 +53,11 @@ Command.prototype.create = function (com) {
     this["execute-immediately?"] = com.executeImmediately;
     this["sequential-params"] = com.sequentialParams;
     this["hide-send-button"] = com.hideSendButton;
-    
+
+    // scopes
+    this.scope = com.scope; 
+    this["scope-bitmask"] = scopeToBitMask(this["scope"]);
+
     this.addToCatalog();
 
     return this;
@@ -51,7 +66,7 @@ Command.prototype.create = function (com) {
 
 Response.prototype = Object.create(Command.prototype);
 Response.prototype.addToCatalog = function () {
-    _status_catalog.responses[this.name] = this;
+    _status_catalog.responses[[this.name, this["scope-bitmask"]]] = this;
 };
 Response.prototype.onReceiveResponse = function (handler) {
     this.onReceive = handler;
@@ -113,6 +128,10 @@ function view(options, elements) {
 function text(options, s) {
     s = Array.isArray(s) ? s : [s];
     return ['text', options].concat(s);
+}
+
+function chatPreviewText(options, s) {
+    return ['chat-preview-text', options, s];
 }
 
 function textInput(options) {
@@ -258,6 +277,7 @@ var status = {
     components: {
         view: view,
         text: text,
+        chatPreviewText: chatPreviewText,
         textInput: textInput,
         slider: slider,
         image: image,

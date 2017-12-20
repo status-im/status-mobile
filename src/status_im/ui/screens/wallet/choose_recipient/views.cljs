@@ -1,16 +1,18 @@
 (ns status-im.ui.screens.wallet.choose-recipient.views
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
-  (:require [re-frame.core :as re-frame]
-            [status-im.utils.utils :as utils]
-            [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.components.toolbar-new.actions :as act]
+  (:require [clojure.string :as string]
+            [re-frame.core :as re-frame]
+            [status-im.ui.components.camera :as camera]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.status-bar :as status-bar]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as act]
             [status-im.i18n :as i18n]
-            [status-im.ui.screens.wallet.styles :as wallet.styles]
-            [status-im.components.react :as react]
-            [status-im.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.wallet.choose-recipient.styles :as styles]
-            [status-im.components.status-bar :as status-bar]
-            [clojure.string :as string]))
+            [status-im.utils.platform :as platform]
+            [status-im.utils.utils :as utils]
+            [status-im.ui.screens.wallet.styles :as wallet.styles]))
 
 (defn- show-not-implemented! []
   (utils/show-popup "TODO" "Not implemented yet!"))
@@ -23,7 +25,7 @@
                        :params  {:hide-actions? true}}]))
 
 (defn toolbar-view [camera-flashlight]
-  [toolbar/toolbar2 {:style wallet.styles/toolbar}
+  [toolbar/toolbar {:style wallet.styles/toolbar}
    [toolbar/nav-button (act/back-white act/default-handler)]
    [toolbar/content-title {:color :white} (i18n/label :t/wallet-choose-recipient)]
    [toolbar/actions [{:icon      (if (= :on camera-flashlight) :icons/flash-active
@@ -43,7 +45,7 @@
    [react/touchable-highlight {:style    (styles/recipient-touchable true)
                                :on-press #(react/get-from-clipboard
                                             (fn [clipboard]
-                                              (re-frame/dispatch [:choose-recipient clipboard nil])))}
+                                              (re-frame/dispatch [:choose-recipient (string/trim-newline clipboard) nil])))}
     [react/view {:style styles/recipient-button}
      [react/text {:style styles/recipient-button-text}
       (i18n/label :t/wallet-address-from-clipboard)]
@@ -73,8 +75,9 @@
                    :style  (styles/corner-right-bottom min-dimension)}]]))
 
 (defview choose-recipient []
-  (letsubs [camera-dimensions [:camera-dimensions]
-            camera-flashlight [:camera-flashlight]]
+  (letsubs [camera-dimensions [:wallet.send/camera-dimensions]
+            camera-flashlight [:wallet.send/camera-flashlight]
+            camera-permitted? [:wallet.send/camera-permitted?]]
     [react/view {:style styles/wallet-container}
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view camera-flashlight]

@@ -1,13 +1,14 @@
 (ns status-im.ui.screens.wallet.navigation
   (:require [re-frame.core :as re-frame]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.main.views :as main]))
 
 (defmethod navigation/preload-data! :wallet
   [db _]
-  (re-frame/dispatch [:update-wallet])
+  (re-frame/dispatch [:update-wallet (map :symbol (main/tokens-for (:network db)))])
   (assoc-in db [:wallet :current-tab] 0))
 
-(defmethod navigation/preload-data! :wallet-transactions
+(defmethod navigation/preload-data! :transactions-history
   [db _]
   (re-frame/dispatch [:update-transactions])
   db)
@@ -20,8 +21,4 @@
   [db [event]]
   (if (= event :navigate-back)
     db
-    (dissoc db :wallet/send-transaction)))
-
-(defmethod navigation/preload-data! :wallet-send-transaction-modal
-  [db [_ _ value]]
-  (assoc db :wallet/send-transaction value))
+    (update db :wallet dissoc :send-transaction)))

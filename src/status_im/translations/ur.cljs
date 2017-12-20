@@ -10,8 +10,6 @@
    :offline                               "آف لائن"
 
    ;drawer
-   :invite-friends                        "دوستوں کو مدعو کریں"
-   :faq                                   "FAQ"
    :switch-users                          "صارف تبدیل کریں"
 
    ;chat
@@ -53,41 +51,30 @@
                                            :other "گھنٹے"}
    :datetime-day                          {:one   "دن"
                                            :other "دن"}
-   :datetime-multiple                     "s"
    :datetime-ago                          "قبل"
    :datetime-yesterday                    "کل"
    :datetime-today                        "آج"
 
    ;profile
    :profile                               "پروفائل"
-   :report-user                           "صارف کی رپورٹ کریں"
    :message                               "پیغام"
-   :username                              "صارف کا نام"
    :not-specified                         "واضح نہیں کیا گیا"
    :public-key                            "Public Key"
    :phone-number                          "فون نمبر"
-   :email                                 "ای میل"
-   :profile-no-status                     "کوئی سٹیٹس نہیں"
    :add-to-contacts                       "اپنے رابطوں میں درج کریں"
-   :error-incorrect-name                  "برائے مہربانی کوئی اور نام چنیں"
-   :error-incorrect-email                 "غلط ای میل"
 
    ;;make_photo
    :image-source-title                    "پروفائل تصویر"
    :image-source-make-photo               "کھینچیں"
    :image-source-gallery                  "گیلری سے چنیں"
-   :image-source-cancel                   "کینسل"
 
    ;sign-up
    :contacts-syncronized                  "آپ کے کانٹیکٹس سنکرونائز ہو گئے ہیں"
    :confirmation-code                     (str "شکریہ! ہم نے آپ کو تصدیق کا پیغام بھیج دیا ہے "
                                                "کوڈ کے ساتھ۔ برائے مہربانی اپنا نمبر کنفرم کرنے کے لیے وہ کوڈ فراہم کریں۔")
    :incorrect-code                        (str "معذرت، کوڈ غلط تھا، برائے مہربانی دوبارہ درج کریں")
-   :generate-passphrase                   (str "میں آپ کے لیے passphrase تشکیل دوں گا تا کہ آپ "
-                                               "کسی دوسری ڈیوائس سے لاگ ان یا رسائی حاصل کر سکیں")
    :phew-here-is-your-passphrase          "*اف* یہ مشکل تھا, یہ آپ کی passphrase ہے۔, *اسے لکھ لیں اور اپنے پاس محفوظ کر لیں۔* آپ کو اپنا اکاؤنٹ بحال کرنے کے لیے اس کی ضرورت ہو گی۔"
    :here-is-your-passphrase               "یہ آپ کی passphrase ہے۔, *ا اکاؤنٹ بحال کرنے کے لیے اس کی ضرورت * ہے۔, *اسے لکھ لیں اور اپنے پاس محفوظ کر لیں۔* آپ کو ا"
-   :written-down                          "یہ یقینی بنا لیں کہ آپ نے اسے بحفاظت لکھ لیا ہے۔"
    :phone-number-required                 "اپنا فون نمبر درج کرنے کے لیے یہاں ٹیپ کریں اور میں آپ کے دوستوں کو تلاش کروں گا"
    :intro-status                          "اپنا اکاؤنٹ سیٹ اپ کرنے اور سیٹنگز تبدیل کرنے کے لیے مجھ سے چیٹ کریں!"
    :intro-message1                        "سٹیٹس میں خوش آمدید اور اپنا پاسورڈ سیٹ کرنے کے لیے اس کو ٹیپ کریں اور شروعات کریں۔"
@@ -95,7 +82,6 @@
 
    ;chats
    :chats                                 "چیٹ"
-   :new-chat                              "نئی چیٹ"
    :new-group-chat                        "نئی گروپ چیٹ"
 
    ;discover
@@ -112,9 +98,6 @@
    ;contacts
    :contacts                              "رابطے"
    :new-contact                           "نئے رابطے"
-   :show-all                              "سب دکھائیں"
-   :contacts-group-dapps                  "ÐApps"
-   :contacts-group-people                 "لوگ"
    :contacts-group-new-chat               "نئی چیٹ شروع کریں"
    :no-contacts                           "ابھی یہاں کوئی کنٹیکٹ نہیں"
    :show-qr                               "دکھائیں QR"
@@ -122,41 +105,17 @@
    ;group-settings
    :remove                                "نکالیں"
    :save                                  "محفوظ کریں"
-   :change-color                          "رنگ تبدیل کریں"
    :clear-history                         "تاریخ مٹا دیں"
-   :delete-and-leave                      "حذف کریں اور چھوڑ دیں"
    :chat-settings                         "چیٹ کی سیٹنگز"
    :edit                                  "تصحیح"
    :add-members                           "ممبران شامل کریں"
-   :blue                                  "نیلا"
-   :purple                                "جامنی"
-   :green                                 "سبز"
-   :red                                   "سرخ"
 
    ;commands
-   :money-command-description             "رقم بھیجیں"
-   :location-command-description          "مقام بھیجیں"
-   :phone-command-description             "فون نمبر بھیجیں"
-   :phone-request-text                    "فون نمبر کی درخواست کریں"
-   :confirmation-code-command-description "برائے مہربانی یقین دہانی کا کوڈ بھیجیں"
-   :confirmation-code-request-text        "تصدیقی کوڈ کی درخواست"
-   :send-command-description              "مقام بھیجیں"
-   :request-command-description           "درخواست بھیجیں"
-   :keypair-password-command-description  ""
-   :help-command-description              "مدد"
-   :request                               "درخواست"
    :chat-send-eth                         "{{amount}} ETH"
-   :chat-send-eth-to                      "{{amount}} ETH کرنے {{chat-name}}"
-   :chat-send-eth-from                    "{{amount}} ETH سے {{chat-name}}"
 
    ;new-group
-   :group-chat-name                       "چیٹ کا نام"
-   :empty-group-chat-name                 "برائے مہربانی کو ایک نام درج کریں"
-   :illegal-group-chat-name               "برائے مہربانی کوئی اور نام درج کریں"
 
    ;participants
-   :add-participants                      "ساتھیوں کو شامل کریں"
-   :remove-participants                   "ساتھیوں کو نکالیں"
 
    ;protocol
    :received-invitation                   "چیٹ کا دعوت نامہ وصول ہوا ہے"
@@ -168,12 +127,9 @@
 
    ;new-contact
    :add-new-contact                       "نیا کانٹیکٹ شامل کریں"
-   :import-qr                             "امپورٹ"
    :scan-qr                               "سکین کریں QR"
    :name                                  "نام"
-   :whisper-identity                      "شناخت بتائیں"
    :address-explication                   "شائد یہاں آپ کو کچھ لکھنا چاہیے دیکھنے کے لیے کہ پتہ کیا ہے اور اسے کہاں ہونا چاہیے"
-   :enter-valid-address                   "برائے مہربانی  درست  پتہ یا QR سکین کریں"
    :contact-already-added                 "کانٹیکٹ پہلے سے شامل ہے"
    :can-not-add-yourself                  "آپ خود کو شامل نہیں کر سکتے"
    :unknown-address                       "نامعلوم پتہ"
@@ -183,20 +139,14 @@
    :connect                               "ملیں"
    :address                               "پتہ"
    :password                              "پاسورڈ"
-   :login                                 "لاگ ان"
    :wrong-password                        "غلط پاسورڈ"
 
    ;recover
-   :recover-from-passphrase               "passphrase کے ذریعے بحال کریں"
-   :recover-explain                       "رسائی حاصل کرنے کے لیے اپنے پاسورڈ کا passphrase درج کریں"
    :passphrase                            "Passphrase"
    :recover                               "بحال کریں"
-   :enter-valid-passphrase                "برائے مہربانی passphrase درج کریں"
-   :enter-valid-password                  "برائے مہربانی پاسورڈ لکھیں"
 
    ;accounts
    :recover-access                        "رسائی بحال کریں"
-   :add-account                           "اکاؤنٹ شامل کریں"
 
    ;wallet-qr-code
    :done                                  "ہو گیا"
@@ -205,34 +155,20 @@
    ;validation
    :invalid-phone                         "غلط فون نمبر"
    :amount                                "رقم"
-   :not-enough-eth                        (str "بیلنس میں کافی ETH موجود نہیں۔ "
-                                               "({{balance}} ETH)")
    ;transactions
-   :confirm-transactions                  {:one   "بیوپار کی تصدیق کریں"
-                                           :other "تصدیق {{count}} بیوپار"
-                                           :zero  "کوئی بیوپار نہیں ہوا"}
    :status                                "سٹیٹس"
-   :pending-confirmation                  "تصدیق کی ضرورت ہے"
    :recipient                             "وصول کنندہ"
-   :one-more-item                         "ایک اور چیز"
-   :fee                                   "فیس"
-   :value                                 "رقم"
 
    ;:webview
    :web-view-error                        "اوہ، غلطی ہو گئی"
 
    :confirm                               "توثیق کریں"
    :phone-national                        "قومی"
-   :transactions-confirmed                {:one   "لین دین کی تصدیق ہوئی"
-                                           :other "{{count}} لین دین کی توثیق ہوئی"
-                                           :zero  "کسی لین دین کی توثیق نہیں ہوئی"}
    :public-group-topic                    "موضوع"
    :debug-enabled                         "ڈی بگ سرور کو لانچ کیا گیا ہے! آپ کا آئی پتہ ہے۔ اب آپ اپنے کمپیوٹر سے *status-dev-cli scan* کو چلاتے ہوئے اپنا DApp شامل کر سکتے ہیں"
    :new-public-group-chat                 "عوامی چیٹ میں شامل ہوں"
    :datetime-ago-format                   "{{number}} {{time-intervals}} {{ago}}"
    :sharing-cancel                        "منسوخ کریں"
-   :share-qr                              "کیو آر کوڈ کا اشتراک کریں"
-   :feedback                              "رائے موصول ہوئی؟\nاپنے فون کو ہلائیں!"
    :twelve-words-in-correct-order         "درست ترتیب میں 12 الفاظ"
    :remove-from-contacts                  "روابط سے خارج کریں"
    :delete-chat                           "چیٹ کو حذف کریں"
@@ -272,7 +208,6 @@
    :contact-s
                                           {:one   "رابطہ"
                                            :other "روابط"}
-   :group-name                            "گروپ کا نام"
    :next                                  "اگلا"
    :from                                  "سے"
    :search-chats                          "چیٹس تلاش کریں"
@@ -289,17 +224,10 @@
    :more                                  "مزید"
    :cancel                                "منسوخ کریں"
    :no-statuses-found                     "کسی اسٹیٹس کا پتہ نہیں چلا"
-   :swow-qr                               "کیو آر دکھائیں"
    :browsing-open-in-web-browser          "ویب براؤزر میں کھولیں"
    :delete-group-prompt                   "اس سے روابط متاثر نہیں ہونگے"
    :edit-profile                          "پروفائل میں ترمیم کریں"
 
-   :enter-password-transactions
-                                          {:one   "اپنا پاس ورڈ داخل کرتے ہوئے لین دین کی توثیق کریں"
-                                           :other "اپنا پاس ورڈ داخل کرتے ہوئے لین دین کی توثیق کریں"}
-   :unsigned-transactions                 "غیر دستخط شدہ لین دین"
    :empty-topic                           "خالی موضوع"
    :to                                    "بجانب"
-   :group-members                         "گروپ کا رکن"
-   :estimated-fee                         "ادارہ کی فیس"
    :data                                  "ڈیٹا"})

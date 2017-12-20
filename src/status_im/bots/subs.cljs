@@ -1,14 +1,13 @@
 (ns status-im.bots.subs
-  (:require [re-frame.core :refer [reg-sub subscribe]]))
+  (:require [re-frame.core :as re-frame]
+            [status-im.chat.models.input :as input-model]))
 
-(reg-sub
-  :bot-subscription
-  (fn [db [_ path]]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (get-in db (concat [:bot-db @chat-id] path)))))
+(re-frame/reg-sub :get-bot-db :bot-db)
 
-(reg-sub
+(re-frame/reg-sub
   :current-bot-db
-  (fn [db]
-    (let [chat-id (subscribe [:get-current-chat-id])]
-      (get-in db [:bot-db @chat-id]))))
+  :<- [:get-bot-db]
+  :<- [:selected-chat-command]
+  (fn [[bot-db command]]
+    (let [command-owner (get-in command [:command :owner-id])]
+      [command-owner (get bot-db command-owner)])))

@@ -8,9 +8,9 @@
 
 (defview parameter-box-container []
   [{:keys [markup]} [:chat-parameter-box]
-   bot-db [:current-bot-db]]
+   bot-id-bot-db [:current-bot-db]]
   (when markup
-    (command-utils/generate-hiccup markup bot-db)))
+    (command-utils/generate-hiccup markup (first bot-id-bot-db) (second bot-id-bot-db))))
 
 (defview parameter-box-view []
   [show-parameter-box? [:show-parameter-box?]

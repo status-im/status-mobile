@@ -1,6 +1,6 @@
 (ns status-im.chat.styles.message.message
   (:require-macros [status-im.utils.styles :refer [defstyle defnstyle]])
-  (:require [status-im.components.styles :refer [color-white
+  (:require [status-im.ui.components.styles :refer [color-white
                                                  color-black
                                                  color-blue
                                                  color-light-blue
@@ -120,7 +120,7 @@
    :android       {:font-size 13}
    :ios           {:font-size 14}})
 
-(def comand-request-view
+(def command-request-view
   {:paddingRight 16})
 
 (def command-request-message-view

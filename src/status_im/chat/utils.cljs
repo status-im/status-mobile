@@ -1,18 +1,13 @@
 (ns status-im.chat.utils
-  (:require [status-im.constants :refer [console-chat-id
-                                         wallet-chat-id]]
-            [clojure.string :as str]
-            [status-im.chat.constants :as const]
-            [status-im.bots.constants :as bots-constants]))
+  (:require [clojure.string :as str]
+            [status-im.constants :as consts]
+            [status-im.chat.constants :as chat-const]))
 
 (defn console? [s]
-  (= console-chat-id s))
+  (= consts/console-chat-id s))
 
 (def not-console?
   (complement console?))
-
-(defn wallet? [s]
-  (= wallet-chat-id s))
 
 (defn safe-trim [s]
   (when (string? s)
@@ -43,16 +38,10 @@
    (let [previous-message (first (get-in db [:chats chat-id :messages]))]
      (check-message previous-message message))))
 
-(defn command-valid? [message validator]
-  (if validator
-    (validator message)
-    (pos? (count message))))
-
-(defn command-name [{:keys [bot name]}]
+(defn command-name [{:keys [bot name scope]}]
   (cond
-    (bots-constants/mailman-bot? bot)
-    (str const/command-char name)
+    (:global? scope)
+    (str chat-const/bot-char name)
 
-    bot (str const/bot-char bot)
-
-    :else (str const/command-char name)))
+    :default
+    (str chat-const/command-char name)))

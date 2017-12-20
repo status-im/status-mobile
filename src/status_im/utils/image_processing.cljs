@@ -16,10 +16,10 @@
     (read-file path "base64" on-success on-error)))
 
 (defn img->base64 [path on-success on-error]
-  (let [on-resized (fn [path]
-                     (let [path (str/replace path "file:" "")]
-                      (log/debug "Resized: " path)
-                      (image-base64-encode path on-success on-error)))
+  (let [on-resized (fn [image]
+                     (let [path (aget image "path")]
+                       (log/debug "Resized: " path)
+                       (image-base64-encode path on-success on-error)))
         on-error   (fn [error]
                      (log/debug "Resized error: " error)
                      (on-error :resize error))]

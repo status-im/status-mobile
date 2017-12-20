@@ -1,6 +1,6 @@
 node {sauce('b9aded57-5cc1-4f6b-b5ea-42d989987852') {
         checkout([$class: 'GitSCM', branches: [[name: '*/develop']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/status-im/status-react.git']]])
-            try {sh 'cd test/appium/tests && /usr/local/bin/python3 -m pytest -m sanity --build ${JOB_NAME}__${BUILD_NUMBER} -v --dist=loadscope -n3'
+            try {sh 'cd test/appium/tests && /usr/local/bin/python3 -m pytest -m all --build ${JOB_NAME}__${BUILD_NUMBER} -v --dist=loadscope -n4'
             }
             finally {
                 saucePublisher()

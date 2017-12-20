@@ -3,10 +3,10 @@
   (:require [reagent.core :as r]
             [reagent.impl.component :as rc]
             [re-frame.core :refer [dispatch subscribe]]
-            [status-im.components.animation :as anim]
-            [status-im.components.drag-drop :as drag]
-            [status-im.components.react :refer [view
-                                                animated-view]]
+            [status-im.ui.components.animation :as anim]
+            [status-im.ui.components.drag-drop :as drag]
+            [status-im.ui.components.react :refer [view
+                                                   animated-view]]
             [status-im.chat.views.input.animations.responder :as resp]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.chat.styles.animations :as style]
@@ -54,9 +54,9 @@
 
 (defn expandable-view [{:keys [key height hide-overlay?]} & _]
   (let [anim-value         (anim/create-value 0)
-        input-height       (subscribe [:chat-ui-props :input-height])
+        input-height       (subscribe [:get-current-chat-ui-prop :input-height])
         max-height         (subscribe [:get-max-container-area-height])
-        fullscreen?        (subscribe [:chat-ui-props :fullscreen?])
+        fullscreen?        (subscribe [:get-current-chat-ui-prop :fullscreen?])
         chat-input-margin  (subscribe [:chat-input-margin])
         to-changed-height  (subscribe [:chat-animations key :height])
         changes-counter    (subscribe [:chat-animations key :changes-counter])
@@ -80,12 +80,8 @@
        :reagent-render
        (fn [{:keys [draggable? custom-header]} & elements]
          @to-changed-height @changes-counter @max-height
-         (let [{expandable-offset :expandable-offset
-                status-bar-height :height} (get-in p/platform-specific [:component-styles :status-bar :main])
-               bottom (+ @input-height @chat-input-margin)
-               height (if @fullscreen?
-                        (+ @max-height status-bar-height expandable-offset)
-                        anim-value)]
+         (let [bottom (+ @input-height @chat-input-margin)
+               height (if @fullscreen? @max-height anim-value)]
            [view style/overlap-container
             (when (and (not hide-overlay?)
                        (not @fullscreen?))

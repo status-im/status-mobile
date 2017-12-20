@@ -11,9 +11,10 @@
 ;; (get-prices "ETH" "USD" println print)
 
 (def api-url "https://min-api.cryptocompare.com/data")
+(def status-identifier "extraParams=Status.im")
 
 (defn- gen-price-url [fsyms tsyms]
-  (str api-url "/pricemultifull?fsyms=" fsyms "&tsyms=" tsyms))
+  (str api-url "/pricemultifull?fsyms=" fsyms "&tsyms=" tsyms "&" status-identifier))
 
 (defn- format-price-resp [from to resp]
   (let [raw (:RAW (types/json->clj resp))

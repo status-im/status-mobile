@@ -1,5 +1,5 @@
 (ns status-im.chat.views.api.geolocation.styles
-  (:require [status-im.components.styles :as common]))
+  (:require [status-im.ui.components.styles :as common]))
 
 (defn place-item-container [address]
   {:height          (if address 74 52)

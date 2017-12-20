@@ -4,17 +4,17 @@
             [re-frame.core :refer [dispatch dispatch-sync]]
             [status-im.ui.screens.accounts.styles :as ast]
             [status-im.ui.screens.accounts.views :refer [account-badge]]
-            [status-im.components.text-input-with-label.view :refer [text-input-with-label]]
-            [status-im.components.status-bar :refer [status-bar]]
-            [status-im.components.toolbar-new.view :as toolbar]
-            [status-im.components.toolbar-new.actions :as act]
+            [status-im.ui.components.text-input-with-label.view :refer [text-input-with-label]]
+            [status-im.ui.components.status-bar :refer [status-bar]]
+            [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.toolbar.actions :as act]
             [status-im.ui.screens.accounts.login.styles :as st]
-            [status-im.components.react :as react]
+            [status-im.ui.components.react :as react]
             [status-im.i18n :as i18n]
-            [status-im.components.react :as components]))
+            [status-im.ui.components.react :as components]))
 
 (defn login-toolbar []
-  [toolbar/toolbar2
+  [toolbar/toolbar
    {:background-color :transparent
     :hide-border?     true}
    [toolbar/nav-button (act/back-white #(dispatch [:navigate-back]))]
@@ -40,7 +40,7 @@
     :t/unknown-status-go-error))
 
 (defview login []
-  (letsubs [{:keys [address photo-path name password error processing]} [:get :accounts/login]]
+  (letsubs [{:keys [address photo-path name password error processing]}]
     [react/view ast/accounts-container
      ;;[status-bar {:type :transparent}]
      ;;[login-toolbar]

@@ -1,6 +1,5 @@
 (ns status-im.data-store.chats
-  (:require [status-im.data-store.realm.chats :as data-store]
-            [re-frame.core :refer [dispatch]])
+  (:require [status-im.data-store.realm.chats :as data-store])
   (:refer-clojure :exclude [exists?]))
 
 (defn- normalize-contacts
@@ -21,6 +20,7 @@
 
 (defn save
   [{:keys [last-message-id chat-id] :as chat}]
+  ;; TODO(janherich): remove `:last-message-id`, seems like it's not used anywhere anymore
   (let [chat (assoc chat :last-message-id (or last-message-id ""))]
     (data-store/save chat (data-store/exists? chat-id))))
 
@@ -42,8 +42,7 @@
 
 (defn add-contacts
   [chat-id identities]
-  (data-store/add-contacts chat-id identities)
-  (dispatch [:reload-chats]))
+  (data-store/add-contacts chat-id identities))
 
 (defn remove-contacts
   [chat-id identities]

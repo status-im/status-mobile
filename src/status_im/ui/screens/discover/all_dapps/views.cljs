@@ -2,31 +2,30 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [cljs.pprint :as pprint]
             [re-frame.core :as re-frame]
-            [status-im.components.react :as react]
-            [status-im.components.chat-icon.screen :as chat-icon]
-            [status-im.components.carousel.carousel :as carousel]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.list.views :as list]
+            [status-im.ui.components.chat-icon.screen :as chat-icon]
             [status-im.ui.screens.discover.components.views :as discover-components]
             [status-im.ui.screens.discover.styles :as styles]
-            [status-im.utils.platform :as platform]
             [status-im.i18n :as i18n]
-            [status-im.components.toolbar-new.view :as toolbar]))
+            [status-im.ui.components.toolbar.view :as toolbar]))
 
-(defn dapp-item [dapp]
-  (let [{:keys [name photo-path dapp?]} dapp
-        ;; TODO(oskarth): Refactor this to be in discover styles, just uppercase
-        item-style (get-in platform/platform-specific [:component-styles :discover :item])]
-    [react/view
-     [react/view styles/dapps-list-item
-      [react/view styles/dapps-list-item-second-row
-      [react/view styles/dapps-list-item-name-container
-       [react/view (merge styles/dapps-list-item-avatar-container
-                          (:icon item-style))
-        ;; TODO(oskarth): Get rid of badge on icon
-        [react/view (chat-icon/contact-icon-contacts-tab dapp)]]
-       [react/text {:style           styles/dapps-list-item-name
-                    :font            :medium
-                    :number-of-lines 1}
-        name]]]]]))
+(defn navigate-to-dapp [dapp]
+  (do (re-frame/dispatch [:set :discover-current-dapp dapp])
+      (re-frame/dispatch [:navigate-to :discover-dapp-details])))
+
+(defn render-dapp [{:keys [name photo-path dapp?] :as dapp}]
+  [react/touchable-highlight {:on-press #(navigate-to-dapp dapp)
+                              :disabled  (empty? name)}
+    [react/view {:style styles/all-dapps-flat-list-item}
+
+       [react/view styles/dapps-list-item-name-container
+        [react/view styles/dapps-list-item-avatar-container
+         [react/view [chat-icon/contact-icon-view dapp {:size 80}]]]
+        [react/text {:style           styles/dapps-list-item-name
+                     :font            :medium
+                     :number-of-lines 2}
+         name]]]])
 
 ;; TODO(oskarth): Move this to top level discover ns
 (defn preview [dapps]
@@ -35,30 +34,38 @@
    [discover-components/title
     :t/dapps
     :t/all
-    #(re-frame/dispatch [:navigate-to :discover-all-dapps])]
+    #(re-frame/dispatch [:navigate-to :discover-all-dapps])
+    true]
    (if (seq dapps)
-     ;; TODO(oskarth): Make this carousel show more dapps at a time
-     [carousel/carousel {:page-style styles/carousel-page-style
-                         :count      (count dapps)}
-      (for [[_ dapp] dapps]
-        ^{:key (str (:name dapp))}
-        [react/view styles/dapp-preview-content
-         [dapp-item dapp]])]
+     [list/flat-list {:data                              (vals dapps)
+                      :render-fn                         render-dapp
+                      :horizontal                        true
+                      :separator?                        false
+                      :shows-horizontal-scroll-indicator false
+                      :content-container-style           styles/dapp-preview-flat-list}]
      [react/text (i18n/label :t/none)])])
+
+;; todo(goranjovic): this is a hacky fix for the dapp alignment problem in a flatlist based grid
+;; it works fine only if the number of items is evenly divisible with the number of columns
+;; so we make it so by adding up blank dapp items.
+;; the proper solution might be to find a decent component for grid lists
+(defn add-blank-dapps-for-padding [columns dapps]
+  (let [extras (mod (count dapps) columns)]
+    (if (zero? extras)
+      dapps
+      (concat dapps
+              (repeat (- columns extras) {:name ""})))))
 
 (defview main []
   (letsubs [all-dapps    [:get-all-dapps]
             tabs-hidden? [:tabs-hidden?]]
-    (when (seq all-dapps)
-      [react/view styles/discover-container
-       [toolbar/toolbar2 {}
-        toolbar/default-nav-back
-        ;; TODO(oskarth): Lowercase for some reason
-        [react/view [react/text {} :t/dapps]]]
-       [react/scroll-view (styles/list-container tabs-hidden?)
+    (let [columns 3]
+      (when (seq all-dapps)
         [react/view styles/all-dapps-container
-         [react/view styles/all-dapps-list
-          (for [[_ dapp] all-dapps]
-            ^{:key (str (:name dapp))}
-            [dapp-item dapp])]]]])))
-
+         [toolbar/toolbar {}
+          toolbar/default-nav-back
+          [toolbar/content-title (i18n/label :t/dapps)]]
+         [list/flat-list {:data                    (add-blank-dapps-for-padding columns (vals all-dapps))
+                          :render-fn               render-dapp
+                          :num-columns             columns
+                          :content-container-style styles/all-dapps-flat-list}]]))))

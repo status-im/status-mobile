@@ -13,7 +13,7 @@
 (def root-el (r/as-element [reloader]))
 (defn callback []
   (swap! cnt inc)
-  (status-im.components.status/init-jail)
+  (status-im.ui.components.status/init-jail)
   (re-frame.core/dispatch [:load-commands!]))
 
 (figwheel/watch-and-reload

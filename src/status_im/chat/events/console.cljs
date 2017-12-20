@@ -39,11 +39,10 @@
                          :chat-id      const/console-chat-id
                          :from         const/console-chat-id
                          :to           "me"}]))
-          (log/debug "ignoring command: " command))))))
+          (log/debug "ignoring command: " name))))))
 
-(def faucet-base-url->url
-  {"http://faucet.ropsten.be:3001" "http://faucet.ropsten.be:3001/donate/0x%s"
-   "http://46.101.129.137:3001"    "http://46.101.129.137:3001/donate/0x%s"})
+(defn faucet-base-url->url [url]
+  (str url "/donate/0x%s"))
 
 (defn- faucet-response-event [message-id content]
   [:received-message
@@ -61,12 +60,8 @@
      (accounts-events/create-account db (:password params)))
 
    "phone"
-   (fn [{:keys [db]} {:keys [params id]}]
-     (-> db
-         (sign-up-events/sign-up (:phone params) id)
-         (as-> fx
-             (assoc fx :dispatch-n [(:dispatch fx)]))
-         (dissoc :dispatch)))
+   (fn [{:keys [db]} {:keys [params id]}] 
+     (sign-up-events/sign-up db (:phone params) id))
 
    "confirmation-code"
    (fn [{:keys [db]} {:keys [params id]}]
@@ -76,32 +71,35 @@
    (fn [{:keys [db random-id]} {:keys [params id]}]
      (let [{:accounts/keys [accounts current-account-id]} db
            current-address (get-in accounts [current-account-id :address])
-           faucet-url (get faucet-base-url->url (:url params))]
-       {:http-get {:url (gstring/format faucet-url current-address)
+           faucet-url      (faucet-base-url->url (:url params))]
+       {:http-get {:url                   (gstring/format faucet-url current-address)
                    :success-event-creator (fn [_]
                                             (faucet-response-event
                                              random-id
                                              (i18n/label :t/faucet-success)))
-                   :failure-event-creator (fn [_]
+                   :failure-event-creator (fn [event]
+                                            (log/error "Faucet error" event)
                                             (faucet-response-event
                                              random-id
                                              (i18n/label :t/faucet-error)))}}))
 
    "debug"
-   (fn [{:keys [random-id] :as cofx} {:keys [params id]}]
-     (let [debug? (= "On" (:mode params))
-           fx (accounts-events/account-update cofx {:debug? debug?})]
-       (assoc fx :dispatch-n (if debug?
-                               [[:debug-server-start]
-                                [:received-message
-                                 {:message-id   random-id
-                                  :content      (i18n/label :t/debug-enabled)
-                                  :content-type const/text-content-type
-                                  :outgoing     false
-                                  :chat-id      const/console-chat-id
-                                  :from         const/console-chat-id
-                                  :to           "me"}]]
-                               [[:debug-server-stop]]))))})
+   (fn [{:keys [db random-id now] :as cofx} {:keys [params id]}]
+     (let [debug? (= "On" (:mode params))]
+       (-> {:db db}
+           (accounts-events/account-update {:debug?       debug?
+                                            :last-updated now})
+           (assoc :dispatch-n (if debug?
+                                [[:initialize-debugging {:force-start? true}]
+                                 [:received-message
+                                  {:message-id   random-id
+                                   :content      (i18n/label :t/debug-enabled)
+                                   :content-type const/text-content-type
+                                   :outgoing     false
+                                   :chat-id      const/console-chat-id
+                                   :from         const/console-chat-id
+                                   :to           "me"}]]
+                                [[:stop-debugging]])))))})
 
 (def commands-names (set (keys console-commands->fx)))
 
