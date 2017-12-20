@@ -22,10 +22,9 @@
     (assoc cofx :message-exists? messages-store/exists?)))
 
 (re-frame/reg-cofx
- :get-last-clock-value
- (fn [cofx]
-   (assoc cofx :get-last-clock-value messages-store/get-last-clock-value)))
-
+  :get-last-clock-value
+  (fn [cofx]
+    (assoc cofx :get-last-clock-value messages-store/get-last-clock-value)))
 
 ;;;; FX
 
@@ -41,15 +40,21 @@
   (fn [{:keys [db] :as cofx} [{:keys [content] :as message}]]
     (if (:command content)
       ;; we are dealing with received command message, we can't add it right away,
-      ;; we first need to fetch preview and add it only after we already have the preview.
+      ;; we first need to fetch short-preview + preview and add it only after we already have those.
       ;; note that `request-command-message-data` implicitly wait till jail is ready and
-      ;; call is made only after that
+      ;; calls are made only after that
       (commands-events/request-command-message-data
-        db message
-        {:data-type             :preview
-         :proceed-event-creator (fn [preview]
-                                  [::received-message
-                                   (assoc-in message [:content :preview] preview)])})
+       db message
+       {:data-type             :short-preview
+        :proceed-event-creator (fn [short-preview]
+                                 [:request-command-message-data
+                                  message
+                                  {:data-type             :preview
+                                   :proceed-event-creator (fn [preview]
+                                                            [::received-message
+                                                             (update message :content merge
+                                                                     {:short-preview short-preview
+                                                                      :preview       preview})])}])})
       ;; regular non command message, we can add it right away
       (message-model/receive cofx message))))
 
