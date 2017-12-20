@@ -82,3 +82,9 @@
 (def choose-asset-container
   {:margin-top        16
    :margin-horizontal 15})
+
+(def qr-code-preview
+  {:width           256
+   :height          256
+   :justify-content :center
+   :align-items     :center})

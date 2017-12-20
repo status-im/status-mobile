@@ -35,7 +35,8 @@
    [toolbar/content-title (i18n/label :t/transactions)]
    (case current-tab
      :transactions-history  [toolbar/actions [(history-action (not (all-checked? filter-data)))]]
-     :unsigned-transactions nil)]) ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
+     :unsigned-transactions nil
+     nil)]) ;; TODO (andrey) implement [unsigned-action unsigned-transactions-count]
 
 
 (defn action-buttons [{:keys [id] :as transaction}]
@@ -197,7 +198,8 @@
      [tabs current-tab]
      [(case current-tab
         :transactions-history history-list
-        :unsigned-transactions unsigned-list)]]))
+        :unsigned-transactions unsigned-list
+        react/view)]]))
 
 (defn- pretty-print-asset [symbol amount]
   (case symbol

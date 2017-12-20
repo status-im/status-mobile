@@ -58,7 +58,9 @@
       [react/view components.styles/flex
         [react/view styles/network-container
          [react/view styles/qr-container
-          [qr-code amount symbol]]]
+          [react/with-activity-indicator
+           {:style wallet.styles/qr-code-preview}
+           [qr-code amount symbol]]]]
         [react/view wallet.styles/amount-container
          [components/amount-input
           {:error         amount-error

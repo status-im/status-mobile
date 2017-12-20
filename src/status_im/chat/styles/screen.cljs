@@ -204,3 +204,12 @@
 (defstyle actions-list-view
   {:ios {:border-bottom-color component.styles/color-gray3
          :border-bottom-width 0.5}})
+
+(def message-view-preview
+  {:flex            1
+   :align-items     :center
+   :justify-content :center})
+
+(defn message-view-animated [opacity]
+  {:opacity opacity
+   :flex    1})

@@ -73,7 +73,8 @@
 (defview choose-recipient []
   (letsubs [camera-dimensions [:wallet.send/camera-dimensions]
             camera-flashlight [:wallet.send/camera-flashlight]
-            camera-permitted? [:wallet.send/camera-permitted?]]
+            camera-permitted? [:wallet.send/camera-permitted?]
+            view              [:get :view-id]]
     [react/view {:style styles/wallet-container}
      [status-bar/status-bar {:type :wallet}]
      [toolbar-view camera-flashlight]
@@ -83,12 +84,17 @@
                                     (re-frame/dispatch [:wallet.send/set-camera-dimensions
                                                         {:width  (.-width layout)
                                                          :height (.-height layout)}]))}
-      (when (or platform/android?
-                camera-permitted?)
-        [camera/camera {:style         styles/preview
-                        :aspect        :fill
-                        :captureAudio  false
-                        :torchMode     (camera/set-torch camera-flashlight)
-                        :onBarCodeRead #(re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil])}])
+
+      (when (and
+             (= view :choose-recipient)
+             (or platform/android?
+                 camera-permitted?))
+        [react/with-activity-indicator
+         {}
+         [camera/camera {:style         styles/preview
+                         :aspect        :fill
+                         :captureAudio  false
+                         :torchMode     (camera/set-torch camera-flashlight)
+                         :onBarCodeRead #(re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil])}]])
       [viewfinder camera-dimensions]]
      [recipient-buttons]]))

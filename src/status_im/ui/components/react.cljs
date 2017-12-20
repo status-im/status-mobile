@@ -71,7 +71,7 @@
 ;; Accessor methods for React Components
 
 (defn add-font-style [style-key {:keys [font] :as opts :or {font :default}}]
-  (let [font (get-in platform-specific [:fonts (keyword font)])
+  (let [font  (get-in platform-specific [:fonts (keyword font)])
         style (get opts style-key)]
     (-> opts
         (dissoc :font)
@@ -88,17 +88,18 @@
               [text-class (add-font-style :style opts)]
               ts))))))
 
+
 (defn text-input [{:keys [font style] :as opts
                    :or   {font :default}} text]
   (let [font (get-in platform-specific [:fonts (keyword font)])]
     [text-input-class (merge
-                        {:underline-color-android :transparent
-                         :placeholder-text-color  st/text2-color
-                         :placeholder             (i18n/label :t/type-a-message)
-                         :value                   text}
-                        (-> opts
-                            (dissoc :font)
-                            (assoc :style (merge style font))))]))
+                       {:underline-color-android :transparent
+                        :placeholder-text-color  st/text2-color
+                        :placeholder             (i18n/label :t/type-a-message)
+                        :value                   text}
+                       (-> opts
+                           (dissoc :font)
+                           (assoc :style (merge style font))))]))
 
 (defn icon
   ([n] (icon n st/icon-default))
@@ -188,7 +189,8 @@
                        [view props])]
     (vec (concat view-element children))))
 
-(views/defview with-activity-indicator [{:keys [timeout style enabled?]} comp]
+(views/defview with-activity-indicator
+  [{:keys [timeout style enabled? preview]} comp]
   (views/letsubs
     [loading (r/atom true)]
     {:component-did-mount (fn []
@@ -199,6 +201,33 @@
                                                (reset! loading false))
                                              timeout)))}
     (if (and (not enabled?) @loading)
-      [view {:style style}
-       [activity-indicator {:animating true}]]
+      (or preview
+          [view {:style (or style {:justify-content :center
+                                   :align-items     :center})}
+           [activity-indicator {:animating true}]])
       comp)))
+
+(defn navigation-wrapper
+  "Wraps component so that it will be shown only when current-screen is one of views"
+  [{:keys [component views current-view hide?]
+    :or   {hide? false}}]
+  (let [current-view? (if (set? views)
+                        (views current-view)
+                        (= views current-view))
+
+        style         (if current-view?
+                        {:flex 1}
+                        {:opacity 0
+                         :flex    0})
+
+        component' (if (fn? component) [component] component)]
+
+    (when (or (not hide?) (and hide? current-view?))
+      (if hide?
+        component'
+        [view style (if (fn? component) [component] component)]))))
+
+(defn with-empty-preview [comp]
+  [with-activity-indicator
+   {:preview [view {}]}
+   comp])

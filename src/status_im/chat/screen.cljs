@@ -73,6 +73,24 @@
                                :group-chat group-chat
                                :current-public-key current-public-key)])
 
+
+(defview messages-view-animation [message-view]
+  ;; smooths out appearance of message-view
+  (letsubs [opacity       (anim/create-value 0)
+            duration      (if platform/android? 100 200)
+            timeout       (if platform/android? 50 0)]
+    {:component-did-mount (fn [component]
+                            (anim/start
+                             (anim/anim-sequence
+                              [(anim/anim-delay timeout)
+                               (anim/spring opacity {:toValue  1
+                                                     :duration duration})])))}
+    [react/with-activity-indicator
+     {:style   style/message-view-preview
+      :preview [react/view style/message-view-preview]}
+     [react/animated-view {:style (style/message-view-animated opacity)}
+      message-view]]))
+
 (defview messages-view [group-chat]
   (letsubs [messages           [:get-current-chat-messages]
             current-public-key [:get-current-public-key]]
@@ -91,7 +109,8 @@
             show-actions?                   [:get-current-chat-ui-prop :show-actions?]
             show-bottom-info?               [:get-current-chat-ui-prop :show-bottom-info?]
             show-emoji?                     [:get-current-chat-ui-prop :show-emoji?]
-            layout-height                   [:get :layout-height]]
+            layout-height                   [:get :layout-height]
+            current-view                    [:get :view-id]]
     {:component-did-mount    #(re-frame/dispatch [:check-and-open-dapp!])
      :component-will-unmount #(re-frame/dispatch [:set-chat-ui-props {:show-emoji? false}])}
     [react/view {:style style/chat-view
@@ -100,7 +119,9 @@
                                 (when (not= height layout-height)
                                   (re-frame/dispatch [:set-layout-height height]))))}
      [chat-toolbar]
-     [messages-view group-chat]
+     (when (= :chat current-view)
+       [messages-view-animation
+        [messages-view group-chat]])
      [input/container {:text-empty? (string/blank? input-text)}]
      (when show-actions?
        [actions/actions-view])

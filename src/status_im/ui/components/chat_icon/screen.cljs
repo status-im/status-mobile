@@ -13,11 +13,12 @@
     (first name)]])
 
 (defn chat-icon [photo-path {:keys [size accessibility-label]}]
-  (let [photo (if (string/starts-with? photo-path "contacts://")
-                (->> (string/replace photo-path #"contacts://" "")
-                     (keyword)
-                     (get resources/contacts))
-                {:uri photo-path})]
+  (let [photo (when photo-path
+                (if (string/starts-with? photo-path "contacts://")
+                  (->> (string/replace photo-path #"contacts://" "")
+                       (keyword)
+                       (get resources/contacts))
+                  {:uri photo-path}))]
     [react/image {:source              photo
                   :style               (styles/image-style size)
                   :accessibility-label (or accessibility-label :chat-icon)}]))
