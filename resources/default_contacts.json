@@ -240,6 +240,22 @@
         },
         "groups": ["dapps"],
         "description": "Smart Contracts for everyone"
+    },
+    
+    "Auctus":
+    {
+        "name":
+        {
+            "en": "Auctus"
+        },
+        "photo-path": "contacts://auctus",
+        "dapp?": true,
+        "dapp-url":
+        {
+          "en": "https://demo.auctus.org"
+        },
+        "groups": ["dapps"],
+        "description": "Achieve your retirement goals faster with Auctus’ automated investing service, with optimized portfolios of bonds, stocks and cryptocurrencies."
     }
 
 }
