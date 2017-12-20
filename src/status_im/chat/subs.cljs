@@ -56,10 +56,10 @@
 
 (reg-sub
   :get-current-chat
-  (fn [_]
-    (let [current-chat-id (subscribe [:get-current-chat-id])]
-      (subscribe [:get-chat @current-chat-id])))
-  identity)
+  :<- [:chats]
+  :<- [:get-current-chat-id]
+  (fn [[chats current-chat-id]]
+    (get chats current-chat-id)))
 
 (reg-sub
   :chat
@@ -133,10 +133,9 @@
            :value (i18n/label :t/datetime-today)})))
 
 (reg-sub
-  :get-current-chat-messages
-  (fn [_]
-    (let [current-chat-id (subscribe [:get-current-chat-id])]
-      (subscribe [:get-chat-message-datemark-groups @current-chat-id])))
+  :get-chat-messages 
+  (fn [[_ chat-id]] 
+    (subscribe [:get-chat-message-datemark-groups chat-id]))
   (fn [message-datemark-groups]
     (messages-stream message-datemark-groups)))
 

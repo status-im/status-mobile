@@ -73,8 +73,8 @@
                                                 :group-chat group-chat
                                                 :current-public-key current-public-key)]))
 
-(defview messages-view [group-chat]
-  (letsubs [messages           [:get-current-chat-messages]
+(defview messages-view [chat-id group-chat]
+  (letsubs [messages           [:get-chat-messages chat-id]
             current-public-key [:get-current-public-key]]
     [react/list-view {:renderRow                 (fn [row _ index]
                                                    (message-row {:group-chat         group-chat
@@ -87,11 +87,11 @@
                       :dataSource                (listview/to-datasource-inverted messages)}]))
 
 (defview chat []
-  (letsubs [{:keys [group-chat input-text]} [:get-current-chat]
-            show-actions?                   [:get-current-chat-ui-prop :show-actions?]
-            show-bottom-info?               [:get-current-chat-ui-prop :show-bottom-info?]
-            show-emoji?                     [:get-current-chat-ui-prop :show-emoji?]
-            layout-height                   [:get :layout-height]]
+  (letsubs [{:keys [chat-id group-chat input-text]} [:get-current-chat]
+            show-actions?                           [:get-current-chat-ui-prop :show-actions?]
+            show-bottom-info?                       [:get-current-chat-ui-prop :show-bottom-info?]
+            show-emoji?                             [:get-current-chat-ui-prop :show-emoji?]
+            layout-height                           [:get :layout-height]]
     {:component-did-mount    #(re-frame/dispatch [:check-and-open-dapp!])
      :component-will-unmount #(re-frame/dispatch [:set-chat-ui-props {:show-emoji? false}])}
     [react/view {:style style/chat-view
@@ -100,7 +100,7 @@
                                 (when (not= height layout-height)
                                   (re-frame/dispatch [:set-layout-height height]))))}
      [chat-toolbar]
-     [messages-view group-chat]
+     [messages-view chat-id group-chat]
      [input/container {:text-empty? (string/blank? input-text)}]
      (when show-actions?
        [actions/actions-view])
