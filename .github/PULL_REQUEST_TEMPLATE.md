@@ -5,7 +5,7 @@ If you submit PR for issue with bounty then write here Fixes #NN where NN is iss
 
 *otherwise*
 
-addresses #...
+fixes #...
 
 ### Summary:
 
@@ -25,9 +25,4 @@ addresses #...
 
 <!-- (PRs will only be accepted if squashed into single commit.) -->
 
-status: ready
-
-*or*
-
-status: wip
-
+status: ready <!-- Can be ready or wip -->
