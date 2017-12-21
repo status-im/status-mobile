@@ -45,10 +45,11 @@
                               (let [args {:jsonrpc "2.0"
                                           :id      2
                                           :method  "shh_requestMessages"
-                                          :params  [{:peer      enode
-                                                     :topic     topic
-                                                     :symKeyID  sym-key-id
-                                                     :from      0}]}
+                                          ;; NOTE: "from" and "to" parameters omitted here
+                                          ;; by default "from" is 24 hours ago and "to" is time now
+                                          :params  [{:mailServerPeer enode
+                                                     :topic          topic
+                                                     :symKeyID       sym-key-id}]}
                                     payload (.stringify js/JSON (clj->js args))]
                                 (log/info "offline inbox: request-messages request")
                                 (log/info "offline inbox: request-messages args" (pr-str args))
