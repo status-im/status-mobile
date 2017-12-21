@@ -5,7 +5,11 @@
             [reagent.core :as reagent]
             [status-im.native-module.core :as status]
             [taoensso.timbre :as log]
-            [status-im.utils.config :as config]))
+            [status-im.utils.config :as config]
+            [goog.object :as object]))
+
+(when js/goog.DEBUG
+  (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting"]))
 
 (defn init [app-root]
   (log/set-level! config/log-level)
