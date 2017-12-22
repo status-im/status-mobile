@@ -4,7 +4,8 @@
             [status-im.data-store.networks :as networks]
             [status-im.ui.screens.network-settings.navigation]
             [status-im.ui.screens.accounts.events :as accounts-events]
-            [status-im.i18n :as i18n]))
+            [status-im.i18n :as i18n]
+            [status-im.utils.ethereum.core :as utils]))
 
 ;;;; FX
 
@@ -28,9 +29,6 @@
                           (assoc :new-networks (vals new-networks')))
        :save-networks new-networks'})))
 
-(defn network-with-upstream-rpc? [networks network]
-  (get-in networks [network :raw-config :UpstreamConfig :Enabled]))
-
 (handlers/register-handler-fx
  ::save-network
  (fn [{:keys [db now]} [_ network]]
@@ -44,7 +42,7 @@
   (fn [{:keys [db now]} [_ network]]
     (let [current-network (:network db)
           networks        (:networks/networks db)]
-      (if (network-with-upstream-rpc? networks current-network)
+      (if (utils/network-with-upstream-rpc? networks current-network)
         (merge (accounts-events/account-update {:db db} {:network      network
                                                          :last-updated now})
                {:dispatch     [:navigate-to-clean :accounts]

@@ -16,6 +16,9 @@
 (defn testnet? [id]
   (contains? #{(chain-id :ropsten) (chain-id :rinkeby)} id))
 
+(defn network-with-upstream-rpc? [networks network]
+  (get-in networks [network :raw-config :UpstreamConfig :Enabled]))
+
 (def hex-prefix "0x")
 
 (defn normalized-address [address]

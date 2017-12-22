@@ -15,7 +15,8 @@
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
-            [status-im.utils.web3-provider :as web3-provider]))
+            [status-im.utils.web3-provider :as web3-provider]
+            [status-im.utils.ethereum.core :as utils]))
 
 ;;;; COFX
 
@@ -302,8 +303,9 @@
 
 (handlers/register-handler-fx
   :initialize-sync-listener
-  (fn [{{:keys [sync-listening-started] :as db} :db} _]
-    (when-not sync-listening-started
+  (fn [{{:keys [sync-listening-started network networks/networks] :as db} :db} _]
+    (when (and (not sync-listening-started)
+               (not (utils/network-with-upstream-rpc? networks network)))
       {:db (assoc db :sync-listening-started true)
        :dispatch [:check-sync]})))
 
