@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.*;
 import android.view.WindowManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -39,15 +40,17 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     private ExecutorService executor = null;
     private boolean debug;
     private boolean devCluster;
+    private String logLevel;
     private Jail jail;
 
-    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, boolean jscEnabled) {
+    StatusModule(ReactApplicationContext reactContext, boolean debug, boolean devCluster, boolean jscEnabled, String logLevel) {
         super(reactContext);
         if (executor == null) {
             executor = Executors.newCachedThreadPool();
         }
         this.debug = debug;
         this.devCluster = devCluster;
+        this.logLevel = logLevel;
         reactContext.addLifecycleEventListener(this);
         if(jscEnabled) {
             jail = new JSCJail(this);
@@ -177,9 +180,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             JSONObject customConfig = new JSONObject(defaultConfig);
             JSONObject jsonConfig = new JSONObject(config);
             String gethLogFileName = "geth.log";
-            jsonConfig.put("LogEnabled", false);
+            jsonConfig.put("LogEnabled", !TextUtils.isEmpty(this.logLevel));
             jsonConfig.put("LogFile", gethLogFileName);
-            jsonConfig.put("LogLevel", "INFO");
+            jsonConfig.put("LogLevel", this.logLevel.toUpperCase());
             jsonConfig.put("DataDir", root + customConfig.get("DataDir"));
             jsonConfig.put("NetworkId", customConfig.get("NetworkId"));
             try {

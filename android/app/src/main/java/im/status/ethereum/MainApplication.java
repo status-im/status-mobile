@@ -55,7 +55,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
                 jscEnabled = true;
             }
 
-            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, jscEnabled);
+            StatusPackage statusPackage = new StatusPackage(BuildConfig.DEBUG, devCluster, jscEnabled, BuildConfig.LOG_LEVEL_STATUS_GO);
             Function<String, String> callRPC = statusPackage.getCallRPC();
             List<ReactPackage> packages = new ArrayList<ReactPackage>(Arrays.asList(
                     new MainReactPackage(),

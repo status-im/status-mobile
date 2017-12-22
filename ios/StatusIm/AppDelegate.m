@@ -65,10 +65,19 @@ RCTLogFunction RCTTestFairyLogFunction = ^(
   signal(SIGPIPE, SIG_IGN);
   NSURL *jsCodeLocation;
 
-  /* Enable debug logs from React Native for release mode */
-  NSString *debugLogsEnabled = [ReactNativeConfig envFor:@"DEBUG_LOGS_ENABLED"];
-  if([debugLogsEnabled isEqualToString:@"1"]){
-    RCTSetLogThreshold(RCTLogLevelInfo - 1);
+  /* Set logging level from React Native */
+  NSString *logLevel = [ReactNativeConfig envFor:@"LOG_LEVEL"];
+  if([logLevel isEqualToString:@"error"]){
+    RCTSetLogThreshold(RCTLogLevelError);
+  }
+  else if([logLevel isEqualToString:@"warn"]){
+    RCTSetLogThreshold(RCTLogLevelWarning);
+  }
+  else if([logLevel isEqualToString:@"info"]){
+    RCTSetLogThreshold(RCTLogLevelInfo);
+  }
+  else if([logLevel isEqualToString:@"debug"]){
+    RCTSetLogThreshold(RCTLogLevelTrace);
     RCTSetLogFunction(RCTTestFairyLogFunction);
   }
 

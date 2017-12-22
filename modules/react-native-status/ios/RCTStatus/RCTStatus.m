@@ -189,6 +189,7 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     NSString *upstreamURL = [configJSON valueForKeyPath:@"UpstreamConfig.URL"];
     NSString *networkDir = [rootUrl.path stringByAppendingString:dataDir];
     NSString *devCluster = [ReactNativeConfig envFor:@"ETHEREUM_DEV_CLUSTER"];
+    NSString *logLevel = [[ReactNativeConfig envFor:@"LOG_LEVEL_STATUS_GO"] uppercaseString];
     int dev = 0;
     if([devCluster isEqualToString:@"1"]){
         dev = 1;
@@ -200,9 +201,9 @@ RCT_EXPORT_METHOD(startNode:(NSString *)configString) {
     NSURL *networkDirUrl = [NSURL fileURLWithPath:networkDir];
     NSURL *logUrl = [networkDirUrl URLByAppendingPathComponent:@"geth.log"];
     [resultingConfigJson setValue:newKeystoreUrl.path forKey:@"KeyStoreDir"];
-    [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKey:@"LogEnabled"];
+    [resultingConfigJson setValue:[NSNumber numberWithBool:[logLevel length] != 0] forKey:@"LogEnabled"];
     [resultingConfigJson setValue:logUrl.path forKey:@"LogFile"];
-    [resultingConfigJson setValue:@"DEBUG" forKey:@"LogLevel"];
+    [resultingConfigJson setValue:logLevel forKey:@"LogLevel"];
     
     if(upstreamURL != nil) {
         [resultingConfigJson setValue:[NSNumber numberWithBool:YES] forKeyPath:@"UpstreamConfig.Enabled"];

@@ -17,11 +17,13 @@ public class StatusPackage implements ReactPackage {
     private boolean debug;
     private boolean devCluster;
     private boolean jscEnabled;
+    private String logLevel;
 
-    public StatusPackage (boolean debug, boolean devCluster, boolean jscEnabled) {
+    public StatusPackage (boolean debug, boolean devCluster, boolean jscEnabled, String logLevel) {
         this.debug = debug;
         this.devCluster = devCluster;
         this.jscEnabled = jscEnabled;
+        this.logLevel = logLevel;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class StatusPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         System.loadLibrary("statusgoraw");
         System.loadLibrary("statusgo");
-        modules.add(new StatusModule(reactContext, this.debug, this.devCluster, this.jscEnabled));
+        modules.add(new StatusModule(reactContext, this.debug, this.devCluster, this.jscEnabled, this.logLevel));
 
         return modules;
     }

@@ -25,12 +25,12 @@ node ('macos1') {
       // sh 'cp .env.jenkins .env'
       sh 'echo TESTFAIRY_ENABLED='         + TESTFAIRY_ENABLED         + '>>' + '.env'
       sh 'echo NOTIFICATIONS_WIP_ENABLED=' + NOTIFICATIONS_WIP_ENABLED + '>>' + '.env'
-      sh 'echo DEBUG_LOGS_ENABLED='        + DEBUG_LOGS_ENABLED        + '>>' + '.env'
       sh 'echo STUB_STATUS_GO='            + STUB_STATUS_GO            + '>>' + '.env'
       sh 'echo ETHEREUM_DEV_CLUSTER='      + ETHEREUM_DEV_CLUSTER      + '>>' + '.env'
       sh 'echo MAINNET_NETWORKS_ENABLED='  + MAINNET_NETWORKS_ENABLED  + '>>' + '.env'
       sh 'echo ERC20_ENABLED='             + ERC20_ENABLED             + '>>' + '.env'
       sh 'echo LOG_LEVEL='                 + LOG_LEVEL                 + '>>' + '.env'
+      sh 'echo LOG_LEVEL_STATUS_GO='       + LOG_LEVEL_STATUS_GO       + '>>' + '.env'
       sh 'echo JSC_ENABLED='               + JSC_ENABLED               + '>>' + '.env'
       sh 'echo OFFLINE_INBOX_ENABLED='     + OFFLINE_INBOX_ENABLED     + '>>' + '.env'
 
