@@ -21,7 +21,8 @@
              ["with-profile" "prod" "cljsbuild" "once" "android"]]
             "figwheel-repl"    ["run" "-m" "clojure.main" "env/dev/run.clj"]
             "test-cljs"        ["with-profile" "test" "doo" "node" "test" "once"]
-            "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]}
+            "test-protocol"    ["with-profile" "test" "doo" "node" "protocol" "once"]
+            "test-env-dev-utils" ["with-profile" "test" "doo" "node" "env-dev-utils" "once"]}
   :figwheel {:nrepl-port 7888}
   :profiles {:dev  {:dependencies [[figwheel-sidecar "0.5.14"]
                                    [re-frisk-remote "0.5.3"]
@@ -61,6 +62,13 @@
                                  {:id           "protocol"
                                   :source-paths ["src" "test/cljs"]
                                   :compiler     {:main          status-im.test.protocol.runner
+                                                 :output-to     "target/test/test.js"
+                                                 :output-dir    "target/test"
+                                                 :optimizations :none
+                                                 :target        :nodejs}}
+                                 {:id           "env-dev-utils"
+                                  :source-paths ["env/dev/env/utils.cljs" "test/env/dev"]
+                                  :compiler     {:main          env.test.runner
                                                  :output-to     "target/test/test.js"
                                                  :output-dir    "target/test"
                                                  :optimizations :none

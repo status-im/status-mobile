@@ -31,7 +31,6 @@ prepare: ##@prepare Install dependencies and prepare workspace
 	npm install
 	./re-natal deps
 	./re-natal use-figwheel
-	lein re-frisk use-re-natal
 	./re-natal enable-source-maps
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies

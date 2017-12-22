@@ -4,19 +4,24 @@
             [status-im.ios.core :as core]
             [status-im.utils.handlers :as utils.handlers]
             [figwheel.client :as figwheel :include-macros true]
+            [env.config :as conf]
+            [env.utils]
             [cljs.pprint]))
 
 (enable-console-print!)
+
+(assert (exists? core/init) "Fatal Error - Your core.cljs file doesn't define an 'init' function!!! - Perhaps there was a compilation failure?")
+(assert (exists? core/app-root) "Fatal Error - Your core.cljs file doesn't define an 'app-root' function!!! - Perhaps there was a compilation failure?")
 
 (def cnt (r/atom 0))
 (defn reloader [] @cnt [core/app-root])
 (def root-el (r/as-element [reloader]))
 
-(figwheel/watch-and-reload
-  :websocket-url "ws://localhost:3449/figwheel-ws"
-  :heads-up-display false
-  :jsload-callback #(swap! cnt inc))
+(figwheel/start {:websocket-url (:ios conf/figwheel-urls)
+                 :heads-up-display false
+                 :jsload-callback #(swap! cnt inc)})
 
 (utils.handlers/add-pre-event-callback rr/pre-event-callback)
 
-(rr/enable-re-frisk-remote! {:host "localhost:4567" :on-init core/init})
+(rr/enable-re-frisk-remote! {:host (env.utils/re-frisk-url (:ios conf/figwheel-urls))
+                             :on-init core/init})
