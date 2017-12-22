@@ -11,8 +11,11 @@
    :border-bottom-color styles/color-light-gray4})
 
 (def row
-  {:flex-direction :row
-   :margin-bottom  10})
+  {:flex            1
+   :flex-direction  :row
+   :align-items     :center
+   :justify-content :space-between
+   :margin-bottom   10})
 
 (def column
   {:flex-direction :column})
