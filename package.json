@@ -49,7 +49,7 @@
     "re-natal": "git+https://github.com/status-im/re-natal.git#master",
     "react": "^16.0.0",
     "react-dom": "16.0.0",
-    "react-native": "git+https://github.com/status-im/react-native-desktop#feature/run-status-im",
+    "react-native": "git+https://github.com/status-im/react-native-desktop#react-native-qt",
     "react-native-action-button": "2.8.1",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-autolink": "1.1.1",
