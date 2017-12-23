@@ -41,8 +41,8 @@
     (data-store/save message')))
 
 (defn delete
-  [pending-message]
-  (data-store/delete pending-message))
+  [message-id]
+  (data-store/delete message-id))
 
 (defn delete-all-by-chat-id
   [chat-id]

@@ -9,5 +9,8 @@
                                  :new? (if (nil? new?) true new?))]
      (update-in db [:chats add-to-chat-id :messages] assoc message-id prepared-message))))
 
+(defn message-seen-by? [message user-pk]
+  (= :seen (get-in message [:user-statuses user-pk])))
+
 (defn command-name [{:keys [name]}]
   (str chat.constants/command-char name))

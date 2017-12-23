@@ -10,10 +10,8 @@
 (s/def :chat/chat-list-ui-props (s/nilable map?))
 (s/def :chat/layout-height (s/nilable number?))                   ; height of chat's view layout
 (s/def :chat/expandable-view-height-to-value (s/nilable number?)) 
-(s/def :chat/message-status (s/nilable map?))                     ; TODO janherich: remove later 
 (s/def :chat/selected-participants (s/nilable set?))
-(s/def :chat/chat-loaded-callbacks (s/nilable map?))
-(s/def :chat/command-hash-valid? (s/nilable boolean?))
+(s/def :chat/chat-loaded-callbacks (s/nilable map?)) 
 (s/def :chat/public-group-topic (s/nilable string?))
 (s/def :chat/confirmation-code-sms-listener (s/nilable any?))     ; .addListener result object
 (s/def :chat/messages (s/nilable map?))                           ; messages indexed by message-id

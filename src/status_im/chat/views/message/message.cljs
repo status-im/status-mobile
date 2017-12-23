@@ -174,71 +174,66 @@
     [message-content-audio {:content      content
                             :content-type content-type}]]])
 
-(defview group-message-delivery-status [{:keys [message-id group-id message-status user-statuses] :as msg}]
-  (letsubs [chat [:get-current-chat]
-            contacts [:get-contacts]]
-    (let [status            (or message-status :sending)
-          participants      (:contacts chat)
-          seen-by-everyone? (and (= (count user-statuses) (count participants))
-                                 (every? (fn [[_ {:keys [status]}]]
-                                           (= (keyword status) :seen)) user-statuses))]
-      (if (or (zero? (count user-statuses))
-              seen-by-everyone?)
-        [react/view style/delivery-view
-         [react/text {:style style/delivery-text
-                      :font  :default}
-          (i18n/message-status-label
-           (if seen-by-everyone?
-             :seen-by-everyone
-             status))]]
+(defn- text-status [status]
+  [react/view style/delivery-view
+   [react/text {:style style/delivery-text
+                :font  :default}
+    (i18n/message-status-label status)]])
+
+(defview group-message-delivery-status [{:keys [message-id group-id current-public-key user-statuses] :as msg}]
+  (letsubs [{participants :contacts} [:get-current-chat]
+            contacts                 [:get-contacts]]
+    (let [outgoing-status         (or (get user-statuses current-public-key) :sending)
+          delivery-statuses       (dissoc user-statuses current-public-key)
+          delivery-statuses-count (count delivery-statuses)
+          seen-by-everyone        (and (= delivery-statuses-count (count participants))
+                                       (every? (comp (partial = :seen) second) delivery-statuses)
+                                       :seen-by-everyone)]
+      (if (or seen-by-everyone (zero? delivery-statuses-count))
+        [text-status (or seen-by-everyone outgoing-status)]
         [react/touchable-highlight
-         {:on-press (fn []
-                      (re-frame/dispatch [:show-message-details {:message-status status
-                                                                 :user-statuses  user-statuses
-                                                                 :participants   participants}]))}
+         {:on-press #(re-frame/dispatch [:show-message-details {:message-status outgoing-status
+                                                                :user-statuses  delivery-statuses
+                                                                :participants   participants}])}
          [react/view style/delivery-view
-          (for [[_ {:keys [whisper-identity]}] (take 3 user-statuses)]
+          (for [[whisper-identity] (take 3 delivery-statuses)]
             ^{:key whisper-identity}
             [react/image {:source {:uri (or (get-in contacts [whisper-identity :photo-path])
                                             (identicon/identicon whisper-identity))}
                           :style  {:width        16
                                    :height       16
                                    :borderRadius 8}}])
-          (if (> (count user-statuses) 3)
+          (if (> delivery-statuses-count 3)
             [react/text {:style style/delivery-text
                          :font  :default}
-             (str "+ " (- (count user-statuses) 3))])]]))))
+             (str "+ " (- delivery-statuses-count 3))])]]))))
 
 (defn message-delivery-status
-  [{:keys [message-id chat-id message-status user-statuses content]}]
-  (let [delivery-status (get-in user-statuses [chat-id :status])
-        status          (cond (and (not (console/commands-with-delivery-status (:command content)))
-                                   (= constants/console-chat-id chat-id))
+  [{:keys [message-id chat-id current-public-key user-statuses content]}]
+  (let [outgoing-status (or (get user-statuses current-public-key) :sending)
+        delivery-status (get user-statuses chat-id)
+        status          (cond (and (= constants/console-chat-id chat-id)
+                                   (not (console/commands-with-delivery-status (:command content))))
                               :seen
 
                               :else
-                              (or delivery-status message-status :sending))]
-    [react/view style/delivery-view
-     [react/text {:style style/delivery-text
-                  :font  :default}
-      (i18n/message-status-label status)]]))
+                              (or delivery-status outgoing-status))]
+    [text-status status]))
+
+(defn- photo [from photo-path]
+  [react/view
+   [react/image {:source {:uri (if (string/blank? photo-path)
+                                 (identicon/identicon from)
+                                 photo-path)}
+                 :style  style/photo}]])
 
 (defview member-photo [from]
-  (letsubs [photo-path [:photo-path from]]
-    [react/view
-     [react/image {:source {:uri (if (string/blank? photo-path)
-                                   (identicon/identicon from)
-                                   photo-path)}
-                   :style  style/photo}]]))
+  (letsubs [photo-path [:get-photo-path from]]
+    (photo from photo-path)))
 
 (defview my-photo [from]
-  (letsubs [account [:get-current-account]]
-    (let [{:keys [photo-path]} account]
-      [react/view
-       [react/image {:source {:uri (if (string/blank? photo-path)
-                                     (identicon/identicon from)
-                                     photo-path)}
-                     :style  style/photo}]])))
+  (letsubs [{:keys [photo-path]} [:get-current-account]]
+    (photo from photo-path)))
 
 (defn message-body
   [{:keys [last-outgoing? message-type same-author? from outgoing] :as message} content]
@@ -291,18 +286,16 @@
                   children)])}))
     (into [react/view] children)))
 
-(defn chat-message [{:keys [outgoing message-id chat-id message-status user-statuses
-                            from current-public-key] :as message}]
+(defn chat-message [{:keys [outgoing message-id chat-id from current-public-key] :as message}]
   (reagent/create-class
     {:display-name "chat-message"
      :component-did-mount
-     #(when (and message-id
-                 chat-id
-                 (not outgoing)
-                 (not= :seen message-status)
-                 (not= :seen (keyword (get-in user-statuses [current-public-key :status]))))
+     ;; send `:seen` signal when we have signed-in user, message not from us and we didn't sent it already
+     #(when (and current-public-key message-id chat-id (not outgoing)
+                 (not (chat.utils/message-seen-by? message current-public-key)))
         (re-frame/dispatch [:send-seen! {:chat-id    chat-id
                                          :from       from
+                                         :me         current-public-key
                                          :message-id message-id}]))
      :reagent-render
      (fn [{:keys [outgoing group-chat content-type content] :as message}]
@@ -321,4 +314,5 @@
          [react/view
           (let [incoming-group (and group-chat (not outgoing))]
             [message-content message-body (merge message
-                                                 {:incoming-group incoming-group})])]]])}))
+                                                 {:current-public-key current-public-key
+                                                  :incoming-group     incoming-group})])]]])}))

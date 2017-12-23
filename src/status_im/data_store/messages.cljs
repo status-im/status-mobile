@@ -14,8 +14,7 @@
 
 (def default-values
   {:outgoing       false
-   :to             nil
-   :preview        nil})
+   :to             nil})
 
 (defn exists? [message-id]
   (data-store/exists? message-id))
@@ -24,17 +23,11 @@
   [message-id]
   (data-store/get-by-id message-id))
 
-(defn get-message-content-by-id [message-id]
-  (when-let [{:keys [content-type content] :as message} (get-by-id message-id)]
-    (when (command-type? content-type)
-      (reader/read-string content))))
-
 (defn get-by-chat-id
   ([chat-id]
    (get-by-chat-id chat-id 0))
   ([chat-id from]
    (->> (data-store/get-by-chat-id chat-id from constants/default-number-of-messages)
-        reverse
         (keep (fn [{:keys [content-type preview] :as message}]
                 (if (command-type? content-type)
                   (update message :content reader/read-string)
@@ -46,13 +39,6 @@
        (filter #(= (:content-type %) constants/content-type-log-message))
        (map #(select-keys % [:content :timestamp]))))
 
-(defn get-last-outgoing
-  [chat-id number-of-messages]
-  (data-store/get-by-fields {:chat-id  chat-id
-                             :outgoing true}
-                            0
-                            number-of-messages))
-
 (defn get-last-clock-value
   [chat-id]
   (if-let [message (data-store/get-last-message chat-id)]
@@ -60,34 +46,46 @@
     0))
 
 (defn get-unviewed
-  []
-  (data-store/get-unviewed))
+  [current-public-key]
+  (into {}
+        (map (fn [[chat-id user-statuses]]
+               [chat-id (into #{} (map :message-id) user-statuses)]))
+        (group-by :chat-id (data-store/get-unviewed current-public-key))))
 
 (defn- prepare-content [content]
   (if (string? content)
     content
     (pr-str
      ;; TODO janherich: this is ugly and not systematic, define something like `:not-persisent`
-     ;; option for command params instead 
+     ;; option for command params instead
      (update content :params dissoc :password :password-confirmation))))
 
-(defn save
-  [{:keys [message-id content] :as message}]
+(defn- prepare-statuses [{:keys [chat-id message-id] :as message}]
+  (utils/update-if-present message
+                           :user-statuses
+                           (partial map (fn [[whisper-identity status]]
+                                          {:whisper-identity whisper-identity
+                                           :status           status
+                                           :chat-id          chat-id
+                                           :message-id       message-id}))))
+
+(defn- prepare-message [message]
+  (-> message
+      prepare-statuses
+      (utils/update-if-present :content prepare-content)))
+
+(defn save 
+  [{:keys [message-id content from] :as message}]
   (when-not (data-store/exists? message-id)
-    (let [content' (prepare-content content)
-          message' (merge default-values
-                          message
-                          {:content   content'
-                           :timestamp (random/timestamp)})]
-      (data-store/save message'))))
+    (data-store/save (prepare-message (merge default-values
+                                             message
+                                             {:from      (or from "anonymous")
+                                              :timestamp (random/timestamp)})))))
 
 (defn update-message
   [{:keys [message-id] :as message}]
-  (when (data-store/exists? message-id)
-    (let [message  (-> message
-                       (utils/update-if-present :user-statuses vals)
-                       (utils/update-if-present :content prepare-content))]
-      (data-store/save message))))
+  (when-let [{:keys [chat-id]} (data-store/get-by-id message-id)]
+    (data-store/save (prepare-message (assoc message :chat-id chat-id)))))
 
 (defn delete-by-chat-id [chat-id]
   (data-store/delete-by-chat-id chat-id))

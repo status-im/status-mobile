@@ -11,6 +11,7 @@
             [status-im.i18n :as i18n]
             [status-im.utils.random :as random]
             [status-im.protocol.message-cache :as cache]
+            [status-im.chat.utils :as chat.utils]
             [status-im.utils.datetime :as datetime]
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.native-module.core :as status]
@@ -198,38 +199,14 @@
           :content-type constants/text-content-type}]))))
 
 (re-frame/reg-fx
-  ::save-message-status!
-  (fn [{:keys [message-id ack-of-message group-id from status]}]
-    (let [message-id' (or ack-of-message message-id)]
-      (when-let [{:keys [message-status] :as message} (messages/get-by-id message-id')]
-        (when-not (= (keyword message-status) :seen)
-          (let [group? (boolean group-id)
-                message' (-> (if (and group? (not= status :sent))
-                               (update-in message
-                                          [:user-statuses from]
-                                          (fn [{old-status :status}]
-                                            {:id (random/id)
-                                             :whisper-identity from
-                                             :status (if (= (keyword old-status) :seen)
-                                                       old-status
-                                                       status)}))
-                               (assoc message :message-status status))
-                             ;; we need to dissoc preview because it has been saved before
-                             (dissoc :preview))]
-            (messages/update-message message')))))))
-
-(re-frame/reg-fx
   ::pending-messages-delete
-  (fn [message]
-    (pending-messages/delete message)))
+  (fn [message-id]
+    (pending-messages/delete message-id)))
 
 (re-frame/reg-fx
   ::pending-messages-save
-  (fn [{:keys [type id pending-message]}]
-    (pending-messages/save pending-message)
-    (when (#{:message :group-message} type)
-      (messages/update-message {:message-id id
-                                :delivery-status :pending}))))
+  (fn [pending-message]
+    (pending-messages/save pending-message)))
 
 (re-frame/reg-fx
   ::status-init-jail
@@ -316,9 +293,18 @@
                   :to      to
                   :chat-id from}))
 
+(defn- message-from-self [{:keys [current-public-key]} {:keys [id to group-id]}]
+  {:from      to
+   :sent-from current-public-key
+   :payload   {:message-id id
+               :group-id   group-id}})
+
+(defn- get-message-id [{:keys [message-id ack-of-message]}]
+  (or ack-of-message message-id))
+
 (handlers/register-handler-fx
-  :incoming-message
-  (fn [_ [_ type {:keys [payload ttl id] :as message}]]
+  :incoming-message 
+  (fn [{:keys [db]} [_ type {:keys [payload ttl id] :as message}]]
     (let [message-id (or id (:message-id payload))]
       (when-not (cache/exists? message-id type)
         (let [ttl-s             (* 1000 (or ttl 120))
@@ -326,74 +312,56 @@
                                  :message-id message-id
                                  :type       type
                                  :ttl        (+ (datetime/now-ms) ttl-s)}
-              route-event (case type
-                            (:message
-                             :group-message
-                             :public-group-message) [:chat-received-message/add (transform-protocol-message message)]
-                            :ack                    (if (#{:message :group-message} (:type payload))
-                                                      [:update-message-status message :delivered]
-                                                      [:pending-message-remove message])
-                            :seen                   [:update-message-status message :seen]
-                            :group-invitation       [:group-chat-invite-received message]
-                            :update-group           [:update-group-message message]
-                            :add-group-identity     [:participant-invited-to-group message]
-                            :remove-group-identity  [:participant-removed-from-group message]
-                            :leave-group            [:participant-left-group message]
-                            :contact-request        [:contact-request-received message]
-                            :discover               [:status-received message]
-                            :discoveries-request    [:discoveries-request-received message]
-                            :discoveries-response   [:discoveries-response-received message]
-                            :profile                [:contact-update-received message]
-                            :update-keys            [:update-keys-received message]
-                            :online                 [:contact-online-received message]
-                            :pending                [:pending-message-upsert message]
-                            :sent                   (let [{:keys [to id group-id]} message
-                                                          message' {:from    to
-                                                                    :payload {:message-id id
-                                                                              :group-id   group-id}}]
-                                                      [:update-message-status message' :sent])
-                            nil)]
-          (when (nil? route-event) (debug "Unknown message type" type))
+              chat-message (#{:message :group-message} (:type payload))
+              route-fx (case type
+                         (:message
+                          :group-message
+                          :public-group-message) {:dispatch [:chat-received-message/add (transform-protocol-message message)]} 
+                         :pending                (cond-> {::pending-messages-save message}
+                                                   chat-message
+                                                   (assoc :dispatch
+                                                          [:update-message-status (message-from-self db message) :pending]))
+                         :sent                   {:dispatch [:update-message-status (message-from-self db message) :sent]}
+                         :ack                    (cond-> {::pending-messages-delete (get-message-id payload)}
+                                                   chat-message
+                                                   (assoc :dispatch [:update-message-status message :delivered]))
+                         :seen                   {:dispatch [:update-message-status message :seen]}
+                         :group-invitation       {:dispatch [:group-chat-invite-received message]}
+                         :update-group           {:dispatch [:update-group-message message]}
+                         :add-group-identity     {:dispatch [:participant-invited-to-group message]}
+                         :remove-group-identity  {:dispatch [:participant-removed-from-group message]}
+                         :leave-group            {:dispatch [:participant-left-group message]}
+                         :contact-request        {:dispatch [:contact-request-received message]}
+                         :discover               {:dispatch [:status-received message]}
+                         :discoveries-request    {:dispatch [:discoveries-request-received message]}
+                         :discoveries-response   {:dispatch [:discoveries-response-received message]}
+                         :profile                {:dispatch [:contact-update-received message]}
+                         :update-keys            {:dispatch [:update-keys-received message]}
+                         :online                 {:dispatch [:contact-online-received message]} 
+                         nil)]
+          (when (nil? route-fx) (debug "Unknown message type" type))
           (cache/add! processed-message)
           (merge
             {::save-processed-messages processed-message}
-            (when route-event {:dispatch route-event})))))))
-
-(defn update-message-status [db {:keys [message-id ack-of-message group-id from status]}]
-  (let [message-id'          (or ack-of-message message-id)
-        update-group-status? (and group-id (not= status :sent))
-        message-path         [:chats (or group-id from) :messages message-id']
-        current-status       (if update-group-status?
-                               (get-in db (into message-path [:user-statuses from :status]))
-                               (get-in db (into message-path [:message-status])))]
-    ;; for some strange reason, we sometimes receive status update for message we don't have,
-    ;; that's why the first condition in if
-    (if (and (get-in db message-path)
-             (not= :seen current-status))
-      (if update-group-status?
-        (assoc-in db (into message-path [:user-statuses from]) {:whisper-identity from
-                                                                :status           status})
-        (assoc-in db (into message-path [:message-status]) status))
-      db)))
+            route-fx))))))
 
 (handlers/register-handler-fx
   :update-message-status
   [re-frame/trim-v
+   (re-frame/inject-cofx :get-stored-message)
    (re-frame/inject-cofx ::chats-is-active?)]
-  (fn [{db :db chats-is-active? :chats-is-active?}
-       [{:keys                                        [from]
-         {:keys [message-id ack-of-message group-id]} :payload
-         :as message}
-        status]]
-    (let [data {:status status
-                :message-id message-id :ack-of-message ack-of-message
-                :group-id group-id :from from}]
-      (merge
-        {::save-message-status! data}
-        (when (= status :delivered)
-         {:dispatch  [:pending-message-remove message]})
-        (when chats-is-active?
-          {:db (update-message-status db data)})))))
+  (fn [{:keys [db chats-is-active? get-stored-message]} [{:keys [from sent-from payload]} status]]
+    (let [message-identifier (get-message-id payload)
+          message-db-path    [:chats (or (:group-id payload) from) :messages message-identifier] 
+          from-id            (or sent-from from) 
+          message            (get-stored-message message-identifier)]
+      ;; proceed with updating status if chat is active, and message was not already seen 
+      (when (and chats-is-active? (not (chat.utils/message-seen-by? message from-id)))
+        (let [statuses (assoc (:user-statuses message) from-id status)]
+          (cond-> {:update-message {:message-id    message-identifier
+                                    :user-statuses statuses}} 
+            (get-in db message-db-path)
+            (assoc :db (assoc-in db (conj message-db-path :user-statuses) statuses))))))))
 
 (handlers/register-handler-fx
   :contact-request-received
@@ -422,23 +390,6 @@
             {:dispatch-n [[:update-contact! contact]
                           [:update-chat! chat]
                           [:watch-contact contact]]}))))))
-
-(handlers/register-handler-fx
-  :pending-message-upsert
-  (fn [{db :db} [_ {:keys [type id to group-id] :as pending-message}]]
-    (let [chat-id        (or group-id to)
-          current-status (get-in db [:message-status chat-id id])]
-      (merge
-        {::pending-messages-save {:type type :id id :pending-message pending-message}}
-        (when (and (#{:message :group-message} type) (not= :seen current-status))
-          {:db (assoc-in db [:message-status chat-id id] :pending)})))))
-
-(handlers/register-handler-fx
-  :pending-message-remove
-  (fn [_ [_ message]]
-    {::pending-messages-delete message}))
-
-
 
 ;;GROUP
 

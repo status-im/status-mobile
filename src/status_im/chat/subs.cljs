@@ -62,6 +62,12 @@
     (get chats current-chat-id)))
 
 (reg-sub
+  :get-current-chat-message
+  :<- [:get-current-chat]
+  (fn [{:keys [messages]} [_ message-id]]
+    (get messages message-id)))
+
+(reg-sub
   :chat
   :<- [:chats]
   :<- [:get-current-chat-id]
@@ -265,7 +271,7 @@
     (:web-view-extra-js current-chat)))
 
 (reg-sub
-  :photo-path
+  :get-photo-path
   :<- [:get-contacts]
   (fn [contacts [_ id]]
     (:photo-path (contacts id))))

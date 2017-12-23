@@ -8,7 +8,7 @@
             [status-im.data-store.realm.schemas.account.v1.processed-message :as processed-message]
             [status-im.data-store.realm.schemas.account.v19.request :as request]
             [status-im.data-store.realm.schemas.account.v1.tag :as tag]
-            [status-im.data-store.realm.schemas.account.v1.user-status :as user-status]
+            [status-im.data-store.realm.schemas.account.v19.user-status :as user-status]
             [status-im.data-store.realm.schemas.account.v5.contact-group :as contact-group]
             [status-im.data-store.realm.schemas.account.v5.group-contact :as group-contact]
             [status-im.data-store.realm.schemas.account.v8.local-storage :as local-storage]
@@ -101,6 +101,24 @@
                     (log/debug "migrating v19 command/request database, updating: " content " with: " new-props)
                     (aset object "content" (pr-str new-content)))))))
 
+(defn update-message-statuses [new-realm]
+  (some-> new-realm
+          (.objects "message")
+          (.map (fn [msg _ _]
+                  (let [message-id (aget msg "message-id")
+                        chat-id    (aget msg "chat-id")
+                        from       (aget msg "from")
+                        msg-status (aget msg "message-status")
+                        statuses   (aget msg "user-statuses")]
+                    (when statuses 
+                      (.map statuses (fn [status _ _]
+                                       (aset status "message-id" message-id)
+                                       (aset status "chat-id"    chat-id)))
+                      (.push statuses (clj->js {"message-id"       message-id
+                                                "chat-id"          chat-id
+                                                "status"           (or msg-status "received")
+                                                "whisper-identity" (or from "anonymous")}))))))))
+
 (defn migration [old-realm new-realm]
   (log/debug "migrating v19 account database: " old-realm new-realm)
   (remove-contact! new-realm "transactor-personal")
@@ -108,4 +126,5 @@
   (remove-console-intro-message! new-realm)
   (update-commands (juxt :bot :command) owner-command->new-props new-realm "command")
   (update-commands (juxt :command) console-requests->new-props new-realm "command-request")
-  (update-commands (juxt :command (comp count :prefill)) transactor-requests->new-props new-realm "command-request"))
+  (update-commands (juxt :command (comp count :prefill)) transactor-requests->new-props new-realm "command-request")
+  (update-message-statuses new-realm))

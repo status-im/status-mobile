@@ -44,10 +44,13 @@
     (sign-up db phone-number message-id)))
 
 (defn- message-seen [{:keys [db] :as fx} message-id]
-  (-> fx
-      (assoc-in [:db :chats const/console-chat-id :messages message-id :message-status] :seen)
-      (assoc :update-message {:message-id     message-id
-                              :message-status :seen})))
+  (let [statuses-path [:chats const/console-chat-id :messages message-id :user-statuses]
+        statuses      (-> (get-in db statuses-path)
+                          (assoc const/console-chat-id :seen))]
+    (-> fx
+        (assoc-in (into [:db] statuses-path) statuses)
+        (assoc :update-message {:message-id     message-id
+                                :user-statuses  statuses}))))
 
 (handlers/register-handler-fx
   :start-listening-confirmation-code-sms

@@ -79,9 +79,15 @@
           (dispatch [:prepare-command! chat-id params])))
       (dispatch [:set-chat-ui-props {:sending-in-progress? false}]))))
 
+(defn- message-type [{:keys [group-chat public?]}]
+  (cond
+    (and group-chat public?) :public-group-user-message
+    (and group-chat (not public?)) :group-user-message
+    :else :user-message))
+
 (register-handler :prepare-command!
   (u/side-effect!
-    (fn [{:keys [current-public-key network-status] :as db}
+    (fn [{:keys [current-public-key network-status chats] :as db}
          [_ add-to-chat-id {{:keys [handler-data
                                     command]
                              :as   content} :command
@@ -92,7 +98,8 @@
             hidden-params (->> (:params command)
                                (filter :hidden)
                                (map :name))
-            command'      (prepare-command current-public-key chat-id clock-value request content)]
+            command'      (-> (prepare-command current-public-key chat-id clock-value request content)
+                              (assoc :message-type (message-type (get chats chat-id))))]
         (dispatch [:update-message-overhead! chat-id network-status])
         (dispatch [:set-chat-ui-props {:sending-in-progress? false}])
         (dispatch [::send-command! add-to-chat-id (assoc params :command command') hidden-params])

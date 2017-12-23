@@ -17,13 +17,13 @@
                                            :indexed true}
                           :outgoing       :bool
                           :retry-count    {:type    :int
-                                           :default 0} 
+                                           :default 0}
                           :message-type   {:type     :string
                                            :optional true}
                           :message-status {:type     :string
                                            :optional true}
                           :user-statuses  {:type       :list
-                                           :objectType "user-status"}
+                                           :objectType :user-status}
                           :clock-value    {:type    :int
                                            :default 0}
                           :show?          {:type    :bool
