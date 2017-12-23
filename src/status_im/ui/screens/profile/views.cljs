@@ -17,8 +17,20 @@
             [status-im.ui.screens.profile.styles :as styles]
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]]
+            [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.icons.vector-icons :as vector-icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
+
+
+(defn check-random-bytes [length]
+      (.randomBytes rn-dependencies/random-bytes
+                    length
+                    (fn [& [err buf]]
+                        (if err
+                          (print "react-native-randombytes check error: " err)
+                          (print "react-native-randombytes check success")))))
+(print "Check react-native-randombytes:")
+(check-random-bytes 1024)
 
 (defn my-profile-toolbar []
   [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
@@ -205,7 +217,7 @@
        [my-profile-info {:phone "+44 7911 123456"
                          :public-key "0x04223458893...303a35c18c29caf"
                          :address "e6e248c8caac...d48395284bd23a"}]]]])
-    
+
     ;;[react/image {:source {:uri "https://origami.design/public/images/bird-logo.png" :width 64 :height 64}
     ;;    :style {:width 64 :height 64}]]]])     ;;  [bottom-shadow]]]])
      
