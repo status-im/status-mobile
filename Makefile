@@ -1,4 +1,4 @@
-.PHONY: react-native
+.PHONY: react-native test
 
 help: ##@other Show this help
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
@@ -31,7 +31,7 @@ prepare: ##@prepare Install dependencies and prepare workspace
 	npm install
 	./re-natal deps
 	./re-natal use-figwheel
-	lein re-frisk use-re-natal 
+	lein re-frisk use-re-natal
 	./re-natal enable-source-maps
 
 prepare-ios: prepare ##@prepare Install iOS specific dependencies
@@ -42,7 +42,7 @@ prepare-ios: prepare ##@prepare Install iOS specific dependencies
 #----------------
 release: release-android release-ios ##@build build release for Android and iOS
 
-release-android: prod-build ##@build build release for Android 
+release-android: prod-build ##@build build release for Android
 	react-native run-android --variant=release
 
 release-ios: prod-build ##@build build release for iOS release
@@ -95,6 +95,16 @@ run-android: ##@run Run Android build
 
 run-ios: ##@run Run iOS build
 	react-native run-ios
+
+#--------------
+# Tests
+#--------------
+
+test: ##@test Run tests once in NodeJS
+	lein with-profile test doo node test once
+
+test-auto: ##@test Run tests in interactive (auto) mode in NodeJS
+	lein with-profile test doo node test
 
 #--------------
 # Other
