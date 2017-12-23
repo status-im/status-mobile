@@ -1,7 +1,9 @@
 {
   "name": "StatusIm",
   "interface": "reagent",
-  "modules": [],
+  "modules": [
+    "react-native-randombytes"
+  ],
   "imageDirs": [
     "resources/images",
     "resources/icons"
