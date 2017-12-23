@@ -91,7 +91,7 @@
    :remove-from-contacts                  "Ta bort från kontakter"
    :start-conversation                    "Börja en konversation"
    :send-transaction                      "Sänd en transaktion"
-   :testnet-text                          "Du är på {{testnet}} Testnet. Sänd inte äkta ETH eller SNT till din address"
+   :testnet-text                          "Du är på {{testnet}} Testnet. Sänd inte riktiga ETH eller SNT till din address"
    :mainnet-text                          "Du är på Mainnet. Äkta ETH kommer att sändas"
 
    ;;make_photo
@@ -113,9 +113,9 @@
    :confirmation-code                     (str "Tack! Vi har skickat dig ett textmeddelande med en bekräftelse "
                                                "kod. Var god ange den koden för att bekräfta ditt telefonnummer")
    :incorrect-code                        (str "Tyvärr var koden felaktig, var god ange den igen")
-   :phew-here-is-your-passphrase          "*Pust* det var svårt, här är din lösenordsfras, *skriv ner det här och förvara det säkert!* Du kommer att behöva det för att återställa ditt konto."
-   :here-is-your-passphrase               "Här är din lösenordsfras, *skriv ner det här och förvara det säkert!* Du kommer att behöva det för att återställa ditt konto."
-   :here-is-your-signing-phrase           "Här är din underskriftsfras. Du kommer att använde den för att verifiera dina transaktioner. *Skriv ner det här och förvara det säkert!*"
+   :phew-here-is-your-passphrase          "*Pust* det var svårt, här är din lösenordsfras, *skriv ner den och förvara den säkert!* Du kommer att behöva den för att återställa ditt konto."
+   :here-is-your-passphrase               "Här är din lösenordsfras, *skriv ner den och förvara den säkert!* Du kommer att behöva den för att återställa ditt konto."
+   :here-is-your-signing-phrase           "Här är din underskriftsfras. Du kommer att använde den för att verifiera dina transaktioner. *Skriv ner den och förvara den säkert!*"
    :phone-number-required                 "Tryck här för att ange ditt telefonnummer så jag kommer att hitta dina vänner"
    :shake-your-phone                      "Hittade du ett fel eller har du ett förbättringsförslag? ~Skaka~ bara din telefon!"
    :intro-status                          "Chatta med mig för att konfigurera ditt konto och ändra dina inställningar!"
@@ -183,7 +183,7 @@
    :save                                  "Spara"
    :delete                                "Ta bort"
    :clear-history                         "Rensa historik"
-   :mute-notifications                    "Tysta anmälningar"
+   :mute-notifications                    "Tysta aviseringar"
    :leave-chat                            "Lämna chatt"
    :chat-settings                         "Chattinställningar"
    :edit                                  "Redigera"
@@ -321,7 +321,7 @@
    :transactions-sign-transaction         "Skriv under transaktionen"
    :transactions-sign-later               "Skriv under senare"
    :transactions-delete                   "Ta bort transaktion"
-   :transactions-delete-content           "Transaktionen tas bort från listan 'Ounderskrivna'"
+   :transactions-delete-content           "Transaktionen tas bort från listan 'Ej underskrivna'"
    :transactions-history                  "Historik"
    :transactions-unsigned                 "Ej underskrivna"
    :transactions-history-empty            "Inga transaktioner i din historik ännu"
