@@ -46,8 +46,8 @@
    :no-messages                           "Inga meddelanden"
    :suggestions-requests                  "Begäranden"
    :suggestions-commands                  "Kommandon"
-   :faucet-success                        "Kranbegäran mottagen"
-   :faucet-error                          "Felaktig kranbegäran"
+   :faucet-success                        "Faucet-begäran mottagen"
+   :faucet-error                          "Felaktig faucet-egäran"
 
    ;;sync
    :sync-in-progress                      "Synkroniserar..."
@@ -195,7 +195,7 @@
    ;;location command
    :your-current-location                 "Din nuvarande plats"
    :places-nearby                         "Närliggande platser"
-   :search-results                        "Sök resultat"
+   :search-results                        "Sökresultat"
    :dropped-pin                           "Droppade nål"
    :location                              "Plats"
    :open-map                              "Öppna kartan"
@@ -224,7 +224,7 @@
    :add-new-contact                       "Lägg till ny kontakt"
    :scan-qr                               "Skanna QR kod"
    :name                                  "Namn"
-   :address-explication                   "Din offentliga nykel används för att generera din address på Ethereum och är en serie siffror och bokstäver. Du kan hitta den lätt i din profil"
+   :address-explication                   "Din offentliga nykel används för att generera din address på Ethereum och är en serie siffror och bokstäver. Du kan lätt hitta den i din profil"
    :enter-valid-public-key                "Var vänlig och ange en giltig offentlig nyckel eller skanna en QR kod"
    :contact-already-added                 "Kontakten har redan lagts till"
    :can-not-add-yourself                  "Du kan inte lägga till dig själv"
@@ -258,7 +258,7 @@
    ;;transactions
    :confirm                               "Bekräfta"
    :transaction                           "Transaktion"
-   :unsigned-transaction-expired          "Ounderskriven transaktion förföll"
+   :unsigned-transaction-expired          "Ej underskriven transaktion förföll"
    :status                                "Status"
    :recipient                             "Mottagare"
    :to                                    "Till"
@@ -273,7 +273,7 @@
    :cost-fee                              "Kostnad/Avgift"
    :nonce                                 "Nonce"
    :confirmations                         "Bekräftelser"
-   :confirmations-helper-text             "Var god och vänta på åtminståne 12 bekräftelser för att försäkra dig att transaktionen behandlas säkert"
+   :confirmations-helper-text             "Var god och vänta på minst 12 bekräftelser för att försäkra dig om att transaktionen gått igenom"
    :copy-transaction-hash                 "Kopiera transaktionshash"
    :open-on-etherscan                     "Öppna på Etherscan.io"
    :incoming                              "Inkommande"
@@ -286,7 +286,7 @@
 
    ;;testfairy warning
    :testfairy-title                       "Varning!"
-   :testfairy-message                     "Du använder en app som installerats från en nattlig version. För att underlätta testning spelar denna version in sessionen om wifi används. All interaktion med appen sparas (som video och loggfiler) och kan användas av utväcklarna för att undersöka möjliga fel. Sparade video/loggfiler innehåller inte lösenord. Inspelningen sker endast om appen installeras från en nattlig version. Inget spelas in om appen installeras från PlayStore eller TestFlight."
+   :testfairy-message                     "Du använder en app som installerats från en nattlig version. För att underlätta testning spelar denna version in sessionen om WiFi används. All interaktion med appen sparas (som video och loggfiler) och kan användas av utvecklarna för att undersöka möjliga fel. Sparade video/loggfiler innehåller inte lösenord. Inspelningen sker endast om appen installeras från en nattlig version. Inget spelas in om appen installeras från PlayStore eller TestFlight."
 
    ;; wallet
    :wallet                                "Plånbok"
@@ -303,7 +303,7 @@
    :wallet-total-value                    "Totalt värde"
    :wallet-settings                       "Plånboksinställningar"
    :wallet-manage-assets                  "Hantera tillgångar"
-   :signing-phrase-description            "Skriv under transaktionen genom att ge ditt lösenord. Kontrollera att orden ovan motsvarar din hemliga underskriftsfras"
+   :signing-phrase-description            "Skriv under transaktionen genom att ange ditt lösenord. Kontrollera att orden ovan motsvarar din hemliga underskriftsfras"
    :wallet-insufficient-funds             "Otillräckligt kapital"
    :wallet-my-token                       "Mina {{symbol}}"
    :wallet-market-value                   "Marknadsvärde"
@@ -323,21 +323,21 @@
    :transactions-delete                   "Ta bort transaktion"
    :transactions-delete-content           "Transaktionen tas bort från listan 'Ounderskrivna'"
    :transactions-history                  "Historik"
-   :transactions-unsigned                 "Ounderskrivna"
-   :transactions-history-empty            "Inga transaktioner in din historik ännu"
-   :transactions-unsigned-empty           "Du har inga ounderskrivna transaktioner"
+   :transactions-unsigned                 "Ej underskrivna"
+   :transactions-history-empty            "Inga transaktioner i din historik ännu"
+   :transactions-unsigned-empty           "Du har inga ej underskrivna transaktioner"
    :transactions-filter-title             "Filtrera historik"
    :transactions-filter-tokens            "Tokens"
    :transactions-filter-type              "Typ"
    :transactions-filter-select-all        "Välj alla"
    :view-transaction-details              "Visa transaktionsdetaljer"
-   :transaction-description               "Var god och vänta på åtminståne 12 bekräftelser för att försäkra dig att transaktionen behandlas säkert"
-   :transaction-sent                      "Transaktionen sändes"
-   :transaction-moved-text                "Transaktionen kvarblir på listan 'Ounderskrivna' de nästa 5 minuterna"
+   :transaction-description               "Var god och vänta på minst 12 bekräftelser för att försäkra dig om att transaktionen gått igenom"
+   :transaction-sent                      "Transaktionen skickad"
+   :transaction-moved-text                "Transaktionen står kvar på listan 'Ej underskrivna' i 5 minuter"
    :transaction-moved-title               "Transaktionen flyttades"
    :sign-later-title                      "Skriv under transaktionen senare?"
    :sign-later-text                       "Kontrollera transaktionshistoriken för att skriva under denna transaktion"
-   :not-applicable                        "Inte tillämplig på ounderskrivna transaktioner"
+   :not-applicable                        "Otillämplig på ej underskrivna transaktioner"
 
    ;; Wallet Send
    :wallet-choose-recipient               "Välj mottagare"
@@ -346,8 +346,8 @@
    :wallet-invalid-address                "Ogiltig address: \n {{data}}"
    :wallet-invalid-chain-id               "Felaktigt nätverk: \n {{data}}"
    :wallet-browse-photos                  "Bläddra foton"
-   :validation-amount-invalid-number      "Summan är inte ett giltigt tal"
-   :validation-amount-is-too-precise      "Summan är för exakt. Den minsta summan du kan skicka är 1 Wei (1x10^-18 ETH)"
+   :validation-amount-invalid-number      "Beloppet är inte ett giltigt tal"
+   :validation-amount-is-too-precise      "Summan är för precis Den minsta summan du kan skicka är 1 Wei (1x10^-18 ETH)"
 
 
 
