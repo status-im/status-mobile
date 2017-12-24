@@ -30,6 +30,7 @@
 (reg-sub :signed-up? 
   :<- [:get-current-account]
   (fn [current-account]
+    (print "status-im.ui.screens.subs signed-up? call. current-account:"current-account)
     (:signed-up? current-account)))
 
 (reg-sub :tabs-hidden?
@@ -40,7 +41,8 @@
   (fn [[search-mode? chats-edit-mode? contacts-edit-mode? view-id]]
     (or search-mode?
         (and (= view-id :chat-list) chats-edit-mode?)
-        (and (= view-id :contact-list) contacts-edit-mode?))))
+        (and (= view-id :contact-list) contacts-edit-mode?))
+    (print "status-im.ui.screens.subs :tabs-hidden? call. view-id:"view-id)))
 
 (reg-sub :network
   (fn [db]

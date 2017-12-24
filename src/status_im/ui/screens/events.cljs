@@ -139,7 +139,7 @@
 
 (reg-fx
   ::initialize-crypt-fx
-  (fn []
+  (comment (fn []
     (crypt/gen-random-bytes
      1024
      (fn [{:keys [error buffer]}]
@@ -147,7 +147,7 @@
          (log/error "Failed to generate random bytes to initialize sjcl crypto")
          (->> (.toString buffer "hex")
               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-              (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
+              (.addEntropy (.. dependencies/eccjs -sjcl -random)))))))))
 
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
@@ -240,7 +240,8 @@
                          :network-status network-status
                          :status-module-initialized? (or platform/ios? js/goog.DEBUG status-module-initialized?)
                          :status-node-started? status-node-started?
-                         :network network)}))
+                         :network network)}
+    (print ":initialize-db call")))
 
 (register-handler-db
   :initialize-account-db
@@ -274,20 +275,21 @@
   :initialize-account
   (fn [_ [_ address events-after]]
     {:dispatch-n (cond-> [[:initialize-account-db address]
-                          [:load-processed-messages]
-                          [:initialize-protocol address]
-                          [:initialize-sync-listener]
-                          [:initialize-chats]
-                          [:load-contacts]
-                          [:load-contact-groups] 
-                          [:init-discoveries]
-                          [:initialize-debugging {:address address}]
-                          [:send-account-update-if-needed]
-                          [:start-requesting-discoveries]
-                          [:remove-old-discoveries!]
-                          [:update-wallet]
-                          [:update-transactions]
-                          [:get-fcm-token]]
+                          ;[:load-processed-messages]
+                          ;[:initialize-protocol address]
+                          ;[:initialize-sync-listener]
+                          ;[:initialize-chats]
+                          ;[:load-contacts]
+                          ;[:load-contact-groups]
+                          ;[:init-discoveries]
+                          ;[:initialize-debugging {:address address}]
+                          ;[:send-account-update-if-needed]
+                          ;[:start-requesting-discoveries]
+                          ;[:remove-old-discoveries!]
+                          ;[:update-wallet]
+                          ;[:update-transactions]
+                          ;[:get-fcm-token]]
+                          ]
                    (seq events-after)
                    (into events-after))}))
 
@@ -295,7 +297,7 @@
   :check-console-chat
   (fn [{{:accounts/keys [accounts] :as db} :db} [_ open-console?]]
     (let [view (if (empty? accounts)
-                 :chat
+                 :login
                  :accounts)]
       (merge
        {:db (assoc db

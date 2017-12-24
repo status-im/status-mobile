@@ -34,13 +34,13 @@
   (->interceptor
    :id check-spec
    :after
-   (fn check-handler
+   (comment (fn check-handler
      [context]
      (let [new-db (get-effect context :db)
            v (get-coeffect context :event)]
        (when (and new-db (not (spec/valid? :status-im.ui.screens.db/db new-db)))
          (throw (ex-info (str "spec check failed on: " (first v) "\n " (spec/explain-str :status-im.ui.screens.db/db new-db)) {})))
-       context))))
+       context)))))
 
 (defn register-handler
   ([name handler] (register-handler name nil handler))

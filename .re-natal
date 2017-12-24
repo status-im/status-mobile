@@ -2,7 +2,16 @@
   "name": "StatusIm",
   "interface": "reagent",
   "modules": [
-    "react-native-randombytes"
+    "react-native-randombytes",
+    "awesome-phonenumber",
+    "chance",
+    "homoglyph-finder",
+    "identicon.js",
+    "web3",
+    "eccjs",
+    "emojilib",
+    "realm",
+    "realm/react-native"
   ],
   "imageDirs": [
     "resources/images",

@@ -11,12 +11,14 @@
   (if (or (contains? #{:login} current-view)
           signed-up?)
     current-view
-    :profile))
+    current-view))
 
 (defview main []
-    (when true
-      (let [signed-up? true
-            view-id :profile
+   (letsubs [signed-up? [:signed-up?]
+             view-id [:get :view-id]
+             modal-view [:get :modal]]
+    (when view-id
+      (let [
             current-view (validate-current-view view-id signed-up?)]
         (let [component (case current-view
                           :login login
@@ -26,7 +28,7 @@
           [view common-styles/flex
            [component]]
           )
-        ))
+        )))
 
     )
 

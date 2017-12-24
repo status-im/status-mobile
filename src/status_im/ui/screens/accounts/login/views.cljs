@@ -40,15 +40,16 @@
     :t/unknown-status-go-error))
 
 (defview login []
-  (letsubs [{:keys [address photo-path name password error processing]}]
+  (letsubs [{:keys [address photo-path name password error processing]}  [:get :accounts/login]]
     [react/view ast/accounts-container
      ;;[status-bar {:type :transparent}]
      ;;[login-toolbar]
+     (print "status-im.ui.screens.accounts.login.views defview login call")
+     (print "address: "address" name:"name" photo-path:"photo-path)
      [react/view st/login-view
       [react/view st/login-badge-container
        [account-badge "Address Text" "test" "Name Text"]
-       [react/text
-        "Some text"]
+       [react/text "Some text"]
        [react/view {:height 8}]
        [text-input-with-label {:ref               #(reset! password-text-input %)
                                :label             (i18n/label :t/password)

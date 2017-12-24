@@ -22,7 +22,7 @@
 
 (defn save
   [contact update?]
-  (realm/save @realm/account-realm :contact contact update?))
+  (comment (realm/save @realm/account-realm :contact contact update?)))
 
 (defn delete
   [{:keys [whisper-identity]}]

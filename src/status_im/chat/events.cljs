@@ -155,17 +155,21 @@
 
 (defn init-console-chat
   [{:keys [chats] :accounts/keys [current-account-id] :as db}]
-  (if (chats const/console-chat-id)
+  (print "init-console-chat call. chats:"chats" db:"db)
+  (comment (if (chats const/console-chat-id)
     {:db db}
-    (cond-> {:db (-> db
-                     (assoc :current-chat-id const/console-chat-id)
-                     (update :chats assoc const/console-chat-id sign-up/console-chat))
-             :dispatch-n [[:add-contacts [sign-up/console-contact]]]
-             :save-chat sign-up/console-chat
-             :save-all-contacts [sign-up/console-contact]}
+    (comment (cond-> {:db (-> db
+                     ;(assoc :current-chat-id const/console-chat-id)
+                     ;(update :chats assoc const/console-chat-id sign-up/console-chat)
+                     )
+             ;:dispatch-n [[:add-contacts [sign-up/console-contact]]]
+             ;:save-chat sign-up/console-chat
+             ;:save-all-contacts [sign-up/console-contact]
+             }
 
-      (not current-account-id)
-      (update :dispatch-n concat sign-up/intro-events))))
+      ;(not current-account-id)
+      ;(update :dispatch-n concat sign-up/intro-events)
+            )))))
 
 (handlers/register-handler-fx
   :init-console-chat
