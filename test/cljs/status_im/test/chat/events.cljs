@@ -4,7 +4,7 @@
             [re-frame.core :as rf]
             [day8.re-frame.test :refer [run-test-sync]]
             [status-im.constants :as const]
-            [status-im.chat.sign-up :as sign-up]
+            [status-im.chat.console :as console-chat]
             [status-im.chat.events :as chat-events]))
 
 (def contact
@@ -16,7 +16,7 @@
 
 (deftest init-console-chat
   (testing "initialising console if console is already added to chats, should not modify anything"
-    (let [db {:chats {const/console-chat-id sign-up/console-chat}}
+    (let [db {:chats {const/console-chat-id console-chat/chat}}
           fx (chat-events/init-console-chat db)]
       (is (= db (:db fx)))
       (is (= #{:db} (-> fx keys set)))))
@@ -26,19 +26,15 @@
                     :accounts/current-account-id nil}
           {:keys [db dispatch-n]} (chat-events/init-console-chat fresh-db)]
       (is (= (:current-chat-id db)
-             (:chat-id sign-up/console-chat))) 
+             (:chat-id console-chat/chat)))
       (is (= (:current-chat-id db)
-             const/console-chat-id))
-      (is (= dispatch-n
-             [[:add-contacts [sign-up/console-contact]]
-              sign-up/intro-event]))))
+             const/console-chat-id))))
 
   (testing "initialising console with existing account and console chat not initialisated"
     (let [fresh-db {:chats {}
                     :accounts/current-account-id (:whisper-identity contact)}
           {:keys [db dispatch-n]} (chat-events/init-console-chat fresh-db)]
       (is (= (:current-chat-id db)
-             (:chat-id sign-up/console-chat))) 
+             (:chat-id console-chat/chat)))
       (is (= (:current-chat-id db)
-             const/console-chat-id))
-      (is (= dispatch-n [[:add-contacts [sign-up/console-contact]]])))))
+             const/console-chat-id)))))
