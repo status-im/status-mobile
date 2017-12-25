@@ -49,7 +49,7 @@
    :margin-top       16
    :border-radius    4
    :padding          16
-   :max-height       114})
+   :max-height       200})
 
 (def profile-badge
   {:flex-direction :row})
@@ -169,11 +169,9 @@
    :ios          {:font-size      17
                   :padding-bottom 0
                   :padding-top    0
-                  :height         74
                   :letter-spacing -0.2}
    :android      {:font-size           16
                   :padding-top         5
-                  :height              74
                   :text-align-vertical :top
                   :padding-bottom      0}})
 
@@ -187,14 +185,14 @@
 (defstyle edit-profile-status
   {:background-color   color-light-gray
    :border-radius      4
-   :height             104
+   :max-height         150
    :padding-horizontal 16
    :padding-bottom     16
    :margin-left        16
    :margin-right       16
-   :ios                {:padding-top 10
+   :ios                {:padding-top 16
                         :margin-top  10}
-   :android            {:padding-top 13
+   :android            {:padding-top 16
                         :margin-top  13}})
 
 (def add-a-status
