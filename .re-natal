@@ -11,7 +11,8 @@
     "eccjs",
     "emojilib",
     "realm",
-    "realm/react-native"
+    "realm/react-native",
+    "react-native-config"
   ],
   "imageDirs": [
     "resources/images",

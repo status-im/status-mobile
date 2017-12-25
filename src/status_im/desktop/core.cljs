@@ -6,6 +6,7 @@
             status-im.ui.screens.events
             status-im.ui.screens.subs
             status-im.data-store.core
+            [status-im.utils.config :as config]
             [status-im.ui.screens.views :as views]
             [status-im.ui.components.react :as react]
             [status-im.core :as core]))
@@ -20,4 +21,5 @@
 
 (defn init []
   (enable-console-print!)
+  (print "value of log-level from config: "config/log-level)
   (core/init app-root))
