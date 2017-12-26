@@ -18,6 +18,7 @@ allprojects {
         mavenLocal()
         jcenter()
         maven { url "$rootDir/../node_modules/react-native/android" }
+        maven { url "$rootDir/../modules/react-native-status/android/libs" }
         // for geth
         flatDir { dirs 'libs' }
         maven { url "http://139.162.11.12:8081/artifactory/libs-release-local" }

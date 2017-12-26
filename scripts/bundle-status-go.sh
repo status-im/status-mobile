@@ -1,46 +1,85 @@
 #!/usr/bin/env sh
 
-set -euf pipefail
+if [ -z $STATUS_GO_HOME ] ; then
+    echo "Please define STATUS_GO_HOME"
+    exit 1
+fi
+if [ -z $STATUS_REACT_HOME ] ; then
+    echo "Please define STATUS_REACT_HOME"
+    exit 1
+fi
+if [ $# -eq 0 ]; then
+    echo "Please specify platforms to bundle as discrete arguments (ios, android)"
+    exit 1
+fi
 
-# TODO Clean up with require STATUS_GO_HOME and STATUS_REACT_HOME
+set -euf
 
-echo "[Assumes status-go is in sibling directory]"
-echo "[Warning: iOS only for now]"
+for platform in "$@"; do
+    case $platform in
+    ios | android)
+        echo "Bundling $platform platform"
 
-cd ..
+        cd $STATUS_GO_HOME
+        ;;
+    *)
+        echo "Undefined platform $platform"
+        exit 1
+    esac
 
-# Build status-go artifact for iOS:
-(cd status-go && make statusgo-ios-simulator)
+    case $platform in
+    ios)
+        # Build status-go artifact for iOS:
+        make statusgo-ios-simulator
 
-# You should see iOS framework cross compilation done. This builds the following artifact:
-#
-# > (cd status-go && find . -iname "Statusgo.framework")
-# ./build/bin/statusgo-ios-9.3-framework/Statusgo.framework
-#
-# Normally this is installed by Maven via Artifactory in this step
-# mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
-#
-# Locally you can see it here:
-# > (cd status-react && find . -iname "Statusgo.framework")
-# ./modules/react-native-status/ios/RCTStatus/Statusgo.framework
-# ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/Statusgo.framework
-#
-# Instead we are going to manually overwrite it.
+        # You should see iOS framework cross compilation done. This builds the following artifact:
+        #
+        # > (cd status-go && find . -iname "Statusgo.framework")
+        # ./build/bin/statusgo-ios-9.3-framework/Statusgo.framework
+        #
+        # Normally this is installed by Maven via Artifactory in this step
+        # mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack
+        #
+        # Locally you can see it here:
+        # > (cd status-react && find . -iname "Statusgo.framework")
+        # ./modules/react-native-status/ios/RCTStatus/Statusgo.framework
+        # ./modules/react-native-status/ios/RCTStatus/Statusgo.framework/Statusgo.framework
+        #
+        # Instead we are going to manually overwrite it.
 
-# For Xcode to pick up the new version, remove the whole framework first:
-rm -r status-react/modules/react-native-status/ios/RCTStatus/Statusgo.framework/ || true
+        # For Xcode to pick up the new version, remove the whole framework first:
+        rm -r $STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus/Statusgo.framework/ || true
 
-# Then copy over framework:
-cp -R status-go/build/bin/statusgo-ios-9.3-framework/Statusgo.framework status-react/modules/react-native-status/ios/RCTStatus/Statusgo.framework
+        # Then copy over framework:
+        cp -R $STATUS_GO_HOME/build/bin/statusgo-ios-9.3-framework/Statusgo.framework $STATUS_REACT_HOME/modules/react-native-status/ios/RCTStatus/Statusgo.framework
 
-# In Xcode, clean and build. If you have any scripts to do this, make sure that
-# you don't accidentally run the mvn step to undo your manual install.
-#
+        # In Xcode, clean and build. If you have any scripts to do this, make sure that
+        # you don't accidentally run the mvn step to undo your manual install.
+        #
 
-# It might also be a good idea to print something custom so you can easily tell
-# the difference between an old and new version of status-go.
+        # It might also be a good idea to print something custom so you can easily tell
+        # the difference between an old and new version of status-go.
 
-cd -
+        cd -
 
-echo "[Done]"
-echo "[You can now build in Xcode]"
+        echo "[Done]"
+        echo "[You can now build in Xcode]"
+        ;;
+    android)
+        # Build status-go artifact for Android:
+        make statusgo-android
+
+        target=$STATUS_REACT_HOME/modules/react-native-status/android/libs/status-im/status-go/local
+        [ -d $target ] || mkdir -p $target
+        # Copy over framework:
+        cp -R $STATUS_GO_HOME/build/bin/statusgo-android-16.aar $target/status-go-local.aar
+
+        # It might also be a good idea to print something custom so you can easily tell
+        # the difference between an old and new version of status-go.
+
+        cd -
+
+        echo "[Done]"
+        ;;
+    esac
+done

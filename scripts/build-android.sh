@@ -24,7 +24,7 @@ case $TARGET in
     ;;
   prod)
     STORE_FILE=$(property_gradle 'STATUS_RELEASE_STORE_FILE')
-    [[ ! -e "${STORE_FILE/#\~/$HOME}" ]] && echo "Please generate keystore first using ./generate-kesytore.sh" && exit 0
+    [[ ! -e "${STORE_FILE/#\~/$HOME}" ]] && echo "Please generate keystore first using ./generate-keystore.sh" && exit 0
     lein do clean, with-profile prod cljsbuild once android && ./android/gradlew ${GRADLE_PROPERTIES} assembleRelease
     cecho "Generated @b@blueandroid/app/build/outputs/apk/app-release.apk"
     echo

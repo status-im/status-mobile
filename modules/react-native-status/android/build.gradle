@@ -17,5 +17,16 @@ dependencies {
     compile 'com.instabug.library:instabug:3+'
     compile 'com.github.ericwlange:AndroidJSCore:3.0.1'
     compile 'status-im:function:0.0.1'
-    compile(group: 'status-im', name: 'status-go', version: 'develop-gb7fb51d9', ext: 'aar')
+
+    String statusGoVersion = 'develop-gb7fb51d9'
+    final String statusGoGroup = 'status-im', statusGoName = 'status-go'
+
+    // Check if the local status-go jar exists, and compile against that if it does
+    final String localStatusLibOutputDir = "${rootDir}/../modules/react-native-status/android/libs", localVersion = 'local'
+    if ( new File("${localStatusLibOutputDir}/${statusGoGroup}/${statusGoName}/${localVersion}/${statusGoName}-${localVersion}.aar").exists() ) {
+        // Use the local version
+        statusGoVersion = localVersion
+    }
+
+    compile(group: statusGoGroup, name: statusGoName, version: statusGoVersion, ext: 'aar')
 }
