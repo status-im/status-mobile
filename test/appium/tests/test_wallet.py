@@ -118,7 +118,7 @@ class TestWallet(SingleDeviceTestCase):
                                       transaction_hash=transaction_hash)
 
     @pytest.mark.wallet
-    def test_balance_and_eth_rate(self):
+    def test_eth_and_currency_balance(self):
         errors = list()
         home = HomeView(self.driver)
         recover_access(home,
@@ -128,10 +128,10 @@ class TestWallet(SingleDeviceTestCase):
         chats = home.get_chats()
         address = transaction_users_wallet['A_USER']['address']
         balance = get_balance(address) / 1000000000000000000
-        eth_rate = get_ethereum_price_in_usd()
         wallet = chats.wallet_button.click()
+        eth_rate = get_ethereum_price_in_usd()
         wallet_balance = wallet.get_eth_value()
         if wallet_balance != balance:
             errors.append('Balance %s is not equal to the expected %s' % (wallet_balance, balance))
-        wallet.verify_eth_rate(eth_rate, errors)
+        wallet.verify_currency_balance(eth_rate, errors)
         assert not errors, 'errors occurred:\n{}'.format('\n'.join(errors))
