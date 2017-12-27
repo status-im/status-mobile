@@ -89,10 +89,10 @@ class WalletViewObject(BaseViewObject):
     def get_eth_value(self):
         return float(self.eth_asset.text)
 
-    def verify_eth_rate(self, expected_rate: int, errors: list):
+    def verify_currency_balance(self, expected_rate: int, errors: list):
         usd = self.get_usd_total_value()
         eth = self.get_eth_value()
-        current_rate = usd / eth
-        if round(current_rate, 2) != expected_rate:
-            errors.append('Current ETH rate %s is not equal to the expected %s' % (current_rate, expected_rate))
-        logging.info('Current ETH rate %s is ok' % current_rate)
+        expected_usd = round(eth * expected_rate, 2)
+        if expected_usd != usd:
+            errors.append('Current USD balance %s is not equal to the expected %s' % (usd, expected_usd))
+        logging.info('Current USD balance %s is ok' % usd)
