@@ -22,16 +22,6 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 
-(defn check-random-bytes [length]
-      (.randomBytes rn-dependencies/random-bytes
-                    length
-                    (fn [& [err buf]]
-                        (if err
-                          (print "react-native-randombytes check error: " err)
-                          (print "react-native-randombytes check success")))))
-(print "Check react-native-randombytes:")
-(check-random-bytes 1024)
-
 (defn my-profile-toolbar []
   [toolbar/toolbar {:actions [(actions/opts [{:value #(dispatch [:my-profile/edit-profile])
                                               :text  "Edit"}])]}])
