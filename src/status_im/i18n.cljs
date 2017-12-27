@@ -354,6 +354,9 @@
 
 (def default-option-value "<no value>")
 
+(def locale
+  (.-locale rn-dependencies/i18n))
+
 (defn label-options [options]
   ;; i18n ignores nil value, leading to misleading messages
   (into {} (for [[k v] options] [k (or v default-option-value)])))
@@ -371,15 +374,28 @@
     (.p rn-dependencies/i18n count (name path) (clj->js options))
     (name path)))
 
+(defn lookup [scope]
+  (.lookup rn-dependencies/i18n scope))
+
+(defn localize
+  ([scope value] (localize scope value {}))
+  ([scope value options]
+   (let [l #(.l rn-dependencies/i18n scope value (clj->js options))]
+     (case scope
+       ("currency" "number" "percentage") (l)
+       (if (lookup scope) ; lookup date/time format in locale, fallback to "en"
+         (l)
+         (.strftime rn-dependencies/i18n value
+                    (get-in en/translations
+                            (map keyword
+                                 (str/split scope (.-defaultSeparator rn-dependencies/i18n))))))))))
+
 (defn message-status-label [status]
   (->> status
        (name)
        (str "t/status-")
        (keyword)
        (label)))
-
-(def locale
-  (.-locale rn-dependencies/i18n))
 
 (defn get-contact-translated [contact-id key fallback]
   (let [translation #(get-in default-contacts [(keyword contact-id) key (keyword %)])]

@@ -76,6 +76,19 @@
    :datetime-yesterday                    "yesterday"
    :datetime-today                        "today"
 
+   :date                                  {:formats {:default "%d/%m/%Y"
+                                                     :short   "%d %b"
+                                                     :long    "%A, %d %B %Y"}
+                                            :day-names        ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+                                            :abbr-day-names   ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+                                            :month-names      [nil, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+                                            :abbr-month-names [nil, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]}
+   :time                                  {:formats {:default "%A, %d %B %Y, %I:%M %p"
+                                                     :short "%d %b, %I:%M %p"
+                                                     :long "%A, %d %B %Y, %I:%M %p"}
+                                           :am "am"
+                                           :pm "pm"}
+
    ;;profile
    :profile                               "Profile"
    :edit-profile                          "Edit profile"
