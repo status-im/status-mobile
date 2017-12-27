@@ -166,57 +166,6 @@
                       (fn [res]
                         (dispatch [:command-handler! chat-id orig-params res])))})))))
 
-(register-handler :prepare-message
-  (u/side-effect!
-    (fn [{:keys [network-status] :as db} [_ {:keys [chat-id identity message] :as params}]]
-      (let [{:keys [group-chat public?]} (get-in db [:chats chat-id])
-            clock-value (messages/get-last-clock-value chat-id)
-            message'    {:message-id   (random/id)
-                         :chat-id      chat-id
-                         :content      message
-                         :from         identity
-                         :content-type text-content-type
-                         :outgoing     true
-                         :timestamp    (datetime/now-ms)
-                         :clock-value  (clocks/send clock-value)
-                         :show?        true}
-            message''   (cond-> message'
-                                (and group-chat public?)
-                                (assoc :group-id chat-id :message-type :public-group-user-message)
-                                (and group-chat (not public?))
-                                (assoc :group-id chat-id :message-type :group-user-message)
-                                (not group-chat)
-                                (assoc :to chat-id :message-type :user-message))
-            params'     (assoc params :message message'')]
-        (dispatch [:update-message-overhead! chat-id network-status])
-        (dispatch [::add-message params'])
-        (dispatch [::save-message! params'])))))
-
-(register-handler ::add-message
-  (fn [db [_ {:keys [chat-id message]}]]
-    (cu/add-message-to-db db chat-id chat-id message)))
-
-(register-handler
-  ::save-message!
-  (after (fn [_ [_ params]]
-           (dispatch [::send-message! params])))
-  (u/side-effect!
-    (fn [_ [_ {:keys [chat-id message]}]]
-      (dispatch [:upsert-chat! {:chat-id chat-id}])
-      (messages/save message))))
-
-(register-handler
-  ::send-dapp-message
-  (u/side-effect!
-    (fn [{:accounts/keys [current-account-id] :as db} [_ chat-id {:keys [content]}]]
-      (let [data (get-in db [:local-storage chat-id])]
-        (status/call-function!
-          {:chat-id chat-id
-           :function :on-message-send
-           :parameters {:message content}
-           :context {:data data
-                     :from current-account-id}})))))
-
 (register-handler
   :received-bot-response
   (u/side-effect!
@@ -286,53 +235,6 @@
         (dispatch [:suggestions-handler
                    {:result  result
                     :chat-id chat-id}])))))
-
-(defn send-notification [fcm-token message]
-  (if (and fcm-token config/notifications-wip-enabled?)
-    (do (log/debug "send-notification fcm-token: " fcm-token)
-        (log/debug "send-notification message: " message)
-        (status/notify fcm-token (fn [res]
-                                   (log/debug "send-notification cb result: " res))))
-    (log/debug "send-notification message not sending because fcm-token is unavailable or notification flag is off")))
-
-(register-handler ::send-message!
-  (u/side-effect!
-    (fn [{:keys [web3 chats network-status]
-          :accounts/keys [accounts current-account-id]
-          :contacts/keys [contacts]
-          :as   db} [_ {{:keys [message-type]
-                         :as   message} :message
-                        chat-id         :chat-id}]]
-      (let [{:keys [dapp? fcm-token]} (get contacts chat-id)]
-        (if dapp?
-          (dispatch [::send-dapp-message chat-id message])
-          (when message
-            (let [message' (select-keys message [:from :message-id])
-                  payload  (select-keys message [:timestamp :content :content-type
-                                                 :clock-value :show?])
-                  payload  (if (= network-status :offline)
-                             (assoc payload :show? false)
-                             payload)
-                  options  {:web3    web3
-                            :message (assoc message' :payload payload)}]
-              (cond
-                (= message-type :group-user-message)
-                (let [{:keys [public-key private-key]} (chats chat-id)]
-                  (protocol/send-group-message! (assoc options
-                                                  :group-id chat-id
-                                                  :keypair {:public  public-key
-                                                            :private private-key})))
-
-                (= message-type :public-group-user-message)
-                (protocol/send-public-group-message!
-                  (let [username (get-in accounts [current-account-id :name])]
-                    (assoc options :group-id chat-id
-                                   :username username)))
-
-                :else
-                (do (protocol/send-message! (assoc-in options
-                                                      [:message :to] (:to message)))
-                    (send-notification fcm-token (:message options)))))))))))
 
 (register-handler ::send-command-protocol!
   (u/side-effect!

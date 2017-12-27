@@ -8,6 +8,7 @@
             [status-im.chat.models.input :as input-model]
             [status-im.chat.events.commands :as commands-events]
             [status-im.chat.events.animation :as animation-events]
+            [status-im.chat.events.send-message :as send-message-events]
             [status-im.bots.events :as bots-events]
             [status-im.ui.components.react :as react-comp]
             [status-im.utils.datetime :as time]
@@ -440,8 +441,11 @@
 
 (handlers/register-handler-fx
   :send-current-message
-  [(re-frame/inject-cofx :random-id)]
-  (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now} _]
+  [(re-frame/inject-cofx :random-id)
+   (re-frame/inject-cofx :get-last-clock-value)
+   (re-frame/inject-cofx :get-stored-chat)]
+  (fn [{{:keys [current-chat-id current-public-key] :as db} :db message-id :random-id current-time :now
+        :as cofx} _]
     (let [input-text   (get-in db [:chats current-chat-id :input-text])
           chat-command (-> (input-model/selected-chat-command db)
                            (as-> selected-command
@@ -464,14 +468,13 @@
         ;; no command detected, when not empty, proceed by sending text message without command processing
         (if (str/blank? input-text)
           {:db db}
-          {:db (-> db
-                   (set-chat-input-metadata nil)
-                   (set-chat-input-text nil))
-           ;; TODO: refactor send-message.cljs to use atomic pure handlers and get rid of this dispatch
-           :dispatch [:prepare-message {:message  input-text
-                                        :chat-id  current-chat-id
-                                        :identity current-public-key
-                                        :address  (:accounts/current-account-id db)}]})))))
+          (send-message-events/prepare-message (assoc cofx :db (-> db
+                                                                   (set-chat-input-metadata nil)
+                                                                   (set-chat-input-text nil)))
+                                               {:message-text  input-text
+                                                :chat-id       current-chat-id
+                                                :identity      current-public-key
+                                                :address       (:accounts/current-account-id db)}))))))
 
 ;; TODO: remove this handler and leave only helper fn once all invocations are refactored
 (handlers/register-handler-db
