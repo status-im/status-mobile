@@ -197,9 +197,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             jsonConfig.put("KeyStoreDir", newKeystoreDir);
             String gethLogPath = dataFolder + "/" + gethLogFileName;
             File logFile = new File(gethLogPath);
-            if (logFile.exists()) {
-                logFile.delete();
-            }
             try {
                 logFile.setReadable(true);
                 File parent = logFile.getParentFile();
