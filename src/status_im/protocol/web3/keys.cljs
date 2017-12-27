@@ -1,4 +1,5 @@
-(ns status-im.protocol.web3.keys)
+(ns status-im.protocol.web3.keys
+  (:require [taoensso.timbre :as log]))
 
 (def status-key-password "status-key-password")
 (def status-group-key-password "status-public-group-key-password")
@@ -13,14 +14,20 @@
 
 (defn get-sym-key
   "Memoizes expensive calls by password."
-  [web3 password callback]
-  (if-let [key-id (get @password->keys password)]
-    (callback key-id)
-    (add-sym-key-from-password
+  ([web3 password success-fn]
+   ;; TODO:(dmitryn) add proper error handling
+   ;; to other usages of get-sym-key fn
+   (get-sym-key web3 password success-fn #(log/error %)))
+  ([web3 password success-fn error-fn]
+   (if-let [key-id (get @password->keys password)]
+     (success-fn key-id)
+     (add-sym-key-from-password
       web3 password
       (fn [err res]
-        (swap! password->keys assoc password res)
-        (callback res)))))
+        (if err
+          (error-fn err)
+          (do (swap! password->keys assoc password res)
+              (success-fn res))))))))
 
 (defn reset-keys! []
   (reset! password->keys {}))

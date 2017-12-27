@@ -100,10 +100,7 @@
              :allowP2P true
              :topics   [f/status-topic]}
             (l/message-listener listener-options))
-          (inbox/request-messages!
-           web3
-           {:enode inbox/cluster-enode}
-           #(log/info "offline inbox: request-messages response" %)))
+          (inbox/initialize! web3))
       (f/add-filter!
         web3
         {:key    identity

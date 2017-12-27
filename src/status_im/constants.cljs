@@ -87,6 +87,10 @@
 
 (def default-wnodes [default-wnode])
 
+;; TODO(oskarth): Determine if this is the correct topic or not
+(def inbox-topic "0xaabb11ee")
+(def inbox-password "status-offline-inbox")
+
 (def ^:const send-transaction-no-error-code        "0")
 (def ^:const send-transaction-default-error-code   "1")
 (def ^:const send-transaction-password-error-code  "2")

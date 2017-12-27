@@ -12,6 +12,8 @@
             [status-im.utils.random :as random]
             [status-im.protocol.message-cache :as cache]
             [status-im.chat.utils :as chat.utils]
+            [status-im.protocol.web3.inbox :as inbox]
+            [status-im.protocol.web3.keys :as web3.keys]
             [status-im.utils.datetime :as datetime]
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.native-module.core :as status]
@@ -214,8 +216,103 @@
       (cache/init! messages)
       (processed-messages/delete (str "ttl <=" now)))))
 
+(re-frame/reg-fx
+ ::add-peer
+ (fn [{:keys [wnode web3]}]
+   (inbox/add-peer wnode
+                   #(re-frame/dispatch [::add-peer-success web3 %])
+                   #(re-frame/dispatch [::add-peer-error %]))))
+
+(re-frame/reg-fx
+ ::mark-trusted-peer
+ (fn [{:keys [wnode web3]}]
+   (inbox/mark-trusted-peer wnode
+                            #(re-frame/dispatch [::mark-trusted-peer-success web3 %])
+                            #(re-frame/dispatch [::mark-trusted-peer-error %]))))
+
+(re-frame/reg-fx
+ ::get-sym-key
+ (fn [{:keys [web3 password]}]
+   (web3.keys/get-sym-key web3
+                     password
+                     #(re-frame/dispatch [::get-sym-key-success web3 %])
+                     #(re-frame/dispatch [::get-sym-key-error %]))))
+
+(re-frame/reg-fx
+ ::request-messages
+ (fn [{:keys [wnode topic sym-key-id]}]
+   (inbox/request-messages wnode
+                           topic
+                           sym-key-id
+                           #(re-frame/dispatch [::request-messages-success %])
+                           #(re-frame/dispatch [::request-messages-error %]))))
 
 ;;;; Handlers
+
+;; NOTE(dmitryn): events chain
+;; add-peeer -> mark-trusted-peer -> get-sym-key -> request-messages
+(handlers/register-handler-fx
+ :initialize-offline-inbox
+ (fn [{:keys [db]} [_ web3]]
+   (log/info "offline inbox: initialize")
+   (let [wnode (get-in db [:inbox/wnode :address])]
+     {::add-peer {:wnode wnode
+                  :web3  web3}})))
+
+(handlers/register-handler-fx
+ ::add-peer-success
+ (fn [{:keys [db]} [_ web3 response]]
+   (let [wnode (get-in db [:inbox/wnode :address])]
+     (log/info "offline inbox: add-peer response" wnode response)
+     {::mark-trusted-peer {:wnode wnode
+                           :web3  web3}})))
+
+(handlers/register-handler-fx
+ ::mark-trusted-peer-success
+ (fn [{:keys [db]} [_ web3 response]]
+   (let [wnode    (get-in db [:inbox/wnode :address])
+         password (:inbox/password db)]
+     (log/info "offline inbox: mark-trusted-peer response" wnode response)
+     {::get-sym-key {:password password
+                     :web3     web3}})))
+
+
+
+(handlers/register-handler-fx
+ ::get-sym-key-success
+ (fn [{:keys [db]} [_ web3 sym-key-id]]
+   (log/info "offline inbox: get-sym-key response" sym-key-id)
+   (let [wnode (get-in db [:inbox/wnode :address])
+         topic (:inbox/topic db)]
+     {::request-messages {:wnode      wnode
+                          :topic      topic
+                          :sym-key-id sym-key-id
+                          :web3       web3}})))
+
+(handlers/register-handler-fx
+ ::request-messages-success
+ (fn [_ [_ response]]
+   (log/info "offline inbox: request-messages response" response)))
+
+(handlers/register-handler-fx
+ ::add-peer-error
+ (fn [_ [_ error]]
+   (log/error "offline inbox: add-peer error" error)))
+
+(handlers/register-handler-fx
+ ::mark-trusted-peer-error
+ (fn [_ [_ error]]
+   (log/error "offline inbox: mark-trusted-peer error" error)))
+
+(handlers/register-handler-fx
+ ::get-sym-key-error
+ (fn [_ [_ error]]
+   (log/error "offline inbox: get-sym-key error" error)))
+
+(handlers/register-handler-fx
+ ::request-messages-error
+ (fn [_ [_ error]]
+   (log/error "offline inbox: request-messages error" error)))
 
 
 ;;; INITIALIZE PROTOCOL
