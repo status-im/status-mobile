@@ -93,6 +93,7 @@ class WalletViewObject(BaseViewObject):
         usd = self.get_usd_total_value()
         eth = self.get_eth_value()
         expected_usd = round(eth * expected_rate, 2)
-        if expected_usd != usd:
-            errors.append('Current USD balance %s is not equal to the expected %s' % (usd, expected_usd))
+        percentage_diff = abs((usd - expected_usd) / ((usd + expected_usd) / 2)) * 100
+        if percentage_diff > 2:
+            errors.append('Difference between current (%s) and expected (%s) USD balance > 2%%!!' % (usd, expected_usd))
         logging.info('Current USD balance %s is ok' % usd)
