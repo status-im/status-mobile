@@ -3,6 +3,7 @@
   "interface": "reagent",
   "modules": [
     "react-native-randombytes",
+    "react-native-i18n",
     "awesome-phonenumber",
     "chance",
     "homoglyph-finder",
