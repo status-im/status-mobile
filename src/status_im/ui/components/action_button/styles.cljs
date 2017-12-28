@@ -13,6 +13,7 @@
    :flex-direction :row
    :align-items    :center
    :ios            {:height 63}
+   :desktop        {:height 63}
    :android        {:height 56}})
 
 (defnstyle action-button-icon-container [cyrcle-color]
@@ -21,13 +22,18 @@
    :height           40
    :align-items      :center
    :justify-content  :center
-   :ios              {:background-color (or cyrcle-color color-light-blue-transparent)}})
+   :ios              {:background-color (or cyrcle-color color-light-blue-transparent)}
+   :desktop          {:background-color (or cyrcle-color color-light-blue-transparent)}})
 
 (def action-button-label-container
   {:padding-left 16})
 
 (defstyle action-button-label
   {:ios     {:color          color-light-blue
+             :letter-spacing -0.2
+             :font-size      17
+             :line-height    20}
+   :desktop {:color          color-light-blue
              :letter-spacing -0.2
              :font-size      17
              :line-height    20}
@@ -50,5 +56,6 @@
    :height           40
    :align-items      :center
    :justify-content  :center
-   :ios              {:background-color color-light-gray}})
+   :ios              {:background-color color-light-gray}
+   :desktop          {:background-color color-light-gray}})
 
