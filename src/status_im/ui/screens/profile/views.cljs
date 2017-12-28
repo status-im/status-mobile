@@ -200,8 +200,10 @@
      [profile-status]]
     [common/form-spacer]
     [react/view styles/profile-badge
-          (vi/icon :icons/qr)
-    [action-button {:label "Show QR"}]]
+    [action-button {:icon :icons/qr
+                    :icon-opts {:style {:tintColor color-blue}}
+                    :label "Show QR"
+                    :on-press #(print "Show QR pressed")}]]
     [common/form-spacer]
     [react/view styles/profile-info-container
        [my-profile-info {:phone "+44 7911 123456"

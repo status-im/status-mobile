@@ -297,7 +297,7 @@
   :check-console-chat
   (fn [{{:accounts/keys [accounts] :as db} :db} [_ open-console?]]
     (let [view (if (empty? accounts)
-                 :login
+                 :profile
                  :accounts)]
       (merge
        {:db (assoc db
