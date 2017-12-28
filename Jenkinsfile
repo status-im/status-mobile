@@ -15,11 +15,8 @@ node ('macos1') {
     stage('Git & Dependencies') {
       slackSend color: 'good', message: BRANCH_NAME + ' build started. ' + env.BUILD_URL
 
-      git([url: 'https://github.com/status-im/status-react.git', branch: BRANCH_NAME])
-
-      sh 'git checkout -- .'
-      sh 'git checkout develop'
-      sh 'git checkout ' + BRANCH_NAME
+      checkout scm
+      
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
       sh 'lein deps && npm install && ./node_modules/re-natal/index.js deps'
