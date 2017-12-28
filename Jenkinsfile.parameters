@@ -39,7 +39,7 @@ node ('macos1') {
       sh 'cat .env'
       sh 'echo "**********************************************************************"'
 
-      sh 'lein deps && npm install && ./re-natal deps'
+      sh 'lein deps && npm install'
       // Uncomment with RN merge
       sh '[ -f node_modules/react-native/packager/src/JSTransformer/index.js ] && sed -i "" "s/301000/1201000/g" node_modules/react-native/packager/src/JSTransformer/index.js || echo "New packager"'
       // sh 'sed -i "" "s/301000/1201000/g" node_modules/react-native/packager/src/JSTransformer/index.js'
