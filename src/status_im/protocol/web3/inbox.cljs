@@ -3,7 +3,8 @@
             [taoensso.timbre :as log]
             [re-frame.core :as re-frame]
             [clojure.string :as string]
-            [status-im.protocol.web3.keys :as keys]))
+            [status-im.protocol.web3.keys :as keys]
+            [status-im.protocol.web3.utils :as utils]))
 
 (def peers (atom #{}))
 (def trusted-peers (atom #{}))
@@ -12,20 +13,28 @@
 ;; {"error": "msg"} or {"result": true}
 (defn- parse-json [s]
   (try
-    (-> s
-        js/JSON.parse
-        (js->clj :keywordize-keys true))
+    (let [res (-> s
+                  js/JSON.parse
+                  (js->clj :keywordize-keys true))]
+      ;; NOTE(dmitryn): AddPeer() may return {"error": ""}
+      ;; assuming empty error is a success response
+      ;; by transforming {"error": ""} to {:result true}
+      (if (and (:error res)
+               (= (:error res) ""))
+        {:result true}
+        res))
     (catch :default e
       {:error (.-message e)})))
 
 (defn- response-handler [error-fn success-fn]
-  (fn [response]
-    (let [{:keys [error result]} (parse-json response)]
-      ;; NOTE(dmitryn): AddPeer() may return {"error": ""}
-      ;; assuming empty error is a success response
-      (if (seq error)
-        (error-fn error)
-        (success-fn result)))))
+  (fn handle-response
+    ([response]
+     (let [{:keys [error result]} (parse-json response)]
+       (handle-response error result)))
+    ([error result]
+     (if error
+       (error-fn error)
+       (success-fn result)))))
 
 (defn add-peer [enode success-fn error-fn]
   (if (@peers enode)
@@ -49,27 +58,15 @@
                                                      (swap! trusted-peers conj enode)
                                                      (success-fn result)))))))
 
-;; TODO(oskarth): Use web3 binding instead of raw RPC above, pending binding and deps:
-;; (.requestMessages (utils/shh web3)
-;;                   (clj->js opts)
-;;                   callback
-;;                   #(log/warn :request-messages-error
-;;                             (.stringify js/JSON (clj->js opts)) %))
-(defn request-messages [wnode topic sym-key-id success-fn error-fn]
+(defn request-messages [web3 wnode topic sym-key-id success-fn error-fn]
   (log/info "offline inbox: sym-key-id" sym-key-id)
-  (let [args {:jsonrpc "2.0"
-              :id      2
-              :method  "shh_requestMessages"
-              ;; NOTE: "from" and "to" parameters omitted here
-              ;; by default "from" is 24 hours ago and "to" is time now
-              :params  [{:mailServerPeer wnode
-                         :topic          topic
-                         :symKeyID       sym-key-id}]}
-        payload (.stringify js/JSON (clj->js args))]
+  (let [opts {:mailServerPeer wnode
+              :topic          topic
+              :symKeyID       sym-key-id}]
     (log/info "offline inbox: request-messages request")
-    (log/info "offline inbox: request-messages args" (pr-str args))
-    (log/info "offline inbox: request-messages payload" (pr-str payload))
-    (status/call-web3 payload
+    (log/info "offline inbox: request-messages args" (pr-str opts))
+    (.requestMessages (utils/shh web3)
+                      (clj->js opts)
                       (response-handler error-fn success-fn))))
 
 (defn initialize! [web3]

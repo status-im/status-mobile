@@ -240,8 +240,9 @@
 
 (re-frame/reg-fx
  ::request-messages
- (fn [{:keys [wnode topic sym-key-id]}]
-   (inbox/request-messages wnode
+ (fn [{:keys [wnode topic sym-key-id web3]}]
+   (inbox/request-messages web3
+                           wnode
                            topic
                            sym-key-id
                            #(re-frame/dispatch [::request-messages-success %])
