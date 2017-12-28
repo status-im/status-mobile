@@ -141,21 +141,24 @@ function install_maven() {
   apt_install maven
 }
 
-function install_react_native_cli() {
+function install_global_npm_package() {
+  local package=$1
+
   cd "$(repo_path)"
 
-  local npm_command="npm"
-
-  if is_linux && ! nvm_installed; then
-    # aptitude version of node requires sudo for global install
-    npm_command="sudo npm"
-  fi
-
-  if npm list -g | grep -q react-native-cli; then
-    already_installed "react-native-cli"
+  if npm list -g | grep -q "$package"; then
+    already_installed "$package"
   else
-    $npm_command install -g react-native-cli
+    npm install -g "$package"
   fi
+}
+
+function install_node_gyp() {
+  install_global_npm_package "node-gyp"
+}
+
+function install_react_native_cli() {
+  install_global_npm_package "react-native-cli"
 }
 
 function install_node_via_nvm() {
