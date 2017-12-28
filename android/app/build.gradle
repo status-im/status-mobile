@@ -117,7 +117,7 @@ def getVersionName = { ->
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId "im.status.ethereum"
@@ -189,7 +189,7 @@ android {
 dependencies {
     compile project(':react-native-svg')
     compile project(':react-native-mapbox-gl')
-    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:multidex:1.0.2'
     compile project(':react-native-http-bridge')
     compile project(':nfc-react-native')
     compile project(':instabug-reactnative')
