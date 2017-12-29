@@ -276,10 +276,10 @@
   :initialize-account
   (fn [_ [_ address events-after]]
     {:dispatch-n (cond-> [[:initialize-account-db address]
-                          ;[:load-processed-messages]
-                          ;[:initialize-protocol address]
+                          [:load-processed-messages]
+                          [:initialize-protocol address]
                           ;[:initialize-sync-listener]
-                          ;[:initialize-chats]
+                          [:initialize-chats]
                           ;[:load-contacts]
                           ;[:load-contact-groups]
                           ;[:init-discoveries]
@@ -298,7 +298,7 @@
   :check-console-chat
   (fn [{{:accounts/keys [accounts] :as db} :db} [_ open-console?]]
     (let [view (if (empty? accounts)
-                 :profile
+                 :chat
                  :accounts)]
       (merge
        {:db (assoc db
