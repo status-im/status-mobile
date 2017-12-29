@@ -12,7 +12,9 @@
     "eccjs",
     "emojilib",
     "realm",
-    "realm/react-native"
+    "realm/react-native",
+    "react-native-config",
+    "react-native-linear-gradient"
   ],
   "imageDirs": [
     "resources/images",

@@ -3,12 +3,17 @@
   (:require [re-frame.core :refer [dispatch]]
             [status-im.ui.components.react :refer [view modal]]
             [status-im.ui.components.styles :as common-styles]
+
+            [status-im.chat.screen :refer [chat]]
+            [status-im.chat.new-chat.view :refer [new-chat]]
+            [status-im.chat.new-public-chat.view :refer [new-public-chat]]
+
             [status-im.ui.screens.accounts.login.views :refer [login]]
             [status-im.ui.screens.profile.views :refer [profile]]))
 
 (defn validate-current-view
   [current-view signed-up?]
-  (if (or (contains? #{:login} current-view)
+  (if (or (contains? #{:login :chat} current-view)
           signed-up?)
     current-view
     current-view))
@@ -23,6 +28,9 @@
         (let [component (case current-view
                           :login login
                           :profile profile
+                          :new-chat new-chat
+                          :new-public-chat new-public-chat
+                          :chat chat
                           (throw (str "Unknown view: " current-view))
                           )]
           [view common-styles/flex

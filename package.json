@@ -11,7 +11,9 @@
   },
   "desktopExternalModules": [
     "node_modules/react-native-randombytes",
-    "node_modules/react-native-i18n/desktop"
+    "node_modules/react-native-i18n/desktop",
+    "node_modules/react-native-config/desktop",
+    "node_modules/react-native-linear-gradient/desktop"
   ],
   "dependencies": {
     "assert": "1.4.1",
@@ -55,7 +57,7 @@
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-autolink": "1.1.1",
     "react-native-camera": "0.10.0",
-    "react-native-config": "0.9.0",
+    "react-native-config": "git+https://github.com/status-im/react-native-config.git",
     "react-native-contacts": "1.0.3",
     "react-native-crypto": "2.1.1",
     "react-native-dialogs": "0.0.20",
@@ -70,7 +72,7 @@
     "react-native-image-resizer": "1.0.0",
     "react-native-invertible-scroll-view": "1.1.0",
     "react-native-level-fs": "^3.0.0",
-    "react-native-linear-gradient": "2.3.0",
+    "react-native-linear-gradient": "git+https://github.com/status-im/react-native-linear-gradient.git#desktop-platform-v230",
     "react-native-mapbox-gl": "github:status-im/react-native-mapbox-gl",
     "react-native-orientation": "3.1.0",
     "react-native-os": "1.1.0",

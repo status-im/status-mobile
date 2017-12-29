@@ -43,7 +43,8 @@
    :android         {:align-items    :flex-start
                      :margin-left    (if show-actions 66 18)
                      :padding-bottom 6}
-   :ios             {:align-items :center}})
+   :ios             {:align-items :center}
+   :desktop         {:align-items :center}})
 
 (def chat-name-text
   {:color      component.styles/color-gray6
@@ -63,13 +64,17 @@
   {:color   component.styles/text4-color
    :ios     {:font-size  14
              :margin-top 4}
-   :android {:font-size 13}})
+   :android {:font-size 13}
+   :desktop {:font-size  14
+             :margin-top 4}})
 
 (defstyle last-activity-text
   {:color   component.styles/text4-color
    :ios     {:font-size  14
              :margin-top 4}
-   :android {:font-size 13}})
+   :android {:font-size 13}
+   :desktop {:font-size  14
+             :margin-top 4}})
 
 (defn actions-wrapper [status-bar-height]
   {:backgroundColor component.styles/color-white

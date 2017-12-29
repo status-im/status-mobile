@@ -139,7 +139,7 @@
 
 (reg-fx
   ::initialize-crypt-fx
-  (comment (fn []
+  (fn []
     (crypt/gen-random-bytes
      1024
      (fn [{:keys [error buffer]}]
@@ -147,7 +147,7 @@
          (log/error "Failed to generate random bytes to initialize sjcl crypto")
          (->> (.toString buffer "hex")
               (.toBits (.. dependencies/eccjs -sjcl -codec -hex))
-              (.addEntropy (.. dependencies/eccjs -sjcl -random)))))))))
+              (.addEntropy (.. dependencies/eccjs -sjcl -random))))))))
 
 (defn move-to-internal-storage [config]
   (status/move-to-internal-storage
@@ -252,6 +252,7 @@
         :or [network (get app-db :network)]
         :as db} [_ address]]
     (let [console-contact (get contacts console-chat-id)]
+      (print "call of :initialize-account-db address: "address)
       (cond-> (assoc app-db 
                      :access-scope->commands-responses access-scope->commands-responses
                      :accounts/current-account-id address

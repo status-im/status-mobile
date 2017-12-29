@@ -6,6 +6,7 @@
             status-im.ui.screens.events
             status-im.ui.screens.subs
             status-im.data-store.core
+            [status-im.utils.config :as config]
             [status-im.ui.screens.views :as views]
             [status-im.react-native.js-dependencies :as rn-dependencies]
             [status-im.ui.components.react :as react]
@@ -30,12 +31,17 @@
 (defn check-i18n []
       (let [lcl (.-locale rn-dependencies/i18n)] (print "== locale:" lcl)))
 
+(defn check-react-native-config []
+  (print "== react-native-config value of log-level from config: "config/log-level))
+
 (defn check-3rdparty-libraries []
       (print "========= Check 3rd party libraries ==========")
       (print "== Check react-native-randombytes...")
       (check-random-bytes 1024)
       (print "== Check react-native-i18n...")
-      (check-i18n))
+      (check-i18n)
+      (print "== Check react-native-config...")
+      (check-react-native-config))
 
 
 (defn init []

@@ -4,7 +4,7 @@
 (def android-sms-listener   "");;(js/require "react-native-android-sms-listener"))
 (def autolink               "");;(js/require "react-native-autolink"))
 (def camera                 "");;(js/require "react-native-camera"))
-(def config                 "");;(js/require "react-native-config"))
+(def config                 (js/require "react-native-config"))
 ;; TODO see https://github.com/rt2zz/react-native-contacts/issues/45
 (def contacts               "");;(js/require "react-native-contacts"))
 (def dialogs                "");;(js/require "react-native-dialogs"))
@@ -18,7 +18,7 @@
 (def image-resizer          "");;(js/require "react-native-image-resizer"))
 (def instabug               "");;(js/require "instabug-reactnative"))
 (def invertible-scroll-view "");;(js/require "react-native-invertible-scroll-view"))
-(def linear-gradient        "");;(js/require "react-native-linear-gradient"))
+(def linear-gradient        (js/require "react-native-linear-gradient"))
 (def mapbox-gl              "");;(js/require "react-native-mapbox-gl"))
 (def nfc                   "");; (js/require "nfc-react-native"))
 (def orientation            "");;(js/require "react-native-orientation"))
