@@ -42,7 +42,10 @@
              :line-height    25
              :letter-spacing -0.2}
    :android {:line-height 18
-             :font-size   12}})
+             :font-size   12}
+   :desktop {:font-size      14
+             :line-height    25
+             :letter-spacing -0.2}})
 
 (def profile-status-container
   {:background-color color-light-gray
@@ -72,13 +75,17 @@
   {:color   color-gray4
    :ios     {:font-size      13
              :letter-spacing -0.1}
-   :android {:font-size 12}})
+   :android {:font-size 12}
+   :desktop {:font-size      13
+             :letter-spacing -0.1}})
 
 (defstyle profile-name-text
   {:ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:color     color-black
-             :font-size 16}})
+             :font-size 16}
+   :desktop {:font-size      17
+             :letter-spacing -0.2}})
 
 (def profile-badge-name-container
   {:flex            1
@@ -94,14 +101,18 @@
              :line-height    20
              :letter-spacing -0.2}
    :android {:font-size   15
-             :line-height 20}})
+             :line-height 20}
+   :desktop {:font-size      14
+             :line-height    20
+             :letter-spacing -0.2}})
 
 (defstyle profile-setting-item
   {:flex-direction :row
    :align-items    :center
    :padding-left   16
    :ios            {:height 73}
-   :android        {:height 72}})
+   :android        {:height 72}
+   :desktop        {:height 73}})
 
 (defn profile-info-text-container [options]
   {:flex          1
@@ -111,17 +122,22 @@
   {:color   color-gray4
    :ios     {:font-size      14
              :letter-spacing -0.2}
-   :android {:font-size 12}})
+   :android {:font-size 12}
+   :desktop {:font-size      14
+             :letter-spacing -0.2}})
 
 (defstyle profile-setting-text
   {:ios     {:font-size      17
              :letter-spacing -0.2}
    :android {:font-size 16
-             :color     color-black}})
+             :color     color-black}
+   :desktop {:font-size      17
+             :letter-spacing -0.2}})
 
 (defstyle profile-setting-spacing
   {:ios     {:height 10}
-   :android {:height 7}})
+   :android {:height 7}
+   :desktop {:height 10}})
 
 (def profile-setting-text-empty
   (merge profile-setting-text
@@ -136,7 +152,8 @@
    :align-items        :center
    :background-color   color-white
    :android            {:height 72}
-   :ios                {:height 64}})
+   :ios                {:height 64}
+   :desktop            {:height 64}})
 
 (def network-settings-text
   (merge {:flex 1}
@@ -163,7 +180,11 @@
              :line-height    16
              :padding-top    5
              :height         30
-             :padding-bottom 0}})
+             :padding-bottom 0}
+   :desktop {:font-size      17
+             :padding-bottom 0
+             :line-height    17
+             :letter-spacing -0.2}})
 
 (defstyle profile-status-input
   {:line-height  24                                         ;;TODO doesnt' work for multiline because a bug in the RN
@@ -178,14 +199,21 @@
                   :padding-top         5
                   :height              74
                   :text-align-vertical :top
-                  :padding-bottom      0}})
+                  :padding-bottom      0}
+   :desktop      {:font-size      17
+                  :padding-bottom 0
+                  :padding-top    0
+                  :height         74
+                  :letter-spacing -0.2}})
 
 (defstyle profile-status-text
   {:color       text1-color
    :line-height 24
    :ios         {:font-size      17
                  :letter-spacing -0.2}
-   :android     {:font-size 16}})
+   :android     {:font-size 16}
+   :desktop     {:font-size      17
+                 :letter-spacing -0.2}})
 
 (defstyle edit-profile-status
   {:background-color   color-light-gray
@@ -198,7 +226,9 @@
    :ios                {:padding-top 10
                         :margin-top  10}
    :android            {:padding-top 13
-                        :margin-top  13}})
+                        :margin-top  13}
+   :desktop            {:padding-top 10
+                        :margin-top  10}})
 
 (def add-a-status
   (merge profile-status-text

@@ -27,7 +27,8 @@
            :margin-horizontal 28
            :margin-vertical   20
            :border-radius     8
-           :ios {:background-color styles/color-blue6}})
+           :ios {:background-color styles/color-blue6}
+           :desktop {:background-color styles/color-blue6}})
 
 (def recipient-icon {:margin-right 20})
 

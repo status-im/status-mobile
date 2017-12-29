@@ -17,6 +17,7 @@
    :background-color component.styles/color-white
    :android          {:height 76}
    :ios              {:height 74}
+   :desktop          {:height 74}
    :overflow         "hidden"})
 
 (defstyle chat-icon-container
@@ -26,7 +27,8 @@
    :padding-right  20
    :width          72
    :android        {:height 76}
-   :ios            {:height 74}})
+   :ios            {:height 74}
+   :desktop        {:height 74}})
 
 (defstyle chat-info-container
   {:margin-bottom   13
@@ -34,7 +36,8 @@
    :flex            1
    :flex-direction  :column
    :android         {:margin-top 16}
-   :ios             {:margin-top 14}})
+   :ios             {:margin-top 14}
+   :desktop         {:margin-top 14}})
 
 (defstyle chat-options-container
   {:padding-top 10})
@@ -50,7 +53,8 @@
    :justify-content :space-between
    :padding-right   16
    :android         {:margin-top 4}
-   :ios             {:margin-top 6}})
+   :ios             {:margin-top 6}
+   :desktop         {:margin-top 6}})
 
 (def message-status-container
   {:flex-direction :row
@@ -70,7 +74,8 @@
    :height       12
    :margin-right 6
    :android      {:margin-top 4}
-   :ios          {:margin-top 2}})
+   :ios          {:margin-top 2}
+   :desktop      {:margin-top 2}})
 
 (def private-group-icon
   {:width  16
@@ -81,7 +86,8 @@
    :height       12
    :margin-right 6
    :android      {:margin-top 4}
-   :ios          {:margin-top 2}})
+   :ios          {:margin-top 2}
+   :desktop      {:margin-top 2}})
 
 (def public-group-icon
   {:width  16
@@ -95,6 +101,8 @@
    :android {:font-size 14
              :height    24}
    :ios     {:font-size 15
+             :height    24}
+   :desktop {:font-size 15
              :height    24}})
 
 (def status-container
@@ -111,7 +119,8 @@
 (defstyle datetime-text
   {:color   component.styles/text4-color
    :android {:font-size 14}
-   :ios     {:font-size 15}})
+   :ios     {:font-size 15}
+   :desktop {:font-size 15}})
 
 (def new-messages-container
   {:width            22
@@ -126,7 +135,8 @@
    :color      component.styles/color-blue
    :text-align :center
    :android    {:top 2}
-   :ios        {:top 3}})
+   :ios        {:top 3}
+   :desktop    {:top 3}})
 
 (def chats-container
   {:flex 1})
@@ -134,7 +144,8 @@
 (defstyle list-container
   {:android {:background-color component.styles/color-light-gray}
 
-   :ios     {:background-color component.styles/color-white}})
+   :ios     {:background-color component.styles/color-white}
+   :desktop {:background-color component.styles/color-white}})
 
 (def toolbar-actions
   {:flex-direction :row

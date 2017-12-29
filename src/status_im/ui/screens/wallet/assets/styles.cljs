@@ -25,6 +25,7 @@
 (defnstyle tab-title [active?]
   {:ios        {:font-size 15}
    :android    {:font-size 14}
+   :desktop    {:font-size 15}
    :text-align :center
    :color      (if active?
                  styles/color-blue4
@@ -48,7 +49,8 @@
    :margin-left 9
    :color       styles/color-gray4
    :android     {:letter-spacing 1.5}
-   :ios         {:letter-spacing 1.16}})
+   :ios         {:letter-spacing 1.16}
+   :desktop     {:letter-spacing 1.16}})
 
 (def value-variation
   {:flex-direction :row
@@ -58,7 +60,8 @@
   {:font-size 14
    :color     styles/color-gray4
    :android   {:letter-spacing -0.18}
-   :ios       {:letter-spacing -0.2}})
+   :ios       {:letter-spacing -0.2}
+   :desktop   {:letter-spacing -0.2}})
 
 (defstyle main-button-text
   {:color              styles/color-blue4
@@ -66,6 +69,8 @@
    :android            {:font-size      13
                         :letter-spacing 0.46}
    :ios                {:font-size      15
+                        :letter-spacing -0.2}
+   :desktop            {:font-size      15
                         :letter-spacing -0.2}})
 
 (defstyle transactions-title
@@ -94,6 +99,9 @@
        :ios                {:border-top-width    1
                             :border-right-width  1
                             :border-bottom-width 1}
+       :desktop            {:border-top-width    1
+                            :border-right-width  1
+                            :border-bottom-width 1}
        :border-right-color styles/color-blue4})))
 
 (defnstyle button-bar [position]
@@ -115,9 +123,11 @@
   {:margin-top    8
    :margin-bottom 4
    :android       {:font-size 16}
-   :ios           {:font-size 17}})
+   :ios           {:font-size 17}
+   :desktop       {:font-size 17}})
 
 (defstyle token-symbol-title
   {:color   styles/color-gray4
    :android {:font-size 14}
-   :ios     {:font-size 15}})
+   :ios     {:font-size 15}
+   :desktop {:font-size 15}})

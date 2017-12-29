@@ -33,7 +33,8 @@
    :padding     0
    :color       (if valid? common/color-black common/color-red)
    :android     {:font-size 16}
-   :ios         {:font-size 17}})
+   :ios         {:font-size 17}
+   :desktop     {:font-size 17}})
 
 (def status-container
   {:flex-direction :row
@@ -57,7 +58,8 @@
         (assoc :color common/color-gray))
       (merge
        {:min-height 0
-        :ios        {:padding-top 10}})))
+        :ios        {:padding-top 10}
+        :desktop    {:padding-top 10}})))
 
 (def options-button
   {:position :absolute
@@ -72,7 +74,8 @@
 (defstyle network-label
   {:color   common/color-gray4
    :android {:font-size 12}
-   :ios     {:font-size 14}})
+   :ios     {:font-size 14}
+   :desktop {:font-size 14}})
 
 (def network-title
   {:color     common/color-gray6
@@ -89,12 +92,14 @@
 (defstyle transactions-title-container
   {:margin-left 16
    :android     {:margin-bottom 16}
-   :ios         {:margin-bottom 8}})
+   :ios         {:margin-bottom 8}
+   :desktop     {:margin-bottom 8}})
 
 (defstyle transactions-title
   {:color   common/color-gray4
    :android {:font-size 12}
-   :ios     {:font-size 14}})
+   :ios     {:font-size 14}
+   :desktop {:font-size 14}})
 
 (def transaction
   {:padding        16
@@ -131,7 +136,8 @@
   {:line-height 16
    :color       common/color-gray4
    :android     {:font-size 12}
-   :ios         {:font-size 14}})
+   :ios         {:font-size 14}
+   :desktop     {:font-size 14}})
 
 (defstyle transaction-recipient
   {:line-height 16
@@ -139,14 +145,16 @@
    :color       common/color-black
    :flex-shrink 1
    :android     {:font-size 12}
-   :ios         {:font-size 14}})
+   :ios         {:font-size 14}
+   :desktop     {:font-size 14}})
 
 (defstyle transaction-time
   {:line-height 16
    :color       common/color-gray4
    :margin-left 8
    :android     {:font-size 12}
-   :ios         {:font-size 14}})
+   :ios         {:font-size 14}
+   :desktop     {:font-size 14}})
 
 (def transaction-picture
   {:margin-top  3
@@ -164,7 +172,8 @@
 (defstyle view-all-transactions-text
   {:color   common/color-light-blue
    :android {:font-size 14}
-   :ios     {:font-size 17}})
+   :ios     {:font-size 17}
+   :desktop {:font-size 17}})
 
 (def switch-account-container
   {:align-items   :center
@@ -174,4 +183,5 @@
 (defstyle switch-account-text
   {:color   common/color-light-blue
    :android {:font-size 14}
-   :ios     {:font-size 17}})
+   :ios     {:font-size 17}
+   :desktop {:font-size 17}})

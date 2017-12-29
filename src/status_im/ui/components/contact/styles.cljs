@@ -10,7 +10,8 @@
    :padding-left     16
    :background-color common/color-white
    :android          {:height 56}
-   :ios              {:height 63}})
+   :ios              {:height 63}
+   :desktop          {:height 63}})
 
 (def info-container
   {:flex            1
@@ -23,6 +24,8 @@
   {:color   common/text1-color
    :android {:font-size      16}
    :ios     {:font-size      17
+             :letter-spacing -0.2}
+   :desktop {:font-size      17
              :letter-spacing -0.2}})
 
 (def info-text
@@ -60,6 +63,9 @@
                     :width         17
                     :height        17}
    :ios            {:border-radius 50
+                    :width         24
+                    :height        24}
+   :desktop        {:border-radius 50
                     :width         24
                     :height        24}})
 

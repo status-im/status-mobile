@@ -34,6 +34,7 @@
 (defnstyle tab-title [active?]
   {:ios        {:font-size 15}
    :android    {:font-size 14}
+   :desktop    {:font-size 15}
    :text-align :center
    :color      (if active?
                  styles/color-blue4
@@ -57,7 +58,8 @@
    :padding-right   22
    :padding-left    17
    :ios             {:padding-top 13}
-   :android         {:padding-top 14}})
+   :android         {:padding-top 14}
+   :desktop         {:padding-top 13}})
 
 (def tx-amount
   {:flex-grow    1

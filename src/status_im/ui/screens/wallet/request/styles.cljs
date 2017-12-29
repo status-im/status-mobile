@@ -11,7 +11,8 @@
    :padding          16
    :background-color styles/color-white
    :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :android          {:border-radius 4}
+   :desktop          {:border-radius 8}})
 
 (def share-icon-container
   {:margin-right 8})

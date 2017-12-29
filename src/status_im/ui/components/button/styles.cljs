@@ -16,6 +16,8 @@
    :align-items     :center
    :android         {:background-color border-color}
    :ios             (when-not disabled?
+                      {:background-color border-color})
+   :desktop         (when-not disabled?
                       {:background-color border-color})})
 
 (defn- border [position]
@@ -33,7 +35,8 @@
                                           :border-bottom-width 1}}
       {:android {:border-left-width  1
                  :border-right-width 1}
-       :ios     {:border-width 1}})))
+       :ios     {:border-width 1}
+       :desktop {:border-width 1}})))
 
 (defnstyle button-bar [position]
   (merge {:border-color border-color}
@@ -52,6 +55,11 @@
                          {:font-size        15
                           :padding-vertical 9
                           :letter-spacing   -0.2}
+                         (when disabled? {:opacity 0.6}))
+   :desktop            (merge
+                         {:font-size        15
+                          :padding-vertical 9
+                          :letter-spacing   -0.2}
                          (when disabled? {:opacity 0.6}))})
 
 (defstyle button-borders
@@ -59,7 +67,8 @@
    :ios     {:border-radius 8
              ;; Border radius is ignored with transparent background unless overflow "hidden" is used
              ;; See https://github.com/facebook/react-native/issues/13760
-             :overflow      :hidden}})
+             :overflow      :hidden}
+   :desktop {:border-radius 8}})
 
 (def primary-button
   (merge

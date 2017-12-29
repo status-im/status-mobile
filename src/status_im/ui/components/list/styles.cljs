@@ -74,4 +74,6 @@
    :android         {:margin-top    11
                      :margin-bottom 3}
    :ios             {:margin-top    10
+                     :margin-bottom 2}
+   :desktop         {:margin-top    10
                      :margin-bottom 2}})

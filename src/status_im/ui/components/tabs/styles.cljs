@@ -28,6 +28,7 @@
 (defnstyle tab-title [active?]
   {:ios        {:font-size 11}
    :android    {:font-size 12}
+   :desktop    {:font-size 11}
    :text-align :center
    :color      (if active?
                  styles/color-blue4

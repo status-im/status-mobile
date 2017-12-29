@@ -11,6 +11,8 @@
                       :margin-top    6}
    :android          {:border-radius 4
                       :margin-top    18}
+   :desktop          {:border-radius 20
+                      :margin-top    6}
    :background-color styles/color-blue5})
 
 (defstyle error-message-container
@@ -18,7 +20,8 @@
    :align-items        :center
    :padding-horizontal 15
    :ios                {:padding-vertical 8}
-   :android            {:padding-vertical 10}})
+   :android            {:padding-vertical 10}
+   :desktop            {:padding-vertical 8}})
 
 
 (defnstyle exclamation [color]
@@ -46,7 +49,8 @@
 (defstyle toolbar
   {:ios     {:background-color styles/color-blue4}
    :android {:background-color styles/color-blue5
-             :elevation        0}})
+             :elevation        0}
+   :desktop {:background-color styles/color-blue4}})
 
 (def buttons-container
   {:flex-direction :row

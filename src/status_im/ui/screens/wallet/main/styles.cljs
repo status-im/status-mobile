@@ -43,7 +43,8 @@
    :margin-left 9
    :color       styles/color-white-transparent-5
    :android     {:letter-spacing 1.5}
-   :ios         {:letter-spacing 1.16}})
+   :ios         {:letter-spacing 1.16}
+   :desktop     {:letter-spacing 1.16}})
 
 (def value-variation
   {:flex-direction :row
@@ -53,12 +54,14 @@
   {:font-size 14
    :color     styles/color-white-transparent-6
    :android   {:letter-spacing -0.18}
-   :ios       {:letter-spacing -0.2}})
+   :ios       {:letter-spacing -0.2}
+   :desktop   {:letter-spacing -0.2}})
 
 (defstyle buttons
   {:margin-top 34
    :android    {:margin-horizontal 21}
-   :ios        {:margin-horizontal 30}})
+   :ios        {:margin-horizontal 30}
+   :desktop    {:margin-horizontal 30}})
 
 (defstyle main-button-text
   {:padding-vertical   13
@@ -66,6 +69,8 @@
    :android            {:font-size      13
                         :letter-spacing 0.46}
    :ios                {:font-size      15
+                        :letter-spacing -0.2}
+   :desktop            {:font-size      15
                         :letter-spacing -0.2}})
 
 ;; Assets section
@@ -97,12 +102,14 @@
    :width            40
    :height           40
    :border-radius    32
-   :ios              {:background-color styles/color-blue4-transparent}})
+   :ios              {:background-color styles/color-blue4-transparent}
+   :desktop          {:background-color styles/color-blue4-transparent}})
 
 (defstyle add-asset-text
   {:font-size 16
    :ios       {:color styles/color-blue4}
-   :android   {:color styles/color-black}})
+   :android   {:color styles/color-black}
+   :desktop   {:color styles/color-blue4}})
 
 (def asset-item-currency
   {:font-size   16

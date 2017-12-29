@@ -14,6 +14,9 @@
                     :height        17}
    :ios            {:border-radius 50
                     :width         24
+                    :height        24}
+   :desktop        {:border-radius 50
+                    :width         24
                     :height        24}})
 
 (def check-icon

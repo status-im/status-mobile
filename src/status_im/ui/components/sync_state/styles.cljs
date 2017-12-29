@@ -29,6 +29,7 @@
 
 (defnstyle offline-wrapper [top opacity window-width pending?]
   {:ios              {:z-index 0}
+   :desktop          {:z-index 0}
    :opacity          opacity
    :width            window-width
    :top              (+ (+ 56 top) (if pending? 35 0))

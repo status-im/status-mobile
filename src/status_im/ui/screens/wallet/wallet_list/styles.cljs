@@ -50,6 +50,8 @@
    :android          {:border-radius 4
                       :padding-right 12}
    :ios              {:border-radius 8
+                      :padding-right 8}
+   :desktop          {:border-radius 8
                       :padding-right 8}})
 
 (def active-wallet-item

@@ -31,13 +31,16 @@
   {:letter-spacing -0.1
    :color          common/color-gray4
    :ios            {:font-size 13}
-   :android        {:font-size 12}})
+   :android        {:font-size 12}
+   :desktop        {:font-size 13}})
 
 (defstyle members-text
   {:color   common/color-gray4
    :ios     {:letter-spacing -0.2
              :font-size      16}
-   :android {:font-size 14}})
+   :android {:font-size 14}
+   :desktop {:letter-spacing -0.2
+             :font-size      16}})
 
 (defstyle members-text-count
   {:margin-left 8
@@ -45,7 +48,9 @@
    :opacity     0.6
    :ios         {:letter-spacing -0.2
                  :font-size      16}
-   :android     {:font-size 14}})
+   :android     {:font-size 14}
+   :desktop     {:letter-spacing -0.2
+                 :font-size      16}})
 
 (def add-container
   {:flex-direction :row
@@ -59,6 +64,8 @@
    :align-items      :center
    :justify-content  :center
    :ios              {:background-color "#628fe333"
+                      :border-radius    50}
+   :desktop          {:background-color "#628fe333"
                       :border-radius    50}})
 
 (def add-icon
@@ -73,7 +80,11 @@
              :font-size      17
              :line-height    20}
    :android {:letter-spacing 0.5
-             :font-size      16}})
+             :font-size      16}
+   :desktop {:color          common/color-light-blue
+             :letter-spacing -0.2
+             :font-size      17
+             :line-height    20}})
 
 (def settings-group-text
   add-group-text)
@@ -90,25 +101,30 @@
    :padding-top 5
    :ios         {:font-size      14
                  :letter-spacing -0.2}
-   :android     {:font-size 12}})
+   :android     {:font-size 12}
+   :desktop     {:font-size      14
+                 :letter-spacing -0.2}})
 
 (defstyle contact-container
   {:flex-direction  :row
    :justify-content :center
    :align-items     :center
    :ios             {:height 63}
-   :android         {:height 56}})
+   :android         {:height 56}
+   :desktop         {:height 63}})
 
 (defstyle settings-group-container
   {:ios     {:margin-top 25}
-   :android {:margin-top 23}})
+   :android {:margin-top 23}
+   :desktop {:margin-top 25}})
 
 (defstyle settings-group-item
   {:padding-left   16
    :flex-direction :row
    :align-items    :center
    :ios            {:height         64}
-   :android        {:height         56}})
+   :android        {:height         56}
+   :desktop        {:height         64}})
 
 (defstyle delete-icon-container
   {:width            40
@@ -116,6 +132,8 @@
    :align-items      :center
    :justify-content  :center
    :ios              {:background-color "#d84b4b33"
+                      :border-radius    50}
+   :desktop          {:background-color "#d84b4b33"
                       :border-radius    50}})
 
 (def order-item-container
@@ -129,6 +147,8 @@
                     :min-height       56
                     :background-color common/color-white}
    :ios            {:padding-vertical 22
+                    :min-height       63}
+   :desktop        {:padding-vertical 22
                     :min-height       63}})
 
 (defstyle order-item-label
@@ -139,6 +159,9 @@
                   :line-height 24}
    :ios          {:font-size      17
                   :line-height    20
+                  :letter-spacing -0.2}
+   :desktop      {:font-size      17
+                  :line-height    20
                   :letter-spacing -0.2}})
 
 (defstyle order-item-contacts
@@ -148,11 +171,15 @@
                   :line-height    20
                   :letter-spacing -0.2}
    :android      {:font-size   16
-                  :line-height 24}})
+                  :line-height 24}
+   :desktop      {:font-size      17
+                  :line-height    20
+                  :letter-spacing -0.2}})
 
 (defstyle order-item-icon
   {:android {:padding-horizontal 16}
-   :ios     {:padding-horizontal 20}})
+   :ios     {:padding-horizontal 20}
+   :desktop {:padding-horizontal 20}})
 
 (def order-item-separator-wrapper
   {:background-color common/color-white})
@@ -161,6 +188,8 @@
   {:height           1
    :background-color common/color-gray5
    :ios              {:margin-left 16
+                      :opacity     0.5}
+   :desktop          {:margin-left 16
                       :opacity     0.5}})
 
 (def toolbar-title-with-count-text

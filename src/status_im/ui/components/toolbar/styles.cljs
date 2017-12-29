@@ -18,7 +18,8 @@
    :background-color (or background-color toolbar-background1)
    :elevation        (if flat? 0 2)
    :android          {:height 55}
-   :ios              {:height 56}})
+   :ios              {:height 56}
+   :desktop          {:height 56}})
 
 (defnstyle toolbar-nav-actions-container
   [actions]
@@ -28,7 +29,8 @@
 (defstyle toolbar-container
   {:flex       1
    :android    {:padding-left 18}
-   :ios        {:align-items  :center}})
+   :ios        {:align-items  :center}
+   :desktop    {:align-items  :center}})
 
 (def toolbar-title-container
   {:flex           1
@@ -39,7 +41,8 @@
   {:color          styles/text1-color
    :letter-spacing -0.2
    :font-size      17
-   :ios            {:text-align "center"}})
+   :ios            {:text-align "center"}
+   :desktop        {:text-align "center"}})
 
 (def toolbar-border-container
   (get-in p/platform-specific [:component-styles :toolbar-border-container]))
@@ -69,7 +72,8 @@
 (defstyle toolbar-with-search-content
   {:flex    1
    :android {:padding-left 18}
-   :ios     {:align-items :center}})
+   :ios     {:align-items :center}
+   :desktop {:align-items :center}})
 
 (defstyle toolbar-search-input
   {:line-height         24
@@ -99,7 +103,9 @@
 (defstyle item
   {:ios     {:marginHorizontal 12
              :marginVertical   16}
-   :android {:margin 16}})
+   :android {:margin 16}
+   :desktop {:marginHorizontal 12
+             :marginVertical   16}})
 
 (def item-text
   {:color     styles/color-blue4

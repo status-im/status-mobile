@@ -32,19 +32,24 @@
   {:ios     {:color          styles/color-steel
              :font-size      13}
    :android {:color     styles/color-gray2
-             :font-size 14}})
+             :font-size 14}
+   :desktop {:color          styles/color-steel
+             :font-size      13}})
 
 ;; NOTE(oskarth): Hacky use of defstyle to get
 ;; platform specific styles in place where they belong
 (defstyle subtitle-text-augment
   {:ios     {:uppercase? false}
-   :android {:uppercase? true}})
+   :android {:uppercase? true}
+   :desktop {:uppercase? false}})
 
 (defstyle discover-item-status-text
   {:ios     {:font-size      14
              :letter-spacing -0.1}
    :android {:line-height 22
-             :font-size   16}})
+             :font-size   16}
+   :desktop {:font-size      14
+             :letter-spacing -0.1}})
 
 (def discover-list-item-name-container
   {:flex            0.3
@@ -138,14 +143,18 @@
    :android          {:border-radius 4
                       :margin-top    2
                       :margin-bottom 4
-                      :margin-right  2}})
+                      :margin-right  2}
+   :desktop          {:border-radius 3
+                      :border-width  1
+                      :border-color  styles/color-white}})
 
 (defstyle chat-button-container
   {:justify-content  :center
    :align-items      :center
    :background-color styles/color-blue4-transparent
    :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :android          {:border-radius 4}
+   :desktop          {:border-radius 8}})
 
 (defstyle chat-button-inner
   {:flex-direction :row
@@ -158,13 +167,15 @@
 ;; platform specific styles in place where they belong
 (defstyle chat-button-text-case
   {:ios     {:uppercase? false}
-   :android {:uppercase? true}})
+   :android {:uppercase? true}
+   :desktop {:uppercase? false}})
 
 (defstyle chat-button-text
   {:color   styles/color-blue4
    :ios     {:font-size 15}
    :android {:font-size   14
-             :font-weight :bold}})
+             :font-weight :bold}
+   :desktop {:font-size 15}})
 
 ;; discover_recent
 
@@ -256,7 +267,9 @@
    :flex-direction    :column
    :ios               {:border-radius 8
                        :border-color  styles/color-light-blue6}
-   :android           {:border-radius 4}})
+   :android           {:border-radius 4}
+   :desktop           {:border-radius 8
+                       :border-color  styles/color-light-blue6}})
 
 (def tag-title
   {:color            styles/color-blue4
@@ -360,7 +373,8 @@
 (defstyle dapp-details-name-text
   {:android {:font-size 16
              :color     styles/color-gray6}
-   :ios     {:font-size 17}})
+   :ios     {:font-size 17}
+   :desktop {:font-size 17}})
 
 (defstyle dapp-details-action-container
   {:flex-direction   :row
@@ -370,7 +384,8 @@
    :background-color styles/color-white
    :android          {:height    64
                       :elevation 2}
-   :ios              {:height 72}})
+   :ios              {:height 72}
+   :desktop          {:height 72}})
 
 (def dapp-details-action-icon-container
   {:padding-left     10
@@ -402,7 +417,8 @@
   {:color       styles/color-blue4
    :android     {:font-size 16
                  :color     styles/color-gray6}
-   :ios         {:font-size 17}})
+   :ios         {:font-size 17}
+   :desktop     {:font-size 17}})
 
 (defstyle dapp-details-section-container
   {:background-color styles/color-white
@@ -415,7 +431,8 @@
 (defstyle dapp-details-section-title-text
   {:color   styles/color-gray
    :ios     {:font-size 14}
-   :android {:font-size 12}})
+   :android {:font-size 12}
+   :desktop {:font-size 14}})
 
 (def dapp-details-section-body-container
   {:background-color styles/color-white
@@ -426,7 +443,8 @@
 (defstyle dapp-details-section-content-text
   {:ios     {:font-size 17}
    :android {:font-size 16
-             :color     styles/color-gray6}})
+             :color     styles/color-gray6}
+   :desktop {:font-size 17}})
 
 (def empty-section-container
   {:flex-direction   :row

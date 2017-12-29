@@ -43,13 +43,17 @@
    :backgroundColor common/color-white
    :padding-left    72
    :android         {:height       56}
-   :ios             {:height       64}})
+   :ios             {:height       64}
+   :desktop         {:height       64}})
 
 (defstyle show-all-text
   {:android {:font-size      14
              :color          common/color-blue
              :letter-spacing 0.5}
    :ios     {:font-size      16
+             :color          common/color-gray4
+             :letter-spacing -0.2}
+   :desktop {:font-size      16
              :color          common/color-gray4
              :letter-spacing -0.2}})
 

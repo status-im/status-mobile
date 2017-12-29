@@ -50,13 +50,19 @@
    :android        {:background-color styles/color-light-gray
                     :padding-top      20
                     :padding-bottom   17
-                    :margin-top       8}})
+                    :margin-top       8}
+   :desktop        {:background-color styles/color-white
+                    :padding-top      19
+                    :padding-bottom   15
+                    :margin-top       16}})
 
 (defstyle form-title-extend-container
   {:ios     {:margin-top       16
              :background-color styles/color-white}
    :android {:margin-top       8
-             :background-color styles/color-light-gray}})
+             :background-color styles/color-light-gray}
+   :desktop {:margin-top       16
+             :background-color styles/color-white}})
 
 (def form-title-extend-button
   {:padding 16})
@@ -67,7 +73,10 @@
                  :letter-spacing -0.2
                  :font-size      16}
    :android     {:color     styles/text4-color
-                 :font-size 14}})
+                 :font-size 14}
+   :desktop     {:color          styles/text1-color
+                 :letter-spacing -0.2
+                 :font-size      16}})
 
 (def form-title-count
   (merge form-title
@@ -78,7 +87,7 @@
           :color         styles/text4-color}))
 
 (defstyle form-spacer
-  {:desktop     {:height 25}
+  {:desktop {:height 25}
    :ios     {:height 1}
    :android {:height 11}})
 

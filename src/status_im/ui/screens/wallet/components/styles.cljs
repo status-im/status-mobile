@@ -17,7 +17,10 @@
    :ios     {:font-size      14
              :line-height    16
              :letter-spacing -0.2}
-   :android {:font-size   12}})
+   :android {:font-size   12}
+   :desktop {:font-size      14
+             :line-height    16
+             :letter-spacing -0.2}})
 
 (def amount-text-input-container
   {:margin-top 8})
@@ -32,7 +35,8 @@
                        styles/color-white-transparent-4
                        styles/color-white-transparent-3)
    :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :android          {:border-radius 4}
+   :desktop          {:border-radius 8}})
 
 (def network
   {:color          :white
@@ -58,14 +62,16 @@
    :justify-content :center
    :padding         14
    :ios             {:border-radius 8}
-   :android         {:border-radius 4}})
+   :android         {:border-radius 4}
+   :desktop         {:border-radius 8}})
 
 (defstyle container-disabled
   {:border-width     1
    :border-color     styles/color-white-transparent-4
    :background-color nil
    :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :android          {:border-radius 4}
+   :desktop          {:border-radius 8}})
 
 
 (defstyle recipient-container
@@ -79,7 +85,8 @@
    :padding-left     14
    :padding-right    8
    :ios              {:border-radius 8}
-   :android          {:border-radius 4}})
+   :android          {:border-radius 4}
+   :desktop          {:border-radius 8}})
 
 (defstyle wallet-container
   {:flex-direction :row
@@ -92,7 +99,8 @@
    :align-items    :center
    :padding        14
    :ios            {:border-radius 8}
-   :android        {:border-radius 4}})
+   :android        {:border-radius 4}
+   :desktop        {:border-radius 8}})
 
 (def wallet-name
   {:color          :white

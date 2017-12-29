@@ -16,7 +16,8 @@
   {:fontSize 15
    :color    text1-color
    :android  {:line-height 22}
-   :ios      {:line-height 23}})
+   :ios      {:line-height 23}
+   :desktop  {:line-height 23}})
 
 (def style-sub-text
   {:top        -2
@@ -97,7 +98,8 @@
   {:color      color-gray4
    :marginLeft 5
    :android    {:font-size 13}
-   :ios        {:font-size 14}})
+   :ios        {:font-size 14}
+   :desktop    {:font-size 14}})
 
 (defn text-message
   [{:keys [outgoing group-chat incoming-group]}]
@@ -118,7 +120,8 @@
   {:color         color-gray4
    :margin-bottom 5
    :android       {:font-size 13}
-   :ios           {:font-size 14}})
+   :ios           {:font-size 14}
+   :desktop       {:font-size 14}})
 
 (def command-request-view
   {:paddingRight 16})
