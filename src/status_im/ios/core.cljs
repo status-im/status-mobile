@@ -43,10 +43,9 @@
          (.hide react/splash-screen))
        :component-did-mount
        (fn []
-         (when config/notifications-wip-enabled?
-           (notifications/request-permissions)
-           (notifications/on-refresh-fcm-token)
-           (notifications/on-notification)))
+         (notifications/request-permissions)
+         (notifications/on-refresh-fcm-token)
+         (notifications/on-notification))
        :component-will-unmount
        (fn []
          (.stop react/http-bridge))

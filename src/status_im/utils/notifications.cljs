@@ -22,9 +22,8 @@
 (defn get-fcm-token []
     (-> (.getFCMToken (aget rn/react-native-fcm "default"))
         (.then (fn [x]
-                 (when config/notifications-wip-enabled?
-                   (log/debug "get-fcm-token: " x)
-                   (dispatch [:update-fcm-token x]))))))
+                 (log/debug "get-fcm-token: " x)
+                 (dispatch [:update-fcm-token x])))))
 
 (defn on-refresh-fcm-token []
   (.on (.-default rn/react-native-fcm)

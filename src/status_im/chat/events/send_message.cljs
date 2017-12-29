@@ -68,8 +68,7 @@
             :user-message              (cond-> {::send-message
                                                 (assoc-in message-to-send
                                                           [:message :to] to)} 
-                                         (and fcm-token config/notifications-wip-enabled?)
-                                         (assoc ::send-notification fcm-token))))))))
+                                         fcm-token (assoc ::send-notification fcm-token))))))))
 
 (defn prepare-message
   [{:keys [db now random-id get-last-clock-value] :as cofx}
