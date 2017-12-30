@@ -2,7 +2,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs] :as views])
   (:require [re-frame.core :refer [dispatch]]
             [status-im.utils.platform :refer [android?]]
-            [status-im.ui.components.react :refer [view modal] :as react]
+            [status-im.ui.components.react :refer [view modal create-main-screen-view] :as react]
             [status-im.ui.components.styles :as common-styles]
             [status-im.ui.screens.main-tabs.views :refer [main-tabs]]
 
@@ -176,8 +176,9 @@
                           :recipient-qr-code recipient-qr-code
                           :contact-code contact-code
                           :profile-qr-viewer profile/qr-viewer
-                          (throw (str "Unknown view: " current-view)))]
-          [view common-styles/flex
+                          (throw (str "Unknown view: " current-view)))
+              main-screen-view (create-main-screen-view current-view)]
+          [main-screen-view common-styles/flex
            (if (and android?
                     signed-up?
                     (#{:home :wallet :my-profile :chat :wallet-send-transaction
@@ -202,4 +203,5 @@
                                  :wallet-transaction-sent-modal transaction-sent-modal
                                  :wallet-transaction-fee wallet.send/transaction-fee
                                  (throw (str "Unknown modal view: " modal-view)))]
-                 [component])]])])))))
+                 [react/main-screen-modal-view modal-view
+                   [component]])]])])))))

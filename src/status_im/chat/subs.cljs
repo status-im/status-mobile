@@ -2,7 +2,7 @@
   (:require [re-frame.core :refer [reg-sub subscribe]]
             [status-im.constants :as constants]
             [status-im.chat.models.input :as input-model]
-            [status-im.chat.models.commands :as commands-model] 
+            [status-im.chat.models.commands :as commands-model]
             [status-im.chat.views.input.utils :as input-utils]
             [status-im.commands.utils :as commands-utils]
             [status-im.utils.datetime :as time]
@@ -45,7 +45,10 @@
   :chat-input-margin
   :<- [:get :keyboard-height]
   (fn [kb-height]
-    (if platform/ios? kb-height 0)))
+    (cond
+      (and platform/iphone-x? (> kb-height 0)) (- kb-height 34)
+      platform/ios? kb-height
+      :default 0)))
 
 (reg-sub
   :get-active-chats

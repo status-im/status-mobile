@@ -57,6 +57,15 @@
       "extent" : "full-screen",
       "subtype" : "retina4",
       "scale" : "2x"
+    },
+    {
+      "orientation" : "portrait",
+      "idiom" : "iphone",
+      "filename" : "LaunchScreen1125x2436.png",
+      "extent" : "full-screen",
+      "minimum-system-version" : "11.0",
+      "subtype" : "2436h",
+      "scale" : "3x"
     }
   ],
   "info" : {

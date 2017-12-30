@@ -46,7 +46,7 @@
             click-handler [:get :contacts/click-handler]
             action [:get :contacts/click-action]
             params [:get :contacts/click-params]]
-    [react/view {:flex 1}
+    [react/view {:flex 1 :background-color :white}
      [status-bar {:type :modal-white}]
      [toolbar/simple-toolbar (i18n/label :t/contacts)]
      [list/flat-list {:style                     st/contacts-list-modal

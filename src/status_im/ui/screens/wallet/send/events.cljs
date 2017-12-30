@@ -185,8 +185,8 @@
                   (update-in [:wallet :transactions-unsigned] dissoc id)
                   (update-in [:wallet :send-transaction] merge clear-send-properties))}
          (if modal?
-           {:dispatch-n [[:navigate-back]
-                         [:navigate-to-modal :wallet-transaction-sent-modal]]}
+           {:dispatch       [:navigate-back]
+            :dispatch-later [{:ms 400 :dispatch [:navigate-to-modal :wallet-transaction-sent-modal]}]}
            {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]

@@ -163,7 +163,7 @@
 
 (defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? symbol]}]
   (let [{:keys [amount amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction]
-    [wallet.components/simple-screen {:avoid-keyboard? true
+    [wallet.components/simple-screen {:avoid-keyboard? (not modal?)
                                       :status-bar-type (if modal? :modal-wallet :wallet)}
      [toolbar from-chat? (if modal? act/close-white act/back-white)
       (i18n/label :t/send-transaction)]

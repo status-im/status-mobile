@@ -9,6 +9,7 @@
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.components.toolbar.actions :as actions]
             [status-im.ui.components.toolbar.view :as toolbar]
+            [status-im.ui.components.status-bar.view :as status-bar]
             [status-im.ui.screens.wallet.transactions.styles :as styles]
             [status-im.utils.money :as money]))
 
@@ -140,6 +141,7 @@
 (defview filter-history []
   (letsubs [filter-data [:wallet.transactions/filters]]
     [react/view styles/filter-container
+     [status-bar/status-bar {:type :modal-white}]
      [toolbar/toolbar {}
       [toolbar/nav-clear-text (i18n/label :t/done)]
       [toolbar/content-title (i18n/label :t/transactions-filter-title)]

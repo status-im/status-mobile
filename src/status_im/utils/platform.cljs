@@ -9,6 +9,7 @@
 
 (def android? (= platform "android"))
 (def ios? (= platform "ios"))
+(def iphone-x? (and ios? (ios/iphone-x-dimensions?)))
 
 (def platform-specific
   (cond
