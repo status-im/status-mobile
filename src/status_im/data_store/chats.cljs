@@ -21,8 +21,8 @@
 (defn save
   [{:keys [last-message-id chat-id] :as chat}]
   ;; TODO(janherich): remove `:last-message-id`, seems like it's not used anywhere anymore
-  (comment (let [chat (assoc chat :last-message-id (or last-message-id ""))]
-    (data-store/save chat (data-store/exists? chat-id)))))
+  (let [chat (assoc chat :last-message-id (or last-message-id ""))]
+    (data-store/save chat (data-store/exists? chat-id))))
 
 (defn delete
   [chat-id]

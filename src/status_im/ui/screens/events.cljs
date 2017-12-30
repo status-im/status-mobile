@@ -278,15 +278,15 @@
     {:dispatch-n (cond-> [[:initialize-account-db address]
                           [:load-processed-messages]
                           [:initialize-protocol address]
-                          ;[:initialize-sync-listener]
+                          [:initialize-sync-listener]
                           [:initialize-chats]
-                          ;[:load-contacts]
-                          ;[:load-contact-groups]
-                          ;[:init-discoveries]
-                          ;[:initialize-debugging {:address address}]
-                          ;[:send-account-update-if-needed]
-                          ;[:start-requesting-discoveries]
-                          ;[:remove-old-discoveries!]
+                          [:load-contacts]
+                          [:load-contact-groups]
+                          [:init-discoveries]
+                          [:initialize-debugging {:address address}]
+                          [:send-account-update-if-needed]
+                          [:start-requesting-discoveries]
+                          [:remove-old-discoveries!]
                           ;[:update-wallet]
                           ;[:update-transactions]
                           ;[:get-fcm-token]]
@@ -300,6 +300,7 @@
     (let [view (if (empty? accounts)
                  :chat
                  :accounts)]
+      (print ":check-console-chat call")
       (merge
        {:db (assoc db
                    :view-id view

@@ -1,11 +1,13 @@
 (ns status-im.core
   (:require [status-im.ui.components.react :as react]
             [re-frame.core :as re-frame]
-            ;[status-im.utils.config :as config]
+            [taoensso.timbre :as log]
+            [status-im.utils.config :as config]
+            [status-im.native-module.core :as status]
             [reagent.core :as reagent]))
 
 (defn init [app-root]
-  ;(log/set-level! config/log-level)
+  (log/set-level! :debug)
   ;;(error-handler/register-exception-handler!)
   ;;(status/init-jail)
   (print "status-im.core init call")

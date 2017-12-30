@@ -77,7 +77,7 @@
         [_ {:keys                                [from]
             {:keys [group-id keypair timestamp]} :payload}]]
      (let [{:keys [private public]} keypair]
-       (comment (let [is-active (chats/is-active? group-id)
+       (let [is-active (chats/is-active? group-id)
              chat      {:chat-id     group-id
                         :public-key  public
                         :private-key private
@@ -92,7 +92,7 @@
                :group-id group-id
                :identity current-public-key
                :keypair  keypair
-               :callback #(dispatch [:incoming-message %1 %2])})))))))))
+               :callback #(dispatch [:incoming-message %1 %2])}))))))))
 
 (register-handler
   :update-message-overhead!
