@@ -7,7 +7,8 @@
             [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]
             [clojure.set :as set]
-            [status-im.protocol.web3.keys :as shh-keys]))
+            [status-im.protocol.web3.keys :as shh-keys]
+            [status-im.utils.async :refer [timeout]]))
 
 (defonce loop-state (atom nil))
 (defonce messages (atom {}))
@@ -85,7 +86,7 @@
 
 (defn add-pending-message!
   [web3 message]
-  {:pre [(valid? :protocol/message message)]} 
+  {:pre [(valid? :protocol/message message)]}
   (debug :add-pending-message! message)
   ;; encryption can take some time, better to run asynchronously
   (async/put! pending-message-queue [web3 message]))
@@ -237,7 +238,7 @@
     (async/go-loop [_ nil]
       (doseq [[_ messages] (@messages web3)]
         (doseq [[_ {:keys [id message to type] :as data}] messages]
-          ;; check each message asynchronously 
+          ;; check each message asynchronously
           (when (should-be-retransmitted? options data)
             (try
               (let [message' (check-ttl message type ttl-config default-ttl)
@@ -248,11 +249,11 @@
               (finally
                 (attempt-was-made! web3 id to))))))
       (when-not @stop?
-        (recur (async/<! (async/timeout delivery-loop-ms-interval)))))
+        (recur (async/<! (timeout delivery-loop-ms-interval)))))
     (async/go-loop [_ nil]
       (when-not @stop?
         (online-message)
-        (recur (async/<! (async/timeout (* 1000 send-online-s-interval))))))))
+        (recur (async/<! (timeout (* 1000 send-online-s-interval))))))))
 
 (defn reset-pending-messages! [to]
   (doseq [key (@recipient->pending-message to)]

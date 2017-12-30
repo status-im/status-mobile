@@ -41,4 +41,7 @@
 (def snoopy-buffer           #js {:default #js {}})
 (def EventEmmiter            #js {})
 
-
+(def background-timer       #js {:setTimeout js/setTimeout
+                                 :setInterval js/setInterval
+                                 :clearTimeout js/clearTimeout
+                                 :clearInterval js/clearInterval})

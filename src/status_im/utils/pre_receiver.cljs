@@ -1,6 +1,7 @@
 (ns status-im.utils.pre-receiver
   (:require [cljs.core.async :as async]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [status-im.utils.async :as async-utils]))
 
 ;; See status-im.test.utils.pre-receiver for justification.
 
@@ -25,7 +26,7 @@
     (async/go-loop []
       (let [{:keys [message-id clock-value] :as msg} (async/<! in-ch)]
         (swap! seen conj [clock-value message-id])
-        (async/<! (async/timeout delay-ms))
+        (async/<! (async-utils/timeout delay-ms))
         (async/put! mature-ch msg))
       (recur))
     (async/go-loop []

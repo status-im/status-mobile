@@ -36,3 +36,4 @@
 (def snoopy-bars            (js/require "rn-snoopy/stream/bars"))
 (def snoopy-buffer          (js/require "rn-snoopy/stream/buffer"))
 (def EventEmmiter           (js/require "react-native/Libraries/vendor/emitter/EventEmitter"))
+(def background-timer       (.-default (js/require "react-native-background-timer")))

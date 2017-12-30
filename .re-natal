@@ -54,7 +54,8 @@
     "rn-snoopy/stream/bars",
     "rn-snoopy/stream/filter",
     "rn-snoopy/stream/buffer",
-    "react-native/Libraries/vendor/emitter/EventEmitter"
+    "react-native/Libraries/vendor/emitter/EventEmitter",
+    "react-native-background-timer"
   ],
   "imageDirs": [
     "resources/images"

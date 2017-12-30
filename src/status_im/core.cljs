@@ -9,7 +9,7 @@
             [goog.object :as object]))
 
 (when js/goog.DEBUG
-  (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting" "Setting a timer"]))
+  (object/set js/console "ignoredYellowBox" #js ["re-frame: overwriting"]))
 
 (defn init [app-root]
   (log/set-level! config/log-level)

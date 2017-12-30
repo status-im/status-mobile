@@ -46,7 +46,7 @@
   ::show-transaction-error
   (fn [message]
     ;; (andrey) we need this timeout because modal window conflicts with alert
-    (js/setTimeout #(utils/show-popup (i18n/label :t/transaction-failed) message) 1000)))
+    (utils/set-timeout #(utils/show-popup (i18n/label :t/transaction-failed) message) 1000)))
 
 (re-frame/reg-fx
   :discard-transaction

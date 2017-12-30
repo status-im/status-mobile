@@ -50,6 +50,7 @@
     "react-native-action-button": "2.8.1",
     "react-native-android-sms-listener": "github:adrian-tiberius/react-native-android-sms-listener#listener-bugfix",
     "react-native-autolink": "1.1.1",
+    "react-native-background-timer": "2.0.0",
     "react-native-camera": "0.10.0",
     "react-native-config": "0.9.0",
     "react-native-contacts": "1.0.3",

@@ -3,7 +3,8 @@
             [status-im.ui.components.react :as react]
             [status-im.ui.components.carousel.styles :as st]
             [taoensso.timbre :as log]
-            [status-im.react-native.js-dependencies :as rn-dependencies]))
+            [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.utils.utils :as utils]))
 
 
 (defn window-page-width []
@@ -88,7 +89,7 @@
     (log/debug "go-to-page: props-page-width=" page-width "; gap=" gap
                "; page-position=" page-position "; page: " page)
     (reagent.core/set-state component {:scrolling? true})
-    (js/setTimeout #(reagent.core/set-state component {:scrolling? false}) 200)
+    (utils/set-timeout #(reagent.core/set-state component {:scrolling? false}) 200)
     (scroll-to component page-position 0)
     (reagent.core/set-state component {:activePage page})
     (when (:onPageChange props)

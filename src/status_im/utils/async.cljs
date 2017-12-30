@@ -1,6 +1,12 @@
 (ns status-im.utils.async
   "Utility namespace containing `core.async` helper constructs"
-  (:require [cljs.core.async :as async]))
+  (:require [cljs.core.async :as async]
+            [status-im.utils.utils :as utils]))
+
+(defn timeout [ms]
+  (let [c (async/chan)]
+    (utils/set-timeout (fn [] (async/close! c)) ms)
+    c))
 
 (defn chunked-pipe!
   "Connects input channel to the output channel with time-based chunking.
@@ -16,7 +22,7 @@
     (if flush?
       (do (async/put! output-ch acc)
           (recur [] false))
-      (let [[v ch] (async/alts! [input-ch (async/timeout flush-time)])]
+      (let [[v ch] (async/alts! [input-ch (timeout flush-time)])]
         (if (= ch input-ch)
           (if v
             (recur (conj acc v) (and (seq acc) flush?))

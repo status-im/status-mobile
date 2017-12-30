@@ -3,7 +3,8 @@
             [status-im.protocol.core :as protocol]
             [status-im.ui.screens.discover.navigation]
             [status-im.utils.handlers :as handlers]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [status-im.utils.utils :as utils]))
 
 (def request-discoveries-interval-s 600)
 (def maximum-number-of-discoveries 1000)
@@ -117,8 +118,14 @@
 (handlers/register-handler-fx
   :init-discoveries
   [(re-frame/inject-cofx :data-store/discoveries)]
-  (fn [{:keys [data-store/discoveries db]} _]
-    {:db       (assoc db :discoveries discoveries)
+  (fn [{:keys [data-store/discoveries db] {:keys [request-discoveries-timer]} :db} _]
+    (when request-discoveries-timer
+      (utils/clear-interval request-discoveries-timer))
+    {:db       (assoc db
+                      :discoveries discoveries
+                      :request-discoveries-timer
+                      (utils/set-interval #(re-frame/dispatch [:request-discoveries])
+                                          (* request-discoveries-interval-s 1000)))
      :dispatch [:request-discoveries]}))
 
 (handlers/register-handler-fx
@@ -126,18 +133,11 @@
   [(re-frame/inject-cofx :random-id)]
   (fn [{{:keys [current-public-key web3]
          :contacts/keys [contacts]} :db
-        random-id :random-id} [this-event]]
-    ;; this event calls itself at regular intervals
-    ;; TODO (yenda): this was previously using setInterval explicitly, with
-    ;; dispatch-later it is using it implicitly. setInterval is
-    ;; problematic for such long period of time and will cause a warning
-    ;; for Android in latest versions of react-nativexb
+        random-id :random-id} _]
     {::request-discoveries {:current-public-key current-public-key
                             :web3               web3
                             :identities         (handlers/identities contacts)
-                            :message-id         random-id}
-     :dispatch-later       [{:ms       (* request-discoveries-interval-s 1000)
-                             :dispatch [this-event]}]}))
+                            :message-id         random-id}}))
 
 (handlers/register-handler-fx
   :discoveries-send-portions

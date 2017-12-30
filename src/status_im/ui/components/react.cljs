@@ -196,7 +196,7 @@
                             (if (or (nil? timeout)
                                     (> 100 timeout))
                               (reset! loading false)
-                              (js/setTimeout (fn []
+                              (u/set-timeout (fn []
                                                (reset! loading false))
                                              timeout)))}
     (if (and (not enabled?) @loading)

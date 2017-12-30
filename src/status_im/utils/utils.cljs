@@ -81,9 +81,16 @@
                    (fn [error]
                      (show-popup "Error" (str error))))))))
 
-(defn deep-merge
-  "Recursively merge maps"
-  [& maps]
-  (if (every? map? maps)
-    (apply merge-with deep-merge maps)
-    (last maps)))
+;; background-timer
+
+(defn set-timeout [cb ms]
+  (.setTimeout rn-dependencies/background-timer cb ms))
+
+(defn clear-timeout [id]
+  (.clearTimeout rn-dependencies/background-timer id))
+
+(defn set-interval [cb ms]
+  (.setInterval rn-dependencies/background-timer cb ms))
+
+(defn clear-interval [id]
+  (.clearInterval rn-dependencies/background-timer id))

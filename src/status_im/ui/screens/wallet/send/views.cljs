@@ -182,7 +182,7 @@
                                                         (when-not sufficient-funds? (i18n/label :t/wallet-insufficient-funds)))
                                      :input-options {:default-value  (str (money/to-fixed (money/wei->ether amount)))
                                                      :max-length     21
-                                                     :on-focus       (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
+                                                     :on-focus       (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                                                      :on-change-text #(re-frame/dispatch [:wallet.send/set-and-validate-amount %])}}]
         [advanced-options advanced? transaction modal?]]]
       (if signing?

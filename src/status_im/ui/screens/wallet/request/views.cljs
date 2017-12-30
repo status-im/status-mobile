@@ -15,7 +15,8 @@
             [status-im.ui.screens.wallet.styles :as wallet.styles]
             [status-im.utils.ethereum.core :as ethereum]
             [status-im.utils.ethereum.eip681 :as eip681]
-            [status-im.utils.ethereum.tokens :as tokens]))
+            [status-im.utils.ethereum.tokens :as tokens]
+            [status-im.utils.utils :as utils]))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style wallet.styles/toolbar}
@@ -63,7 +64,7 @@
            [qr-code amount symbol]]]]
        [components/amount-selector
         {:error         amount-error
-         :input-options {:on-focus (fn [] (when @scroll (js/setTimeout #(.scrollToEnd @scroll) 100)))
+         :input-options {:on-focus (fn [] (when @scroll (utils/set-timeout #(.scrollToEnd @scroll) 100)))
                          :on-change-text #(re-frame/dispatch [:wallet.request/set-and-validate-amount %])}}]
        [components/asset-selector {:type   :request
                                    :symbol symbol}]]]
