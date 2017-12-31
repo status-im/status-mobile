@@ -18,6 +18,7 @@
             [status-im.utils.datetime :as time]
             [status-im.utils.utils :refer [hash-tag?]]
             [status-im.react-native.js-dependencies :as rn-dependencies]
+            [status-im.ui.components.qr-code :refer [qr-code]]
             [status-im.ui.components.icons.vector-icons :as vector-icons])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
@@ -196,6 +197,7 @@
   [react/view styles/profile-form
    [react/scroll-view
     [react/view styles/profile-form
+     [qr-code {:value "Hello status!"}]
      [profile-badge]
      [profile-status]]
     [common/form-spacer]

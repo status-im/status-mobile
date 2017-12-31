@@ -25,7 +25,7 @@
                       :height        150}})
 
 (defstyle sign-it-text
-  {:color   :white
+  {:color   :blue
    :ios     {:font-size 17
              :letter-spacing -0.2}
    :android {:font-size 16}
