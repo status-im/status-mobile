@@ -22,7 +22,8 @@ node ('macos1') {
       
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
-      sh 'lein deps && npm install'
+      sh 'lein deps'
+      sh 'npm install'
       sh '[ -f node_modules/react-native/packager/src/JSTransformer/index.js ] && sed -i "" "s/301000/1201000/g" node_modules/react-native/packager/src/JSTransformer/index.js || echo "New packager"'
 
       // Fix silly RN upgrade weird env issue
