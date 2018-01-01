@@ -18,7 +18,7 @@ node ('macos1') {
       checkout scm
       sh 'git checkout -- .'
       sh 'git checkout develop'
-      sh 'git checkout ' + BRANCH_NAME
+      sh 'git checkout remotes/origin/' + BRANCH_NAME
       
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
