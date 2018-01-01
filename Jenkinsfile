@@ -18,7 +18,7 @@ node ('macos1') {
       checkout scm
       sh 'git checkout -- .'
       sh 'git checkout develop'
-      sh 'git checkout ' + BRANCH_NAME
+      sh 'git checkout remotes/origin/' + BRANCH_NAME
       
       sh 'rm -rf node_modules'
       sh 'cp .env.jenkins .env'
@@ -30,6 +30,7 @@ node ('macos1') {
 
       sh 'mvn -f modules/react-native-status/ios/RCTStatus dependency:unpack'
       sh 'cd ios && pod install && cd ..'
+      sh 'npm install'
     }
 
     stage('Tests') {
