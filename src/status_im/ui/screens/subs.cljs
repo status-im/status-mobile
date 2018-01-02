@@ -8,6 +8,7 @@
             status-im.ui.screens.contacts.subs
             status-im.ui.screens.group.subs
             status-im.ui.screens.wallet.subs
+            status-im.ui.screens.wallet.collectibles.subs
             status-im.ui.screens.wallet.request.subs
             status-im.ui.screens.wallet.send.subs
             status-im.ui.screens.wallet.transactions.subs

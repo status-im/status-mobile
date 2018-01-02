@@ -110,6 +110,8 @@
 
 (spec/def :navigation.screen-params/usage-data vector?)
 
+(spec/def :navigation.screen-params/display-collectible map?)
+
 (spec/def :navigation/screen-params (spec/nilable (allowed-keys :opt-un [:navigation.screen-params/network-details
                                                                          :navigation.screen-params/browser
                                                                          :navigation.screen-params/profile-qr-viewer
@@ -117,7 +119,8 @@
                                                                          :navigation.screen-params/group-contacts
                                                                          :navigation.screen-params/edit-contact-group
                                                                          :navigation.screen-params/dapp-description
-                                                                         :navigation.screen-params/usage-data])))
+                                                                         :navigation.screen-params/usage-data
+                                                                         :navigation.screen-params/display-collectible])))
 
 (spec/def :desktop/desktop (spec/nilable any?))
 
@@ -128,6 +131,9 @@
 (spec/def ::peers-summary (spec/nilable vector?))
 (spec/def :inbox/fetching? (spec/nilable boolean?))
 (spec/def :inbox/current-id (spec/nilable string?))
+
+(spec/def ::collectible (spec/nilable map?))
+(spec/def ::collectibles (spec/nilable map?))
 
 ;;;;NODE
 
@@ -249,4 +255,6 @@
                  :prices/prices
                  :prices/prices-loading?
                  :notifications/notifications
-                 ::device-UUID]))
+                 ::device-UUID
+                 ::collectible
+                 ::collectibles]))

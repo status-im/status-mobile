@@ -24,6 +24,7 @@
             [status-im.ui.screens.profile.contact.views :as profile.contact]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
             [status-im.ui.screens.profile.photo-capture.views :refer [profile-photo-capture]]
+            [status-im.ui.screens.wallet.collectibles.views :as collectibles]
             [status-im.ui.screens.wallet.send.views :refer [send-transaction send-transaction-modal sign-message-modal]]
             [status-im.ui.screens.wallet.choose-recipient.views :refer [choose-recipient]]
             [status-im.ui.screens.wallet.request.views :refer [request-transaction send-transaction-request]]
@@ -51,6 +52,7 @@
 
 (defn get-main-component [view-id]
   (case view-id
+    :display-collectible collectibles/display-collectible
     :intro intro
     :create-account create-account
     :usage-data usage-data

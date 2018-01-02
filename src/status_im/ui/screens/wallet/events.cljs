@@ -12,7 +12,9 @@
             status-im.ui.screens.wallet.request.events
             [status-im.utils.money :as money]
             [status-im.constants :as constants]
-            [status-im.ui.screens.navigation :as navigation]))
+            [status-im.ui.screens.navigation :as navigation]
+            [status-im.ui.screens.wallet.collectibles.views :as collectibles]
+            [clojure.set :as set]))
 
 (defn get-balance [{:keys [web3 account-id on-success on-error]}]
   (if (and web3 account-id)
@@ -99,14 +101,18 @@
  (fn [{:keys [web3 obj success-event]}]
    (ethereum/estimate-gas-web3 web3 (clj->js obj) #(re-frame/dispatch [success-event %2]))))
 
+(defn tokens-symbols [v chain]
+  (set/difference (set v) (set (map :symbol (tokens/nfts-for chain)))))
+
 ;; Handlers
 (handlers/register-handler-fx
  :update-wallet
- (fn [{{:keys [web3 account/account network network-status] {:keys [address settings]} :account/account :as db} :db} _]
+ (fn [{{:keys [web3 network network-status] {:keys [address settings]} :account/account :as db} :db} _]
    (let [network     (get-in db [:account/account :networks network])
          chain       (ethereum/network->chain-keyword network)
          mainnet?    (= :mainnet chain)
-         symbols     (get-in settings [:wallet :visible-tokens chain])
+         assets      (get-in settings [:wallet :visible-tokens chain])
+         tokens      (tokens-symbols (get-in settings [:wallet :visible-tokens chain]) chain)
          currency-id (or (get-in settings [:wallet :currency]) :usd)
          currency    (get constants/currencies currency-id)]
      (when (not= network-status :offline)
@@ -116,11 +122,11 @@
                              :error-event   :update-balance-fail}
         :get-tokens-balance {:web3          web3
                              :account-id    address
-                             :symbols       symbols
+                             :symbols       assets
                              :chain         chain
                              :success-event :update-token-balance-success
                              :error-event   :update-token-balance-fail}
-        :get-prices         {:from          (if mainnet? (conj symbols "ETH") ["ETH"])
+        :get-prices         {:from          (if mainnet? (conj tokens "ETH") ["ETH"])
                              :to            [(:code currency)]
                              :success-event :update-prices-success
                              :error-event   :update-prices-fail}
@@ -268,3 +274,10 @@
    {:db (-> db
             (assoc-in [:wallet :send-transaction] {})
             (navigation/navigate-back))}))
+
+(handlers/register-handler-fx
+ :wallet/show-collectibles
+ (fn [_ [_ address {:keys [symbol] :as m}]]
+   (if-let [fx (collectibles/load-collectibles-fx symbol address)]
+     (assoc fx :dispatch [:navigate-to :display-collectible m])
+     {:show-error (str "Missing implementation for " (name symbol))})))

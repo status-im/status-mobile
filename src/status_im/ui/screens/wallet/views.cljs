@@ -9,7 +9,9 @@
             [status-im.ui.components.icons.vector-icons :as vector-icons]
             [status-im.ui.screens.wallet.onboarding.views :as onboarding.views]
             [status-im.ui.screens.wallet.styles :as styles]
-            [status-im.ui.screens.wallet.utils :as wallet.utils]))
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
+            [status-im.utils.money :as money]
+            status-im.ui.screens.wallet.collectibles.cryptokitties))
 
 (defn toolbar-view []
   [toolbar/toolbar {:style styles/toolbar :flat? true}
@@ -80,21 +82,56 @@
                      :number-of-lines 1}
          (if @asset-value @asset-value "...")]]])))
 
-(defn- asset-section [assets currency]
-  [react/view styles/asset-section
-   [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
-   [list/flat-list
-    {:default-separator? true
-     :scroll-enabled     false
-     :key-fn             (comp str :symbol)
-     :data               assets
-     :render-fn          (render-asset currency)}]])
+(def item-icon-forward
+  [list/item-icon {:icon      :icons/forward
+                   :icon-opts {:color :gray}}])
+
+(defn- render-collectible [address-hex {:keys [symbol icon amount] :as m}]
+  (let [i        (money/to-fixed amount)
+        details? (pos? i)]
+    [react/touchable-highlight (when details?
+                                 {:on-press #(re-frame/dispatch [:wallet/show-collectibles address-hex m])})
+     [react/view {:style styles/asset-item-container}
+      [list/item
+       [list/item-image icon]
+       [react/view {:style styles/asset-item-value-container}
+        [react/text {:style               styles/asset-item-value
+                     :number-of-lines     1
+                     :ellipsize-mode      :tail
+                     :accessibility-label (str (-> symbol name clojure.string/lower-case) "-collectible-value-text")}
+         (or i 0)]
+        [react/text {:style           styles/asset-item-currency
+                     :uppercase?      true
+                     :number-of-lines 1}
+         (name symbol)]]
+       (when details?
+         item-icon-forward)]]]))
+
+(defn group-assets [v]
+  (group-by #(if (:nft? %) :nfts :tokens) v))
+
+(defn- asset-section [assets currency address-hex]
+  (let [{:keys [tokens nfts]} (group-assets assets)]
+    [react/view styles/asset-section
+     [list/section-list
+      {:default-separator? true
+       :scroll-enabled     false
+       :key-fn             (comp str :symbol)
+       :sections           [{:title     (i18n/label :t/wallet-assets)
+                             :key       :assets
+                             :data      tokens
+                             :render-fn (render-asset currency)}
+                            {:title     (i18n/label :t/wallet-collectibles)
+                             :key       :collectibles
+                             :data      nfts
+                             :render-fn #(render-collectible address-hex %)}]}]]))
 
 (views/defview wallet-root []
   (views/letsubs [assets          [:wallet/visible-assets-with-amount]
                   currency        [:wallet/currency]
                   portfolio-value [:portfolio-value]
-                  {:keys [seed-backed-up?]} [:get-current-account]]
+                  {:keys [seed-backed-up?]} [:get-current-account]
+                  address-hex     [:get-current-account-hex]]
     [react/view styles/main-section
      [toolbar-view]
      [react/scroll-view {:refresh-control
@@ -110,7 +147,7 @@
         [backup-seed-phrase])
       [list/action-list actions
        {:container-style styles/action-section}]
-      [asset-section assets currency]
+      [asset-section assets currency address-hex]
       ;; Hack to allow different colors for bottom scroll view (iOS only)
       [react/view {:style styles/scroll-bottom}]]]))
 

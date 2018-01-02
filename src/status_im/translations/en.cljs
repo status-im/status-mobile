@@ -427,6 +427,7 @@
    :wallet-exchange                      "Exchange"
    :wallet-asset                         "Asset"
    :wallet-assets                        "Assets"
+   :wallet-collectibles                  "Collectibles"
    :wallet-add-asset                     "Add asset"
    :wallet-total-value                   "Total value"
    :wallet-settings                      "Wallet settings"
@@ -588,6 +589,9 @@
    :validation-amount-is-too-precise     "Amount is too precise. Max number of decimals is {{decimals}}."
    :scan-qr-code                         "Scan a QR code with a wallet address"
    :reset-default                        "Reset to default"
+
+   :view-cryptokitties                   "View in CryptoKitties"
+   :cryptokitty-name                     "CryptoKitty #"
 
    ;; network settings
    :new-network                          "New network"

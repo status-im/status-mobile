@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.wallet.styles
   (:require-macros [status-im.utils.styles :refer [defstyle]])
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.react :as react]
             [status-im.ui.components.styles :as styles]))
 
 ;; wallet
@@ -152,11 +151,6 @@
   {:flex             1
    :padding-top      16
    :background-color colors/white})
-
-(def asset-section-title
-  {:font-size   14
-   :margin-left 16
-   :color       colors/gray})
 
 (def asset-item-container
   {:flex            1

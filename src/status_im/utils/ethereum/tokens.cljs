@@ -385,7 +385,19 @@
                     :name     "Attention Token of Media"
                     :address  "0x9B11EFcAAA1890f6eE52C6bB7CF8153aC5d74139"
                     :decimals 8
-                    :hidden?  true}])
+                    :hidden?  true}
+                   {:symbol   :CK
+                    :nft?     true
+                    :name     "CryptoKitties"
+                    :address  "0x06012c8cf97bead5deae237070f9587f8e7a266d"}
+                   {:symbol   :EMONA
+                    :nft?     true
+                    :name     "EtheremonAsset"
+                    :address  "0xB2c0782ae4A299f7358758B2D15dA9bF29E1DD99"}
+                   {:symbol   :STRK
+                    :nft?     true
+                    :name     "CryptoStrikers"
+                    :address  "0xdcaad9fd9a74144d226dbf94ce6162ca9f09ed7e"}])
    :testnet
    (resolve-icons :testnet
                   [{:name     "Status Test Token"
@@ -415,6 +427,9 @@
 
 (defn tokens-for [chain]
   (get all chain))
+
+(defn nfts-for [chain]
+  (filter :nft? (tokens-for chain)))
 
 (defn sorted-tokens-for [chain]
   (->> (tokens-for chain)
