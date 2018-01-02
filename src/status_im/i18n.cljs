@@ -282,6 +282,7 @@
                                                 :en
                                                 :de
                                                 :lt
+                                                :zh-wuu
                                                 :sr-RS_#Latn
                                                 :sr
                                                 :sv}))
