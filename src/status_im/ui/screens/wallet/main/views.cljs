@@ -16,25 +16,18 @@
             [status-im.utils.utils :as utils]
             [status-im.ui.screens.wallet.main.styles :as styles]
             [status-im.ui.screens.wallet.styles :as wallet.styles]
+            [status-im.ui.screens.wallet.utils :as wallet.utils]
             [status-im.ui.components.styles :as components.styles]
             [status-im.ui.screens.wallet.components.views :as components]
             [status-im.ui.components.button.styles :as button.styles]
             [status-im.ui.screens.wallet.views :as wallet.views]))
 
-(defn- show-not-implemented! []
-  (utils/show-popup "TODO" "Not implemented yet!"))
-
 (defn toolbar-title []
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :wallet-list])}
-   [react/view {:style styles/toolbar-title-container}
-    [react/text {:style           styles/toolbar-title-text
-                 :font            :toolbar-title
-                 :number-of-lines 1}
-     (i18n/label :t/main-wallet)]
-    [vi/icon
-     :icons/dropdown
-     {:container-style styles/toolbar-title-icon
-      :color           :white}]]])
+  [react/view {:style styles/toolbar-title-container}
+   [react/text {:style           styles/toolbar-title-text
+                :font            :toolbar-title
+                :number-of-lines 1}
+    (i18n/label :t/main-wallet)]])
 
 (def transaction-history-action
   {:icon      :icons/transaction-history
@@ -62,10 +55,6 @@
     [react/view {:style styles/total-balance}
      [react/text {:style styles/total-balance-value} usd-value]
      [react/text {:style styles/total-balance-currency} (i18n/label :t/usd-currency)]]
-    [react/view {:style styles/value-variation}
-     [react/text {:style styles/value-variation-title}
-      (i18n/label :t/wallet-total-value)]
-     [components/change-display change]]
     [react/view {:style (merge button.styles/buttons-container styles/buttons)}
      [btn/button {:disabled? syncing?
                   :on-press #(re-frame/dispatch [:navigate-to :wallet-send-transaction])
@@ -78,43 +67,27 @@
      [btn/button {:disabled? true :style (button.styles/button-bar :last) :text-style styles/main-button-text}
       (i18n/label :t/wallet-exchange)]]]])
 
-(defn add-asset []
-  [list/touchable-item show-not-implemented!
-   [react/view
-    [list/item
-     [list/item-icon {:icon :icons/add :style styles/add-asset-icon :icon-opts {:color :blue}}]
-     [react/view {:style styles/asset-item-value-container}
-      [react/text {:style styles/add-asset-text}
-       (i18n/label :t/wallet-add-asset)]]]]])
-
-(defn render-asset [{:keys [name symbol icon decimals amount] :as asset}]
-  (if name ;; If no 'name' then this the dummy value used to render `add-asset`
-    [list/touchable-item  #(re-frame/dispatch [:navigate-to-asset asset])
-     [react/view
-      [list/item
-       [list/item-image icon]
-       [react/view {:style styles/asset-item-value-container}
-        [react/text {:style           styles/asset-item-value
-                     :number-of-lines 1
-                     :ellipsize-mode  :tail}
-         (money/to-fixed (money/token->unit (or amount (money/bignumber 0)) decimals))]
-        [react/text {:style           styles/asset-item-currency
-                     :uppercase?      true
-                     :number-of-lines 1}
-         symbol]]
-       [list/item-icon {:icon :icons/forward}]]]]
-    [add-asset]))
-
-(defn tokens-for [network]
-  (get tokens/all (ethereum/network->chain-id network)))
+(defn- render-asset [{:keys [name symbol icon decimals amount] :as asset}]
+  [react/view
+   [list/item
+    [list/item-image icon]
+    [react/view {:style styles/asset-item-value-container}
+     [react/text {:style           styles/asset-item-value
+                  :number-of-lines 1
+                  :ellipsize-mode  :tail}
+      (wallet.utils/format-amount amount decimals)]
+     [react/text {:style           styles/asset-item-currency
+                  :uppercase?      true
+                  :number-of-lines 1}
+      symbol]]]])
 
 (defn asset-section [network balance visible-tokens prices-loading? balance-loading?]
-  (let [tokens (filter #(contains? visible-tokens (:symbol %)) (tokens-for network))
+  (let [tokens (filter #(contains? visible-tokens (:symbol %)) (tokens/tokens-for (ethereum/network->chain-keyword network)))
         assets (map #(assoc % :amount (get balance (:symbol %))) (concat [tokens/ethereum] (when config/erc20-enabled? tokens)))]
     [react/view {:style styles/asset-section}
      [react/text {:style styles/asset-section-title} (i18n/label :t/wallet-assets)]
      [list/flat-list
-      {:data       assets ;; TODO(jeluard) Reenable once we `add-an-asset` story is flecthed out ;; (concat assets [{}]) ;; Extra map triggers rendering for add-asset
+      {:data       assets
        :render-fn  render-asset
        :on-refresh #(re-frame/dispatch [:update-wallet (when config/erc20-enabled? (map :symbol tokens))])
        :refreshing (boolean (or prices-loading? balance-loading?))}]]))

@@ -1,24 +1,20 @@
 (ns status-im.ui.components.image-button.view
-  (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
-            [status-im.ui.components.react :refer [view
-                                                text
-                                                image
-                                                touchable-highlight]]
-            [status-im.ui.components.icons.vector-icons :as vi]
-            [status-im.ui.components.styles :refer [icon-scan]]
-            [status-im.i18n :refer [label]]
-            [status-im.ui.components.image-button.styles :as st]))
+  (:require [status-im.i18n :as i18n]
+            [status-im.ui.components.icons.vector-icons :as vector-icons]
+            [status-im.ui.components.image-button.styles :as styles]
+            [status-im.ui.components.react :as react]
+            [status-im.ui.components.styles :as components.styles]))
 
-(defn image-button [{:keys [value style handler]}]
-  [view st/image-button
-   [touchable-highlight {:on-press handler}
-    [view st/image-button-content
-     [vi/icon :icons/fullscreen {:color :blue :style icon-scan}]
-     (when text
-       [text {:style style} value])]]])
+(defn- image-button [{:keys [value style handler]}]
+  [react/view styles/image-button
+   [react/touchable-highlight {:on-press handler}
+    [react/view styles/image-button-content
+     [vector-icons/icon :icons/fullscreen {:color :blue :style components.styles/icon-scan}]
+     (when value
+       [react/text {:style style} value])]]])
 
 (defn scan-button [{:keys [show-label? handler]}]
-  [image-button {:value   (if show-label?
-                            (label :t/scan-qr))
-                 :style   st/scan-button-text
+  [image-button {:value   (when show-label?
+                            (i18n/label :t/scan-qr))
+                 :style   styles/scan-button-text
                  :handler handler}])

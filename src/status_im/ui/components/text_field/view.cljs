@@ -3,11 +3,11 @@
             [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [reagent.core :as r]
             [status-im.ui.components.react :refer [view
-                                                text
-                                                animated-text
-                                                animated-view
-                                                text-input
-                                                touchable-opacity]]
+                                                   text
+                                                   animated-text
+                                                   animated-view
+                                                   text-input
+                                                   touchable-opacity]]
             [status-im.ui.components.text-field.styles :as st]
             [status-im.i18n :refer [label]]
             [status-im.ui.components.animation :as anim]

@@ -4,8 +4,7 @@
             [status-im.ui.screens.navigation :as nav]
             [status-im.utils.handlers :as u :refer [register-handler]]
             [status-im.utils.utils :as utils]
-            [status-im.i18n :as i18n]
-            [status-im.utils.ethereum.eip681 :as eip681]))
+            [status-im.i18n :as i18n]))
 
 (defmethod nav/preload-data! :qr-scanner
   [db [_ _ identifier]]
@@ -32,10 +31,10 @@
   (fn [db [_ identifier]]
     (update db :qr-codes dissoc identifier)))
 
-(defn handle-qr-request
+(defn- handle-qr-request
   [db [_ context data]]
   (when-let [handler (get-in db [:qr-codes context])]
-    (re-frame/dispatch [handler context (:address (eip681/parse-uri data))])))
+    (re-frame/dispatch [handler context data])))
 
 (defn clear-qr-request [db [_ context]]
   (-> db

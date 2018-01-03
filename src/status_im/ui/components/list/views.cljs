@@ -47,6 +47,7 @@
 
 (defn item-icon
   [{:keys [icon style icon-opts]}]
+  {:pre [(not (nil? icon))]}
   [rn/view {:style style}
    [vi/icon icon (merge icon-opts {:style lst/item-icon})]])
 

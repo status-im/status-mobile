@@ -21,11 +21,10 @@
 (defview manage-assets []
   (letsubs [network        [:network]
             visible-tokens [:wallet.settings/visible-tokens]]
-    (let [chain-id (ethereum/network->chain-id network)]
-      [react/view components.styles/flex
-       [toolbar/toolbar {}
-        [toolbar/nav-clear-text (i18n/label :t/done)]
-        [toolbar/content-title (i18n/label :t/wallet-assets)]]
-       [react/view {:style components.styles/flex}
-        [list/flat-list {:data      (tokens/tokens-for chain-id)
-                         :render-fn #(render-token % visible-tokens)}]]])))
+    [react/view components.styles/flex
+     [toolbar/toolbar {}
+      [toolbar/nav-clear-text (i18n/label :t/done)]
+      [toolbar/content-title (i18n/label :t/wallet-assets)]]
+     [react/view {:style components.styles/flex}
+      [list/flat-list {:data      (tokens/tokens-for (ethereum/network->chain-keyword network))
+                       :render-fn #(render-token % visible-tokens)}]]]))

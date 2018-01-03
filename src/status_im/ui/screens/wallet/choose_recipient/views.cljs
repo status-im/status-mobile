@@ -16,7 +16,7 @@
 (defn choose-from-contacts []
   (re-frame/dispatch [:navigate-to-modal
                       :contact-list-modal
-                      {:handler #(re-frame/dispatch [:wallet-open-send-transaction (:address %1) (:name %1)])
+                      {:handler #(re-frame/dispatch [:wallet/fill-request-from-contact %])
                        :action  :send
                        :params  {:hide-actions? true}}]))
 
@@ -41,7 +41,7 @@
    [react/touchable-highlight {:style    (styles/recipient-touchable true)
                                :on-press #(react/get-from-clipboard
                                             (fn [clipboard]
-                                              (re-frame/dispatch [:choose-recipient (string/trim-newline clipboard) nil])))}
+                                              (re-frame/dispatch [:wallet/fill-request-from-url (string/trim-newline clipboard) nil])))}
     [react/view {:style styles/recipient-button}
      [react/text {:style styles/recipient-button-text}
       (i18n/label :t/wallet-address-from-clipboard)]
@@ -89,6 +89,6 @@
                         :aspect        :fill
                         :captureAudio  false
                         :torchMode     (camera/set-torch camera-flashlight)
-                        :onBarCodeRead #(re-frame/dispatch [:choose-recipient (camera/get-qr-code-data %) nil])}])
+                        :onBarCodeRead #(re-frame/dispatch [:wallet/fill-request-from-url (camera/get-qr-code-data %) nil])}])
       [viewfinder camera-dimensions]]
      [recipient-buttons]]))
