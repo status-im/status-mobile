@@ -18,6 +18,7 @@ def get_latest_apk():
     dates.sort(key=lambda date: datetime.strptime(date, "%d-%b-%Y %H:%M"), reverse=True)
     return re.findall('>(.*k)</a>\s*%s' % dates[0], raw_data)[0]
 
+
 latest_nightly_apk = dict()
 latest_nightly_apk['name'] = get_latest_apk()
 latest_nightly_apk['url'] = storage + latest_nightly_apk['name']

@@ -1,11 +1,9 @@
-from selenium.common.exceptions import NoSuchElementException
-
-from apis.ropsten_api import get_transactions, is_transaction_successful, get_balance
-from views.base_element import BaseElement, BaseButton, BaseEditBox, BaseText
 import logging
 import time
 import pytest
-import requests
+from views.base_element import *
+from tests import api_requests
+from datetime import datetime
 
 
 class BackButton(BaseButton):
@@ -40,36 +38,6 @@ class DenyButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Deny']")
 
 
-class ContactsButton(BaseButton):
-    def __init__(self, driver):
-        super(ContactsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Contacts']")
-
-    def navigate(self):
-        from views.contacts import ContactsViewObject
-        return ContactsViewObject(self.driver)
-
-
-class WalletButton(BaseButton):
-    def __init__(self, driver):
-        super(WalletButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Wallet']")
-
-    def navigate(self):
-        from views.wallet import WalletViewObject
-        return WalletViewObject(self.driver)
-
-
-class DiscoverButton(BaseButton):
-    def __init__(self, driver):
-        super(DiscoverButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Discover']")
-
-    def navigate(self):
-        from views.discover import DiscoverView
-        return DiscoverView(self.driver)
-
-
 class YesButton(BaseButton):
     def __init__(self, driver):
         super(YesButton, self).__init__(driver)
@@ -82,9 +50,9 @@ class NoButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='No']")
 
 
-class OkButtonAPK(BaseButton):
+class OkButton(BaseButton):
     def __init__(self, driver):
-        super(OkButtonAPK, self).__init__(driver)
+        super(OkButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='OK']")
 
 
@@ -94,15 +62,40 @@ class ContinueButtonAPK(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Continue']")
 
 
-def verify_transaction_in_ropsten(address: str, transaction_hash: str):
-    transactions = get_transactions(address=address)
-    for transaction in transactions:
-        if transaction['hash'] == transaction_hash:
-            logging.info('Transaction is found in Ropsten network')
-            if not is_transaction_successful(transaction_hash=transaction_hash):
-                pytest.fail('Transaction is not successful')
-            return
-    pytest.fail('Transaction was not found via Ropsten API')
+class ContactsButton(BaseButton):
+    def __init__(self, driver):
+        super(ContactsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Contacts']/..")
+
+    def navigate(self):
+        from views.contacts_view import ContactsView
+        return ContactsView(self.driver)
+
+
+class WalletButton(BaseButton):
+    def __init__(self, driver):
+        super(WalletButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Wallet']/..")
+
+    def navigate(self):
+        from views.wallet_view import WalletView
+        return WalletView(self.driver)
+
+
+class DiscoverButton(BaseButton):
+    def __init__(self, driver):
+        super(DiscoverButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Discover']/..")
+
+    def navigate(self):
+        from views.discover_view import DiscoverView
+        return DiscoverView(self.driver)
+
+
+class ChatsButton(BaseButton):
+    def __init__(self, driver):
+        super(ChatsButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector("//*[@text='Chats']/..")
 
 
 class SaveButton(BaseButton):
@@ -110,6 +103,13 @@ class SaveButton(BaseButton):
         super(SaveButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector(
             "//android.widget.TextView[@text='SAVE']")
+
+
+class NextButton(BaseButton):
+    def __init__(self, driver):
+        super(NextButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector(
+            "//android.widget.TextView[@text='NEXT']")
 
 
 class ChatRequestInput(BaseEditBox):
@@ -133,14 +133,7 @@ class StatusAppIcon(BaseButton):
             "//*[@text='Status']")
 
 
-class ChatsButton(BaseButton):
-    def __init__(self, driver):
-        super(ChatsButton, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector(
-            "//*[@text='Chats']")
-
-
-class BaseViewObject(object):
+class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
 
@@ -150,7 +143,8 @@ class BaseViewObject(object):
         self.allow_button = AllowButton(self.driver)
         self.deny_button = DenyButton(self.driver)
         self.continue_button_apk = ContinueButtonAPK(self.driver)
-        self.ok_button_apk = OkButtonAPK(self.driver)
+        self.ok_button_apk = OkButton(self.driver)
+        self.next_button = NextButton(self.driver)
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
 
@@ -162,6 +156,13 @@ class BaseViewObject(object):
         self.save_button = SaveButton(self.driver)
 
         self.chat_request_input = ChatRequestInput(self.driver)
+
+        self.element_types = {
+            'base': BaseElement,
+            'button': BaseButton,
+            'edit_box': BaseEditBox,
+            'text': BaseText
+        }
 
     @property
     def logcat(self):
@@ -198,51 +199,28 @@ class BaseViewObject(object):
         return element.wait_for_element(wait_time)
 
     def element_by_text(self, text, element_type='base'):
-
-        element_types = {
-            'base': BaseElement,
-            'button': BaseButton,
-            'edit_box': BaseEditBox,
-            'text': BaseText
-        }
-
-        element = element_types[element_type](self.driver)
+        logging.info("Looking for an element by text: '%s'" % text)
+        element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector('//*[@text="' + text + '"]')
         return element
 
     def element_by_text_part(self, text, element_type='base'):
-
-        element_types = {
-            'base': BaseElement,
-            'button': BaseButton,
-            'edit_box': BaseEditBox,
-            'text': BaseText
-        }
-
-        element = element_types[element_type](self.driver)
+        logging.info("Looking for an element by text part: '%s'" % text)
+        element = self.element_types[element_type](self.driver)
         element.locator = element.Locator.xpath_selector('//*[contains(@text, "' + text + '")]')
         return element
 
-    def get_chats(self):
-        from views.chats import ChatsViewObject
-        return ChatsViewObject(self.driver)
+    def get_chat_view(self):
+        from views.chat_view import ChatView
+        return ChatView(self.driver)
 
-    def get_login(self):
-        from views.login import LoginView
-        return LoginView(self.driver)
+    def get_sign_in_view(self):
+        from views.sign_in_view import SignInView
+        return SignInView(self.driver)
 
-    def get_donate(self, address, wait_time=300):
-        initial_balance = get_balance(address)
-        counter = 0
-        if initial_balance < 1000000000000000000:
-            response = requests.request('GET', 'http://46.101.129.137:3001/donate/0x%s' % address).json()
-            while True:
-                if counter == wait_time:
-                    pytest.fail("Donation was not received during %s seconds!" % wait_time)
-                elif get_balance(address) == initial_balance:
-                    counter += 10
-                    time.sleep(10)
-                    logging.info('Waiting %s seconds for donation' % counter)
-                else:
-                    logging.info('Got %s for %s' % (response["amount"], address))
-                    break
+    def get_send_transaction_view(self):
+        from views.send_transaction_view import SendTransactionView
+        return SendTransactionView(self.driver)
+
+    def get_unique_amount(self):
+        return '0.0%s' % datetime.now().strftime('%-m%-d%-H%-M%-S').strip('0')

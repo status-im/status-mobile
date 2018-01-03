@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 
 
 @asyncio.coroutine
@@ -18,7 +19,9 @@ class TestData(object):
         self.test_name = None
         self.apk_name = None
 
+
 test_data = TestData()
+
 
 basic_user = {'password': "newuniquepassword12",
               'passphrase': "tree weekend ceiling awkward universe pyramid glimpse raven pair lounge grant grief",
@@ -63,3 +66,7 @@ transaction_users_wallet['B_USER']['username'] = "Muffled Purple Milksnake"
 transaction_users_wallet['B_USER']['address'] = "5261ceba31e3a7204b498b2dd20220a6057738d1"
 transaction_users_wallet['B_USER']['public_key'] = "0x04cd70746f3df6cae7b45c32c211bd7e9e95ed5a1ec470db8f3b1f244eed182" \
                                                    "1d4a2053d7671802c5f7ce5b81f5fc2016a8109e1bc83f151ceff21f08c0cdcc6e4"
+
+
+def get_current_time():
+    return datetime.now().strftime('%-m%-d%-H%-M%-S')

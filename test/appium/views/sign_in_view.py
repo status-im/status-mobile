@@ -1,4 +1,4 @@
-from views.base_view import BaseViewObject
+from views.base_view import BaseView
 import pytest
 from views.base_element import *
 
@@ -30,31 +30,18 @@ class RecoverAccessButton(BaseButton):
         super(RecoverAccessButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Recover access']")
 
-
-class PassphraseInput(BaseEditBox):
-
-    def __init__(self, driver):
-        super(PassphraseInput, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='Passphrase']")
+    def navigate(self):
+        from views.recover_access_view import RecoverAccessView
+        return RecoverAccessView(self.driver)
 
 
-class ConfirmRecoverAccess(BaseButton):
+class SignInView(BaseView):
 
     def __init__(self, driver):
-        super(ConfirmRecoverAccess, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//android.widget.TextView[@text='RECOVER ACCESS']")
-
-
-class LoginView(BaseViewObject):
-
-    def __init__(self, driver):
-        super(LoginView, self).__init__(driver)
+        super(SignInView, self).__init__(driver)
         self.driver = driver
 
         self.first_account_button = FirstAccountButton(self.driver)
         self.password_input = PasswordInput(self.driver)
         self.sign_in_button = SignInButton(self.driver)
-
         self.recover_access_button = RecoverAccessButton(self.driver)
-        self.passphrase_input = PassphraseInput(self.driver)
-        self.confirm_recover_access = ConfirmRecoverAccess(self.driver)

@@ -94,15 +94,19 @@ class AbstractTestCase:
     def environment(self):
         return pytest.config.getoption('env')
 
+    @property
+    def implicitly_wait(self):
+        return 10
 
-class LocalMultiplyDeviceTestCase(AbstractTestCase):
+
+class LocalMultipleDeviceTestCase(AbstractTestCase):
 
     def setup_method(self, method):
         capabilities = self.add_local_devices_to_capabilities()
         self.driver_1 = webdriver.Remote(self.executor_local, capabilities[0])
         self.driver_2 = webdriver.Remote(self.executor_local, capabilities[1])
         for driver in self.driver_1, self.driver_2:
-            driver.implicitly_wait(10)
+            driver.implicitly_wait(self.implicitly_wait)
 
     def teardown_method(self, method):
         for driver in self.driver_1, self.driver_2:
@@ -112,7 +116,7 @@ class LocalMultiplyDeviceTestCase(AbstractTestCase):
                 pass
 
 
-class SauceMultiplyDeviceTestCase(AbstractTestCase):
+class SauceMultipleDeviceTestCase(AbstractTestCase):
 
     @classmethod
     def setup_class(cls):
@@ -125,7 +129,7 @@ class SauceMultiplyDeviceTestCase(AbstractTestCase):
                                                               self.executor_sauce_lab,
                                                               self.capabilities_sauce_lab))
         for driver in self.driver_1, self.driver_2:
-            driver.implicitly_wait(10)
+            driver.implicitly_wait(self.implicitly_wait)
 
     def teardown_method(self, method):
         for driver in self.driver_1, self.driver_2:
@@ -151,7 +155,7 @@ class SingleDeviceTestCase(AbstractTestCase):
 
         self.driver = webdriver.Remote(capabilities[self.environment]['executor'],
                                        capabilities[self.environment]['capabilities'])
-        self.driver.implicitly_wait(10)
+        self.driver.implicitly_wait(self.implicitly_wait)
 
     def teardown_method(self, method):
         if self.environment == 'sauce':
@@ -162,10 +166,10 @@ class SingleDeviceTestCase(AbstractTestCase):
             pass
 
 
-environments = {'local': LocalMultiplyDeviceTestCase,
-                'sauce': SauceMultiplyDeviceTestCase}
+environments = {'local': LocalMultipleDeviceTestCase,
+                'sauce': SauceMultipleDeviceTestCase}
 
 
-class MultiplyDeviceTestCase(environments[pytest.config.getoption('env')]):
+class MultipleDeviceTestCase(environments[pytest.config.getoption('env')]):
 
     pass

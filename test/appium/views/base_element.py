@@ -37,11 +37,11 @@ class BaseElement(object):
         return None
 
     def find_element(self):
-        logging.info('Looking for %s' % self.name)
+        self.info('Looking for %s' % self.name)
         return self.driver.find_element(self.locator.by, self.locator.value)
 
     def find_elements(self):
-        logging.info('Looking for %s' % self.name)
+        self.info('Looking for %s' % self.name)
         return self.driver.find_elements(self.locator.by, self.locator.value)
 
     def wait_for_element(self, seconds=10):
@@ -54,7 +54,7 @@ class BaseElement(object):
             try:
                 return self.find_element()
             except NoSuchElementException:
-                logging.info('Scrolling to %s' % self.name)
+                self.info('Scrolling to %s' % self.name)
                 action.press(x=0, y=1000).move_to(x=200, y=-1000).release().perform()
 
     def is_element_present(self, sec=5):
@@ -68,6 +68,10 @@ class BaseElement(object):
     def text(self):
         return self.find_element().text
 
+    def info(self, text):
+        if not "Base" in text:
+            logging.info(text)
+
 
 class BaseEditBox(BaseElement):
 
@@ -76,15 +80,15 @@ class BaseEditBox(BaseElement):
 
     def send_keys(self, value):
         self.find_element().send_keys(value)
-        logging.info('Type %s to %s' % (value, self.name))
+        self.info('Type %s to %s' % (value, self.name))
 
     def set_value(self, value):
         self.find_element().set_value(value)
-        logging.info('Set %s to %s' % (value, self.name))
+        self.info('Type %s to %s' % (value, self.name))
 
     def clear(self):
         self.find_element().clear()
-        logging.info('Clear text in %s' % self.name)
+        self.info('Clear text in %s' % self.name)
 
 
 class BaseText(BaseElement):
@@ -95,7 +99,7 @@ class BaseText(BaseElement):
     @property
     def text(self):
         text = self.find_element().text
-        logging.info('%s is %s' % (self.name, text))
+        self.info('%s is %s' % (self.name, text))
         return text
 
 
@@ -106,5 +110,5 @@ class BaseButton(BaseElement):
 
     def click(self):
         self.find_element().click()
-        logging.info('Tap on %s' % self.name)
+        self.info('Tap on %s' % self.name)
         return self.navigate()

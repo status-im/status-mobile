@@ -29,7 +29,7 @@ class ReserveAssetName(BaseElement):
             self.locator = self.Locator.accessibility_id('Register Name')
 
 
-class AuctionHouseWebView(BaseWebViewObject):
+class AuctionHouseWebView(BaseWebView):
 
     def __init__(self, driver):
         super(AuctionHouseWebView, self).__init__(driver)

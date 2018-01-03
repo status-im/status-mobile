@@ -1,5 +1,6 @@
-from views.base_view import BaseViewObject
+from views.base_view import BaseView
 from views.base_element import *
+
 
 class RequestPasswordIcon(BaseButton):
 
@@ -21,18 +22,23 @@ class RecoverButton(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Recover']")
 
     def navigate(self):
-        from views.login import LoginView
-        return LoginView(self.driver)
+        from views.recover_access_view import RecoverAccessView
+        return RecoverAccessView(self.driver)
 
 
-class HomeView(BaseViewObject):
+class ConsoleView(BaseView):
 
     def __init__(self, driver):
-        super(HomeView, self).__init__(driver)
+        super(ConsoleView, self).__init__(driver)
+
+        self.request_password_icon = RequestPasswordIcon(self.driver)
+        self.recover_button = RecoverButton(self.driver)
+
+        self.accept_agreements()
+
+    def accept_agreements(self):
         for i in self.ok_button_apk, self.continue_button_apk:
             try:
                 i.click()
             except (NoSuchElementException, TimeoutException):
                 pass
-        self.request_password_icon = RequestPasswordIcon(self.driver)
-        self.recover_button = RecoverButton(self.driver)

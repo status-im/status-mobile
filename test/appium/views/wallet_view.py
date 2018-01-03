@@ -1,6 +1,6 @@
 import logging
 
-from views.base_view import BaseViewObject
+from views.base_view import BaseView
 from views.base_element import BaseButton, BaseEditBox, BaseText
 
 
@@ -17,19 +17,15 @@ class RequestButton(BaseButton):
         super(RequestButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='REQUEST']")
 
+    def navigate(self):
+        pass
+
 
 class SendRequestButton(BaseButton):
 
     def __init__(self, driver):
         super(SendRequestButton, self).__init__(driver)
         self.locator = self.Locator.xpath_selector("//*[@text='SEND REQUEST']")
-
-
-class AmountEditBox(BaseEditBox, BaseButton):
-
-    def __init__(self, driver):
-        super(AmountEditBox, self).__init__(driver)
-        self.locator = self.Locator.xpath_selector("//*[@text='Amount']/..//android.widget.EditText")
 
 
 class ChooseRecipientButton(BaseButton):
@@ -46,8 +42,8 @@ class TransactionsButton(BaseButton):
         self.locator = self.Locator.xpath_selector('(//android.view.ViewGroup[@content-desc="icon"])[4]')
 
     def navigate(self):
-        from views.transactions import TransactionsViewObject
-        return TransactionsViewObject(self.driver)
+        from views.transactions_view import TransactionsView
+        return TransactionsView(self.driver)
 
 
 class ChooseFromContactsButton(BaseButton):
@@ -68,19 +64,17 @@ class UsdTotalValueText(BaseText):
         self.locator = self.Locator.xpath_selector("//*[@text='USD']/../android.widget.TextView[1]")
 
 
-class WalletViewObject(BaseViewObject):
+class WalletView(BaseView):
     def __init__(self, driver):
-        super(WalletViewObject, self).__init__(driver)
+        super(WalletView, self).__init__(driver)
         self.driver = driver
 
         self.send_button = SendButton(self.driver)
-        self.amount_edit_box = AmountEditBox(self.driver)
-        self.chose_recipient_button = ChooseRecipientButton(self.driver)
-        self.chose_from_contacts_button = ChooseFromContactsButton(self.driver)
         self.transactions_button = TransactionsButton(self.driver)
         self.eth_asset = EthAssetText(self.driver)
         self.usd_total_value = UsdTotalValueText(self.driver)
         self.request_button = RequestButton(self.driver)
+
         self.send_request_button = SendRequestButton(self.driver)
 
     def get_usd_total_value(self):

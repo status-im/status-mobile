@@ -1,4 +1,4 @@
-from views.base_view import BaseViewObject
+from views.base_view import BaseView
 import time
 from views.base_element import *
 
@@ -18,7 +18,7 @@ class AllPopular(BaseButton):
         self.locator = self.Locator.xpath_selector("//*[@text='Popular #hashtags']/..//*[@text='ALL']")
 
 
-class DiscoverView(BaseViewObject):
+class DiscoverView(BaseView):
 
     def __init__(self, driver):
         super(DiscoverView, self).__init__(driver)

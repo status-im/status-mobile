@@ -8,10 +8,10 @@ class ProgressBarIcon(BaseElement):
         self.locator = self.Locator.xpath_selector("//android.widget.ProgressBar")
 
 
-class BaseWebViewObject(BaseViewObject):
+class BaseWebView(BaseView):
 
     def __init__(self, driver):
-        super(BaseWebViewObject, self).__init__(driver)
+        super(BaseWebView, self).__init__(driver)
         self.driver = driver
 
         self.progress_bar_icon = ProgressBarIcon(self.driver)
