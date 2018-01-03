@@ -47,7 +47,7 @@
  'status-im.test.utils.utils
  'status-im.test.utils.money
  'status-im.test.utils.clocks
- 'status-im.test.utils.pre-receiver
+ ;;'status-im.test.utils.pre-receiver
  'status-im.test.utils.ethereum.eip681
  'status-im.test.utils.ethereum.core
  'status-im.test.utils.random
