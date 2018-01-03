@@ -133,11 +133,10 @@
            :value (i18n/label :t/datetime-today)})))
 
 (reg-sub
-  :get-chat-messages
-  (fn [[_ chat-id]]
-    (subscribe [:get-chat-message-datemark-groups chat-id]))
-  (fn [message-datemark-groups]
-    (messages-stream message-datemark-groups)))
+  :get-current-chat-messages
+  :<- [:get-current-chat]
+  (fn [{:keys [messages]}]
+    (-> messages message-datemark-groups messages-stream)))
 
 (reg-sub
   :get-commands-for-chat
