@@ -18,7 +18,7 @@
    :type-a-command                        "Почніть вводити команду..."
    :error                                 "Помилка"
    :unknown-status-go-error               "Невідома помилка статусу"
-   :node-unavailable                      "Жоден вузол ефіру не процює"
+   :node-unavailable                      "Жоден вузол ефіру не працює"
    :yes                                   "Так"
    :no                                    "Ні"
 
@@ -32,7 +32,7 @@
    ;;chat
    :is-typing                             "друкує"
    :and-you                               "і ви"
-   :search-chat                           "Найти чат"
+   :search-chat                           "Знайти чат"
    :members                               {:one   "1 учасник"
                                            :other "{{count}} учасника/ів"
                                            :zero  "немає учасників"}
@@ -194,7 +194,7 @@
    :chat-send-eth                         "{{amount}} ETH"
 
    ;;location command
-   :your-current-location                 "Ваше поточне міце положення"
+   :your-current-location                 "Ваше поточне місцеположення"
    :places-nearby                         "Місця поблизу"
    :search-results                        "Шукати результати"
    :dropped-pin                           "Випав пін"
@@ -234,7 +234,7 @@
    ;;login
    :connect                               "Підключіться"
    :address                               "Адреса"
-   :password                              "Праоль"
+   :password                              "Пароль"
    :sign-in-to-status                     "Увійдіть у статус"
    :sign-in                               "Увійдіть"
    :wrong-password                        "Неправильний пароль"
@@ -314,7 +314,7 @@
    :transactions-sign-transaction         "Підписати транзакцію"
    :transactions-sign-later               "Підписати пізніше"
    :transactions-delete                   "Видалити транзакцію"
-   :transactions-delete-content           "Транзакції будуть видалені зі списку 'Непідписані' "
+   :transactions-delete-content           "Транзакції будуть видалені зі списку 'Непідписані'"
    :transactions-history                  "Історія"
    :transactions-unsigned                 "Непідписані"
    :transactions-history-empty            "Поки що немає жодних транзакцій у вашій історії"
@@ -324,7 +324,7 @@
    :transactions-filter-type              "Тип"
    :transactions-filter-select-all        "Вибрати все"
    :view-transaction-details              "Показати деталі транзакції"
-   :transaction-description               "Please wait for at least 12 confirmations to make sure your transaction is processed securely"
+   :transaction-description               "Будь ласка, зачекайте принаймні 12 підтверджень, щоб переконатися, що ваша транзакція буде оброблятися у безпеці"
    :transaction-sent                      "Транзакція відправлена"
    :transaction-moved-text                "Не підписані транзакції будуть видалені протягом наступних 5 хвилин"
    :transaction-moved-title               "Транзакція переміщена"
@@ -352,15 +352,15 @@
    :paste-json-as-text                    "Вставити JSON як текст"
    :paste-json                            "Вставити JSON"
    :specify-rpc-url                       "Вкажіть RPC URL"
-   :edit-network-config                   "Редагувати параметри мережы"
+   :edit-network-config                   "Редагувати параметри мережі"
    :connected                             "Підключено"
    :process-json                          "Обробити JSON"
    :error-processing-json                 "Помилка обробки JSON"
    :rpc-url                               "RPC URL"
    :remove-network                        "Видалити мережу"
    :network-settings                      "Настройки мережі"
-   :edit-network-warning                  "Будьте обережні, редагуючи дані мережі, вас може відключити від цієї"
-   :connecting-requires-login             "Підключення до іншої мережі потребує логіну"
+   :edit-network-warning                  "Будьте обережні, редагування мережевих даних може відключити цю мережу для вас"
+   :connecting-requires-login             "Підключення до іншої мережі потребує логін"
    :close-app-title                       "Увага!"
-   :close-app-content                     "Додаток буде зупинений і закртий. Коли ви знову відкриєте його, вибрані мережі будуть застосовані"
+   :close-app-content                     "Додаток буде зупинений та закритий. Коли ви знову відкриєте його, будуть застосовані вибрані мережі"
    :close-app-button                      "Підтвердити"})
