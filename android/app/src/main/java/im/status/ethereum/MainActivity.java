@@ -21,29 +21,44 @@ import java.util.Properties;
 
 public class MainActivity extends ReactActivity {
 
+    private static boolean unknownException(Throwable ex){
+        String msg = ex.getMessage();
+        String rnCameraException = "Attempt to invoke virtual method 'android.hardware.Camera$Parameters android.hardware.Camera.getParameters()' on a null object reference";
+        String[] knownExceptions = {rnCameraException};
+        for (int i = 0; i < knownExceptions.length; i++) {
+            if(msg.startsWith(knownExceptions[i])){
+                Log.e("MainActivityUnknownException", knownExceptions[i], ex);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static void registerUncaughtExceptionHandler(final Context context) {
         final Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(final Thread thread, final Throwable t) {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
+                if(unknownException(t)){
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            Looper.prepare();
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Error")
+                                        .setMessage(t.toString())
+                                        .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                                            public void onClick(final DialogInterface dialog, final int id) {
+                                                dialog.dismiss();
+                                                defaultUncaughtExceptionHandler.uncaughtException(thread, t);
+                                            }
+                                        }).show();
 
-                        new AlertDialog.Builder(context)
-                                .setTitle("Error")
-                                .setMessage(t.toString())
-                                .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-                                    public void onClick(final DialogInterface dialog, final int id) {
-                                        dialog.dismiss();
-                                        defaultUncaughtExceptionHandler.uncaughtException(thread, t);
-                                    }
-                                }).show();
-
-                        Looper.loop();
-                    }
-                }.start();
+                            Looper.loop();
+                        }
+                    }.start();
+                }
             }
         });
     }
@@ -73,7 +88,6 @@ public class MainActivity extends ReactActivity {
         // Report memory details for this application
         final ActivityManager activityManager = getActivityManager();
         Log.v("RNBootstrap", "Available system memory "+getAvailableMemory(activityManager).availMem + ", maximum usable application memory " + activityManager.getLargeMemoryClass()+"M");
-
 
         SplashScreen.show(this);
         super.onCreate(savedInstanceState);
