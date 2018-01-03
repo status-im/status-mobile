@@ -13,7 +13,8 @@
     "node_modules/react-native-randombytes",
     "node_modules/react-native-i18n/desktop",
     "node_modules/react-native-config/desktop",
-    "node_modules/react-native-linear-gradient/desktop"
+    "node_modules/react-native-linear-gradient/desktop",
+    "modules/react-native-status/desktop"
   ],
   "dependencies": {
     "assert": "1.4.1",

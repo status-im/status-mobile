@@ -366,7 +366,8 @@
   (fn [_ [_ event-str]]
     (log/debug :event-str event-str)
     (inst/log (str "Signal event: " event-str))
-    (let [{:keys [type event]} (types/json->clj event-str)]
+    (let [{:keys [type event] :as gethEvent} (types/json->clj event-str)]
+      (print "Geth event signal received: "event-str" type: "type" event: "event" whole event: "gethEvent)
       (case type
         "transaction.queued"      (dispatch [:transaction-queued event])
         "transaction.failed"      (dispatch [:transaction-failed event])
@@ -387,6 +388,7 @@
 (register-handler-fx
   :status-node-started
   (fn [{{:node/keys [after-start] :as db} :db}]
+    (print "call of :status-node-started")
     (merge {:db (assoc db :status-node-started? true)}
            (when after-start {:dispatch-n [after-start]}))))
 

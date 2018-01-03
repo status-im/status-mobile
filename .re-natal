@@ -15,7 +15,8 @@
     "realm/react-native",
     "react-native-config",
     "react-native-linear-gradient",
-    "react-native-qrcode"
+    "react-native-qrcode",
+    "react-native-status"
   ],
   "imageDirs": [
     "resources/images",
