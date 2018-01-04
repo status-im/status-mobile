@@ -14,7 +14,13 @@
 (re-frame/reg-sub ::send-transaction
   :<- [:wallet]
   (fn [wallet]
-    (:send-transaction wallet)))
+    (let [transaction (:send-transaction wallet)]
+      ;NOTE(goranjovic): the transactions started from chat using /send command
+      ; are only in ether, so this parameter defaults to ETH
+      (if (:symbol transaction)
+        transaction
+        (assoc transaction :symbol :ETH)))))
+
 
 (re-frame/reg-sub :wallet.send/symbol
   :<- [::send-transaction]

@@ -104,7 +104,9 @@
   [(re-frame/inject-cofx :now)]
   (fn [{:keys [db now]} [_ {:keys [id message_id args] :as transaction}]]
     (if (transaction-valid? transaction)
-      (let [{:keys [from to value symbol data gas gasPrice]} args
+      ;NOTE(goranjovic): the transactions started from chat using /send command
+      ; are only in ether, so this parameter defaults to ETH
+      (let [{:keys [from to value symbol data gas gasPrice] :or {symbol :ETH}} args
             ;;TODO (andrey) revisit this map later (this map from old transactions, idk if we need all these fields)
             transaction {:id         id
                          :from       from
