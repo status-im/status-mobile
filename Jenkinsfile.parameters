@@ -32,7 +32,7 @@ node ('macos1') {
       sh 'git checkout ' + BRANCH_NAME
       sh 'rm -rf node_modules'
 
-      sh 'test ${JENKINS_REBASE_DEVELOP} -eq 1 && git rebase origin/develop'
+      sh 'test ${JENKINS_REBASE_DEVELOP} -eq 1 && git rebase origin/develop || echo "Not rebasing on develop."'
 
       // Assume all parameters are set in Jenkins 'Parameterized build'
       // TODO(oskarth): Consider read/write from .env to avoid having to specify in Jenkins again
