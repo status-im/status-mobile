@@ -64,7 +64,8 @@
   (utils/update-if-present message
                            :user-statuses
                            (partial map (fn [[whisper-identity status]]
-                                          {:whisper-identity whisper-identity
+                                          {:status-id        (str message-id "-" whisper-identity)
+                                           :whisper-identity whisper-identity
                                            :status           status
                                            :chat-id          chat-id
                                            :message-id       message-id}))))
