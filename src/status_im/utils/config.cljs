@@ -30,3 +30,4 @@
       keyword))
 
 (def jsc-enabled? (enabled? (get-config :JSC_ENABLED 0)))
+(def queue-message-enabled? (enabled? (get-config :QUEUE_MESSAGE_ENABLED 0)))
