@@ -6,7 +6,10 @@
                                       unparse]]
             [status-im.i18n :refer [label label-pluralize]]
             [goog.string :as gstring]
-            goog.string.format))
+            goog.string.format
+            goog.i18n.DateTimeFormat
+            [clojure.string :as s]
+            [goog.object :refer [get]]))
 
 (defn now []
   (t/now))
@@ -21,18 +24,47 @@
 
 (def time-zone-offset (hours (- (/ (.getTimezoneOffset (js/Date.)) 60))))
 
-(defn to-short-str
-  ([ms]
-   (to-short-str ms #(unparse (formatters :hour-minute) %)))
-  ([ms today-format-fn]
-   (let [date      (from-long ms)
-         local     (plus date time-zone-offset)
-         today     (t/today-at-midnight)
-         yesterday (plus today (days -1))]
-     (cond
-       (before? date yesterday) (unparse (formatter "dd MMM hh:mm") local)
-       (before? date today) (label :t/datetime-yesterday)
-       :else (today-format-fn local)))))
+;; xx-YY locale, xx locale or en fallback
+(defn- locale-symbols [locale-name]
+  (if-let [loc (get goog.i18n (str "DateTimeSymbols_" locale-name))]
+    loc
+    (let [name-first (s/replace (or locale-name "") #"-.*$" "")
+          loc (get goog.i18n (str "DateTimeSymbols_" name-first))]
+      (or loc goog.i18n.DateTimeSymbols_en))))
+
+;; Closure does not have an enum for datetime formats
+(def short-date-time-format 10)
+(def short-date-format 2)
+
+(defn mk-fmt [locale format]
+  (goog.i18n.DateTimeFormat. format (locale-symbols locale)))
+
+(def date-time-fmt
+  (mk-fmt status-im.i18n/locale short-date-time-format))
+(def date-fmt
+  (mk-fmt status-im.i18n/locale short-date-format))
+
+(defn- to-str [ms old-fmt-fn yesterday-fmt-fn today-fmt-fn]
+  (let [date (from-long ms)
+        local (plus date time-zone-offset)
+        today (t/today-at-midnight)
+        yesterday (plus today (days -1))]
+    (cond
+      (before? date yesterday) (old-fmt-fn local)
+      (before? date today) (yesterday-fmt-fn local)
+      :else (today-fmt-fn local))))
+
+(defn to-short-str [ms]
+  (to-str ms
+          #(.format date-fmt %)
+          #(label :t/datetime-yesterday)
+          #(unparse (formatters :hour-minute) %)))
+
+(defn day-relative [ms]
+  (to-str ms
+          #(.format date-time-fmt %)
+          #(label :t/datetime-yesterday)
+          #(label :t/datetime-today)))
 
 (defn timestamp->mini-date [ms]
   (unparse (formatter "dd MMM") (-> ms
@@ -54,10 +86,6 @@
                     (-> ms
                         from-long
                         (plus time-zone-offset)))))
-
-(defn day-relative [ms]
-  (when (pos? ms)
-    (to-short-str ms #(label :t/datetime-today))))
 
 (defn format-time-ago [diff unit]
   (let [name (label-pluralize diff (:name unit))]

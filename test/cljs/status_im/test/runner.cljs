@@ -21,7 +21,8 @@
             [status-im.test.utils.gfycat.core]
             [status-im.test.utils.signing-phrase.core]
             [status-im.test.utils.transducers]
-            [status-im.test.utils.async]))
+            [status-im.test.utils.async]
+            [status-im.test.utils.datetime]))
 
 (enable-console-print!)
 
@@ -53,4 +54,5 @@
  'status-im.test.utils.random
  'status-im.test.utils.gfycat.core
  'status-im.test.utils.signing-phrase.core
- 'status-im.test.utils.transducers)
+ 'status-im.test.utils.transducers
+ 'status-im.test.utils.datetime)
