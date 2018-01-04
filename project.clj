@@ -31,14 +31,14 @@
                     :source-paths ["src" "env/dev"]
                     :cljsbuild    {:builds
                                    {:ios
-                                    {:source-paths ["react-native/src"]
+                                    {:source-paths ["react-native/src" "src"]
                                      :figwheel     true
                                      :compiler     {:output-to     "target/ios/app.js"
                                                     :main          "env.ios.main"
                                                     :output-dir    "target/ios"
                                                     :optimizations :none}}
                                     :android
-                                    {:source-paths ["react-native/src"]
+                                    {:source-paths ["react-native/src" "src"]
                                      :figwheel     true
                                      :compiler     {:output-to     "target/android/app.js"
                                                     :main          "env.android.main"
