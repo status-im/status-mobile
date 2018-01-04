@@ -10,9 +10,11 @@
 
 (re-frame/reg-fx
   :send-notification
-  (fn [fcm-token]
-    (log/debug "send-notification fcm-token: " fcm-token)
-    (status/notify fcm-token #(log/debug "send-notification cb result: " %))))
+  (fn [{:keys [message payload tokens]}]
+    (let [payload-json (types/clj->json payload)
+          tokens-json  (types/clj->json tokens)]
+      (log/debug "send-notification message: " message " payload-json: " payload-json " tokens-json: " tokens-json)
+      (status/notify-users {:message message :payload payload-json :tokens tokens-json} #(log/debug "send-notification cb result: " %)))))
 
 (re-frame/reg-fx
   :send-group-message

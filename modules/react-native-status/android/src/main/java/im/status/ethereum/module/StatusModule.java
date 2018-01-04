@@ -404,8 +404,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void notify(final String token, final Callback callback) {
-        Log.d(TAG, "notify");
+    public void notifyUsers(final String message, final String payloadJSON, final String tokensJSON, final Callback callback) {
+        Log.d(TAG, "notifyUsers");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
@@ -414,7 +414,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
                 @Override
                 public void run() {
-                    String res = Statusgo.Notify(token);
+                    String res = Statusgo.NotifyUsers(message, payloadJSON, tokensJSON);
 
                     callback.invoke(res);
                 }

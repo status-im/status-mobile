@@ -276,14 +276,16 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)password
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Notify method
-//////////////////////////////////////////////////////////////////// notify
-RCT_EXPORT_METHOD(notify:(NSString *)token
+#pragma mark - NotifyUsers method
+//////////////////////////////////////////////////////////////////// notifyUsers
+RCT_EXPORT_METHOD(notifyUsers:(NSString *)message
+                  payloadJSON:(NSString *)payloadJSON
+                  tokensJSON:(NSString *)tokensJSON
                   callback:(RCTResponseSenderBlock)callback) {
-    char * result = Notify((char *) [token UTF8String]);
+    char * result = NotifyUsers((char *) [message UTF8String], (char *) [payloadJSON UTF8String], (char *) [tokensJSON UTF8String]);
     callback(@[[NSString stringWithUTF8String: result]]);
 #if DEBUG
-    NSLog(@"Notify() method called");
+    NSLog(@"NotifyUsers() method called");
 #endif
 }
 

@@ -84,8 +84,8 @@
 (defn should-move-to-internal-storage? [callback]
   (module-interface/-should-move-to-internal-storage? rns-module callback))
 
-(defn notify [token callback]
-  (module-interface/-notify rns-module token callback))
+(defn notify-users [{:keys [message payload tokens] :as m} callback]
+  (module-interface/-notify-users rns-module m callback))
 
 (defn add-peer [enode callback]
   (module-interface/-add-peer rns-module enode callback))

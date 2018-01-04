@@ -18,7 +18,7 @@
   (-call-web3 [this payload callback])
   (-module-initialized! [this])
   (-should-move-to-internal-storage? [this callback])
-  (-notify [this token callback])
+  (-notify-users [this {:keys [message payload tokens] :as m} callback])
   (-add-peer [this enode callback])
   (-close-application [this]))
 

@@ -103,9 +103,9 @@
                    true)
                  false))))))
 
-(defn notify [token on-result]
+(defn notify-users [{:keys [message payload tokens] :as m} on-result]
   (when status
-    (call-module #(.notify status token on-result))))
+    (call-module #(.notifyUsers status message payload tokens on-result))))
 
 (defn add-peer [enode on-result]
   (when status
@@ -259,8 +259,8 @@
     (call-function! params))
   (-call-web3 [this payload callback]
     (call-web3 payload callback))
-  (-notify [this token callback]
-    (notify token callback))
+  (-notify-users [this {:keys [message payload tokens] :as m} callback]
+    (notify-users m callback))
   (-add-peer [this enode callback]
     (add-peer enode callback))
 
