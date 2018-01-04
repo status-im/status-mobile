@@ -111,11 +111,12 @@
    :ios     {:font-size 15}})
 
 (def new-messages-container
-  {:width            22
-   :height           22
-   :margin-left      15
-   :background-color component.styles/new-messages-count-color
-   :border-radius    50})
+  {:min-width          22
+   :height             22
+   :padding-horizontal 8
+   :margin-left        15
+   :background-color   component.styles/new-messages-count-color
+   :border-radius      50})
 
 (defstyle new-messages-text
   {:left       0
