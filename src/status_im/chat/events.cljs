@@ -1,5 +1,7 @@
 (ns status-im.chat.events
-  (:require [re-frame.core :as re-frame]
+  (:require-macros [cljs.core.async.macros :as async])
+  (:require [cljs.core.async :as async]
+            [re-frame.core :as re-frame]
             [taoensso.timbre :as log]
             [status-im.utils.handlers :as handlers]
             [status-im.utils.gfycat.core :as gfycat]
@@ -54,13 +56,19 @@
   (fn [cofx _]
     (assoc cofx :get-stored-chat chats-store/get-by-id)))
 
-
 ;;;; Effects
+
+(def ^:private update-message-queue (async/chan 100))
+
+(async/go-loop [message (async/<! update-message-queue)]
+  (when message
+    (messages-store/update-message message)
+    (recur (async/<! update-message-queue))))
 
 (re-frame/reg-fx
   :update-message
   (fn [message]
-    (messages-store/update-message message)))
+    (async/put! update-message-queue message)))
 
 (re-frame/reg-fx
   :save-message

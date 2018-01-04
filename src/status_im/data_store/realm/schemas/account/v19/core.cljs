@@ -112,9 +112,11 @@
                         statuses   (aget msg "user-statuses")]
                     (when statuses 
                       (.map statuses (fn [status _ _]
+                                       (aset status "status-id" (str message-id "-" from))
                                        (aset status "message-id" message-id)
                                        (aset status "chat-id"    chat-id)))
-                      (.push statuses (clj->js {"message-id"       message-id
+                      (.push statuses (clj->js {"status-id"        (str message-id "-anonymous")
+                                                "message-id"       message-id
                                                 "chat-id"          chat-id
                                                 "status"           (or msg-status "received")
                                                 "whisper-identity" (or from "anonymous")}))))))))

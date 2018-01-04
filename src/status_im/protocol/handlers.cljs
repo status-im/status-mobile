@@ -62,13 +62,6 @@
                             (> timestamp (chats/get-property group-id :timestamp)))))))
 
 (re-frame/reg-cofx
-  ::chats-is-active?
-  (fn [coeffects _]
-    (let [[{{:keys [group-id]} :payload from :from}] (:event coeffects)]
-      (assoc coeffects :chats-is-active?
-                       (chats/is-active? (or group-id from))))))
-
-(re-frame/reg-cofx
   ::has-contact?
   (fn [coeffects _]
     (let [[{{:keys [group-id identity]} :payload}] (:event coeffects)]
@@ -347,16 +340,17 @@
 
 (handlers/register-handler-fx
   :update-message-status
-  [re-frame/trim-v
-   (re-frame/inject-cofx :get-stored-message)
-   (re-frame/inject-cofx ::chats-is-active?)]
-  (fn [{:keys [db chats-is-active? get-stored-message]} [{:keys [from sent-from payload]} status]]
+  [re-frame/trim-v (re-frame/inject-cofx :get-stored-message)]
+  (fn [{:keys [db get-stored-message]} [{:keys [from sent-from payload]} status]]
     (let [message-identifier (get-message-id payload)
-          message-db-path    [:chats (or (:group-id payload) from) :messages message-identifier] 
+          chat-identifier    (or (:group-id payload) from)
+          message-db-path    [:chats chat-identifier :messages message-identifier] 
           from-id            (or sent-from from) 
           message            (get-stored-message message-identifier)]
-      ;; proceed with updating status if chat is active, and message was not already seen 
-      (when (and chats-is-active? (not (chat.utils/message-seen-by? message from-id)))
+      ;; proceed with updating status if chat is in db, status is not the same and message was not already seen 
+      (when (and (get-in db [:chats chat-identifier])
+                 (not= status (get-in message [:user-statuses from-id]))
+                 (not (chat.utils/message-seen-by? message from-id)))
         (let [statuses (assoc (:user-statuses message) from-id status)]
           (cond-> {:update-message {:message-id    message-identifier
                                     :user-statuses statuses}} 
