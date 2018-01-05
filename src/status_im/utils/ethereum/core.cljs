@@ -1,6 +1,7 @@
 (ns status-im.utils.ethereum.core
   (:require [clojure.string :as string]
             [status-im.js-dependencies :as dependencies]
+            [status-im.utils.ethereum.tokens :as tokens]
             [status-im.utils.money :as money]))
 
 ;; IDs standardized in https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md#list-of-chain-ids
@@ -83,3 +84,9 @@
 
 (def default-transaction-gas (money/bignumber 21000))
 (def default-gas-price (money/->wei :gwei 21))
+
+(defn estimate-gas [symbol]
+  (if (tokens/ethereum? symbol)
+    default-transaction-gas
+    ;; TODO(jeluard) Rely on estimateGas call
+    (.times default-transaction-gas 5)))

@@ -23,21 +23,23 @@
 (def key-value-format (str "([^" parameter-separator key-value-separator "]+)"))
 (def query-pattern (re-pattern (str key-value-format key-value-separator key-value-format)))
 
-(def valid-native-arguments #{:value :gas})
+(def valid-native-arguments #{:value :gas :gasPrice})
 
 (defn- parse-query [s]
   (into {} (for [[_ k v] (re-seq query-pattern (or s ""))]
              [(keyword k) v])))
 
 (defn- parse-native-arguments [m]
-  (when (set/superset? valid-native-arguments (set (keys m)))
-    m))
+  (select-keys m valid-native-arguments))
 
 (defn- parse-arguments [function-name s]
-  (let [m (parse-query s)]
+  (let [m         (parse-query s)
+        arguments (parse-native-arguments m)]
     (if function-name
-      (merge {:function-name function-name} (when-not (empty? m) {:function-arguments m}))
-      (parse-native-arguments m))))
+      (merge arguments {:function-name function-name}
+             (when (seq m)
+               {:function-arguments (apply dissoc m valid-native-arguments)}))
+      arguments)))
 
 ;; TODO add ENS support
 
@@ -94,5 +96,16 @@
              (str chain-id-separator chain-id))
            (when-not (empty? parameters)
              (if function-name
-               (str function-name-separator function-name query-separator (generate-query-string function-arguments))
+               (str function-name-separator function-name query-separator
+                    (let [native-parameters (dissoc parameters :function-name :function-arguments)]
+                      (generate-query-string (merge function-arguments native-parameters))))
                (str query-separator (generate-query-string parameters))))))))
+
+(defn generate-erc20-uri
+  "Generate a EIP 681 URI encapsulating ERC20 token transfer"
+  [address {:keys [symbol value chain-id] :as m}]
+  (when-let [token (tokens/symbol->token (or (ethereum/chain-id->chain-keyword chain-id) :mainnet) symbol)]
+    (generate-uri (:address token)
+                  (merge (dissoc m :value :symbol)
+                         {:function-name      "transfer"
+                          :function-arguments {:uint256 value :address address}}))))

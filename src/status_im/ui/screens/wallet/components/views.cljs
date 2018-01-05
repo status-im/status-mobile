@@ -62,17 +62,16 @@
       [react/text
        (name symbol)]]]))
 
-(views/defview choose-currency [style]
-  (views/letsubs [visible-tokens [:wallet.settings/visible-tokens]
-                  symbol         [:wallet.send/symbol]]
+(views/defview choose-currency [{:keys [style on-change value]}]
+  (views/letsubs [visible-tokens [:wallet.settings/visible-tokens]]
     [react/view
      [react/text {:style styles/label} (i18n/label :t/currency)]
      [react/view (merge styles/currency-container
                         style)
-      [react/picker {:selected   (name symbol)
+      [react/picker {:selected   value
                      :style      {:color "white"}
                      :item-style styles/wallet-name
-                     :on-change  #(re-frame/dispatch [:wallet.send/set-symbol (keyword %)])}
+                     :on-change  on-change}
        (map (fn [s] {:value (name s) :color "white"}) (conj visible-tokens (:symbol tokens/ethereum)))]]]))
 
 (defn choose-recipient-content [{:keys [address name on-press style]}]

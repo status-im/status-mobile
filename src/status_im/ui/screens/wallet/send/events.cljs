@@ -70,17 +70,11 @@
                (assoc-in [:wallet :send-transaction :amount] (money/ether->wei value))
                (assoc-in [:wallet :send-transaction :amount-error] error))})))
 
-(defn- estimated-gas [symbol]
-  (if (tokens/ethereum? symbol)
-    ethereum/default-transaction-gas
-    ;; TODO(jeluard) Rely on estimateGas call
-    (.times ethereum/default-transaction-gas 5)))
-
 (handlers/register-handler-fx
   :wallet.send/set-symbol
   (fn [{:keys [db]} [_ symbol]]
     {:db (-> (assoc-in db [:wallet :send-transaction :symbol] symbol)
-             (assoc-in [:wallet :send-transaction :gas] (estimated-gas symbol)))}))
+             (assoc-in [:wallet :send-transaction :gas] (ethereum/estimate-gas symbol)))}))
 
 (handlers/register-handler-fx
   :wallet.send/toggle-advanced

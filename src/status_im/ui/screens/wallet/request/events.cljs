@@ -32,3 +32,8 @@
       {:db (-> db
                (assoc-in [:wallet/request-transaction :amount] (money/ether->wei value))
                (assoc-in [:wallet/request-transaction :amount-error] error))})))
+
+(handlers/register-handler-fx
+  :wallet.request/set-symbol
+  (fn [{:keys [db]} [_ s]]
+    {:db (assoc-in db [:wallet/request-transaction :symbol] s)}))

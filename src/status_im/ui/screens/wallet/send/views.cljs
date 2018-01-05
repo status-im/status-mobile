@@ -189,7 +189,7 @@
       (when on-press
         [vector-icons/icon :icons/forward {:color :white}])]]]])
 
-(defn- send-transaction-panel [{:keys [modal? transaction scroll advanced?] :as transaction}]
+(defn- send-transaction-panel [{:keys [modal? transaction scroll advanced? symbol]}]
   (let [{:keys [amount amount-error signing? to to-name sufficient-funds? in-progress? from-chat?]} transaction]
     [react/keyboard-avoiding-view wallet.styles/wallet-modal-container
      [react/view components.styles/flex
@@ -219,7 +219,9 @@
            [react/view wallet.styles/choose-currency-container
             [components/view-currency wallet.styles/choose-currency]]
            [react/view wallet.styles/choose-currency-container
-            [components/choose-currency wallet.styles/choose-currency]])]
+            [components/choose-currency {:style     wallet.styles/choose-currency
+                                         :on-change #(re-frame/dispatch [:wallet.send/set-symbol (keyword %)])
+                                         :value     (name symbol)}]])]
         [react/view {:style send.styles/advanced-wrapper}
          [react/touchable-highlight {:on-press #(re-frame/dispatch [:wallet.send/toggle-advanced (not advanced?)])}
           [react/view {:style send.styles/advanced-button-wrapper}
@@ -245,15 +247,17 @@
 
 (defview send-transaction []
   (letsubs [transaction [:wallet.send/transaction]
+            symbol      [:wallet.send/symbol]
             advanced?   [:wallet.send/advanced?]
             scroll      (atom nil)]
-    [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced?}]))
+    [send-transaction-panel {:modal? false :transaction transaction :scroll scroll :advanced? advanced? :symbol symbol}]))
 
 (defview send-transaction-modal []
   (letsubs [transaction [:wallet.send/unsigned-transaction]
+            symbol      [:wallet.send/symbol]
             advanced?   [:wallet.send/advanced?]]
     (if transaction
-      [send-transaction-panel {:modal? true :transaction transaction :advanced? advanced?}]
+      [send-transaction-panel {:modal? true :transaction transaction :advanced? advanced? :symbol symbol}]
       [react/view wallet.styles/wallet-modal-container
        [react/view components.styles/flex
         [status-bar/status-bar {:type :modal-wallet}]

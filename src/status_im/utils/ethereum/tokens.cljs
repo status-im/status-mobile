@@ -1,6 +1,5 @@
 (ns status-im.utils.ethereum.tokens
-  (:require [status-im.ui.components.styles :as styles]
-            [status-im.utils.ethereum.core :as ethereum])
+  (:require [status-im.ui.components.styles :as styles])
   (:require-macros [status-im.utils.ethereum.macros :refer [resolve-icons]]))
 
 (defn- asset-border [color]
