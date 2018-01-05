@@ -2,7 +2,7 @@
   (:require [cljs.spec.alpha :as s]
             [status-im.protocol.web3.filtering :as f]
             [status-im.protocol.web3.delivery :as d]
-            [taoensso.timbre :refer-macros [debug]]
+            [taoensso.timbre :refer-macros [debug] :as log]
             [status-im.protocol.validation :refer-macros [valid?]]))
 
 (def message-defaults
@@ -17,10 +17,11 @@
 (defn send!
   [{:keys [web3 message]}]
   {:pre [(valid? ::user-message message)]}
-  (let [message' (merge message-defaults
-                        (assoc message
-                          :type :message
-                          :requires-ack? true))]
+  (let [topics  (f/get-topics (:to message))
+        message' (assoc message
+                        :topics        topics
+                        :type          :message
+                        :requires-ack? true)]
     (debug :send-user-message message')
     (d/add-pending-message! web3 message')))
 

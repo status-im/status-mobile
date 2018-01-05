@@ -98,13 +98,13 @@
             web3
             {:key      identity
              :allowP2P true
-             :topics   [f/status-topic]}
+             :topics  (f/get-topics identity)}
             (l/message-listener listener-options))
           (inbox/initialize! web3))
       (f/add-filter!
         web3
         {:key    identity
-         :topics [f/status-topic]}
+         :topics (f/get-topics identity)}
         (l/message-listener listener-options)))
 
     ;; start listening to profiles

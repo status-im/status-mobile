@@ -32,3 +32,4 @@
 
 (def jsc-enabled? (enabled? (get-config :JSC_ENABLED 0)))
 (def queue-message-enabled? (enabled? (get-config :QUEUE_MESSAGE_ENABLED 0)))
+(def many-whisper-topics-enabled? (enabled? (get-config :MANY_WHISPER_TOPICS_ENABLED 0)))
