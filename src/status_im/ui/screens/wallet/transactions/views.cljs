@@ -207,7 +207,9 @@
 
 (defn- pretty-print-asset [symbol amount]
   (case symbol
-    "ETH" (if amount (money/wei->str :eth amount) "...")))
+    ;; TODO (jeluard) Format tokens amount once tokens history is supported
+    :ETH (if amount (money/wei->str :eth amount) "...")))
+
 
 (defn details-header [{:keys [value date type symbol]}]
   [react/view {:style transactions.styles/details-header}
@@ -266,8 +268,8 @@
 
 (defview transaction-details []
   (letsubs [{:keys [hash url type] :as transaction} [:wallet.transactions/transaction-details]
-            confirmations                            [:wallet.transactions.details/confirmations]
-            confirmations-progress                   [:wallet.transactions.details/confirmations-progress]]
+            confirmations                           [:wallet.transactions.details/confirmations]
+            confirmations-progress                  [:wallet.transactions.details/confirmations-progress]]
     [react/view {:style styles/flex}
      [status-bar/status-bar]
      [toolbar/toolbar {}
